@@ -1,0 +1,63 @@
+{
+  "taskId": "city:7213",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-7213-omoku.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/omoku-service-review.json",
+    "tmp/valhalla-parcel-research/omoku/urban.html",
+    "tmp/valhalla-parcel-research/omoku/rivers.html",
+    "tmp/valhalla-parcel-research/omoku/sgriv.html"
+  ],
+  "checkedAt": "2026-10-12T00:10:02Z",
+  "city": "Omoku",
+  "identityCheck": {
+    "officialArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "queueRank": 2981,
+    "country": "Nigeria",
+    "pointLatLon": [
+      5.34068647964386,
+      6.65584499280551
+    ],
+    "populationPersons": 200802,
+    "queueRosterPacketAndOfficialSourceMatch": true
+  },
+  "searchLanguages": [
+    "English",
+    "Ikwerre/local (Latin orthography; Nigeria has no single cadastral-language convention)"
+  ],
+  "bilingualSearchEvidence": "Packet records two executed language queries with result URLs; paired review corroborates investigated routes.",
+  "registryFound": true,
+  "durableSamplePolygonCount": 0,
+  "safeNativeParcelIdAndFullPolygonVerified": false,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "First-party Rivers ministry page documents layout applications requiring login and survey plans; the federal survey office describes custody of a cadastral database for government property. These establish institutional functions, not an Omoku parcel response or public geometry. Cached state homepage is a WAF wall and SGRIV is a deployment 404. No native parcel ID or polygon was obtained.",
+  "sourceChecks": [
+    {
+      "url": "https://urban.riversstateapps.ng/",
+      "observation": "Original cached first-party page describes layout-registration applications, survey plans, and login."
+    },
+    {
+      "url": "https://www.riversstate.gov.ng/",
+      "observation": "Cached response is a Just a moment WAF page."
+    },
+    {
+      "url": "https://www.sgriv.com/",
+      "observation": "Cached response is 404 NOT_FOUND."
+    },
+    {
+      "url": "https://osgof.gov.ng/cadastral-legal-surveys/",
+      "observation": "First-party page says its cadastral unit maintains a digital cadastral database for government properties nationwide; no Omoku public polygons shown."
+    }
+  ],
+  "absenceInference": false
+}

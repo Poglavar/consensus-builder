@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-1743-daloa.json",
+  "purpose": "Document first-party registry/map discovery, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Côte d’Ivoire sources evidence Daloa’s cadastral service/circonscription and current national urban and rural land information channels. No anonymous complete safe parcel polygon response with a verified native identity was obtained.",
+  "registryAssessment": "The Daloa-specific official/legal publication references the service du Cadastre de Daloa and the circonscription foncière de Daloa. SIGFU is the official urban-land management system with parcel and lot search; AFOR is the official rural-land agency and its geoportal advertises parcel loading. These establish custody and public-facing procedures/channels, not open citywide parcel geometry.",
+  "officialPrimarySources": [
+    {"url": "https://www.sigfu.gouv.ci/parcelles", "observation": "Official SIGFU parcel page describes public lot/locality search and says results concern approved subdivisions; no schema or complete polygon response was retained."},
+    {"url": "https://sigfu.gouv.ci/public", "observation": "Official SIGFU public landing page describes parcel/lot cartography and administrative parcel verification services."},
+    {"url": "https://geoportail.afor.ci/", "observation": "Official AFOR rural geoportal states national overview and parcel loading at detailed zoom; no bounded feature response was obtained."},
+    {"url": "https://agp.africanlii.org/en/akn/ci/act/decree/2019/101/fra@2023-07-18/publication", "observation": "Official/legal publication text references the service du Cadastre de Daloa and the circonscription foncière de Daloa."},
+    {"url": "https://dgi.gouv.ci/SITE_CADASTRE/index.php", "observation": "Official DGI Direction du Cadastre page was retrieved; it exposes an online tax-notice workflow, not a public parcel geometry service."},
+    {"url": "https://www.afor.ci/news/nos-actualites/94", "observation": "Official AFOR news page documents rural-land security activity in Daloa; it is contextual custody evidence, not a parcel API."}
+  ],
+  "viewerConfiguration": {
+    "homeUrls": ["https://www.sigfu.gouv.ci/parcelles", "https://geoportail.afor.ci/"],
+    "observedTechnology": "Public HTML/search-indexed viewer pages; AFOR page presents an OpenStreetMap-backed web map and parcel-loading status. No stable service configuration or API contract was verified.",
+    "observedControls": ["SIGFU lot/locality/parcel search", "AFOR map with national overview and parcel loading", "DGI cadastral tax-notice form"],
+    "schemaAndCrs": "Not exposed by the bounded retrieval; no CRS, native ID field, or feature schema was verified.",
+    "nativeFieldNames": [],
+    "sourceFieldMapping": "None verified.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://www.sigfu.gouv.ci/parcelles", "method": "GET via first-party indexed retrieval", "normalTlsVerification": true, "result": "Search result and page content exposed official parcel/locality search controls; direct bounded open timed out. No anonymous feature response, schema, or geometry obtained."},
+    {"url": "https://geoportail.afor.ci/", "method": "GET via first-party indexed retrieval", "normalTlsVerification": true, "result": "HTTP page content retrieved; viewer advertised national overview and parcel loading. No bounded anonymous feature response or schema obtained."},
+    {"url": "https://dgi.gouv.ci/SITE_CADASTRE/index.php", "method": "GET via first-party retrieval", "normalTlsVerification": true, "result": "Official DGI cadastre page retrieved; only tax-notice workflow observed, with no parcel geometry route."},
+    {"url": "https://agp.africanlii.org/en/akn/ci/act/decree/2019/101/fra@2023-07-18/publication", "method": "GET via first-party/legal publication retrieval", "normalTlsVerification": true, "result": "Official/legal publication content verified Daloa cadastral-service and land-circonscription references; no geometry request submitted."},
+    {"url": "https://www.afor.ci/news/nos-actualites/94", "method": "GET via first-party retrieval", "normalTlsVerification": true, "result": "Official AFOR page verified Daloa-specific rural-land-security activity; no parcel geometry request submitted."},
+    {"url": "https://www.sigfu.gouv.ci/parcelles", "method": "GET with local curl", "normalTlsVerification": true, "result": "TLS certificate chain could not be verified by the local curl trust store; request was not retried with verification disabled or bypassed."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous parcel response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No parcel feature query was submitted because the public pages did not expose a verified anonymous endpoint/schema and one direct request encountered a TLS trust-chain failure."},
+  "coverageAssessment": {"claimedScope": "Daloa cadastral-service reference plus official Côte d’Ivoire SIGFU and AFOR channels.", "verifiedOpenScope": "No anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The SIGFU and AFOR public viewers’ current JavaScript/API routes, anonymous access policy, CRS, native identity field, returned schema, and Daloa coverage remain unverified. Timeout, TLS trust failure, general viewer text, or lack of a bounded response is not evidence of cadastral absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

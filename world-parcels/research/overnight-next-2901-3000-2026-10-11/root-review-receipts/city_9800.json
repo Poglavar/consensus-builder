@@ -1,0 +1,41 @@
+{
+  "taskId": "city:9800",
+  "decision": "held",
+  "checkedAt": "2026-10-11T22:58:52Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-9800-tanghe.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/tanghe-service-review.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "tmp/valhalla-parcel-research/tanghe/tanghe-procurement.html",
+    "tmp/valhalla-parcel-research/tanghe/tanghe-home.html"
+  ],
+  "reason": "The first-party procurement page identifies the local registration center and cadastral database project, supporting custody true. The official host block and missing anonymous ID-plus-geometry response prevent admission.",
+  "identityCheck": {
+    "queueRank": 2925,
+    "name": "Tanghe",
+    "country": "China",
+    "point": [
+      32.6868328882055,
+      112.839769297921
+    ],
+    "populationPersons": 204020,
+    "matchedQueueAndRoster": true
+  },
+  "researchCheck": {
+    "englishAndLocalQueryRecordsPresent": true,
+    "queryExecutionProvenByIndependentSearchLog": false,
+    "retainedFullPolygons": 0,
+    "safeNativeParcelIdVerified": false
+  },
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "custodyDecision": true,
+  "scopeNote": "Research packet completion is not runtime qualification. A blocked viewer, timeout, or empty bounded response is not citywide absence."
+}

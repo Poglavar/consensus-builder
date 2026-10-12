@@ -1,0 +1,37 @@
+{
+  "cityCode": 6387,
+  "queueRank": 2402,
+  "name": "Adıyaman",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "point": [37.761903101735, 38.2673873771064],
+  "population2025": 243388,
+  "population2025k": 243.388,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Adıyaman Turkey cadastral parcel map official TKGM parcel query",
+        "result": "Official TKGM results identify Parsel Sorgu as the public cadastral parcel viewer and describe public parcel location, area, map-sheet, qualification, and coordinate access. An official Adıyaman municipal imar viewer was also found.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://ekentrehberi.adiyaman.bel.tr/KentrehberiApp/Imardurumu"
+        ]
+      },
+      {
+        "language": "Turkish",
+        "query": "Adıyaman Türkiye kadastro parsel sorgu resmi TKGM",
+        "result": "Resmî TKGM sonuçları Parsel Sorgu uygulamasını kamuya açık parsel sorgulama hizmeti olarak tanımlıyor. Adıyaman Belediyesi Kent Rehberi imar haritasında TKGM katmanı ve ada/parsel sorgu arayüzü gözlendi.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://ekentrehberi.adiyaman.bel.tr/KentrehberiApp/Imardurumu"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "The official national TKGM cadastral service was anonymously reachable and returned a safe polygon on a bounded nearby coordinate. The exact WUP point returned no parcel; that miss is not interpreted as citywide absence. This packet is not source integration or runtime admission.",
+  "sampleGeoJSON": "ad-yaman-sample.geojson"
+}

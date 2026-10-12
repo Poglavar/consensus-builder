@@ -52,7 +52,7 @@ describe('Athens active-cadastre source', () => {
         expect(descriptor).toMatchObject({
             id: sourceId, adapter: 'arcgis', idField: 'KAEK', idType: 'string', objectIdField: 'OBJECTID',
             idPrefix: 'GR-ATHENS-KAEK-', outFields: ['OBJECTID', 'KAEK'], countryCode: 'GR',
-            metricSrid: 32634, cityIds: [cityId], maxBboxKm2: 0.25, maxFeatures: 2500
+            metricSrid: 32634, cityIds: expect.arrayContaining([cityId]), maxBboxKm2: 0.25, maxFeatures: 2500
         });
         expect(Object.keys(descriptor)).not.toContain('ownerField');
         expect(parcelSourceForCity(cityId).descriptor.id).toBe(sourceId);

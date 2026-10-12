@@ -1,0 +1,20 @@
+{
+  "cityCode": 7186,
+  "checkedAt": "2026-10-12T02:43:20.805899Z",
+  "request": {
+    "method": "GET",
+    "url": "https://www.indaiatuba.sp.gov.br/engenharia/cadastro-de-imoveis-e-edificacoes/"
+  },
+  "response": {
+    "status": 200,
+    "finalUrl": "https://www.indaiatuba.sp.gov.br/engenharia/cadastro-de-imoveis-e-edificacoes/",
+    "bytes": 58898,
+    "sha256": "0207b3095bd10493dabc9e1f2b216f523268c852339df7f71df2a237e1bb2beb"
+  },
+  "visibleTextMarkers": {
+    "cadastro de imóveis": true,
+    "departamento": true,
+    "geoprocessamento": true
+  },
+  "scope": "First-party custodian page only; no parcel geometry or API acceptance metrics inferred."
+}

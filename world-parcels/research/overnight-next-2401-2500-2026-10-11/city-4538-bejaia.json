@@ -1,0 +1,49 @@
+{
+  "cityCode": 4538,
+  "queueRank": 2434,
+  "name": "Bejaia",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "point": [36.7407344530971, 5.04971418819759],
+  "population2025": 241071,
+  "population2025k": 241.071,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bejaia Algeria cadastral parcel map official GIS cadastre",
+        "result": "Search identified the official Ministry of Justice map-dgapr page, the official ANFU site, and an official Journal entry establishing the Wilaya cadastre directorate structure including Béjaïa. The official results did not expose a public Bejaia parcel-vector endpoint or safe anonymous geometry response.",
+        "actualResultUrls": [
+          "https://www.mjustice.gov.dz/ar/map-dgapr/",
+          "https://www.anfu.dz/",
+          "https://www.joradp.dz/FTP/Jo-Francais/2002/F2002042.pdf"
+        ]
+      },
+      {
+        "language": "French/local",
+        "query": "Algérie Béjaïa cadastre carte parcelles SIG officiel",
+        "result": "Search identified the official Journal entry naming Béjaïa among Wilaya cadastre directorates and the official ANFU site describing GIS and cadastral-data dependencies. No public Bejaia parcel-vector service or safe anonymous geometry response was exposed.",
+        "actualResultUrls": [
+          "https://www.joradp.dz/FTP/Jo-Francais/2002/F2002042.pdf",
+          "https://www.anfu.dz/",
+          "https://www.mjustice.gov.dz/fr/map-inspection-dgapr-fr/"
+        ]
+      },
+      {
+        "language": "Arabic/local",
+        "query": "الجزائر بجاية مسح عقاري خريطة قطع الأراضي رسمي",
+        "result": "Search identified official Algerian Ministry of Justice and Finance-related results describing governmental portals and cadastral services, but no public Bejaia parcel-vector response or safe anonymous geometry was obtained.",
+        "actualResultUrls": [
+          "https://www.mjustice.gov.dz/ar/map-dgapr/",
+          "https://mfdgi.gov.dz/services-pro-ar/e-services-pro",
+          "https://www.joradp.dz/FTP/Jo-Arabe/1988/A1988010.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "Official Journal evidence supports a local Wilaya cadastre directorate for Béjaïa. No anonymous parcel geometry, viewer configuration, parcel API, schema, CRS, or native parcel identity was verified. This packet is research completion only, not source integration or runtime admission.",
+  "sampleGeoJSON": null
+}

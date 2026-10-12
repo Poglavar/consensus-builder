@@ -1,0 +1,22 @@
+{
+  "taskId": "city:11061",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-11061-pupri.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pupri-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/runs/20261010T131305-3f3ca6c3/stdout.jsonl",
+    "tmp/valhalla-parcel-research/11061/levels0.json",
+    "tmp/valhalla-parcel-research/11061/levels1.json",
+    "tmp/valhalla-parcel-research/11061/pupri-levels.json",
+    "tmp/valhalla-parcel-research/11061/pupri-villages.json",
+    "tmp/valhalla-parcel-research/11061/extent.json",
+    "tmp/valhalla-parcel-research/11061/plot1.json"
+  ],
+  "checkedAt": "2026-10-10T13:18:43Z",
+  "registryFound": true,
+  "reason": "Bihar public cadastral hierarchy resolves the Pupri selection, but its saved extent is empty and the bounded plot request returned an error page. No native parcel ID or polygon was verified.",
+  "admission": "No independent live adapter qualification: fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details verification are not evidenced. No runtime or catalog admission."
+}

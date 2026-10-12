@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 5322,
+  "queueRank": 1813,
+  "cityId": "queue:1813",
+  "name": "Surendranagar",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [22.7249644406895, 71.6443345022146],
+  "centerLatLon": [22.7249644406895, 71.6443345022146],
+  "population2025": 316206,
+  "population2025k": 316.206,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Surendranagar Gujarat official cadastral parcel map GIS public viewer API",
+        "result": "First-party results identified the Government of Gujarat District Surendranagar land-record service, its AnyRoR land-record portal, Surendranagar Municipal Corporation maps, and the official Gujarat State GIS/BharatMaps portal. The district page states that cadastral survey was completed statewide in 1960 and records are updated through taluka e-Dhara centers.",
+        "actualResultUrls": [
+          "https://surendranagar.nic.in/service/land-records/",
+          "https://anyror.gujarat.gov.in/",
+          "https://snmcgujarat.com/maps",
+          "https://stategisportal.nic.in/stategisportal/Home/Map/24"
+        ]
+      },
+      {
+        "language": "native/local (Gujarati)",
+        "query": "સુરેન્દ્રનગર જમીન નકશો કેડસ્ટ્રલ સત્તાવાર GIS પાર્સલ",
+        "result": "First-party discovery returned the Gujarati-linked Government of Gujarat district land-record page and official Gujarat GIS references. The results support local land-record custody and administrative mapping, but no anonymous Surendranagar parcel ID-plus-geometry response or public parcel schema was obtained.",
+        "actualResultUrls": [
+          "https://surendranagar.nic.in/service/land-records/",
+          "https://anyror.gujarat.gov.in/",
+          "https://stategisportal.nic.in/stategisportal/Home/Map/24",
+          "https://snmcgujarat.com/maps"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Gujarati first-party web discovery followed by bounded TLS-verified anonymous GET attempts. No credentials, private tokens, unsafe fields, CAPTCHA/Cloudflare bypass, or TLS disablement was used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://surendranagar.nic.in/service/land-records/",
+      "observation": "Official District Surendranagar, Government of Gujarat page. It identifies statewide cadastral survey, computerized land records, mutation processing through taluka e-Dhara centers, and the AnyRoR portal. This evidences a local/district land-record custodian, not an open parcel feature API."
+    },
+    {
+      "url": "https://anyror.gujarat.gov.in/",
+      "observation": "Official Gujarat land-record portal linked by the district administration. The public request did not complete within the bounded attempt, so viewer configuration, service route, parcel schema and geometry were not verified."
+    },
+    {
+      "url": "https://snmcgujarat.com/maps",
+      "observation": "Official Surendranagar Municipal Corporation maps page. It provides contour, inundation and municipal/SWUDA boundary maps; its published maps are contextual administrative or thematic maps, not a verified parcel polygon service."
+    },
+    {
+      "url": "https://stategisportal.nic.in/stategisportal/Home/Map/24",
+      "observation": "Official Gujarat State GIS portal powered by BharatMaps. Discovery exposed administrative GIS functionality, but the current map request returned no usable configuration or parcel layer response."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://anyror.gujarat.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS-verified anonymous request timed out after 20 seconds without a response. No HTML, JavaScript configuration, public API route, schema, CRS, native ID or geometry was obtained. This is a route failure, not evidence of citywide absence."
+    },
+    {
+      "url": "https://stategisportal.nic.in/stategisportal/Home/Map/24",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Anonymous request did not return usable content within the bounded attempt; web discovery also reported a 502 fetch failure. No parcel service configuration, schema, CRS, native ID or geometry was obtained."
+    },
+    {
+      "url": "https://snmcgujarat.com/maps",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "Official municipal maps page loaded. The listed downloads are contour, inundation and boundary/SWUDA maps; no parcel feature endpoint or safe parcel geometry was exposed. No geometry retained."
+    },
+    {
+      "url": "https://anyror.gujarat.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "A second direct request path was not attempted with certificate verification disabled: the environment reported a self-signed certificate-chain error on an attempted request, and no source-specific TLS exception was authorized. TLS was not bypassed."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Gujarat district land-record custody, the Gujarat AnyRoR portal, Surendranagar Municipal Corporation public maps, and the Gujarat State GIS/BharatMaps portal.",
+    "verifiedOpenScope": "Official local/district land-record custody and municipal map presence only; no open Surendranagar parcel geometry coverage, public service schema or bounded ID-plus-geometry response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "AnyRoR and State GIS current JavaScript/configuration, public API route, Surendranagar urban/taluka unit identifiers, parcel schema, CRS, stable native identity, update currency and citywide completeness remain unresolved. The exact WUP point was preserved and never shifted; no exact-point hit/miss inference was made. A timeout, map extent miss, TLS failure or unusable UI is not evidence of cadastral absence.",
+  "nextStep": "A later attempt may inspect the current official Gujarat viewer through an available public route and request only bounded anonymous native ID-plus-geometry data for Surendranagar. Serial reviewer qualification remains required; runtime readiness stays held."
+}

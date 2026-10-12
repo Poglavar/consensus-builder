@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-6094-el-senbellawein.json",
+  "cohort": "overnight-next-2301-2400-2026-10-11",
+  "cityCode": 6094,
+  "queueRank": 2398,
+  "country": "Egypt",
+  "countryCode": "EG",
+  "pointLatLon": [30.8932343330992, 31.4603411613124],
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "queryAndRequestOutcome": "Separate English and Arabic first-party discovery found the Egyptian General Survey Authority's official survey/cadastral-map mandate, digital-map request procedure, and national cadastral-register project descriptions. An official Egyptian Tax Authority page identified a Senbellawein office, but no local cadastral registry or public parcel viewer/API was evidenced. The ESA public pages were inspected anonymously; no bounded parcel request could be formed from a verified public endpoint.",
+  "officialPrimarySources": [
+    {"url": "https://www.esa.gov.eg/", "operator": "Egyptian General Survey Authority", "scope": "Official national survey and cadastral-mapping authority site."},
+    {"url": "https://www.esa.gov.eg/services.aspx", "operator": "Egyptian General Survey Authority", "scope": "Official survey/map services index."},
+    {"url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "operator": "Egyptian General Survey Authority", "scope": "Official digital-map request and purchase procedure."},
+    {"url": "https://www.esa.gov.eg/projects.aspx", "operator": "Egyptian General Survey Authority", "scope": "Official national cadastral/register digitization project descriptions."},
+    {"url": "https://eta.gov.eg/ar/node/1062", "operator": "Egyptian Tax Authority", "scope": "Official Senbellawein local tax-office coverage page; not treated as parcel geometry custody."}
+  ],
+  "schemaAndCrs": {"viewerConfig": "No current public El Senbellawein viewer or parcel API configuration retrieved.", "geometryType": null, "geometryCrs": null, "nativeIdentity": null, "nativeFieldsObserved": [], "sourceFieldMapping": null, "compositeKeyProvenance": null, "boundedAnonymousResponse": {"featureCount": 0, "result": "No verified public parcel endpoint; no parcel request formed."}},
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "full polygon geometry", "source URL", "source CRS / requested output CRS", "retrieval date", "administrative codes"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "No anonymous safe native-ID-plus-polygon response was obtained; this is source discovery evidence only and not integration/admission."},
+  "scopeLimits": ["Exact WUP point preserved in latitude/longitude order and not shifted.", "National ESA custody/procedure pages do not prove El Senbellawein-local public geometry access.", "The local tax-office page is not cadastral parcel evidence.", "No zero hit, extent miss, timeout, login wall, or unavailable UI was treated as citywide absence.", "No raw source-specific attributes, credentials, private tokens, or unsafe records were retained.", "No GeoJSON sample was written because no safe native parcel ID plus full polygon was obtained."],
+  "uncertainty": "A first-party national cadastral/survey custodian and official digital-map request workflow are evidenced, but anonymous public parcel delivery, current schema/CRS, native identity semantics, local coverage, and citywide completeness remain unresolved. Runtime readiness remains held pending independent serial qualification.",
+  "runtimeDecision": "held_not_enabled",
+  "integrationDecision": "not_integrated"
+}

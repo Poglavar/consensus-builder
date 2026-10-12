@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "wupCityCode": 4494,
+  "cityId": "wup2025:4494",
+  "name": "Tunja",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "centerLatLon": [5.53982781286999, -73.357908762805],
+  "point": [5.53982781286999, -73.357908762805],
+  "queueRank": 2754,
+  "population2025": 214651,
+  "population2025k": 214.651,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tunja Colombia official cadastral parcel map GIS catastro predial visor",
+        "result": "Found the official Tunja cadastral portal, its public geovisor link, and official IGAC cadastral references. The municipal portal identifies Tunja as a cadastral manager; no anonymous parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://catastroide.tunja.gov.co/",
+          "https://catastro.tunja.gov.co/geoportal/",
+          "https://sigi.igac.gov.co/colombia-mapas/como-hacer-una-consulta-catastral/index.html",
+          "https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Tunja Colombia visor catastral mapa predios oficial IGAC catastro",
+        "result": "Found the official Catastro Tunja portal and the municipal geovisor/login route. The local portal states that Tunja provides public cadastral service and exposes geospatial data/catalog links; parcel consultation requires the geovisor session.",
+        "actualResultUrls": [
+          "https://catastroide.tunja.gov.co/",
+          "https://catastro.tunja.gov.co/geoportal/index.php/preguntas-frecuentes-2/",
+          "https://catastro.tunja.gov.co/geoportal/index.php/elementor-1797/",
+          "https://catastro.tunja.gov.co/ideep_geovisor/login.html?b=6cA6mKSVyW"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Tunja's official municipal Catastro portal identifies the Departamento Administrativo de Gestión Catastral Multipropósito, provides cadastral/geovisor access, and states that IGAC enabled Tunja as a gestor catastral through Resolution 1148 of 4 September 2023. This establishes local cadastral custody, not an open runtime adapter.",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Tunja municipal cadastral portal/geovisor and its public backend bootstrap; official IGAC national cadastral references.",
+    "verifiedOpenScope": "Municipality identity and public service metadata only.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_cadastral_service_found_parcel_api_requires_session",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not run against a verified parcel endpoint; exact WUP point remains unchanged and no absence inference is made."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "remainingUncertainty": "The current municipal geovisor exposes LADM-COL parcel consultation routes, but anonymous requests to those routes returned 401. A later authorized public-session review may verify safe parcel geometry and native identity; no login, CAPTCHA bypass, or unsafe property fields were attempted.",
+  "sourceIds": [],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://catastroide.tunja.gov.co/",
+      "method": "GET anonymous; TLS verified",
+      "httpStatus": 200,
+      "outcome": "Official municipal cadastral portal retrieved; portal text links to geovisor, open data, and metadata catalog functions."
+    },
+    {
+      "url": "https://catastro.tunja.gov.co/ideep_geovisor/login.html?b=6cA6mKSVyW",
+      "method": "GET anonymous; TLS verified",
+      "httpStatus": 200,
+      "outcome": "Current geovisor login shell retrieved. Public JavaScript configuration was inspected; login and reCAPTCHA were not used."
+    },
+    {
+      "url": "https://backendcatastro.tunja.gov.co/api/health-check/",
+      "method": "GET anonymous; TLS verified",
+      "httpStatus": 200,
+      "outcome": "Backend health response was {\"backend\":\"ok\"}."
+    },
+    {
+      "url": "https://backendcatastro.tunja.gov.co/api/autenticacion/listado_municipios",
+      "method": "GET anonymous; TLS verified",
+      "httpStatus": 200,
+      "outcome": "Returned Tunja administrative entry with DANE code 15001 and municipal boundary geometry. Boundary geometry was not retained because this packet is for parcel evidence, not municipal boundaries."
+    },
+    {
+      "url": "https://backendcatastro.tunja.gov.co/api/autenticacion/insumos_iniciales/geovisor",
+      "method": "GET anonymous; TLS verified",
+      "httpStatus": 200,
+      "outcome": "Returned public geovisor bootstrap metadata, including the municipal platform name and backend configuration; no credentials or token values were retained."
+    },
+    {
+      "url": "https://backendcatastro.tunja.gov.co/api/autenticacion/insumos/plataforma/1/15001",
+      "method": "GET anonymous; TLS verified",
+      "httpStatus": 401,
+      "outcome": "Parcel/geovisor platform configuration requires an authenticated session. No login or CAPTCHA bypass attempted."
+    },
+    {
+      "url": "https://backendcatastro.tunja.gov.co/api/ladmcol/consulta/cod_terreno/15001/1",
+      "method": "GET anonymous; TLS verified",
+      "httpStatus": 401,
+      "outcome": "LADM-COL terrain consultation route requires an authenticated session; no geometry or ID response returned."
+    },
+    {
+      "url": "https://backendcatastro.tunja.gov.co/api/ladmcol/consulta/predio/15001/1",
+      "method": "GET anonymous; TLS verified",
+      "httpStatus": 401,
+      "outcome": "LADM-COL parcel consultation route requires an authenticated session; no geometry or ID response returned."
+    },
+    {
+      "url": "https://mapas.igac.gov.co/server/rest/services/catastro/direccionesterritorialesigac/MapServer/2?f=pjson",
+      "method": "GET anonymous; TLS verified",
+      "httpStatus": 200,
+      "outcome": "Official IGAC municipality layer metadata retrieved. It is an administrative boundary layer, not a Tunja parcel layer, and was not used as parcel evidence."
+    }
+  ],
+  "safeFieldAllowlist": ["native public parcel ID if available", "native geometry", "geometry type", "source CRS", "layer/schema metadata", "municipal/DANE code"],
+  "ownerOrAddressDataRetained": false,
+  "credentialsOrTokenValuesRetained": false,
+  "citywideCompletenessAsserted": false,
+  "exactPointAbsenceInferred": false,
+  "integrationDecision": "not_integrated"
+}

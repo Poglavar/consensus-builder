@@ -1,0 +1,48 @@
+{
+  "cityRecord": "city-7659-mian-channu.json",
+  "cityCode": 7659,
+  "queueRank": 3039,
+  "city": "Mian Channu",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Urdu first-party discovery identified PLRA as the provincial land-record custodian and confirmed an Arazi Record Centre for Tehsil Mian Channu. The current PLRA JavaScript exposes a Khanewal raster map tile configuration; an exact-point tile returned HTTP 200 PNG, while the public ArcGIS REST directory exposed no parcel vector service. No parcel ID-plus-geometry response or GeoJSON sample was retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, URLs, direct requests, response outcomes, viewer configuration, schema/CRS checks, safe field allowlist, scope limits, and uncertainty are recorded in city-7659-mian-channu.json. No login, CAPTCHA/Cloudflare bypass, credentials, private token, TLS bypass, or unsafe-field request occurred.",
+  "custodians": [
+    {
+      "name": "Punjab Land Records Authority (PLRA), Government of Punjab, Pakistan",
+      "scope": "Provincial land-record custodian with an officially listed Arazi Record Centre at Tehsil Mian Channu, District Khanewal.",
+      "evidence": "https://www.punjab-zameen.gov.pk/assets/documents/procurement/archproc/Bid_Doc_PrintingSolution.pdf"
+    },
+    {
+      "name": "PLRA Arazi Record Centre, Tehsil Mian Channu",
+      "scope": "Local/tehsil service centre evidenced by official PLRA material; no local public parcel-vector service qualified.",
+      "evidence": "https://www.punjab-zameen.gov.pk/assets/documents/procurement/archproc/Bid_Doc_PrintingSolution.pdf"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "The exact WUP point and population are preserved in the city record.",
+    "The local service-centre evidence does not establish citywide vector parcel coverage.",
+    "The successful raster tile and empty ArcGIS folder responses are access/qualification outcomes, not evidence of parcel absence.",
+    "No anonymous ID-plus-geometry response, parcel schema, CRS, or citywide vector coverage was qualified.",
+    "No unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "A protected or separately configured PLRA/PULSE map service may exist beyond the public routes inspected.",
+    "No independent runtime adapter qualification was performed."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

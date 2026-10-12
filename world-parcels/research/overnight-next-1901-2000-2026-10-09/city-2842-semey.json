@@ -1,0 +1,43 @@
+{
+  "cityCode": 2842,
+  "queueRank": 1924,
+  "city": "Semey",
+  "country": "Kazakhstan",
+  "countryCode": "KZ",
+  "iso3": "KAZ",
+  "point": [50.410451463955, 80.2441168695813],
+  "population2025": 298847,
+  "population2025k": 298.847,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Semey Kazakhstan cadastral parcel map official public GIS cadastral map Semey official",
+        "result": "Found the official East Kazakhstan geoportal help page, an official Kazakhstan public cadastral map link, and Semey municipal land-relations information. The geoportal help says its digital maps include Semey and land parcels, but the live configuration inspected below did not contain a Semey KATO entry.",
+        "actualResultUrls": [
+          "https://vkomap.kz/Index/Help",
+          "https://www.gov.kz/memleket/entities/aqmola-egin/press/article/details/88490",
+          "https://www.gov.kz/memleket/entities/abay-semey/activities/587"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Семей Қазақстан кадастрлық карта жер учаскесі ресми карта",
+        "result": "Found the official East Kazakhstan geoportal in Kazakh, the national land-cadastre AIS page, and official Semey land-zoning material. These establish cadastral/map and local land-administration context, not an anonymously retrievable parcel feature response for Semey.",
+        "actualResultUrls": [
+          "https://vkomap.kz/Kaz/",
+          "https://aisgzk.kz/aisgzk/kz/content/maps?type=cosmos",
+          "https://www.adilet.zan.kz/rus/docs/V23FA016518"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official East Kazakhstan geoportal identifies the regional land-relations administration as custodian and states that digital maps include Semey and land parcels. This is local/regional registry/map evidence, although the live service configuration no longer exposes Semey.",
+  "serviceReview": "semey-service-review.json",
+  "runtimeReadiness": "held_no_verified_public_geometry"
+}

@@ -1,0 +1,47 @@
+{
+  "cityCode": 4783,
+  "queueRank": 1367,
+  "name": "Hamhung",
+  "country": "Dem. People's Republic of Korea",
+  "countryCode": "KP",
+  "iso3": "PRK",
+  "point": [39.9161642846767, 127.539957279009],
+  "population2025": 412277,
+  "population2025k": 412.277,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "No Hamhung city/local cadastral custodian or DPRK public parcel registry/map was evidenced. South Korean national-agency material references North Korea land-information and cadastral-original-map work, but not an anonymous public Hamhung parcel service.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hamhung North Korea cadastral parcel map official land registry GIS",
+        "result": "Found South Korean Ministry of Land and K-GeoP national land-information references and official material mentioning North Korea land-information/cadastral-original-map work; no Hamhung parcel viewer, local registry, or anonymous parcel-vector API was found.",
+        "actualResultUrls": ["https://kgeop.go.kr/", "https://www.kgeop.go.kr/info/infoMap.do?initMode=L", "https://www.molit.go.kr/USR/law/m_46/dtl.jsp?r_id=4978", "https://www.data.go.kr/data/15118500/fileData.do?recommendDataYn=Y"]
+      },
+      {
+        "language": "Korean",
+        "query": "함흥 북한 지적도 지적공부 토지정보 지도 공식",
+        "result": "국토교통부 K-GeoP와 북한지역 지적원도·토지정보 구축 관련 공식 자료를 확인했으나, 함흥시의 공개 지적도 뷰어·지방 등록기관·익명 필지 벡터 API는 확인하지 못했다.",
+        "actualResultUrls": ["https://kgeop.go.kr/", "https://www.kgeop.go.kr/info/infoMap.do?initMode=L", "https://www.molit.go.kr/USR/law/m_46/dtl.jsp?r_id=4978", "https://www.data.go.kr/data/15118500/fileData.do?recommendDataYn=Y"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://kgeop.go.kr/", "role": "K-GeoP / Ministry of Land, Infrastructure and Transport National Spatial Information Center", "observation": "Official Korean national land-information portal. Public landing page loaded, but it is a South Korean service and no DPRK/Hamhung parcel layer was exposed."},
+    {"url": "https://www.kgeop.go.kr/info/infoMap.do?initMode=L", "role": "K-GeoP public map viewer", "observation": "Official map route advertises parcel information and map selection. Direct GET of the map page timed out after 20 seconds; no login, CAPTCHA bypass, credentials, or private token was used."},
+    {"url": "https://www.molit.go.kr/USR/law/m_46/dtl.jsp?r_id=4978", "role": "Ministry of Land, Infrastructure and Transport official notice", "observation": "Official notice for cadastral-original-map database standards; search-indexed text references building a North Korea land-information DB, but does not provide a Hamhung parcel service or safe parcel geometry."},
+    {"url": "https://www.data.go.kr/data/15118500/fileData.do?recommendDataYn=Y", "role": "Korean public-data portal cadastral-map index dataset", "observation": "Official dataset describes national cadastral-map index coverage for South Korea; its stated spatial scope is 대한민국 전체 (South Korea), so it was not treated as Hamhung evidence."}
+  ],
+  "serviceReview": "hamhung-service-review.json",
+  "geometryDecision": {"verified": false, "sampleCount": 0, "sampleFile": null, "reason": "No safe anonymous Hamhung parcel geometry response or native parcel identity was obtained; no GeoJSON sample retained."},
+  "coverageAssessment": {"claimedScope": "First-party Korean national land-information/cadastral references and public map/data routes searched for Hamhung.", "verifiedOpenScope": "No open Hamhung parcel-vector scope verified.", "exactWupPointParcelSample": false, "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "sourceFieldMapping": {"nativeIdentity": null, "nativeIdentityEvidence": null, "geometryField": null, "sourceCrs": null, "compositeKey": null},
+  "safeFieldAllowlist": ["native parcel identity if later exposed", "geometry if later exposed", "CRS", "non-personal layer/schema metadata"],
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

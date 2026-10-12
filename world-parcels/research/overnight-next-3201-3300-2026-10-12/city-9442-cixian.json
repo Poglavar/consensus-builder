@@ -1,0 +1,109 @@
+{
+  "cityCode": 9442,
+  "queueRank": 3222,
+  "name": "Cixian",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [36.3671335896048, 114.375692831453],
+  "population2025": 187364,
+  "population2025k": 187.364,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cixian China official cadastral parcel map GIS natural resources cadastral",
+        "result": "Discovery found the official Hebei cadastral-zone/subzone map service and a non-first-party directory lead describing the Cixian Natural Resources and Planning Bureau. No Cixian-specific anonymous parcel-vector endpoint was identified in first-party search results.",
+        "actualResultUrls": [
+          "https://hebei.tianditu.gov.cn/streetscape/#/map/housing",
+          "https://hebei.tianditu.gov.cn/iserver/services/map-HBDJQ/rest/maps/%E6%B2%B3%E5%8C%97%E5%9C%B0%E7%B1%8D%E5%AD%90%E5%8C%BA.json",
+          "https://www.95ye.com/handan/gov/52166.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "磁县 自然资源和规划局 不动产登记 地籍图 GIS 官方",
+        "result": "Chinese discovery located Hebei's official public cadastral-zone/subzone procedure and viewer. The public service documents browsing/searching cadastral zones and subzones statewide, but no parcel polygon or parcel-native identity endpoint was exposed for Cixian.",
+        "actualResultUrls": [
+          "https://www.boye.gov.cn/zwgkcontent-1671-42800.html",
+          "https://hebei.tianditu.gov.cn/streetscape/#/map/housing",
+          "https://hebei.tianditu.gov.cn/iserver/services/map-HBDJQ/rest/maps/%E6%B2%B3%E5%8C%97%E5%9C%B0%E7%B1%8D%E5%8C%BA.json"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": null,
+    "scope": "Hebei provincial public cadastral-zone/subzone viewer and map service; a Cixian county bureau lead was found in discovery but not independently verified on an official Cixian page.",
+    "evidenceUrls": [
+      "https://hebei.tianditu.gov.cn/streetscape/#/map/housing",
+      "https://www.boye.gov.cn/zwgkcontent-1671-42800.html"
+    ],
+    "scopeNote": "The official provincial service is cadastral-map evidence, but the bounded service extent inspected did not cover the exact WUP point and no Cixian-local registry custodian was directly verified; registryFound therefore remains null."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Official Hebei Tianditu cadastral-zone/subzone viewer and SuperMap map service",
+    "nativeIdField": null,
+    "crs": "CGCS2000 geographic coordinates (service metadata name GCS_China_2000; EPSG code -1000)",
+    "boundedResponse": {"featureCount": 0, "result": "No parcel feature response obtained; the point query was outside the inspected map extent and zero is not an absence finding."},
+    "fieldMapping": {},
+    "compositeKeyProvenance": null,
+    "note": "The inspected service is cadastral-zone/subzone rather than a parcel polygon feed. No parcel ID-plus-geometry response was retained. The exact WUP point was preserved and not shifted."
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://hebei.tianditu.gov.cn/streetscape/", "httpStatus": 200, "contentType": "text/html", "outcome": "Official viewer shell retrieved. It references current app configuration and JavaScript bundles."},
+    {"method": "GET", "url": "https://hebei.tianditu.gov.cn/streetscape/static/config/app-config.js", "httpStatus": 200, "contentType": "application/javascript", "outcome": "Current viewer configuration retrieved. It publishes the HBDJQ cadastral-zone and cadastral-subzone map-service URLs and identifies the service as CGCS2000 geographic coordinates."},
+    {"method": "GET", "url": "https://hebei.tianditu.gov.cn/iserver/services/map-HBDJQ/rest/maps/%E6%B2%B3%E5%8C%97%E5%9C%B0%E7%B1%8D%E5%8C%BA.json", "httpStatus": 200, "contentType": "application/json", "outcome": "Map metadata retrieved; view bounds 115.6099527352574–117.69352775890974 longitude and 38.29029331267291–40.37386833632524 latitude; CRS GCS_China_2000/CGCS2000."},
+    {"method": "GET", "url": "https://hebei.tianditu.gov.cn/iserver/services/map-HBDJQ/rest/maps/%E6%B2%B3%E5%8C%97%E5%9C%B0%E7%B1%8D%E5%AD%90%E5%8C%BA.json", "httpStatus": 200, "contentType": "application/json", "outcome": "Map metadata retrieved; view bounds 114.82384554486623–117.85584625605938 longitude and 38.411134180794–41.44313489198715 latitude; CRS GCS_China_2000/CGCS2000."},
+    {"method": "GET", "url": "https://hebei.tianditu.gov.cn/iserver/services/map-HBDJQ/rest/maps/%E6%B2%B3%E5%8C%97%E5%9C%B0%E7%B1%8D%E5%AD%90%E5%8C%BA/queryResults.json?queryMode=SpatialQuery&geometry={Point%20%5B114.375692831453%2C36.3671335896048%5D}", "httpStatus": 200, "contentType": "application/json", "outcome": "Returned [] for the bounded point query. The point is outside the inspected service view bounds; this is not a citywide absence result."},
+    {"method": "GET", "url": "https://zrgh.hd.gov.cn/", "httpStatus": null, "contentType": null, "outcome": "Connection reset during bounded retrieval. No retry bypass, login, credential, CAPTCHA/Cloudflare bypass, or TLS exception was attempted."}
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "geometryCrs": "CGCS2000 geographic coordinates; service metadata reports GCS_China_2000 and EPSG code -1000",
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {"featureCount": 0, "result": "No parcel response obtained; zero is not an absence finding."}
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public service/layer metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable parcel endpoint covered the exact WUP point [36.3671335896048, 114.375692831453]. The point was preserved in latitude/longitude order and not shifted; no hit/miss inference was made."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Hebei provincial cadastral-zone/subzone public viewer",
+    "verifiedOpenScope": "Current public map metadata and a bounded anonymous query for the inspected map services only; no Cixian parcel-vector coverage verified",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "Exact WUP point [36.3671335896048, 114.375692831453] was preserved in latitude/longitude order; no coordinate shift was made.",
+    "The inspected map extents do not cover the WUP point; an extent miss or empty point response is not evidence of citywide cadastral absence.",
+    "No native parcel identity, parcel schema, or full parcel polygon was verified, so no sample GeoJSON is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, title, or other unsafe fields were requested or retained.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "The public Hebei cadastral-zone/subzone service and its current CRS/configuration were verified, but its inspected geographic extent excludes the Cixian WUP point. A Cixian-local anonymous parcel service, parcel identity semantics, parcel schema, geometry delivery, update behavior, and citywide completeness remain unresolved."
+}

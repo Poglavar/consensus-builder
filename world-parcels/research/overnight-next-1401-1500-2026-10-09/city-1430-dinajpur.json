@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:1430",
+  "cityCode": 1430,
+  "queueRank": 1432,
+  "wupCityCode": 1430,
+  "name": "Dinajpur",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "centerLatLon": [25.6291298314223, 88.6383251338779],
+  "point": [25.6291298314223, 88.6383251338779],
+  "population2025": 396235,
+  "population2025k": 396.235,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dinajpur Bangladesh official cadastral map parcel land registry GIS",
+        "result": "First-party Bangladesh Land Records and Surveys Directorate (DLRS) and settlement.gov.bd map services were found. The public map viewer exposes a district/survey/mouza workflow, but no city-bounded anonymous parcel geometry response was verified.",
+        "actualResultUrls": ["https://settlement.gov.bd/Map/MapSearch", "https://settlement.gov.bd/", "https://dlrs.portal.gov.bd/", "https://dlrs.gov.bd/pages/static-pages/6922e0e9933eb65569e2920a"]
+      },
+      {
+        "language": "Bengali",
+        "query": "দিনাজপুর বাংলাদেশ সরকারি ক্যাডাস্ট্রাল মানচিত্র ভূমি রেজিস্ট্রি GIS পার্সেল",
+        "result": "সরকারি DLRS/অনলাইন ভূমি রেকর্ড ও জরিপ ব্যবস্থাপনা এবং ভূমি নকশা সেবা পাওয়া গেছে। দিনাজপুর জোনাল সেটেলমেন্ট অফিস ও জেলা-ভিত্তিক জরিপের প্রমাণ আছে; তবে দিনাজপুর শহরের জন্য নিরাপদ native parcel identity-সহ সীমাবদ্ধ anonymous geometry response যাচাই করা যায়নি।",
+        "actualResultUrls": ["https://settlement.gov.bd/Map/MapSearch", "https://settlement.gov.bd/", "https://map.land.gov.bd/", "https://dlrs.gov.bd/pages/static-pages/6922e0e9933eb65569e2920a"]
+      }
+    ]
+  },
+  "verifiedSample": false,
+  "sourceIds": [],
+  "research": {
+    "queries": [
+      {"language": "English", "query": "Dinajpur Bangladesh official cadastral map parcel land registry GIS", "result": "Official DLRS and settlement map viewer found; no city-bounded safe parcel response verified.", "actualResultUrls": ["https://settlement.gov.bd/Map/MapSearch", "https://dlrs.portal.gov.bd/"]},
+      {"language": "Bengali", "query": "দিনাজপুর বাংলাদেশ সরকারি ক্যাডাস্ট্রাল মানচিত্র ভূমি রেজিস্ট্রি GIS পার্সেল", "result": "সরকারি ভূমি রেকর্ড/জরিপ ও ভূমি নকশা সেবা পাওয়া গেছে; city-specific geometry/identity response যাচাই হয়নি।", "actualResultUrls": ["https://settlement.gov.bd/", "https://map.land.gov.bd/"]}
+    ],
+    "officialEvidence": [
+      {"url": "https://dlrs.portal.gov.bd/", "observation": "Official DLRS portal identifies a Dinajpur Zonal Settlement Office and describes survey/map services.", "coverage": "Dinajpur district and zonal office custody"},
+      {"url": "https://settlement.gov.bd/", "observation": "Official online land-record and survey system states that it displays survey-stage khatians and provides map display/search functions; displayed records may be draft and are not asserted as a complete cadastral registry.", "coverage": "Bangladesh national service"},
+      {"url": "https://map.land.gov.bd/", "observation": "Official land-map project describes mouza- and plot-based map-sheet digitization/georeferencing and exposes administrative selectors; no public safe parcel feature response was retained.", "coverage": "Bangladesh national project"}
+    ],
+    "observedServices": [
+      {"url": "https://settlement.gov.bd/Map/MapSearch", "method": "GET", "httpStatus": 200, "contentType": "text/html", "observation": "Anonymous map viewer loaded and referenced /js/MapSearch.js. Current configuration exposes POST workflow endpoints and parcel vector-tile paths."},
+      {"url": "https://settlement.gov.bd/Map/GetDivisionList", "method": "POST", "httpStatus": 200, "contentType": "application/json", "request": {"contentLength": 0}, "observation": "Returned division metadata; Rangpur division code 080000000 was identified."},
+      {"url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise", "method": "POST", "httpStatus": 200, "contentType": "application/json", "request": {"divid": "080000000"}, "observation": "Returned Dinajpur district metadata: unit code 080700000 and component code 4151."},
+      {"url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise", "method": "POST", "httpStatus": 200, "contentType": "application/json", "request": {"districtid": "080700000", "comcod": "4151"}, "observation": "Returned one survey record, RS/BRS (rsnum 201901), status চলমান (ongoing)."},
+      {"url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap", "method": "POST", "httpStatus": 200, "contentType": "application/json", "request": {"comcod": "4151", "rsno1": "201901", "districtid": "080700000"}, "observation": "Returned a bounded list of available survey units, but no Dinajpur Sadar unit was returned in this response; this is a coverage/service observation, not evidence of citywide absence."},
+      {"url": "https://settlement.gov.bd/Khatian/GetMouzaListBySurveyMap", "method": "POST", "httpStatus": 200, "contentType": "application/json", "request": {"comcod": "4151", "rsnum": "201901", "unitcod": "080701000"}, "observation": "Response did not yield a city-bounded parcel geometry or safe native identity; the endpoint returned a broad mouza-style listing rather than a usable Dinajpur city parcel sample."},
+      {"url": "https://tiles.settlement.gov.bd/catalog", "method": "GET", "httpStatus": "not attempted", "contentType": null, "observation": "Referenced by current JavaScript for raster/vector overlay catalog, but no tile request was made without a verified Dinajpur mouza key and no raw tile was retained."}
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "DLRS national land-record/survey service with a Dinajpur Zonal Settlement Office; the settlement viewer exposes survey/mouza workflows.",
+    "verifiedOpenScope": "National service custody, Dinajpur district metadata, and an ongoing RS/BRS survey route were verified. No citywide open parcel geometry/identity response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "registryExistenceScope": "National/state land-record and survey custody is evidenced; local city registry accessibility and completeness remain unestablished."
+  },
+  "qualityAssessment": {"geometryQuality": "no parcel geometry sampled", "identityReadiness": "not ready; no safe native parcel identity response retained", "attributesRequested": ["non-personal service/schema metadata only"], "unsafeFieldsRequested": false},
+  "blocker": "The official viewer's current workflow exposed administrative survey and mouza endpoints but did not produce a bounded Dinajpur city parcel geometry plus stable native identity response suitable for retention.",
+  "remainingUncertainty": "The exact WUP point was not shifted and was not used as a citywide absence test. City records may exist in other survey stages, offline records, authenticated routes, or currently unexposed mouza/tile keys.",
+  "nextStep": "If a later attempt is authorized, continue only through the official DLRS/settlement viewer, identify an explicitly Dinajpur Sadar mouza key, inspect its metadata and bounded response, and retain at most three full polygons with one stable native identity field.",
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "registry_custody_found_no_verified_open_city_parcel_endpoint"
+}

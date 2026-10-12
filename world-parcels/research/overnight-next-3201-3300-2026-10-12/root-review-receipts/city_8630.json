@@ -1,0 +1,19 @@
+{
+  "taskId": "city:8630",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-8630-biak-kota.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/biak-kota-service-review.json",
+    "tmp/valhalla-parcel-research/8630/bhumi.html"
+  ],
+  "checkedAt": "2026-10-12T07:10:52Z",
+  "findings": {
+    "identity": "WUP bulk archive SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114 and ranked/queue records confirm code 8630, rank 3258, Biak Kota, Indonesia, point [-1.16994554589976, 136.081198390132], 184918 persons.",
+    "searches": "Paired packet records executed English and Indonesian queries with query text, outcomes, and URLs.",
+    "custody": "registryFound remains null: national BHUMI/ATLAS and local land-office references do not verify a Biak Kota parcel registry or public feed. Cached BHUMI page is an application shell, not a city parcel response.",
+    "geometry": "No sample file or first-party ID-plus-full-polygon response; zero retained polygons. National parcel-map capability does not verify Biak Kota coverage.",
+    "admission": "Held: no fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. No runtime/catalog/report admission."
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-2149-windsor.json",
+  "cityCode": 2149,
+  "queueRank": 2411,
+  "name": "Windsor",
+  "country": "Canada",
+  "countryCode": "CA",
+  "pointLatLon": [42.2970404281255, -82.9940374441006],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH/GET","url":"https://www.citywindsor.ca/visitors/maps","httpStatus":200,"outcome":"Official City mapping page says City Geomatics creates maps and publishes technical data through the open-data portal."},
+    {"method":"SEARCH/GET","url":"https://www.citywindsor.ca/visitors/maps/mappmycity","httpStatus":200,"outcome":"Official City page identifies MappMyCity and City public mapping/open-data context, including property descriptions and information."},
+    {"method":"GET","url":"https://www.arcgis.com/sharing/rest/content/items/2a96346a8b344aca815d44c864f3202a?f=json","httpStatus":200,"outcome":"Public ArcGIS item metadata resolved to the current Feature Service URL https://mappmycity.ca/arcgis/rest/services/OpenDataServices/PropertyParcels/MapServer/4; item title Parcel; access public."},
+    {"method":"GET","url":"https://mappmycity.ca/arcgis/rest/services/OpenDataServices/PropertyParcels/MapServer/4?f=json","httpStatus":200,"outcome":"Layer schema reports polygon geometry, native field OBJECTID of OID type, source geometry field Shape, and service spatial reference WKID 26917. Unsafe descriptive, ownership, address, tax and personal fields were not requested."},
+    {"method":"GET","url":"https://mappmycity.ca/arcgis/rest/services/OpenDataServices/PropertyParcels/MapServer/4/query","httpStatus":200,"outcome":"Anonymous spatial query using the exact WUP point [42.2970404281255,-82.9940374441006], inSR 4326, spatialRel intersects, outFields OBJECTID only, returnGeometry true, outSR 4326, resultRecordCount 3 returned one polygon with OBJECTID 39793. Full unchanged geometry is retained in windsor-sample.geojson."},
+    {"method":"SEARCH/GET","url":"https://data.urbandatacentre.ca/fr/catalogue/open-data-portal-5eb39d-parcel","httpStatus":200,"outcome":"French catalogue entry independently describes Windsor parcel polygons maintained by Geomatics and identifies PROP_RSN as its catalogue primary key; the retained service response used the layer's native OBJECTID and did not request PROP_RSN."},
+    {"method":"GET","url":"https://www.ontario.ca/fr/page/vue-densemble-du-registre-immobilier","httpStatus":200,"outcome":"General Ontario land-registry overview; national/provincial agency prose, not a Windsor parcel geometry service. No protected lookup or title data was attempted."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "ArcGIS item metadata; public Feature Service URL resolved from item JSON",
+    "apiBase": "https://mappmycity.ca/arcgis/rest/services/OpenDataServices/PropertyParcels/MapServer/4",
+    "geometryCrs": {"source":"EPSG:26917 / WKID 26917","retained":"EPSG:4326","coordinateOrder":"GeoJSON longitude, latitude"},
+    "nativeIdentity": "OBJECTID",
+    "sourceFieldMapping": {"nativeIdentity":"OBJECTID","geometry":"Shape"},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {"requestScope":"Exact WUP point intersection; OBJECTID plus geometry only; resultRecordCount=3","featureCount":1,"nativeIdentity":"OBJECTID 39793"}
+  },
+  "localCustodianAssessment":"The City of Windsor is evidenced as the local municipal mapping/cadastral-data custodian through its official mapping pages and Geomatics attribution. The Ontario land-registry page is general provincial agency prose and does not establish the City service.",
+  "safeFieldAllowlist":["OBJECTID stable native parcel identity","polygon geometry","source service URL","source CRS and coordinate order","retrieval date"],
+  "unsafeFieldsNotRequested":["owner","address","contact","titleholder","tax/account","certificate/title","personal data","identity documents","OTP","private token or credentials"],
+  "sampleGeoJSON":"windsor-sample.geojson",
+  "qualification":{"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"A public municipal parcel service, schema, CRS, native OID and one bounded anonymous geometry response are evidenced. Adapter admission and citywide coverage qualification remain for serial review."},
+  "scopeLimits":["The exact WUP point was preserved and not shifted.","The point hit demonstrates one local intersecting feature, not complete citywide coverage or universal parcel availability.","Only OBJECTID and geometry were requested and retained; source-specific attribute sets were not retained.","The service's source CRS was reported as WKID 26917 and output was explicitly transformed to EPSG:4326.","No login, CAPTCHA/Cloudflare bypass, credentials, private token, or unsafe landholder field request was attempted.","No source integration, registry admission, or runtime readiness is claimed."],
+  "uncertainty":"The official municipal service is public and returned a valid exact-point parcel geometry, but this bounded request does not independently establish completeness, update cadence, licensing details, or all citywide edge cases. Runtime qualification remains held."
+}

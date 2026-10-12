@@ -1,0 +1,18 @@
+{
+  "cityRecord": "city-8917-islampur.json",
+  "cityCode": 8917,
+  "queueRank": 3261,
+  "attempt": 1,
+  "reviewStatus": "complete_pending_serial_runtime_review",
+  "registryFound": true,
+  "summary": "Official Maharashtra land-record services and the Sangli/Walwa administrative custodian covering Islampur were evidenced. The public Mahabhunakasha viewer timed out before current JavaScript/API inspection, and no safe anonymous parcel ID-plus-polygon response was qualified.",
+  "custodian": "Walwa Deputy Superintendent Land Records office at Islampur/Ishwarpur is the local custodian reference; Sangli District Superintendent Land Records and Maharashtra Bhumi Abhilekh/Mahabhumi are the district/state authorities.",
+  "requests": "English and Marathi discovery, official service/catalogue GETs, official Sangli custodian and district-map checks, and a direct TLS-default BhuNaksha viewer GET are recorded in the city record. The viewer request timed out after 30 seconds. No credentials, unsafe fields, CAPTCHA/Cloudflare bypass, or TLS disable was used.",
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdFields": [], "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "geometry": {"verified": false, "sampleCount": 0, "sampleFile": null, "retainedFeatureProperties": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point [17.0542146548791, 74.2646018541214] and population 184756 persons are preserved.", "No exact-point hit, viewer miss, timeout, or unavailable route is treated as citywide absence.", "No raw source-specific attributes were retained.", "Completion is not source integration/admission."],
+  "runtimeReadiness": "held_independent_adapter_review",
+  "admissionDecision": "held",
+  "uncertainty": ["Native parcel IDs, CRS, polygons, and coverage remain unverified.", "No sample GeoJSON was written."]
+}

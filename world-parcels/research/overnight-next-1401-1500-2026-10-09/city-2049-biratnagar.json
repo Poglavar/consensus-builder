@@ -1,0 +1,60 @@
+{
+  "cityCode": 2049,
+  "queueRank": 1420,
+  "country": "Nepal",
+  "countryCode": "NP",
+  "point": [26.5093824807541, 87.2780030619981],
+  "population2025": 398453,
+  "population2025k": 398.453,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Biratnagar Nepal official cadastral parcel map land records GIS service Department of Survey",
+        "result": "First-party results identified the Nepal Survey Department office directory, the official Morang survey office, the official MeroKitta public portal, the Biratnagar Department of Land Management and Archive office, and a Biratnagar Metropolitan City GIS-map page. No anonymous parcel-vector endpoint was found.",
+        "actualResultUrls": [
+          "https://dos.gov.np/pages/napi-offices/",
+          "https://morang.dos.gov.np/",
+          "https://merokitta.dos.gov.np/",
+          "https://biratnagar.dolma.gov.np/office/biratnagar",
+          "https://biratnagarmun.gov.np/ne/image-types/%E0%A4%AD%E0%A5%82-%E0%A4%B8%E0%A5%82%E0%A4%9A%E0%A4%A8%E0%A4%BE-%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%A3%E0%A4%BE%E0%A4%B2%E0%A5%80-%E0%A4%A8%E0%A4%95%E0%A5%8D%E0%A4%B8%E0%A4%BE"
+        ]
+      },
+      {
+        "language": "Nepali",
+        "query": "विराटनगर नेपाल सरकारी कित्ता नक्सा भू-अभिलेख क्याडस्ट्रल नक्सा",
+        "result": "First-party Nepali results identified the Biratnagar Metropolitan City GIS-map page, the official Morang/Biratnagar land-administration office, Survey Department office listings, and MeroKitta. The public MeroKitta route requires landowner documents for service submission; no anonymous parcel geometry was obtained.",
+        "actualResultUrls": [
+          "https://biratnagarmun.gov.np/ne/image-types/%E0%A4%AD%E0%A5%82-%E0%A4%B8%E0%A5%82%E0%A4%9A%E0%A4%A8%E0%A4%BE-%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%A3%E0%A4%BE%E0%A4%B2%E0%A5%80-%E0%A4%A8%E0%A4%95%E0%A5%8D%E0%A4%B8%E0%A4%BE",
+          "https://biratnagar.dolma.gov.np/office/biratnagar",
+          "https://dos.gov.np/pages/napi-offices/",
+          "https://merokitta.dos.gov.np/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryAssessment": "A city-specific first-party custodian is evidenced: the Nepal Survey Department's Morang survey office and the Department of Land Management and Archive's Biratnagar office. A current public citywide cadastral registry/API with anonymous parcel geometry and stable native parcel IDs was not established; registryFound remains null.",
+  "geometryEvidence": {
+    "sourceUrl": null,
+    "sampleFile": null,
+    "nativeIdField": null,
+    "nativeFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "sampleCount": 0,
+    "crs": null,
+    "queryExtent": null
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "nativeIdField": null,
+    "sampleCount": 0,
+    "exactWupPointTest": "Not run against a parcel layer because the tested public routes returned administrative and mapsheet metadata only; the exact WUP point [26.5093824807541, 87.2780030619981] was not shifted and was not treated as an absence test.",
+    "retentionNote": "No GeoJSON retained: no safe native parcel identity plus full polygon response was obtained."
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1
+}

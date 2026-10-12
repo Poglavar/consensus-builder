@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-8051-xingping.json",
+  "purpose": "Document first-party registry/map discovery, current viewer-route outcomes, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Xianyang/Xingping government linkage and the official Shaanxi Tianditu portal were verified, but no current anonymous Xingping parcel feature response was obtained.",
+  "registryAssessment": "A local-government linkage and provincial public map platform are evidenced, but no Xingping-specific cadastral or real-estate-registration procedure was verified; registryFound remains null.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.xianyang.gov.cn/",
+      "observation": "Official Xianyang government portal; its inspected links include the Xingping government site at http://www.snxingping.gov.cn. No parcel geometry was exposed in the inspected page."
+    },
+    {
+      "url": "http://www.snxingping.gov.cn",
+      "observation": "Official Xingping government host linked from Xianyang's portal. Bounded HTTP/HTTPS retrieval was attempted, but no cadastral viewer, service configuration or safe parcel response was verified."
+    },
+    {
+      "url": "https://shaanxi.tianditu.gov.cn/",
+      "observation": "Official Shaanxi geographic-information public-service platform. The home page loaded and referenced a current portal JavaScript bundle; the bounded bundle request timed out before complete service configuration inspection."
+    }
+  ],
+  "viewerConfiguration": {
+    "documentedHomeUrl": "https://shaanxi.tianditu.gov.cn/",
+    "observedServiceTypes": ["Shaanxi Tianditu public geospatial portal", "Xianyang government portal", "Xingping government host linkage"],
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://www.xianyang.gov.cn/",
+      "method": "GET/web search result inspection; direct public GET",
+      "normalTlsVerification": true,
+      "result": "Official portal retrieved. Its page links Xingping's government host. No parcel geometry or cadastral service endpoint was exposed."
+    },
+    {
+      "url": "http://www.snxingping.gov.cn",
+      "method": "GET; redirected public request",
+      "normalTlsVerification": true,
+      "result": "Bounded HTTP retrieval completed, but no usable cadastral viewer/configuration or safe parcel feature response was verified. HTTPS was also attempted."
+    },
+    {
+      "url": "https://snxingping.gov.cn",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Timed out after 15 seconds. No certificate exception used; no geometry."
+    },
+    {
+      "url": "https://shaanxi.tianditu.gov.cn/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Home page retrieved successfully; it references /portal/assets/index-C2w7USyz.js and /portal/libs/mapbox-gl-cgcs2000.js. No parcel response."
+    },
+    {
+      "url": "https://shaanxi.tianditu.gov.cn/portal/assets/index-C2w7USyz.js",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Bounded 30-second download timed out after receiving a partial bundle. Viewer service configuration could not be completely inspected; no parcel request was submitted."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No WUP-point parcel query submitted because no current public Xingping parcel endpoint or complete viewer configuration was identified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official local-government linkage and provincial public map-platform evidence cover source discovery only.",
+    "verifiedOpenScope": "Official government/map-platform routes verified; no current anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "Timeouts and absent exposed configuration are access/discovery limitations only, not evidence of cadastral absence. Current service URL, parcel schema, CRS, native identity, geometry availability and citywide completeness remain unverified.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."
+  }
+}

@@ -17,7 +17,7 @@
 //
 // Place: { kind: 'live-city' | 'city' | 'region' | 'country' | 'territory' | 'ocean', tier: 'live'|'source'|'none'|'unknown',
 //          name, country, cc, note, lat, lon, placeKey, cityId?, regionId?, coverage?, coverageSources? }
-//   Countries and regions carry geographic coverage (full/partial/none/unknown), independently of app
+//   Countries and regions carry geographic coverage (full/mostly/partial/none/unknown), independently of app
 //   routing. A region (US state, Canadian province, England, ...) answers for its part of a country,
 //   except inside a countrywide-live country, whose routing the country place carries.
 //   WorldCoverage.statusKey(place) selects the matching localized label/description prefix.
@@ -32,7 +32,7 @@
     'use strict';
 
     const TIERS = ['live', 'source', 'none', 'unknown'];
-    const COVERAGE_LEVELS = ['full', 'partial', 'none', 'unknown'];
+    const COVERAGE_LEVELS = ['full', 'mostly', 'partial', 'none', 'unknown'];
     const TIER_RANK = { live: 3, source: 2, none: 1, unknown: 0 };
     const LIVE_RADIUS_KM = 60;
     const CITY_RADIUS_KM = 40;

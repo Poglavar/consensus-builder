@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 2889,
+  "cityId": "wup2025:2889",
+  "name": "Podolsk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "centerLatLon": [55.4359280576275, 37.5500930826687],
+  "point": [55.4359280576275, 37.5500930826687],
+  "queueRank": 1415,
+  "population2025": 400335,
+  "population2025k": 400.335,
+  "populationUnit": "persons",
+  "cohorts": ["overnight-next-1401-1500-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Podolsk Russia official cadastral map land registry parcel GIS Rosreestr",
+        "result": "Discovery identified Rosreestr's current National Spatial Data Platform (NSPD) public cadastral map route and official Podolsk municipal land/property committee material. No usable anonymous parcel-vector response was obtained.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map",
+          "https://www.kizopodolsk.ru/",
+          "https://www.podolskmfc.ru/?q=service%2Forgany-gos-upravleniya%2Fupravlenie-federalnoy-sluzhby-gosudarstvennoy-registracii-kadastra-i"
+        ]
+      },
+      {
+        "language": "Russian (local/native)",
+        "query": "Публичная кадастровая карта Подольск Росреестр НСПД официальный кадастровые участки",
+        "result": "Russian-language discovery confirmed the official NSPD migration of the Public Cadastral Map and found first-party Podolsk municipal cadastral-number/procedure notices. No public geometry response was verified.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map",
+          "https://www.kizopodolsk.ru/info/p2_start/240",
+          "https://rosreestr.gov.ru/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Committee for Property and Land Relations of the Podolsk urban district identifies the local municipal land/property custodian and publishes procedures/notices naming cadastral land parcels. This evidences local registry/procedure custody, not an open parcel-vector API.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.kizopodolsk.ru/",
+      "operator": "Committee for Property and Land Relations, Administration of Podolsk Urban District",
+      "observation": "Official municipal page identifies the committee as successor to the city and district property/land-relations committees and publishes land-parcel materials."
+    },
+    {
+      "url": "https://www.kizopodolsk.ru/info/p2_start/240",
+      "operator": "Committee for Property and Land Relations, Administration of Podolsk Urban District",
+      "observation": "Official notice includes cadastral parcel numbers in a public-servitude procedure, proving local procedural use of cadastral identities; it does not publish parcel geometry or an API."
+    },
+    {
+      "url": "https://nspd.gov.ru/map",
+      "operator": "Rosreestr / National Spatial Data Platform",
+      "observation": "Official current public cadastral-map destination identified by Rosreestr notices; anonymous page/API access timed out from this environment."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://nspd.gov.ru/map?zoom=14&coordinate_x=4177000&coordinate_y=7460000&theme_id=1",
+      "method": "GET",
+      "outcome": "timeout after 30 seconds; no HTML, JavaScript configuration, service endpoint, schema, CRS or parcel response retained",
+      "safeRequest": true
+    },
+    {
+      "url": "https://pkk.rosreestr.ru/",
+      "method": "HEAD/GET",
+      "outcome": "timeout after 20 seconds; legacy endpoint not treated as evidence of absence",
+      "safeRequest": true
+    },
+    {
+      "url": "https://www.kizopodolsk.ru/",
+      "method": "GET via first-party discovery",
+      "outcome": "official municipal custodian page identified in search; no parcel geometry endpoint advertised",
+      "safeRequest": true
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Rosreestr/NSPD public cadastral-map discovery and Podolsk municipal land/property-procedure evidence.",
+    "verifiedOpenScope": "Custodian and current service-route evidence only; parcel layer, schema, CRS, anonymous geometry access and citywide extent remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "geometryDecision": "No GeoJSON retained. No safe anonymous native parcel ID-plus-geometry response was available; the exact WUP point was not used to infer absence.",
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "safeFieldAllowlist": ["stable native parcel or cadastral identity if publicly exposed", "geometry", "source CRS", "service layer name"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "private credentials or tokens"],
+  "remainingUncertainty": "The official NSPD map may expose Podolsk parcel geometry through an interactive or region-specific service unavailable to this bounded environment; no exact-point hit/miss, extent miss, timeout or login wall was treated as citywide absence.",
+  "nextStep": "A serial reviewer should independently inspect the current NSPD map configuration and qualify a bounded anonymous parcel identity-plus-geometry response before any adapter consideration."
+}

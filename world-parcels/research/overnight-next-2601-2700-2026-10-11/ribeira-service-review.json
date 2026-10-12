@@ -1,0 +1,64 @@
+{
+  "cityRecord": "city-8012-ribeira.json",
+  "cityCode": 8012,
+  "queueRank": 2659,
+  "name": "Ribeira",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "reviewStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "verifiedSample": true,
+  "sampleFile": "city-8012-ribeira-sample.geojson",
+  "summary": "Official Prefeitura do Rio municipal parcel service was found. Layer metadata and anonymous bounded geometry query were verified; exact WUP point was a zero-hit, while a nearby envelope returned three safe polygon features. No unsafe attributes were requested or retained.",
+  "queryOutcomes": [
+    {
+      "language": "English",
+      "query": "Ribeira Brazil official cadastral map parcel GIS Rio de Janeiro prefeitura",
+      "outcome": "Found the official Prefeitura do Rio CadParcel IMOVEIS_TERRITORIAIS ArcGIS service and official Carioca Digital references to municipal cadastral/parcel map services."
+    },
+    {
+      "language": "native/local",
+      "query": "Ribeira Brasil cadastro imobiliário mapa oficial parcela geoserver prefeitura Rio de Janeiro",
+      "outcome": "Found official Portuguese Prefeitura do Rio/Carioca Digital references for Planta Cadastral, GeoPAL and urban map consultation, plus the official municipal parcel feature service."
+    }
+  ],
+  "requestOutcomes": [
+    {
+      "request": "GET https://pgeo3.rio.rj.gov.br/arcgis/rest/services/CadParcel/IMOVEIS_TERRITORIAIS/FeatureServer/0?f=pjson",
+      "outcome": "Layer metadata returned geometryType esriGeometryPolygon, native spatial reference EPSG:31983 (SIRGAS 2000 / UTM zone 23S), max record count 2000, and fields including objectid plus unsafe cadastral attributes not requested."
+    },
+    {
+      "request": "GET https://pgeo3.rio.rj.gov.br/arcgis/rest/services/CadParcel/IMOVEIS_TERRITORIAIS/FeatureServer/0/query",
+      "outcome": "Anonymous point query at the exact WUP coordinate transformed to EPSG:31983 returned an empty FeatureCollection with outFields=objectid and returnGeometry=true. This is an exact-point miss only, not evidence of citywide absence."
+    },
+    {
+      "request": "GET https://pgeo3.rio.rj.gov.br/arcgis/rest/services/CadParcel/IMOVEIS_TERRITORIAIS/FeatureServer/0/query",
+      "outcome": "Anonymous bounded envelope query centered on the transformed WUP point, approximately 2 km by 2 km, with spatialRel=esriSpatialRelIntersects, outFields=objectid, resultRecordCount=3, outSR=4326 returned three polygon features (native objectids 55, 118, 140) and exceededTransferLimit=true. Three full polygons were retained with properties reduced to id only."
+    }
+  ],
+  "scopeLimits": [
+    "Exact WUP point [-22.8050293524197,-43.1936610372124] was preserved in latitude/longitude order and was not shifted.",
+    "The exact point returned zero features; this is not evidence of citywide absence. The bounded envelope returned features elsewhere in the vicinity.",
+    "Envelope response exceededTransferLimit=true; retained sample is deliberately limited to three polygons and is not a coverage census.",
+    "The WUP label Ribeira may denote a locality/neighborhood rather than an administrative municipality; source scope is the Rio de Janeiro municipal service, and locality matching was not independently resolved.",
+    "Packet completion is research evidence only and is not source integration/admission.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception used."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identity",
+    "geometry",
+    "source layer/year",
+    "source CRS if declared",
+    "retrieval timestamp"
+  ],
+  "nativeFieldMapping": {
+    "sourceField": "objectid",
+    "canonicalProperty": "id",
+    "provenance": "ArcGIS FeatureServer layer's native objectid; GeoJSON response also exposed the same identity as feature id; sample ids 55, 118, 140."
+  },
+  "uncertainty": "The official municipal service and bounded parcel geometries are evidenced, but exact WUP point coverage is a miss, envelope results were transfer-limited, locality-versus-municipality alignment for the WUP label Ribeira is unresolved, and citywide coverage plus long-term identity semantics remain unverified.",
+  "serialReviewRecommendation": "Hold. Recheck official service availability, locality alignment, coverage, CRS/axis handling, and native objectid semantics independently before runtime qualification."
+}

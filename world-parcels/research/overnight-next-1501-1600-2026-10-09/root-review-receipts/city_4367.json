@@ -1,0 +1,14 @@
+{
+  "taskId": "city:4367",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-4367-qazvin.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/qazvin-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T10:44:01+00:00",
+  "reason": "Qazvin local registration context is supported by the first-party notary association page, but there is no native parcel ID plus full polygon response. Official service timeouts are unresolved availability, not absence.",
+  "admissionGates": "No independently evidenced fresh native-ID polygon reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details-panel verification. Runtime and catalog remain unmodified.",
+  "sourceChecks": "Root fetched the cited Qazvin notary association public page with HTTP 200 and inspected its provincial and national registration links. Timed-out official routes in the paired review do not establish absence.",
+  "searchEvidenceLimit": "The paired packet and review record separate bilingual searches and results; no separate raw search-result cache is present in the reviewed repository evidence."
+}

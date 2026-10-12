@@ -1,0 +1,28 @@
+{
+  "taskId": "city:10864",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-10864-ganyu.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ganyu-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T04:16:37Z",
+  "finding": "WUP 2025 code 10864, rank 3151, China, point [34.8482253843674,119.144994022057], and 190593 persons match the original 2025 source, ranked roster, queue, and packet. English and Simplified Chinese searches with result URLs are recorded. First-party Ganyu bureau notice confirms registration-information service and an on-site query machine, not public parcel geometry. Public parcel-level custody remains unresolved (null). No native-ID polygon or qualified adapter evidence; retain hold without claiming citywide absence.",
+  "firstPartyUrlsChecked": [
+    "https://www.lyg.gov.cn/zglygzfmhwz/zffw1/content/5f5e08d5-3079-4957-aeb1-f2752d0c04e9.html",
+    "https://www.ganyu.gov.cn/"
+  ],
+  "samplePolygonCount": 0,
+  "runtimeAdmitted": false,
+  "missingAdmissionGates": [
+    "fresh native-ID feature reads",
+    "forced paging",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed details-panel verification"
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 10257,
+  "wupCityCode": 10257,
+  "queueRank": 1939,
+  "name": "Karur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [10.9592193269556, 78.0774902651533],
+  "centerLatLon": [10.9592193269556, 78.0774902651533],
+  "population2025": 297598,
+  "population2025k": 297.598,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "No parcel geometry retained; exact WUP-point geometry was not obtained.",
+  "nativeIdReadiness": "unverified; no bounded parcel response or native identity was obtained",
+  "registryFound": true,
+  "registryBasis": "The official Karur District administration page identifies the Collector Office Survey and Land Records office and links the Government of Tamil Nadu land e-Services procedure, which provides Patta/FMB/Chitta/TSLR and A-Register access. This evidences a local custodian/procedure, not a public parcel geometry API.",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Karur Tamil Nadu official cadastral parcel map GIS land records viewer",
+        "result": "Found the official Karur District land e-Services page, the Government of India service description for Tamil Nadu land records, and Tamil Nadu's official GIS application index. No publicly documented Karur parcel FeatureServer/WFS endpoint was identified in the search results.",
+        "actualResultUrls": [
+          "https://karur.nic.in/service/e-services-anytime-anywhere-land/",
+          "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+          "https://www.tngis.tn.gov.in/apps.html"
+        ]
+      },
+      {
+        "language": "Tamil",
+        "query": "கரூர் தமிழ்நாடு அதிகாரப்பூர்வ நில அளவை வரைபடம் பட்டா நில பதிவுகள்",
+        "result": "Found Tamil Nadu land-records and TamilNilam Geo-Info references describing map/FMB and survey/subdivision lookup, plus the official Karur District land-records procedure. No safe anonymous parcel geometry response was identified.",
+        "actualResultUrls": [
+          "https://karur.nic.in/service/e-services-anytime-anywhere-land/",
+          "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/",
+          "https://play.google.com/store/apps/details?id=org.tnega.tamil.nilam"
+        ]
+      }
+    ]
+  },
+  "attemptedRoutes": [
+    {
+      "route": "GET https://karur.nic.in/service/e-services-anytime-anywhere-land/",
+      "outcome": "succeeded via indexed official page; identified Karur Collector Office Survey and Land Records custodian/procedure and linked eservices.tn.gov.in"
+    },
+    {
+      "route": "GET https://eservices.tn.gov.in/",
+      "outcome": "TLS-verified anonymous curl attempt timed out after 20 seconds; no response body, configuration, schema, CRS, or parcel geometry obtained"
+    },
+    {
+      "route": "GET https://tngis.tn.gov.in/generic_viewer/",
+      "outcome": "TLS-verified anonymous curl attempt timed out after 20 seconds; no response body, current JavaScript/configuration, service endpoint, schema, CRS, or parcel geometry obtained"
+    },
+    {
+      "route": "GET https://www.tngis.tn.gov.in/apps.html",
+      "outcome": "succeeded via indexed official page; confirmed Tamil Nadu GIS application index and public informational-use notice, but no Karur parcel response was requested or obtained"
+    },
+    {
+      "route": "bounded anonymous parcel query at unchanged WUP point [10.9592193269556, 78.0774902651533]",
+      "outcome": "not executed because no verified public parcel API endpoint/configuration was available; therefore no point hit or miss is asserted"
+    }
+  ],
+  "scope": "Karur District's official land-records procedure and Tamil Nadu statewide e-Services/ILR references were verified from first-party pages; parcel API coverage, service schema, CRS, native identity, and citywide geometry were not verified.",
+  "schemaAndCrs": null,
+  "nativeIdentity": null,
+  "fieldMapping": {},
+  "safeFieldAllowlist": ["native parcel identifier if independently verified", "geometry"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, personal, tax/account, legal-description, or ownership fields were requested or retained.",
+  "retainedSample": null,
+  "limits": [
+    "No public parcel API response was obtained, so no native identity or geometry can be qualified.",
+    "The official procedure requires district/taluk/village or urban town/block/ward/survey inputs rather than providing a demonstrated citywide anonymous geometry endpoint.",
+    "Direct service timeouts are an access limitation, not evidence of citywide parcel absence.",
+    "Search/indexed pages and service descriptions do not establish API availability, schema, CRS, or complete Karur coverage.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A later reviewer should inspect the current official viewer configuration when reachable, identify a public anonymous geometry route if one exists, verify safe native parcel identity and CRS, and perform bounded geometry checks without shifting the WUP point."
+}

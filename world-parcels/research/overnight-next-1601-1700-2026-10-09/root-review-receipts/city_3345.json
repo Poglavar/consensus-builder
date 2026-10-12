@@ -1,0 +1,12 @@
+{
+  "taskId": "city:3345",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/provenance.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-3345-ondjiva.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ondjiva-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T11:54:05.912858Z",
+  "reviewFindings": "WUP code 3345, rank 1646, Angola, point and 347591 persons match the immutable queue and official 2025 source. English and Portuguese queries are recorded. First-party SIAC and Inscreva Ja pages establish national service context, while the parcel map route requires authentication. No Ondjiva parcel geometry or stable native ID was retrieved; local registry custody remains unresolved, not absent. No admission."
+}

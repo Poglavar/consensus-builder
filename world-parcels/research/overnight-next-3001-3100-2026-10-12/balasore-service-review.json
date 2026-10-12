@@ -1,0 +1,47 @@
+{
+  "cityRecord": "city-11705-balasore.json",
+  "cityCode": 11705,
+  "queueRank": 3068,
+  "city": "Balasore",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Odia first-party discovery identified the official Odisha Bhulekh/BhuNaksha cadastral service and evidenced Balasore district, tehsil, and town hierarchy entries. Current anonymous REST/WMS checks did not return a usable safe parcel ID-plus-geometry response, so no sample was retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, actual URLs, viewer/configuration inspection, hierarchy, extent, exact-point, and WMS checks with outcomes are recorded in city-11705-balasore.json. No login, CAPTCHA/Cloudflare bypass, credentials, private tokens, TLS bypass, or unsafe-field request occurred.",
+  "custodians": [
+    {
+      "name": "Government of Odisha Revenue & Disaster Management Department / Bhulekh Odisha",
+      "scope": "State land-record and cadastral-map publication custodian; Balasore administrative hierarchy was evidenced in the public viewer.",
+      "evidence": "https://bhulekh.ori.nic.in/frmmapview.aspx"
+    },
+    {
+      "name": "BhuNaksha Odisha",
+      "scope": "Official public cadastral-map viewer/service; anonymous feature qualification was incomplete.",
+      "evidence": "https://app1bhunakshaodisha.nic.in/bhunaksha/"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "Exact WUP point and population are preserved in the city record.",
+    "Empty/204 endpoint results do not establish parcel absence or a citywide coverage conclusion.",
+    "No anonymous ID-plus-geometry response, parcel schema, CRS, or citywide vector coverage was qualified.",
+    "No unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "A resolved village GIS code may be required before the public service returns map extent or point results.",
+    "No independent runtime adapter qualification was performed."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

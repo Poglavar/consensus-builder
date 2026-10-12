@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7854-probolinggo.json",
+  "cityCode": 7854,
+  "queueRank": 1338,
+  "purpose": "Document first-party discovery, current public viewer/API route review, bounded anonymous access outcomes, safe-field limits, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official ATR/BPN BHUMI shell, its current console wrapper, the separate console host, and local Kota Probolinggo ATR/BPN material were reachable or evidenced. The current public assets were inspected for service configuration, but no bounded anonymous parcel-vector response with a safe native ID and geometry was verified.",
+  "registryAssessment": "Local registry custody is evidenced by the official Kantor Pertanahan Kota Probolinggo ATR/BPN host/material. This is custodian evidence only and does not establish an admitted runtime source.",
+  "safeFieldAllowlist": ["safe public parcel/native source ID if available", "geometry", "CRS or coordinate-system metadata", "non-sensitive layer/schema metadata", "administrative hierarchy metadata"],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Probolinggo Indonesia official cadastral parcel map GIS land registry ATR BPN",
+      "outcome": "Official BHUMI viewer and Kota Probolinggo ATR/BPN material found; no verified anonymous parcel geometry route.",
+      "actualResultUrls": ["https://bhumi.atrbpn.go.id/", "https://bhumi.atrbpn.go.id/bantuan/landing", "https://kot-probolinggo.atrbpn.go.id/assets/04be9dba-921b-441e-906d-689a98d4a5a8"]
+    },
+    {
+      "language": "Indonesian",
+      "query": "Probolinggo peta bidang tanah resmi ATR BPN Kantor Pertanahan Kota Probolinggo",
+      "outcome": "Official BHUMI help and local land-office route found; no safe anonymous parcel feature response exposed by the inspected current viewer assets.",
+      "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/unsur_peta", "https://bhumi.atrbpn.go.id/konsolbhumi.html", "https://kot-probolinggo.atrbpn.go.id/"]
+    }
+  ],
+  "attempts": [
+    {"url":"https://bhumi.atrbpn.go.id/","method":"GET anonymous with Chrome UA, Accept, Accept-Language, cookie jar","httpStatus":200,"result":"Official BHUMI shell loaded; it delegates the map to konsolbhumi.atrbpn.go.id."},
+    {"url":"https://bhumi.atrbpn.go.id/konsolbhumi.html","method":"GET anonymous with browser headers and Referer","httpStatus":200,"result":"Official console wrapper loaded; iframe target identified."},
+    {"url":"https://konsolbhumi.atrbpn.go.id/","method":"GET anonymous with browser headers and Referer","httpStatus":200,"result":"Current interactive console shell loaded; its current JavaScript assets were fetched and inspected."},
+    {"url":"https://bhumi.atrbpn.go.id/bantuan/landing","method":"GET anonymous","httpStatus":200,"result":"Official help page documents public BHUMI use and data-completeness disclaimer."},
+    {"url":"https://bhumi.atrbpn.go.id/bantuan/unsur_peta","method":"GET anonymous","httpStatus":200,"result":"Official help page documents bidang tanah as a map element; no feature payload returned."},
+    {"url":"https://kot-probolinggo.atrbpn.go.id/","method":"GET anonymous","httpStatus":"not independently fetched as a working API","result":"Official local ATR/BPN host was evidenced by indexed first-party material; no parcel endpoint was inferred or guessed."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "nativeIdField": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint. Exact WUP point [-7.77816373910349, 113.209754178279] remains unchanged; no absence inference is made.",
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "remainingUncertainty": "The interactive BHUMI console may issue runtime requests after map interaction, and a separately published ATR/BPN endpoint may expose safe parcel geometry. Those routes were not verified from the inspected public assets. No owner, address, titleholder, tax, contact, personal, or unsafe fields were requested or retained.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter",
+  "integrationDecision": "not_integrated",
+  "requestCache": "tmp/valhalla-parcel-research/probolinggo/"
+}

@@ -1,0 +1,2468 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "8228",
+  "cityName": "Wilmington",
+  "sourceId": "us-de-firstmap-statewide-parcels",
+  "candidateSha256": "6100acc773a7f5417fb8548f95ff0b401dd96cae3e0b513c432aa9e5d6d094de",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 437,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 437,
+      "collectedUniqueCount": 437
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 1108
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "object-ids-manifest",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "singletonObjectIdRequests": 5,
+      "distinctSingletonObjectIdQueries": 5,
+      "duplicateObjectIdRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "7c88842aa68f76244b79c85ff2f40580eeed787ef8159e053ee19a2d69fe752b",
+      "featureCount": 437,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32618",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "7c88842aa68f76244b79c85ff2f40580eeed787ef8159e053ee19a2d69fe752b",
+  "featureCount": 437,
+  "sampleIds": [
+    "US-DE-STATEWIDE-New%20Castle~2602740223",
+    "US-DE-STATEWIDE-New%20Castle~2602740224",
+    "US-DE-STATEWIDE-New%20Castle~2602740225"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -75.563,
+        39.744,
+        -75.562,
+        39.745
+      ],
+      "complete": true,
+      "featureCount": 60,
+      "ids": [
+        "US-DE-STATEWIDE-New%20Castle~2603420127",
+        "US-DE-STATEWIDE-New%20Castle~2603420128",
+        "US-DE-STATEWIDE-New%20Castle~2603420129",
+        "US-DE-STATEWIDE-New%20Castle~2603420130",
+        "US-DE-STATEWIDE-New%20Castle~2603420201",
+        "US-DE-STATEWIDE-New%20Castle~2603420208",
+        "US-DE-STATEWIDE-New%20Castle~2603410639",
+        "US-DE-STATEWIDE-New%20Castle~2603410640",
+        "US-DE-STATEWIDE-New%20Castle~2603410641",
+        "US-DE-STATEWIDE-New%20Castle~2603410642",
+        "US-DE-STATEWIDE-New%20Castle~2603410645",
+        "US-DE-STATEWIDE-New%20Castle~2603410646",
+        "US-DE-STATEWIDE-New%20Castle~2603410669",
+        "US-DE-STATEWIDE-New%20Castle~2603410670",
+        "US-DE-STATEWIDE-New%20Castle~2603420059",
+        "US-DE-STATEWIDE-New%20Castle~2603420060",
+        "US-DE-STATEWIDE-New%20Castle~2603420061",
+        "US-DE-STATEWIDE-New%20Castle~2603420062",
+        "US-DE-STATEWIDE-New%20Castle~2603420063",
+        "US-DE-STATEWIDE-New%20Castle~2603420064",
+        "US-DE-STATEWIDE-New%20Castle~2603420082",
+        "US-DE-STATEWIDE-New%20Castle~2603420083",
+        "US-DE-STATEWIDE-New%20Castle~2603420084",
+        "US-DE-STATEWIDE-New%20Castle~2603420085",
+        "US-DE-STATEWIDE-New%20Castle~2603420086",
+        "US-DE-STATEWIDE-New%20Castle~2603420087",
+        "US-DE-STATEWIDE-New%20Castle~2603420088",
+        "US-DE-STATEWIDE-New%20Castle~2603420089",
+        "US-DE-STATEWIDE-New%20Castle~2603420090",
+        "US-DE-STATEWIDE-New%20Castle~2603420091",
+        "US-DE-STATEWIDE-New%20Castle~2603420092",
+        "US-DE-STATEWIDE-New%20Castle~2603420093",
+        "US-DE-STATEWIDE-New%20Castle~2603420094",
+        "US-DE-STATEWIDE-New%20Castle~2603420095",
+        "US-DE-STATEWIDE-New%20Castle~2603420096",
+        "US-DE-STATEWIDE-New%20Castle~2603420097",
+        "US-DE-STATEWIDE-New%20Castle~2603420098",
+        "US-DE-STATEWIDE-New%20Castle~2603420099",
+        "US-DE-STATEWIDE-New%20Castle~2603420100",
+        "US-DE-STATEWIDE-New%20Castle~2603420101",
+        "US-DE-STATEWIDE-New%20Castle~2603420102",
+        "US-DE-STATEWIDE-New%20Castle~2603420103",
+        "US-DE-STATEWIDE-New%20Castle~2603420104",
+        "US-DE-STATEWIDE-New%20Castle~2603420105",
+        "US-DE-STATEWIDE-New%20Castle~2603420106",
+        "US-DE-STATEWIDE-New%20Castle~2603420107",
+        "US-DE-STATEWIDE-New%20Castle~2603420108",
+        "US-DE-STATEWIDE-New%20Castle~2603420109",
+        "US-DE-STATEWIDE-New%20Castle~2603420110",
+        "US-DE-STATEWIDE-New%20Castle~2603420111",
+        "US-DE-STATEWIDE-New%20Castle~2603420112",
+        "US-DE-STATEWIDE-New%20Castle~2603420118",
+        "US-DE-STATEWIDE-New%20Castle~2603420119",
+        "US-DE-STATEWIDE-New%20Castle~2603420120",
+        "US-DE-STATEWIDE-New%20Castle~2603420121",
+        "US-DE-STATEWIDE-New%20Castle~2603420122",
+        "US-DE-STATEWIDE-New%20Castle~2603420123",
+        "US-DE-STATEWIDE-New%20Castle~2603420124",
+        "US-DE-STATEWIDE-New%20Castle~2603420125",
+        "US-DE-STATEWIDE-New%20Castle~2603420126"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -75.562,
+        39.744,
+        -75.561,
+        39.745
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "US-DE-STATEWIDE-New%20Castle~2603420176",
+        "US-DE-STATEWIDE-New%20Castle~2603420177",
+        "US-DE-STATEWIDE-New%20Castle~2603420178",
+        "US-DE-STATEWIDE-New%20Castle~2603420179",
+        "US-DE-STATEWIDE-New%20Castle~2603420180",
+        "US-DE-STATEWIDE-New%20Castle~2603420181",
+        "US-DE-STATEWIDE-New%20Castle~2603420187",
+        "US-DE-STATEWIDE-New%20Castle~2603420193",
+        "US-DE-STATEWIDE-New%20Castle~2603420194",
+        "US-DE-STATEWIDE-New%20Castle~2603420201",
+        "US-DE-STATEWIDE-New%20Castle~2603420063",
+        "US-DE-STATEWIDE-New%20Castle~2603420064",
+        "US-DE-STATEWIDE-New%20Castle~2603420065"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -75.561,
+        39.744,
+        -75.56,
+        39.745
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "US-DE-STATEWIDE-New%20Castle~2603420174",
+        "US-DE-STATEWIDE-New%20Castle~2603420175",
+        "US-DE-STATEWIDE-New%20Castle~2603420176",
+        "US-DE-STATEWIDE-New%20Castle~2603420177",
+        "US-DE-STATEWIDE-New%20Castle~2603420193",
+        "US-DE-STATEWIDE-New%20Castle~2603420194",
+        "US-DE-STATEWIDE-New%20Castle~2603420200",
+        "US-DE-STATEWIDE-New%20Castle~2603420201",
+        "US-DE-STATEWIDE-New%20Castle~2603420229"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -75.563,
+        39.745,
+        -75.562,
+        39.746
+      ],
+      "complete": true,
+      "featureCount": 45,
+      "ids": [
+        "US-DE-STATEWIDE-New%20Castle~2603410477",
+        "US-DE-STATEWIDE-New%20Castle~2603410509",
+        "US-DE-STATEWIDE-New%20Castle~2603410510",
+        "US-DE-STATEWIDE-New%20Castle~2603420449",
+        "US-DE-STATEWIDE-New%20Castle~2603420009",
+        "US-DE-STATEWIDE-New%20Castle~2603420010",
+        "US-DE-STATEWIDE-New%20Castle~2603420011",
+        "US-DE-STATEWIDE-New%20Castle~2603420012",
+        "US-DE-STATEWIDE-New%20Castle~2603420018",
+        "US-DE-STATEWIDE-New%20Castle~2603420019",
+        "US-DE-STATEWIDE-New%20Castle~2603420020",
+        "US-DE-STATEWIDE-New%20Castle~2603420021",
+        "US-DE-STATEWIDE-New%20Castle~2603420022",
+        "US-DE-STATEWIDE-New%20Castle~2603420023",
+        "US-DE-STATEWIDE-New%20Castle~2603420024",
+        "US-DE-STATEWIDE-New%20Castle~2603420039",
+        "US-DE-STATEWIDE-New%20Castle~2603420040",
+        "US-DE-STATEWIDE-New%20Castle~2603420041",
+        "US-DE-STATEWIDE-New%20Castle~2603420042",
+        "US-DE-STATEWIDE-New%20Castle~2603420043",
+        "US-DE-STATEWIDE-New%20Castle~2603420044",
+        "US-DE-STATEWIDE-New%20Castle~2603420048",
+        "US-DE-STATEWIDE-New%20Castle~2603420052",
+        "US-DE-STATEWIDE-New%20Castle~2603420053",
+        "US-DE-STATEWIDE-New%20Castle~2603420054",
+        "US-DE-STATEWIDE-New%20Castle~2603420055",
+        "US-DE-STATEWIDE-New%20Castle~2603420056",
+        "US-DE-STATEWIDE-New%20Castle~2603420057",
+        "US-DE-STATEWIDE-New%20Castle~2603420058",
+        "US-DE-STATEWIDE-New%20Castle~2603420059",
+        "US-DE-STATEWIDE-New%20Castle~2603420060",
+        "US-DE-STATEWIDE-New%20Castle~2603420061",
+        "US-DE-STATEWIDE-New%20Castle~2603420062",
+        "US-DE-STATEWIDE-New%20Castle~2603420063",
+        "US-DE-STATEWIDE-New%20Castle~2603420066",
+        "US-DE-STATEWIDE-New%20Castle~2603420075",
+        "US-DE-STATEWIDE-New%20Castle~2603420076",
+        "US-DE-STATEWIDE-New%20Castle~2603420077",
+        "US-DE-STATEWIDE-New%20Castle~2603420078",
+        "US-DE-STATEWIDE-New%20Castle~2603420079",
+        "US-DE-STATEWIDE-New%20Castle~2603420080",
+        "US-DE-STATEWIDE-New%20Castle~2603420081",
+        "US-DE-STATEWIDE-New%20Castle~2603420109",
+        "US-DE-STATEWIDE-New%20Castle~2603420110",
+        "US-DE-STATEWIDE-New%20Castle~2603420111"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -75.562,
+        39.745,
+        -75.561,
+        39.746
+      ],
+      "complete": true,
+      "featureCount": 50,
+      "ids": [
+        "US-DE-STATEWIDE-New%20Castle~2602740223",
+        "US-DE-STATEWIDE-New%20Castle~2602740224",
+        "US-DE-STATEWIDE-New%20Castle~2603420152",
+        "US-DE-STATEWIDE-New%20Castle~2603420153",
+        "US-DE-STATEWIDE-New%20Castle~2603420154",
+        "US-DE-STATEWIDE-New%20Castle~2603420155",
+        "US-DE-STATEWIDE-New%20Castle~2603420156",
+        "US-DE-STATEWIDE-New%20Castle~2603420157",
+        "US-DE-STATEWIDE-New%20Castle~2603420177",
+        "US-DE-STATEWIDE-New%20Castle~2603420178",
+        "US-DE-STATEWIDE-New%20Castle~2603420179",
+        "US-DE-STATEWIDE-New%20Castle~2603420180",
+        "US-DE-STATEWIDE-New%20Castle~2603420181",
+        "US-DE-STATEWIDE-New%20Castle~2603420182",
+        "US-DE-STATEWIDE-New%20Castle~2603420183",
+        "US-DE-STATEWIDE-New%20Castle~2603420184",
+        "US-DE-STATEWIDE-New%20Castle~2603420185",
+        "US-DE-STATEWIDE-New%20Castle~2603420186",
+        "US-DE-STATEWIDE-New%20Castle~2603420187",
+        "US-DE-STATEWIDE-New%20Castle~2603420022",
+        "US-DE-STATEWIDE-New%20Castle~2603420023",
+        "US-DE-STATEWIDE-New%20Castle~2603420024",
+        "US-DE-STATEWIDE-New%20Castle~2603420025",
+        "US-DE-STATEWIDE-New%20Castle~2603420026",
+        "US-DE-STATEWIDE-New%20Castle~2603420027",
+        "US-DE-STATEWIDE-New%20Castle~2603420028",
+        "US-DE-STATEWIDE-New%20Castle~2603420029",
+        "US-DE-STATEWIDE-New%20Castle~2603420030",
+        "US-DE-STATEWIDE-New%20Castle~2603420031",
+        "US-DE-STATEWIDE-New%20Castle~2603420032",
+        "US-DE-STATEWIDE-New%20Castle~2603420033",
+        "US-DE-STATEWIDE-New%20Castle~2603420034",
+        "US-DE-STATEWIDE-New%20Castle~2603420035",
+        "US-DE-STATEWIDE-New%20Castle~2603420061",
+        "US-DE-STATEWIDE-New%20Castle~2603420062",
+        "US-DE-STATEWIDE-New%20Castle~2603420063",
+        "US-DE-STATEWIDE-New%20Castle~2603420064",
+        "US-DE-STATEWIDE-New%20Castle~2603420065",
+        "US-DE-STATEWIDE-New%20Castle~2603420066",
+        "US-DE-STATEWIDE-New%20Castle~2603420067",
+        "US-DE-STATEWIDE-New%20Castle~2603420068",
+        "US-DE-STATEWIDE-New%20Castle~2603420069",
+        "US-DE-STATEWIDE-New%20Castle~2603420070",
+        "US-DE-STATEWIDE-New%20Castle~2603420071",
+        "US-DE-STATEWIDE-New%20Castle~2603420072",
+        "US-DE-STATEWIDE-New%20Castle~2603420073",
+        "US-DE-STATEWIDE-New%20Castle~2603420074",
+        "US-DE-STATEWIDE-New%20Castle~2603420075",
+        "US-DE-STATEWIDE-New%20Castle~2603420076",
+        "US-DE-STATEWIDE-New%20Castle~2603420077"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -75.561,
+        39.745,
+        -75.56,
+        39.746
+      ],
+      "complete": true,
+      "featureCount": 42,
+      "ids": [
+        "US-DE-STATEWIDE-New%20Castle~2603420141",
+        "US-DE-STATEWIDE-New%20Castle~2603420152",
+        "US-DE-STATEWIDE-New%20Castle~2603420154",
+        "US-DE-STATEWIDE-New%20Castle~2603420155",
+        "US-DE-STATEWIDE-New%20Castle~2603420156",
+        "US-DE-STATEWIDE-New%20Castle~2603420157",
+        "US-DE-STATEWIDE-New%20Castle~2603420158",
+        "US-DE-STATEWIDE-New%20Castle~2603420159",
+        "US-DE-STATEWIDE-New%20Castle~2603420160",
+        "US-DE-STATEWIDE-New%20Castle~2603420161",
+        "US-DE-STATEWIDE-New%20Castle~2603420162",
+        "US-DE-STATEWIDE-New%20Castle~2603420163",
+        "US-DE-STATEWIDE-New%20Castle~2603420164",
+        "US-DE-STATEWIDE-New%20Castle~2603420165",
+        "US-DE-STATEWIDE-New%20Castle~2603420166",
+        "US-DE-STATEWIDE-New%20Castle~2603420167",
+        "US-DE-STATEWIDE-New%20Castle~2603420174",
+        "US-DE-STATEWIDE-New%20Castle~2603420175",
+        "US-DE-STATEWIDE-New%20Castle~2603420176",
+        "US-DE-STATEWIDE-New%20Castle~2603420177",
+        "US-DE-STATEWIDE-New%20Castle~2603420178",
+        "US-DE-STATEWIDE-New%20Castle~2603420179",
+        "US-DE-STATEWIDE-New%20Castle~2603420180",
+        "US-DE-STATEWIDE-New%20Castle~2603420200",
+        "US-DE-STATEWIDE-New%20Castle~2603420450",
+        "US-DE-STATEWIDE-New%20Castle~2603420451",
+        "US-DE-STATEWIDE-New%20Castle~2603420452",
+        "US-DE-STATEWIDE-New%20Castle~2603420453",
+        "US-DE-STATEWIDE-New%20Castle~2603420454",
+        "US-DE-STATEWIDE-New%20Castle~2603420455",
+        "US-DE-STATEWIDE-New%20Castle~2603420456",
+        "US-DE-STATEWIDE-New%20Castle~2603420457",
+        "US-DE-STATEWIDE-New%20Castle~2603420458",
+        "US-DE-STATEWIDE-New%20Castle~2603420459",
+        "US-DE-STATEWIDE-New%20Castle~2603420460",
+        "US-DE-STATEWIDE-New%20Castle~2603420461",
+        "US-DE-STATEWIDE-New%20Castle~2603420462",
+        "US-DE-STATEWIDE-New%20Castle~2603420463",
+        "US-DE-STATEWIDE-New%20Castle~2603420464",
+        "US-DE-STATEWIDE-New%20Castle~2603420465",
+        "US-DE-STATEWIDE-New%20Castle~2603420466",
+        "US-DE-STATEWIDE-New%20Castle~2603420467"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -75.563,
+        39.746,
+        -75.562,
+        39.747
+      ],
+      "complete": true,
+      "featureCount": 66,
+      "ids": [
+        "US-DE-STATEWIDE-New%20Castle~2602740075",
+        "US-DE-STATEWIDE-New%20Castle~2602740076",
+        "US-DE-STATEWIDE-New%20Castle~2602740077",
+        "US-DE-STATEWIDE-New%20Castle~2602740078",
+        "US-DE-STATEWIDE-New%20Castle~2602740079",
+        "US-DE-STATEWIDE-New%20Castle~2602740080",
+        "US-DE-STATEWIDE-New%20Castle~2602740081",
+        "US-DE-STATEWIDE-New%20Castle~2602740082",
+        "US-DE-STATEWIDE-New%20Castle~2602740083",
+        "US-DE-STATEWIDE-New%20Castle~2602740084",
+        "US-DE-STATEWIDE-New%20Castle~2602740085",
+        "US-DE-STATEWIDE-New%20Castle~2602740093",
+        "US-DE-STATEWIDE-New%20Castle~2602740094",
+        "US-DE-STATEWIDE-New%20Castle~2602740095",
+        "US-DE-STATEWIDE-New%20Castle~2602740096",
+        "US-DE-STATEWIDE-New%20Castle~2602740097",
+        "US-DE-STATEWIDE-New%20Castle~2602740098",
+        "US-DE-STATEWIDE-New%20Castle~2602740099",
+        "US-DE-STATEWIDE-New%20Castle~2602740100",
+        "US-DE-STATEWIDE-New%20Castle~2602740101",
+        "US-DE-STATEWIDE-New%20Castle~2602740102",
+        "US-DE-STATEWIDE-New%20Castle~2602740104",
+        "US-DE-STATEWIDE-New%20Castle~2602740106",
+        "US-DE-STATEWIDE-New%20Castle~2602740107",
+        "US-DE-STATEWIDE-New%20Castle~2602740108",
+        "US-DE-STATEWIDE-New%20Castle~2602740109",
+        "US-DE-STATEWIDE-New%20Castle~2602740232",
+        "US-DE-STATEWIDE-New%20Castle~2602740233",
+        "US-DE-STATEWIDE-New%20Castle~2602740234",
+        "US-DE-STATEWIDE-New%20Castle~2602730469",
+        "US-DE-STATEWIDE-New%20Castle~2602730470",
+        "US-DE-STATEWIDE-New%20Castle~2602730478",
+        "US-DE-STATEWIDE-New%20Castle~2602730479",
+        "US-DE-STATEWIDE-New%20Castle~2603410477",
+        "US-DE-STATEWIDE-New%20Castle~2603420449",
+        "US-DE-STATEWIDE-New%20Castle~2603420001",
+        "US-DE-STATEWIDE-New%20Castle~2603420002",
+        "US-DE-STATEWIDE-New%20Castle~2603420003",
+        "US-DE-STATEWIDE-New%20Castle~2603420004",
+        "US-DE-STATEWIDE-New%20Castle~2603420005",
+        "US-DE-STATEWIDE-New%20Castle~2603420006",
+        "US-DE-STATEWIDE-New%20Castle~2603420007",
+        "US-DE-STATEWIDE-New%20Castle~2603420008",
+        "US-DE-STATEWIDE-New%20Castle~2603420012",
+        "US-DE-STATEWIDE-New%20Castle~2603420013",
+        "US-DE-STATEWIDE-New%20Castle~2603420014",
+        "US-DE-STATEWIDE-New%20Castle~2603420015",
+        "US-DE-STATEWIDE-New%20Castle~2603420016",
+        "US-DE-STATEWIDE-New%20Castle~2603420017",
+        "US-DE-STATEWIDE-New%20Castle~2603420018",
+        "US-DE-STATEWIDE-New%20Castle~2603420019",
+        "US-DE-STATEWIDE-New%20Castle~2603420020",
+        "US-DE-STATEWIDE-New%20Castle~2603420022",
+        "US-DE-STATEWIDE-New%20Castle~2602740417",
+        "US-DE-STATEWIDE-New%20Castle~2602730502",
+        "US-DE-STATEWIDE-New%20Castle~2602730503",
+        "US-DE-STATEWIDE-New%20Castle~2602740419",
+        "US-DE-STATEWIDE-New%20Castle~2602740420",
+        "US-DE-STATEWIDE-New%20Castle~2602740421",
+        "US-DE-STATEWIDE-New%20Castle~2602740422",
+        "US-DE-STATEWIDE-New%20Castle~2602740423",
+        "US-DE-STATEWIDE-New%20Castle~2602740424",
+        "US-DE-STATEWIDE-New%20Castle~2602740425",
+        "US-DE-STATEWIDE-New%20Castle~2602740426",
+        "US-DE-STATEWIDE-New%20Castle~2602740427",
+        "US-DE-STATEWIDE-New%20Castle~2602740428"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -75.562,
+        39.746,
+        -75.561,
+        39.747
+      ],
+      "complete": true,
+      "featureCount": 63,
+      "ids": [
+        "US-DE-STATEWIDE-New%20Castle~2602740082",
+        "US-DE-STATEWIDE-New%20Castle~2602740083",
+        "US-DE-STATEWIDE-New%20Castle~2602740084",
+        "US-DE-STATEWIDE-New%20Castle~2602740085",
+        "US-DE-STATEWIDE-New%20Castle~2602740086",
+        "US-DE-STATEWIDE-New%20Castle~2602740188",
+        "US-DE-STATEWIDE-New%20Castle~2602740189",
+        "US-DE-STATEWIDE-New%20Castle~2602740190",
+        "US-DE-STATEWIDE-New%20Castle~2602740191",
+        "US-DE-STATEWIDE-New%20Castle~2602740192",
+        "US-DE-STATEWIDE-New%20Castle~2602740193",
+        "US-DE-STATEWIDE-New%20Castle~2602740194",
+        "US-DE-STATEWIDE-New%20Castle~2602740195",
+        "US-DE-STATEWIDE-New%20Castle~2602740196",
+        "US-DE-STATEWIDE-New%20Castle~2602740197",
+        "US-DE-STATEWIDE-New%20Castle~2602740198",
+        "US-DE-STATEWIDE-New%20Castle~2602740199",
+        "US-DE-STATEWIDE-New%20Castle~2602740200",
+        "US-DE-STATEWIDE-New%20Castle~2602740201",
+        "US-DE-STATEWIDE-New%20Castle~2602740202",
+        "US-DE-STATEWIDE-New%20Castle~2602740203",
+        "US-DE-STATEWIDE-New%20Castle~2602740204",
+        "US-DE-STATEWIDE-New%20Castle~2602740205",
+        "US-DE-STATEWIDE-New%20Castle~2602740206",
+        "US-DE-STATEWIDE-New%20Castle~2602740207",
+        "US-DE-STATEWIDE-New%20Castle~2602740208",
+        "US-DE-STATEWIDE-New%20Castle~2602740209",
+        "US-DE-STATEWIDE-New%20Castle~2602740210",
+        "US-DE-STATEWIDE-New%20Castle~2602740211",
+        "US-DE-STATEWIDE-New%20Castle~2602740212",
+        "US-DE-STATEWIDE-New%20Castle~2602740213",
+        "US-DE-STATEWIDE-New%20Castle~2602740214",
+        "US-DE-STATEWIDE-New%20Castle~2602740215",
+        "US-DE-STATEWIDE-New%20Castle~2602740218",
+        "US-DE-STATEWIDE-New%20Castle~2602740219",
+        "US-DE-STATEWIDE-New%20Castle~2602740220",
+        "US-DE-STATEWIDE-New%20Castle~2602740221",
+        "US-DE-STATEWIDE-New%20Castle~2602740222",
+        "US-DE-STATEWIDE-New%20Castle~2602740223",
+        "US-DE-STATEWIDE-New%20Castle~2602740224",
+        "US-DE-STATEWIDE-New%20Castle~2602740225",
+        "US-DE-STATEWIDE-New%20Castle~2602740226",
+        "US-DE-STATEWIDE-New%20Castle~2602740227",
+        "US-DE-STATEWIDE-New%20Castle~2602740228",
+        "US-DE-STATEWIDE-New%20Castle~2602740229",
+        "US-DE-STATEWIDE-New%20Castle~2602740230",
+        "US-DE-STATEWIDE-New%20Castle~2602740231",
+        "US-DE-STATEWIDE-New%20Castle~2602740232",
+        "US-DE-STATEWIDE-New%20Castle~2602740233",
+        "US-DE-STATEWIDE-New%20Castle~2602740234",
+        "US-DE-STATEWIDE-New%20Castle~2603420152",
+        "US-DE-STATEWIDE-New%20Castle~2603420013",
+        "US-DE-STATEWIDE-New%20Castle~2603420014",
+        "US-DE-STATEWIDE-New%20Castle~2603420015",
+        "US-DE-STATEWIDE-New%20Castle~2603420016",
+        "US-DE-STATEWIDE-New%20Castle~2603420017",
+        "US-DE-STATEWIDE-New%20Castle~2603420022",
+        "US-DE-STATEWIDE-New%20Castle~2603420023",
+        "US-DE-STATEWIDE-New%20Castle~2603420024",
+        "US-DE-STATEWIDE-New%20Castle~2603420025",
+        "US-DE-STATEWIDE-New%20Castle~2603420026",
+        "US-DE-STATEWIDE-New%20Castle~2603420027",
+        "US-DE-STATEWIDE-New%20Castle~2603420035"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -75.561,
+        39.746,
+        -75.56,
+        39.747
+      ],
+      "complete": true,
+      "featureCount": 47,
+      "ids": [
+        "US-DE-STATEWIDE-New%20Castle~2602740207",
+        "US-DE-STATEWIDE-New%20Castle~2602740208",
+        "US-DE-STATEWIDE-New%20Castle~2602740209",
+        "US-DE-STATEWIDE-New%20Castle~2602740210",
+        "US-DE-STATEWIDE-New%20Castle~2602740211",
+        "US-DE-STATEWIDE-New%20Castle~2602740212",
+        "US-DE-STATEWIDE-New%20Castle~2602740213",
+        "US-DE-STATEWIDE-New%20Castle~2602740214",
+        "US-DE-STATEWIDE-New%20Castle~2602740215",
+        "US-DE-STATEWIDE-New%20Castle~2602740216",
+        "US-DE-STATEWIDE-New%20Castle~2602740217",
+        "US-DE-STATEWIDE-New%20Castle~2602740218",
+        "US-DE-STATEWIDE-New%20Castle~2602740219",
+        "US-DE-STATEWIDE-New%20Castle~2602740311",
+        "US-DE-STATEWIDE-New%20Castle~2602740312",
+        "US-DE-STATEWIDE-New%20Castle~2602740313",
+        "US-DE-STATEWIDE-New%20Castle~2602740314",
+        "US-DE-STATEWIDE-New%20Castle~2602740315",
+        "US-DE-STATEWIDE-New%20Castle~2602740316",
+        "US-DE-STATEWIDE-New%20Castle~2602740359",
+        "US-DE-STATEWIDE-New%20Castle~2602740360",
+        "US-DE-STATEWIDE-New%20Castle~2602740361",
+        "US-DE-STATEWIDE-New%20Castle~2602740362",
+        "US-DE-STATEWIDE-New%20Castle~2602740363",
+        "US-DE-STATEWIDE-New%20Castle~2602740364",
+        "US-DE-STATEWIDE-New%20Castle~2602740365",
+        "US-DE-STATEWIDE-New%20Castle~2602740366",
+        "US-DE-STATEWIDE-New%20Castle~2602740367",
+        "US-DE-STATEWIDE-New%20Castle~2602740368",
+        "US-DE-STATEWIDE-New%20Castle~2602740369",
+        "US-DE-STATEWIDE-New%20Castle~2602740370",
+        "US-DE-STATEWIDE-New%20Castle~2602740371",
+        "US-DE-STATEWIDE-New%20Castle~2602740372",
+        "US-DE-STATEWIDE-New%20Castle~2603420134",
+        "US-DE-STATEWIDE-New%20Castle~2603420135",
+        "US-DE-STATEWIDE-New%20Castle~2603420136",
+        "US-DE-STATEWIDE-New%20Castle~2603420137",
+        "US-DE-STATEWIDE-New%20Castle~2603420138",
+        "US-DE-STATEWIDE-New%20Castle~2603420139",
+        "US-DE-STATEWIDE-New%20Castle~2603420140",
+        "US-DE-STATEWIDE-New%20Castle~2603420141",
+        "US-DE-STATEWIDE-New%20Castle~2603420142",
+        "US-DE-STATEWIDE-New%20Castle~2603420143",
+        "US-DE-STATEWIDE-New%20Castle~2603420144",
+        "US-DE-STATEWIDE-New%20Castle~2603420145",
+        "US-DE-STATEWIDE-New%20Castle~2603420146",
+        "US-DE-STATEWIDE-New%20Castle~2603420152"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -75.562,
+        39.743,
+        -75.561,
+        39.744
+      ],
+      "complete": true,
+      "featureCount": 33,
+      "ids": [
+        "US-DE-STATEWIDE-New%20Castle~2603440037",
+        "US-DE-STATEWIDE-New%20Castle~2603440038",
+        "US-DE-STATEWIDE-New%20Castle~2603440040",
+        "US-DE-STATEWIDE-New%20Castle~2603440042",
+        "US-DE-STATEWIDE-New%20Castle~2603440043",
+        "US-DE-STATEWIDE-New%20Castle~2603440044",
+        "US-DE-STATEWIDE-New%20Castle~2603440045",
+        "US-DE-STATEWIDE-New%20Castle~2603440104",
+        "US-DE-STATEWIDE-New%20Castle~2603440105",
+        "US-DE-STATEWIDE-New%20Castle~2603420201",
+        "US-DE-STATEWIDE-New%20Castle~2603420202",
+        "US-DE-STATEWIDE-New%20Castle~2603420203",
+        "US-DE-STATEWIDE-New%20Castle~2603420204",
+        "US-DE-STATEWIDE-New%20Castle~2603420215",
+        "US-DE-STATEWIDE-New%20Castle~2603420216",
+        "US-DE-STATEWIDE-New%20Castle~2603420217",
+        "US-DE-STATEWIDE-New%20Castle~2603420218",
+        "US-DE-STATEWIDE-New%20Castle~2603420219",
+        "US-DE-STATEWIDE-New%20Castle~2603420220",
+        "US-DE-STATEWIDE-New%20Castle~2603420221",
+        "US-DE-STATEWIDE-New%20Castle~2603420222",
+        "US-DE-STATEWIDE-New%20Castle~2603420223",
+        "US-DE-STATEWIDE-New%20Castle~2603420224",
+        "US-DE-STATEWIDE-New%20Castle~2603420225",
+        "US-DE-STATEWIDE-New%20Castle~2603420226",
+        "US-DE-STATEWIDE-New%20Castle~2603420229",
+        "US-DE-STATEWIDE-New%20Castle~2603440424",
+        "US-DE-STATEWIDE-New%20Castle~2603440021",
+        "US-DE-STATEWIDE-New%20Castle~2603440022",
+        "US-DE-STATEWIDE-New%20Castle~2603440023",
+        "US-DE-STATEWIDE-New%20Castle~2603440024",
+        "US-DE-STATEWIDE-New%20Castle~2603440025",
+        "US-DE-STATEWIDE-New%20Castle~2603440036"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -75.562,
+        39.747,
+        -75.561,
+        39.748
+      ],
+      "complete": true,
+      "featureCount": 58,
+      "ids": [
+        "US-DE-STATEWIDE-New%20Castle~2602740039",
+        "US-DE-STATEWIDE-New%20Castle~2602740040",
+        "US-DE-STATEWIDE-New%20Castle~2602740041",
+        "US-DE-STATEWIDE-New%20Castle~2602740042",
+        "US-DE-STATEWIDE-New%20Castle~2602740043",
+        "US-DE-STATEWIDE-New%20Castle~2602740044",
+        "US-DE-STATEWIDE-New%20Castle~2602740045",
+        "US-DE-STATEWIDE-New%20Castle~2602740046",
+        "US-DE-STATEWIDE-New%20Castle~2602740047",
+        "US-DE-STATEWIDE-New%20Castle~2602740048",
+        "US-DE-STATEWIDE-New%20Castle~2602740049",
+        "US-DE-STATEWIDE-New%20Castle~2602740050",
+        "US-DE-STATEWIDE-New%20Castle~2602740051",
+        "US-DE-STATEWIDE-New%20Castle~2602740052",
+        "US-DE-STATEWIDE-New%20Castle~2602740053",
+        "US-DE-STATEWIDE-New%20Castle~2602740054",
+        "US-DE-STATEWIDE-New%20Castle~2602740055",
+        "US-DE-STATEWIDE-New%20Castle~2602740056",
+        "US-DE-STATEWIDE-New%20Castle~2602740057",
+        "US-DE-STATEWIDE-New%20Castle~2602740058",
+        "US-DE-STATEWIDE-New%20Castle~2602740085",
+        "US-DE-STATEWIDE-New%20Castle~2602740086",
+        "US-DE-STATEWIDE-New%20Castle~2602740087",
+        "US-DE-STATEWIDE-New%20Castle~2602740088",
+        "US-DE-STATEWIDE-New%20Castle~2602740089",
+        "US-DE-STATEWIDE-New%20Castle~2602740090",
+        "US-DE-STATEWIDE-New%20Castle~2602740091",
+        "US-DE-STATEWIDE-New%20Castle~2602740092",
+        "US-DE-STATEWIDE-New%20Castle~2602740147",
+        "US-DE-STATEWIDE-New%20Castle~2602740148",
+        "US-DE-STATEWIDE-New%20Castle~2602740149",
+        "US-DE-STATEWIDE-New%20Castle~2602740150",
+        "US-DE-STATEWIDE-New%20Castle~2602740151",
+        "US-DE-STATEWIDE-New%20Castle~2602740152",
+        "US-DE-STATEWIDE-New%20Castle~2602740153",
+        "US-DE-STATEWIDE-New%20Castle~2602740154",
+        "US-DE-STATEWIDE-New%20Castle~2602740155",
+        "US-DE-STATEWIDE-New%20Castle~2602740156",
+        "US-DE-STATEWIDE-New%20Castle~2602740157",
+        "US-DE-STATEWIDE-New%20Castle~2602740158",
+        "US-DE-STATEWIDE-New%20Castle~2602740159",
+        "US-DE-STATEWIDE-New%20Castle~2602740160",
+        "US-DE-STATEWIDE-New%20Castle~2602740161",
+        "US-DE-STATEWIDE-New%20Castle~2602740185",
+        "US-DE-STATEWIDE-New%20Castle~2602740186",
+        "US-DE-STATEWIDE-New%20Castle~2602740187",
+        "US-DE-STATEWIDE-New%20Castle~2602740188",
+        "US-DE-STATEWIDE-New%20Castle~2602740189",
+        "US-DE-STATEWIDE-New%20Castle~2602740190",
+        "US-DE-STATEWIDE-New%20Castle~2602740191",
+        "US-DE-STATEWIDE-New%20Castle~2602740192",
+        "US-DE-STATEWIDE-New%20Castle~2602740219",
+        "US-DE-STATEWIDE-New%20Castle~2602740220",
+        "US-DE-STATEWIDE-New%20Castle~2602740221",
+        "US-DE-STATEWIDE-New%20Castle~2602740222",
+        "US-DE-STATEWIDE-New%20Castle~2602740032",
+        "US-DE-STATEWIDE-New%20Castle~2602740034",
+        "US-DE-STATEWIDE-New%20Castle~2602740038"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -75.564,
+        39.745,
+        -75.563,
+        39.746
+      ],
+      "complete": true,
+      "featureCount": 60,
+      "ids": [
+        "US-DE-STATEWIDE-New%20Castle~2603410261",
+        "US-DE-STATEWIDE-New%20Castle~2603410262",
+        "US-DE-STATEWIDE-New%20Castle~2603410263",
+        "US-DE-STATEWIDE-New%20Castle~2603410477",
+        "US-DE-STATEWIDE-New%20Castle~2603410478",
+        "US-DE-STATEWIDE-New%20Castle~2603410479",
+        "US-DE-STATEWIDE-New%20Castle~2603410480",
+        "US-DE-STATEWIDE-New%20Castle~2603410481",
+        "US-DE-STATEWIDE-New%20Castle~2603410482",
+        "US-DE-STATEWIDE-New%20Castle~2603410483",
+        "US-DE-STATEWIDE-New%20Castle~2603410488",
+        "US-DE-STATEWIDE-New%20Castle~2603410489",
+        "US-DE-STATEWIDE-New%20Castle~2603410490",
+        "US-DE-STATEWIDE-New%20Castle~2603410491",
+        "US-DE-STATEWIDE-New%20Castle~2603410492",
+        "US-DE-STATEWIDE-New%20Castle~2603410493",
+        "US-DE-STATEWIDE-New%20Castle~2603410494",
+        "US-DE-STATEWIDE-New%20Castle~2603410495",
+        "US-DE-STATEWIDE-New%20Castle~2603410496",
+        "US-DE-STATEWIDE-New%20Castle~2603410497",
+        "US-DE-STATEWIDE-New%20Castle~2603410498",
+        "US-DE-STATEWIDE-New%20Castle~2603410499",
+        "US-DE-STATEWIDE-New%20Castle~2603410500",
+        "US-DE-STATEWIDE-New%20Castle~2603410501",
+        "US-DE-STATEWIDE-New%20Castle~2603410502",
+        "US-DE-STATEWIDE-New%20Castle~2603410503",
+        "US-DE-STATEWIDE-New%20Castle~2603410504",
+        "US-DE-STATEWIDE-New%20Castle~2603410505",
+        "US-DE-STATEWIDE-New%20Castle~2603410506",
+        "US-DE-STATEWIDE-New%20Castle~2603410507",
+        "US-DE-STATEWIDE-New%20Castle~2603410508",
+        "US-DE-STATEWIDE-New%20Castle~2603410509",
+        "US-DE-STATEWIDE-New%20Castle~2603410510",
+        "US-DE-STATEWIDE-New%20Castle~2603410511",
+        "US-DE-STATEWIDE-New%20Castle~2603410512",
+        "US-DE-STATEWIDE-New%20Castle~2603410513",
+        "US-DE-STATEWIDE-New%20Castle~2603410514",
+        "US-DE-STATEWIDE-New%20Castle~2603410515",
+        "US-DE-STATEWIDE-New%20Castle~2603410516",
+        "US-DE-STATEWIDE-New%20Castle~2603410517",
+        "US-DE-STATEWIDE-New%20Castle~2603410518",
+        "US-DE-STATEWIDE-New%20Castle~2603410519",
+        "US-DE-STATEWIDE-New%20Castle~2603410520",
+        "US-DE-STATEWIDE-New%20Castle~2603410521",
+        "US-DE-STATEWIDE-New%20Castle~2603410522",
+        "US-DE-STATEWIDE-New%20Castle~2603410523",
+        "US-DE-STATEWIDE-New%20Castle~2603410524",
+        "US-DE-STATEWIDE-New%20Castle~2603410525",
+        "US-DE-STATEWIDE-New%20Castle~2603410533",
+        "US-DE-STATEWIDE-New%20Castle~2603410534",
+        "US-DE-STATEWIDE-New%20Castle~2603410535",
+        "US-DE-STATEWIDE-New%20Castle~2603410536",
+        "US-DE-STATEWIDE-New%20Castle~2603410537",
+        "US-DE-STATEWIDE-New%20Castle~2603410538",
+        "US-DE-STATEWIDE-New%20Castle~2603410539",
+        "US-DE-STATEWIDE-New%20Castle~2603410540",
+        "US-DE-STATEWIDE-New%20Castle~2603420009",
+        "US-DE-STATEWIDE-New%20Castle~2603420010",
+        "US-DE-STATEWIDE-New%20Castle~2603420011",
+        "US-DE-STATEWIDE-New%20Castle~2603420012"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -75.56,
+        39.745,
+        -75.559,
+        39.746
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "US-DE-STATEWIDE-New%20Castle~2603420141",
+        "US-DE-STATEWIDE-New%20Castle~2603420142",
+        "US-DE-STATEWIDE-New%20Castle~2603420143",
+        "US-DE-STATEWIDE-New%20Castle~2603420144",
+        "US-DE-STATEWIDE-New%20Castle~2603420450",
+        "US-DE-STATEWIDE-New%20Castle~2603420451",
+        "US-DE-STATEWIDE-New%20Castle~2603420452",
+        "US-DE-STATEWIDE-New%20Castle~2603420453"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 125,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:01:56.606Z",
+      "queryHash": "fd46271e1b9ae0f2178e4af828a8e4c347a22e9e6fba128d17d32dbde756b5c6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 981
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:01:57.606Z",
+      "queryHash": "fd46271e1b9ae0f2178e4af828a8e4c347a22e9e6fba128d17d32dbde756b5c6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 282
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:01:57.892Z",
+      "queryHash": "29d2e36f883379063da6d3554c908eed743a11f3ca8955421d5bce5b9e8283f8",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 215
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:01:58.112Z",
+      "queryHash": "fd46271e1b9ae0f2178e4af828a8e4c347a22e9e6fba128d17d32dbde756b5c6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 832
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:01:58.946Z",
+      "queryHash": "fd46271e1b9ae0f2178e4af828a8e4c347a22e9e6fba128d17d32dbde756b5c6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 315
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:01:59.265Z",
+      "queryHash": "29d2e36f883379063da6d3554c908eed743a11f3ca8955421d5bce5b9e8283f8",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 2747
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:02.017Z",
+      "queryHash": "0516d8f3be629a32b30caf532c7c1b576bd71d0ad67d75609b7f240469dc9db0",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1748
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:03.769Z",
+      "queryHash": "0516d8f3be629a32b30caf532c7c1b576bd71d0ad67d75609b7f240469dc9db0",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 360
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:04.134Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 197
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:04.338Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:04.527Z",
+      "queryHash": "d5d82e5c62f3b40caeb8b383df3d282cb1753ef4aad16ae80146648104f5ea85",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 60,
+      "httpStatus": 200,
+      "elapsedMs": 197
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:04.727Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:04.914Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 196
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:05.110Z",
+      "queryHash": "4d46f8a616c5798c1fd5b0c18045bb20657a8f425a47f86ffc12ada7a6995dbf",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 13,
+      "httpStatus": 200,
+      "elapsedMs": 207
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:05.323Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 246
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:05.571Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:05.762Z",
+      "queryHash": "6a225bdd81839e19e09c2edac1defec23c1188e8d577f9ca43e6b5d7f2f0d764",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 9,
+      "httpStatus": 200,
+      "elapsedMs": 239
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:06.003Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 207
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:06.212Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:06.395Z",
+      "queryHash": "484bb0259f2a31210580bc1516782b62b5fe193ae47e5241fb06aa7b847873c6",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 45,
+      "httpStatus": 200,
+      "elapsedMs": 243
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:06.640Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:06.826Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 193
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:07.020Z",
+      "queryHash": "c6aeaec3bf5b6b677a50ef72150908e0b6c11228822f26f63211ee7a71b33dbf",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 50,
+      "httpStatus": 200,
+      "elapsedMs": 202
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:07.226Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 184
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:07.411Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 193
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:07.605Z",
+      "queryHash": "3d570301897f46d9c68c101bf7eb162bc51107d9453b7ab9747cd9550db936c5",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 42,
+      "httpStatus": 200,
+      "elapsedMs": 205
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:07.812Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:07.993Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 172
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:08.166Z",
+      "queryHash": "e89b028668629c5c54d4f12b3c3ca0f764ff11c5360fe66cc5cdff1e24ae67bf",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 66,
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:08.367Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 195
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:08.563Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:08.746Z",
+      "queryHash": "ffd5d5abff3b693e3004b5a33c39dc194a6636c11e8e1f2a16806aa3f9d9c472",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 63,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:08.941Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:09.136Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:09.322Z",
+      "queryHash": "b3e5fe1094efea1ef2c39f2fb0e4a85b8d4f5fb40a248f4c20bff5b147537ae5",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 47,
+      "httpStatus": 200,
+      "elapsedMs": 205
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:09.591Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 213
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:09.866Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 301
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:10.171Z",
+      "queryHash": "10b63aefa8ab9296ef476df5848bb3dff5c2d10aba7bb6a25244ae7f5f464152",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 33,
+      "httpStatus": 200,
+      "elapsedMs": 198
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:10.373Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 205
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:10.580Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:10.775Z",
+      "queryHash": "e69bb9e7b66bf6c0b02db47f6db0fa4f5e5bf0d2e5692cf08de637f53ea2f9bf",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 58,
+      "httpStatus": 200,
+      "elapsedMs": 214
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:11.002Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 193
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:11.198Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:11.389Z",
+      "queryHash": "df518bccfcf4eaef9155228fdbf24fae830999148ec1d30e804266d71a946e24",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 60,
+      "httpStatus": 200,
+      "elapsedMs": 196
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:11.606Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:11.792Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:12.017Z",
+      "queryHash": "21093e2b9ab4c8b6ca0a1b864ac2ff2b82acc613b92639fca64fa5ca61df312f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 194
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:12.220Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 209
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:12.434Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 921
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:13.355Z",
+      "queryHash": "d5d82e5c62f3b40caeb8b383df3d282cb1753ef4aad16ae80146648104f5ea85",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 60,
+      "httpStatus": 200,
+      "elapsedMs": 192
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:13.567Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 199
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:13.772Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 219
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:13.993Z",
+      "queryHash": "4d46f8a616c5798c1fd5b0c18045bb20657a8f425a47f86ffc12ada7a6995dbf",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 13,
+      "httpStatus": 200,
+      "elapsedMs": 211
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:14.206Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 258
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:14.467Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 267
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:14.751Z",
+      "queryHash": "6a225bdd81839e19e09c2edac1defec23c1188e8d577f9ca43e6b5d7f2f0d764",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 9,
+      "httpStatus": 200,
+      "elapsedMs": 195
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:14.952Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 207
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:15.163Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 278
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:15.443Z",
+      "queryHash": "484bb0259f2a31210580bc1516782b62b5fe193ae47e5241fb06aa7b847873c6",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 45,
+      "httpStatus": 200,
+      "elapsedMs": 198
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:15.649Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 195
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:15.845Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 224
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:16.077Z",
+      "queryHash": "c6aeaec3bf5b6b677a50ef72150908e0b6c11228822f26f63211ee7a71b33dbf",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 50,
+      "httpStatus": 200,
+      "elapsedMs": 205
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:16.286Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 203
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:16.489Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 192
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:16.682Z",
+      "queryHash": "3d570301897f46d9c68c101bf7eb162bc51107d9453b7ab9747cd9550db936c5",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 42,
+      "httpStatus": 200,
+      "elapsedMs": 358
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:17.063Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 250
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:17.321Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 206
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:17.531Z",
+      "queryHash": "e89b028668629c5c54d4f12b3c3ca0f764ff11c5360fe66cc5cdff1e24ae67bf",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 66,
+      "httpStatus": 200,
+      "elapsedMs": 206
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:17.742Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 264
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:18.007Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 268
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:18.278Z",
+      "queryHash": "ffd5d5abff3b693e3004b5a33c39dc194a6636c11e8e1f2a16806aa3f9d9c472",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 63,
+      "httpStatus": 200,
+      "elapsedMs": 286
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:18.706Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 211
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:18.917Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 192
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:19.116Z",
+      "queryHash": "b3e5fe1094efea1ef2c39f2fb0e4a85b8d4f5fb40a248f4c20bff5b147537ae5",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 47,
+      "httpStatus": 200,
+      "elapsedMs": 195
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:19.319Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 305
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:19.626Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 212
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:19.840Z",
+      "queryHash": "10b63aefa8ab9296ef476df5848bb3dff5c2d10aba7bb6a25244ae7f5f464152",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 33,
+      "httpStatus": 200,
+      "elapsedMs": 203
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:20.051Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 192
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:20.244Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 203
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:20.448Z",
+      "queryHash": "e69bb9e7b66bf6c0b02db47f6db0fa4f5e5bf0d2e5692cf08de637f53ea2f9bf",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 58,
+      "httpStatus": 200,
+      "elapsedMs": 198
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:20.667Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 260
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:20.933Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 217
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:21.152Z",
+      "queryHash": "df518bccfcf4eaef9155228fdbf24fae830999148ec1d30e804266d71a946e24",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 60,
+      "httpStatus": 200,
+      "elapsedMs": 209
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:21.367Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 197
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:21.566Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 217
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:21.784Z",
+      "queryHash": "21093e2b9ab4c8b6ca0a1b864ac2ff2b82acc613b92639fca64fa5ca61df312f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 199
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:22.007Z",
+      "queryHash": "b80de23ba38d693b2da919558eafbae394f90810729cacb46e15e46b23db8ff1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 310
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:22.340Z",
+      "queryHash": "b80de23ba38d693b2da919558eafbae394f90810729cacb46e15e46b23db8ff1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 272
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:22.623Z",
+      "queryHash": "5fdfdf8ac67bd5cfebd6ab07e99bf3701bb54a2f6d67db6b1d96340cc1e3bef7",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 218
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:22.848Z",
+      "queryHash": "7b7509c100b73581d4cd7ecf08dc3db4b4c1b8eacc9da6fe55673e3e2381a0ec",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 262
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:23.111Z",
+      "queryHash": "7b7509c100b73581d4cd7ecf08dc3db4b4c1b8eacc9da6fe55673e3e2381a0ec",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 275
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:23.388Z",
+      "queryHash": "396ccd5a1d4ccad2a940955e8e26d372e1fc43fb620d8375fa166e25dc272ede",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 361
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:23.783Z",
+      "queryHash": "e4d337288068986d979e1e0fa26a0d43fa2145521f8fc811d62b1f31b23303fc",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 357
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:24.142Z",
+      "queryHash": "e4d337288068986d979e1e0fa26a0d43fa2145521f8fc811d62b1f31b23303fc",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 304
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:24.447Z",
+      "queryHash": "98aca5edd8c65e91289d4e7d8fe1fc8fd6d2c7b1609a5747eff1a6a0b1a936c2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 325
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:24.773Z",
+      "queryHash": "7bf6731334b05e5ad11c49c3c7b413bccdb067508c1331640e3cadce805c2415",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 458
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:25.232Z",
+      "queryHash": "7bf6731334b05e5ad11c49c3c7b413bccdb067508c1331640e3cadce805c2415",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 396
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:25.629Z",
+      "queryHash": "abfb276d5554208aa125e424622b4addf0c8a87e16fbd2a1b7ed381c75492183",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 230
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:25.861Z",
+      "queryHash": "4e7b0d71ba1ce44167a3389c559b1309b126dd2104e768fd55775a5d96185d5d",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 338
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:26.209Z",
+      "queryHash": "4e7b0d71ba1ce44167a3389c559b1309b126dd2104e768fd55775a5d96185d5d",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 297
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:26.509Z",
+      "queryHash": "84a57524964eedfb2e6ea8413419d8dbe6cbe1b3db11c2d090391a2217a0cbdd",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 475
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:26.999Z",
+      "queryHash": "fd46271e1b9ae0f2178e4af828a8e4c347a22e9e6fba128d17d32dbde756b5c6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 637
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:27.637Z",
+      "queryHash": "fd46271e1b9ae0f2178e4af828a8e4c347a22e9e6fba128d17d32dbde756b5c6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 603
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:28.244Z",
+      "queryHash": "29d2e36f883379063da6d3554c908eed743a11f3ca8955421d5bce5b9e8283f8",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 534
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:29.032Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 382
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:29.419Z",
+      "queryHash": "39eea4d659b220c05ad37d7d7f56a9a12f29d92eedaceb24234b49bdc98ec298",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 923
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:30.350Z",
+      "queryHash": "5205d4f5ad90bab8a820320e739720b932455b55589c0846b5c35ac1da087d51",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 6,
+      "httpStatus": 200,
+      "elapsedMs": 283
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:02:30.786Z",
+      "queryHash": "4556edcbbe3713d55d98fe352c9adcd05940dc3f593ce9bb03444c61019492ec",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 566
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:02:31.361Z",
+      "queryHash": "4556edcbbe3713d55d98fe352c9adcd05940dc3f593ce9bb03444c61019492ec",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 360
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:31.749Z",
+      "queryHash": "f0303c48e84a06a5f8345c12694b8e8ff2a156267f15abb41672dd32521d686e",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 80,
+      "httpStatus": 200,
+      "elapsedMs": 503
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:02:32.337Z",
+      "queryHash": "36375d194c482e77f3660b51f48c5eec17577a61135c32bf9cb5fcf75845eb6c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 561
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:02:32.901Z",
+      "queryHash": "36375d194c482e77f3660b51f48c5eec17577a61135c32bf9cb5fcf75845eb6c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 333
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:33.383Z",
+      "queryHash": "38ddfdbc69cc588aa5a199dd33fa61712ab4b14d909001faefc64cfeee72eb28",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 80,
+      "httpStatus": 200,
+      "elapsedMs": 240
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:02:33.737Z",
+      "queryHash": "a1c13bcc75991f4ea559a9b782630380c1d49f06a8e328aec2aa33dd0b56d7a4",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 321
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:02:34.059Z",
+      "queryHash": "a1c13bcc75991f4ea559a9b782630380c1d49f06a8e328aec2aa33dd0b56d7a4",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 321
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:34.389Z",
+      "queryHash": "28502ab822bb6b2cc7a43a2f9fac8113faa045ff7e056e7809d8b65447b73e93",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 80,
+      "httpStatus": 200,
+      "elapsedMs": 287
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:02:34.685Z",
+      "queryHash": "5a588a1cbe7651955ae80b4a05dcc314119b03041f5bc3898eba7c736102e5b2",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2394
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:02:37.176Z",
+      "queryHash": "5a588a1cbe7651955ae80b4a05dcc314119b03041f5bc3898eba7c736102e5b2",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1222
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:38.400Z",
+      "queryHash": "c25967a2be35cc52913ee3b8235ec23f93135f31f4f57dd2066f80537d02a85b",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 80,
+      "httpStatus": 200,
+      "elapsedMs": 328
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:02:38.814Z",
+      "queryHash": "3a7fe065cb8d614a6e6f5a996d3da7b30234cc09919bd5b12803ee2d99f12167",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 425
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:02:39.261Z",
+      "queryHash": "3a7fe065cb8d614a6e6f5a996d3da7b30234cc09919bd5b12803ee2d99f12167",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 454
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:39.716Z",
+      "queryHash": "6e0709016d19fb27e2d162f54094b40023bb7a319b3a0023e944a8b3a9c44711",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 80,
+      "httpStatus": 200,
+      "elapsedMs": 212
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:02:39.985Z",
+      "queryHash": "6dd458be0ec324665dd285eb96681e6e96a6455d1d7a519cc39ddb5873517a8f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 458
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:02:40.533Z",
+      "queryHash": "6dd458be0ec324665dd285eb96681e6e96a6455d1d7a519cc39ddb5873517a8f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 343
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "enterprise.firstmap.delaware.gov",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:40.877Z",
+      "queryHash": "fff2b9898cf207c20d8357b4e799ed42d4cf87aaf4be42fa76794adb373ba2bd",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 37,
+      "httpStatus": 200,
+      "elapsedMs": 217
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

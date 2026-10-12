@@ -1,0 +1,135 @@
+{
+  "cityCode": 10520,
+  "queueRank": 2900,
+  "name": "Xiangyin",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [28.6825214009469, 112.883890481222],
+  "population2025": 205654,
+  "population2025k": 205.654,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xiangyin China official cadastral parcel map GIS natural resources planning bureau real estate registration",
+        "result": "Official Xiangyin government pages were identified for the county Natural Resources Bureau, its Real Estate Registration Center, and an online natural-condition inquiry procedure. The procedure is for natural persons, uses the Xiangyi-ban app or Hunan online one-window platform, and requires an immovable-property certificate number; no anonymous parcel-vector viewer or ID-plus-geometry API was identified.",
+        "actualResultUrls": [
+          "https://www.xiangyin.gov.cn/31185/32018/32020/38655/38656/38663/index.htm",
+          "https://www.xiangyin.gov.cn/31951/67738/67741/content_2101679.html",
+          "https://portal.hunanbdc.cn/home"
+        ]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "湘阴县 自然资源局 不动产登记 地籍图 查询 官方 地图",
+        "result": "Chinese-language official results identified 湘阴县自然资源局 and 湘阴县不动产登记中心. The local procedure page describes authenticated/person-specific查询 of house immovable-property information; the bureau page states it manages unified natural-resource and immovable-property registration, cadastral investigation, survey, and the registration information platform. No public anonymous parcel geometry, native parcel ID field, schema, or CRS was exposed.",
+        "actualResultUrls": [
+          "https://www.xiangyin.gov.cn/31185/32018/32020/38655/38656/38663/index.htm",
+          "https://www.xiangyin.gov.cn/31951/67738/67741/content_2101679.html",
+          "https://www.xiangyin.gov.cn/31951/73934/content_2285072.html"
+        ]
+      }
+    ]
+  },
+  "registryEvidence": {
+    "custodian": "湘阴县自然资源局 (Xiangyin County Natural Resources Bureau) and its 湘阴县不动产登记中心 (Xiangyin County Real Estate Registration Center).",
+    "locality": "Xiangyin County, Yueyang, Hunan, China.",
+    "evidenceUrls": [
+      "https://www.xiangyin.gov.cn/31185/32018/32020/38655/38656/38663/index.htm",
+      "https://www.xiangyin.gov.cn/31951/67738/67741/content_2101679.html",
+      "https://www.xiangyin.gov.cn/31951/73934/content_2285072.html"
+    ],
+    "scopeNote": "Official local government pages evidence the county bureau's statutory registration/cadastral responsibilities and the local registration center's online service. This establishes a local registry custodian, not open citywide parcel-vector access."
+  },
+  "officialSources": [
+    {
+      "url": "https://www.xiangyin.gov.cn/31185/32018/32020/38655/38656/38663/index.htm",
+      "observation": "The bureau page assigns the Xiangyin Natural Resources Bureau responsibility for unified natural-resource and immovable-property registration, cadastral investigation/survey, registration information management, and related geospatial data management; it lists the Real Estate Registration Center as a subordinate institution."
+    },
+    {
+      "url": "https://www.xiangyin.gov.cn/31951/67738/67741/content_2101679.html",
+      "observation": "The local government service guide says natural-condition inquiry is for natural persons, uses Xiangyi-ban or the Hunan online one-window platform, and queries house immovable-property information; the decision institution is the Xiangyin Real Estate Registration Center."
+    },
+    {
+      "url": "https://www.xiangyin.gov.cn/31951/73934/content_2285072.html",
+      "observation": "The center's official annual-report page describes online registration work and operation of the provincial unified one-database/one-platform registration system."
+    }
+  ],
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": null,
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null,
+    "note": "No safe anonymous parcel ID-plus-geometry response was obtained. The exact WUP point was preserved and was not shifted or used as an absence test."
+  },
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH/GET",
+      "url": "https://www.xiangyin.gov.cn/31185/32018/32020/38655/38656/38663/index.htm",
+      "httpStatus": 200,
+      "outcome": "Official Xiangyin Natural Resources Bureau page loaded; local custodian and cadastral/registration responsibilities were confirmed. No parcel-vector endpoint was exposed in the page."
+    },
+    {
+      "method": "SEARCH/GET",
+      "url": "https://www.xiangyin.gov.cn/31951/67738/67741/content_2101679.html",
+      "httpStatus": 200,
+      "outcome": "Official local service guide loaded; it documents person-specific natural-condition inquiry through Xiangyi-ban or the Hunan one-window platform and certificate-number lookup, not anonymous parcel geometry."
+    },
+    {
+      "method": "SEARCH/GET",
+      "url": "https://www.xiangyin.gov.cn/31951/73934/content_2285072.html",
+      "httpStatus": null,
+      "outcome": "Search result identified the official Real Estate Registration Center annual-report page and its provincial platform usage; direct page extraction was not needed for parcel access."
+    },
+    {
+      "method": "GET",
+      "url": "https://portal.hunanbdc.cn/home",
+      "httpStatus": null,
+      "outcome": "Anonymous request timed out after 12 seconds; no JavaScript/configuration or public parcel service was obtained. No login, credential, token, CAPTCHA/Cloudflare bypass, or TLS exception was used."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.tianditu.gov.cn/",
+      "httpStatus": 418,
+      "outcome": "Anonymous request returned HTTP 418 with no usable Xiangyin parcel service, schema, CRS, or geometry. No token, login, CAPTCHA/Cloudflare bypass, or unsafe-field request was attempted."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [28.6825214009469, 112.883890481222] preserved in latitude/longitude order; no coordinate shift or parcel query was used.",
+      "featureCount": null,
+      "result": "No public Xiangyin parcel-vector route or safe ID-plus-geometry response was identified."
+    }
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable public parcel-vector response; no hit/miss inference."},
+  "coverageAssessment": {"claimedScope": "Xiangyin county natural-resources and real-estate registration custodian plus provincial online registration leads.", "verifiedOpenScope": "Local custodian and authenticated registration workflow evidenced; no anonymous open parcel-vector coverage verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "integration": "not_admitted",
+  "scopeLimits": ["The exact WUP point was preserved and not shifted to force a parcel hit.", "A zero exact-point hit, map extent miss, login wall, timeout, HTTP error, or unusable UI was not treated as citywide cadastral absence.", "No parcel polygon or raw source-specific attribute set is retained because no unchanged polygon with a qualified native identity was obtained.", "This packet records research only and is not source integration or runtime admission."],
+  "uncertainty": "Official local pages establish Xiangyin's natural-resources/registration custodian and person-specific online workflow, but no public anonymous parcel geometry, schema, CRS, stable parcel identity, or citywide open coverage was qualified. Runtime readiness remains held."
+}

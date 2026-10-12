@@ -1,0 +1,100 @@
+{
+  "cityRecord": "city-8496-dausa.json",
+  "cityCode": 8496,
+  "queueRank": 2348,
+  "name": "Dausa",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [26.8976054048931, 76.3382552079103],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+      "httpStatus": "official indexed result; direct GET timeout",
+      "outcome": "Official Rajasthan Bhu-Naksha cadastral viewer discovered. Direct GET timed out after 25 seconds; JavaScript/configuration was not available for inspection."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhunaksha.rajasthan.gov.in/",
+      "httpStatus": "timeout",
+      "outcome": "HTTPS request timed out after 12 seconds; no API route inferred."
+    },
+    {
+      "method": "GET",
+      "url": "http://bhunaksha.rajasthan.gov.in/",
+      "httpStatus": "timeout",
+      "outcome": "HTTP request timed out after 12 seconds; TLS was not disabled and no downgrade was used to bypass a certificate issue."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/rajasthan-revenue-department/Circular/OnlineTehsils.html",
+      "httpStatus": "official readable",
+      "outcome": "Official Revenue Department page lists Dausa/Dausa tehsil as online. Administrative evidence only; no parcel geometry requested or retained."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://dausa.rajasthan.gov.in/pages/dptHome",
+      "httpStatus": "official indexed result",
+      "outcome": "Official Dausa district government site found. Local custodian context only; no parcel response."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/hi/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html",
+      "httpStatus": "official indexed result",
+      "outcome": "Hindi Revenue Department cadastral-map digitization page found. Program-level evidence only; no parcel response."
+    },
+    {
+      "method": "GET",
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+      "httpStatus": "302 observed; not followed to parcel query",
+      "outcome": "Official Urban GIS portal route identified in discovery. No parcel request was completed and no urban khasra fields were requested."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Not inspected: Bhu-Naksha host timed out before HTML/JavaScript could be retrieved.",
+    "geometryCrs": "Unverified",
+    "nativeIdentity": "Unverified; no parcel response",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "None completed",
+      "featureCount": 0,
+      "result": "No geometry or identity response obtained; timeout is not a zero-feature result."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel ID",
+    "full polygon geometry",
+    "source URL",
+    "source/output CRS",
+    "retrieval date",
+    "reproduction administrative codes"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "tax/account",
+    "certificate/title",
+    "personal data"
+  ],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Only official registry/viewer discovery and administrative scope evidence were obtained. Live service schema, CRS, safe native identity, geometry, point matching, city extent, and adapter behavior remain unverified."
+  },
+  "scopeLimits": [
+    "Exact WUP point preserved and not shifted.",
+    "No exact-point hit or map-extent query was completed.",
+    "No parcel polygon was retained because no native ID-plus-geometry response was obtained.",
+    "No citywide absence or completeness inference is made.",
+    "No unsafe fields were requested or retained.",
+    "Packet completion records research attempts only and is not source integration/admission."
+  ],
+  "uncertainty": "The official Rajasthan cadastral viewer and Dausa administrative routes are evidenced, but host timeouts prevented current API/configuration inspection and any bounded parcel response. Runtime readiness remains held."
+}

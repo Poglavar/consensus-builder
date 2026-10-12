@@ -1,0 +1,82 @@
+{
+  "cityCode": 2898,
+  "queueRank": 1764,
+  "city": "Sanandaj",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "point": [35.3022883120695, 46.9993236299454],
+  "population2025": 325425,
+  "population2025k": 325.425,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sanandaj Iran official cadastral parcel map land registry GIS",
+        "result": "Discovery identified the Sanandaj municipal urban-planning citizen portal (eshahr.sanandaj.ir) as a first-party map/planning-services route, and the national Registration Organization services (my.ssaa.ir and shamim.ssaa.ir) as registration/cadastre-related routes. Search results did not expose a public anonymous parcel-vector endpoint or city-specific cadastral viewer.",
+        "actualResultUrls": ["https://eshahr.sanandaj.ir/", "https://my.ssaa.ir/portal", "https://shamim.ssaa.ir/"]
+      },
+      {
+        "language": "Persian",
+        "query": "سنندج نقشه کاداستر سامانه رسمی ثبت اسناد املاک نقشه پارسل",
+        "result": "نتیجه جستجو سامانه شهروندیار شهرداری سنندج را برای خدمات نقشه و شهرسازی و سامانه‌های ملی سازمان ثبت اسناد و املاک را برای خدمات ثبتی/کاداستری نشان داد؛ مسیر عمومی ناشناس برای دریافت شناسه و هندسه قطعه سنندج پیدا نشد.",
+        "actualResultUrls": ["https://eshahr.sanandaj.ir/", "https://my.ssaa.ir/portal", "https://shamim.ssaa.ir/"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryCustodian": "National Registration Organization of Iran is evidenced only as a general registration/cadastre custodian; no Sanandaj-local public cadastral registry or anonymous parcel service was verified. Sanandaj Municipality portal was evidenced for urban-planning map services, not cadastral parcel publication.",
+  "registryEvidence": {
+    "municipalPortal": "https://eshahr.sanandaj.ir/",
+    "nationalRegistrationPortal": "https://my.ssaa.ir/portal",
+    "surveyNetworkPortal": "https://shamim.ssaa.ir/",
+    "qualification": "Discovery evidence only; no successful public map/API response. registryFound remains null."
+  },
+  "sourceReview": {
+    "service": "Sanandaj municipal urban-planning portal and Iranian national registration/cadastre portals",
+    "officialAssetsInspected": [],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": null,
+    "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate-reference metadata", "source layer and public service metadata"]
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://eshahr.sanandaj.ir/", "outcome": "TLS-valid anonymous request timed out after 10 seconds; no HTML, JavaScript, configuration, map service, or geometry."},
+    {"method": "GET", "url": "https://my.ssaa.ir/portal", "outcome": "TLS-valid anonymous request timed out after 10 seconds; no HTML, JavaScript, configuration, map service, or geometry."},
+    {"method": "GET", "url": "https://shamim.ssaa.ir/", "outcome": "TLS-valid anonymous request timed out after 10 seconds; no HTML, JavaScript, configuration, map service, or geometry."},
+    {"method": "GET", "url": "https://eshahr.sanandaj.ir/", "outcome": "A preliminary curl probe used an explicitly insecure TLS option and also timed out; it produced no response and is not treated as evidence."},
+    {"method": "GET", "url": "https://my.ssaa.ir/portal", "outcome": "A preliminary curl probe used an explicitly insecure TLS option and produced no retained response; it is not treated as evidence."},
+    {"method": "GET", "url": "https://shamim.ssaa.ir/", "outcome": "A preliminary curl probe used an explicitly insecure TLS option and produced no retained response; it is not treated as evidence."}
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed; no public parcel geometry was obtained. No citywide absence inference is made.",
+    "requestEvidence": ["https://eshahr.sanandaj.ir/", "https://my.ssaa.ir/portal", "https://shamim.ssaa.ir/"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Sanandaj municipal urban-planning map services and Iran national registration/cadastre services.",
+    "verifiedOpenScope": "Only discovery-level service URLs; no open parcel layer, schema, CRS, native ID, or geometry response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "Exact WUP point was preserved in latitude/longitude order and was not shifted.",
+    "A timeout, login wall, map extent miss, zero exact-point hit, or unusable UI is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, personal, tax/account, or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set or GeoJSON sample was retained.",
+    "Packet completion is not source integration/admission; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The public routes may require authentication, interactive browser access, or non-public service configuration. Sanandaj parcel coverage, stable native identity, field schema, CRS, geometry access, and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

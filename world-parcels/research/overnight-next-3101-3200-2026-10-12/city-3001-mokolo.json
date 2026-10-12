@@ -1,0 +1,106 @@
+{
+  "cityCode": 3001,
+  "queueRank": 3154,
+  "name": "Mokolo",
+  "country": "Cameroon",
+  "countryCode": "CM",
+  "iso3": "CMR",
+  "point": [10.7391591184211, 13.8036204429135],
+  "population2025": 190418,
+  "population2025k": 190.418,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "sourceDiscoveryDate": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mokolo Cameroon official cadastral map parcel land registry GIS",
+        "result": "First-party discovery identified MINDCAF as the ministry responsible for cadastral plans and land administration. The official MINHDU SIG-WEB viewer was found as a public geospatial map, but no parcel service, schema, or safe native-ID-plus-geometry response was qualified.",
+        "actualResultUrls": [
+          "https://www.mindcaf.gov.cm/en/mission/",
+          "https://www.minhdu.gov.cm/sigwebminhdu/public/index.php/home"
+        ]
+      },
+      {
+        "language": "French (official/local)",
+        "query": "Mokolo Cameroun cadastre carte parcelles registre foncier officiel",
+        "result": "La recherche officielle a confirmé le rôle du MINDCAF dans l'élaboration et la tenue des plans cadastraux. Le SIG-WEB public du MINHDU a été identifié, mais aucune couche parcellaire publique, structure de données, CRS ou réponse anonyme sûre avec identifiant natif et géométrie n'a été qualifiée.",
+        "actualResultUrls": [
+          "https://mindcaf.gov.cm/fr/mission/",
+          "https://www.minhdu.gov.cm/sigwebminhdu/public/index.php/home",
+          "https://minepat.gov.cm/wp-content/uploads/2022/01/Annexe12_Situation-fonciere-et-domaniale.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryCustodian": {
+    "name": "Ministère des Domaines, du Cadastre et des Affaires Foncières (MINDCAF)",
+    "scope": "National cadastral and land-administration custodian; official mission page states responsibility for preparing and maintaining cadastral plans. No Mokolo-local public parcel endpoint was evidenced.",
+    "evidence": "https://www.mindcaf.gov.cm/en/mission/"
+  },
+  "service": {
+    "name": "MINHDU SIG-WEB public viewer; parcel service not qualified",
+    "viewerUrl": "https://www.minhdu.gov.cm/sigwebminhdu/public/index.php/home",
+    "baseUrl": null,
+    "viewerConfiguration": "Search result exposes a public JavaScript-dependent geospatial viewer with region, department and commune filters and urban themes. Direct retrieval of the current viewer HTML/configuration timed out; no service endpoint or parcel schema was retained.",
+    "schemaAndCrs": {
+      "parcelSchema": null,
+      "nativeIdFields": [],
+      "geometryCrs": null,
+      "fieldMapping": {},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://www.minhdu.gov.cm/sigwebminhdu/public/index.php/home",
+      "status": "timeout after 20 seconds",
+      "outcome": "The public viewer did not return current HTML/configuration within the bounded request. This is an access limit, not evidence of a citywide parcel absence. No TLS bypass was used."
+    },
+    {
+      "method": "GET/search",
+      "url": "https://www.mindcaf.gov.cm/en/mission/",
+      "status": "200 via first-party search result",
+      "outcome": "Official MINDCAF mission evidence identifies preparation and maintenance of cadastral plans as a ministry responsibility; it does not expose a Mokolo parcel API or parcel geometry."
+    },
+    {
+      "method": "GET/search",
+      "url": "https://mindcaf.gov.cm/fr/mission/",
+      "status": "200 via first-party search result",
+      "outcome": "French official mission evidence confirms the same national cadastral mandate; no local service or safe parcel response was exposed."
+    },
+    {
+      "method": "GET/search",
+      "url": "https://minepat.gov.cm/wp-content/uploads/2022/01/Annexe12_Situation-fonciere-et-domaniale.pdf",
+      "status": "200 via first-party search result",
+      "outcome": "Official regional land-and-state-property document mentions Mokolo in Mayo-Tsanaga and describes national land-law context, but is not a parcel dataset or viewer."
+    }
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/3001/ (bounded request output; no unsafe fields retained)",
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native cadastral parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [10.7391591184211, 13.8036204429135] was preserved in longitude/latitude source order as required by the queue record and was not shifted.",
+    "No qualified anonymous parcel endpoint was found; no exact-point hit or miss was asserted.",
+    "The MINHDU viewer timeout and absence of an exposed endpoint are not evidence of citywide cadastral absence.",
+    "No owner, address, contact, titleholder, personal, tax/account, or other unsafe fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The MINHDU viewer may load configuration or services only through browser-side JavaScript that was unavailable within the bounded direct request.",
+    "MINDCAF may maintain local cadastral records or map services not publicly indexed or anonymously exposed.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

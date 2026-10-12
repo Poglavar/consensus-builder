@@ -1,0 +1,187 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:5734",
+  "wupCityCode": 5734,
+  "queueRank": 1211,
+  "rank": 1211,
+  "name": "Elenga",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "point": [24.3419223748049, 89.9872724245112],
+  "centerLatLon": [24.3419223748049, 89.9872724245112],
+  "pointBasis": "Immutable WUP 2025 City_Code 5734 coordinate, copied without adjustment.",
+  "population2025": 459645,
+  "population2025k": 459.645,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "status": "complete",
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "registryFound": true,
+  "registryBasis": "Official Kalihati Upazila Land Office material identifies the local land office as performing land-record updating and mutation/land-management functions; the official Tangail Zonal Settlement Office states it is under the Department of Land Records and Surveys and prepares land records and maps for Tangail. Official Kalihati pages identify Elenga Municipality within Kalihati Upazila.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "The official map.land.gov.bd viewer's current anonymous administrative endpoint returned only three Dhaka-division districts (Gopalganj, Kishoreganj, Shariatpur) and no Tangail result in the tested route; its configured official GIS GeoServer WMS/WFS metadata endpoints returned HTTP 503. No parcel geometry or citywide coverage conclusion is inferred from these results.",
+  "source": {
+    "sourceId": null,
+    "name": "Bangladesh Department of Land Records and Surveys / Ministry of Land digital land-map viewer and Tangail Zonal Settlement Office",
+    "url": "https://map.land.gov.bd/",
+    "operator": "Department of Land Records and Surveys, Ministry of Land, Government of Bangladesh; Tangail Zonal Settlement Office",
+    "serviceType": "Official public digital land-map viewer plus official local/state land-record custodianship pages",
+    "layer": "Viewer JavaScript config: wsDMMS:mouza plot-boundary layer and /getGeomByCode route; metadata service family at gis.land.gov.bd/geoserver",
+    "geometryType": "WKT polygon was documented in viewer JavaScript response handling, but no parcel response was retained",
+    "nativeIdField": "gid (documented in viewer JavaScript plot response; not received for Elenga)",
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Only safe parcel IDs and public geometry may be retained if a bounded anonymous parcel response is independently obtained. No owner, address, contact, titleholder, tax, account, or private fields were requested or retained.",
+    "outputCrs": "Viewer transforms EPSG:4326 to EPSG:3857 for display; native parcel response was not obtained.",
+    "nativeIdEvidence": "Viewer JavaScript reads plotData[i].gid and plotData[i].geom, but no Elenga plotData response was obtained.",
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Bangladesh national digital land-map viewer configuration, its anonymous administrative route, configured GIS metadata routes, and official Kalihati/Tangail land-record custodian pages.",
+    "verifiedOpenScope": "Official local custodianship is verified; anonymous Tangail/Elenga parcel geometry and coverage are not verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "technicalBlocker": "The map viewer loaded over HTTPS and exposed POST admin and geometry routes in current JavaScript. POST /getAdminByCode for division 30 returned three districts, but tested Tangail district-code candidates returned empty arrays; direct configured gis.land.gov.bd GeoServer WMS GetCapabilities and wsDMMS WFS GetCapabilities requests returned HTTP 503.",
+  "remainingUncertainty": "Whether Tangail is absent from this viewer's current project coverage, represented under another code, or available through another official authenticated/public route remains unresolved. A zero or missing administrative response is not evidence of citywide parcel absence.",
+  "registryEvidenceUrls": [
+    "https://acl.kalihati.tangail.gov.bd/pages/static-pages/6995c36b35ce18e1c06d1d1a",
+    "https://zso.tangail.gov.bd/",
+    "https://zso.tangail.gov.bd/pages/static-pages/6995e30835ce18e1c07b27e2",
+    "https://kalihati.tangail.gov.bd/pages/static-pages/6995b9ba35ce18e1c079c19d",
+    "https://settlement.gov.bd/home/",
+    "https://map.land.gov.bd/",
+    "https://www.land.gov.bd/nagorik-subidha?lang=bn"
+  ],
+  "rootReview": null,
+  "rootReviewedAt": null,
+  "checkedAt": "2026-10-09",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Elenga Bangladesh official cadastral map land records mouza map GIS parcel",
+        "result": "First-party discovery located the Government of Bangladesh settlement portal, national digital land-map viewer, Ministry of Land service page, Kalihati Upazila Land Office, and Tangail Zonal Settlement Office. Official local custody was verified; no anonymous Elenga parcel geometry was obtained.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/home/",
+          "https://map.land.gov.bd/",
+          "https://www.land.gov.bd/nagorik-subidha?lang=bn",
+          "https://acl.kalihati.tangail.gov.bd/pages/static-pages/6995c36b35ce18e1c06d1d1a",
+          "https://zso.tangail.gov.bd/"
+        ],
+        "scope": "Official public land-record and map discovery only; exact WUP point preserved; no unsafe landholder or account data requested."
+      },
+      {
+        "language": "native/local",
+        "query": "এলেঙ্গা বাংলাদেশ সরকারি খতিয়ান মৌজা মানচিত্র ভূমি রেকর্ড",
+        "result": "Separate Bengali-language discovery confirmed official Bangladesh land-record/map services and official Kalihati/Tangail pages identifying Elenga Municipality, the local Upazila Land Office, and Tangail settlement zone. No anonymous Elenga parcel geometry was obtained.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/home/",
+          "https://map.land.gov.bd/",
+          "https://kalihati.tangail.gov.bd/",
+          "https://kalihati.tangail.gov.bd/pages/static-pages/6995b9ba35ce18e1c079c19d",
+          "https://zso.tangail.gov.bd/pages/static-pages/6995e30835ce18e1c07b27e2"
+        ],
+        "scope": "শুধু সরকারি ভূমি রেকর্ড/মৌজা মানচিত্র ও স্থানীয় ভূমি-প্রশাসন সেবা যাচাই; মালিক, ঠিকানা, খতিয়ানধারী বা কর-তথ্য সংগ্রহ করা হয়নি।"
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://map.land.gov.bd/",
+        "operator": "Department of Land Records and Surveys / Ministry of Land, Government of Bangladesh",
+        "scope": "Public digital mouza/plot land-map viewer. Current JavaScript documents POST admin lookup, POST geometry lookup, plot gid, and WKT geometry handling."
+      },
+      {
+        "url": "https://settlement.gov.bd/home/",
+        "operator": "Department of Land Records and Surveys, Ministry of Land",
+        "scope": "Official online land-record and survey portal; states that displayed khatiyans are survey-stage records and links map and record services."
+      },
+      {
+        "url": "https://acl.kalihati.tangail.gov.bd/pages/static-pages/6995c36b35ce18e1c06d1d1a",
+        "operator": "Upazila Land Office, Kalihati, Tangail",
+        "scope": "Local land office page describes land-record updating, mutation, and land-management functions; this is local custody evidence, not parcel geometry."
+      },
+      {
+        "url": "https://zso.tangail.gov.bd/pages/static-pages/6995e30835ce18e1c07b27e2",
+        "operator": "Tangail Zonal Settlement Office",
+        "scope": "Official page states the office is under DLRS control and prepares land records and maps for Tangail."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://map.land.gov.bd/",
+        "method": "GET; anonymous public read",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": 89021,
+        "assessment": "Viewer loaded. Current JavaScript/configuration was inspected; it identifies POST admin and geometry routes and the official GIS host."
+      },
+      {
+        "url": "https://map.land.gov.bd/getAdminByCode",
+        "method": "POST; anonymous public read; level=forDiv, column=division_n",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 649,
+        "assessment": "Returned seven division records."
+      },
+      {
+        "url": "https://map.land.gov.bd/getAdminByCode",
+        "method": "POST; anonymous public read; level=forDist, division_code=30",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 415,
+        "assessment": "Returned Gopalganj, Kishoreganj, and Shariatpur only; Tangail was not returned by this current route."
+      },
+      {
+        "url": "https://map.land.gov.bd/getAdminByCode",
+        "method": "POST; anonymous public read; level=forThana, division_code=30, district_code=3093 plus nearby tested candidates 3090 and 3091",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 2,
+        "assessment": "Each tested candidate returned an empty JSON array. This is a bounded route result, not evidence of missing Tangail/Elenga parcels."
+      },
+      {
+        "url": "https://gis.land.gov.bd/geoserver/wms?service=WMS&request=GetCapabilities",
+        "method": "GET; anonymous metadata only",
+        "httpStatus": 503,
+        "contentType": "text/html",
+        "bytesRead": 123,
+        "assessment": "GeoServer unavailable; no schema or layer metadata returned."
+      },
+      {
+        "url": "https://gis.land.gov.bd/geoserver/wsDMMS/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+        "method": "GET; anonymous metadata only",
+        "httpStatus": 503,
+        "contentType": "text/html",
+        "bytesRead": 123,
+        "assessment": "Configured WFS metadata route unavailable; no geometry query attempted after metadata failure."
+      },
+      {
+        "url": "https://www.land.gov.bd/nagorik-subidha?lang=bn",
+        "method": "GET; anonymous public read",
+        "httpStatus": 403,
+        "contentType": "text/html",
+        "bytesRead": 5362,
+        "assessment": "Cloudflare challenge/login-wall style response; not treated as source absence and not bypassed."
+      }
+    ],
+    "historicalContext": ["Fresh research performed on 2026-10-09 for WUP City_Code 5734; no prior Elenga packet was found in the cohort before this attempt."]
+  },
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "nextStep": "Serial reviewer should independently re-check Tangail/Kalihati administrative coverage and any public native parcel endpoint; keep runtime readiness held until a real adapter and bounded safe geometry response are qualified.",
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "Official local registry custody is evidenced, but no safe anonymous Elenga parcel geometry and stable parcel ID were verified in this pass."
+  }
+}

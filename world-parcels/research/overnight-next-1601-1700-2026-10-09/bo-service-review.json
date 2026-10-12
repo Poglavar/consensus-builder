@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-1027-bo.json",
+  "cityCode": 1027,
+  "queueRank": 1654,
+  "city": "Bo",
+  "country": "Sierra Leone",
+  "countryCode": "SL",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official MLHCP, OARG, and NLC pages evidence Sierra Leone land-registration/cadastral custodians and procedures, but bounded anonymous requests found no public Bo parcel geometry, stable parcel identity, schema, CRS, or viewer/API route. Runtime remains held.",
+  "queryOutcomes": "Separate English and Krio-oriented first-party discovery queries are recorded in city-1027-bo.json. They found official land-registration, cadastral-survey, GIS/NLIS, and LMIS pages, but no public parcel layer.",
+  "requestOutcomes": "Anonymous TLS-verified GETs fetched MLHCP portal pages, MLHCP GIS page, NLC digital portal, and NMA mining-cadastre page; NLC /api returned 404 and OARG land-register returned 500. No login, credentials, private token, CAPTCHA/Cloudflare bypass, TLS disablement, formal submission, or unsafe property lookup was used.",
+  "scopeLimits": [
+    "Official custodian/procedure pages establish a registry and survey route, not public parcel geometry availability or Bo coverage.",
+    "The MLHCP/NLC digital land-information systems are described as application-based or under development; no public JavaScript/configuration endpoint was exposed.",
+    "The NMA mining cadastre is a separate mineral-rights source and was not treated as a general land-parcel source.",
+    "No exact-point hit or miss, map extent miss, timeout, login wall, or unavailable UI was treated as evidence of citywide cadastral absence, and the WUP point was not shifted.",
+    "No GeoJSON sample was retained because no safe native parcel geometry and identity response was obtained.",
+    "This packet is research evidence only and must not be treated as source integration or adapter admission."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentityPolicy": "No native parcel identity was observed; do not synthesize one from directory rows, search results, response order, or internal records.",
+  "nativeFieldMapping": {},
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no parcel geometry retained",
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "A restricted, account-gated, formal-request, or not-yet-published cadastral service may exist. Public availability, parcel schema, CRS, native identity, coverage, and safe anonymous runtime access remain unresolved.",
+  "retainedSample": null
+}

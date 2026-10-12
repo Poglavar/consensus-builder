@@ -1,0 +1,37 @@
+{
+  "taskId": "city:4041",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-4041-borujerd.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/borujerd-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T23:20:37Z",
+  "queueIdentity": {
+    "cityCode": 4041,
+    "rank": 2944,
+    "name": "Borujerd",
+    "country": "Iran (Islamic Republic of)",
+    "point": [
+      33.9040969860824,
+      48.7511641178514
+    ],
+    "population2025Persons": 202223,
+    "verifiedAgainst": "original UN WUP 2025 bulk CSV row, cohort ranked roster and immutable pending queue"
+  },
+  "registryFound": null,
+  "bilingualSearchesReviewed": true,
+  "retainedFullPolygonCount": 0,
+  "reason": "English and Persian executed search records cite actual result URLs and distinguish national registration/cadastre routes from a third-party local office reference. Official routes timed out and the municipal host failed DNS; no first-party Borujerd parcel response, safe native ID, or full polygon was obtained. Timeouts and DNS failure do not establish cadastral absence.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeDecision": "held; no registry, source catalog, city config or generated coverage admission change"
+}

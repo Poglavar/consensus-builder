@@ -1,0 +1,96 @@
+{
+  "cityCode": 3921,
+  "queueRank": 1602,
+  "name": "Vinh",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "iso3": "VNM",
+  "locId": 704,
+  "point": [18.6850994827433, 105.680967248425],
+  "population2025": 355643,
+  "population2025k": 355.643,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Vinh Nghe An cadastral map official parcel land registry GIS",
+        "result": "Search identified the official Nghệ An land-data procedure, the national VNSDI/DOSM geospatial portal, and a national VBDLIS land-information login endpoint; no public Vinh parcel service or bounded parcel response was established.",
+        "actualResultUrls": [
+          "https://dichvucong.nghean.gov.vn/trang-chu/tra-cuu/chi-tiet-thu-tuc?ma-thu-tuc=50203",
+          "https://dosm.vnsdi.gov.vn/",
+          "https://dt-authen.mplis.gov.vn/"
+        ]
+      },
+      {
+        "language": "Vietnamese",
+        "query": "Vinh Nghệ An bản đồ địa chính cổng thông tin chính thức thửa đất",
+        "result": "Search identified the official Nghệ An land-data supply procedure handled by the land-registration office/branch, commune authorities, and provincial agriculture/environment department; it did not expose an anonymous public parcel map/API for Vinh.",
+        "actualResultUrls": [
+          "https://dichvucong.nghean.gov.vn/trang-chu/tra-cuu/chi-tiet-thu-tuc?ma-thu-tuc=50203",
+          "https://vinh.nghean.gov.vn/tuyen-truyen-pho-bien-giao-duc-phap-luat/-/asset_publisher/ynVJdsHuw4tR/content/id/4834493?_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ynVJdsHuw4tR_redirect=https%3A%2F%2Fvinh.nghean.gov.vn%2Ftuyen-truyen-pho-bien-giao-duc-phap-luat%3Fp_p_id%3Dcom_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ynVJdsHuw4tR%26p_p_lifecycle%3D0%26p_p_state%3Dnormal%26p_p_mode%3Dview%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ynVJdsHuw4tR_cur%3D0%26p_r_p_resetCur%3Dfalse%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ynVJdsHuw4tR_assetEntryId%3D4834493",
+          "https://vnsdi.mae.gov.vn/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://dichvucong.nghean.gov.vn/trang-chu/tra-cuu/chi-tiet-thu-tuc?ma-thu-tuc=50203",
+      "observation": "Official Nghệ An procedure for supplying land information/data. It names the provincial land-registration office, branches, commune authorities, and provincial agriculture/environment department as responsible bodies and identifies Vinh as the provincial service location; it is a procedure, not an open parcel geometry API."
+    },
+    {
+      "url": "https://dosm.vnsdi.gov.vn/",
+      "observation": "Official national geospatial portal. The fetched public viewer loaded over HTTPS and its current JavaScript/configuration exposed base-map/administrative services, including NenBanDoDaTyLe_diagioidam and Bien_7zoom_Nen_911; no cadastral parcel layer or anonymous parcel query was verified."
+    },
+    {
+      "url": "https://dt-authen.mplis.gov.vn/",
+      "observation": "Official-looking VBDLIS land-information endpoint returned a login/restricted-access page. No credentials or private fields were used."
+    },
+    {
+      "url": "https://vinh.nghean.gov.vn/",
+      "observation": "Official Vinh city portal domain found in first-party search results; no public parcel viewer/API was exposed by the inspected result."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://dosm.vnsdi.gov.vn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Public portal fetched successfully (5791 bytes). Current JavaScript assets were inspected; only national/base-map service references were found, not a city parcel layer or safe parcel schema."
+    },
+    {
+      "url": "https://dt-authen.mplis.gov.vn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Returned a login/restricted-access page (1877 bytes). No login attempted."
+    },
+    {
+      "url": "https://dichvucong.nghean.gov.vn/trang-chu/tra-cuu/chi-tiet-thu-tuc?ma-thu-tuc=50203",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official procedure page fetched successfully (87442 bytes); it documents requesting land information through Nghệ An authorities but does not provide an anonymous parcel geometry response."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "A local/provincial land-information custodian is evidenced by Nghệ An's official procedure, but no public city-bounded registry/map response or parcel geometry was verified. National portal and restricted VBDLIS evidence do not establish an open Vinh parcel source.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "resultCategory": "official_land_information_custodian_open_parcel_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Nghệ An official land-information procedure and national VNSDI/DOSM/VBDLIS systems as described by their first-party pages.",
+    "verifiedOpenScope": "No city-bounded Vinh parcel record, stable native parcel identity, schema, CRS, or geometry was retrieved.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The existence, coverage, access policy, endpoint, schema, and CRS of any Vinh cadastral layer remain unverified. A zero exact-point result was not used as an absence claim; no exact-point parcel request was made because no public parcel endpoint was identified."
+}

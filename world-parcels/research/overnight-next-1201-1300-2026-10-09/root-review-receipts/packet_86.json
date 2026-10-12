@@ -1,0 +1,19 @@
+{
+  "taskId": "packet:86",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-86-kaliningrad.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/kaliningrad-service-review.json"
+  ],
+  "reason": "Kaliningrad code 86, rank 1278, Russian Federation, point and 436555 persons match the immutable roster and pending queue; English and Russian executed-search records are present. The first-party city geoportal lists a land-parcels layer, and the city separately publishes a municipal-property register with a land-parcels category; this supports limited local record custody, not full cadastre or public vector availability. No original bounded parcel feature response, safe native ID, or full polygon was retained. The municipal address-register files are address data, not parcel polygons. Fresh adapter native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent. Geometry remains unresolved, not citywide absent; no admission.",
+  "firstPartySourceUrls": [
+    "https://geoportal.klgd.ru/",
+    "https://www.klgd.ru/activity/property/reestr/index.php?print=Y",
+    "https://www.klgd.ru/activity/construction/adresnyy-reestr/prostranstdannye_adresreestr.php?print=Y"
+  ],
+  "checkedAt": "2026-10-09T13:50:53.730554Z"
+}

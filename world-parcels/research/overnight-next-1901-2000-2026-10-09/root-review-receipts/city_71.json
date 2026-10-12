@@ -1,0 +1,16 @@
+{
+  "taskId": "city:71",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-71-szczecin.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/szczecin-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:28:12.801241Z",
+  "reason": "Official municipal SIP pages list EGiB parcels and their metadata, but no live feature response or original feature cache establishes native ID, polygon geometry, CRS, or adapter qualification. Failed portal/metadata retrieval is not parcel absence.",
+  "firstPartySourceUrls": [
+    "https://geoportal.szczecin.eu/",
+    "https://geoportal.szczecin.eu/geonetwork/srv/search"
+  ]
+}

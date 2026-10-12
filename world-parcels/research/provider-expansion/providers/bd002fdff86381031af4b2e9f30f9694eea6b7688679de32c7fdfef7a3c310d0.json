@@ -1,0 +1,45 @@
+{
+  "descriptor": {
+    "id": "zm-nsdi-lots",
+    "label": "Zambia NSDI ZILMIS Lots — bounded Chingola review",
+    "adapter": "arcgis",
+    "endpoint": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0",
+    "idPrefix": "ZM-NSDI-LOTS-",
+    "idField": "SDE.Lots.OBJECTID",
+    "objectIdField": "SDE.Lots.OBJECTID",
+    "idType": "integer",
+    "outFields": ["SDE.Lots.OBJECTID"],
+    "queryFormat": "geojson",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "boundsSrid": 32735,
+    "boundsProjection": "+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs",
+    "metricSrid": 32735,
+    "pageSize": 100,
+    "idBatchSize": 80,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 25,
+    "maxConcurrentQueries": 1,
+    "cityIds": ["1183"],
+    "defaultForCity": false,
+    "capabilities": {"areaEnumeration": true}
+  },
+  "city": {
+    "code": "1183",
+    "name": "Chingola",
+    "point": [27.8723779018079, -12.5459298146707]
+  },
+  "sampleIds": ["ZM-NSDI-LOTS-109239", "ZM-NSDI-LOTS-109240", "ZM-NSDI-LOTS-109241"],
+  "absentId": "ZM-NSDI-LOTS-2147483647",
+  "metricEpsg": 32735,
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Frozen city-1183-chingola.json registryBasis and coverageAssessment identify the official Zambia NSDI CadasterNew Lots layer as lots from ZILMIS, a cadastral/registry source; https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer.",
+      "The frozen packet records Chingola City Council estate management processing land applications and maintaining the deeds register (https://www.chingolacouncil.gov.zm/?page_id=770) and plot allocation/town planning and land distribution (https://www.chingolacouncil.gov.zm/?page_id=792).",
+      "Frozen chingola-sample.geojson SHA256 92598b1c05412cc6826bdf57f6aadb6e56d93d0e22475c56f0378f9b58780481 contains complete native OBJECTID polygons 109239, 109240 and 109241 from a bounded 10 km envelope near Chingola's WUP point. This confirms bounded city-area geometry, not municipal or citywide completeness; the exact WUP point returned zero features.",
+      "Attempt-02 official-inspection.json confirms anonymous layer metadata: esriGeometryPolygon, native SDE.Lots.OBJECTID OID, EPSG:32735, GeoJSON queries and supportsPagination:false. Existing production object-ids queries verify counts/manifests and full native polygons without offset pagination."
+    ]
+  }
+}

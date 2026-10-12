@@ -1,0 +1,43 @@
+{
+  "cityRecord": "city-6444-poza-rica.json",
+  "schemaVersion": "1.0",
+  "cityCode": 6444,
+  "queueRank": 2850,
+  "city": "Poza Rica",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official municipal and Veracruz state cadastral custodianship was verified. The current municipal map page and predial portal were inspected, but no safe anonymous parcel ID plus full polygon geometry response or CRS was obtained; no sample GeoJSON is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Spanish discovery queries, exact text and actual result URLs are recorded in city-6444-poza-rica.json.",
+  "requestOutcomes": "TLS-verified GETs retrieved the municipal map, Tesorería/Dirección de Catastro and tramites pages, the predial portal, and official Veracruz cadastral documents. The map page exposed no vector service; the predial form includes CAPTCHA and proprietor-name input, so no submission or bypass was attempted.",
+  "attemptedRoutes": [
+    {"route": "Municipal map page", "url": "https://poza-rica.gob.mx/mapa/", "outcome": "HTTP 200; no embedded cadastral map, public API, layer schema or feature geometry found in current HTML."},
+    {"route": "Municipal Tesorería/Dirección de Catastro", "url": "https://poza-rica.gob.mx/areas/tesoreria/", "outcome": "HTTP 200; local custodian and cadastral service descriptions confirmed."},
+    {"route": "Municipal cadastral procedures", "url": "https://poza-rica.gob.mx/tramites/", "outcome": "HTTP 200; cadastral registration, certificates, data statements, updates and cartographic-service context confirmed; no vector data."},
+    {"route": "Municipal predial portal", "url": "https://predial.poza-rica.gob.mx/", "outcome": "HTTP 200; location fields and proprietor-name field plus CAPTCHA displayed. No unsafe lookup or CAPTCHA interaction performed."},
+    {"route": "Veracruz municipal/state cadastral coordination", "url": "https://www.veracruz.gob.mx/wp-content/uploads/sites/2/2012/05/tf20-conv-mpio-ant-poza-rica.pdf", "outcome": "HTTP 200; official document evidences coordinated municipal/state cadastral functions."},
+    {"route": "Veracruz regional cadastral delegation", "url": "https://www.veracruz.gob.mx/wp-content/uploads/sites/2/2012/05/tf33-id-ig-2009-dir-gral-catas-valuacion.pdf", "outcome": "HTTP 200; official document identifies the regional cadastral delegation in Poza Rica."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [20.5351951211859, -97.4456254628651] was preserved; no exact-point hit/miss inference was made.",
+    "No stable native parcel identity plus full polygon geometry was retrieved or retained; CRS and parcel schema remain unverified.",
+    "The municipal map page and a CAPTCHA/proprietor-input predial workflow are not equivalent to an open cadastral feature service.",
+    "No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable city-bounded public geometry response reached; no hit/miss inference.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Poza Rica municipal Dirección de Catastro and Veracruz regional cadastral administration.", "verifiedOpenScope": "Official custodianship and service descriptions only; no citywide parcel geometry response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Parcel selection sequence, public geometry delivery, stable identity semantics, CRS, municipal boundary relationship and citywide completeness remain unresolved. No claim is made about parcel absence, ownership or legal title.",
+  "retainedSample": null
+}

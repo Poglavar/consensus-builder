@@ -1,0 +1,13 @@
+{
+  "taskId": "city:2597",
+  "decision": "held",
+  "checkedAt": "2026-10-11T19:53:39Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-2597-ica.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ica-service-review.json"
+  ],
+  "review": "Rank 2775, code 2597, Peru, WUP point and 213644 persons match immutable roster and queue. English and Spanish searches are recorded. First-party municipal and ICL project material supports registryFound=true, but the project host timed out again on independent request; other inspected services are raster or base cartography. No safe native parcel ID or full polygon was verified or retained. Exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent; held without admission or citywide absence claim."
+}

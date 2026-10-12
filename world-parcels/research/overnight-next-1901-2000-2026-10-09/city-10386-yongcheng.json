@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 10386,
+  "cityCode": 10386,
+  "cityId": "wup2025:10386",
+  "name": "Yongcheng",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "centerLatLon": [33.9394302484405, 116.424176352057],
+  "point": [33.9394302484405, 116.424176352057],
+  "queueRank": 1922,
+  "population2025": 299180,
+  "population2025k": 299.18,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yongcheng China official cadastral parcel map land registration natural resources bureau",
+        "result": "Discovery identified the official Yongcheng government site and its local Real Estate Registration Affairs Center notice. The site links the Shangqiu Natural Resources and Planning Bureau, but no public cadastral viewer or parcel-vector endpoint was found in the reachable public HTML.",
+        "actualResultUrls": [
+          "https://www.ycs.gov.cn/",
+          "https://www.ycs.gov.cn/zjxs/zrzy",
+          "https://www.ycs.gov.cn/ywdt/tzgg/content_29350",
+          "https://zrzyghj.shangqiu.gov.cn"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "永城市 官方 不动产登记 地籍图 宗地图 自然资源和规划局",
+        "result": "First-party Yongcheng government material confirms the Yongcheng Real Estate Registration Affairs Center publishes real-estate registration notices and the government site has a Natural Resources section. No anonymous safe parcel ID and geometry response was exposed.",
+        "actualResultUrls": [
+          "https://www.ycs.gov.cn/ywdt/tzgg/content_29350",
+          "https://www.ycs.gov.cn/zjxs/zrzy",
+          "https://zrzyghj.shangqiu.gov.cn"
+        ]
+      }
+    ],
+    "officialViewerInspection": "The official Yongcheng government home page and Natural Resources section were fetched over HTTPS and inspected for current viewer/configuration/API references. The public page contained department navigation and registration-notice links but no cadastral map service or parcel API. The linked first-party Shangqiu Natural Resources and Planning Bureau host returned HTTP 403 to an anonymous HTTPS GET. No login, CAPTCHA bypass, credentials, private token, or unsafe owner/address/titleholder field was used."
+  },
+  "registryFound": true,
+  "registryBasis": "The first-party Yongcheng government publication at /ywdt/tzgg/content_29350 is issued by and names the Yongcheng Real Estate Registration Affairs Center; the official Yongcheng site also links the Shangqiu Natural Resources and Planning Bureau. This establishes local registry/procedure custodians, not public parcel-vector access or source admission.",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Yongcheng registry/procedure evidence and bounded anonymous inspection of the official local and supervising natural-resources web routes.",
+    "verifiedOpenScope": "Local registry/procedure custodian evidenced; no anonymous parcel geometry service verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_registry_procedure_no_verified_open_parcel_geometry",
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous request returned a safe native parcel identity and full polygon geometry. The exact WUP point was not shifted; absence of a verified response is not treated as citywide absence."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "technicalBlocker": "The reachable Yongcheng public pages expose registry notices but no current cadastral viewer/API configuration. The linked Shangqiu natural-resources host denied anonymous access with HTTP 403, leaving CRS, schema, safe native ID, geometry response, and citywide completeness unverified.",
+  "remainingUncertainty": "A separately published, authenticated, or locally networked cadastral service may exist but was not accessed. Exact-point parcel coverage, CRS/schema, native identity fields, and citywide completeness remain unknown."
+}

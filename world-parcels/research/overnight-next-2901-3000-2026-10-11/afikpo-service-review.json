@@ -1,0 +1,34 @@
+{
+  "cityRecord": "city-8265-afikpo.json",
+  "cityCode": 8265,
+  "queueRank": 2971,
+  "name": "Afikpo",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "pointLatLon": [5.88241950419596, 7.94495489106671],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://ebonyistate.gov.ng/ministries/lands-and-survey/MIN-88RUZ7R6","outcome":"Official Ebonyi State Lands and Survey ministry page was reachable and identifies the state ministry/custodian. It provides ministry information but no public parcel layer, schema, CRS, or geometry response."},
+    {"method":"GET","url":"https://eblands.online/","outcome":"Official-state-branded Ebonyi Ministry of Lands and Survey portal was reachable. It advertises property searches, beacon lookup, land registration, land allocation, and statistics."},
+    {"method":"GET","url":"https://eblands.online/property.php","outcome":"Public property-search instructions were reachable. The search form requires a security number and serial number after payment; no credentials, payment, protected request, owner, address, title, or personal fields were requested."},
+    {"method":"GET","url":"https://eblands.online/beacon.php","outcome":"Public beacon-lookup instructions were reachable and state that the coordinate register contains approved property beacon coordinates. The form requires a username and password; no login or protected request was attempted."},
+    {"method":"GET","url":"https://eblands.online/data_list.php?search=Afikpo","outcome":"Public C-of-O data search returned HTTP 200 and rendered a search-result page for Afikpo, but no Afikpo parcel geometry or safe native parcel identity was exposed in the response."},
+    {"method":"GET","url":"https://osgof.gov.ng/","outcome":"National Office of the Surveyor-General of the Federation site was reachable and describes general mapping, coordinates, and cadastral-survey services. It was kept distinct from the Ebonyi local/state custodian and no parcel response was requested."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "boundedAnonymousResponse": {"requestScope":"No safe anonymous parcel geometry endpoint was exposed after first-party discovery and public-shell inspection; no ID-plus-geometry request was made.","featureCount":null}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed anonymously", "polygon geometry if later exposed anonymously", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Ebonyi local/state land and survey custody and a public land-management portal are evidenced, but no safe anonymous native-ID polygon response, schema, CRS, or independent adapter behavior was exposed. Runtime qualification remains a separate serial review."},
+  "scopeLimits": ["The exact WUP point [5.88241950419596, 7.94495489106671] was preserved in latitude/longitude order; no coordinate shift or parcel-hit forcing was attempted.", "The property-search and beacon routes are payment/security-number or login-oriented; no protected access, credentials, CAPTCHA/Cloudflare bypass, or private token was used.", "A zero exact-point hit, public C-of-O search result without geometry, or absence of an anonymous endpoint is not evidence of citywide parcel absence.", "The national OSGOF route was kept distinct from the Ebonyi local/state custodian and was not treated as an Afikpo parcel service.", "No GeoJSON sample is retained because no safe anonymous native ID-plus-geometry response was available.", "No owner, address, contact, titleholder, tax/account, certificate/title, or personal fields were requested or retained.", "Request captures and scratch evidence belong under ignored tmp/valhalla-parcel-research/8265/."],
+  "uncertainty": "Ebonyi State publicly evidences land and survey administration and a digital portal with property, beacon, registration, allocation, and C-of-O functions. Public coverage of Afikpo, cadastral digitization extent, anonymous viewer/API availability, schema, CRS, native identity, update cadence, licensing, and runtime adapter behavior remain unverified. No citywide absence inference is made."
+}

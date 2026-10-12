@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 2075,
+  "wupCityCode": 2075,
+  "queueRank": 1957,
+  "name": "Kankan",
+  "country": "Guinea",
+  "countryCode": "GN",
+  "iso3": "GIN",
+  "point": [10.363689994973, -9.29409424959834],
+  "centerLatLon": [10.363689994973, -9.29409424959834],
+  "population2025": 296159,
+  "population2025k": 296.159,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "No safe public parcel geometry was obtained. The unchanged WUP point was queried only against the public country-boundary layer; no point-hit or citywide absence inference was made.",
+  "nativeIdReadiness": "none",
+  "registryFound": null,
+  "registryBasis": "Guinea's official cadastre host exposes a public country-boundary MapServer and an application layer requiring a token. First-party service and procedure material evidences national cadastral modernization and land-registration procedures, but no anonymous Kankan parcel registry, public parcel viewer, or parcel geometry API was evidenced.",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kankan Guinea official cadastral parcel map cadastre GIS land registry",
+        "result": "Found the official Guinea cadastre ArcGIS host, including a public country-boundary MapServer and a token-required application layer. Also found the official Service Public Guinea title-registration procedure. No public Kankan parcel layer or anonymous parcel geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://cadastre.mines.gov.gn/arcgis/rest/services/SSRSMaps_SOE/MapServer",
+          "https://cadastre.mines.gov.gn/arcgis/rest/services/MapPortal/GuineaPortal_ApplicationLayer/MapServer?f=jsapi",
+          "https://service-public.gov.gn/ova_sev/certificat-dimmatriculation-de-titre-foncier/"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "Kankan Guinée cadastre parcellaire carte foncier registre officiel",
+        "result": "Found Guinea's national land-governance platform, official land-title procedure, and the official Ministry cadastre ArcGIS services. Results describe national policy/procedure and a country layer, not a public Kankan parcel registry or anonymous parcel geometry service.",
+        "actualResultUrls": [
+          "https://foncierguinee.org/",
+          "https://service-public.gov.gn/ova_sev/certificat-dimmatriculation-de-titre-foncier/",
+          "https://cadastre.mines.gov.gn/arcgis/rest/services/SSRSMaps_SOE/MapServer"
+        ]
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Public first-party Guinea cadastre, land-governance, and title-registration entry points were checked, along with the current public ArcGIS service catalog and service metadata.",
+    "verifiedOpenScope": "One public country-boundary polygon layer (`Pays`, ISO_CTRY) was available. The GuineaPortal application layer returned token required. No parcel layer, parcel schema, or Kankan-specific geometry was available anonymously.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attemptedRoutes": [
+    {
+      "route": "GET https://cadastre.mines.gov.gn/arcgis/rest/services?f=pjson",
+      "outcome": "succeeded; catalog listed ExportWebMap, two Landfolio GP services, and SSRSMaps_SOE MapServer"
+    },
+    {
+      "route": "GET https://cadastre.mines.gov.gn/arcgis/rest/services/SSRSMaps_SOE/MapServer?f=pjson",
+      "outcome": "succeeded; service exposes one polygon layer named Pays, public CRS WKID 104257/latestWkid 8999, maxRecordCount 1000, and JSON/GeoJSON query support"
+    },
+    {
+      "route": "GET https://cadastre.mines.gov.gn/arcgis/rest/services/SSRSMaps_SOE/MapServer/0?f=pjson",
+      "outcome": "succeeded; layer schema contains OBJECTID, ISO_CTRY, Shape, Shape.area, and Shape.len; this is a country layer, not parcels"
+    },
+    {
+      "route": "GET https://cadastre.mines.gov.gn/arcgis/rest/services/SSRSMaps_SOE/MapServer/0/query with point [-9.29409424959834,10.363689994973] inSR=4326, spatialRel=esriSpatialRelIntersects, resultRecordCount=3, returnGeometry=false",
+      "outcome": "succeeded; returned one feature OBJECTID=1, ISO_CTRY=GN, with no geometry by request. This is not a parcel hit and was not used as an absence claim."
+    },
+    {
+      "route": "GET https://cadastre.mines.gov.gn/arcgis/rest/services/MapPortal/GuineaPortal_ApplicationLayer/MapServer?f=pjson",
+      "outcome": "returned ArcGIS error 499 Token Required; no login, token, or private access was attempted"
+    },
+    {
+      "route": "GET https://cadastre.mines.gov.gn/arcgis/rest/services/LandfolioGPServicev2_1_1/GPServer?f=pjson and /LandfolioGPServicev4_0_0/GPServer?f=pjson",
+      "outcome": "succeeded; metadata exposed only the asynchronous BulkProjectShapes task. No task was submitted because it is not an identified public parcel-query route and could risk broader data access."
+    },
+    {
+      "route": "GET https://service-public.gov.gn/ova_sev/certificat-dimmatriculation-de-titre-foncier/",
+      "outcome": "succeeded; official procedure requires application to the commune mayor and Director General of Land Conservation; no public parcel map or geometry endpoint"
+    },
+    {
+      "route": "GET https://foncierguinee.org/",
+      "outcome": "succeeded; national land-governance information platform; no public parcel API or Kankan parcel geometry evidenced"
+    }
+  ],
+  "schemaAndCrs": "The only anonymous map layer inspected is a country polygon layer in source WKID 104257/latestWkid 8999. No parcel schema or parcel CRS response was available.",
+  "nativeIdentity": "None observed for parcels. No synthetic identity was created.",
+  "fieldMapping": {
+    "country_layer_only": {
+      "OBJECTID": "country-layer object identifier, not a parcel identity",
+      "ISO_CTRY": "country code",
+      "Shape": "country polygon geometry",
+      "Shape.area": "country-layer geometry area",
+      "Shape.len": "country-layer geometry length"
+    }
+  },
+  "safeFieldAllowlist": ["geometry", "stable native parcel id if a future public service exposes one"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, personal, tax/account, legal-description, or ownership fields were requested. No login, credentials, private token, CAPTCHA bypass, or certificate exception was used.",
+  "sourceIds": [
+    "https://cadastre.mines.gov.gn/arcgis/rest/services/SSRSMaps_SOE/MapServer",
+    "https://cadastre.mines.gov.gn/arcgis/rest/services/MapPortal/GuineaPortal_ApplicationLayer/MapServer?f=jsapi",
+    "https://service-public.gov.gn/ova_sev/certificat-dimmatriculation-de-titre-foncier/",
+    "https://foncierguinee.org/"
+  ],
+  "runtimeReadiness": "held",
+  "resultCategory": "no_anonymous_public_city_parcel_service_evidenced",
+  "blocker": "No public anonymous Kankan parcel layer or geometry API was found. The accessible official ArcGIS service is only a country-boundary layer, while the application layer requires a token.",
+  "remainingUncertainty": "Kankan may be covered by a non-public or token-controlled Landfolio/cadastre application, a local commune or prefecture registry, or a parcel layer not listed in the public service catalog. The exact-point country-layer response, token wall, or unavailable UI is not evidence of citywide cadastral absence.",
+  "nextStep": "Independent serial reviewer should verify whether Guinea's official cadastre application can expose a public parcel endpoint under authorized public access, and whether Kankan has a commune-level parcel source, before any adapter consideration."
+}

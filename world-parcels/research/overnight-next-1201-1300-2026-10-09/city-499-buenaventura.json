@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 499,
+  "cityId": "wup2025:499",
+  "name": "Buenaventura",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "centerLatLon": [3.87751185998404, -77.019907696878],
+  "queueRank": 1272,
+  "population2025": 438063,
+  "population2025k": 438.063,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Buenaventura Colombia official cadastral map parcel GIS catastro open data IGAC Alcaldía Buenaventura",
+        "result": "Found official IGAC open geospatial/cadastral data documentation, the Colombia en Mapas cadastral consultation guide, an official IGAC ArcGIS REST cadastral service, and the Buenaventura district maps page.",
+        "actualResultUrls": [
+          "https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales",
+          "https://sigi.igac.gov.co/colombia-mapas/como-hacer-una-consulta-catastral/index.html",
+          "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer",
+          "https://www.buenaventura.gov.co/categorias/mapas"
+        ]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "Buenaventura Colombia catastro mapa predial visor geográfico oficial",
+        "result": "Found the same official IGAC cadastral consultation guidance, which identifies Buenaventura as an enabled municipality for Colombia en Mapas land-use consultation, and the district's official maps pages; no separate public district parcel API was found in discovery.",
+        "actualResultUrls": [
+          "https://sigi.igac.gov.co/colombia-mapas/como-consultar-el-uso-del-suelo/index.html",
+          "https://sigi.igac.gov.co/colombia-mapas/como-hacer-una-consulta-catastral/index.html",
+          "https://www.buenaventura.gov.co/?articulos=mapas-de-buenaventura"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official IGAC cadastral REST service and Colombia en Mapas documentation provide public cadastral parcel geometry and native cadastral codes in the Buenaventura area. The district website provides planning maps but no verified parcel API was established there.",
+  "source": {
+    "operator": "Instituto Geográfico Agustín Codazzi (IGAC)",
+    "service": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer",
+    "layer": "U_TERRENO (layer 4)",
+    "schema": {
+      "geometryType": "esriGeometryPolygon",
+      "sourceSpatialReference": "EPSG:4686 MAGNA-SIRGAS geographic",
+      "safeIdentityFields": ["CODIGO", "FID"],
+      "nativeFieldMapping": {"CODIGO": "30-character national cadastral code", "FID": "ArcGIS object identifier"},
+      "excludedFields": ["MANZANA_CO", "NUMERO_SUB", "CODIGO_ANT", "GLOBALID_S", "GlobalID", "SHAPE_Leng", "SHAPE_Area"]
+    }
+  },
+  "verifiedParcelResponse": {
+    "sampleFile": "buenaventura-parcels-sample.geojson",
+    "featureCount": 3,
+    "queryScope": "bounded anonymous envelope around the city area, then object IDs 3048212, 3048213, 3048214",
+    "outFields": ["FID", "CODIGO"],
+    "outSR": 4326,
+    "geometryVerified": true
+  },
+  "coverageAssessment": {
+    "claimedScope": "IGAC describes the service as a national fundamental cadastral dataset; the layer extent is national Colombia.",
+    "verifiedOpenScope": "The anonymous spatial query returned 16,338 object IDs intersecting a broad Buenaventura-area envelope (-77.12,3.82,-76.92,3.94); three polygons were fetched by safe native IDs for a bounded sample.",
+    "countrywideVerified": false,
+    "exactPointHit": false,
+    "exactPointInterpretation": "The exact WUP point returned zero intersecting U_TERRENO features. This is not treated as evidence of citywide absence; the point may be outside mapped parcel coverage or on non-parcel space."
+  },
+  "resultCategory": "public_arcgis_cadastral_polygon_service_with_bounded_sample",
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The sample is spatially near the WUP point but not an exact-point hit; the public service's full citywide coverage, update cadence for this location, and adapter semantics require independent serial qualification.",
+  "nextStep": "Serial reviewer should independently validate the service, safe native identity semantics, CRS conversion, and citywide coverage before any runtime admission."
+}

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-6617-wenjiang.json",
+  "purpose": "Document first-party Wenjiang registry context and bounded anonymous geometry-access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Wenjiang local government and Chengdu planning/natural-resources geospatial service context is evidenced. The current public application was inspected, but no anonymous cadastral parcel vector service or bounded geometry response was verified.",
+  "registryAssessment": "Local registry/procedure context evidenced through the first-party Wenjiang government-service portal and official district planning/natural-resources references. This is local custodian evidence, not source admission or runtime integration.",
+  "searchQueries": [
+    {"language": "English", "query": "Wenjiang Chengdu China official cadastral parcel map land registration geoportal API", "result": "Official Chengdu geospatial and open-data portals found; no anonymous parcel geometry route.", "resultUrls": ["https://cdmap.cd168.cn/", "https://sichuan.tianditu.gov.cn/chengdu/public/service.aspx", "https://www.chengdu.gov.cn/data/oportal/index"]},
+    {"language": "Chinese", "query": "温江区 不动产登记 地籍图 宗地图 官方 成都市 规划和自然资源 地图 服务", "result": "Official Wenjiang service and Chengdu geospatial portals found; no anonymous parcel geometry route.", "resultUrls": ["https://cdswjq.sczwfw.gov.cn/", "https://cdmap.cd168.cn/", "https://www.chengdu.gov.cn/data/oportal/index"]}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not performed against a verified cadastral endpoint; exact WUP point [30.7009918308298, 103.835825307731] remains unchanged and no absence inference is made.", "requestEvidence": []},
+  "attempts": [
+    {"url": "https://cdmap.cd168.cn/", "method": "GET via curl with verified TLS", "httpStatus": 200, "result": "Current HTML and scripts inspected; Wenjiang map/category content was present, but no cadastral parcel viewer/API, schema, CRS, or safe parcel ID was exposed."},
+    {"url": "https://sichuan.tianditu.gov.cn/chengdu/public/service.aspx", "method": "GET via first-party web retrieval", "httpStatus": "indexed", "result": "Official Chengdu geospatial service-resource page found; no public parcel feature route exposed."},
+    {"url": "https://cdswjq.sczwfw.gov.cn/", "method": "GET via first-party web retrieval", "httpStatus": "indexed", "result": "Official Wenjiang government portal retrieved; service context only, no parcel geometry response."},
+    {"url": "https://www.chengdu.gov.cn/data/oportal/index", "method": "GET via first-party web retrieval", "httpStatus": "indexed", "result": "Official open-data portal inspected for geographic-space and natural-resources resources; no anonymous Wenjiang parcel route identified."}
+  ],
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "sourceFieldMapping": null,
+  "coverageAssessment": {"claimedScope": "Official Wenjiang local-government and Chengdu municipal geospatial-service context.", "verifiedOpenScope": "Local registry/procedure and general geospatial service context only; parcel geometry access unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "An authenticated or separately published cadastral service may exist, but no login, credential, CAPTCHA bypass, private token, or unsafe registration/ownership data was attempted. CRS, schema, native identity, point hit, and citywide completeness remain unknown.",
+  "nextStep": "Serial reviewer may independently qualify a first-party Wenjiang/Chengdu parcel adapter only after confirming a current public route, safe native ID, CRS/schema, bounded geometry response, and coverage."
+}

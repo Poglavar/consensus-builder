@@ -1,0 +1,29 @@
+{
+  "cityRecord": "city-9545-pusad.json",
+  "cityCode": 9545,
+  "queueRank": 2938,
+  "name": "Pusad",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "reviewStatus": "complete_research_held",
+  "queryAndRequestSummary": "Separate English and Marathi first-party discovery identified Maharashtra Bhumi Abhilekh, Mahabhumi, the official BhuNaksha route, and the Pusad Sub-Divisional Land Records Office in Yavatmal. The BhuNaksha landing route was identified, but direct retrieval timed out before current JavaScript/configuration and an anonymous parcel ID+geometry response could be inspected.",
+  "attemptedRoutes": [
+    {"url": "https://bhumiabhilekh.maharashtra.gov.in/Services", "method": "GET", "outcome": "first-party Maharashtra service page; identifies e-Map/BhuNaksha and map-with-land-records services"},
+    {"url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard", "method": "GET", "outcome": "first-party Mahabhumi portal; identifies Mahabhunakasha and authorised state land-records service"},
+    {"url": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=22&source=DistrictContact", "method": "GET", "outcome": "first-party Yavatmal district page; lists the Pusad land-records office"},
+    {"url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html", "method": "GET", "outcome": "official viewer route; direct curl request timed out after 20 seconds; no API/schema or geometry response obtained"}
+  ],
+  "scopeLimits": [
+    "No parcel sample is retained because no native parcel identity and full polygon were obtained.",
+    "No exact-point or bounded query response was obtained; timeout is not evidence of citywide absence.",
+    "The local custodian evidence is an official Pusad office listing; the map service is state-level, not a city-owned endpoint.",
+    "Only safe identity, geometry, CRS, and service metadata would be eligible for retention; no raw source attributes were retained."
+  ],
+  "nativeFieldMapping": {"canonicalIdentity": null, "alsoObserved": [], "retainedGeoJSONProperty": null, "compositeKeyProvenance": null},
+  "safeFieldAllowlist": ["stable native parcel identity", "full native parcel geometry", "geometry CRS", "source service/layer metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "registryFound": true,
+  "uncertainty": "The official state service and local Pusad land-record office are evidenced, but anonymous public parcel geometry and schema remain unverified. No credentials, private tokens, CAPTCHA/Cloudflare bypass, TLS exception, or unsafe fields were used."
+}

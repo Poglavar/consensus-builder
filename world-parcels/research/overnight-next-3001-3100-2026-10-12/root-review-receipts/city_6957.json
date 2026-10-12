@@ -1,0 +1,38 @@
+{
+  "taskId": "city:6957",
+  "decision": "held",
+  "checkedAt": "2026-10-12T00:47:13Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-6957-kaspiysk.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/kaspiysk-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 6957,
+    "rank": 3013,
+    "country": "Russian Federation",
+    "point": [
+      42.8810451320123,
+      47.6325621368155
+    ],
+    "populationPersons": 198601
+  },
+  "checks": {
+    "bilingualExecutedSearchesRecorded": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "firstPartyCustodyCorroboration": [
+    "https://nspd.gov.ru/map",
+    "https://www.kaspiysk.org/storage/files/%D0%9F%D0%BE%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5%20%E2%84%96150.pdf"
+  ],
+  "reason": "The official NSМD/NSPD map route and first-party Kaspiysk municipal cadastral procedure are identified; the map/API response remained unavailable. The bounded intersects request in ignored scratch has no response. No safe native parcel ID or polygon was retained. Timeouts do not establish citywide absence."
+}

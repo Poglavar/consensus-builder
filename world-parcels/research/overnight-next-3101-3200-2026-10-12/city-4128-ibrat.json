@@ -1,0 +1,80 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 4128,
+  "queueRank": 3164,
+  "name": "Ibrat",
+  "country": "Uzbekistan",
+  "countryCode": "UZ",
+  "iso3": "UZB",
+  "locId": 860,
+  "capital": false,
+  "point": [40.5761536405821, 71.1278684966842],
+  "population2025": 189898,
+  "population2025k": 189.898,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ibrat Uzbekistan cadastral parcel map official land registry cadastral viewer",
+        "result": "First-party discovery identified Uzbekistan's National Geoportal (open.ngis.uz), the Cadastre Agency, and Digital Government documentation describing public land-parcel registry information. No Ibrat-specific anonymous parcel-vector endpoint was verified.",
+        "actualResultUrls": ["https://open.ngis.uz/", "https://dgov.uz/en/solution/detail/52/", "https://gov.uz/oz/kadastr"]
+      },
+      {
+        "language": "Uzbek (local/official)",
+        "query": "Ibrat O'zbekiston kadastr xaritasi yer uchastkasi rasmiy",
+        "result": "Rasmiy qidiruv Ibrat shaharchasini Farg'ona viloyati, Buvayda tumanida ko'rsatdi va Milliy geoaxborot portali hamda Kadastr agentligi xizmatlarini tasdiqladi. Ibrat uchun anonim ochiq parcel-vector endpointi, sxemasi yoki geometriyasi tasdiqlanmadi.",
+        "actualResultUrls": ["https://olddata.gov.uz/uz/datasets/4323?dp-1-page=68&dp-1-sort=g6", "https://open.ngis.uz/", "https://gov.uz/oz/kadastr/news/view/143473"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": "O'zbekiston Respublikasi Kadastr agentligi / Davlat kadastrlari palatasi; a Farg'ona-region cadastral department is listed in the official open-data directory, but a Buvayda-specific open parcel service was not evidenced.",
+    "locality": "Ibrat shaharchasi, Buvayda tumani, Farg'ona viloyati, Uzbekistan.",
+    "evidenceUrls": ["https://olddata.gov.uz/uz/datasets/4323?dp-1-page=68&dp-1-sort=g6", "https://olddata.gov.uz/uz/datasets/9598", "https://open.ngis.uz/"],
+    "scopeNote": "The locality and national/regional cadastral custodians were evidenced, but no public anonymous Ibrat parcel API, stable native parcel identity, schema, CRS response, or geometry was qualified; registryFound therefore remains null."
+  },
+  "officialSources": [
+    {"url": "https://open.ngis.uz/", "observation": "Official National Geoportal landing page; it advertises cadastral-number and map search, but the direct page request timed out from this environment."},
+    {"url": "https://dgov.uz/en/solution/detail/52/", "observation": "Official Digital Government description says the National Geoportal provides public information about registered land parcels, including cadastral number, address, and use purpose; it does not expose a verified anonymous geometry API in the retrieved page."},
+    {"url": "https://gov.uz/oz/kadastr/news/view/143473", "observation": "Official Cadastre Agency notice states that open.ngis.uz was launched as a public geoportal for land parcels and real-estate objects."},
+    {"url": "https://olddata.gov.uz/uz/datasets/4323?dp-1-page=68&dp-1-sort=g6", "observation": "Official open-data record identifies an institution in Ibrat shaharchasi, Buvayda tumani, Farg'ona viloyati; this supports locality identification, not parcel coverage."},
+    {"url": "https://olddata.gov.uz/uz/datasets/9598", "observation": "Official open-data directory lists the Farg'ona regional land-resources/state-cadastre department and its public office metadata."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://open.ngis.uz/", "outcome": "Timed out after 25 seconds from the research environment; no HTML, JavaScript, service URL, schema, CRS, or feature response was obtained."},
+    {"method": "GET", "url": "https://dgov.uz/en/solution/detail/52/", "outcome": "HTTP content retrieved through first-party Digital Government page; documentation confirms the National Geoportal's public land-parcel information scope, but contains no parcel geometry response."},
+    {"method": "GET", "url": "https://dgov.uz/uz/solution/detail/52/", "outcome": "HTTP content retrieved through first-party Uzbek-language Digital Government page; it describes public cadastral land information and open.ngis.uz, but no anonymous geometry endpoint."},
+    {"method": "GET", "url": "https://gov.uz/oz/kadastr/news/view/143473", "outcome": "First-party Uzbek Cadastre Agency notice retrieved; it confirms public geoportal launch, not a directly usable parcel API."},
+    {"method": "GET", "url": "https://olddata.gov.uz/uz/datasets/4323?dp-1-page=68&dp-1-sort=g6", "outcome": "First-party open-data page retrieved; it contains an Ibrat shaharchasi, Buvayda tumani locality reference, but no parcel polygons or parcel IDs."},
+    {"method": "GET", "url": "https://olddata.gov.uz/uz/datasets/9598", "outcome": "Search result and official directory identify the Farg'ona regional cadastral custodian; no Buvayda parcel endpoint was exposed."},
+    {"method": "GET", "url": "https://kadastr.uz/uz/ochiq-ma%27lumotlar", "outcome": "First-party Cadastre Agency open-data page discovered; no bounded anonymous parcel geometry response was retained."},
+    {"method": "POST", "url": "https://open.ngis.uz/", "outcome": "Not attempted; no safe public POST contract or endpoint was exposed, and no login, credentials, CAPTCHA, private token, or owner/property lookup was used."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Uzbekistan National Geoportal and Cadastre Agency public registry information, with Farg'ona regional cadastral custodian evidence.",
+    "verifiedOpenScope": "Official public-portal documentation only; no anonymous bounded parcel ID-plus-geometry response was verified for Ibrat.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel ID", "full parcel polygon", "CRS", "public service metadata", "retrieval date"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The exact WUP point [40.5761536405821, 71.1278684966842] was preserved and not shifted; no exact-point hit or miss was used as an absence claim.",
+    "The Ibrat locality reference and national/regional cadastral custodians do not establish anonymous citywide parcel coverage.",
+    "The official geoportal timed out before its current JavaScript/configuration or service routes could be inspected from this environment.",
+    "No parcel ID, native schema, CRS response, or geometry was verified, so no sample GeoJSON was retained.",
+    "No unsafe personal, owner, address, contact, titleholder, tax, account, credential, or private-token data was requested or retained. This packet is research evidence only and is not source integration or admission."
+  ]
+}

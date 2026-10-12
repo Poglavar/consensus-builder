@@ -1,0 +1,53 @@
+{
+  "cityRecord": "city-526-sunyani.json",
+  "cityCode": 526,
+  "queueRank": 3102,
+  "city": "Sunyani",
+  "country": "Ghana",
+  "countryCode": "GH",
+  "attempt": 1,
+  "reviewStatus": "complete_research_held_runtime",
+  "requests": [
+    {
+      "route": "GET https://www.lc.gov.gh/",
+      "outcome": "HTTP 200; official institutional site. General agency and Survey & Mapping Division material, no parcel service endpoint exposed in the inspected homepage/configuration."
+    },
+    {
+      "route": "GET https://onlineservices.lc.gov.gh/",
+      "outcome": "HTTP 200; public service landing page, but land services require account login and service submission. No anonymous parcel map/API response."
+    },
+    {
+      "route": "GET https://elis.lc.gov.gh/",
+      "outcome": "HTTP 200; ELIS login wall. HTML form posts to two_factor_verification and requests official email/password. No login attempted."
+    },
+    {
+      "route": "GET https://igf.mlgrd.gov.gh/",
+      "outcome": "HTTP 200; dLRev redirect shell to LRE/index.php, presenting sign-in choices rather than an anonymous parcel layer. No credentials used."
+    },
+    {
+      "route": "GET https://oasl.gov.gh/contact-us/",
+      "outcome": "First-party regional contact evidence for Bono & Bono East office in Sunyani; custodian/contact evidence only, no parcel geometry."
+    },
+    {
+      "route": "GET https://www.lc.gov.gh/contact-us/csau/ and official service charter",
+      "outcome": "First-party procedural evidence for land searches, registry maps/site plans, and Sunyani CSAU/regional service context; no anonymous downloadable parcel data."
+    }
+  ],
+  "scopeLimits": [
+    "Research was limited to anonymous public GET discovery and inspection.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS-disable exception was used.",
+    "No owner, address, contact, titleholder, personal, tax/account, or other unsafe fields were requested or retained.",
+    "No exact-point parcel query was attempted because no public parcel endpoint was identified; this is not evidence of citywide absence.",
+    "No GeoJSON sample was retained because no safe native parcel identity plus full polygon was publicly verified."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel geometry"],
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "uncertainty": [
+    "The Lands Commission is evidenced as the official custodian and Sunyani regional service presence, but public access to parcel-level records appears service/login based.",
+    "Absence of an anonymous viewer/API in this bounded attempt does not establish that Ghana lacks digital parcel data or that Sunyani lacks cadastral coverage.",
+    "runtimeReadiness remains held pending independent serial qualification of a real adapter and safe public geometry."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "evidenceCache": "tmp/valhalla-parcel-research/sunyani-526/"
+}

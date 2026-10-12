@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityId": "wup2025:1860",
+  "cityCode": 1860,
+  "queueRank": 1491,
+  "name": "Kas",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "point": [12.5059709379069, 24.2881537768175],
+  "population2025": 381286,
+  "population2025k": 381.286,
+  "populationUnit": "persons",
+  "status": "complete",
+  "resultCategory": "official_registry_context_geometry_unverified",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kas Sudan official cadastral parcel map land registry GIS geoportal",
+        "result": "First-party discovery found the National Information Center page for Sudan Spatial Portal, which describes a national interactive spatial map browser and OGC WMS/WFS services and links to geoportal.gov.sd. The Judiciary’s Aqari portal documents national land-registration and real-estate-record services. No Kas-specific anonymous parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://nic.gov.sd/public/projectDetails/3",
+          "https://aqari.nctr.sd/en",
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "كاس السودان خريطة كادسترية قطع الأراضي السجل العقاري بوابة مكانية رسمية",
+        "result": "Arabic first-party discovery found the Sudan Spatial Portal description and the official Aqari national real-estate registration portal. The sources establish national spatial/registration context but expose no Kas-specific safe parcel ID and geometry response.",
+        "actualResultUrls": [
+          "https://nic.gov.sd/public/projectDetails/3",
+          "https://aqari.nctr.sd/ar",
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidenceUrls": [
+    "https://nic.gov.sd/public/projectDetails/3",
+    "https://aqari.nctr.sd/ar",
+    "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9_%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A"
+  ],
+  "registryBasis": "Official Sudan national spatial-portal and Judiciary land-registration service context was verified, but no Kas-local registry custodian, cadastral office page, or city-specific parcel layer was independently evidenced. registryFound remains null.",
+  "source": {
+    "sourceId": "SD-1860-KAS-SUDAN-SPATIAL-PORTAL-AQARI-REVIEW",
+    "name": "Sudan Spatial Portal / Judiciary Aqari land-registration services",
+    "url": "https://nic.gov.sd/public/projectDetails/3",
+    "operator": "National Information Center, Sudan; Judiciary of the Republic of Sudan",
+    "serviceType": "National spatial portal and land-registration service context reviewed; no safe anonymous Kas parcel feature response verified.",
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Sudan national spatial portal advertises OGC WMS/WFS; Aqari describes a national land-registration system.",
+    "verifiedOpenScope": "National institutional/service descriptions only. Kas parcel coverage, schema, native identity, CRS, exact-point result, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "technicalBlocker": "The official geoportal.gov.sd link from the Sudan Spatial Portal timed out during bounded ordinary HTTPS GET attempts. The NIC page itself returned 200 and exposed the geoportal link plus WMS/WFS description, but no current service URL, JavaScript configuration, layer schema, CRS, or feature response. Aqari returned 200 and documented registration services but no public anonymous parcel geometry endpoint. No login, credentials, CAPTCHA bypass, private token, unsafe owner/address field, or TLS verification disablement was used.",
+  "safeFieldAllowlist": ["stable native parcel ID", "full native parcel geometry", "native geometry CRS", "source URL", "request status", "schema field names needed to identify safe ID/geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "The linked national geoportal may expose parcel geometry through a current viewer or service that was unavailable by timeout. No conclusion about parcel absence at Kas or citywide coverage is made; the unchanged WUP point was not shifted and was not tested against a parcel layer.",
+  "nextStep": "Hold runtime integration. A later researcher may inspect the current Sudan geoportal viewer configuration, if reachable, and verify a Kas-scoped anonymous feature request with stable native IDs, safe geometry only, schema, and CRS before retaining any sample.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []}
+}

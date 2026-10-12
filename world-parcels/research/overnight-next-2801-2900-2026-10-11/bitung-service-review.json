@@ -1,0 +1,21 @@
+{
+  "cityRecord": "city-8574-bitung.json",
+  "cityCode": 8574,
+  "queueRank": 2838,
+  "name": "Bitung",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "pointLatLon": [1.44559473513715, 125.160915303709],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": "See city-8574-bitung.json attemptedRoutes; all executed routes and outcomes are recorded there.",
+  "localCustodianAssessment": "The official kot-bitung.atrbpn.go.id hostname and official search material identify Kantor Pertanahan Kota Bitung, establishing a local land-registry/cadastre custodian. This does not establish public parcel-vector coverage.",
+  "schemaAndCrs": "No parcel API, native identity field, source mapping, geometry transport, or CRS was exposed by the bounded anonymous inspection.",
+  "safeFieldAllowlist": ["stable native parcel identifier only if independently returned by a public route","bounded public response metadata","source service URL","source CRS/coordinate order when declared","retrieval date","full unchanged polygon geometry only when safely obtained"],
+  "unsafeFieldsNotRequested": ["owner","address","contact","titleholder","tax/account","certificate/title","personal data"],
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Local custodian and official national map infrastructure were evidenced, but no anonymous parcel schema, stable identity, CRS, or geometry was obtained. Adapter qualification remains a separate serial review."},
+  "scopeLimits": ["Exact WUP point and latitude/longitude order were preserved.","No coordinate was shifted and no exact-point parcel hit/miss was inferred.","No full parcel polygon is retained and no sample GeoJSON is created.","DNS failures on guessed alternate hostnames are access limitations, not evidence of cadastral absence.","No unsafe personal, ownership, address, title, tax, or certificate fields were requested or retained.","Raw HTML and JavaScript evidence remains under ignored tmp/valhalla-parcel-research/8574/.","This packet is research evidence only and is not source integration or admission."],
+  "uncertainty":"BHUMI/ATLAS documentation and the Bitung local custodian are confirmed, but current anonymous parcel coverage, public endpoint availability, citywide completeness, native schema/CRS, identity semantics, licensing, and update cadence remain unverified."
+}

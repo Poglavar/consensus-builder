@@ -1,0 +1,31 @@
+{
+  "taskId": "city:7507",
+  "decision": "held",
+  "checkedAt": "2026-10-11T22:37:52.869460Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-7507-mongbwalu.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/mongbwalu-service-review.json"
+  ],
+  "reason": "Official Ituri cadastral districts and request workflow establish national/provincial custody, but no Mongbwalu-specific anonymous native-ID polygon response. Local registry custody stays null; lack of a viewer is not parcel absence.",
+  "identitySourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+  "checks": {
+    "immutableQueueIdentity": "matched original WUP 2025 archive and ranked roster",
+    "englishAndLocalQueries": "present in packet with result URLs",
+    "durableFullPolygons": 0,
+    "nativeIdRead": "not_evidenced",
+    "forcedPaging": "not_evidenced",
+    "boundedCells13": "not_evidenced",
+    "metricGeosValidityAndOverlap": "not_evidenced",
+    "sourceBinding": "not_evidenced",
+    "headedDetailsPanel": "not_evidenced",
+    "runtimeAdmission": false
+  },
+  "sourceUrlsReviewed": [
+    "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+  ],
+  "effectiveRegistryFoundForQueuedCity": null
+}

@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:1684",
+  "cityCode": 1684,
+  "wupCityCode": 1684,
+  "name": "Tver",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso2": "RU",
+  "iso3": "RUS",
+  "rank": 1564,
+  "queueRank": 1564,
+  "point": [56.8526121935049, 35.8935971762724],
+  "centerLatLon": [56.8526121935049, 35.8935971762724],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 366542,
+  "population2025k": 366.542,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Tver municipal pages document the city Department of Property and Land Resources and municipal cadastral work, including current territorial cadastral plans. Official regional service information also identifies cadastral-plan/EGRN procedures through the Tver MFC. The parcel registry custodian is the federal Rosreestr/Roskadastr system; no separate city-owned parcel feature service was verified.",
+  "registryEvidenceUrls": [
+    "https://www.tver.ru/administration/structure/departament-upravleniya-imushchestvom-i-zemelnymi-resursami/",
+    "https://www.tver.ru/administration/munitsipalnoe-imushchestvo/karta-plany-territoriy-2025/",
+    "https://www.tver.ru/administration/munitsipalnoe-imushchestvo/kompl.php",
+    "https://mfc-tver.ru/services/detail.php?ELEMENT_ID=54322",
+    "https://pkk.rosreestr.ru/",
+    "https://nspd.gov.ru/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The current national public map/API route could not be inspected anonymously in this environment: nspd.gov.ru, pkk.rosreestr.ru, and rosreestr.gov.ru timed out. No safe ID-plus-complete-geometry response was obtained, so no polygon or native field schema is retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_no_public_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Tver municipal cadastral-work and property/land administration pages; federal Rosreestr/Roskadastr public cadastral-map channel.",
+    "verifiedOpenScope": "Official source pages were identified, but no anonymous parcel feature response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "serviceEvidence": {
+    "serviceUrl": "https://nspd.gov.ru/",
+    "layer": null,
+    "layerName": null,
+    "geometryType": null,
+    "sourceCrs": null,
+    "nativeIdentityField": null,
+    "safeRequestedFields": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "boundedFeatureCount": 0,
+    "representativeNativeIds": []
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tver official cadastral map public parcel Rosreestr Tver region official",
+        "scope": "Identify an official city-in-scope cadastral custodian and a safe public parcel geometry route.",
+        "result": "Search identified the official Tver municipal property/land department, current municipal cadastral-work pages, the Tver MFC EGRN service page, and the Rosreestr public-cadastral-map/NSPD routes. Direct requests to the national map routes timed out; no API schema or geometry was retrieved.",
+        "actualResultUrls": [
+          "https://www.tver.ru/administration/structure/departament-upravleniya-imushchestvom-i-zemelnymi-resursami/",
+          "https://www.tver.ru/administration/munitsipalnoe-imushchestvo/karta-plany-territoriy-2025/",
+          "https://mfc-tver.ru/services/detail.php?ELEMENT_ID=54322",
+          "https://pkk.rosreestr.ru/",
+          "https://nspd.gov.ru/"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Russian",
+        "query": "Тверь официальный кадастровая карта публичная Росреестр кадастровые участки",
+        "scope": "Independent local-language search for the Tver municipal/regional cadastral custodian and public map/API.",
+        "result": "Search identified official Tver pages for municipal cadastral plans and the city property/land department, plus the official references to the Rosreestr public cadastral map and EGRN services. No anonymous parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://www.tver.ru/administration/munitsipalnoe-imushchestvo/karta-plany-territoriy-2025/",
+          "https://www.tver.ru/administration/munitsipalnoe-imushchestvo/kompl.php",
+          "https://www.tver.ru/administration/structure/departament-upravleniya-imushchestvom-i-zemelnymi-resursami/",
+          "https://mfc-tver.ru/services/detail.php?ELEMENT_ID=54322",
+          "https://pkk.rosreestr.ru/"
+        ],
+        "executionMethod": "Separate Russian-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The current viewer JavaScript/configuration, service endpoint, schema, CRS, native parcel identity, anonymous query shape, and geometry availability remain unverified. Timeouts, HTTP 403, or unavailable UI are not evidence of citywide cadastral absence. Municipal cadastral-plan PDFs/pages evidence local administrative activity but is not a substitute for a safe parcel feature feed.",
+  "nextStep": "Serial reviewer may independently inspect NSPD/Rosreestr and qualify a safe adapter if an anonymous ID-plus-geometry response becomes available; keep runtime held from this packet alone."
+}

@@ -1,0 +1,11 @@
+{
+  "taskId": "city:1336",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-1336-point-cook.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/point-cook-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T15:57:00.075243+00:00",
+  "reason": "Queue identity and rank match the WUP 2025 source. Both recorded searches are English, so the bilingual-search requirement is unverified. Live Vicmap layer metadata exposes parcel ID schema, but its feature query returns an unsupported-operation error; no Point Cook polygon or qualifying adapter evidence exists. This is unresolved access, not citywide absence."
+}

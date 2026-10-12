@@ -1,0 +1,60 @@
+{
+  "taskId": "city:852",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-852-kisii.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/kisii-service-review.json",
+    "tmp/valhalla-parcel-research/kisii/ardhisasa.html",
+    "tmp/valhalla-parcel-research/kisii/parcel-layer.json",
+    "tmp/valhalla-parcel-research/kisii/query-point.geojson"
+  ],
+  "checkedAt": "2026-10-12T00:10:02Z",
+  "city": "Kisii",
+  "identityCheck": {
+    "officialArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "queueRank": 2983,
+    "country": "Kenya",
+    "pointLatLon": [
+      -0.670990402707098,
+      34.7615978139198
+    ],
+    "populationPersons": 200579,
+    "queueRosterPacketAndOfficialSourceMatch": true
+  },
+  "searchLanguages": [
+    "English",
+    "Swahili (local/native)"
+  ],
+  "bilingualSearchEvidence": "Packet records two executed language queries with result URLs; paired review corroborates investigated routes.",
+  "registryFound": true,
+  "durableSamplePolygonCount": 0,
+  "safeNativeParcelIdAndFullPolygonVerified": false,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Official Kisii County and State Department pages identify local land-record and survey custody. No anonymous official native parcel ID or polygon was obtained. The saved WWF Kenya layer extent is 39.43–39.71 E and -0.0095–0.2814 N, outside Kisii; its empty response cannot establish absence. Its query also sent latitude as ArcGIS X and longitude as Y, so that point test is invalid independently of the extent mismatch.",
+  "sourceChecks": [
+    {
+      "url": "https://kisii.go.ke/departments/lands-physical-planning-housing-and-urban-development/",
+      "observation": "First-party page states custody and maintenance of land records and survey records."
+    },
+    {
+      "url": "https://www.lands.go.ke/land-registries",
+      "observation": "First-party directory lists Kisii lands office and land survey/mapping functions."
+    },
+    {
+      "url": "https://wwfke-giscoe.wwfkenya.org/arcgis/rest/services/General/ParcelAreas/MapServer/1",
+      "observation": "Original non-government layer metadata extent excludes Kisii; saved FeatureCollection has zero features, and request coordinates were reversed for ArcGIS XY."
+    }
+  ],
+  "absenceInference": false,
+  "pointQueryCoordinateOrderValid": false
+}

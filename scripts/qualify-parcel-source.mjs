@@ -12,6 +12,33 @@ const MAX_RESPONSE_MS = 45_000;
 const MAX_SAMPLE_IDS = 5;
 const CELL_OFFSETS = [[-1,-1],[0,-1],[1,-1],[-1,0],[0,0],[1,0],[-1,1],[0,1],[1,1],[0,-2],[0,2],[-2,0],[2,0]];
 const SENSITIVE_FIELD = /owner|propriet|address|holder|title.?name|person|company|organization|organisation/i;
+// Dense cities: where a source reads exact IDs at one or more requests per parcel, re-reading every
+// collected parcel can spend the whole budget (and a provider's hourly limit). Cells are halved
+// until the estimated re-read fits this many requests; every collected parcel is still re-read.
+const REREAD_REQUEST_TARGET = 150;
+const MIN_CELL_DEGREES = 0.00025;
+// The forced page-size-one stage reads at most MAX_SAMPLE_IDS known IDs, so it needs no larger
+// feature cap; some adapters bound ceil(maxFeatures / pageSize) and refuse the production cap there.
+const FORCED_STAGE_MAX_FEATURES = 100;
+
+// Requests per parcel of an exact-ID read: 0 when the source batches IDs (fewer requests than IDs).
+export function exactReadCost(requestCount, idCount) {
+    return idCount > 0 && requestCount >= idCount ? requestCount / idCount : 0;
+}
+
+// The 5x5-cell box around the 13 sampled cells: one read of it estimates how many parcels the
+// cells will collect (a sparse centre cell alone misjudged Wellington).
+export function footprintBbox(point, step) {
+    const boxes = cellsForPoint(point, step).map(cell => cell.bbox);
+    return [0, 1, 2, 3].map(i => (i < 2 ? Math.min : Math.max)(...boxes.map(box => box[i])));
+}
+
+// Halve the cell while the 13 cells plus a sample-centroid cell (14 of the footprint's 25 cells)
+// would collect more parcels than the re-read target allows.
+export function shouldShrinkCell({ footprintFeatures, perIdCost, step }) {
+    const expectedParcels = footprintFeatures * (CELL_OFFSETS.length + 1) / 25;
+    return perIdCost > 0 && step / 2 >= MIN_CELL_DEGREES && expectedParcels * perIdCost > REREAD_REQUEST_TARGET;
+}
 
 export function cellsForPoint([longitude, latitude], step) {
     if (!Number.isFinite(longitude) || !Number.isFinite(latitude) || longitude < -180 || longitude > 180 || latitude < -90 || latitude > 90
@@ -72,10 +99,11 @@ export function assessForcedQueryEvidence({ requests, expectedIds, returnedIds, 
     const returned = [...returnedIds].sort();
     const sameIds = JSON.stringify(expected) === JSON.stringify(returned);
     const records = Array.isArray(requests) ? requests : [];
-    if (mode === 'object-ids') {
+    // Single-equality reads end each exact ID with one singleton objectIds geometry request too.
+    if (mode === 'object-ids' || mode === 'single-equality') {
         const objectIdRequests = records.filter(request => request.idListParam === 'objectIds' && request.idListCount === 1);
         const distinctQueries = new Set(objectIdRequests.map(request => request.queryHash)).size;
-        return { passed: complete === true && sameIds && distinctQueries >= 2 && distinctQueries === objectIdRequests.length, kind: 'object-ids-manifest',
+        return { passed: complete === true && sameIds && distinctQueries >= 2 && distinctQueries === objectIdRequests.length, kind: `${mode}-manifest`,
             completeManifest: complete === true, returnedIdsMatch: sameIds, singletonObjectIdRequests: objectIdRequests.length,
             distinctSingletonObjectIdQueries: distinctQueries, duplicateObjectIdRequests: objectIdRequests.length - distinctQueries };
     }
@@ -176,7 +204,7 @@ function findRepoRoot(scriptFile) {
     return root;
 }
 
-function makeSafeFetch({ state, stage, timeoutMs = MAX_RESPONSE_MS }) {
+export function makeSafeFetch({ state, stage, timeoutMs = MAX_RESPONSE_MS }) {
     return async (input, init = {}) => {
         if (state.requests.length >= MAX_REQUESTS) throw Object.assign(new Error('Request budget exceeded.'), { code: 'qualification-request-budget' });
         const started = Date.now();
@@ -189,12 +217,12 @@ function makeSafeFetch({ state, stage, timeoutMs = MAX_RESPONSE_MS }) {
                 try {
                     const body = JSON.parse(init.body);
                     if (body && typeof body === 'object' && !Array.isArray(body)) {
-                        for (const [key, value] of Object.entries(body)) if (/^(where|cql_filter|filter|featureID|resourceId|resultRecordCount|maxRecordCount|pageSize|limit|count|maxFeatures|resultOffset|startIndex|offset|objectIds|ids)$/i.test(key)
+                        for (const [key, value] of Object.entries(body)) if (/^(where|cql_filter|filter|featureID|resourceId|resultRecordCount|maxRecordCount|pageSize|limit|count|maxFeatures|resultOffset|startIndex|offset|cursor|objectIds|ids)$/i.test(key)
                             && (typeof value === 'string' || typeof value === 'number')) values.set(key, String(value));
                     }
                 } catch {
                     try { for (const [key, value] of new URLSearchParams(init.body)) {
-                        if (/^(where|cql_filter|filter|featureID|resourceId|resultRecordCount|maxRecordCount|pageSize|limit|count|maxFeatures|resultOffset|startIndex|offset|objectIds|ids)$/i.test(key)) values.set(key, value);
+                        if (/^(where|cql_filter|filter|featureID|resourceId|resultRecordCount|maxRecordCount|pageSize|limit|count|maxFeatures|resultOffset|startIndex|offset|cursor|objectIds|ids)$/i.test(key)) values.set(key, value);
                     } } catch { /* Do not inspect arbitrary request bodies. */ }
                 }
             }
@@ -202,7 +230,7 @@ function makeSafeFetch({ state, stage, timeoutMs = MAX_RESPONSE_MS }) {
             const offsetKey = ['resultOffset', 'startIndex', 'offset'].find(key => values.has(key));
             const idsKey = ['objectIds', 'ids'].find(key => values.has(key));
             const queryIdentityParams = [...values.entries()]
-                .filter(([key]) => /^(where|cql_filter|filter|featureID|resourceId|objectIds|ids|resultRecordCount|maxRecordCount|pageSize|limit|count|maxFeatures|resultOffset|startIndex|offset)$/i.test(key))
+                .filter(([key]) => /^(where|cql_filter|filter|featureID|resourceId|objectIds|ids|resultRecordCount|maxRecordCount|pageSize|limit|count|maxFeatures|resultOffset|startIndex|offset|cursor)$/i.test(key))
                 .sort(([a, av], [b, bv]) => a.localeCompare(b) || av.localeCompare(bv));
             const queryHash = sha256(JSON.stringify({ host, pathname: url.pathname, params: queryIdentityParams }));
             const requestRecord = { stage, host, method, startedAt: new Date(started).toISOString(),
@@ -277,7 +305,9 @@ async function main() {
     const args = parseArgs(process.argv.slice(2));
     const candidateBytes = await fs.readFile(args.candidatePath);
     const candidate = JSON.parse(candidateBytes.toString('utf8'));
-    const { step, areaEnumeration } = validateCandidate(candidate);
+    const validated = validateCandidate(candidate);
+    const areaEnumeration = validated.areaEnumeration;
+    let step = validated.step;
     const repoRoot = findRepoRoot(fileURLToPath(import.meta.url));
     const { createParcelSource } = await import(pathToFileURL(path.join(repoRoot, 'backend/parcels/sources.js')));
     const { computeSourceBinding, computeSourceParcelActBinding } = await import(pathToFileURL(path.join(repoRoot, 'backend/parcels/source-binding.js')));
@@ -297,6 +327,7 @@ async function main() {
     };
     const sampledCells = [];
     const samplingPoints = [];
+    const densityProbe = [];
     const failures = {};
     const metricCrs = epsgCode(candidate.metricEpsg);
     const sourceId = candidate.descriptor.id;
@@ -305,16 +336,22 @@ async function main() {
         const descriptor = { ...candidate.descriptor };
         const fetchImpl = makeSafeFetch({ state, stage,
             timeoutMs: descriptor.adapter === 'hmlr-browser' ? 180_000 : MAX_RESPONSE_MS });
-        if (stage === 'forced-page-size-one') { descriptor.pageSize = 1; descriptor.idBatchSize = 1; }
+        if (stage === 'forced-page-size-one') {
+            descriptor.pageSize = 1; descriptor.idBatchSize = 1;
+            if (Number.isFinite(descriptor.maxFeatures)) descriptor.maxFeatures = Math.min(descriptor.maxFeatures, FORCED_STAGE_MAX_FEATURES);
+        }
         const options = descriptor.adapter === 'gml-snapshot' ? {} : { fetchImpl };
+        // Every exact-ID read says where the parcels are expected (adapters that can use it, e.g.
+        // Catastro's UTM zone, ask the right place first; the rest ignore it).
+        const located = adapter => ({ ...adapter, queryIds: (ids, options = {}) => adapter.queryIds(ids, { near: candidate.city.point, ...options }) });
         if (['gml-snapshot', 'hmlr-browser'].includes(descriptor.adapter)) {
             const previous = globalThis.fetch;
             globalThis.fetch = fetchImpl;
             const adapter = createParcelSource(descriptor, options);
             // Keep the wrapper installed until this source operation completes. Caller restores it.
-            return { adapter, restore: () => { globalThis.fetch = previous; } };
+            return { adapter: located(adapter), restore: () => { globalThis.fetch = previous; } };
         }
-        return { adapter: createParcelSource(descriptor, options), restore: () => {} };
+        return { adapter: located(createParcelSource(descriptor, options)), restore: () => {} };
     };
     const recordFailure = (name, error) => { failures[name] = safeFailure(error); };
     const runSource = async (stage, operation) => {
@@ -374,6 +411,19 @@ async function main() {
             if (!checks.explicitAbsence.passed) throw new Error('Known-format absent ID did not produce explicit complete absence.');
         } catch (error) { recordFailure('explicitAbsence', error); checks.explicitAbsence = checkRecord(false); }
 
+        if (areaEnumeration && firstExact) {
+            const perIdCost = exactReadCost(state.requests.filter(request => request.stage === 'exact-id-first-read').length, candidate.sampleIds.length);
+            try {
+                while (perIdCost > 0) {
+                    const bbox = footprintBbox(candidate.city.point, step);
+                    const probe = await runSource('density-probe', async adapter => adapter.queryBounds(bbox));
+                    const footprintFeatures = Array.isArray(probe?.features) ? probe.features.length : 0;
+                    densityProbe.push({ cellSizeDegrees: step, footprintBbox: bbox, footprintFeatures, perIdCost });
+                    if (!shouldShrinkCell({ footprintFeatures, perIdCost, step })) break;
+                    step /= 2;
+                }
+            } catch (error) { recordFailure('densityProbe', error); }
+        }
         if (areaEnumeration) {
             const cells = cellsForPoint(candidate.city.point, step);
             const pass1 = [];
@@ -585,6 +635,7 @@ async function main() {
         featureCount: features.length,
         sampleIds: candidate.sampleIds,
         cellSizeDegrees: step,
+        ...(densityProbe.length ? { densityProbe } : {}),
         sampledCells: sampledCells.map(({ index, dx, dy, bbox, complete, featureCount, ids }) => ({ index, dx, dy, bbox, complete, featureCount, ids })),
         sampledPoints: samplingPoints,
         requestCount: state.requests.length,

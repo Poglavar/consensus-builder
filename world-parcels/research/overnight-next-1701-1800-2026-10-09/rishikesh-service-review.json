@@ -1,0 +1,60 @@
+{
+  "cityRecord": "city-8694-rishikesh.json",
+  "schemaVersion": "1.0",
+  "cityCode": 8694,
+  "queueRank": 1762,
+  "city": "Rishikesh",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Uttarakhand first-party sources document a state BhuNaksha cadastral-map portal and identify the Board of Revenue as land-record custodian; the public viewer timed out before its current JavaScript/configuration, hierarchy, schema, or parcel service could be inspected. No parcel ID or polygon is retained and runtime remains held.",
+  "queryOutcomes": "English and Hindi discovery queries are recorded in city-8694-rishikesh.json with actual first-party URLs and outcomes.",
+  "requestOutcomes": "The official Board of Revenue page, official Uttarakhand government cadastral-map procedure PDF, and official Dehradun directory loaded. GET requests to https://bhunaksha.uk.gov.in/ and https://bhunaksha.uk.gov.in/05/index.html each timed out after 20 seconds. No anonymous ID+geometry request was attempted because the viewer bundle/configuration was unavailable.",
+  "scopeLimits": [
+    "Exact WUP point [30.096522613497, 78.2806609890294] was preserved in latitude/longitude order and was not shifted or used to force a parcel hit.",
+    "The state portal URL and administrative jurisdiction were evidenced, but Rishikesh revenue-village hierarchy and map coverage were not resolved.",
+    "A timeout, login wall, map extent miss, zero exact-point hit, or unusable UI is not evidence of citywide cadastral absence.",
+    "No stable native parcel identifier, native field schema, CRS response, or full parcel polygon was obtained.",
+    "No owner, address, titleholder, contact, personal, tax, account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate-reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": null,
+  "geometryQuality": "not applicable; no parcel geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not attempted because the official viewer timed out before a public map/API route was available; no absence inference is made.",
+    "requestEvidence": [
+      "https://bor.uk.gov.in/bhu-abhilekh/",
+      "https://investuttarakhand.uk.gov.in/themes/backend/uploads/Fees-for-mutation-name-change-services.pdf",
+      "https://bhunaksha.uk.gov.in/05/index.html"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Uttarakhand BhuNaksha cadastral maps and associated land-record procedure.",
+    "verifiedOpenScope": "Custodian and official viewer URL documented; no open Rishikesh parcel response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The official state cadastral route may have coverage behind a temporarily unreachable viewer, but its current service contract, safe native identity, CRS, geometry access, and Rishikesh coverage remain unknown. No claim is made about parcel absence, ownership, title, or completeness.",
+  "retainedSample": null
+}

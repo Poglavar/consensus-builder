@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-10365-thoothukudi.json",
+  "purpose": "Document first-party local land-record context and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official district page links Tamil Nadu land e-services for Patta, FMB/Chitta/TSLR and A-Register extracts. The official Tamil Nadu GIS/TamilNilam material describes cadastral-boundary integration and land-map access, but no anonymous safe citywide parcel-vector endpoint was exposed in this bounded review. The VOC Port Authority public map exposes an anonymous GeoServer WFS, schema, CRS and geometry response for port-estate layers only.",
+  "officialPrimarySources": [
+    {"url": "https://thoothukudi.nic.in/service/e-services-anytime-anywhere-land/", "observation": "Official district page links public Tamil Nadu land e-services including Patta, FMB/Chitta/TSLR, A-Register and Poramboke verification."},
+    {"url": "https://tngis.tn.gov.in/apps.html", "observation": "Official TNGIS portal describes Tamil Nadu spatial-data services and cautions that public GIS data is informational and dynamically maintained."},
+    {"url": "https://tnega.tn.gov.in/assets/pdf/it_e_pn_2025_26.pdf", "observation": "Official Tamil Nadu e-governance material describes geo-referenced cadastral boundaries linked with TamilNilam and the TamilNilam Geo-Info app."},
+    {"url": "https://webgis.vocport.gov.in/land_info_sys/webgis/public.php", "observation": "Government of India V.O. Chidambaranar Port Authority public Web GIS for port land; local map scope is port estate, not citywide cadastre."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Thoothukudi official cadastral map land records parcel GIS Tamil Nadu government", "resultUrls": ["https://thoothukudi.nic.in/service/e-services-anytime-anywhere-land/", "https://tngis.tn.gov.in/apps.html", "https://webgis.vocport.gov.in/land_info_sys/webgis/public.php"]},
+    {"language": "Tamil", "query": "தூத்துக்குடி அதிகாரப்பூர்வ நில அளவை வரைபடம் பட்டா நிலப்பதிவு", "resultUrls": ["https://thoothukudi.nic.in/ta/service/%e0%ae%87%e0%a3%a3%e0%af%88%e0%ae%af%e0%ae%b5%e0%ae%b4%e0%ae%bf-%e0%ae%9a%e0%af%87%e0%ae%b5%e0%af%88%e0%ae%95%e0%ae%b3%e0%af%8d-%e0%ae%8e%e0%ae%99%e0%ae%95%e0%af%87%e0%ae%af%e0%af%81/", "https://play.google.com/store/apps/details?id=org.tnega.tamil.nilam"]}
+  ],
+  "attempts": [
+    {"url": "https://tngis.tn.gov.in/apps/cumta/", "method": "GET", "result": "Timed out after 20 seconds; no JavaScript/configuration or API response was obtained. This is an unavailable route, not evidence of absence."},
+    {"url": "https://eservices.tn.gov.in/eservicesnew/home.html", "method": "GET", "result": "Timed out after 15 seconds; no login was attempted and no response was retained."},
+    {"url": "https://webgis.vocport.gov.in/land_info_sys/webgis/public.php", "method": "GET", "httpStatus": 200, "result": "Official public Web GIS loaded. Its JavaScript configuration identifies WMS/WFS workspace voc_port_survey and map projection EPSG:3857."},
+    {"url": "https://webgis.vocport.gov.in/geoserver/voc_port_survey/wfs?service=WFS&version=1.1.0&request=GetCapabilities", "method": "GET", "httpStatus": 200, "result": "Anonymous WFS capabilities returned port-estate layers and WGS84 bounding boxes; layers include notallotted_notused, notallotted_usedbyport and lease_land_court. This is a port-authority estate dataset, not a citywide cadastral registry."},
+    {"url": "https://webgis.vocport.gov.in/geoserver/voc_port_survey/wfs?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=voc_port_survey%3Anotallotted_notused", "method": "GET", "httpStatus": 200, "result": "Schema returned gid and the_geom (gml:MultiSurfacePropertyType), with additional unsafe owner/lease fields observed but not requested or retained. Default SRS in capabilities is urn:x-ogc:def:crs:EPSG:3857."},
+    {"url": "https://webgis.vocport.gov.in/geoserver/voc_port_survey/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=voc_port_survey%3Anotallotted_notused&outputFormat=application%2Fjson&maxFeatures=3&propertyName=the_geom&bbox=78.1357,8.8068,78.1360,8.8072,EPSG:4326", "method": "GET", "httpStatus": 200, "result": "Bounded geometry-only exact-WUP-point-area request returned an empty FeatureCollection. No geometry retained; zero hit is not citywide absence evidence."},
+    {"url": "https://webgis.vocport.gov.in/geoserver/voc_port_survey/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=voc_port_survey%3Anotallotted_usedbyport&outputFormat=application%2Fjson&maxFeatures=3&propertyName=gid%2Cthe_geom&bbox=78.125,8.797,78.147,8.817,EPSG:4326", "method": "GET", "httpStatus": 200, "result": "Broader bounded query returned port-estate MultiPolygon features, but the response is outside a verified citywide cadastral scope and was not retained as a city sample."}
+  ],
+  "safeFieldAllowlist": ["gid", "the_geom"],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Empty response from port-estate layer at the exact WUP point-area query; not evidence of citywide absence."},
+  "coverageAssessment": {"claimedScope": "Tamil Nadu state land-record/cadastral services plus a separate VOC Port Authority estate map.", "verifiedOpenScope": "Official land-record service context is verified; anonymous geometry is verified only for port-estate layers, not citywide cadastre.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "The public Tamil Nadu cadastral map/API route, its exact schema/CRS and parcel coverage at the WUP point remain unverified because TNGIS and e-services routes timed out and no safe citywide vector endpoint was exposed.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any real adapter."
+}

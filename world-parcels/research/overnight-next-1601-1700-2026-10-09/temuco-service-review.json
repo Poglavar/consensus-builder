@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-2926-temuco.json",
+  "cityCode": 2926,
+  "queueRank": 1626,
+  "name": "Temuco",
+  "country": "Chile",
+  "countryCode": "CL",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official municipal sources establish Temuco's local Catastro/DOM custodian and an anonymous parcel-role geocoder in the municipal IDE. The accessible routes did not yield a safe parcel ID plus full polygon response; no sample GeoJSON is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Spanish first-party discovery queries are recorded in city-2926-temuco.json. They found the official Municipalidad de Temuco interactive parcel/address page, municipal transparency evidence for Departamento de Catastro, and the official IDE Temuco ArcGIS REST directory and parcel GeocodeServer.",
+  "requestOutcomes": "The official REST root, ESTUDIOS folder and parcel GeocodeServer metadata returned HTTP 200. The CATASTRO folder returned ArcGIS error 499 Token Required. A bounded anonymous geocoder request returned zero candidates, but it was not a polygon query. No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe lookup or TLS-disable action was used.",
+  "attemptedRoutes": [
+    {"url": "https://ide.temuco.cl/public/rest/services?f=pjson", "method": "GET", "httpStatus": 200, "outcome": "Official REST root listed CATASTRO and ESTUDIOS folders."},
+    {"url": "https://ide.temuco.cl/public/rest/services/CATASTRO?f=pjson", "method": "GET", "httpStatus": 200, "outcome": "JSON error 499 Token Required; no authenticated retry."},
+    {"url": "https://ide.temuco.cl/public/rest/services/ESTUDIOS/Geolocalizador_Predios_202411041143_202504011222/GeocodeServer?f=pjson", "method": "GET", "httpStatus": 200, "outcome": "Parcel-role geocoder metadata returned, including WKID 32718; no polygon layer or safe ID-plus-geometry response."},
+    {"url": "https://ide.temuco.cl/public/rest/services/ESTUDIOS/Geolocalizador_Predios_202411041143_202504011222/GeocodeServer/findAddressCandidates?SingleLine=Temuco&f=pjson&outSR=4326&maxLocations=1", "method": "GET", "httpStatus": 200, "outcome": "Empty candidate response; not evidence of parcel absence."},
+    {"url": "https://www.temuco.cl/download/plano-interactivo-de-predios-y-direcciones-de-la-comuna-de-temuco/", "method": "GET", "httpStatus": 200, "outcome": "Official page loaded but exposed only a placeholder, not viewer configuration."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [-38.7378808982456, -72.6061192362359] was preserved; no coordinate shift or exact-point absence inference was made.",
+    "The public parcel route is a geocoder, not a verified parcel-polygon feature service; no geometry or stable native parcel identity was retained.",
+    "The token-required CATASTRO folder may contain additional services, but no login, token or private access was attempted.",
+    "No citywide parcel completeness, legal cadastral status, ownership, address, titleholder, contact, tax/account or personal-data claim is made.",
+    "Packet completion is not source integration/admission; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "excludedFields": ["owner or titleholder names", "addresses and contact data", "tax/account/registration details beyond a safe native parcel ID", "credentials and private tokens"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "EPSG:32718 reported by the geocoder metadata; polygon CRS unverified",
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "runtimeReadiness": "held_no_verified_public_parcel_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Current CATASTRO service contents, viewer/API configuration, polygon schema, native identity, exact-point response and citywide coverage remain unresolved. A token wall, empty geocoder result or inaccessible viewer is not evidence of citywide cadastral absence.",
+  "retainedSample": null
+}

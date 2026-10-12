@@ -1,0 +1,12 @@
+{
+  "taskId": "city:3806",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-3806-menongue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/menongue-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:34:32.732628Z",
+  "reason": "WUP identity and English/Portuguese executed search trace match. Registry custody remains unresolved (null): national IGCA/campaign references do not prove a Menongue local custodian. The original and fresh Ministry API responses return application code 300, request not permitted. No native parcel ID, polygon, or independent adapter/UI qualification exists; the access wall is not citywide absence."
+}

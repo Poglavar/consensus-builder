@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4876-wad-madan.json",
+  "purpose": "Document first-party local/state registry evidence and bounded anonymous parcel-service review for Wad Madanī.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Al Jazirah state ministry documents a Land Authority plus Planning and Survey directorates, including land allocation, lease contracts, detailed plans, and survey-approved sketches. The National Information Centre documents a Sudan Spatial Portal with WMS/WFS capabilities, but the portal root timed out during anonymous inspection. No parcel geometry or safe parcel identity was verified, and no sample was retained.",
+  "registryAssessment": "Local/state land-administration custody is evidenced through the official Al Jazirah ministry. No open digital parcel registry or public cadastral geometry endpoint was verified.",
+  "officialPrimarySources": [
+    {"url": "https://www.ogs.gov.sd/%D9%85%D8%B5%D9%84%D8%AD%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%A7%D8%B6%D9%8A/", "observation": "Official Land Authority page describes housing-plan implementation and residential plot distribution across state localities."},
+    {"url": "https://www.ogs.gov.sd/%D8%B9%D9%86-%D8%A7%D9%84%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-2/", "observation": "Official ministry page identifies land, planning, and survey directorates and their responsibilities."},
+    {"url": "https://www.ogs.gov.sd/%D8%A7%D9%84%D8%AA%D8%AE%D8%B7%D9%8A%D8%B7/", "observation": "Official planning page describes detailed plans and survey-approved sketches; no public parcel endpoint exposed."},
+    {"url": "https://www.nic.gov.sd/public/projectDetails/3", "observation": "Official National Information Centre page documents the Sudan Spatial Portal and WMS/WFS concept."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Wad Madani Sudan official cadastral map land registry parcel GIS", "result": "State land-authority custody found; no public parcel endpoint verified."},
+    {"language": "Arabic", "query": "السودان ود مدني خريطة كادسترية سجل الأراضي GIS", "result": "State land/planning/survey functions found; no public cadastral viewer/API or parcel geometry verified."}
+  ],
+  "attempts": [
+    {"url": "https://www.geoportal.gov.sd/", "method": "GET", "httpStatus": 0, "result": "30-second anonymous request timed out; current JS/configuration, services, schema, CRS, and bounded parcel response unavailable."},
+    {"url": "https://www.ogs.gov.sd/%D9%85%D8%B5%D9%84%D8%AD%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%A7%D8%B6%D9%8A/", "method": "GET", "httpStatus": 200, "result": "Official land-authority HTML loaded; prose/images and login form only, no public parcel service."},
+    {"url": "https://www.ogs.gov.sd/%D8%A7%D9%84%D8%AA%D8%AE%D8%B7%D9%8A%D8%B7/", "method": "GET", "httpStatus": 200, "result": "Official planning HTML loaded; detailed plans and survey-approved sketches described, no parcel geometry/service exposed."}
+  ],
+  "safeFieldAllowlist": ["geometry", "stable native parcel identity", "source layer name", "CRS", "response counts"],
+  "nativeFieldMapping": {},
+  "geometryDecision": "No GeoJSON parcel sample retained.",
+  "coverageAssessment": {"claimedScope": "Al Jazirah state land administration plus Sudan national spatial portal.", "verifiedOpenScope": "Official custody/documentation only; no open parcel geometry endpoint verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "uncertainty": "The relevant authorities may hold offline, authenticated, request-only, or currently unavailable parcel records. Portal timeout and no exact-point response are not evidence of citywide absence.",
+  "runtimeEligible": false,
+  "runtimeHoldReason": "Serial reviewer must independently qualify a real parcel adapter; current evidence supports registry custody but no public parcel geometry/identity source."
+}

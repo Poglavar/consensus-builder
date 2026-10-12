@@ -1,0 +1,12 @@
+{
+  "taskId": "city:7062",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-7062-longquanyi.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/longquanyi-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T14:15:27.479996Z",
+  "reason": "Official custodian and mapping platform evidenced, but bounded service capture returned no parcel schema, native ID or polygon; no live adapter qualification."
+}

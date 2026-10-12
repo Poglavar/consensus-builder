@@ -1,0 +1,62 @@
+{
+  "cityRecord": "city-2467-chlef.json",
+  "cityCode": 2467,
+  "queueRank": 2680,
+  "name": "Chlef",
+  "country": "Algeria",
+  "iso2": "DZ",
+  "point": [36.1527713590316, 1.33210935708189],
+  "population2025": 220634,
+  "population2025k": 220.634,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "discovery": {
+    "english": "Official Chlef page lists Cadastre and Conservation Foncière offices; ASGA BNDG is a general national cartography viewer.",
+    "arabic": "Arabic discovery found DGDN/Ministry of Finance cadastral-plan service references; no open parcel endpoint was evidenced."
+  },
+  "localRegistryCustodian": {
+    "evidenced": true,
+    "url": "https://www.dcw-chlef.dz/fr/index.php/wil34/admins-liens",
+    "details": "The official Chlef Directorate page lists Cadastre and Conservation Foncière under Wilaya administrations and gives local contacts."
+  },
+  "attempts": [
+    "English first-party discovery query recorded in city packet.",
+    "Arabic first-party discovery query recorded in city packet.",
+    "GET official Chlef administrative page: HTTP 200; custodian listing only.",
+    "GET official DGDN home: timeout after 20 seconds; access failure only.",
+    "GET official DGDN cadastral PDF: HTTP 503; no data.",
+    "GET official ASGA BNDG viewer: timeout; no parcel schema/CRS/geometry.",
+    "GET official Ministry of Housing Chlef page: HTTP 200; non-cadastral context only."
+  ],
+  "serviceAssessment": {
+    "publicParcelGeometryFound": false,
+    "verifiedParcelResponse": null,
+    "sourceFieldMapping": null,
+    "nativeIdentityField": null,
+    "crs": null,
+    "sampleGeojson": null,
+    "mapExtentProbe": "Not used to infer absence; no parcel map endpoint was established."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier if publicly returned",
+    "parcel polygon geometry",
+    "service/source metadata",
+    "CRS and response format"
+  ],
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInRepository": 3,
+    "fullPolygonsRetained": 0,
+    "citywideCoverage": false,
+    "countrywideCoverage": false,
+    "notes": "No anonymous bounded ID+geometry response was available to qualify."
+  },
+  "uncertainty": [
+    "Official local custodian evidence does not establish an anonymous public API.",
+    "National service availability and any authentication or portal workflow remain unresolved.",
+    "No conclusion about cadastral coverage or parcel absence is drawn from timeouts, HTTP 503, or the lack of a search result.",
+    "No owner, titleholder, address, contact, tax, account, identity, or other unsafe fields were requested."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Serial reviewer qualification is required before any adapter can be considered runtime-ready; this packet does not claim integration or admission."
+}

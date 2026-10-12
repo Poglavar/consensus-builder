@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-2963-jizzakh.json",
+  "purpose": "Document first-party registry/map discovery, current viewer evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official sources evidence the State Cadastre Chamber's Jizzakh regional administration and the National Geo-information Portal. No anonymous safe parcel-ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "Local/regional cadastral custody found through the official State Cadastre Chamber listing, which names the Jizzakh regional administration and its Jizzakh city address. The official Jizzakh government article separately describes cadastral inventory of land plots. The national portal is treated as a public map channel, not proof of citywide geometry availability.",
+  "officialPrimarySources": [
+    {
+      "url": "https://uzdkp.uz/",
+      "observation": "Official State Cadastre Chamber page lists the Jizzakh regional administration in Jizzakh city and identifies cadastral administrative contacts and functions."
+    },
+    {
+      "url": "https://gov.uz/oz/jizzax/news/view/130096",
+      "observation": "Official Jizzakh government article describes cadastral inventory and an information system covering land plots; it does not publish safe parcel geometry."
+    },
+    {
+      "url": "https://open.ngis.uz/",
+      "observation": "Official National Geo-information Portal is publicly discoverable and exposes coordinate and cadastral-number search controls; the viewer is identified as Esri-powered."
+    },
+    {
+      "url": "https://portal.ngis.uz/portal/sharing/rest/portals/0123456789ABCDEF",
+      "observation": "Public ArcGIS Enterprise portal metadata identifies portal.ngis.uz and db.ngis.uz REST service infrastructure; it does not identify a verified public parcel layer for Jizzakh."
+    }
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://open.ngis.uz/",
+    "observedTechnology": "Esri-powered public geoportal; portal metadata references ArcGIS Enterprise at portal.ngis.uz and service infrastructure at db.ngis.uz.",
+    "observedControls": ["coordinate search", "cadastral-number search", "map layers"],
+    "schemaAndCrs": "Not verified from a successful service response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://open.ngis.uz/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Direct curl request timed out after 20 seconds; no response body or service configuration was retrieved."
+    },
+    {
+      "url": "https://open.ngis.uz/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Second bounded direct request also timed out after 20 seconds; this is an access/transport finding only, not evidence of cadastral absence."
+    },
+    {
+      "url": "https://portal.ngis.uz/portal/sharing/rest/search?q=Jizzax&num=100&f=json",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Bounded direct request timed out after 20 seconds; no item or layer response was retained."
+    },
+    {
+      "url": "https://portal.ngis.uz/portal/sharing/rest/portals/0123456789ABCDEF",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "First-party web discovery returned public ArcGIS portal metadata, including portal and service host references; no parcel feature layer was verified."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No WUP-point parcel query was submitted because the public service route and safe request shape were not verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Jizzakh regional cadastral custody is evidenced by the official State Cadastre Chamber listing; the National Geo-information Portal is a national public map channel.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "The official viewer's exact parcel layer, schema, CRS, native identity, anonymous query body, and coverage remain unverified. The exact WUP point was preserved; no point-hit or timeout was interpreted as absence.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."
+  }
+}

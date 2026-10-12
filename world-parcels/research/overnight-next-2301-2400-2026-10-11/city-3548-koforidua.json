@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "wupCityCode": 3548,
+  "cityCode": 3548,
+  "queueRank": 2364,
+  "cityId": "wup2025:3548",
+  "name": "Koforidua",
+  "country": "Ghana",
+  "countryCode": "GH",
+  "iso3": "GHA",
+  "centerLatLon": [6.08496962288014, -0.257205126709419],
+  "point": [6.08496962288014, -0.257205126709419],
+  "population2025": 246770,
+  "population2025k": 246.77,
+  "populationUnit": "persons",
+  "cohorts": ["overnight-next-2301-2400-2026-10-11"],
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Koforidua Ghana official cadastral parcel map GIS Lands Commission land registry",
+        "result": "Official Ghana Lands Commission sources found. They evidence Koforidua regional service custody and cadastral/search procedures, but no anonymous public parcel geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://www.lc.gov.gh/contact-us/csau/",
+          "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/",
+          "https://www.lc.gov.gh/about-us/organizational-structure/land-registration-division-lrd/",
+          "https://onlineservices.lc.gov.gh/",
+          "https://elis.lc.gov.gh/"
+        ]
+      },
+      {
+        "language": "Twi (local language)",
+        "query": "Koforidua Ghana Twi asase cadastral map Lands Commission",
+        "result": "No additional official Twi-language cadastral viewer or anonymous parcel API was found. The official Lands Commission site exposes Twi as a service-video language and repeats the Koforidua service lead.",
+        "actualResultUrls": [
+          "https://www.lc.gov.gh/",
+          "https://www.lc.gov.gh/contact-us/csau/"
+        ]
+      }
+    ],
+    "sources": [
+      "https://www.lc.gov.gh/contact-us/csau/",
+      "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/",
+      "https://www.lc.gov.gh/about-us/organizational-structure/land-registration-division-lrd/",
+      "https://www.lc.gov.gh/storage/2023/12/CLIENT-SERVICE-CHARTER.pdf",
+      "https://onlineservices.lc.gov.gh/",
+      "https://elis.lc.gov.gh/"
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Ghana Lands Commission cadastral, survey/mapping and land-registration services, with a Koforidua regional/CSAU presence.",
+    "verifiedOpenScope": "Institutional and service metadata only; no open parcel feature response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "resultCategory": "official_local_registry_custody_but_no_open_parcel_geometry",
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "remainingUncertainty": "The Lands Commission may expose parcel records or map extracts through authenticated/service-request workflows or unpublished regional systems. No claim about citywide parcel absence or completeness is made.",
+  "nextStep": "A later reviewer should check for a documented public Ghana Lands Commission map/API route or a safe, unauthenticated regional geometry service. Do not use the login-only ELIS or online-services routes without authorized credentials.",
+  "identityPolicy": "Retain only a stable native public parcel identity with native geometry if a first-party anonymous response becomes available; do not retain owner, address, titleholder, tax, account or contact fields.",
+  "sourceIds": [],
+  "integrationDecision": "not_integrated"
+}

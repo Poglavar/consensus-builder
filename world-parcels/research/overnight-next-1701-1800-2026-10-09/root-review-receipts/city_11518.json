@@ -1,0 +1,23 @@
+{
+  "taskId": "city:11518",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-11518-huangshan.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/huangshan-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T14:50:34Z",
+  "findings": {
+    "identity": "WUP code 11518, rank 1775, China/CN, exact point and 323492 persons match immutable queue and roster.",
+    "searches": "English and Chinese query texts, outcome narratives and actual URLs recorded in city packet.",
+    "custody": "registryFound true supported by first-party Huangshan bureau article describing municipal cadastral survey and full-territory cadastral database on a physically isolated business network.",
+    "geometry": "No sample polygon or safe native parcel ID; reported GIS endpoint access failure has no original response artifact in the packet, so no positive feature metric or citywide absence inference is accepted.",
+    "admission": "No fresh native-ID read, paging, 13 bounded cells, metric GEOS checks, source binding or headed Details verification."
+  },
+  "sourceUrls": [
+    "https://zrzyj.huangshan.gov.cn/zwgk/public/6615726/11710316.html"
+  ],
+  "retainedFullPolygons": 0,
+  "runtimeAdmitted": false
+}

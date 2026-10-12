@@ -1,0 +1,73 @@
+{
+  "cityCode": 2521,
+  "queueRank": 3125,
+  "name": "Antioch",
+  "country": "United States of America",
+  "countryCode": "US",
+  "point": [37.9995977752111, -121.852977227884],
+  "population2025": 192502,
+  "population2025k": 192.502,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registry": {
+    "name": "Contra Costa County Assessor / Contra Costa County GIS",
+    "scope": "Countywide assessor parcel mapping and monthly public parcel download; Antioch is within Contra Costa County.",
+    "url": "https://www.contracosta.ca.gov/552/Maps-Property-Information"
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Antioch California official parcel map GIS Contra Costa County assessor parcels ArcGIS",
+        "result": "Found official Contra Costa County Maps & Property Information, GIS, CCMAP, and Assessor parcel download references.",
+        "actualResultUrls": [
+          "https://www.contracosta.ca.gov/552/Maps-Property-Information",
+          "https://www.contracosta.ca.gov/1818/GIS",
+          "https://gis.cccounty.us/Downloads/Assessor/"
+        ]
+      },
+      {
+        "language": "Spanish/local-language alternative",
+        "query": "Antioch California mapa parcelas oficial GIS Condado de Contra Costa assessor parcel",
+        "result": "Search results resolved to the same official Contra Costa County parcel/GIS pages; no separate Spanish-language cadastral custodian or service was identified.",
+        "actualResultUrls": [
+          "https://www.contracosta.ca.gov/552/Maps-Property-Information",
+          "https://www.contracosta.ca.gov/1818/GIS"
+        ]
+      }
+    ]
+  },
+  "service": {
+    "name": "Contra Costa County Assessor public parcel shapefile",
+    "serviceUrl": "https://gis.cccounty.us/Downloads/Assessor/Parcels_Public_September2026.zip",
+    "sourceCustodian": "Contra Costa County Assessor; download is linked by the official county Maps & Property Information page.",
+    "nativeLayer": "Parcels_Public",
+    "nativeIdentityField": "APN",
+    "nativeFieldMapping": {
+      "APN": "Assessor Parcel Number; stable native parcel identity used in the retained sample",
+      "geometry": "official parcel polygon",
+      "APN_CHECK": "source validation/check field, not retained",
+      "other_source_fields": "available in source but not requested or retained because they can contain address, valuation, building, or other unsafe/nonessential attributes"
+    },
+    "crs": "EPSG:2227 (NAD83 / California zone 3 (ftUS))",
+    "geometryType": "Polygon/MultiPolygon",
+    "safeFieldAllowlist": ["APN", "geometry"],
+    "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "tax", "account", "valuation", "building characteristics", "raw source attribute set"],
+    "sampleFile": "antioch-parcel-sample.geojson",
+    "sampleCount": 3,
+    "sampleIdentityProvenance": "GeoJSON properties.id is copied from native Parcels_Public.APN; no synthetic row number used.",
+    "exactPointCheck": {
+      "method": "Exact WUP point transformed from EPSG:4326 to EPSG:2227 as 6171823.195651, 2189257.662594 and tested against the downloaded parcel polygons without shifting.",
+      "hit": true,
+      "nativeIdentity": "074262004",
+      "sourceGeometryRetained": false
+    }
+  },
+  "runtimeReadiness": "held_independent_adapter_review",
+  "uncertainty": [
+    "The county CivicPlus pages returned a Cloudflare 403 to direct GET during this attempt; search-indexed official content and the county GIS download host remained available. No CAPTCHA or bypass was attempted.",
+    "The San Ramon-hosted ArcGIS parcel service metadata identified Contra Costa Assessor as its source, but bounded Antioch queries returned empty; it was not used for the retained sample.",
+    "The three polygons are a bounded evidence sample, not a citywide completeness claim or runtime integration admission."
+  ]
+}

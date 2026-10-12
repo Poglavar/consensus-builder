@@ -1,0 +1,12 @@
+{
+  "taskId": "city:5845",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-5845-bathinda.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/bathinda-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T14:34:00Z",
+  "findings": "Immutable WUP code 5845, rank 1331, India, point [30.2120777898521,74.9443981502469], and 421753 persons match the ranked roster. English and Punjabi executed searches are recorded. The first-party BhuNaksha hierarchy and Bathinda village extents support cadastral-service custody, while two tested plot responses are empty bounded misses; sample count is zero. The cited first-party DILRMP row reports 300154 total Bathinda-tehsil parcels and 231789 georeferenced parcels, so the packet's 231789 total-parcel wording is inaccurate. Fresh ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed details verification are absent; no runtime admission."
+}

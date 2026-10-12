@@ -1,0 +1,95 @@
+{
+  "cityCode": 348,
+  "queueRank": 2569,
+  "name": "Portoviejo",
+  "country": "Ecuador",
+  "countryCode": "EC",
+  "iso3": "ECU",
+  "point": [-1.05364692596998, -80.464647231378],
+  "population2025": 228823,
+  "population2025k": 228.823,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Portoviejo Ecuador official cadastral parcel map catastro geoportal parcelas municipio",
+        "result": "First-party discovery identified the official GAD Municipal de Portoviejo site, its GeoPortal link, the municipal Fénix Geoportal Web AppBuilder item, and the public Consulta de Ficha Predial service. The official guide documents a cadastral ‘Límite – Predios’ layer and lookup by clave predial. The viewer item metadata was public, but the configuration/data request was blocked with HTTP 403 (subscription disabled).",
+        "actualResultUrls": [
+          "https://www.portoviejo.gob.ec/",
+          "https://municipiosabiertos.gob.ec/buenas-practicas/fenix-geoportal/",
+          "https://online.portoviejo.gob.ec/Manuales/archivos/Paso_a_paso_geoportal.pdf",
+          "https://online.portoviejo.gob.ec/Certificados/FichaPredial.aspx",
+          "https://portoviejo2035.maps.arcgis.com/apps/webappviewer/index.html?id=95e184a563674d6c83f163a113076e13"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Portoviejo Ecuador catastro mapa predial oficial municipio",
+        "result": "La búsqueda en fuentes de primera parte identificó el GeoPortal/Fénix del GAD Municipal de Portoviejo, la consulta oficial de ficha predial y la guía municipal que indica la capa ‘Límite – Predios’ y la localización mediante clave predial. El elemento público de ArcGIS fue identificable, pero su configuración/datos respondió HTTP 403 (suscripción deshabilitada); no se obtuvo geometría parcelaria anónima.",
+        "actualResultUrls": [
+          "https://www.portoviejo.gob.ec/",
+          "https://municipiosabiertos.gob.ec/buenas-practicas/fenix-geoportal/",
+          "https://online.portoviejo.gob.ec/Manuales/archivos/Paso_a_paso_geoportal.pdf",
+          "https://online.portoviejo.gob.ec/Certificados/FichaPredial.aspx",
+          "https://portoviejo2035.maps.arcgis.com/sharing/rest/content/items/95e184a563674d6c83f163a113076e13?f=json"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "GAD Municipal de Portoviejo, through its official municipal GeoPortal/Fénix and cadastral services; the municipal portal separately identifies the Empresa Pública Municipal Registro de la Propiedad del cantón Portoviejo for registry services.",
+    "parcelService": "Public ArcGIS Web AppBuilder item https://portoviejo2035.maps.arcgis.com/apps/webappviewer/index.html?id=95e184a563674d6c83f163a113076e13; service endpoint not exposed because item configuration/data returned HTTP 403.",
+    "registryBasis": "The official municipal portal and guide directly evidence cadastral maps, information catastral, and a ‘Límite – Predios’ layer. This is local cadastral-source evidence, but no live parcel feature response was obtained.",
+    "registryFoundReason": "A local municipal cadastral/map custodian and public cadastral viewer/procedure were evidenced; source discovery is not source integration or adapter qualification."
+  },
+  "schemaAndCrs": {
+    "responseType": "ArcGIS Web AppBuilder application; parcel layer schema not retrievable",
+    "geometryType": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {
+      "nativeIdentity": null,
+      "nativeCadastralReference": "clave predial is documented as the parcel lookup key, but its underlying field name was not exposed",
+      "activeFilter": null
+    },
+    "compositeKeyProvenance": null,
+    "inspectionNote": "The municipal guide documents the Límite – Predios layer and table selection, but no safe anonymous ID-plus-geometry response or layer metadata was available. No source attributes were requested or retained."
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed: the public viewer configuration/data endpoint was unavailable with HTTP 403, and the exact WUP point was not shifted or used to infer absence.",
+    "nativeIdField": null,
+    "safeFieldsRetained": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal Portoviejo canton GeoPortal/Fénix with cadastral information and a documented Límite – Predios layer.",
+    "verifiedOpenScope": "Official pages and guide verified the existence and intended municipal scope of the cadastral viewer workflow; the live parcel layer, CRS, fields, and citywide feature coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identity if later exposed", "full parcel polygon geometry if later exposed", "source service URL", "observed coordinate order", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "required; research evidence is not source integration or admission",
+  "sampleGeoJSON": null,
+  "scopeLimits": [
+    "The exact WUP point was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point parcel query was possible; this is not evidence of citywide absence.",
+    "No parcel polygon or raw source-specific attribute set was retained.",
+    "The ArcGIS item metadata was public, but its configuration/data request returned HTTP 403 with subscription disabled.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification disablement was used.",
+    "Packet completion records research only; it is not source integration or runtime admission."
+  ],
+  "uncertainty": "Portoviejo has a first-party municipal cadastral viewer and documented predios layer, but the current public ArcGIS application did not expose retrievable configuration or parcel service schema anonymously. Parcel identity, CRS, geometry, update cadence, and adapter readiness remain unresolved."
+}

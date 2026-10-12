@@ -1,0 +1,16 @@
+{
+  "taskId": "city:3546",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-3546-granada.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/granada-service-review.json",
+    "tmp/valhalla-parcel-research/granada/wfs.headers",
+    "tmp/valhalla-parcel-research/granada/wfs.xml"
+  ],
+  "checkedAt": "2026-10-10T09:43:22Z",
+  "reason": "Queue code, rank, country, point and 367226-person population match. English and Spanish executed searches are recorded. The Spanish DGC documents cadastral parcel WFS and municipal downloads, grounding registry custody, but the saved WFS request returned an HTML HTTP 400 processing error. No Granada native-ID polygon response or adapter qualification exists. Service failure does not establish parcel absence.",
+  "independentFirstPartySources": [
+    "https://www.catastro.hacienda.gob.es/webinspire/index_eng.html"
+  ]
+}

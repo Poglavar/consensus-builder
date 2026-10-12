@@ -1,0 +1,17 @@
+{
+  "taskId": "packet:10581",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-10581-thanjavur.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/thanjavur-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-review-receipts/city_10581.json"
+  ],
+  "checkedAt": "2026-10-09T13:36:14Z",
+  "identityReview": "WUP code 10581, rank 1255, India, point [10.7714485846302,79.1313196204464], population 443736 persons match immutable queue and roster.",
+  "searchReview": "English and Tamil executed searches and first-party URLs are present. Direct official Thanjavur Survey & Land page returned HTTP 200 and named the Assistant Director (Survey & Land Records).",
+  "decisionReason": "Local survey custodian supports registryFound=true. Viewer routes timed out; no native parcel ID, full polygon, or live adapter qualification was evidenced. Timeout does not establish citywide absence.",
+  "admissionGates": "Fresh native-ID read, forced pagination, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not independently evidenced; no runtime/catalog/report admission."
+}

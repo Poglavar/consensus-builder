@@ -1,0 +1,38 @@
+{
+  "taskId": "city:8046",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-8046-parma.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/parma-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T15:01:23.243362Z",
+  "reason": "Official Cuyahoga MyPlace and county GIS pages support local parcel custody, but worker REST metadata cache files are empty after timeout and no live native-ID polygon response or durable sample exists. Indexed schema claims do not qualify a live adapter. No citywide absence is inferred.",
+  "firstPartyUrlsChecked": [
+    "https://myplace.cuyahogacounty.gov/",
+    "https://cuyahogacounty.gov/information-technology"
+  ],
+  "originalCacheInspection": [
+    {
+      "path": "tmp/valhalla-parcel-research/8046/meta.json",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/8046/meta_0.json",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/8046/meta_1.json",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "admissionGatesIndependentlyVerified": {
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "freshExactNativeIdReads": false
+  }
+}

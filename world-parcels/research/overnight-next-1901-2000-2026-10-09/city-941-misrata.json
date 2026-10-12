@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 941,
+  "queueRank": 1974,
+  "name": "Misrata",
+  "country": "Libya",
+  "countryCode": "LY",
+  "iso3": "LBY",
+  "point": [32.3660037121569, 15.089469695447],
+  "population2025": 294401,
+  "population2025k": 294.401,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Misrata Libya official cadastral parcel map cadastre geoportal",
+        "result": "Found the official Misrata Municipality map, the Real Estate Registration Authority site listing a Misrata regional branch, and the Libya Survey Authority site. No public anonymous parcel feature service or parcel API was exposed.",
+        "actualResultUrls": [
+          "https://misrata.gov.ly/map/",
+          "https://reril.ly/",
+          "https://www.sdl.gov.ly/"
+        ]
+      },
+      {
+        "language": "Arabic (local/official language)",
+        "query": "بلدية مصراتة السجل العقاري الخريطة العقارية الأراضي المساحية",
+        "result": "Found the official municipality map and official Real Estate Registration Authority entry for the Misrata branch, plus Libya Survey Authority material about national mapping/GIS and electronic archiving. No anonymous parcel schema or geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://misrata.gov.ly/map/",
+          "https://reril.ly/2023/07/14/%D9%81%D8%B1%D8%B9-%D8%A7%D9%84%D9%85%D8%B5%D9%84%D8%AD%D8%A9-%D8%A8%D9%85%D9%86%D8%B7%D9%82%D8%A9-%D9%85%D8%B5%D8%B1%D8%A7%D8%AA%D8%A9/",
+          "https://www.sdl.gov.ly/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://misrata.gov.ly/map/",
+      "operator": "Misrata Municipality",
+      "evidence": "Official municipal map page retrieved successfully. Its current JavaScript/configuration defines a jVectorMap named misurataMap with municipal branch/admin polygons and labels; it is not a cadastral parcel layer and exposes no parcel IDs or feature API."
+    },
+    {
+      "url": "https://reril.ly/",
+      "operator": "Real Estate Registration Authority (Libya), مصلحة التسجيل العقاري",
+      "evidence": "Official authority homepage retrieved successfully and its navigation lists a dedicated فرع المصلحة بمنطقة مصراتة (Misrata regional branch). This is direct local-custodian evidence, not merely national agency prose."
+    },
+    {
+      "url": "https://www.sdl.gov.ly/",
+      "operator": "Libya Survey Authority, مصلحة المساحة",
+      "evidence": "Official Survey Authority homepage retrieved successfully; it describes mapping/GIS administration and an electronic archive for maps, survey points, and aerial imagery. It does not expose an anonymous Misrata parcel feature service in the inspected public HTML."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://misrata.gov.ly/map/",
+      "method": "GET with verified TLS",
+      "status": 200,
+      "summary": "Retrieved 36918-byte HTML. Inspected current page JavaScript/configuration: jVectorMap administrative/municipal branch geometry only; no parcel layer, query endpoint, safe native identity, or CRS metadata."
+    },
+    {
+      "url": "https://reril.ly/",
+      "method": "GET with verified TLS",
+      "status": 200,
+      "summary": "Retrieved official homepage. Navigation lists the Misrata regional registration branch and a survey inquiry page; no anonymous parcel map/API was exposed in the inspected page."
+    },
+    {
+      "url": "https://reril.ly/2023/07/14/%D9%81%D8%B1%D8%B9-%D8%A7%D9%84%D9%85%D8%B5%D9%84%D8%AD%D8%A9-%D8%A8%D9%85%D9%86%D8%B7%D9%82%D8%A9-%D9%85%D8%B5%D8%B1%D8%A7%D8%AA%D8%A9/",
+      "method": "GET with verified TLS",
+      "status": 404,
+      "summary": "The branch article URL currently returned a 404 page. This was recorded as a stale/unavailable public page, not as absence of the local registry. No login or bypass was attempted."
+    },
+    {
+      "url": "https://misrata.gov.ly/wp-json/wp/v2/pages/800",
+      "method": "GET with verified TLS",
+      "status": 403,
+      "summary": "WordPress REST route reported secure_guard_invalid_token and required a valid JWT token. No token, credentials, or private access was requested. The public HTML page was used instead."
+    },
+    {
+      "url": "https://www.sdl.gov.ly/",
+      "method": "GET with verified TLS",
+      "status": 200,
+      "summary": "Retrieved 153609-byte official Survey Authority homepage. Public content described mapping/GIS and electronic archive initiatives; no anonymous parcel response or endpoint was identified."
+    },
+    {
+      "route": "Exact-point parcel query at [32.3660037121569, 15.089469695447]",
+      "method": "not run",
+      "status": "not available",
+      "summary": "No public parcel endpoint was identified, so no point-hit or absence claim was made. The WUP point was not shifted."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "geometry": "Not available: the municipal map contains administrative/branch vector paths, not parcel features.",
+      "native identity": "Not available: no parcel feature schema or safe native ID was exposed."
+    },
+    "crs": "Not confirmed for cadastral parcels.",
+    "geometryType": "No parcel geometry obtained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Real Estate Registration Authority lists a Misrata regional branch, and the Survey Authority is the national mapping/survey custodian.",
+    "verifiedOpenScope": "Local registry custodian and national survey/mapping evidence only; open Misrata parcel geometry, schema, CRS, and coverage were not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No usable parcel point response was obtained. This is an endpoint/availability limitation, not evidence of citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["geometry", "stable native parcel identifier if later exposed"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "rights/title details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_registry_custodian_geometry_unverified",
+  "remainingUncertainty": "The local registration branch and national survey authority are evidenced, but no current anonymous cadastral map/API with safe parcel IDs, schema, CRS, or geometry was available. The municipality map is administrative rather than cadastral, and the indexed branch article currently returns 404.",
+  "nextStep": "Serial reviewer should independently inspect any current official Real Estate Registration Authority or Survey Authority public viewer/API, confirm parcel schema, native identity, CRS, and Misrata coverage, and qualify any adapter before admission."
+}

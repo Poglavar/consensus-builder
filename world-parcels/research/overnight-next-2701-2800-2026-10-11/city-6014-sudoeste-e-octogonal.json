@@ -1,0 +1,137 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for Sudoeste e Octogonal, Brazil; exact-point misses and bounded-service limits are not treated as citywide absence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 6014,
+  "queueRank": 2741,
+  "name": "Sudoeste e Octogonal",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "point": [-15.8082039482757, -47.9195915002244],
+  "population2025": 215411,
+  "population2025k": 215.411,
+  "populationUnit": "persons",
+  "aliases": ["sudoeste e octogonal"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sudoeste e Octogonal Brasília cadastral parcel map official GIS API",
+        "result": "Search located the official SEDUH Distrito Federal Parcelamentos do Solo portal, the official IDE-DF ArcGIS service directory, and the official SEDUH/IDE-DF territorial-cadastre service. The indexed results did not themselves establish a parcel response, so the live service configuration was inspected separately.",
+        "actualResultUrls": [
+          "https://parcelamentosdosolo.seduh.df.gov.br/consulta",
+          "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico",
+          "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/FeatureServer"
+        ]
+      },
+      {
+        "language": "Portuguese",
+        "query": "Sudoeste e Octogonal cadastro mapa parcelas Brasília fonte oficial",
+        "result": "Search located the official Regional Administration page and SEDUH/IDE-DF map materials identifying Sudoeste/Octogonal and cadastral/lot layers; the live IDE-DF ArcGIS service was then inspected for schema, CRS, and bounded parcel geometry.",
+        "actualResultUrls": [
+          "https://sudoeste.df.gov.br/mapas",
+          "https://www.geoservicos.ide.df.gov.br/anexos/monografia/SUDOESTE_OCTOGONAL.pdf",
+          "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/FeatureServer"
+        ]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/FeatureServer",
+      "observation": "Official IDE-DF ArcGIS FeatureServer. Service description identifies a territorial-cadastre map with registered and implanted lots and related urban features; service CRS is EPSG:31983 and the public service supports Query/Extract. Layer 10 is 'Lotes Registrados', polygon geometry."
+    },
+    {
+      "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/FeatureServer/10",
+      "observation": "Official layer metadata exposes polygon geometry and native object ID field objectid. No owner, address, titleholder, tax/account, or personal fields were requested or retained."
+    },
+    {
+      "url": "https://parcelamentosdosolo.seduh.df.gov.br/consulta",
+      "observation": "Official SEDUH portal explicitly lists RA-XXII - Sudoeste/Octogonal and its public query form. A successful anonymous query scoped to region 22 returned four planning/parcelamento records; this is local/regional custodian evidence, not a substitute for the cadastral polygon layer."
+    },
+    {
+      "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/LIMITES/MapServer/1",
+      "observation": "Official IDE-DF administrative-boundary layer labels SUDOESTE/OCTOGONAL; used as regional identity corroboration only, not as parcel geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://parcelamentosdosolo.seduh.df.gov.br/consulta",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Downloaded current HTML and JavaScript references. The form uses /consulta-array and a CSRF token; no login wall or CAPTCHA was encountered."
+    },
+    {
+      "url": "https://parcelamentosdosolo.seduh.df.gov.br/consulta-array",
+      "method": "POST",
+      "httpStatus": 419,
+      "outcome": "Initial anonymous POST without the page session cookie was rejected as a CSRF/session failure. No bypass was attempted."
+    },
+    {
+      "url": "https://parcelamentosdosolo.seduh.df.gov.br/consulta-array",
+      "method": "POST",
+      "httpStatus": 200,
+      "parameters": "Fresh page session, page CSRF token, regioes_adm[]=22; response limited to public process metadata.",
+      "outcome": "Returned four records for RA-XXII - Sudoeste/Octogonal. No unsafe personal or ownership fields were requested or retained."
+    },
+    {
+      "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/FeatureServer",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current ArcGIS service metadata obtained: EPSG:31983, Query/Extract capability, layer 10 named Lotes Registrados, polygon geometry."
+    },
+    {
+      "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/FeatureServer/10/query",
+      "method": "GET",
+      "parameters": "where=1=1; point=-47.9195915002244,-15.8082039482757; geometryType=esriGeometryPoint; inSR=4326; spatialRel=Intersects; outFields=OBJECTID; returnGeometry=true; outSR=4326",
+      "httpStatus": 200,
+      "outcome": "Valid JSON response with zero features at the exact WUP point. This is recorded as an exact-point miss only and is not evidence of citywide absence."
+    },
+    {
+      "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/FeatureServer/10/query",
+      "method": "GET",
+      "parameters": "where=1=1; envelope=-47.935,-15.825,-47.905,-15.790; geometryType=esriGeometryEnvelope; inSR=4326; spatialRel=Intersects; outFields=OBJECTID; returnGeometry=true; outSR=4326; resultRecordCount=3",
+      "httpStatus": 200,
+      "outcome": "Returned three full polygon features with native objectid values 71, 288, and 314, plus exceededTransferLimit=true. The response was bounded and only the three returned safe samples were retained."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A local/regional DF custodian is evidenced by the official SEDUH public portal scoped to RA-XXII - Sudoeste/Octogonal, and the official IDE-DF SEDUH territorial-cadastre service provides open registered-lot polygons.",
+  "registryEvidenceUrls": [
+    "https://parcelamentosdosolo.seduh.df.gov.br/consulta",
+    "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/FeatureServer"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "source": {
+    "service": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/FeatureServer",
+    "layer": 10,
+    "layerName": "Lotes Registrados",
+    "nativeIdField": "objectid",
+    "geometryType": "esriGeometryPolygon",
+    "sourceCrs": "EPSG:31983",
+    "sampleOutputCrs": "EPSG:4326"
+  },
+  "sourceIds": [71, 288, 314],
+  "verifiedParcelResponse": {
+    "sampleFile": "sudoeste-e-octogonal-safe-sample.geojson",
+    "sampleCount": 3,
+    "identityRule": "GeoJSON properties contain exactly one canonical native identity field: id, populated from source objectid."
+  },
+  "resultCategory": "primary_source_verified_city_bounded_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Official SEDUH/IDE-DF registered-lot layer queried over a bounded envelope around the WUP point, with RA-XXII local-service corroboration.",
+    "verifiedOpenScope": "Three registered-lot polygons were returned in the bounded envelope; the service response reported exceededTransferLimit=true, so this is not a complete citywide extract.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel/object ID", "full native parcel polygon geometry", "geometry CRS", "source layer/service metadata", "bounded query metadata"],
+  "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "tax/account", "registration details", "personal fields"],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "south-america",
+  "remainingUncertainty": "The exact WUP point is not inside a returned registered-lot polygon, but the bounded query proved nearby registered-lot geometry and was transfer-limited. The sample is not a citywide inventory, and no adapter has been qualified. Native source fields beyond objectid were intentionally not requested or retained."
+}

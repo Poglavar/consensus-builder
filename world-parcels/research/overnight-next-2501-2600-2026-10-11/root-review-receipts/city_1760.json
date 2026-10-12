@@ -1,0 +1,13 @@
+{
+  "taskId": "city:1760",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-1760-hammamet.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/hammamet-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/root-review-receipts/source-evidence/city_1760-first-party-cache-review.json"
+  ],
+  "checkedAt": "2026-10-11T14:55:34.993474Z",
+  "reason": "Queue identity and English/French searches match; OTC first-party cache supports institutional cadastral custody, but supplies no anonymous native-ID geometry for Hammamet. Public geometry and coverage remain unresolved. Fresh exact-ID reads, forced paging, 13 bounded cells, full metric GEOS checks, source binding, and headed Details-panel verification are missing."
+}

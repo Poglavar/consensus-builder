@@ -1,0 +1,67 @@
+{
+  "cityCode": 8444,
+  "queueRank": 3208,
+  "name": "Ende",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "point": [-8.84250431736624, 121.657681503467],
+  "population2025": 188334,
+  "population2025k": 188.334,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ende Indonesia official cadastral parcel map ATR BPN",
+        "result": "First-party discovery identified the official BHUMI interactive map, ATLAS geospatial portal, and the local Kantor Pertanahan Kabupaten Ende site. No Ende-specific public parcel endpoint or safe anonymous feature response was identified.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/peta", "https://atlas.atrbpn.go.id/", "https://www.bpnkabende.com/"]
+      },
+      {
+        "language": "Indonesian (local/native discovery language)",
+        "query": "Ende Indonesia peta bidang tanah resmi ATR BPN; Kantor Pertanahan Kabupaten Ende layanan peta bidang tanah resmi",
+        "result": "Pencarian berbahasa Indonesia menemukan portal resmi BHUMI/ATLAS ATR/BPN dan situs yang mengaku sebagai Kantor Pertanahan Kabupaten Ende, tetapi tidak menemukan layanan publik khusus Ende dengan respons bidang tanah anonim yang memuat ID asli dan geometri. Konten situs lokal yang diambil berisi materi/tautan Bandar Lampung, sehingga tidak diperlakukan sebagai bukti layanan kadaster Ende.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/unsur_peta", "https://atlas.atrbpn.go.id/", "https://www.bpnkabende.com/"]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Kantor Pertanahan Kabupaten Ende is identified by the local site, but its retrieved content did not expose an Ende parcel map/API and included Bandar Lampung references; local parcel custody and public vector coverage remain unverified.",
+    "regionalOrNationalSources": [
+      "BHUMI ATR/BPN official help says its interactive map disseminates spatial information and includes land-parcel layers.",
+      "ATLAS is the official ATR/BPN geospatial portal; its public catalog described datasets including land-related layers, but no Ende parcel dataset or anonymous feature response was exposed.",
+      "The local site is general land-office/service prose and is not parcel-vector evidence."
+    ],
+    "registryEvidence": "No Ende-specific public registry/map/procedure with usable parcel geometry and stable native identity was identified; registryFound remains null."
+  },
+  "requestOutcomes": "TLS-verified anonymous GET of https://bhumi.atrbpn.go.id/ returned HTTP 200. TLS-verified GET of https://bhumi.atrbpn.go.id/bantuan/peta returned HTTP 200 and confirmed the public map/help surface. The current BHUMI Next.js entrypoints referenced by the page were fetched and inspected; no safe anonymous Ende parcel feature request, schema, CRS, or native identity response was exposed. TLS-verified GET of https://atlas.atrbpn.go.id/ returned HTTP 200; the current public catalog showed seven published sources at inspection time, but no Ende parcel layer, service URL, schema, CRS, or feature response. TLS-verified GET of https://www.bpnkabende.com/ returned HTTP 200, but the retrieved page contained Bandar Lampung branding/links and no Ende parcel-vector endpoint. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification disable was used.",
+  "attemptedRoutes": [
+    {"route": "Official BHUMI map help", "url": "https://bhumi.atrbpn.go.id/bantuan/peta", "outcome": "HTTP 200; confirms the interactive map is integrated with ATLAS and supports spatial information including land parcels. National capability documentation only; no Ende coverage verified."},
+    {"route": "Official BHUMI public map application", "url": "https://bhumi.atrbpn.go.id/", "outcome": "HTTP 200; current Next.js page and referenced public JavaScript entrypoints were inspected. No safe anonymous Ende parcel ID-plus-geometry response was obtained."},
+    {"route": "Official ATLAS geospatial catalog", "url": "https://atlas.atrbpn.go.id/", "outcome": "HTTP 200; public catalog rendered seven published sources, none identified as Ende parcel coverage. No safe feature service, schema, CRS, native ID, or geometry response was obtained."},
+    {"route": "Local land-office custodian site", "url": "https://www.bpnkabende.com/", "outcome": "HTTP 200; page was inspected, but content included Bandar Lampung branding/links and no public Ende parcel vector service. Not treated as verified local coverage."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [-8.84250431736624, 121.657681503467] was preserved in latitude/longitude order and was not shifted to force a parcel hit.",
+    "No exact-point hit or miss, map-extent miss, timeout, login wall, or unusable UI was treated as evidence of citywide absence.",
+    "National capability documentation and ambiguous local service content do not establish Ende parcel coverage.",
+    "No safe native parcel identifier plus full polygon response was obtained; no GeoJSON sample is retained.",
+    "Packet completion records research status only; runtimeReadiness remains held and independent serial review is required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "No parcel CRS response observed.",
+  "geometryQuality": "not applicable; no parcel geometry retrieved",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable Ende parcel-vector response; no hit/miss inference.", "requestEvidence": ["BHUMI and ATLAS official public surfaces were inspected without an Ende parcel response.", "The local Ende-named site was inspected without an Ende parcel-vector endpoint and was not accepted as verified local coverage."]},
+  "coverageAssessment": {"claimedScope": "Indonesia national ATR/BPN discovery, Ende local land-office discovery, and bounded anonymous inspection of current BHUMI/ATLAS public application surfaces.", "verifiedOpenScope": "Official national map/catalog surfaces were verified; no anonymous Ende parcel-vector coverage was verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "A parcel layer may exist behind authenticated, unindexed, or map-session requests. Current Ende coverage, public access conditions, native identity field, CRS, geometry endpoint, and completeness were not established through safe anonymous requests."
+}

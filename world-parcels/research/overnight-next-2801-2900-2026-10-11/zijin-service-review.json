@@ -1,0 +1,18 @@
+{
+  "cityRecord": "city-11626-zijin.json",
+  "cityCode": 11626,
+  "queueRank": 2863,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "Zijin County Natural Resources Bureau / Zijin County Real Estate Registration Center, accessed through Heyuan's official online real-estate registration service; local scope county code 441621",
+  "publicMapLead": "https://bdc.heyuan.gov.cn/HYApplyOnline/templates/CXgather/ZDORFWFTSearch.html?infoC=441621",
+  "queryOutcomes": "Separate English and Chinese discovery queries were performed. Official Zijin county custodian pages and the Heyuan online registration service were found. The current query page was inspected; no parcel geometry was obtained.",
+  "requestOutcomes": "Anonymous organization enumeration succeeded and identified the Zijin County registration center. The parcel/house attachment route requires a certificate or registration-number query. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used. One wrong path and one certificate-verification failure were recorded.",
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdField": null, "geometryCrs": null, "geometryType": null, "fieldMapping": null, "compositeKeyProvenance": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry only if publicly returned and safe", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point [23.6343764709408, 115.176363827102] was preserved and not moved.", "A public procedural/query service and organization record do not establish citywide parcel completeness.", "No anonymous parcel geometry or native parcel identity was verified.", "No sample GeoJSON is retained.", "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.", "Independent serial review is required before any adapter/runtime qualification."],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "A local registry custodian and public query service were verified, but no safe anonymous parcel identity-plus-geometry response was obtained."},
+  "uncertainty": "The current service's qualifying-record requirement prevents anonymous parcel schema/CRS inspection without a legitimate certificate or registration identifier. Citywide coverage, map extent, native identity stability, geometry availability, and update cadence remain unknown."
+}

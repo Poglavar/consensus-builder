@@ -1,0 +1,20 @@
+{
+  "taskId": "city:7784",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-7784-montes-claros.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/montes-claros-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T10:50:57Z",
+  "reason": "Official municipal digital-map and cadastral decree pages support local custody; no anonymous native-ID polygon response or adapter qualification was evidenced. The candidate map host failure is not absence.",
+  "qualificationGaps": [
+    "fresh native-ID reads",
+    "forced paging",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed Details-panel verification"
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 7729,
+  "queueRank": 1903,
+  "name": "Hammond",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso3": "USA",
+  "point": [41.6091850522165, -87.5857397291232],
+  "population2025": 301148,
+  "population2025k": 301.148,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hammond Indiana official parcel GIS Lake County cadastral map",
+        "result": "Found the official Lake County Indiana GIS Hub, Surveyor page, and public Lake County Parcels ArcGIS Feature Service.",
+        "actualResultUrls": [
+          "https://lakecountyin.gov/departments/surveyor",
+          "https://lakecountyhub-lakeingispro.hub.arcgis.com/",
+          "https://services5.arcgis.com/8CXRnvSfSpwdf0R6/arcgis/rest/services/Lake_County_Parcels/FeatureServer"
+        ]
+      },
+      {
+        "language": "Spanish (local-language fallback; United States has no federally designated local language)",
+        "query": "Hammond Indiana mapa parcelario GIS oficial condado de Lake Indiana",
+        "result": "Search surfaced the same official Lake County Indiana GIS and parcel-service leads; no separate Spanish-language local custodian was identified.",
+        "actualResultUrls": [
+          "https://lakecountyin.gov/departments/surveyor",
+          "https://lakecountyhub-lakeingispro.hub.arcgis.com/",
+          "https://services5.arcgis.com/8CXRnvSfSpwdf0R6/arcgis/rest/services/Lake_County_Parcels/FeatureServer"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://lakecountyin.gov/departments/surveyor",
+      "operator": "Lake County Surveyor / Lake County GIS",
+      "evidence": "Official county page says the Surveyor maintains official county maps and coordinates development of the county GIS; it identifies the basis for property boundaries."
+    },
+    {
+      "url": "https://lakecountyhub-lakeingispro.hub.arcgis.com/",
+      "operator": "Lake County Indiana GIS",
+      "evidence": "Official GIS Hub states parcel data are freely available through data downloads."
+    },
+    {
+      "url": "https://services5.arcgis.com/8CXRnvSfSpwdf0R6/arcgis/rest/services/Lake_County_Parcels/FeatureServer",
+      "operator": "Lake County GIS / Lake County Auditor parcel fabric",
+      "evidence": "Public polygon Feature Service describes Lake County parcel boundaries and says the layer is maintained within the Lake County Auditor's Office using the parcel fabric."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://lakecountyin.gov/departments/surveyor",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official local county surveyor/GIS custody page retrieved."
+    },
+    {
+      "url": "https://lakecountyhub-lakeingispro.hub.arcgis.com/",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official county ArcGIS Hub bootstrap retrieved; site metadata identifies Lake County Indiana GIS and a parcel-data download section."
+    },
+    {
+      "url": "https://services5.arcgis.com/8CXRnvSfSpwdf0R6/arcgis/rest/services/Lake_County_Parcels/FeatureServer?f=pjson",
+      "method": "GET",
+      "status": 200,
+      "summary": "Anonymous service metadata retrieved. One polygon layer, native service CRS EPSG:2245 / latest WKID 2966."
+    },
+    {
+      "url": "https://services5.arcgis.com/8CXRnvSfSpwdf0R6/arcgis/rest/services/Lake_County_Parcels/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "status": 200,
+      "summary": "Layer schema retrieved. Safe identity fields observed: OBJECTID (OID) and PARCELID (Parcel Identification Number). Owner, address, tax, legal-description and link fields were not requested for features and are excluded from retained samples."
+    },
+    {
+      "url": "https://services5.arcgis.com/8CXRnvSfSpwdf0R6/arcgis/rest/services/Lake_County_Parcels/FeatureServer/0/query",
+      "method": "GET",
+      "status": 200,
+      "summary": "Bounded anonymous query with where IncMuni='Hammond', outFields=OBJECTID,PARCELID, returnGeometry=true, outSR=4326, resultRecordCount=3 returned three polygons. Retained in hammond-parcels-sample.geojson with only canonical PARCELID in each feature property."
+    },
+    {
+      "url": "https://services5.arcgis.com/8CXRnvSfSpwdf0R6/arcgis/rest/services/Lake_County_Parcels/FeatureServer/0/query",
+      "method": "GET",
+      "status": 200,
+      "summary": "Exact WUP-point and small/wider EPSG:4326 envelope attempts returned zero features. This is recorded only as an exact-point/map-query miss and is not treated as citywide absence; the Hammond-scoped query independently returned geometry."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": "PARCELID",
+    "fallbackOidField": "OBJECTID",
+    "compositeKey": null,
+    "fieldMapping": {
+      "PARCELID": "Parcel Identification Number; retained as canonical native identity",
+      "OBJECTID": "ArcGIS object identifier; observed but not retained where PARCELID exists"
+    },
+    "crs": "EPSG:2245 (NAD83 / Indiana East, US survey feet); response reprojected by service to EPSG:4326 for retained GeoJSON",
+    "geometryType": "esriGeometryPolygon"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Lake County, Indiana parcel boundaries; Hammond is a city within Lake County.",
+    "verifiedOpenScope": "Hammond-filtered public parcel response with three polygons; countywide service extent is documented in service metadata.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No exact-point feature was returned; this does not establish absence."
+  },
+  "verifiedSample": true,
+  "sampleFile": "hammond-parcels-sample.geojson",
+  "safeFieldAllowlist": ["PARCELID", "OBJECTID", "geometry"],
+  "unsafeFieldsNotRetained": ["mdeededOwner", "Situs_Add", "Mail_Add", "LocstreetNumber", "mailstreetNumber", "RecorderLink", "AssessorLink", "TreasurerLink", "mlegalDescription"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_county_parcel_service_verified_geometry",
+  "remainingUncertainty": "The service is countywide rather than a Hammond-only custodian, and the exact WUP point did not intersect a returned feature. Parcel freshness is governed by the publisher's changing parcel fabric. No runtime adapter qualification was performed.",
+  "nextStep": "Serial reviewer should independently qualify the Lake County service, including current endpoint behavior, CRS handling, Hammond coverage, native PARCELID stability, and adapter safety before admission."
+}

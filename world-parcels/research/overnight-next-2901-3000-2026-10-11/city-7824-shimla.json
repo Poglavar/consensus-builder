@@ -1,0 +1,86 @@
+{
+  "cityCode": 7824,
+  "queueRank": 2937,
+  "name": "Shimla",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [31.1040949223005, 77.1665579703667],
+  "population2025": 202908,
+  "population2025k": 202.908,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shimla official cadastral parcel map land records GIS Himachal Pradesh government",
+        "result": "First-party discovery found the official Shimla District portal, Himachal Pradesh Revenue Department, public Himbhoomi land-record interface, and official BhuNaksha map viewer.",
+        "actualResultUrls": [
+          "https://hpshimla.nic.in/service/view-land-record/",
+          "https://hpshimla.nic.in/service/online-bhukansha-maps/",
+          "https://himbhoomilmk.nic.in/viewLandRecords.aspx",
+          "https://himachal.nic.in/revenue"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "शिमला आधिकारिक भू अभिलेख cadastral parcel map हिमाचल प्रदेश",
+        "result": "First-party Hindi Shimla District pages identify Himbhoomi for land records and BhuNaksha for online cadastral maps; the district e-governance page states that cadastral maps are digitized and publicly viewable through NIC BhuNaksha, but does not expose a parcel API response.",
+        "actualResultUrls": [
+          "https://hpshimla.nic.in/hi/service/%E0%A4%AD%E0%A5%82-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/",
+          "https://hpshimla.nic.in/hi/service/%E0%A4%91%E0%A4%A8%E0%A4%B2%E0%A4%BE%E0%A4%87%E0%A4%A8-%E0%A4%AD%E0%A5%82-%E0%A4%A8%E0%A4%95%E0%A5%8D%E0%A4%B6%E0%A4%BE-%E0%A4%AE%E0%A4%BE%E0%A4%A8%E0%A4%9A%E0%A4%BF%E0%A4%A4%E0%A5%8D%E0%A4%B0/",
+          "https://hpshimla.nic.in/hi/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A4%BE-%E0%A4%AE%E0%A5%87%E0%A4%82-%E0%A4%88-%E0%A4%B6%E0%A4%BE%E0%A4%B8%E0%A4%A8/",
+          "https://bhunakshahp.nic.in/"
+        ]
+      }
+    ],
+    "officialViewer": "https://bhunakshahp.nic.in/",
+    "viewerConfiguration": "The official district page links BhuNaksha HP as the online cadastral-map viewer. The public Himbhoomi page exposes a form for district, tehsil, village/hadbast number, and jamabandi year, but no public parcel GeoJSON or service configuration was obtained anonymously.",
+    "requests": [
+      {"method": "GET", "url": "https://hpshimla.nic.in/service/online-bhukansha-maps/", "outcome": "HTTP content retrieved through first-party web discovery; page links to https://bhunakshahp.nic.in/ as Online BhuNaksha Maps."},
+      {"method": "GET", "url": "https://hpshimla.nic.in/hi/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A4%BE-%E0%A4%AE%E0%A5%87%E0%A4%82-%E0%A4%88-%E0%A4%B6%E0%A4%BE%E0%A4%B8%E0%A4%A8/", "outcome": "HTTP content retrieved through first-party web discovery; Hindi district page describes Himbhoomi computerization and digitized cadastral maps for Shimla district."},
+      {"method": "GET", "url": "https://himbhoomilmk.nic.in/viewLandRecords.aspx", "outcome": "Public page content retrieved through first-party web discovery; UI requires district, tehsil, village/hadbast number, and jamabandi year. Direct curl request timed out after 20 seconds; no response schema or parcel geometry retained."},
+      {"method": "GET", "url": "https://bhunakshahp.nic.in/", "outcome": "Direct curl request timed out after 20 seconds; web retrieval also reported timeout. No login, CAPTCHA bypass, certificate exception, or alternate host was used."},
+      {"method": "GET", "url": "https://himachal.nic.in/revenue", "outcome": "First-party discovery identifies the Department of Revenue / Directorate of Land Records and BhuNaksha/Himbhoomi links; direct web retrieval timed out in this run."}
+    ]
+  },
+  "registryFound": true,
+  "custodians": [
+    {"name": "Himachal Pradesh Department of Revenue / Directorate of Land Records", "scope": "State land-record and cadastral-map custodian, with Directorate address in Shimla; Himbhoomi and BhuNaksha are the identified public services.", "evidence": "https://himachal.nic.in/revenue"},
+    {"name": "District Administration Shimla", "scope": "Local district portal and service entry point for View Land Record and Online BhuNaksha Maps.", "evidence": "https://hpshimla.nic.in/service/online-bhukansha-maps/"},
+    {"name": "National Informatics Centre", "scope": "Technical/publication host referenced by the official Shimla District portal; not treated as the cadastral custodian.", "evidence": "https://hpshimla.nic.in/hi/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A4%BE-%E0%A4%AE%E0%A5%87%E0%A4%82-%E0%A4%88-%E0%A4%B6%E0%A4%BE%E0%A4%B8%E0%A4%A8/"}
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": "Not obtained anonymously; Himbhoomi is documented as a record/map viewing interface, not a returned GeoJSON feature service in this attempt.",
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": "No native parcel response was retained. Public UI labels observed were district, tehsil, village/hadbast number, and jamabandi year; unsafe owner/ROR fields were not requested.",
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["canonical native parcel identifier if independently qualified", "parcel geometry if publicly returned", "source CRS", "public service metadata", "retrieval date"],
+  "scopeLimits": [
+    "Exact WUP point [31.1040949223005, 77.1665579703667] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point or map-extent query was used because the operational viewers timed out before their current request configuration could be inspected.",
+    "Timeouts and unavailable viewer responses are transport/access outcomes, not evidence of citywide parcel absence.",
+    "No owner, address, contact, titleholder, personal, tax/account, or other unsafe fields were requested or retained.",
+    "District statements about digitized maps and village coverage are custodial/procedural evidence, not a qualified citywide parcel feature extract.",
+    "Packet completion is not source integration or runtime admission."
+  ],
+  "uncertainty": [
+    "No independently qualified anonymous parcel geometry or stable native parcel identity was obtained.",
+    "No CRS, public feature schema, or service endpoint configuration was returned.",
+    "The WUP city point is not asserted to be a cadastral or municipal boundary.",
+    "The identified services may require selecting local administrative units before any parcel map is available."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "doNotInfer": [
+    "A timeout or unusable viewer is not evidence of parcel absence.",
+    "A local registry being evidenced does not mean a runtime adapter is qualified.",
+    "Digitization claims do not substitute for an anonymous safe parcel response."
+  ]
+}

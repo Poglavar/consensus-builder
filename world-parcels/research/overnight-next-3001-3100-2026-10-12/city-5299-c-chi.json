@@ -1,0 +1,127 @@
+{
+  "cityCode": 5299,
+  "queueRank": 3066,
+  "name": "Củ Chi",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "iso3": "VNM",
+  "locId": 704,
+  "capital": false,
+  "point": [10.9599536551358, 106.515900164675],
+  "population2025": 195626,
+  "population2025k": 195.626,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "sourceDiscoveryDate": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cu Chi Vietnam official cadastral parcel map land registry GIS API Ho Chi Minh",
+        "result": "First-party discovery identified the HCMC DONRE Geoportal catalog and its Củ Chi land-use-status dataset, plus the national land-inventory map operated by the Department of Land Administration. The accessible official material did not expose an anonymous cadastral parcel feature endpoint.",
+        "actualResultUrls": [
+          "https://geoportal-stnmt.tphcm.gov.vn/geonetwork/srv/search?topicCat=hienTrangSuDungDat",
+          "https://maps.gdla.gov.vn/",
+          "https://thongtin.diagioi.gov.vn/trangchu.aspx"
+        ]
+      },
+      {
+        "language": "Vietnamese (local/native)",
+        "query": "Củ Chi bản đồ địa chính thửa đất Văn phòng đăng ký đất đai GIS chính thức",
+        "result": "Vietnamese first-party discovery identified the HCMC DONRE Geoportal record for “Dữ liệu Hiện trạng sử dụng đất năm 2019 Huyện Củ Chi – Thành phố Hồ Chí Minh” and official government guidance naming the local land-registration office/branch as a cadastral-record custodian. The catalog record concerns land-use status, not a safely downloadable parcel layer, and no anonymous parcel geometry response was qualified.",
+        "actualResultUrls": [
+          "https://geoportal-stnmt.tphcm.gov.vn/geonetwork/srv/search?topicCat=hienTrangSuDungDat",
+          "https://congbaocdn.chinhphu.vn/CongBaoCP/CongBao/2024/8/42544/51400-1-973-974.pdf",
+          "https://baochinhphu.vn/ban-do-dia-chinh.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Ho Chi Minh City Department of Natural Resources and Environment (DONRE) Geoportal; local land-registration office/branch under Viet Nam land administration",
+    "locality": "Củ Chi District, Ho Chi Minh City",
+    "evidenceUrls": [
+      "https://geoportal-stnmt.tphcm.gov.vn/geonetwork/srv/search?topicCat=hienTrangSuDungDat",
+      "https://congbaocdn.chinhphu.vn/CongBaoCP/CongBao/2024/8/42544/51400-1-973-974.pdf"
+    ],
+    "scopeNote": "The HCMC first-party catalog specifically lists a Củ Chi land-use-status dataset and describes OGC web delivery for cataloged land-status maps. This evidences a local government geospatial custodian, not open citywide cadastral parcel geometry or a qualified parcel API."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "HCMC DONRE Geoportal / national land-inventory map",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {
+      "nativeIdentity": null,
+      "safeGeometry": null,
+      "otherDocumentedFields": []
+    },
+    "compositeKeyProvenance": null,
+    "note": "The Củ Chi catalog record is land-use-status data rather than a parcel feature response. No native parcel identity, parcel schema, CRS, or ID-plus-geometry response was retained. The exact WUP point was not shifted and was not used as an absence test."
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://geoportal-stnmt.tphcm.gov.vn/geonetwork/srv/search?topicCat=hienTrangSuDungDat",
+      "status": "timeout",
+      "outcome": "Direct curl request exceeded 20 seconds without a response; indexed first-party search evidence was available through discovery, but no live viewer configuration, service URL, schema, CRS, or parcel response was obtained. This is not evidence of citywide absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://maps.gdla.gov.vn/",
+      "status": 200,
+      "outcome": "Public national land-inventory application shell loaded and referenced JavaScript configuration. It is an inventory/statistics application, not evidence of an anonymous cadastral parcel layer."
+    },
+    {
+      "method": "GET",
+      "url": "https://maps.gdla.gov.vn/api/public-region",
+      "status": 200,
+      "outcome": "Returned public region metadata {ki_kiem_ke: 2025, params: {year: 2025, global: vn}}; no parcel IDs or geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://maps.gdla.gov.vn/api/no-auth/config-data",
+      "status": 404,
+      "outcome": "Returned the application not-found HTML page; no public configuration or parcel service was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://maps.gdla.gov.vn/api/config-data",
+      "status": 401,
+      "outcome": "Returned Vietnamese login-required response; no login, credential, or private token was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://maps.gdla.gov.vn/api/kiem-ke/search",
+      "status": 401,
+      "outcome": "Returned Vietnamese login-required response; no search or parcel request was made through the authenticated route."
+    }
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/5299/ (public request headers/errors and downloaded application shell only; no unsafe fields retained)",
+  "safeFieldAllowlist": [
+    "stable native cadastral parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [10.9599536551358, 106.515900164675] was preserved in latitude/longitude order and was not shifted.",
+    "The Củ Chi catalog result is land-use-status coverage, not proof that parcel vectors are openly downloadable.",
+    "No exact-point parcel request was submitted because no usable public parcel endpoint or layer configuration was available; this is not evidence of a point miss or citywide absence.",
+    "No parcel schema, native identity field, geometry CRS, or ID-plus-geometry response was qualified; no GeoJSON sample is retained.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The HCMC Geoportal direct request was unreachable by timeout from this environment despite indexed first-party catalog evidence.",
+    "The national map exposes public region metadata but its configuration and search routes require login or are unavailable anonymously.",
+    "A current authenticated or client-specific workflow may expose further services, but no login or private token was used.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "runtimeReadiness": "held"
+}

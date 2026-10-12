@@ -1,0 +1,127 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 9988,
+  "queueRank": 3157,
+  "name": "Feicheng",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [36.1839064752403, 116.76414584722],
+  "population2025": 190373,
+  "population2025k": 190.373,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Feicheng China cadastral parcel map public GIS official land registry",
+        "result": "First-party discovery identified the official Feicheng government website and a referenced Feicheng geographic-information public service / Tianditu lead, but did not expose a current anonymous parcel-vector API, schema, CRS, or safe native parcel identity.",
+        "actualResultUrls": ["https://www.feicheng.gov.cn/", "https://www.tianditu.gov.cn/"]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "肥城 不动产登记 地籍图 地理信息公共服务平台 官方",
+        "result": "First-party discovery identified the official 肥城市人民政府 site and the national 天地图 service as relevant map/GIS leads. Search did not produce a current anonymous Feicheng cadastral parcel endpoint or safe parcel geometry response.",
+        "actualResultUrls": ["https://www.feicheng.gov.cn/", "https://www.tianditu.gov.cn/"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": null,
+  "officialSources": [
+    {
+      "url": "https://www.feicheng.gov.cn/",
+      "observation": "Official Feicheng municipal-government domain discovered; current parcel-service custody and anonymous parcel-vector access were not verified because TLS validation failed during direct retrieval."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "observation": "Official national Tian Di Tu geographic-information service lead; direct request returned HTTP 418 and no Feicheng parcel schema or geometry was obtained."
+    }
+  ],
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Feicheng municipal government / Tian Di Tu discovery leads",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "note": "No safe anonymous response containing both a stable native parcel identity and full polygon geometry was obtained."
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://www.feicheng.gov.cn/col/col361969/index.html",
+      "outcome": "TLS verification failed because the server presented a self-signed certificate; request stopped. No certificate exception or TLS bypass was used."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.tianditu.gov.cn/",
+      "outcome": "HTTP 418 received from the official national map-service host; no public parcel API/configuration or geometry response was obtained."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.feicheng.gov.cn/",
+      "outcome": "English first-party discovery lead; municipal site identified, but no safe anonymous parcel endpoint was returned."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.tianditu.gov.cn/",
+      "outcome": "Chinese first-party discovery lead; national geographic-information service identified, but no Feicheng parcel schema or geometry was returned."
+    }
+  ],
+  "schemaAndCrs": {
+    "nativeIdFields": [],
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "geometryCrs": null,
+    "note": "No parcel layer metadata or feature response was returned."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable anonymous parcel-vector response; no hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Feicheng municipal government and national Tian Di Tu map-service discovery leads.",
+    "verifiedOpenScope": "Official discovery leads were identified, but local registry custody, anonymous geometry, schema, CRS, native identity, and citywide parcel coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "integration": "not_admitted",
+  "scopeLimits": [
+    "Exact WUP point [36.1839064752403,116.76414584722] was preserved and not shifted to force a hit.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, TLS failure, HTTP 418, or unusable UI is not evidence of citywide absence.",
+    "No parcel polygon or source-specific raw attribute set is retained.",
+    "No citywide polygon completeness, current anonymous API, CRS, native identity semantics, or update cadence was verified.",
+    "This packet records research only and is not source integration or admission."
+  ],
+  "uncertainty": "The official Feicheng government and Tian Di Tu discovery leads are evidenced, but current local registry custody, anonymous parcel-vector access, schema, CRS, native identity semantics, safe geometry access, and coverage remain unresolved.",
+  "evidenceCache": "tmp/valhalla-parcel-research/9988/"
+}

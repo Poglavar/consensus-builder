@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:501",
+  "cityCode": 501,
+  "queueRank": 1580,
+  "name": "San Cristobal",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "iso2": "VE",
+  "iso3": "VEN",
+  "rank": 1580,
+  "point": [7.76727602889449, -72.2246713867036],
+  "centerLatLon": [7.76727602889449, -72.2246713867036],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 361969,
+  "population2025k": 361.969,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Alcaldía de San Cristóbal site publishes municipal cadastral ordinances. The 2021 official ordinance identifies the División de Catastro and its Área Técnica/Área Legal, and requires municipal cadastral records and parcel references in municipal procedures. This evidences a local cadastral custodian/procedure, not open parcel geometry access.",
+  "registryEvidenceUrls": [
+    "https://www.alcaldiasancristobal.gob.ve/",
+    "https://www.alcaldiasancristobal.gob.ve/empresa/ordenanzas.php",
+    "https://www.alcaldiasancristobal.gob.ve/empresa/ordenanza/GACETAEXTRA.N083-REF.YORD.SOBRETERRENOSMUNICIPALES26-04-2021.pdf",
+    "https://www.alcaldiasancristobal.gob.ve/empresa/ordenanza/083.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "No anonymous parcel ID-plus-geometry response, public parcel schema/CRS, or safe parcel layer was found. The municipal Vensat-linked portal is login-oriented; its public app source disclosed an API base and Socket.IO configuration but no anonymous parcel endpoint. No credentials, tokens, private fields, or unsafe property data were used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "local_cadastre_evidenced_no_open_parcel_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Public first-party discovery for the Municipality of San Cristóbal, Táchira, Venezuela, including its official municipal site and linked public application.",
+    "verifiedOpenScope": "Local cadastral custodian/procedure evidenced; no open parcel layer or anonymous parcel geometry verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "San Cristobal Venezuela cadastral map parcel land registry official GIS service",
+        "result": "Search identified the official Alcaldía de San Cristóbal domain and its municipal cadastral ordinances. No public parcel viewer or anonymous parcel geometry API was found in the search results.",
+        "actualResultUrls": [
+          "https://www.alcaldiasancristobal.gob.ve/",
+          "https://www.alcaldiasancristobal.gob.ve/empresa/ordenanzas.php",
+          "https://www.alcaldiasancristobal.gob.ve/empresa/ordenanza/GACETAEXTRA.N083-REF.YORD.SOBRETERRENOSMUNICIPALES26-04-2021.pdf"
+        ],
+        "executionMethod": "Separate English web search and first-party URL review."
+      },
+      {
+        "language": "Spanish",
+        "query": "San Cristóbal Venezuela catastro municipal mapa parcelas visor geográfico oficial",
+        "result": "The official municipal site and 2021 cadastral/municipal-land ordinance were found. The ordinance evidences the División de Catastro and parcel procedures, but no public parcel map, schema, or anonymous geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://www.alcaldiasancristobal.gob.ve/",
+          "https://www.alcaldiasancristobal.gob.ve/empresa/ordenanzas.php",
+          "https://www.alcaldiasancristobal.gob.ve/empresa/ordenanza/083.pdf",
+          "https://sancristobal.vensat.io/login"
+        ],
+        "executionMethod": "Separate Spanish-language web search and first-party URL/application review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The local cadastral inventory may be available internally, offline, or through a restricted municipal workflow. The absence of an anonymous parcel response, an unusable/login-oriented UI, or no exact-point hit does not establish citywide cadastral absence. The WUP point was preserved exactly and was not shifted to seek a hit.",
+  "nextStep": "Serial reviewer may independently qualify a public municipal adapter if a safe anonymous ID-plus-geometry route is identified. Do not enable runtime from this packet alone."
+}

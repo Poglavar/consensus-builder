@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "cityCode": 7582,
+  "queueRank": 1318,
+  "cityId": "wup2025:7582",
+  "name": "Ziyang",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [30.1238674926562, 104.643237753168],
+  "population2025": 424328,
+  "population2025k": 424.328,
+  "populationUnit": "persons",
+  "status": "complete",
+  "metadataReviewFile": "ziyang-service-review.json",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_source",
+  "registryFound": true,
+  "resultCategory": "official_registry_custodian_identified_no_open_geometry",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ziyang China official cadastral parcel map API natural resources land registry",
+        "result": "Search found the official Ziyang Natural Resources and Planning Bureau lead and Sichuan Natural Resources Department materials, but no public anonymous parcel feature service or geometry endpoint.",
+        "actualResultUrls": [
+          "https://szrzyj.ziyang.gov.cn/",
+          "https://dnr.sc.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "资阳 地籍图 不动产登记 地图 服务 自然资源局 官方",
+        "result": "Official search results identified Ziyang city natural-resources/land-registration responsibilities and Sichuan registration guidance; no anonymous public parcel map/API with safe ID and geometry was located.",
+        "actualResultUrls": [
+          "https://szrzyj.ziyang.gov.cn/",
+          "https://dnr.sc.gov.cn/scdnr/scszdt/2025/6/12/80374ae0d8c34fcd8235d646536949ac.shtml",
+          "https://ggzyjy.sc.gov.cn/jyxx/002004/002004001/20240725/7a0b5580-b453-4be6-a935-e7d278e11a1e.html"
+        ]
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Ziyang city registration and cadastral services under the municipal natural-resources/planning authority; actual public parcel geometry coverage is unverified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "sources": [
+    {
+      "url": "https://szrzyj.ziyang.gov.cn/",
+      "operator": "Ziyang Municipal Natural Resources and Planning Bureau",
+      "evidence": "Official municipal authority lead found in Sichuan government search results; direct host request was not reachable from this environment due DNS resolution failure."
+    },
+    {
+      "url": "https://dnr.sc.gov.cn/scdnr/scszdt/2025/6/12/80374ae0d8c34fcd8235d646536949ac.shtml",
+      "operator": "Sichuan Provincial Department of Natural Resources",
+      "evidence": "First-party report names the Ziyang Natural Resources and Planning Bureau and describes use of a real-estate registration information platform; it does not expose an anonymous parcel geometry API."
+    },
+    {
+      "url": "https://dnr.sc.gov.cn/",
+      "operator": "Sichuan Provincial Department of Natural Resources",
+      "evidence": "Official guidance references cadastral survey results, parcel maps and boundary coordinates as registration materials, not as an open citywide download service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://szrzyj.ziyang.gov.cn/",
+      "method": "GET",
+      "status": "DNS resolution failure",
+      "summary": "Host could not be resolved from the research environment; no TLS/session or viewer inspection was possible."
+    },
+    {
+      "url": "https://dnr.sc.gov.cn/scdnr/scszdt/2025/6/12/80374ae0d8c34fcd8235d646536949ac.shtml",
+      "method": "GET/search open",
+      "status": "official page found",
+      "summary": "Confirmed municipal bureau and a non-public registration information platform context; no safe anonymous geometry response."
+    },
+    {
+      "url": "https://ggzyjy.sc.gov.cn/jyxx/002004/002004001/20240725/7a0b5580-b453-4be6-a935-e7d278e11a1e.html",
+      "method": "GET/search open",
+      "status": "official page found",
+      "summary": "Ziyang land-transaction notice includes a parcel code for a specific offered tract, but it is not a citywide cadastral geometry service and was not used as a sample."
+    }
+  ],
+  "sourceFields": null,
+  "crs": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry", "source CRS", "service metadata"],
+  "blocker": "No public anonymous Ziyang parcel geometry response with a verified native parcel identity was obtained. The municipal domain was DNS-unreachable; first-party documents describe custodianship and registration workflows only.",
+  "remainingUncertainty": "A zero hit was not tested and does not imply citywide absence. Coverage, service endpoints, schema, CRS and parcel identity remain unverified.",
+  "nextStep": "Retry the official Ziyang municipal natural-resources site when DNS/service access is available, follow its public JavaScript/configuration if a viewer exists, and request only a small bounded geometry-plus-ID response around the unchanged WUP locator."
+}

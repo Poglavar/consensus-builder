@@ -1,0 +1,12 @@
+{
+  "taskId": "city:1743",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-1743-daloa.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/daloa-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T10:25:24.917486Z",
+  "reason": "Daloa cadastral custody is supported by legal publication and official channels, but SIGFU timed out and AFOR supplied no bounded anonymous native-ID/full-polygon response. Source schema, adapter and admission checks remain unverified."
+}

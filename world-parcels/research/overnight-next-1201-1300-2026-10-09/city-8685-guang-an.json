@@ -1,0 +1,98 @@
+{
+  "cityCode": 8685,
+  "queueRank": 1282,
+  "name": "Guang'an",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1282,
+  "point": [30.4783655855194, 106.622789621089],
+  "population2025": 436199,
+  "population2025k": 436.199,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Guang'an China official cadastral parcel map GIS natural resources bureau land registration",
+        "result": "First-party discovery identified the official Guang'an municipal government portal, the Guang'an Natural Resources and Planning Bureau as the decision/registration authority, official land-use and cadastral-survey procedure material, and the municipal public-government map. The public map is an OpenLayers/Tian地图 point-of-interest map with administrative service locations, not a cadastral parcel service. No anonymous parcel geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.guang-an.gov.cn/zfxxgk/c112143/pc/content/content_1719206766334779392.html",
+          "https://www.guang-an.gov.cn/gasrmzfw/c00850/pc/content/content_1873916332023709696.html",
+          "https://www.guang-an.gov.cn/gasrmzfw/zwdt/pc/list.html",
+          "https://www.guang-an.gov.cn/zfxxgk/zfgzjg/pc/content/content_1718333446731145216.html?gkfwjg=%E5%B9%BF%E5%AE%89%E5%B8%82%E8%87%AA%E7%84%B6%E8%B5%84%E6%BA%90%E5%92%8C%E8%A7%84%E5%88%92%E5%B1%80"
+        ],
+        "scope": "Identify local cadastral/registration custody and a safe public anonymous parcel-geometry service without requesting owner, address, title, contact, tax, account, or certificate data."
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "广安市 官方 不动产登记 地籍图 宗地图 自然资源和规划局",
+        "result": "Simplified-Chinese first-party discovery confirmed that Guang'an Natural Resources and Planning Bureau handles natural-resource and immovable-property registration matters. Official material mentions cadastral survey, parcel maps, boundary-point coordinates, and an online immovable-property information query service, but the query route is an identity-authenticated service and no anonymous parcel-vector endpoint was exposed. No exact-point or citywide absence conclusion was made.",
+        "actualResultUrls": [
+          "https://www.guang-an.gov.cn/search4/s?columnId=0&searchWord=%E5%AE%85%E5%9F%BA%E5%9C%B0&siteCode=5116000002",
+          "https://www.guang-an.gov.cn/gasrmzfw/cjwd/pc/content/content_2046431196646387712.html",
+          "https://www.guang-an.gov.cn/gasrmzfw/c00850/pc/content/content_1873916332023709696.html",
+          "https://gas.sczwfw.gov.cn/?areaCode=511600000000"
+        ],
+        "scope": "Find safe public geometry and stable native parcel IDs only; do not use identity-authenticated or record-specific registration queries."
+      }
+    ]
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Guang'an Natural Resources and Planning Bureau / Guang'an immovable-property registration service",
+    "url": "https://www.guang-an.gov.cn/zfxxgk/c112143/pc/content/content_1719206766334779392.html",
+    "operator": "Guang'an Natural Resources and Planning Bureau; municipal and district registration service channels",
+    "serviceType": "Official registration/procedure and government-information routes reviewed; no anonymous source-native full parcel polygon endpoint verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Official municipal material evidences local registration custody and cadastral-survey deliverables, while the online registration-information route is identity-authenticated. No safe anonymous parcel geometry response was retained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Guang'an municipal government and Natural Resources and Planning Bureau sources, the municipal public-government map configuration, and anonymous direct requests to the public portal and registration-service route.",
+    "verifiedOpenScope": "Local registry/procedure custody is evidenced; anonymous source-native parcel geometry, schema, CRS, native ID, exact-point hit, and citywide completeness remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymously accessible cadastral geometry endpoint was identified. The public-government map HTML and JavaScript expose Tian地图/OpenLayers administrative service points only. The immovable-property information route is identity-authenticated and was not accessed.",
+  "remainingUncertainty": "A separately published municipal, provincial, or authenticated cadastral/map service may exist, but its current anonymous service URL, schema, CRS, and parcel-ID behavior were not verified. No exact-point query or absence inference was made.",
+  "nextStep": "Continue bounded discovery only if Guang'an or Sichuan publishes a safe anonymous cadastral/map service URL and current configuration; do not use authenticated registration lookups or personal/property-record fields.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8685,
+  "cityId": "wup2025:8685",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [30.4783655855194, 106.622789621089],
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact unchanged WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official Guang'an government pages identify the Guang'an Natural Resources and Planning Bureau as the decision/registration authority and describe cadastral survey, parcel-map, and parcel-boundary-point materials. Official guidance also directs users to an authenticated online immovable-property information service. These sources establish local institutional custody/procedure, not public anonymous parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://www.guang-an.gov.cn/zfxxgk/c112143/pc/content/content_1719206766334779392.html",
+    "https://www.guang-an.gov.cn/search4/s?columnId=0&searchWord=%E5%AE%85%E5%9F%BA%E5%9C%B0&siteCode=5116000002",
+    "https://www.guang-an.gov.cn/gasrmzfw/cjwd/pc/content/content_2046431196646387712.html",
+    "https://www.guang-an.gov.cn/zfxxgk/zfgzjg/pc/content/content_1718333446731145216.html?gkfwjg=%E5%B9%BF%E5%AE%89%E5%B8%82%E8%87%AA%E7%84%B6%E8%B5%84%E6%BA%90%E5%92%8C%E8%A7%84%E5%88%92%E5%B1%80"
+  ],
+  "runtimeAssessment": {
+    "status": "unknown_no_verified_public_geometry",
+    "reason": "No anonymous parcel geometry endpoint was verified or queried at the exact WUP point. The public map is a general administrative service-point map, and the registration-information route is identity-gated; no absence claim is made."
+  },
+  "cohort": "overnight-next-1201-1300",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

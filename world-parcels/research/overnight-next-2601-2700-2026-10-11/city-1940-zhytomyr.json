@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 1940,
+  "wupCityCode": 1940,
+  "queueRank": 2613,
+  "cityId": "wup2025:1940",
+  "name": "Zhytomyr",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "iso2": "UA",
+  "iso3": "UKR",
+  "point": [50.2668347580156, 28.6681093298911],
+  "centerLatLon": [50.2668347580156, 28.6681093298911],
+  "population2025": 225363,
+  "population2025k": 225.363,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_ready_no_verified_safe_parcel_response",
+  "sourceIds": [],
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zhytomyr Ukraine official cadastral map parcel GIS StateGeoCadastre",
+        "result": "Found the official Zhytomyr City geoportal, the official Zhytomyr regional StateGeoCadastre site, and the national electronic cadastral portal. The city geoportal exposes a public cadastral-division map, but no public machine-readable parcel polygon response with a stable native parcel ID was verified.",
+        "actualResultUrls": ["https://gis.zt-rada.gov.ua/home", "https://zhytomyrska.land.gov.ua/", "https://e.land.gov.ua/", "https://map.land.gov.ua/"]
+      },
+      {
+        "language": "Ukrainian",
+        "query": "Житомир офіційна кадастрова карта земельний кадастр GIS",
+        "result": "Found the official Zhytomyr City geoportal and the official regional cadastral authority. The city map configuration names the layer “Кадастровий поділ” and serves it as a raster/TMS map layer; the bounded anonymous point-info request did not return a parcel record or geometry.",
+        "actualResultUrls": ["https://gis.zt-rada.gov.ua/zemelni-kadastr", "https://gis.zt-rada.gov.ua/map/zem_cad", "https://zhytomyrska.land.gov.ua/kadastr-i-reiestratsiia/"]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://gis.zt-rada.gov.ua/",
+      "operator": "Zhytomyr City official geoportal",
+      "scope": "City public geospatial portal; local cadastral-division map layer",
+      "observation": "The portal's public map route /map/zem_cad loads map id zem_cad with layer id 3250996033106216875 named “Кадастровий поділ”. Its current layer-list configuration identifies the rendered service as TMS/raster, not a parcel feature service."
+    },
+    {
+      "url": "https://zhytomyrska.land.gov.ua/",
+      "operator": "Main Department of the State Service of Ukraine for Geodesy, Cartography and Cadastre in Zhytomyr region",
+      "scope": "Regional StateGeoCadastre authority and cadastral/registration information",
+      "observation": "Official regional authority page provides cadastral and registration guidance and identifies the Zhytomyr office; it is custodian/agency evidence, not a verified open parcel-geometry endpoint."
+    },
+    {
+      "url": "https://e.land.gov.ua/",
+      "operator": "StateGeoCadastre electronic portal",
+      "scope": "Ukraine national cadastral services",
+      "observation": "Official portal loaded and describes cadastral-information and extract services. It states that some services require registration/authentication; no credentials or authenticated route was used."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://gis.zt-rada.gov.ua/home",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official city geoportal loaded and linked its public cadastral map route."
+    },
+    {
+      "url": "https://gis.zt-rada.gov.ua/map/zem_cad",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Current JavaScript/configuration inspected: map id zem_cad, layer id 3250996033106216875, displayed name “Кадастровий поділ”; the layer is configured as a raster/TMS map, with no safe parcel attribute schema exposed."
+    },
+    {
+      "url": "https://gis.zt-rada.gov.ua/api-user/gis-layer-list",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Anonymous layer metadata returned. The cadastral-division entry had raster/TMS configuration and no parcel table/feature schema or native parcel identity field."
+    },
+    {
+      "url": "https://gis.zt-rada.gov.ua/api-user/gis-format?layer=3250996033106216875&lat=50.2668347580156&lng=28.6681093298911&auto=1&zoom=13",
+      "method": "GET",
+      "status": "HTTP 404",
+      "summary": "Returned “layer table not found”. This exact-point route/layer miss is a delivery/schema limitation only, not evidence of citywide parcel absence; no retry or route bypass was attempted."
+    },
+    {
+      "url": "https://gis.zt-rada.gov.ua/api-user/rtile/3250996033106216875/ua/13/4954/2876.png",
+      "method": "GET",
+      "status": "HTTP 200 but error body",
+      "summary": "The guessed tile URL based on the public layer id returned an application error indicating no matching mapnik XML. No tile was retained and no geometry was inferred from this failure."
+    },
+    {
+      "url": "https://e.land.gov.ua/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official electronic portal loaded. No login or authenticated cadastral request was attempted."
+    },
+    {
+      "url": "https://map.land.gov.ua/",
+      "method": "GET",
+      "status": "timeout after 25 seconds",
+      "summary": "National Public Cadastral Map host did not return within the bounded request. No retries, bypass, credentials, CAPTCHA/Cloudflare handling, or TLS relaxation were used; this is not evidence of citywide absence."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Zhytomyr City official geoportal and Ukrainian national/regional StateGeoCadastre public information sources.",
+    "verifiedOpenScope": "Zhytomyr City public cadastral-division map layer exists as a rendered map service; parcel feature geometry and stable native parcel identity were not verified.",
+    "countrywideVerified": false,
+    "openGeometryScope": "none verified",
+    "registryExistenceScope": "local Zhytomyr city geoportal and regional StateGeoCadastre authority evidenced",
+    "jurisdictionNote": "The WUP record is preserved as Ukraine/UA; no jurisdictional inference beyond the official Ukrainian sources was made."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "not sampled",
+    "crs": null,
+    "identityReadiness": "not ready; no bounded anonymous parcel response with native identifier and full geometry was obtained",
+    "safeFieldAllowlist": ["stable native parcel identity if publicly returned", "geometry", "source CRS", "source layer/version", "retrieval timestamp"],
+    "attributesRequested": "none; no owner, address, titleholder, tax/account or contact fields requested"
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "The local public geoportal's cadastral layer is currently raster/TMS-only, and its point-info endpoint returned no table-backed parcel response; the national public cadastral map timed out. No safe native parcel identity plus geometry was verified.",
+  "remainingUncertainty": "The city or StateGeoCadastre custodians may expose parcel data through interactive, authenticated, paid, request-based, or other routes not suitable for anonymous integration. A raster cadastral display and an exact-point route miss do not establish citywide coverage or absence.",
+  "nextStep": "If resumed, independently verify a first-party public feature response containing source CRS, stable native parcel identity, and full polygon geometry before adapter qualification.",
+  "identityPolicy": "Do not create a synthetic parcel identity. No GeoJSON sample retained.",
+  "notes": "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification exception was used. This packet is research evidence only and is not source integration/admission."
+}

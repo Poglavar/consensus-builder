@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11480-taixing.json",
+  "cohort": "overnight-next-1301-1400",
+  "purpose": "Review official Taixing cadastral/registration custodian and public government-service channels for safe anonymous parcel geometry and stable parcel identity.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Taixing Natural Resources and Planning Bureau is an evidenced local registry/cadastral custodian. The official public service portal exposes an 不动产登记 entry and current service-list code, but no safe anonymous parcel vector response, native identity, CRS, or geometry was qualified.",
+  "registryAssessment": "The official bureau page assigns unified real-estate registration, cadastral investigation, real-estate surveying, results use, basic surveying, geographic-information resource construction, and public-service responsibilities to the local bureau. The official information-disclosure guide confirms the bureau's public-information channel. This establishes registry presence, not open parcel-vector access.",
+  "officialPrimarySources": [
+    {"url": "https://www.taixing.gov.cn/zwgk/bmxxgk/zrzyhghj/jggk/jgsz/art/2023/art_9f329b8dd6ba4388a01a9f557c3c5c14.html", "operator": "Taixing Natural Resources and Planning Bureau", "scope": "Official bureau organization page describing unified registration, cadastral investigation, surveying, geographic-information resources, and public services."},
+    {"url": "https://www.taixing.gov.cn/zwgk/bmxxgk/zrzyhghj/xxgkzn/art/2023/art_650537d1dfc046f3bc8825e706cc6088.html", "operator": "Taixing Natural Resources and Planning Bureau", "scope": "Official information-disclosure guide and public-information access limits."},
+    {"url": "https://tztx.jszwfw.gov.cn/", "operator": "Taixing municipal government service platform", "scope": "Official public service portal embedding the current local service list."},
+    {"url": "https://txs.jszwfw.gov.cn:32106/txszwdt/txzwdt/txqjd/index.html", "operator": "Taixing government service platform", "scope": "Current service-list HTML containing the real-estate-registration entry and government-service map label."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Taixing China official cadastral map parcel service natural resources bureau 泰兴 不动产登记 地籍图 官方", "result": "Official Taixing bureau and government-service portal results found; no safe anonymous polygon verified.", "actualResultUrls": ["https://www.taixing.gov.cn/zwgk/bmxxgk/zrzyhghj/jggk/jgsz/art/2023/art_9f329b8dd6ba4388a01a9f557c3c5c14.html", "https://tztx.jszwfw.gov.cn/"]},
+    {"language": "Chinese", "query": "泰兴市 自然资源和规划局 不动产登记 地籍 地图 官方", "result": "检索到官方统一确权登记、权籍调查、不动产测绘、地理信息公共服务及不动产登记服务入口；未验证安全匿名地籍要素响应。", "actualResultUrls": ["https://www.taixing.gov.cn/zwgk/bmxxgk/zrzyhghj/jggk/jgsz/art/2023/art_9f329b8dd6ba4388a01a9f557c3c5c14.html", "https://www.taixing.gov.cn/zwgk/bmxxgk/zrzyhghj/xxgkzn/art/2023/art_650537d1dfc046f3bc8825e706cc6088.html", "https://txs.jszwfw.gov.cn:32106/txszwdt/txzwdt/txqjd/index.html"]}
+  ],
+  "attempts": [
+    "Retrieved the official Taixing Natural Resources and Planning Bureau organization page and recorded its local registration/cadastral and geospatial responsibilities.",
+    "Retrieved the official information-disclosure guide and recorded the public-information and application boundary.",
+    "Retrieved the current Taixing government-service portal and its embedded service-list iframe anonymously.",
+    "Retrieved the current service-list JavaScript and inspected its declared REST service-list path and external links.",
+    "Confirmed the public HTML's 不动产登记 link points to an external service/login workflow; did not open it, log in, use credentials, or request owner/address/titleholder/tax data.",
+    "No cadastral viewer configuration, parcel endpoint, feature schema, CRS, native ID, exact-point response, or geometry was returned by the bounded anonymous inspection.",
+    "A direct curl request to the Taixing government host was rejected by TLS certificate verification; TLS verification was not disabled, and the page was independently retrieved through the public web index.",
+    "Did not shift the exact WUP point and did not infer citywide absence from the login boundary, TLS failure, or lack of a feature response."
+  ],
+  "safeFieldAllowlist": ["safe parcel/native ID if publicly returned", "geometry", "geometry CRS", "layer/service metadata", "HTTP status and response size"],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No exact-point parcel feature query completed; the current public service-list route exposed registration workflow access but no anonymous parcel feature endpoint.", "requestEvidence": [{"url": "https://txs.jszwfw.gov.cn:32106/txszwdt/txzwdt/txqjd/index.html", "method": "GET", "httpStatus": 200, "result": "Current service-list HTML retrieved; no parcel geometry."}, {"url": "https://txs.jszwfw.gov.cn:32106/txszwdt/txzwdt/txqjd/js/index.js?v=20221108", "method": "GET", "httpStatus": 200, "result": "Current service-list JavaScript retrieved; no parcel schema or feature URL."}]},
+  "coverageAssessment": {"claimedScope": "Official Taixing local custodian pages and current public service portal HTML/JavaScript reviewed.", "verifiedOpenScope": "Registry custodian and service entry verified; parcel geometry, native identity, CRS, and schema unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "nextStep": "Serial reviewer may re-check only a public anonymous network flow and qualify safe ID plus geometry if actually returned; preserve held runtime state.",
+  "remainingUncertainty": "No safe anonymous parcel polygon/native ID was returned; registration login boundaries and transport/certificate failures are not evidence of cadastral absence.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

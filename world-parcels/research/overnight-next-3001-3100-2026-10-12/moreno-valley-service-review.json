@@ -1,0 +1,17 @@
+{
+  "cityRecord": "city-4141-moreno-valley.json",
+  "cityCode": 4141,
+  "queueRank": 3067,
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "City of Moreno Valley Geographic Information System / MV2; Riverside County Assessor-County Clerk-Recorder is the county property-record custodian referenced by the municipal viewer.",
+  "queryOutcomes": "Separate English and English local-language-check discovery queries identified the official municipal MV2 viewer. The current Geocortex map listing identified the public GEParcels ArcGIS FeatureServer. Exact-point query at the unchanged WUP point returned zero features; bounded envelope query returned parcel polygons and exceeded its transfer limit.",
+  "requestOutcomes": "Public GET metadata/configuration and anonymous GET query requests succeeded with TLS verification. No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception was used.",
+  "schemaAndCrs": {"parcelSchema": "Polygon feature layer", "nativeIdField": "APN", "sourceObjectIdField": "FID", "geometryCrs": "EPSG:3857 / WKID 102100 source; EPSG:4326 sample output", "fieldMapping": {"canonicalId": "APN", "sourceObjectId": "FID"}, "compositeKeyProvenance": null},
+  "safeFieldAllowlist": ["stable native APN identity", "source FID", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point [33.9256769971331, -117.234944442388] was preserved and not moved to force a hit.", "An exact-point miss is not evidence of citywide absence.", "The bounded sample is not a complete citywide parcel inventory; the response exceededTransferLimit.", "No owner, address, contact, titleholder, personal, tax/account, or unsafe fields were requested or retained.", "Independent serial review is required before runtime qualification."],
+  "qualification": {"verifiedSample": true, "parcelGeometryVerified": true, "runtimeReadiness": "held", "sampleFile": "city-4141-moreno-valley-sample.geojson", "reason": "Three full polygons were returned by the public GEParcels service with native APN identities; this does not qualify an adapter or establish citywide completeness."},
+  "uncertainty": "Exact-point coverage and citywide completeness remain unresolved; the sample is bounded and transfer-limited."
+}

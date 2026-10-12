@@ -1,0 +1,21 @@
+{
+  "taskId": "city:10612",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-10612-qidong.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/qidong-service-review.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/root-identity-decision-overlay.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/root-identity-10612-11570-first-party-evidence.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/identity-review.json"
+  ],
+  "checkedAt": "2026-10-12T06:12:51Z",
+  "findings": {
+    "identity": "Original WUP 2025 archive SHA-256 matches the handoff; rank 3235, China, point [26.7902999122816, 112.09936209802], and 186620 persons match the immutable roster, queue and packet.",
+    "searches": "Packet records English and local-language queries with result URLs; paired service review inspected.",
+    "custody": "Retain registryFound=true for first-party evidenced cadastral/registration custody; this does not establish anonymous public parcel geometry.",
+    "geometry": "No parcel sample, full polygon or native parcel ID is retained. Zero responses, access walls and timeouts are not citywide absence.",
+    "admission": "First-party Qidong/Hunan material confirms county registration custody. The Hunan Qidong WUP identity is distinct from prior Jiangsu Qidong. HTTP 412 and Tianditu timeout yielded no anonymous safe parcel ID plus full polygon; no adapter qualification or headed Details proof."
+  }
+}

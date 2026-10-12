@@ -1,0 +1,46 @@
+{
+  "cityCode": 10178,
+  "queueRank": 1499,
+  "name": "LAIWU",
+  "aliases": ["laiwu"],
+  "country": "China",
+  "countryCode": "CN",
+  "countryIso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [36.2213377893534, 117.665645927572],
+  "pointOrder": "latitude,longitude",
+  "population2025": 379135,
+  "population2025k": 379.135,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "plausibility": "Moderate",
+  "status": "complete",
+  "registryFound": null,
+  "registryScope": "Official Jinan/Laiwu natural-resources and planning publication routes were evidenced, but a local open cadastral/parcel registry or parcel geometry service was not verified.",
+  "serviceReview": "laiwu-service-review.json",
+  "freshResearch": {
+    "researchedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Laiwu Shandong cadastral parcel map official GIS API",
+        "result": "Found the first-party Shandong Geographic Information Public Service Platform/API and official Jinan Natural Resources and Planning public-announcement pages. No anonymous Laiwu cadastral parcel feature endpoint or safe ID-plus-geometry response was found.",
+        "actualResultUrls": ["https://www.sdmap.gov.cn/mapAPI.html", "https://nrp.jinan.gov.cn/gsarchive/control___rJrUzdEHz", "https://www.laiwu.gov.cn/resources/public/20250903/68b80520795b9abfd152bc8c.pdf"]
+      },
+      {
+        "language": "native/local (Chinese)",
+        "query": "莱芜 不动产 登记 地籍图 宗地 地图 官方",
+        "result": "Found official Laiwu/Jinan spatial-planning publications and the Shandong public geospatial platform. Search did not establish an open local cadastral registry, public parcel API, schema, CRS, or parcel geometry response.",
+        "actualResultUrls": ["https://www.laiwu.gov.cn/resources/public/20250903/68b80520795b9abfd152bc8c.pdf", "https://nrp.jinan.gov.cn/gsarchive/control___rJrUzdEHz", "https://www.sdmap.gov.cn/mapAPI.html"]
+      }
+    ]
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": [
+    "Exact WUP point preserved in latitude,longitude order; no coordinate shift or exact-point absence inference was made.",
+    "No GeoJSON sample retained because no safe native parcel identity plus unchanged native geometry was obtained.",
+    "Packet completion records executed research and does not imply source integration or runtime admission."
+  ]
+}

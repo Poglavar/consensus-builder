@@ -1,0 +1,125 @@
+{
+  "cityCode": 9643,
+  "queueRank": 1703,
+  "name": "Tanur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [10.9237205240585, 75.9187186545342],
+  "population2025": 335953,
+  "population2025k": 335.953,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tanur Kerala official cadastral map parcel GIS land records",
+        "result": "First-party results identified Kerala Revenue Department eMaps/Bhu-Naksha, the Ente Bhoomi integrated land-information portal, and official Malappuram/Tanur administrative pages. No anonymous Tanur parcel ID-plus-polygon response was found.",
+        "actualResultUrls": [
+          "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+          "https://entebhoomi.kerala.gov.in/web/home",
+          "https://malappuram.gov.in/blocks/"
+        ]
+      },
+      {
+        "language": "Malayalam",
+        "query": "താനൂർ കേരളം ഔദ്യോഗിക ഭൂനകശ കഡസ്ട്രൽ പാഴ്സൽ ഭൂമി രേഖകൾ",
+        "result": "First-party Malayalam search results identified Kerala Revenue/Survey land-record portals and the official Ente Bhoomi land-information system. Public pages describe parcel maps and survey services, but no safe anonymous Tanur parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://survey.entebhoomi.kerala.gov.in/portal/survey/search",
+          "https://entebhoomi.kerala.gov.in/web/home",
+          "https://www.revenue.kerala.gov.in/pages/home.php"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.revenue.kerala.gov.in/pages/home.php",
+      "observation": "Kerala Revenue Department describes eMaps as integrating cadastral maps with land records and states that citizens can obtain digital sketches of individual parcels."
+    },
+    {
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+      "observation": "Official Kerala Bhu-Naksha viewer landing page was identified, but direct TLS validation failed because the host certificate was expired; TLS verification was not disabled."
+    },
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/home",
+      "observation": "Official Kerala Ente Bhoomi portal identifies integrated Revenue, Registration, Survey and land-information services and real-time land parcel maps."
+    },
+    {
+      "url": "https://malappuram.gov.in/blocks/",
+      "observation": "Official Malappuram district administration lists Tanur as a district block; this supports local administrative identity, not parcel coverage."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+      "method": "GET",
+      "httpStatus": "TLS validation failure",
+      "outcome": "Certificate expired. No certificate exception was used; viewer JavaScript/service inspection could not proceed on this host."
+    },
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/home",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official portal loaded. HTML exposed /web/ilms/map and a public map-library JavaScript route; page states that services depend on completed or ongoing digital survey villages."
+    },
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current JavaScript/configuration was inspected. It exposes POST /web/ilms/map/view and bounded parcel routes /web/proxy/mapinfo/extent/{locationCode}, /web/proxy/mapinfo/feature_info/{locationCode}, and /web/proxy/click_info/multiple/{locationCode}; no feature request was executed without a valid village/location code."
+    },
+    {
+      "url": "https://bhunaksha.entebhoomi.kerala.gov.in/",
+      "method": "GET",
+      "httpStatus": 403,
+      "outcome": "Current Ente Bhoomi Bhu-Naksha host returned an access-denied response. No login, token, CAPTCHA or bypass was attempted."
+    },
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/taluk/gid?districtId=591fba1d-cddb-4765-97a6-2d4038a08c78",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Malappuram taluk list returned JSON and included Tirur taluk."
+    },
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/village/gid?talukId=49162a18-83d1-4b8c-a9c3-2be5cc3da37a&loadAllVillage=true&loadPublishedVillage=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Tirur-taluk village list returned JSON, but no Tanur/താനൂർ village entry was exposed in the checked published/all-village response. This is not evidence that Tanur lacks cadastral coverage."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Kerala Revenue Department and Survey/land-record portals are first-party state custodians; official Malappuram administration identifies Tanur locally. The evidence establishes a registry/map custodian but not an open Tanur parcel endpoint or citywide coverage.",
+  "safeFieldAllowlist": ["stable native parcel identifier only", "full parcel polygon geometry", "CRS metadata", "public source/layer metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "The current Ente Bhoomi map JavaScript declares EPSG:32643 for its map configuration; no parcel feature response was retrieved, so parcel geometry CRS remains unverified.",
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Kerala state cadastral/land-record services, with Tanur in Malappuram district.",
+    "verifiedOpenScope": "Official custodian and current viewer/API routes only; no bounded parcel feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "The exact WUP point [10.9237205240585, 75.9187186545342] was preserved and was not shifted.",
+    "No exact-point hit or miss inference was made.",
+    "A TLS failure, 403, missing village entry, or unavailable viewer route is an access/qualification limitation, not evidence of citywide cadastral absence.",
+    "No owner, titleholder, address, contact, tax/account, personal or other unsafe fields were requested or retained.",
+    "No source-specific attribute set or synthetic parcel identity was retained.",
+    "Packet completion is not source integration/admission; runtime remains held pending serial review."
+  ],
+  "uncertainty": "The Tanur village/location code, current anonymous map-service access policy, parcel layer schema, stable native identity, exact service CRS for parcel features, and citywide coverage remain unresolved."
+}

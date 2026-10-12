@@ -1,0 +1,34 @@
+{
+  "cityRecord": "city-7306-balyana.json",
+  "cityCode": 7306,
+  "queueRank": 1608,
+  "name": "Balyana",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": null,
+  "sourceReview": "The Egyptian General Survey Authority is evidenced as the national surveying/cadastral custodian, but its public pages provide service/procedure information rather than an anonymous Balyana parcel endpoint. The official IDSC GIS ArcGIS server was inspected and only an administrative `Egy` polygon layer was usable at the WUP point.",
+  "queryReview": {
+    "englishDiscovery": "Completed; ESA and official IDSC GIS sources found, no public Balyana parcel service verified.",
+    "localLanguageDiscovery": "Completed in Arabic; ESA cadastral/digital-map pages and a government survey-statement service were found, but no public parcel endpoint.",
+    "exactPoint": [26.2042385877924, 32.0018089946504],
+    "returned": 1,
+    "ids": [20],
+    "geometry": "Administrative polygon only; no parcel geometry requested or retained",
+    "mapExtentOrPointMiss": false
+  },
+  "requestOutcomes": "ESA home and digital-map pages returned HTTP 200. IDSC ArcGIS service inventory, service metadata, layer schema, and exact-point query returned HTTP 200. The HTML ArcGIS directory returned HTTP 403 because the administrator disabled it. No login, credentials, private token, CAPTCHA bypass, or unsafe field request was used.",
+  "safeFieldAllowlist": ["OBJECTID", "geometry"],
+  "nativeFieldMapping": {"id": "OBJECTID", "geometry": "Shape"},
+  "compositeKeyProvenance": null,
+  "retainedSample": null,
+  "scopeLimits": [
+    "The returned ID 20 belongs to a broad administrative layer and cannot be treated as a parcel identity.",
+    "ESA service pages describe formal/manual digital-map procurement and do not prove anonymous map/API coverage for Balyana.",
+    "No owner, address, contact, titleholder, personal, tax, account, legal-description, or value fields were requested or retained.",
+    "A point hit, map extent, directory restriction, or lack of public endpoint is not evidence of citywide parcel absence.",
+    "Runtime readiness remains held pending independent serial adapter review."
+  ],
+  "uncertainty": "No claim is made about parcel absence, local registry status beyond the evidence above, legal title, ownership, tax records, or completeness of any Egyptian cadastral dataset.",
+  "runtimeReadiness": "held_serial_review"
+}

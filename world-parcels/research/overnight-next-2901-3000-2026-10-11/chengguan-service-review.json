@@ -1,0 +1,48 @@
+{
+  "cityRecord": "city-8093-chengguan.json",
+  "cityCode": 8093,
+  "queueRank": 2936,
+  "name": "Chengguan",
+  "country": "China",
+  "countryCode": "CN",
+  "pointLatLon": [35.0780263510012, 109.081820622229],
+  "population2025": 203123,
+  "population2025k": 203.123,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "queryAndRequestOutcome": "Separate English and Chinese first-party discovery evidenced the Chengcheng County Natural Resources Bureau at institutional level and reached the official Shaanxi registration and geographic-information portals. Direct retrieval succeeded for the local and provincial pages (HTTP 200); official RERC and webmap routes returned HTTP 418. No public anonymous parcel viewer/API, schema/CRS, or safe native-ID-plus-geometry response was exposed. No GeoJSON sample was retained.",
+  "schemaAndCrs": {
+    "viewerConfig": "Not exposed",
+    "geometryCrs": "Not observed",
+    "nativeIdentity": "Not observed",
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Local registry custodian evidence exists, but anonymous parcel geometry and native identity were not qualified."
+  },
+  "reviewDecision": "held_no_verified_public_geometry",
+  "scopeLimits": [
+    "Exact WUP point preserved; no coordinate shift.",
+    "No exact-point or map-extent miss, timeout, HTTP 418, login wall, or unusable UI was inferred as citywide absence.",
+    "No raw source-specific attribute set retained.",
+    "No GeoJSON sample retained; maximum allowed would have been three full parcel polygons.",
+    "This packet does not admit or integrate a runtime source."
+  ],
+  "uncertainty": "A county-level natural-resources custodian is evidenced, but a usable Chengguan-specific public cadastral adapter remains unverified. Runtime remains held.",
+  "evidenceUrls": [
+    "https://www.chengcheng.gov.cn/",
+    "https://zrzyt.shaanxi.gov.cn/zrzygz/bdcdj/index_2.html",
+    "https://shaanxi.tianditu.gov.cn/portal/",
+    "https://www.rerc.com.cn/",
+    "https://www.webmap.cn/main.do?method=index1"
+  ]
+}

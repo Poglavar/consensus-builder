@@ -1,0 +1,604 @@
+{
+  "url": "https://www.geoloket.be/gwserver/rest/services/Kadaster/AGS_CadGIS2025/MapServer/7?f=pjson",
+  "checkedAt": "2026-10-11T15:35:52.990125Z",
+  "httpStatus": 200,
+  "response": {
+    "currentVersion": 11.5,
+    "cimVersion": "3.5.0",
+    "id": 7,
+    "name": "Kadastrale planpercelen",
+    "type": "Feature Layer",
+    "description": "",
+    "geometryType": "esriGeometryPolygon",
+    "sourceSpatialReference": {
+      "wkid": 31370,
+      "latestWkid": 31370,
+      "xyTolerance": 0.001,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -35872700,
+      "falseY": -30622700,
+      "xyUnits": 10000,
+      "falseZ": 0,
+      "zUnits": 1,
+      "falseM": 0,
+      "mUnits": 1
+    },
+    "spatialReference": {
+      "wkid": 31370,
+      "latestWkid": 31370,
+      "xyTolerance": 0.001,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -35872700,
+      "falseY": -30622700,
+      "xyUnits": 10000,
+      "falseZ": -100000,
+      "zUnits": 10000,
+      "falseM": -100000,
+      "mUnits": 10000
+    },
+    "copyrightText": "",
+    "parentLayer": {
+      "id": 0,
+      "name": "CadGIS - Fiscale toestand 2025"
+    },
+    "subLayers": [],
+    "minScale": 20000,
+    "maxScale": 0,
+    "drawingInfo": {
+      "renderer": {
+        "type": "uniqueValue",
+        "field1": "Type",
+        "uniqueValueGroups": [
+          {
+            "heading": "",
+            "classes": [
+              {
+                "label": "PR - Privatief perceel",
+                "description": "PR - Privatief perceel",
+                "symbol": {
+                  "type": "esriSFS",
+                  "style": "esriSFSSolid",
+                  "color": [
+                    255,
+                    255,
+                    245,
+                    255
+                  ],
+                  "outline": {
+                    "type": "esriSLS",
+                    "style": "esriSLSSolid",
+                    "color": [
+                      0,
+                      115,
+                      76,
+                      255
+                    ],
+                    "width": 0.4
+                  }
+                },
+                "values": [
+                  [
+                    "PR"
+                  ]
+                ]
+              }
+            ]
+          }
+        ],
+        "uniqueValueInfos": [
+          {
+            "symbol": {
+              "type": "esriSFS",
+              "style": "esriSFSSolid",
+              "color": [
+                255,
+                255,
+                245,
+                255
+              ],
+              "outline": {
+                "type": "esriSLS",
+                "style": "esriSLSSolid",
+                "color": [
+                  0,
+                  115,
+                  76,
+                  255
+                ],
+                "width": 0.4
+              }
+            },
+            "value": "PR",
+            "label": "PR - Privatief perceel"
+          }
+        ],
+        "fieldDelimiter": ",",
+        "authoringInfo": {
+          "colorRamp": {
+            "type": "multipart",
+            "colorRamps": [
+              {
+                "type": "algorithmic",
+                "algorithm": "esriCIELabAlgorithm",
+                "fromColor": [
+                  207,
+                  228,
+                  252,
+                  255
+                ],
+                "toColor": [
+                  207,
+                  228,
+                  252,
+                  255
+                ]
+              },
+              {
+                "type": "algorithmic",
+                "algorithm": "esriCIELabAlgorithm",
+                "fromColor": [
+                  199,
+                  252,
+                  179,
+                  255
+                ],
+                "toColor": [
+                  199,
+                  252,
+                  179,
+                  255
+                ]
+              },
+              {
+                "type": "algorithmic",
+                "algorithm": "esriCIELabAlgorithm",
+                "fromColor": [
+                  252,
+                  179,
+                  182,
+                  255
+                ],
+                "toColor": [
+                  252,
+                  179,
+                  182,
+                  255
+                ]
+              },
+              {
+                "type": "algorithmic",
+                "algorithm": "esriCIELabAlgorithm",
+                "fromColor": [
+                  222,
+                  179,
+                  252,
+                  255
+                ],
+                "toColor": [
+                  222,
+                  179,
+                  252,
+                  255
+                ]
+              },
+              {
+                "type": "algorithmic",
+                "algorithm": "esriCIELabAlgorithm",
+                "fromColor": [
+                  252,
+                  243,
+                  212,
+                  255
+                ],
+                "toColor": [
+                  252,
+                  243,
+                  212,
+                  255
+                ]
+              },
+              {
+                "type": "algorithmic",
+                "algorithm": "esriCIELabAlgorithm",
+                "fromColor": [
+                  189,
+                  252,
+                  240,
+                  255
+                ],
+                "toColor": [
+                  189,
+                  252,
+                  240,
+                  255
+                ]
+              },
+              {
+                "type": "algorithmic",
+                "algorithm": "esriCIELabAlgorithm",
+                "fromColor": [
+                  252,
+                  207,
+                  241,
+                  255
+                ],
+                "toColor": [
+                  252,
+                  207,
+                  241,
+                  255
+                ]
+              },
+              {
+                "type": "algorithmic",
+                "algorithm": "esriCIELabAlgorithm",
+                "fromColor": [
+                  182,
+                  196,
+                  252,
+                  255
+                ],
+                "toColor": [
+                  182,
+                  196,
+                  252,
+                  255
+                ]
+              },
+              {
+                "type": "algorithmic",
+                "algorithm": "esriCIELabAlgorithm",
+                "fromColor": [
+                  251,
+                  252,
+                  179,
+                  255
+                ],
+                "toColor": [
+                  251,
+                  252,
+                  179,
+                  255
+                ]
+              },
+              {
+                "type": "algorithmic",
+                "algorithm": "esriCIELabAlgorithm",
+                "fromColor": [
+                  219,
+                  252,
+                  212,
+                  255
+                ],
+                "toColor": [
+                  219,
+                  252,
+                  212,
+                  255
+                ]
+              },
+              {
+                "type": "algorithmic",
+                "algorithm": "esriCIELabAlgorithm",
+                "fromColor": [
+                  252,
+                  215,
+                  194,
+                  255
+                ],
+                "toColor": [
+                  252,
+                  215,
+                  194,
+                  255
+                ]
+              },
+              {
+                "type": "algorithmic",
+                "algorithm": "esriCIELabAlgorithm",
+                "fromColor": [
+                  252,
+                  182,
+                  238,
+                  255
+                ],
+                "toColor": [
+                  252,
+                  182,
+                  238,
+                  255
+                ]
+              },
+              {
+                "type": "algorithmic",
+                "algorithm": "esriCIELabAlgorithm",
+                "fromColor": [
+                  207,
+                  247,
+                  252,
+                  255
+                ],
+                "toColor": [
+                  207,
+                  247,
+                  252,
+                  255
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "scaleSymbols": false,
+      "transparency": 0,
+      "labelingInfo": [
+        {
+          "labelExpression": "[CaPaKey]",
+          "labelPlacement": "esriServerPolygonPlacementAlwaysHorizontal",
+          "multiPart": "labelPerPart",
+          "allowOverrun": true,
+          "deconflictionStrategy": "dynamic",
+          "repeatLabel": false,
+          "useClippedGeometry": false,
+          "stackLabel": true,
+          "stackAlignment": "dynamic",
+          "removeDuplicates": "none",
+          "stackRowLength": 24,
+          "useCodedValues": true,
+          "maxScale": 0,
+          "minScale": 2000,
+          "name": "Default",
+          "priority": 9,
+          "symbol": {
+            "type": "esriTS",
+            "color": [
+              168,
+              0,
+              0,
+              255
+            ],
+            "backgroundColor": null,
+            "borderLineColor": null,
+            "borderLineSize": null,
+            "verticalAlignment": "baseline",
+            "horizontalAlignment": "left",
+            "rightToLeft": false,
+            "angle": 0,
+            "xoffset": 0,
+            "yoffset": 0,
+            "kerning": true,
+            "haloColor": [
+              255,
+              255,
+              255,
+              255
+            ],
+            "haloSize": 1,
+            "font": {
+              "family": "Verdana",
+              "size": 7,
+              "style": "normal",
+              "weight": "normal",
+              "decoration": "none"
+            }
+          }
+        }
+      ]
+    },
+    "defaultVisibility": true,
+    "extent": {
+      "xmin": 22282.299500003457,
+      "ymin": 155940.4946999997,
+      "xmax": 90376.62060000002,
+      "ymax": 229279.73629999906,
+      "spatialReference": {
+        "wkid": 31370,
+        "latestWkid": 31370,
+        "xyTolerance": 0.001,
+        "zTolerance": 0.001,
+        "mTolerance": 0.001,
+        "falseX": -35872700,
+        "falseY": -30622700,
+        "xyUnits": 10000,
+        "falseZ": -100000,
+        "zUnits": 10000,
+        "falseM": -100000,
+        "mUnits": 10000
+      }
+    },
+    "hasAttachments": false,
+    "htmlPopupType": "esriServerHTMLPopupTypeAsHTMLText",
+    "displayField": "CaPaKey",
+    "typeIdField": null,
+    "subtypeFieldName": null,
+    "subtypeField": null,
+    "defaultSubtypeCode": null,
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID",
+        "domain": null
+      },
+      {
+        "name": "RecId",
+        "type": "esriFieldTypeInteger",
+        "alias": "RECID",
+        "domain": null
+      },
+      {
+        "name": "Type",
+        "type": "esriFieldTypeString",
+        "alias": "TYPE",
+        "length": 2,
+        "domain": null
+      },
+      {
+        "name": "CaSeKey",
+        "type": "esriFieldTypeString",
+        "alias": "CASEKEY",
+        "length": 6,
+        "domain": null
+      },
+      {
+        "name": "FiscSitId",
+        "type": "esriFieldTypeInteger",
+        "alias": "FISCSITID",
+        "domain": null
+      },
+      {
+        "name": "Toestand",
+        "type": "esriFieldTypeSmallInteger",
+        "alias": "TOESTAND",
+        "domain": null
+      },
+      {
+        "name": "NISCODE",
+        "type": "esriFieldTypeString",
+        "alias": "NISCODE",
+        "length": 5,
+        "domain": null
+      },
+      {
+        "name": "GEMEENTE",
+        "type": "esriFieldTypeString",
+        "alias": "GEMEENTE",
+        "length": 30,
+        "domain": null
+      },
+      {
+        "name": "Shape",
+        "type": "esriFieldTypeGeometry",
+        "alias": "Shape",
+        "domain": null
+      },
+      {
+        "name": "UpdDate",
+        "type": "esriFieldTypeDate",
+        "alias": "UPDDATE",
+        "length": 8,
+        "domain": null
+      },
+      {
+        "name": "Shape.STArea()",
+        "type": "esriFieldTypeDouble",
+        "alias": "Shape.STArea()",
+        "domain": null
+      },
+      {
+        "name": "Shape.STLength()",
+        "type": "esriFieldTypeDouble",
+        "alias": "Shape.STLength()",
+        "domain": null
+      },
+      {
+        "name": "CaPaKey",
+        "type": "esriFieldTypeString",
+        "alias": "CAPAKEY",
+        "length": 17,
+        "domain": null
+      }
+    ],
+    "geometryField": {
+      "name": "Shape",
+      "type": "esriFieldTypeGeometry",
+      "alias": "Shape"
+    },
+    "indexes": [
+      {
+        "name": "R3957_pk",
+        "fields": "OBJECTID",
+        "isAscending": true,
+        "isUnique": true,
+        "description": ""
+      },
+      {
+        "name": "S2957_idx",
+        "fields": "Shape",
+        "isAscending": true,
+        "isUnique": true,
+        "description": ""
+      }
+    ],
+    "subtypes": [],
+    "relationships": [],
+    "canModifyLayer": true,
+    "canScaleSymbols": false,
+    "hasLabels": true,
+    "capabilities": "Query,Map,Data",
+    "maxRecordCount": 2000,
+    "maxSelectionCount": 2000,
+    "supportsStatistics": true,
+    "supportsExceedsLimitStatistics": true,
+    "supportsAdvancedQueries": true,
+    "supportedQueryFormats": "JSON, geoJSON, PBF",
+    "isDataVersioned": false,
+    "ownershipBasedAccessControlForFeatures": {
+      "allowOthersToQuery": true
+    },
+    "useStandardizedQueries": true,
+    "supportedSpatialRelationships": [
+      "esriSpatialRelIntersects",
+      "esriSpatialRelContains",
+      "esriSpatialRelCrosses",
+      "esriSpatialRelEnvelopeIntersects",
+      "esriSpatialRelIndexIntersects",
+      "esriSpatialRelOverlaps",
+      "esriSpatialRelTouches",
+      "esriSpatialRelWithin",
+      "esriSpatialRelRelation"
+    ],
+    "advancedQueryCapabilities": {
+      "useStandardizedQueries": true,
+      "supportsStatistics": true,
+      "supportsPercentileStatistics": true,
+      "supportsHavingClause": true,
+      "supportsOrderBy": true,
+      "supportsDistinct": true,
+      "supportsCountDistinct": true,
+      "supportsAdvancedQueryRelated": true,
+      "supportsQueryRelatedPagination": true,
+      "supportsPagination": true,
+      "supportsLod": false,
+      "supportsQueryWithLodSR": false,
+      "supportsTrueCurve": true,
+      "supportsQueryWithDatumTransformation": true,
+      "supportsReturningQueryExtent": true,
+      "supportsQueryWithDistance": true,
+      "supportsSqlExpression": true,
+      "supportsTimeRelation": true,
+      "supportsSqlFormat": false,
+      "supportsQueryAnalytic": true,
+      "supportsCurrentUserQueries": true
+    },
+    "supportsDatumTransformation": true,
+    "advancedQueryAnalyticCapabilities": {
+      "supportsLinearRegression": true,
+      "supportsAsync": false,
+      "supportsPercentileAnalytic": true
+    },
+    "dateFieldsTimeReference": null,
+    "preferredTimeReference": null,
+    "datesInUnknownTimezone": false,
+    "hasGeometryProperties": true,
+    "geometryProperties": {
+      "shapeAreaFieldName": "Shape.STArea()",
+      "shapeLengthFieldName": "Shape.STLength()",
+      "units": "esriMeters",
+      "mapUnits": {
+        "uwkid": 9001
+      }
+    },
+    "hasMetadata": true,
+    "isDataArchived": false,
+    "archivingInfo": {
+      "supportsQueryWithHistoricMoment": false,
+      "startArchivingMoment": -1
+    },
+    "supportsCoordinatesQuantization": true,
+    "supportsDynamicLegends": true,
+    "serviceItemId": "6c9ae9ca2c2e423e83365ffbd844d65d"
+  }
+}

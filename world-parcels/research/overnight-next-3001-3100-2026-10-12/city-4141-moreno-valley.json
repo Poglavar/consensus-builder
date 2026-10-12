@@ -1,0 +1,115 @@
+{
+  "cityCode": 4141,
+  "queueRank": 3067,
+  "name": "Moreno Valley",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso3": "USA",
+  "point": [33.9256769971331, -117.234944442388],
+  "population2025": 195562,
+  "population2025k": 195.562,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "sourceDiscoveryDate": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Moreno Valley official parcel map GIS assessor parcel viewer",
+        "result": "First-party City of Moreno Valley results identified the Moreno Valley Map Viewer (MV2), which provides public map and parcel information and links to the current viewer. The current public Geocortex route exposes the City of Moreno Valley mobile site and its GEParcels ArcGIS FeatureServer layer.",
+        "actualResultUrls": [
+          "https://moval.gov/city_hall/city_maps.html",
+          "https://moval.geocortex.com/Html5Viewer/index.html?viewer=comv_hv",
+          "https://moval.geocortex.com/Geocortex/Essentials/Moval/REST/sites/CoMV_Mobile/map",
+          "https://services2.arcgis.com/WgPlP3PNKC8Glejs/ArcGIS/rest/services/GEParcels/FeatureServer/0"
+        ]
+      },
+      {
+        "language": "English (local-language check; United States local language)",
+        "query": "Moreno Valley mapa parcelas GIS oficial assessor",
+        "result": "The separate local-language discovery query surfaced the same official City of Moreno Valley MV2 and Riverside County property/GIS context; no distinct non-English local cadastral endpoint was identified.",
+        "actualResultUrls": [
+          "https://moval.gov/city_hall/city_maps.html",
+          "https://www.moreno-valley.ca.us/cdd/department/faqs-data-records.html",
+          "https://ca-riverside-acr.publicaccessnow.com/PropertySearch/Valuation.aspx?p=478182026"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodians": [
+    {
+      "name": "City of Moreno Valley Geographic Information System / MV2",
+      "scope": "Local municipal map viewer and parcel-information publisher.",
+      "evidence": "https://moval.gov/city_hall/city_maps.html"
+    },
+    {
+      "name": "Riverside County Assessor-County Clerk-Recorder",
+      "scope": "County assessor/property-record custodian referenced by the City viewer and public property search; not treated as an owner-data source.",
+      "evidence": "https://ca-riverside-acr.publicaccessnow.com/PropertySearch/Valuation.aspx?p=478182026"
+    }
+  ],
+  "service": {
+    "name": "Moreno Valley GEParcels ArcGIS FeatureServer layer",
+    "viewerUrl": "https://moval.geocortex.com/Html5Viewer/index.html?viewer=comv_hv",
+    "baseUrl": "https://services2.arcgis.com/WgPlP3PNKC8Glejs/ArcGIS/rest/services/GEParcels/FeatureServer/0",
+    "viewerConfiguration": "The current City Geocortex REST map listing identifies GEParcels as the operational Parcels layer; the ArcGIS REST layer metadata was fetched anonymously and advertises polygon geometry, GeoJSON query format, and maxRecordCount 2000.",
+    "schemaAndCrs": {
+      "parcelSchema": "Polygon feature layer",
+      "nativeIdFields": ["FID", "APN"],
+      "geometryCrs": "Source EPSG:3857 / WKID 102100; sample requested as EPSG:4326 GeoJSON",
+      "fieldMapping": {"canonicalId": "APN", "sourceObjectId": "FID"},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://moval.gov/city_hall/city_maps.html",
+      "status": "200",
+      "outcome": "Official City page returned and linked the current MV2 Geocortex viewer."
+    },
+    {
+      "method": "GET",
+      "url": "https://moval.geocortex.com/Html5Viewer/Resources/Config/Default/Desktop.json.js",
+      "status": "200",
+      "outcome": "Current public Geocortex JavaScript configuration returned; no login, credential, CAPTCHA/Cloudflare bypass, or private token was used."
+    },
+    {
+      "method": "GET",
+      "url": "https://moval.geocortex.com/Geocortex/Essentials/Moval/REST/sites/CoMV_Mobile/map",
+      "status": "200",
+      "outcome": "Current public site map listing identified the GEParcels FeatureServer parcel layer and its ArcGIS service URL."
+    },
+    {
+      "method": "GET",
+      "url": "https://services2.arcgis.com/WgPlP3PNKC8Glejs/ArcGIS/rest/services/GEParcels/FeatureServer/0?f=pjson",
+      "status": "200",
+      "outcome": "Layer schema, polygon geometry type, native FID/APN fields, source WKID 102100/3857, and GeoJSON support returned. Unsafe fields were not requested or retained."
+    },
+    {
+      "method": "GET query",
+      "url": "https://services2.arcgis.com/WgPlP3PNKC8Glejs/ArcGIS/rest/services/GEParcels/FeatureServer/0/query",
+      "status": "200",
+      "outcome": "Exact unchanged WUP point [33.9256769971331, -117.234944442388] returned features []; this exact-point miss is not evidence of citywide absence. Requested only FID/APN and geometry."
+    },
+    {
+      "method": "GET query",
+      "url": "https://services2.arcgis.com/WgPlP3PNKC8Glejs/ArcGIS/rest/services/GEParcels/FeatureServer/0/query",
+      "status": "200",
+      "outcome": "Bounded envelope query [-117.245,33.915,-117.225,33.935] returned parcel polygons with native FID/APN; response indicated exceededTransferLimit, so it is only a bounded sample and not a citywide inventory. Three full polygons are retained in the sample GeoJSON."
+    }
+  ],
+  "geometrySamples": ["city-4141-moreno-valley-sample.geojson"],
+  "safeFieldAllowlist": ["stable native parcel identity APN", "source object identifier FID", "full parcel polygon geometry", "source CRS", "public service metadata", "retrieval date"],
+  "scopeLimits": [
+    "The exact WUP point and latitude/longitude order were preserved; no coordinate was shifted to force a hit.",
+    "The retained polygons are a bounded anonymous service sample, not proof of full citywide coverage or completeness.",
+    "No owner, address, contact, titleholder, personal, tax/account, or other unsafe fields were requested or retained.",
+    "Native source field names and mapping are recorded here rather than in GeoJSON properties; each retained feature has only canonical APN identity.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": ["The exact WUP point is not covered by a returned GEParcels polygon, or the point lies in a gap/edge condition; this was not generalized to the city.", "The bounded query exceeded its transfer limit and does not establish parcel counts or complete coverage.", "Independent serial review is required before any adapter/runtime qualification."],
+  "runtimeReadiness": "held"
+}

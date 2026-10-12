@@ -1,0 +1,19 @@
+{
+  "taskId": "city:540",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-540-malmo.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/malmo-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/malmo-parcel-sample.geojson",
+    "tmp/valhalla-parcel-research/malmo-service.json",
+    "tmp/valhalla-parcel-research/malmo-parcel-layer.json",
+    "tmp/valhalla-parcel-research/malmo-point-query.geojson"
+  ],
+  "checkedAt": "2026-10-10T15:46:05Z",
+  "reviewNotes": "Official Malmö ArcGIS layer cache identifies polygon layer and OBJECTID; one native-ID polygon matches the original point-query cache. No independently qualified adapter, forced paging, thirteen bounded cells, metric GEOS overlap/operation evidence, source binding or headed Details verification.",
+  "admissionGate": "Held. Packet completion and bounded responses do not establish the live adapter qualification required for admission; registry, catalog, city configuration and generated reports were not changed."
+}

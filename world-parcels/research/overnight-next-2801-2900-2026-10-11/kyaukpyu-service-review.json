@@ -1,0 +1,45 @@
+{
+  "cityRecord": "city-1326-kyaukpyu.json",
+  "cityCode": 1326,
+  "queueRank": 2809,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": null,
+  "registryCustodian": null,
+  "nationalAgencyLeads": [
+    "https://slrd.gov.mm/en",
+    "https://surveydepartment.gov.mm/"
+  ],
+  "queryOutcomes": "Separate English and Burmese discovery queries were performed. National SLRD and Survey Department leads were found, but no Kyaukpyu-local public cadastral viewer/API or safe parcel ID-plus-geometry response was exposed.",
+  "requestOutcomes": "SLRD discovery content was available through search/open, while direct curl received a Cloudflare challenge; Survey Department timed out after a bounded anonymous GET; Yangon CPLAD returned HTTP 200 but is explicitly limited to 33 Yangon townships and is not Kyaukpyu coverage. No credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used.",
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [19.4256588638842, 93.5472947778845] was preserved and was not moved to force a parcel hit.",
+    "No exact-point hit or miss was inferred from the Cloudflare challenge, timeout, limited Yangon service, or absent public geometry.",
+    "National agency prose does not establish a Kyaukpyu local registry or open cadastral vector coverage.",
+    "No parcel polygon or source-specific raw attribute set is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "No Kyaukpyu-local public anonymous parcel ID-plus-geometry response, schema, CRS, native identity, or citywide open coverage was qualified."
+  },
+  "uncertainty": "A dedicated Myanmar local land-record workflow or an unindexed public map service may exist, but its safe anonymous endpoint and Kyaukpyu coverage were not established."
+}

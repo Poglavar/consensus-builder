@@ -1,0 +1,12 @@
+{
+  "taskId": "city:11773",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-11773-amarshi.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/amarshi-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T14:14:35.680374Z",
+  "reason": "Official West Bengal cadastral custody and district context are evidenced, but the live portal timed out before any safe native-ID parcel geometry response. No sample, fresh ID read, paging, 13-cell checks, metric GEOS checks, source binding, or headed Details verification exists. Timeout is not citywide absence."
+}

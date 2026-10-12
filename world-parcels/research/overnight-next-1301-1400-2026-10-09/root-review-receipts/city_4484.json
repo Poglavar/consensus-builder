@@ -1,0 +1,24 @@
+{
+  "taskId": "city:4484",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-4484-kushtia.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/kushtia-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/4484/main.js",
+    "tmp/valhalla-parcel-research/4484/divisions.json",
+    "tmp/valhalla-parcel-research/4484/districts.json"
+  ],
+  "checkedAt": "2026-10-09T15:28:39+00:00",
+  "reason": "The immutable WUP identity and bilingual recorded searches match. The original official map JavaScript exposes administrative and geometry routes, while the saved anonymous Khulna district response lists Bagerhat and Khulna only. No Kushtia ID-plus-polygon response or independent adapter qualification exists; the bounded response is not citywide absence.",
+  "reviewFindings": {
+    "queueIdentityVerified": true,
+    "englishAndLocalSearchesRecorded": true,
+    "retainedFullPolygons": 0,
+    "safeNativeIdGeometryVerified": false,
+    "adapterQualificationComplete": false,
+    "integrationState": "held"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-6549-ziway.json",
+  "cityCode": 6549,
+  "queueRank": 2828,
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "runtimeReadiness": "held",
+  "registryFound": null,
+  "requests": [
+    {"method":"GET","url":"https://oromialand.org/","outcome":"200 HTML; official Oromia Land Bureau site loaded and describes regional land administration/digital-map services, but no Ziway parcel API was exposed in the public landing page."},
+    {"method":"GET","url":"https://oromialand.org/services","outcome":"200 HTML; official services page loaded; no anonymous Ziway parcel download or map-service route was evidenced."},
+    {"method":"GET","url":"https://oromialand.org/assets/api-GQsxlrkQ.js","outcome":"200 JavaScript; current frontend exposes public API base https://oromialand.org/api."},
+    {"method":"GET","url":"https://oromialand.org/api","outcome":"200 text response 'Hello World!'; API root is reachable but provides no parcel data or schema."},
+    {"method":"GET","url":"https://oromialand.org/api/health","outcome":"404 JSON Cannot GET /api/health; no health route."},
+    {"method":"GET","url":"https://oromialand.org/api/map","outcome":"404 JSON Cannot GET /api/map; no public map route."},
+    {"method":"GET","url":"https://oromialand.org/api/parcel","outcome":"404 JSON Cannot GET /api/parcel; no public parcel route."},
+    {"method":"GET","url":"https://oromiaurbanplanning.gov.et/om/content/daarektara-qorannoo","outcome":"200 HTML; official Oromia planning bureau research directorate page, general institutional prose only; no Ziway parcel endpoint."},
+    {"method":"GET","url":"https://justice.gov.et/en/directives/urban-cadastral-survey-directive-no-735-2013/","outcome":"200 HTML; official national urban-cadastral directive page, policy/procedure source rather than a parcel map service."},
+    {"method":"GET","url":"https://eland.addiscadaster.gov.et/","outcome":"200 HTML; official e-Land viewer loaded, but its branding/service context is Addis Ababa cadastral administration and it is not evidence for Ziway/Oromia coverage."},
+    {"method":"GET","url":"https://eland.addiscadaster.gov.et/main.d3525dff4b9098d6.js","outcome":"200 JavaScript; current viewer configuration and service routes inspected without login; no safe anonymous Ziway parcel response was requested or observed."}
+  ],
+  "schemaAndCrs": {"parcelResponse":"not obtained","crs":null,"observedSafeFields":[],"observedGeometry":null},
+  "nativeIdentity": {"status":"not qualified","reason":"No Ziway parcel response was obtained, so no native parcel identifier or geometry can be safely retained."},
+  "safeFieldAllowlist": ["stable native parcel ID only after qualification", "geometry", "survey/administrative identifiers needed for provenance"],
+  "excludedFields": ["owner names", "addresses", "titleholder information", "contact details", "tax/account data", "personal/legal land-record details"],
+  "scopeLimits": [
+    "The exact WUP point [7.90795915826347, 38.7210069125021] was preserved and was not shifted to seek a hit.",
+    "A zero exact-point hit or absent public route is not evidence of citywide absence.",
+    "Oromia Land Bureau and national policy pages establish general institutional context, not a Ziway-local registry custodian.",
+    "The Addis e-Land viewer was treated as out of scope for Ziway and no login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe field request was used.",
+    "No adapter integration, source admission, or runtime readiness is claimed."
+  ],
+  "uncertainty":"High for Ziway citywide parcel coverage, local registry custody, schema/CRS, and native identity because no public parcel response was obtained.",
+  "completionSummary": {"packetComplete":true,"registryFound":null,"cityPointParcelSample":false,"runtimeReadiness":"held","nextAttemptNeeded":true}
+}

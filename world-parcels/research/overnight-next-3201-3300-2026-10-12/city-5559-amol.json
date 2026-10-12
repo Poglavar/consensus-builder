@@ -1,0 +1,71 @@
+{
+  "cityCode": 5559,
+  "queueRank": 3236,
+  "name": "Amol",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso3": "IRN",
+  "locId": 364,
+  "capital": false,
+  "point": [36.4706422239321, 52.3559402737253],
+  "population2025": 186561,
+  "population2025k": 186.561,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Amol Iran official cadastral parcel map GIS land registry API",
+        "result": "Search identified the national Registration Organization of Deeds and Properties (SSAA) ecosystem and a local Amol registration-office reference, but no first-party public Amol parcel viewer, vector endpoint, or safe anonymous parcel response.",
+        "actualResultUrls": [
+          "https://ssaa.ir",
+          "https://cadastre.ssaa.ir",
+          "https://shamim.ssaa.ir",
+          "https://my.ssaa.ir"
+        ]
+      },
+      {
+        "language": "Persian (local)",
+        "query": "آمل نقشه کاداستر رسمی املاک سازمان ثبت اسناد و املاک نقشه GIS سامانه",
+        "result": "نتایج به سازمان ثبت اسناد و املاک کشور، سامانه کاداستر و شمیم و یک مرجع محلی اداره ثبت اسناد و املاک شهرستان آمل اشاره کردند؛ هیچ لایه عمومی ناشناس با شناسه امن و هندسه قطعه برای آمل بازیابی نشد.",
+        "actualResultUrls": [
+          "https://ssaa.ir",
+          "https://cadastre.ssaa.ir",
+          "https://shamim.ssaa.ir",
+          "https://www.waze.com/ca/live-map/directions/ir/mazandaran-province/amol/adarh-thbt-asnad-w-amlak-shhrstan-aaml?to=place.ChIJvZK1gTSjjz8RyeXzSuUrduw"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "candidateCustodian": "Registration Organization of Deeds and Properties of Iran (SSAA), including its cadastral and Shamim systems",
+    "locality": "Amol, Mazandaran Province",
+    "evidenceUrls": [
+      "https://ssaa.ir",
+      "https://cadastre.ssaa.ir",
+      "https://shamim.ssaa.ir",
+      "https://www.waze.com/ca/live-map/directions/ir/mazandaran-province/amol/adarh-thbt-asnad-w-amlak-shhrstan-aaml?to=place.ChIJvZK1gTSjjz8RyeXzSuUrduw"
+    ],
+    "scopeNote": "The local-office result is a directory/map reference, not a first-party registry page. Official SSAA-related hosts were attempted but timed out, so a local registry/map/procedure was not sufficiently evidenced for registryFound=true. National cadastral prose is not treated as citywide public parcel coverage."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": null,
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "note": "No parcel polygon was retained. The exact WUP point was used only as the supplied research coordinate and was not shifted or treated as an absence test."
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "Ordinary HTTPS GET attempts to https://ssaa.ir, https://cadastre.ssaa.ir, https://shamim.ssaa.ir, https://my.ssaa.ir, and https://amol.ir did not return within the bounded timeout; no login, credentials, private token, CAPTCHA, or certificate bypass was used.",
+    "Search results describe SSAA cadastral and Shamim services, but do not expose a public anonymous parcel-vector API or current viewer configuration for Amol.",
+    "The exact-point hit status, map extent status, and timeout status do not establish citywide cadastral absence.",
+    "No owner, address, contact, titleholder, tax, account, personal, or other unsafe fields were requested or retained."
+  ]
+}

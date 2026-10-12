@@ -1,0 +1,13 @@
+{
+  "taskId": "city:4914",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-4914-dhamar.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/dhamar-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T15:46:22Z",
+  "reason": "Dhamar WUP identity matches the original 2025 row and immutable rank 1389 queue: Yemen, exact point, 406929 persons. English and Arabic searches are recorded, and cited official authority/branch material supports local custody. The only saved geometry cache is a Yemen administrative-boundary layer with administrative fields, not cadastral parcels; no safe native-ID parcel polygon exists. Adapter qualification, forced paging, 13 cells, metric geometry checks, source binding, and headed Details verification are absent. The worker packet prefilled rootReview/rootReviewedAt; those labels were not accepted as root review evidence."
+}

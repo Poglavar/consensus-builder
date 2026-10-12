@@ -1,0 +1,16 @@
+{
+  "taskId": "city:60",
+  "decision": "held",
+  "reason": "Geneva rank 1277 matches the immutable WUP queue (Switzerland, unchanged point, 436587 persons); English/French executed-search records are present. The original first-party SITG cache has one exact-point EGRID identity and three bounded full polygons; three retained features carry only safe EGRID-derived ids. Sample polygons are metric GEOS valid, distinct, and pairwise nonoverlapping, but two retained coordinate arrays differ from the original response at sub-nanodegree decimal digits, violating unchanged-source retention. No fresh adapter exact-ID reads, forced paging, 13 cells, full-operation/source-binding checks, or headed Details verification are evidenced. Public local discovery remains held; no admission.",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-60-geneva.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/geneva-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/geneva-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/geneva/layer-4.json",
+    "tmp/valhalla-parcel-research/geneva/query-point.json",
+    "tmp/valhalla-parcel-research/geneva/query-3.geojson"
+  ],
+  "checkedAt": "2026-10-09T12:55:03.395833Z"
+}

@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-9692-hulan.json",
+  "purpose": "Document first-party registry/map discovery, current viewer-route outcomes, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "The official Harbin Tianditu portal is current and publicly reachable, but its inspected configuration exposes basemap/annotation services rather than a cadastral parcel layer. No safe anonymous ID-plus-complete-polygon response was verified.",
+  "registryAssessment": "Municipal geospatial-platform ownership is evidenced; a Hulan-specific cadastral or real-estate-registration custodian/procedure was not verified in this attempt, so registryFound remains null.",
+  "officialPrimarySources": [
+    {
+      "url": "https://heilongjiang.tianditu.gov.cn/haerbin/",
+      "observation": "Official Harbin municipal public geospatial portal; page identifies the Harbin Natural Resources and Planning Bureau as owner and links the current online map."
+    },
+    {
+      "url": "https://heilongjiang.tianditu.gov.cn/haerbin/Portal/mapView/index.html",
+      "observation": "Current public viewer entry. Its HTML loads env.js and a Dojo framework; no parcel endpoint is present in the entry document."
+    },
+    {
+      "url": "https://hrbcredit.harbin.gov.cn/creditMess.do?conId=f11f13dcd822ed96f773c15e1820ce&method=thirdPage",
+      "observation": "Harbin government credit-service material describes online real-estate and cadastral-map visualization as a municipal direction, but does not expose a public Hulan parcel API or geometry."
+    }
+  ],
+  "viewerConfiguration": {
+    "documentedHomeUrl": "https://heilongjiang.tianditu.gov.cn/haerbin/",
+    "observedServiceTypes": ["Tianditu basemap WMTS", "ArcGIS MapServer municipal vector/image basemap and annotation", "Tianditu POI/search API route"],
+    "observedConfiguredServices": [
+      "http://61.167.137.253:6080/arcgis/rest/services/HRB_VEC_BaseMap/MapServer",
+      "http://61.167.137.253:6080/arcgis/rest/services/HRB_VEC_Anno/MapServer",
+      "http://61.167.137.253:6080/arcgis/rest/services/HRB_IMG_BaseMap/MapServer",
+      "http://61.167.137.253:6080/arcgis/rest/services/HRB_IMG_Anno/MapServer"
+    ],
+    "schemaAndCrs": "No cadastral feature schema or successful parcel response; map CRS not retained as parcel evidence.",
+    "nativeFieldNames": "Not retained; no parcel feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://heilongjiang.tianditu.gov.cn/haerbin/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Succeeded; current portal HTML was saved in ignored scratch evidence."
+    },
+    {
+      "url": "https://heilongjiang.tianditu.gov.cn/haerbin/Portal/mapView/index.html",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Succeeded; viewer HTML, env.js, framework.js and config.json were inspected. Config exposed basemap/annotation services and no cadastral parcel layer."
+    },
+    {
+      "url": "http://61.167.137.253:6080/arcgis/rest/services?f=pjson",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Timed out after 20 seconds. No service-root metadata, schema, IDs or geometry obtained; no TLS exception used."
+    },
+    {
+      "url": "https://api.tianditu.gov.cn/v2/search",
+      "method": "Not submitted",
+      "normalTlsVerification": true,
+      "result": "Viewer configuration identified this as a POI/search route, not a cadastral parcel feature service; no parcel request was submitted."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No exact-point or bounded parcel query submitted because no current public Hulan parcel endpoint was identified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official municipal map portal and current viewer configuration cover public map-platform evidence only.",
+    "verifiedOpenScope": "Public basemap/annotation configuration verified; no cadastral parcel schema, native identity or complete polygon response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "Timeout and absence of a parcel layer in the inspected viewer are route/access limitations, not evidence of cadastral absence. Hulan-specific service URL, schema, CRS, native identity, geometry availability and completeness remain unverified.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "type": "FeatureCollection",
+  "name": "wonju-parcel-sample",
+  "crs": {"type": "name", "properties": {"name": "EPSG:5186"}},
+  "features": [
+    {"type": "Feature", "id": "LP_PA_CBND.91555", "properties": {"id": "LP_PA_CBND.91555"}, "geometry": {"type": "MultiPolygon", "coordinates": [[[[284179.2362,527459.2933],[284187.8992,527457.5554],[284200.1802,527451.9497],[284201.4909,527467.5436],[284187.076,527468.4403],[284179.3131,527467.2452],[284179.2362,527459.2933]]]]}}
+  ]
+}

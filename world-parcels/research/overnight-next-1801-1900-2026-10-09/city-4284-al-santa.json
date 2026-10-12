@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 4284,
+  "queueRank": 1894,
+  "cityId": "queue:1894",
+  "name": "Al-Santa",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "point": [30.6956118216837, 31.1108170498702],
+  "centerLatLon": [30.6956118216837, 31.1108170498702],
+  "population2025": 302572,
+  "population2025k": 302.572,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Al-Santa Egypt cadastral parcel map official GIS land registry",
+        "result": "First-party discovery identified the Egyptian Survey Authority (ESA) official services page and its digital-map and historical-city-map services. Search did not expose an anonymous Al-Santa parcel feature layer or parcel ID-plus-geometry endpoint.",
+        "actualResultUrls": ["https://www.esa.gov.eg/services.aspx", "https://www.esa.gov.eg/city_maps2.aspx", "https://www.esa.gov.eg/sellingmaproomdigital.aspx"]
+      },
+      {
+        "language": "Arabic (local/native)",
+        "query": "السنتا مصر خريطة كادسترية قطع الأراضي بوابة رسمية",
+        "result": "First-party Arabic discovery identified ESA services for digital maps, cadastral/state-property mapping, and historical maps, plus an ESA notice about a mapping/data-modernization protocol with Gharbia Governorate. No public anonymous Al-Santa parcel geometry or safe parcel identity was exposed.",
+        "actualResultUrls": ["https://www.esa.gov.eg/services.aspx", "https://www.esa.gov.eg/amlak.aspx", "https://www.esa.gov.eg/NewsContent2.aspx?id=1525", "https://www.esa.gov.eg/city_maps2.aspx"]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Arabic first-party discovery, followed by bounded TLS-verified GET inspection of official ESA pages. No credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "observation": "Official Egyptian Survey Authority services catalogue lists digital maps, historical maps, coordinate certificates, boundary separation, and state-property encroachment survey services. This is national agency evidence, not a public parcel API."
+    },
+    {
+      "url": "https://www.esa.gov.eg/NewsContent2.aspx?id=1525",
+      "observation": "Official ESA notice records a protocol with Gharbia Governorate to inventory and validate state property, prepare accurate survey maps, and digitize the data. It supports local service custody/context but does not publish an anonymous Al-Santa parcel layer."
+    },
+    {
+      "url": "https://www.esa.gov.eg/city_maps2.aspx",
+      "observation": "Official ESA historical-city-map page exposes governorate/centre/district selectors and map catalogue results, but the initial public GET showed Cairo defaults and no anonymous Al-Santa parcel feature response."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Successful TLS-verified GET. Service catalogue inspected; no parcel schema, CRS, stable parcel identity, or geometry response."
+    },
+    {
+      "url": "https://www.esa.gov.eg/city_maps2.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Successful TLS-verified GET. Current HTML exposes server-side governorate/centre/district selectors and historical map catalogue UI; no Al-Santa selection response or parcel feature service was requested because no public endpoint was disclosed."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Successful TLS-verified GET. Page describes purchasing digital GIS/CAD/PDF/orthophoto maps and requesting projection/layers; it is not an anonymous parcel download/API."
+    },
+    {
+      "url": "https://www.esa.gov.eg/NewsContent2.aspx?id=1525",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Successful TLS-verified GET. Gharbia-specific ESA/Governorate protocol notice inspected as local custody evidence; no geometry or safe parcel attributes returned."
+    }
+  ],
+  "requestCoordinates": {
+    "wupPointLatLon": [30.6956118216837, 31.1108170498702],
+    "coordinateOrderNote": "Exact WUP latitude/longitude preserved; no coordinate shift applied; no exact-point parcel query was possible."
+  },
+  "safeFieldAllowlist": ["stable native parcel id/uid", "full polygon or multipolygon geometry", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": null,
+  "geometryQuality": "No parcel geometry obtained; no sample GeoJSON retained.",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed because no public parcel feature endpoint was exposed; zero exact-point hit or miss is not inferred.",
+    "requestEvidence": "tmp/valhalla-parcel-research/al-santa/"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Egyptian Survey Authority map/cadastre-related services, with Gharbia Governorate state-property mapping protocol evidence.",
+    "verifiedOpenScope": "Official service and procedure metadata only; anonymous Al-Santa parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "National ESA service descriptions are distinguished from the Gharbia-specific local protocol notice.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "No exact-point or map-extent hit/miss inference was made.",
+    "Packet completion records source research only; runtime remains held pending independent serial qualification."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review remains required",
+  "uncertainty": "The current public viewer/API configuration, parcel-layer availability, schema, CRS, stable native identity, geometry quality, update currency, and citywide coverage remain unresolved."
+}

@@ -1,0 +1,47 @@
+{
+  "cityRecord": "city-4940-middelburg.json",
+  "cityCode": 4940,
+  "queueRank": 2833,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "National Chief Surveyor General cadastral ArcGIS service evidenced; Steve Tshwete Local Municipality geographical-information page identified but municipal parcel API not qualified.",
+  "nationalAgencyLeads": [
+    "https://csg.dlrrd.gov.za/",
+    "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer"
+  ],
+  "localAgencyLead": "https://stlm.gov.za/geographical-info/",
+  "queryOutcomes": "Separate English and Afrikaans discovery queries were performed. Official national CSG cadastral REST service and official Steve Tshwete municipal geographical-information page were identified. The CSG service returned three safe Middelburg-area Erven polygons in a bounded anonymous query.",
+  "requestOutcomes": "Service configuration and layer schema returned over HTTPS with TLS verification enabled. A bounded EPSG:4326 envelope query against Erven returned three polygon geometries and native identifiers. Additional layer probes included a zero-feature result and query errors; neither is treated as cadastral absence.",
+  "schemaAndCrs": {
+    "parcelSchema": "ArcGIS polygon Feature Layer, Erven layer 2",
+    "nativeIdField": "PRCL_KEY",
+    "alternateNativeIdField": "ID",
+    "geometryCrs": "Native WKID 4148; response requested in EPSG:4326",
+    "fieldMapping": {
+      "PRCL_KEY": "preferred stable native identity",
+      "ID": "alternate source identity",
+      "OBJECTID": "source object identifier",
+      "GID": "source global identifier",
+      "PARCEL_NO": "public parcel number"
+    },
+    "compositeKeyProvenance": "PRCL_KEY is a native field returned by the official Erven layer; no synthetic key was created."
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "Exact WUP point [-25.7630669966059, 29.4394487589585] was preserved in latitude/longitude order and was not moved.",
+    "The envelope sample proves nearby public geometry, not citywide or countrywide completeness.",
+    "National agency service evidence does not prove a local municipal registry endpoint.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "No retained GeoJSON sample is included; raw response and service metadata are under ignored tmp/.",
+    "Independent serial review is required before adapter/runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": true,
+    "parcelGeometryVerified": true,
+    "runtimeReadiness": "held",
+    "reason": "Anonymous safe ID-plus-geometry response was verified, but citywide coverage and runtime adapter suitability remain unqualified."
+  },
+  "uncertainty": "The public national service is usable for bounded research, but broader coverage, update cadence, municipal scope, and production adapter behavior remain unverified."
+}

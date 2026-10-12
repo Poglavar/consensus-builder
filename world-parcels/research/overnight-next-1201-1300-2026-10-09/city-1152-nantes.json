@@ -1,0 +1,34 @@
+{
+  "purpose":"City parcel geometry and registry/cadastre research; local registry evidence and public vector geometry are assessed independently.",
+  "schemaVersion":1,"kind":"city_parcel_source_research","checkedAt":"2026-10-09T00:00:00Z",
+  "cityCode":1152,"queueRank":1227,"cityId":"wup:1152","name":"Nantes","country":"France","countryCode":"FR","iso3":"FRA",
+  "centerLatLon":[47.2226716545731,-1.55741025412737],"point":[47.2226716545731,-1.55741025412737],
+  "population2025":453523,"population2025k":453.523,"populationUnit":"persons","year":2025,
+  "freshResearch":{"queries":[
+    {"language":"English","query":"Nantes cadastral parcels official map API cadastre Nantes métropole parcelles","result":"Found official Nantes Métropole map/open-data material, IGN API Carto documentation, and the official DGFiP commune WMS; DGFiP capabilities were inspected directly.","actualResultUrls":["https://data.nantesmetropole.fr/","https://eservices.nantesmetropole.fr/documents/20143/19077811/E-Service%2Burbanisme%2B-%2BCarte%2Binteractive%2Bdu%2BPLUM.pdf","https://www.data.gouv.fr/dataservices/api-carto-module-cadastre","https://inspire.cadastre.gouv.fr/scpc/44109.wms?service=WMS&request=GetCapabilities"]},
+    {"language":"French","query":"Nantes cadastre parcelles carte officielle API données cadastrales Nantes Métropole","result":"Found official Nantes Métropole urbanism/cadastre documentation and DGFiP WMS for NANTES (INSEE 44109); no safe anonymous vector parcel response was exposed by bounded requests.","actualResultUrls":["https://eservices.nantesmetropole.fr/urbanisme","https://naogeow.nantesmetropole.fr/arcgis/rest/services/FondDePlan/FDC_couleur_WMS_CC47/MapServer","https://inspire.cadastre.gouv.fr/scpc/44109.wms?service=WMS&request=GetCapabilities"]}
+  ]},
+  "officialSources":[
+    {"url":"https://inspire.cadastre.gouv.fr/scpc/44109.wms?service=WMS&request=GetCapabilities","operator":"DGFiP","scope":"Official cadastral WMS for commune 44109; advertises CP.CadastralParcel."},
+    {"url":"https://eservices.nantesmetropole.fr/documents/20143/19077811/E-Service%2Burbanisme%2B-%2BCarte%2Binteractive%2Bdu%2BPLUM.pdf","operator":"Nantes Métropole","scope":"Official guide documents a detailed cadastral layer in the interactive urbanism map."},
+    {"url":"https://naogeow.nantesmetropole.fr/arcgis/rest/services/FondDePlan/FDC_couleur_WMS_CC47/MapServer","operator":"Nantes Métropole","scope":"Official ArcGIS basemap metadata inspected; no parcel feature layer exposed."},
+    {"url":"https://www.data.gouv.fr/dataservices/api-carto-module-cadastre","operator":"IGN / API Carto","scope":"Official open cadastre REST/GeoJSON documentation."}
+  ],
+  "requests":[
+    {"url":"https://inspire.cadastre.gouv.fr/scpc/44109.wms?service=WMS&request=GetCapabilities","method":"GET","httpStatus":200,"outcome":"Capabilities returned: Cadastre WMS, CP.CadastralParcel / Parcelle, identifier MD.CP.44109, CRS including EPSG:4326 and EPSG:3947, Nantes bounding box. Exposes GetMap/GetFeatureInfo, not full polygon vector download."},
+    {"url":"https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=44109","method":"GET","httpStatus":0,"outcome":"TLS-verified anonymous request timed out after 20 seconds; no response and no absence inference."},
+    {"url":"https://naogeow.nantesmetropole.fr/arcgis/rest/services/FondDePlan/FDC_couleur_WMS_CC47/MapServer?f=pjson","method":"GET","httpStatus":200,"outcome":"ArcGIS basemap metadata returned; no parcel feature layer listed."},
+    {"url":"https://naogeow.nantesmetropole.fr/arcgis/rest/services/FondDePlan/FDC_couleur_WMS_CC47/MapServer/4?f=pjson","method":"GET","httpStatus":200,"outcome":"Commune boundary metadata returned; DGFiP PCI provenance, not parcel geometry."},
+    {"url":"https://data.geopf.fr/wfs/ows?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetCapabilities","method":"GET","httpStatus":200,"outcome":"National WFS capabilities returned; no unsafe fields requested and no parcel feature retained."}
+  ],
+  "registryFound":true,
+  "registryBasis":"Successful commune-specific DGFiP cadastral capabilities plus Nantes Métropole's official detailed-cadastre map documentation establish local/public cadastral-map evidence, not legal title coverage or a qualified vector adapter.",
+  "registryEvidenceUrls":["https://inspire.cadastre.gouv.fr/scpc/44109.wms?service=WMS&request=GetCapabilities","https://eservices.nantesmetropole.fr/documents/20143/19077811/E-Service%2Burbanisme%2B-%2BCarte%2Binteractive%2Bdu%2BPLUM.pdf"],
+  "verifiedSample":false,"publicParcelGeometryFound":false,
+  "sourceCandidate":{"url":"https://inspire.cadastre.gouv.fr/scpc/44109.wms?service=WMS&request=GetCapabilities","kind":"Official DGFiP commune-specific cadastral WMS","publisher":"Direction générale des Finances publiques (DGFiP)","scope":"Nantes 44109; CP.CadastralParcel display layer with WMS coverage/CRS metadata.","safeSampleFile":null,"sampleAttributes":"none retained","nativeFields":[]},
+  "geometryDecision":{"verified":false,"sourceId":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"Not executed against a returned parcel feature endpoint; point preserved and not shifted.","requestEvidence":["WMS capabilities confirms the commune service and parcel layer, but no feature or identity was retained."]},
+  "coverageAssessment":{"claimedScope":"DGFiP cadastral WMS for commune 44109 and Nantes Métropole urbanism map context.","verifiedOpenScope":"Successful WMS capabilities with parcel layer, CRS list, and Nantes bounding box; no anonymous full-polygon vector response.","citywideVerified":false,"countrywideVerified":false,"geometryVerified":false},
+  "safeFieldAllowlist":["stable cadastral parcel identifier only if exposed by a future bounded safe response","geometry"],
+  "runtimeReadiness":"held_quality_review","resultCategory":"official_registry_context_no_verified_public_geometry","status":"complete",
+  "remainingUncertainty":"WMS proves first-party parcel visualization and coverage metadata, not vector retrieval, stable parcel-ID exposure, or complete citywide coverage. No owner, address, contact, titleholder, tax, account, credential, or private-token fields were requested or retained."
+}

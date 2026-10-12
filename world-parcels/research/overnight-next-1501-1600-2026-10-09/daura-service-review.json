@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-8393-daura.json",
+  "purpose": "Document separate English/Hausa discovery, first-party registry custody, anonymous request outcomes, safe-field limits, and geometry uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "KATGIS and Katsina Ministry of Lands & Survey custody is evidenced for Daura's state, but no public parcel geometry service was verified.",
+  "registryAssessment": "registryFound=true is limited to evidenced state/local land-administration custody and procedure scope. It is not a claim that a public cadastral layer exists or that Daura is fully covered.",
+  "officialPrimarySources": [
+    {
+      "url": "https://gis.katsinastate.gov.ng/",
+      "operator": "Katsina State Geographic Information Service (KATGIS)",
+      "scope": "Official KATGIS portal describing state GIS and land services, including certificate verification and land-administration workflows; no public parcel layer was exposed."
+    },
+    {
+      "url": "https://katgis.org.ng/e-service",
+      "operator": "KATGIS E-Service Platform",
+      "scope": "Public service page for certificate/right-of-occupancy verification and applications; no anonymous parcel map, schema or geometry endpoint was exposed."
+    },
+    {
+      "url": "https://mols.kt.gov.ng/",
+      "operator": "Katsina State Ministry of Lands & Survey",
+      "scope": "Official ministry portal with land registration, laws and fee material; no public parcel viewer or vector service was exposed."
+    },
+    {
+      "url": "https://katsinastate.gov.ng/",
+      "operator": "Katsina State Government",
+      "scope": "State government context and link to KATGIS land services; not used as evidence of parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Daura Nigeria official cadastral parcel map land registry GIS Katsina State",
+      "result": "Found first-party KATGIS and Ministry of Lands & Survey service pages; no public parcel API, viewer configuration, vector schema or geometry response.",
+      "actualResultUrls": ["https://gis.katsinastate.gov.ng/", "https://katgis.org.ng/e-service", "https://mols.kt.gov.ng/", "https://katsinastate.gov.ng/"]
+    },
+    {
+      "language": "Hausa/local",
+      "query": "Daura Najeriya taswirar filaye cadastral rajistar ƙasa Katsina official",
+      "result": "No first-party Hausa-language cadastral viewer or parcel service located; English official material was the available procedural source.",
+      "actualResultUrls": ["https://gis.katsinastate.gov.ng/", "https://mols.kt.gov.ng/", "https://katsinastate.gov.ng/"]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://gis.katsinastate.gov.ng/",
+      "method": "Anonymous HTTPS GET; HTML and current Next.js JavaScript/configuration review",
+      "result": "HTTP 200. Portal identifies KATGIS as Katsina's GIS/land-service custodian. Current page scripts and HTML exposed service navigation and verification routes but no public parcel map, ArcGIS/GeoServer/vector endpoint, schema, CRS or safe ID+geometry response."
+    },
+    {
+      "url": "https://katgis.org.ng/e-service",
+      "method": "Anonymous HTTPS GET and page/source review",
+      "result": "HTTP 200. E-service page exposes application and CofO/RofO verification workflow; no public parcel geometry endpoint or safe parcel response found. No login or registration was attempted."
+    },
+    {
+      "url": "https://gis.katsinastate.gov.ng/certificate",
+      "method": "Anonymous HTTPS GET and page/source review",
+      "result": "HTTP 200. Certificate-related route loaded a service environment and map-resource wording but did not expose a public parcel layer, service configuration, CRS, schema or safe anonymous geometry response. No certificate number or personal data was submitted."
+    },
+    {
+      "url": "https://gis.katsinastate.gov.ng/s/verify",
+      "method": "Anonymous HTTPS GET and page/source review",
+      "result": "HTTP 200. Verification route loaded; no parcel geometry or public cadastral service was exposed. No verification value was submitted."
+    },
+    {
+      "url": "https://mols.kt.gov.ng/",
+      "method": "Anonymous HTTPS GET and HTML/source review",
+      "result": "HTTP 200. Official ministry portal exposes registration, land-law and fee links; no map, parcel layer, CRS, schema or geometry service found."
+    },
+    {
+      "url": "https://mols.kt.gov.ng/registration/",
+      "method": "Anonymous HTTPS GET and form/source review",
+      "result": "HTTP 200. Online registration form loaded and includes land-application fields; no parcel geometry endpoint. No form was submitted and no personal/owner/address data was collected."
+    },
+    {
+      "url": "https://mols.kt.gov.ng/wp-json/",
+      "method": "Anonymous HTTPS GET",
+      "result": "HTTP 200 JSON WordPress API index. This exposed site/content API metadata only; no cadastral layer or parcel geometry endpoint was inferred or queried."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry", "source CRS", "service metadata"],
+  "nativeFieldMapping": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a verified parcel layer; unchanged WUP point retained exactly.",
+    "requestEvidence": "No safe anonymous ID+geometry response was obtained. Service/verification/application routes and unavailable public UI do not establish citywide absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Katsina State land administration, GIS and registration custody relevant to Daura is evidenced through first-party state sources.",
+    "verifiedOpenScope": "No public parcel polygon, native ID, CRS or citywide coverage was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "remainingUncertainty": "Current public availability, schema, native parcel key, CRS and Daura coverage of any KATGIS backend or separate authorized map service.",
+  "nextStep": "Locate an official public viewer configuration or vector service, then inspect metadata and request only safe ID+geometry fields before any adapter qualification.",
+  "runtimeAssessment": "held_not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1
+}

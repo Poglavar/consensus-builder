@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10308",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-10308-shouguang.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/shouguang-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/runs/20261010T131305-c484a65b/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T13:18:43Z",
+  "registryFound": null,
+  "reason": "Institutional custody remains unresolved: municipal hosts timed out and the case description is not an anonymous parcel service. No native parcel ID or polygon was verified.",
+  "admission": "No independent live adapter qualification: fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details verification are not evidenced. No runtime or catalog admission."
+}

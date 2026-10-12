@@ -1,0 +1,19 @@
+{
+  "cityRecord": "city-10225-dharmapuri.json",
+  "cityCode": 10225,
+  "queueRank": 2719,
+  "city": "Dharmapuri",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewStatus": "held",
+  "reviewOutcome": "Local cadastral/land-record procedure is evidenced, but no qualifying public parcel-polygon service or safe retained geometry sample was verified.",
+  "queryAndRequestOutcomes": "Separate English and Tamil first-party discovery was performed and recorded in the city record. Dharmapuri District Administration identifies Patta/FMB/Chitta/TSLR and A-Register services and the local District Survey and Land Records office. Direct anonymous GET checks to Tamil Nadu e-Services, TamilNilam, and TNGIS timed out; indexed TNGIS HTML did not expose a parcel API/configuration.",
+  "cityOrLocalCustodian": "Dharmapuri District Survey and Land Records office, District Collectorate, is evidenced by the official district Tamil page. Tamil Nadu e-Services, TamilNilam, and TNGIS are statewide services/agencies, not independently proven city-specific parcel endpoints.",
+  "safeFieldAllowlist": ["stable native parcel identity when independently verified", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "registration details", "personal fields"],
+  "schemaAndCrs": "No public parcel response was obtained; native fields, composite-key rules, geometry type, and CRS remain unverified.",
+  "sampleGeojson": null,
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "Timeouts and an unusable/non-exposing public directory do not establish absence. The exact WUP point [12.1224956047743, 78.1529196690618] was preserved and not used to force a parcel hit.",
+  "integrationDisposition": "Research packet only; not source integration or admission. No registry/catalog/runtime files were changed."
+}

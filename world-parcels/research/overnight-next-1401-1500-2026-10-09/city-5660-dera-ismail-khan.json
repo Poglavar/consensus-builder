@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5660,
+  "cityId": "wup2025:5660",
+  "name": "Dera Ismail Khan",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "centerLatLon": [31.831438183594, 70.8929565368029],
+  "point": [31.831438183594, 70.8929565368029],
+  "queueRank": 1407,
+  "population2025": 401839,
+  "population2025k": 401.839,
+  "populationUnit": "persons",
+  "cohorts": ["overnight-next-1401-1500-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dera Ismail Khan Pakistan official land records cadastral map parcel GIS",
+        "result": "First-party results identified the Khyber Pakhtunkhwa Revenue & Estate Department, its Directorate of Land Records, the D.I. Khan computerization program, the SDC portal, and an official E-Registry announcement. No public D.I. Khan parcel geometry API or map service was found.",
+        "actualResultUrls": [
+          "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+          "https://revenue.kp.gov.pk/dlr-msg/",
+          "https://revenue.kp.gov.pk/sdcs/",
+          "https://revenue.kp.gov.pk/general-news/e-registry-operational/"
+        ]
+      },
+      {
+        "language": "Urdu (local/native)",
+        "query": "Dera Ismail Khan زمین ریکارڈ نقشہ کادستر سرکاری",
+        "result": "The search returned the official D.I. Khan Deputy Commissioner site, the Khyber Pakhtunkhwa SDC portal showing Dera Ismail Khan in Urdu, and official provincial land-record material. No first-party Urdu parcel viewer or anonymous geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://kplr.gkp.pk/",
+          "https://dikhan.kp.gov.pk/",
+          "https://revenue.kp.gov.pk/director-land-record/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Khyber Pakhtunkhwa Revenue & Estate Department identifies the Directorate of Land Records as the provincial land-record custodian and explicitly includes D.I. Khan in Phase I computerization. The official SDC portal lists Dera Ismail Khan as a service location. This evidences a local/provincial land-record service, not an open parcel geometry API.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+      "operator": "Revenue & Estate Department, Government of Khyber Pakhtunkhwa",
+      "observation": "Official project page says Phase I included D.I. Khan and describes digitized records and land-revenue services. It also reports that 62 D.I. Khan mauzas were pending operationalization; no public geometry endpoint is linked."
+    },
+    {
+      "url": "https://kplr.gkp.pk/",
+      "operator": "Khyber Pakhtunkhwa Land Records / SDC portal",
+      "observation": "Official portal lists Dera Ismail Khan / ڈیرہ اسماعیل خان among SDC locations and describes computerized land-record service delivery. The inspected page is an appointment/service page, not a parcel map/API."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/director-land-record/",
+      "operator": "Directorate of Land Records, Khyber Pakhtunkhwa",
+      "observation": "Official custodian page describes land-record management, GIS-based cadastral mapping, and database management, but exposes no anonymous parcel query route."
+    },
+    {
+      "url": "https://pdaapp.kp.gov.pk/find-plot",
+      "operator": "Peshawar Development Authority",
+      "observation": "Official public plot viewer inspected as a nearby provincial map lead. Its HTML offers only Hayatabad and Regi Model Town townships, so it is not a D.I. Khan cadastral source."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official D.I. Khan computerization page loaded. Text confirms D.I. Khan participation and digitized land-record services; no map/API URL, schema, CRS, or parcel response exposed."
+    },
+    {
+      "url": "https://kplr.gkp.pk/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official SDC portal loaded. Dera Ismail Khan is listed, but the page provides service-center information and no public parcel geometry query."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/director-land-record/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Directorate page loaded. GIS/cadastral responsibility is described, but no current public viewer configuration or anonymous ID-plus-geometry service was exposed."
+    },
+    {
+      "url": "https://pdaapp.kp.gov.pk/find-plot",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Public plot viewer HTML and current JavaScript were inspected. Form action is /find-plot and dependent endpoints are /get-phases, /get-sectors, and /get-plots; township options are limited to Hayatabad and Regi Model Town, outside D.I. Khan."
+    },
+    {
+      "url": "https://pdaapp.kp.gov.pk/get-phases?township=Hayatabad&for_find_plot=1",
+      "method": "GET",
+      "status": "HTTP 200 application/json",
+      "summary": "Bounded anonymous endpoint check returned seven phase names for Hayatabad; no D.I. Khan coverage or parcel geometry."
+    },
+    {
+      "url": "https://pdaapp.kp.gov.pk/get-phases?township=Regi%20Model%20Town&for_find_plot=1",
+      "method": "GET",
+      "status": "HTTP 200 application/json",
+      "summary": "Bounded anonymous endpoint check returned five zone names for Regi Model Town; no D.I. Khan coverage or parcel geometry."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Khyber Pakhtunkhwa provincial land-record custodian, D.I. Khan computerization program, SDC service portal, and nearby public plot-viewer route.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "geometryDecision": "No GeoJSON retained. No qualifying safe anonymous native parcel ID-plus-geometry response was available for D.I. Khan. The exact WUP point was not used to infer citywide absence.",
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "safeFieldAllowlist": ["stable native parcel or survey identity if publicly exposed", "geometry", "source CRS", "service layer name"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "private credentials or tokens"],
+  "remainingUncertainty": "A current anonymous parcel viewer/API may exist behind a separate provincial or district workflow, or D.I. Khan coverage may remain incomplete despite the computerization program. Public parcel schema, CRS, exact-point inclusion, and citywide geometry coverage remain unverified.",
+  "nextStep": "A serial reviewer should independently inspect the current Khyber Pakhtunkhwa CLRMIS/SDC and D.I. Khan district routes for an anonymous geometry-only service, then qualify a small native-ID-plus-geometry sample before any adapter consideration."
+}

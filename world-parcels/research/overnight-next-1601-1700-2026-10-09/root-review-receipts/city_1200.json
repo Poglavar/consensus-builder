@@ -1,0 +1,15 @@
+{
+  "taskId": "city:1200",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-1200-massawa.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/massawa-service-review.json",
+    "tmp/valhalla-parcel-research/massawa-arcgis-search.json"
+  ],
+  "checkedAt": "2026-10-10T10:58:49Z",
+  "reviewNote": "The WUP identity and English/Tigrinya-Arabic searches were checked. The original ArcGIS catalog search has zero results, which establishes no absence. First-party ministry reporting documents Keren cadastre operations and Massawa regional context, but no Massawa parcel response or adapter qualification exists; local custody remains unresolved.",
+  "runtimeAdmission": "held; independent live adapter qualification gates not evidenced"
+}

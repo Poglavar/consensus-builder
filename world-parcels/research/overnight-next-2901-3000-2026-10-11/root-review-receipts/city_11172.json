@@ -1,0 +1,22 @@
+{
+  "taskId": "city:11172",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-11172-wanning.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/wanning-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T23:57:01.188269Z",
+  "registryFound": true,
+  "reason": "First-party Wanning notice identifies its Real Estate Registration Center under the Natural Resources and Planning Bureau. No public native-ID parcel polygon response, source schema, paging/cell/GEOS checks, source binding, or headed details-panel proof; the portal 403 is an access limit, not absence.",
+  "runtimeAdmission": false,
+  "sourceGeometryStatus": "unverified",
+  "qualificationGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

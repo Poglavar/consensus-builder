@@ -1,0 +1,44 @@
+{
+  "taskId": "city:1679",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-1679-chernivtsi.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/chernivtsi-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-11T13:37:32Z",
+  "reason": "Official city geoportal help and municipal land-cadastre page checked; thematic lease and auction layers and a point lookup do not establish a general native-ID parcel polygon service or adapter qualification.",
+  "identityCheck": {
+    "source": "verified WUP 2025 bulk CSV, cohort ranked roster, immutable pending queue",
+    "rank": 2509,
+    "cityCode": 1679,
+    "country": "Ukraine",
+    "pointLatLon": [
+      48.2838600298589,
+      25.9409671955555
+    ],
+    "populationPersons": 234032,
+    "matched": true
+  },
+  "searchLanguagesChecked": [
+    "English",
+    "Ukrainian"
+  ],
+  "retainedPolygonCount": 0,
+  "firstPartyPagesChecked": [
+    "https://map.city.cv.ua/dopomoga",
+    "https://map.city.cv.ua/zemelni-kadastr"
+  ],
+  "admissionGates": {
+    "nativeIdPolygonRead": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "absenceConclusion": null,
+  "runtimeAdmission": false
+}

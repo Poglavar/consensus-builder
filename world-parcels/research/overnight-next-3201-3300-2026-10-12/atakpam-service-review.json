@@ -1,0 +1,45 @@
+{
+  "cityRecord": "city-923-atakpam.json",
+  "cityCode": 923,
+  "queueRank": 3269,
+  "city": "Atakpamé",
+  "country": "Togo",
+  "countryCode": "TG",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": null,
+  "registryCustodian": "OTR/DCCFE is evidenced as Togo’s national cadastral custodian, with an official Division Régionale Atakpamé listed; no public Atakpamé-local registry map or parcel procedure was independently qualified.",
+  "publicMapLead": "https://geodata.gouv.tg/",
+  "queryOutcomes": "Separate English and French first-party discovery queries were executed; exact queries, outcomes, and URLs are in city-923-atakpam.json.",
+  "requestOutcomes": "DCCFE contacts and mission pages, the Géodata portal, its public open-data configuration, and the administrative-boundary endpoint were retrieved. The configuration exposes a Cadastre theme but no current open-data parcel layer. GeoServer WFS GetCapabilities returned HTTP 401. No login, credential, bypass, unsafe field request, or TLS exception was used.",
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [7.52399072023767, 1.13784949472366] was preserved and not moved.",
+    "The absence of an open parcel layer and the GeoServer 401 response are access/configuration limits, not proof of citywide absence.",
+    "No parcel polygon or source-specific raw attribute set is retained.",
+    "Independent serial review is required before adapter/runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "Official national and regional custodial evidence exists, but no Atakpamé-specific live anonymous parcel ID-plus-geometry response or citywide open parcel coverage was qualified."
+  },
+  "uncertainty": "The public portal may have restricted or non-open cadastral services beyond the inspected configuration; unresolved authentication, coverage, schema, CRS and identity semantics are not evidence that Atakpamé lacks cadastral parcels.",
+  "admissionDecision": "held",
+  "geometrySamples": []
+}

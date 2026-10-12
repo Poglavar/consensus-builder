@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-2231-kolda.json",
+  "cityCode": 2231,
+  "queueRank": 2989,
+  "name": "Kolda",
+  "country": "Senegal",
+  "countryCode": "SN",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "reviewStatus": "complete_research_held",
+  "queryAndRequestSummary": "Separate English and French first-party discovery identified DGID/CSF Kolda as the local cadastral custodian and Géo Sénégal/ONDDL SIG as public geospatial sources. The ONDDL public WFS was followed through current GetCapabilities and a bounded Kolda-area administrative request. It exposed no parcel layer or safe parcel ID+geometry response; no sample GeoJSON was retained.",
+  "attemptedRoutes": [
+    {"url": "https://www.dgid.sn/", "method": "GET/search", "outcome": "official DGID custodian and CSF Kolda directory evidence"},
+    {"url": "https://www.dgid.sn/fiches/nicad", "method": "GET/search", "outcome": "official NICAD procedure; territorial Bureau du Cadastre handles cadastral identification and plan extracts"},
+    {"url": "https://www.geosenegal.gouv.sn/Kolda-ND-28-IV-245.html", "method": "GET", "outcome": "official ANAT topographic KML/SHP page; no parcel layer"},
+    {"url": "https://sig.onddl.sn/api/base/?q=Kolda", "method": "GET", "outcome": "nine administrative datasets; no parcel/cadastre dataset"},
+    {"url": "https://sig.onddl.sn/geoserver/wfs?service=WFS&version=1.0.0&request=GetCapabilities", "method": "GET", "outcome": "public WFS schema/capabilities; EPSG:4326 administrative layers only"},
+    {"url": "https://sig.onddl.sn/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:departement&outputFormat=application/json&propertyName=id,name,geom&bbox=-14.94,12.89,-14.93,12.90,EPSG:4326", "method": "GET", "outcome": "bounded department MultiPolygon response, not a parcel"},
+    {"url": "https://landfolio.cadastreminiersenegal.sn/arcgis/rest/services/Applications/MapServer", "method": "GET", "outcome": "login wall; no login attempted"}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [12.8934851754938, -14.9369263744723] preserved in latitude/longitude order; never shifted.",
+    "Administrative WFS geometry and an empty public parcel discovery are not evidence of citywide parcel absence.",
+    "Local DGID custodian evidence does not demonstrate public parcel geometry, complete city coverage, currentness or legal title coverage.",
+    "No retained GeoJSON sample exists because no unchanged native parcel geometry and stable native ID were obtained anonymously."
+  ],
+  "nativeFieldMapping": {
+    "canonicalIdentity": null,
+    "alsoObserved": ["ONDDL administrative response fields id/name/geom; not parcel fields and not retained"],
+    "retainedGeoJSONProperty": null,
+    "compositeKeyProvenance": "No native parcel identity was observed; no synthetic identity was created."
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "full native parcel geometry", "geometry CRS", "source service/layer metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "registryFound": true,
+  "uncertainty": "DGID's official sources establish a local Kolda cadastral custodian and public procedures. Public ONDDL/Géo Sénégal sources inspected here provide administrative/topographic data, not anonymous cadastral parcel features. No credentials, unsafe fields, private tokens, CAPTCHA/Cloudflare bypass, TLS exception or source integration/admission was used."
+}

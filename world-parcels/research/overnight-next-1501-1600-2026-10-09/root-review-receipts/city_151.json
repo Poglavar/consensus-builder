@@ -1,0 +1,14 @@
+{
+  "taskId": "city:151",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-151-kralpora.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/kralpora-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:24:32.987342Z",
+  "reason": "Official Kupwara district page supports local revenue custody. The packet reports anonymous metadata requests rejected with HTTP 401 and no parcel geometry or native ID; this is unresolved access, not absence. Fresh reads, paging, 13 cells, metric GEOS checks, binding and headed Details remain unproved.",
+  "independentlyCheckedCustodyUrl": "https://kupwara.nic.in/service/revenue-department/",
+  "sourceAdmission": "not_admitted"
+}

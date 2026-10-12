@@ -1,0 +1,42 @@
+{
+  "cityRecord": "city-10202-linzi.json",
+  "cityCode": 10202,
+  "queueRank": 2836,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": null,
+  "registryCustodian": "Linzi District Natural Resources Bureau / Linzi District Real Estate Registration Center, evidenced by official government sources; no anonymous cadastral endpoint was evidenced.",
+  "publicMapLead": "Zibo's official 以图查房 (map-to-property) service, described by Shandong government reporting as cadastral-map browsing integrated with registration queries.",
+  "queryOutcomes": "Separate English and Chinese discovery queries were performed. Official sources established the local custodian and the cadastral-map browsing lead, but no safe anonymous parcel-vector service was exposed.",
+  "requestOutcomes": "Official Zibo and Shandong pages loaded with HTTP 200. The official surveying-results portal at http://58.59.31.66:8000/catalog/portal/ timed out after 20 seconds. No credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used.",
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [36.8090514301062, 118.303695210285] was preserved; it was not moved to force a parcel hit.",
+    "No exact-point hit or miss was inferred.",
+    "Official registration and cadastral-map service descriptions do not establish open Linzi cadastral geometry coverage.",
+    "No parcel polygon or source-specific raw attribute set is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "No anonymous public parcel ID-plus-geometry response, schema, CRS, native identity semantics, or citywide open coverage was qualified."
+  },
+  "uncertainty": "The local registration custodian and a cadastral-map browsing lead are confirmed by official sources, but the public service route did not yield safe parcel geometry or native IDs during this attempt."
+}

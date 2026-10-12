@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-196-rio-branco.json",
+  "cityCode": 196,
+  "queueRank": 1725,
+  "city": "Rio Branco",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Rio Branco's municipal Cadastro Imobiliário custodian and official RBGeo Lotes Cadastro Imobiliário - 2023 polygon layer were evidenced. The layer schema and CRS were readable, but the bounded anonymous exact-point feature request was inaccessible/backend-unavailable, so no parcel sample was retained.",
+  "queryOutcomes": "English and Portuguese first-party discovery queries, exact text, outcomes and actual URLs are recorded in city-196-rio-branco.json.",
+  "requestOutcomes": "The official layer directory and query form were readable. The JSON metadata route returned a backend connection-refused error; the exact-point GeoJSON query was inaccessible; the related map service metadata route returned a cache miss. No credentials, CAPTCHA bypass, unsafe fields or TLS exception were used.",
+  "scopeLimits": [
+    "Local municipal cadastral custodianship is evidenced, but complete Rio Branco city coverage was not established.",
+    "The exact-point request failure was not treated as a hit or miss and does not support an absence claim.",
+    "No parcel geometry was returned in a verified Rio Branco feature response, so no GeoJSON sample was retained.",
+    "The layer's id and fid fields were documented as candidates only; no feature-level stable identity was verified.",
+    "Packet completion does not qualify or admit a runtime adapter."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "CRS metadata", "public service/layer metadata"],
+  "excludedFields": ["owner/titleholder names", "addresses/contact data", "tax/account/registration details", "credentials/private tokens/personal data"],
+  "nativeIdentityPolicy": "The official layer exposes id, fid, and cadastral grouping fields, but no returned feature was available to confirm a stable native identity. No identity was retained.",
+  "crs": "The Lotes layer declares EPSG:3857; the related Imóveis_com_geo service declares EPSG:31979. No retained geometry was available for independent transformation validation.",
+  "geometryQuality": "not applicable; no verified Rio Branco geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Hosted/Lotes_Cadastro_Imobili%C3%A1rio/FeatureServer/0",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": "id (candidate source field; not feature-verified)",
+    "exactWupPointTest": "attempted with exact WUP point; inaccessible/backend-unavailable, no hit/miss inference",
+    "requestEvidence": ["official layer metadata readable", "JSON metadata backend connection refused", "exact-point query inaccessible"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Rio Branco municipal Cadastro Imobiliário / SitGeo-derived lot layer",
+    "verifiedOpenScope": "Custodian evidence and service/layer metadata only",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Anonymous parcel selection, stable native identity in a returned feature, geometry transformation, currentness and citywide completeness remain unresolved."
+}

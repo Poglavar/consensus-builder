@@ -1,0 +1,42 @@
+{
+  "cityRecord": "city-6077-volzhskiy.json",
+  "cityCode": 6077,
+  "queueRank": 2695,
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "conclusion": "First-party Russian cadastral-map and Volgograd Oblast regional-service leads were found, but the official NSPD and legacy Rosreestr service checks timed out before JavaScript/configuration, schema/CRS, or parcel geometry could be obtained. This packet does not claim Volzhskiy absence and does not qualify a runtime adapter.",
+  "attemptedRoutes": [
+    {"route": "English web discovery", "outcome": "Found NSPD public cadastral map, Volgograd Oblast cadastral-evaluation institution, and Volzhskiy map leads."},
+    {"route": "Russian native-language discovery", "outcome": "Found the same first-party regional and national leads plus a Volzhskiy local interactive-map lead; no verified city-specific API."},
+    {"route": "Official NSPD viewer shell/configuration", "outcome": "Anonymous GET timed out after 25 seconds; configuration and public API could not be inspected."},
+    {"route": "Documented Rosreestr ArcGIS service root", "outcome": "Anonymous GET timed out after 20 seconds; no layer metadata, schema, CRS, or feature response."},
+    {"route": "Bounded exact WUP-point parcel probe", "outcome": "Prepared but not completed because the service root timed out; zero-hit or absence was not inferred."}
+  ],
+  "scopeLimits": [
+    "The exact WUP point [48.7791871114685,44.7836212806429] was preserved and not shifted.",
+    "Timeouts and unusable viewer responses are not evidence of citywide absence.",
+    "No citywide survey was performed and no geometry sample is retained.",
+    "Regional agency prose and search results do not by themselves prove a Volzhskiy local registry custodian.",
+    "Packet completion is research evidence only and is not source integration/admission."
+  ],
+  "safeFieldPolicy": {
+    "allowed": ["id", "geometry"],
+    "excluded": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "document details"],
+    "retainedNativeFields": false,
+    "reason": "No parcel feature response was obtained."
+  },
+  "sourceAssessment": {
+    "localRegistryCustodian": null,
+    "generalAgencyEvidence": ["National Spatial Data System / Rosreestr public cadastral map", "ГБУ ВО «Центр государственной кадастровой оценки»", "Volzhskiy local interactive-map lead"],
+    "verifiedForVolzhskiy": false,
+    "reason": "A first-party regional service and national map entrypoint were identified, but city-specific coverage and a returned parcel were not evidenced."
+  },
+  "runtimeReadiness": "held",
+  "uncertainty": [
+    "Volzhskiy may be covered by NSPD despite the anonymous timeout.",
+    "The legacy Rosreestr endpoint may be retired, network-blocked, or unavailable from this environment.",
+    "The local interactive-map lead may expose a separate service, but its current configuration was not retrieved.",
+    "Local MСК CRS and native identity semantics remain unknown."
+  ],
+  "completionSummary": {"parcelSourceVerified": false, "geometrySampleRetained": 0, "unsafeFieldsRequested": false, "tlsExceptions": 0}
+}

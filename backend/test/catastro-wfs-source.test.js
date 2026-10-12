@@ -51,6 +51,33 @@ describe('Spanish cadastral GML WFS', () => {
         expect(JSON.stringify(exact.features[0].geometry)).toBe(JSON.stringify(viewport.features[0].geometry));
         expect(JSON.stringify(parcel(30))).not.toBe(JSON.stringify(parcel(31)));
     });
+    it('asks the hinted zone first, so a parcel east of 0° costs one request; a wrong hint is corrected', async () => {
+        const proj4 = (await import('proj4')).default;
+        const utm = zone => `+proj=utm +zone=${zone} +ellps=GRS80 +units=m +no_defs`;
+        const ringAt = lon => [[lon, 41.3860], [lon + 0.0002, 41.3860], [lon + 0.0002, 41.3862], [lon, 41.3862], [lon, 41.3860]];
+        const parcel = (lon, zone) => gml({ zone }).replace(/<g:posList>[^<]*</,
+            `<g:posList>${ringAt(lon).map(p => proj4('EPSG:4326', utm(zone), p).map(v => v.toFixed(2)).join(' ')).join(' ')}<`);
+        // Viewport reads send srsName, exact reads SRSNAME; answer each in the zone it asked for.
+        const zoneOf = url => { const q = new URL(url).searchParams; return (q.get('SRSNAME') || q.get('srsName')) === 'EPSG::25830' ? 30 : 31; };
+        const east = vi.fn(async url => new Response(parcel(2.1670, zoneOf(url))));
+        const viewport = await createCatastroWfsParcelSource(descriptor, { fetchImpl: east }).queryBounds([2.1669, 41.3859, 2.1673, 41.3863]);
+        const hinted = await createCatastroWfsParcelSource(descriptor, { fetchImpl: east }).queryIds([viewport.features[0].id], { near: [2.17, 41.39] });
+        expect(east.mock.calls.slice(1).map(([url]) => new URL(url).searchParams.get('SRSNAME'))).toEqual(['EPSG::25831']);
+        expect(JSON.stringify(hinted.features[0].geometry)).toBe(JSON.stringify(viewport.features[0].geometry));
+        // A parcel west of 0° asked with an eastern hint is re-read in UTM30, its viewport zone.
+        const west = vi.fn(async url => new Response(parcel(-0.3770, zoneOf(url))));
+        const westView = await createCatastroWfsParcelSource(descriptor, { fetchImpl: west }).queryBounds([-0.3771, 41.3859, -0.3767, 41.3863]);
+        const corrected = await createCatastroWfsParcelSource(descriptor, { fetchImpl: west }).queryIds([westView.features[0].id], { near: [2.17, 41.39] });
+        expect(west.mock.calls.slice(1).map(([url]) => new URL(url).searchParams.get('SRSNAME'))).toEqual(['EPSG::25831', 'EPSG::25830']);
+        expect(JSON.stringify(corrected.features[0].geometry)).toBe(JSON.stringify(westView.features[0].geometry));
+    });
+    it('recognizes the missing-parcel message for the zone that was asked', async () => {
+        const fetchImpl = vi.fn(async () => new Response(missing(native).replace('25830]]', '25831]]')));
+        expect(await createCatastroWfsParcelSource(descriptor, { fetchImpl }).queryIds(['ES-DGC-' + native], { near: [2.17, 41.39] }))
+            .toMatchObject({ complete: true, features: [], absentIds: ['ES-DGC-' + native] });
+        expect(fetchImpl).toHaveBeenCalledOnce();
+        expect(new URL(fetchImpl.mock.calls[0][0]).searchParams.get('SRSNAME')).toBe('EPSG::25831');
+    });
     it.each([gml({ matched: 2 }), gml({ returned: 2 }), gml({ key: 'transport-row' }), '<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows/1.1"><ows:Exception exceptionCode="OperationProcessingFailed">No se ha encontrado</ows:Exception></ows:ExceptionReport>'])('rejects truncated, inconsistent, invalid-ID and HTTP200 exception collections', async body => {
         await expect(createCatastroWfsParcelSource(descriptor, { fetchImpl: async () => new Response(body) }).queryBounds(bounds)).rejects.toMatchObject({ code: 'parcel-source-unavailable' });
     });

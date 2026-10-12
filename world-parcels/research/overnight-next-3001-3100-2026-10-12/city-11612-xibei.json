@@ -1,0 +1,65 @@
+{
+  "cityCode": 11612,
+  "queueRank": 3075,
+  "name": "Xibei",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [31.7025934410314, 120.519925592791],
+  "population2025": 195305,
+  "population2025k": 195.305,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xibei Jiangsu China cadastral parcel map public GIS official",
+        "result": "Search identified the official Wuxi municipal cadastral-registration service and an official Wuxi Natural Resources and Planning Bureau notice describing free public cadastral-map lookup; the notice says Tian Di Tu supports cadastral districts, subdistricts and parcel maps, searchable by certificate number, real-estate unit number, parcel code or location.",
+        "actualResultUrls": [
+          "https://www.wuxi.gov.cn/ztzl/mslyfw/zfbz/fwdh/bdcdj/index.shtml",
+          "https://zrzy.wuxi.gov.cn/doc/2021/09/16/3459882.shtml",
+          "https://m.wx.bendibao.com/news/57132.shtm"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "锡北 江苏 无锡 不动产 登记 地图 地籍 官方",
+        "result": "Search identified the official Wuxi Natural Resources and Planning Bureau cadastral-survey notice and the Wuxi municipal real-estate registration service. The official notice identifies Wuxi Natural Resources and Planning Bureau as cadastral-survey data custodian and states that public cadastral maps are displayed through Tian Di Tu.",
+        "actualResultUrls": [
+          "https://zrzy.wuxi.gov.cn/doc/2021/09/16/3459882.shtml",
+          "https://www.wuxi.gov.cn/ztzl/mslyfw/zfbz/fwdh/bdcdj/index.shtml",
+          "https://www.jszwfw.gov.cn/bdczt/bdcindex.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "sourceAssessment": {
+    "localCustodian": "Wuxi Municipal Bureau of Natural Resources and Planning / Wuxi Real Estate Registration Center and relevant district branches",
+    "scope": "Official Wuxi cadastral-survey and cadastral-map publication/procedure evidence; Xibei is treated as a locality within Wuxi jurisdiction from the queue point/name context, but no parcel geometry was obtained.",
+    "officialViewer": "http://61.177.139.228:38080/Apps/wxdj/index.html#/",
+    "officialViewerOutcome": "Anonymous HTTP GET timed out after 20 seconds with no response body; no login, CAPTCHA, or unsafe field request was attempted.",
+    "schemaAndCrs": "Official notice states cadastral spatial data use CGCS2000 (2000 National Geodetic Coordinate System). No live API schema or response was available because the documented viewer timed out.",
+    "nativeIdFields": ["parcel code / 宗地代码", "real-estate unit number / 不动产单元号", "certificate number / 不动产权证书号"],
+    "fieldMapping": "No response schema inspected; the official notice names the above search keys and cadastral map information, but no raw attributes were retained.",
+    "compositeKeyProvenance": "Not established; no live parcel response.",
+    "geometrySamples": []
+  },
+  "safeFieldAllowlist": ["canonical native parcel identifier", "geometry", "source CRS", "public service metadata", "retrieval date"],
+  "requestLog": [
+    {"method": "GET", "url": "http://61.177.139.228:38080/Apps/wxdj/index.html#/", "outcome": "timeout after 20 seconds; no body"},
+    {"method": "GET", "url": "https://zrzy.wuxi.gov.cn/", "outcome": "DNS resolution failure in shell environment"},
+    {"method": "GET", "url": "https://www.wuxi.gov.cn/ztzl/mslyfw/zfbz/fwdh/bdcdj/index.shtml", "outcome": "official municipal page inspected successfully via web discovery; no direct viewer link exposed in retrieved text"}
+  ],
+  "scopeLimits": [
+    "The exact WUP point [31.7025934410314, 120.519925592791] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point, map-extent, or bounded parcel response was obtained; this is an access limitation, not evidence of citywide absence.",
+    "No owner, address, contact, titleholder, personal, tax/account, or certificate-detail fields were requested or retained.",
+    "No GeoJSON sample is retained because no safe native parcel geometry and stable identity were returned.",
+    "Packet completion is not source integration or admission."
+  ],
+  "uncertainty": ["Viewer availability and API route are unqualified due to timeout", "No citywide coverage proof", "Xibei locality-to-administrative-custodian linkage is inferred from the WUP locality context and Wuxi-specific official sources"],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "doNotInfer": ["A timeout is not evidence of parcel absence", "Official publication/procedure evidence is not a live parcel integration", "RegistryFound does not imply geometry availability"]
+}

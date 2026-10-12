@@ -1,0 +1,18 @@
+{
+  "taskId": "city:4995",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-4995-niigata.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/niigata-service-review.json",
+    "tmp/valhalla-parcel-research/4995/getlayers-14.json",
+    "tmp/valhalla-parcel-research/4995/getlayers-30.json",
+    "tmp/valhalla-parcel-research/4995/exact-10502.json",
+    "tmp/valhalla-parcel-research/4995/exact-9000000005.json",
+    "tmp/valhalla-parcel-research/4995/exact.json"
+  ],
+  "checkedAt": "2026-10-09T14:30:20Z",
+  "reason": "Niigata WUP identity and bilingual searches match the original source and queue. Saved public layers are tax/land-price themes and a sewer sheet index; exact-point responses contain no parcel geometry or native ID. The municipal GIS supports local map custody only. Fresh ID reads, forced paging, 13 cells, metric GEOS checks, source binding, and headed Details verification are absent; empty point results are not citywide absence."
+}

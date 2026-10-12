@@ -1,0 +1,48 @@
+{
+  "cityRecord": "city-4432-dilolo.json",
+  "cityCode": 4432,
+  "queueRank": 3036,
+  "city": "Dilolo",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and French first-party discovery identified the official Ministry of Land Affairs registry administration and confirmed Dilolo as a Lualaba land-registration district. The public formal-search page requires identity/contact data and supporting documents; no anonymous parcel map/API, parcel schema, CRS, or safe ID-plus-geometry response was qualified. No geometry sample was retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, URLs, direct requests, viewer/JavaScript inspection, schema/CRS checks, safe field allowlist, scope limits, and uncertainty are recorded in city-4432-dilolo.json. No login, CAPTCHA/Cloudflare bypass, credentials, private tokens, TLS bypass, unsafe-field request, or formal land-record submission occurred.",
+  "custodians": [
+    {
+      "name": "Ministère des Affaires Foncières de la République démocratique du Congo",
+      "scope": "National land-affairs authority; its official list explicitly includes Dilolo among Lualaba circonscriptions foncières.",
+      "evidence": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+    },
+    {
+      "name": "Dilolo land-registration district (circonscription foncière), Lualaba",
+      "scope": "Local/territorial custodian context evidenced only by the ministry's official list; no separate public service or parcel layer was found.",
+      "evidence": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "The exact WUP point and population are preserved in the city record.",
+    "Dilolo's listed circonscription is not evidence of public vector coverage or citywide parcel availability.",
+    "No exact-point lookup was possible without a qualified anonymous endpoint; access/qualification limits are not parcel absence.",
+    "No unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "Non-public or separately hosted ministry systems may exist beyond the inspected public pages.",
+    "The historical 1959 map catalogue record is not current parcel evidence.",
+    "No independent runtime adapter qualification was performed."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

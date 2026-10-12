@@ -1,0 +1,41 @@
+{
+  "cityCode": 11746,
+  "queueRank": 2415,
+  "name": "Lanxi",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [29.2197881381243, 119.467490166732],
+  "population2025": 242478,
+  "population2025k": 242.478,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lanxi China official cadastral parcel map land registration GIS",
+        "result": "Search identified Jinhua's official open-data catalog entry supplied by the Lanxi Natural Resources and Planning Bureau, the official Zhejiang public map platform, and an official Lanxi planning notice. No anonymous Lanxi parcel-vector endpoint or safe downloadable parcel geometry was found.",
+        "actualResultUrls": [
+          "https://open.data.jinhua.gov.cn/jdop_front/detail/data_preview.do?iid=11086",
+          "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+          "https://www.lanxi.gov.cn/art/2025/2/11/art_1229273084_59316594.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "兰溪市 官方 不动产登记 地图 地籍 房地产 登记",
+        "result": "搜索确认兰溪市自然资源和规划局为本地自然资源主管部门，并找到其在金华市官方数据目录中的主动公开信息目录；未验证到无需登录即可返回兰溪宗地身份和完整几何的公开接口。",
+        "actualResultUrls": [
+          "https://open.data.jinhua.gov.cn/jdop_front/detail/data_preview.do?iid=11086",
+          "https://www.lanxi.gov.cn/art/2025/2/11/art_1229273084_59316594.html",
+          "https://ditu.zjzwfw.gov.cn/map/map/index.html?flag=1&resourceId=CH0000073&webId=1"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "Lanxi local custodians and an official catalog entry are evidenced, but no city-bounded anonymous parcel geometry or public vector schema was obtained. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held",
+  "resultCategory": "local_registry_custodian_evidenced_no_anonymous_geometry",
+  "sampleGeoJSON": null
+}

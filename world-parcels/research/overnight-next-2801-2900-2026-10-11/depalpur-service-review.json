@@ -1,0 +1,43 @@
+{
+  "cityRecord": "city-8203-depalpur.json",
+  "cityCode": 8203,
+  "queueRank": 2843,
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "runtimeReadiness": "held",
+  "requests": [
+    {"method":"GET","url":"https://www.punjab-zameen.gov.pk/","outcome":"200 HTML; official PLRA React site loaded."},
+    {"method":"GET","url":"https://www.punjab-zameen.gov.pk/static/js/main.904661a8.js","outcome":"200 JavaScript; current configuration exposed the official GIS host, Okara district tile configuration, and links to land-record services."},
+    {"method":"GET","url":"https://gismaps.punjab-zameen.gov.pk/arcgis","outcome":"200 HTML; ArcGIS public service host responded."},
+    {"method":"GET","url":"https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services?f=pjson","outcome":"200 JSON; service directory returned folders and SampleWorldCities, but no anonymous parcel feature response."},
+    {"method":"GET","url":"https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Private_Housing/Private_Socities/MapServer?f=pjson","outcome":"499 Token Required; current PLRA map code references this authenticated GIS layer for housing-society polygons, not a public cadastral parcel service. No token was requested or used."},
+    {"method":"GET","url":"https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Private_Housing/Private_Socities/MapServer/0?f=pjson","outcome":"499 Token Required; layer metadata unavailable anonymously."},
+    {"method":"GET","url":"https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Private_Housing/Private_Socities/MapServer/0/query?where=1%3D1&outFields=*&returnGeometry=false&f=json","outcome":"499 Token Required; bounded safe administrative query did not return features. No owner, address, titleholder, contact, tax, or account fields were requested for retention."},
+    {"method":"GET","url":"https://dmaps.pulse.gop.pk/1D/14/10439/6245.png","outcome":"404; guessed tile path was not retained as evidence of coverage or absence. The PLRA JavaScript nevertheless maps Okara to the 1D tile family."},
+    {"method":"GET","url":"https://punjab-zameen.gov.pk/web-api/api/home/search/depalpur","outcome":"200 JSON empty array; site search returned no result. This is not evidence of registry or parcel absence."},
+    {"method":"GET","url":"https://onlinefard.punjab-zameen.gov.pk/Client/Index","outcome":"Official online Fard entry point reachable from search discovery; no anonymous parcel geometry endpoint was identified."},
+    {"method":"GET","url":"https://eregistration.punjab-zameen.gov.pk/","outcome":"Official registry service domain identified; available route is authentication/CAPTCHA-oriented and was not accessed with credentials."}
+  ],
+  "schemaAndCrs": {
+    "parcelResponse": "No parcel feature response obtained",
+    "crs": "Not observed for a parcel response",
+    "observedSafeFields": [],
+    "observedGeometry": null
+  },
+  "nativeIdentity": {
+    "status": "not qualified",
+    "reason": "No parcel feature response or native parcel identifier was returned anonymously; no sample GeoJSON retained."
+  },
+  "safeFieldAllowlist": ["stable native parcel ID only after qualification", "geometry", "survey/mouza/sheet identifiers needed for provenance"],
+  "excludedFields": ["owner names", "addresses", "titleholder information", "contact details", "tax/account data", "personal/legal record details"],
+  "scopeLimits": [
+    "The exact WUP point [30.6701650193062, 73.6517825130343] was preserved and not shifted.",
+    "PLRA public pages establish a provincial land-record custodian and GIS infrastructure, but no Depalpur-specific local registry procedure or public parcel layer was independently evidenced.",
+    "The visible GIS service directory did not expose an anonymous cadastral feature service; the referenced housing-society layer returned 499 Token Required.",
+    "A zero exact-point hit, map-tile miss, authentication wall, or unusable anonymous response is not evidence of citywide parcel absence.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, TLS-disable exception, or unsafe field request was used.",
+    "No adapter integration, source admission, or runtime qualification is claimed."
+  ],
+  "uncertainty": "High for citywide parcel coverage, local registry scope, CRS, and native parcel identity; medium for existence of official provincial land-record services because PLRA and its GIS host were directly reachable.",
+  "completionSummary": {"packetComplete": true, "registryFound": null, "cityPointParcelSample": false, "runtimeReadiness": "held", "nextAttemptNeeded": true}
+}

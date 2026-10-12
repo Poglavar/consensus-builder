@@ -1,0 +1,100 @@
+{
+  "cityCode": 4306,
+  "queueRank": 1484,
+  "name": "Villavicencio",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "iso3": "COL",
+  "point": [4.13521945098606, -73.6256559223982],
+  "population2025": 383028,
+  "population2025k": 383.028,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "serviceReview": "villavicencio-service-review.json",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Villavicencio Colombia cadastral map parcel viewer official IGAC geoportal",
+        "result": "Found official Alcaldía de Villavicencio announcement describing the public catastral dissemination portal, and an anonymous ArcGIS FeatureServer titled U_TERRENO with the service description 'Terrenos catastrales del municipio de Villavicencio'.",
+        "actualResultUrls": [
+          "https://villavicencio.gov.co/portal-de-difusion-catastral-de-villavicencio-herramienta-de-informacion-predial-al-servicio-de-la-comunidad/",
+          "https://services7.arcgis.com/c0V1cyhKZwmv8Gtf/ArcGIS/rest/services/U_TERRENO/FeatureServer"
+        ]
+      },
+      {
+        "language": "Spanish (local)",
+        "query": "Villavicencio Colombia visor mapa predial catastro oficial datos abiertos",
+        "result": "Encontrado el portal oficial de difusión catastral de la Alcaldía; la Alcaldía identifica a Villavicencio como gestor catastral y describe consultas de cédulas catastrales, áreas y otras características prediales. También se encontró el servicio ArcGIS público U_TERRENO.",
+        "actualResultUrls": [
+          "https://villavicencio.gov.co/portal-de-difusion-catastral-de-villavicencio-herramienta-de-informacion-predial-al-servicio-de-la-comunidad/",
+          "https://www.igac.gov.co/node/439",
+          "https://services7.arcgis.com/c0V1cyhKZwmv8Gtf/ArcGIS/rest/services/U_TERRENO/FeatureServer"
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://villavicencio.gov.co/portal-de-difusion-catastral-de-villavicencio-herramienta-de-informacion-predial-al-servicio-de-la-comunidad/",
+        "authority": "Alcaldía de Villavicencio",
+        "role": "local registry/cadastre custodian evidence",
+        "observed": "The municipality states that its Secretaría de Catastro y Espacio Público operates a free geographic information system and catastral consultation portal."
+      },
+      {
+        "url": "https://services7.arcgis.com/c0V1cyhKZwmv8Gtf/ArcGIS/rest/services/U_TERRENO/FeatureServer/1",
+        "authority": "ArcGIS-hosted service published for Villavicencio",
+        "role": "public parcel geometry service",
+        "observed": "Feature layer U_TERRENO; polygon geometry; native spatial reference EPSG:3116; public anonymous query accepted."
+      },
+      {
+        "url": "https://www.igac.gov.co/node/439",
+        "authority": "IGAC",
+        "role": "national habilitation corroboration",
+        "observed": "IGAC states that Villavicencio became a cadastral manager; this is corroboration, not a substitute for the local service evidence."
+      }
+    ]
+  },
+  "service": {
+    "name": "Villavicencio U_TERRENO",
+    "url": "https://services7.arcgis.com/c0V1cyhKZwmv8Gtf/ArcGIS/rest/services/U_TERRENO/FeatureServer/1",
+    "serviceItemId": "4eca978798aa490fa22c55bb7b837f36",
+    "geometryType": "esriGeometryPolygon",
+    "nativeCrs": "EPSG:3116",
+    "coverageExtentNative": [1036959.1839, 937633.9468, 1079257.3411, 956738.1563],
+    "identityField": "CODIGO",
+    "safeFieldsRequested": ["CODIGO", "GLOBALID", "GLOBALID_SNC", "codigo_municipio", "OBJECTID"],
+    "sourceFieldsObserved": ["OBJECTID", "CODIGO", "MANZANA_CODIGO", "NUMERO_SUBTERRANEOS", "CODIGO_ANTERIOR", "USUARIO_LOG", "FECHA_LOG", "GLOBALID", "GLOBALID_SNC", "codigo_municipio", "DIRECCION", "Shape__Area", "Shape__Length"],
+    "fieldMapping": {
+      "id": "CODIGO",
+      "nativeObjectId": "OBJECTID",
+      "nativeGlobalId": "GLOBALID",
+      "excludedUnsafeOrUnneeded": ["DIRECCION", "USUARIO_LOG", "FECHA_LOG", "CODIGO_ANTERIOR", "MANZANA_CODIGO", "NUMERO_SUBTERRANEOS", "Shape__Area", "Shape__Length"]
+    },
+    "compositeKeyProvenance": null
+  },
+  "boundedChecks": {
+    "wupPointProjected": {"crs": "EPSG:3116", "x": 1050170.3766812328, "y": 949038.6605542704},
+    "exactPointQuery": {
+      "request": "GET /FeatureServer/1/query with geometry point EPSG:3116, spatialRel=esriSpatialRelIntersects, where=1=1, outFields=OBJECTID,CODIGO,GLOBALID,GLOBALID_SNC,codigo_municipio, returnGeometry=true, outSR=4326, resultRecordCount=3",
+      "httpStatus": 200,
+      "featureCount": 1,
+      "nativeIds": ["500010104000002680001000000000"],
+      "note": "This exact-point hit is evidence of local availability only; it is not used as a citywide coverage estimate."
+    },
+    "nearbyEnvelopeQuery": {
+      "request": "GET /FeatureServer/1/query with a 1000 m x 1000 m EPSG:3116 envelope centered on the projected WUP point, same safe outFields and geometry options",
+      "httpStatus": 200,
+      "featureCountReturned": 3,
+      "nativeIds": ["500010104000007110019000000000", "500010104000007110020000000000", "500010104000007110021000000000"],
+      "note": "Bounded result capped at three features; no broader harvest attempted."
+    }
+  },
+  "runtimeReadiness": "held",
+  "qualification": {
+    "adapterAdmission": "not claimed",
+    "reason": "A real public polygon service and safe native identity were independently observed, but serial adapter review is still required before runtime admission.",
+    "unsafeDataHandling": "No owner, address, contact, titleholder, tax/account, or personal fields were requested or retained."
+  }
+}

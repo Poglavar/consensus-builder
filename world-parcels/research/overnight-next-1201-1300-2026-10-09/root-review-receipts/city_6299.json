@@ -1,0 +1,14 @@
+{
+  "taskId": "city:6299",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-6299-hawassa.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/hawassa-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T12:15:28.181278Z",
+  "reason": "Official Hawassa administration names its land department. No public parcel geometry, native-ID read, or adapter qualification is evidenced.",
+  "primarySourceUrl": "https://www.hawassa.gov.et/en/office/land-administration-and-investment-department-1",
+  "admissionGate": "Held: no fresh exact native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed details-panel verification."
+}

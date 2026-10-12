@@ -1,0 +1,21 @@
+{
+  "cityRecord": "city-8664-sawai-madhopur.json",
+  "cityCode": 8664,
+  "queueRank": 2400,
+  "name": "Sawai Madhopur",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [26.0133036450684, 76.3599321299534],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": "See city record attemptsRecorded; official Bhu-Naksha and Revenue Board routes were found, but bounded anonymous parcel access timed out.",
+  "schemaAndCrs": "No parcel schema, CRS, native identity, or geometry response was obtained.",
+  "safeFieldAllowlist": ["stable native parcel ID", "full parcel polygon geometry", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "No safe parcel ID plus unchanged polygon was returned."},
+  "scopeLimits": ["Exact WUP point was preserved.", "Timeout/unusable UI is not evidence of citywide absence.", "No geometry was retained.", "Packet completion is not source integration/admission."],
+  "uncertainty": "Official cadastral custodianship is evidenced, but anonymous feature access and coverage remain unverified."
+}

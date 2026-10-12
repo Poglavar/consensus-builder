@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 7682,
+  "queueRank": 1699,
+  "name": "Shuozhou",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "point": [39.319574216236, 112.426133144563],
+  "population2025": 336303,
+  "population2025k": 336.303,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shuozhou China official cadastral parcel map land registry GIS natural resources bureau",
+        "result": "Search identified the official Shuozhou Natural Resources and Planning Bureau domain, the national Natural Resources Real Estate Registration Center directory, and a local report identifying the Shuozhou Real Estate Registration Center. No public anonymous parcel feature service was exposed by discovery.",
+        "actualResultUrls": [
+          "https://gtj.shuozhou.gov.cn/",
+          "https://rerc.com.cn/",
+          "https://sxsz.wenming.cn/cxjs/202508/t20250825_9006509.shtml"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "朔州市 自然资源和规划局 不动产登记 地籍图 宗地图 查询 官方",
+        "result": "中文 first-party-oriented discovery identified the official Shuozhou bureau domain and official/municipal references to the Shuozhou Real Estate Registration Center. The public results describe online registration queries through 三晋通 and local service custody, but did not expose an anonymous cadastral map API, layer schema, CRS, or safe parcel geometry response.",
+        "actualResultUrls": [
+          "https://gtj.shuozhou.gov.cn/",
+          "https://credit.shuozhou.gov.cn/",
+          "https://zrzy.dt.gov.cn/dtsghhzrzyjzz/bslc/202411/e2c0e4139b0e4901b2b2cae7a170a417.shtml"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://gtj.shuozhou.gov.cn/",
+      "observation": "Official Shuozhou Natural Resources and Planning Bureau domain identified in search results; anonymous GET from this environment timed out before returning HTML, so viewer/configuration inspection could not proceed."
+    },
+    {
+      "url": "https://sxsz.wenming.cn/cxjs/202508/t20250825_9006509.shtml",
+      "observation": "Public report names the Shuozhou Real Estate Registration Center and states that registration-information queries are offered through 三晋通 and on-site/self-service channels. It is institutional/service evidence, not an open parcel geometry endpoint."
+    },
+    {
+      "url": "https://rerc.com.cn/",
+      "observation": "Official national Real Estate Registration Center site; its directory identifies local registration websites by province/city, but no anonymous Shuozhou parcel response was obtained."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gtj.shuozhou.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Timed out after 20 seconds with no response bytes. TLS verification remained enabled; no retry with credentials, CAPTCHA bypass, or certificate exception was attempted."
+    },
+    {
+      "url": "https://rerc.com.cn/",
+      "method": "search/open discovery",
+      "httpStatus": null,
+      "outcome": "Official national registration-center landing page was located through first-party discovery, but no Shuozhou parcel API or safe geometry payload was available in the inspected result."
+    },
+    {
+      "url": "https://sxsz.wenming.cn/cxjs/202508/t20250825_9006509.shtml",
+      "method": "search/open discovery",
+      "httpStatus": null,
+      "outcome": "Public report inspected for local custodian and service scope; it mentions 三晋通 and physical/self-service registration queries, not an anonymous cadastral feature service. No unsafe fields were requested."
+    },
+    {
+      "url": "https://credit.shuozhou.gov.cn/",
+      "method": "search/open discovery",
+      "httpStatus": null,
+      "outcome": "Municipal credit portal result was inspected for official department links; it did not expose a parcel viewer or geometry service."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Local institutional custody is evidenced by the official Shuozhou Natural Resources and Planning Bureau domain and the public report naming the Shuozhou Real Estate Registration Center. This does not establish an open cadastral geometry service or public citywide parcel coverage.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Shuozhou municipal natural-resources and real-estate-registration services.",
+    "verifiedOpenScope": "Local institutional/service custody only; no anonymous parcel feature response, native parcel ID, schema, CRS, or geometry retrieved.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "excludedFields": [
+    "owner or titleholder names",
+    "addresses and contact data",
+    "tax/account/registration details beyond a safe native parcel ID",
+    "credentials and private tokens"
+  ],
+  "nativeIdentityPolicy": "No native parcel identity was observed; no synthetic identity was created. Any future retained sample must use exactly one stable native identity in GeoJSON properties and document source field mapping in review metadata.",
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "remainingUncertainty": "The current official viewer/API route, anonymous access behavior, parcel schema, CRS, stable native parcel identity, and citywide coverage remain unresolved. The exact WUP point was preserved and was not shifted. The timeout and absence of a public response are not evidence of citywide absence.",
+  "retainedSample": null
+}

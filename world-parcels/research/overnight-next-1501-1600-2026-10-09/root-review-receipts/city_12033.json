@@ -1,0 +1,14 @@
+{
+  "taskId": "city:12033",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-12033-aizawl.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/aizawl-service-review.json",
+    "tmp/valhalla-parcel-research/aizawl/route.html",
+    "tmp/valhalla-parcel-research/aizawl/eram-home.html"
+  ],
+  "checkedAt": "2026-10-10T10:38:17.221855Z",
+  "reason": "Official Mizoram land-record portal and state statement support registryFound=true. Saved application route presents citizen login; no safe native-ID full polygon response or independent admission gates. Login does not prove citywide absence."
+}

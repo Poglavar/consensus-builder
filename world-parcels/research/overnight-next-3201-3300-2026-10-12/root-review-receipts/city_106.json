@@ -1,0 +1,18 @@
+{
+  "taskId": "city:106",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-106-marsa-matruh.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/marsa-matruh-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T06:02:29Z",
+  "findings": {
+    "identity": "WUP 2025 archive hash matches the handoff; the source row, ranked roster, queue and packet agree on code 106, rank 3228, Egypt, point [31.3460995840892, 27.2526447044638], and 187092 persons.",
+    "searches": "Packet records executed English and Arabic queries, first-party result URLs, and bounded ESA page/form requests.",
+    "custody": "Keep local registryFound unresolved (null). ESA national map custody and Matrouh planning references do not establish a local parcel registry or open geometry service.",
+    "geometry": "No parcel polygon or native ID was returned or retained. The ESA purchase workflow and the separate TLS failure are not citywide absence evidence.",
+    "admission": "No independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, or headed Details-panel verification. No runtime admission."
+  }
+}

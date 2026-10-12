@@ -1,0 +1,46 @@
+{
+  "cityRecord": "city-6682-amassoma.json",
+  "cityCode": 6682,
+  "queueRank": 3209,
+  "city": "Amassoma",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "Bayelsa Geographic Information System (BGIS), under the Bayelsa State Ministry of Lands, Housing and Urban Development",
+  "publicMapLead": "https://bgis.bayelsastate.gov.ng/",
+  "queryOutcomes": "Separate English and Ijaw/Izon-oriented discovery queries were executed. English first-party discovery identified BGIS and the Bayelsa Ministry of Lands; the local-language-oriented query found no distinct official Ijaw-language cadastral endpoint. Full queries, outcomes, and actual URLs are recorded in city-6682-amassoma.json.",
+  "requestOutcomes": "Official BGIS home, services, about page, public WordPress page JSON, Bayelsa Ministry of Lands site, and Bayelsa Judiciary context page were retrieved with ordinary anonymous GETs. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used. No viewer JavaScript/configuration, parcel schema, CRS, native parcel ID, bounded geometry, or citywide parcel response was obtained.",
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [4.97495916542313, 6.10771354552521] was preserved and not moved to force a parcel hit.",
+    "No exact-point lookup or map-extent conclusion was treated as evidence of citywide absence.",
+    "The official state GIS lead establishes a state custodian, not a verified anonymous citywide parcel-vector feed for Amassoma.",
+    "No parcel polygon or source-specific raw attribute set is retained.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "A relevant Bayelsa state cadastral custodian and official public GIS lead were evidenced, but no anonymous public parcel ID-plus-geometry response, schema, CRS, or citywide open coverage was qualified."
+  },
+  "uncertainty": "The public BGIS site may front additional land-information workflows not exposed in the inspected anonymous pages. This unresolved endpoint is recorded as unavailable evidence, not as proof that Amassoma lacks cadastral parcels.",
+  "admissionDecision": "held",
+  "geometrySamples": []
+}

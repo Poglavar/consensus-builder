@@ -1,0 +1,100 @@
+{
+  "purpose": "resumable WUP cadastral-source research packet",
+  "schemaVersion": 1,
+  "kind": "city-parcel-research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 8219,
+  "queueRank": 3114,
+  "name": "Anning",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [24.9149021522368, 102.486371886561],
+  "population2025": 192799,
+  "population2025k": 192.799,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Anning Yunnan official cadastral map parcel public viewer API land registration",
+        "result": "No Anning-specific public parcel viewer or anonymous parcel geometry API was found. Results identified official Yunnan natural-resources registration guidance and a provincial description of Kunming registration reform, but not a public Anning parcel endpoint.",
+        "actualResultUrls": [
+          "https://dnr.yn.gov.cn/html/2024/wendalei_0222/4048862.html",
+          "https://dnr.yn.gov.cn/html/2026/zhoushidongtai_0716/4053294.html",
+          "https://dnr.yn.gov.cn/html/syywxt/"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "安宁市 不动产登记 地籍图 官方 地图 服务",
+        "result": "Search found Yunnan official explanations of county-level registration custody and cadastral-map access, plus a Kunming-news report quoting the Anning Natural Resources Bureau about cadastral supplementary investigation and online registration work. It did not expose a public Anning parcel map/API or safe parcel geometry response.",
+        "actualResultUrls": [
+          "https://dnr.yn.gov.cn/html/2024/wendalei_0222/4048862.html",
+          "https://www.kunming.cn/news/c/2023-02-20/13667713.shtml"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "安宁市自然资源局 不动产登记 地籍图 GIS",
+        "result": "No first-party Anning GIS/cadastral viewer or public parcel service was identified. The apparent local government domain route was attempted directly but DNS resolution failed.",
+        "actualResultUrls": [
+          "https://www.anning.gov.cn/",
+          "https://dnr.yn.gov.cn/html/2024/wendalei_0222/4048862.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": "Official Yunnan guidance identifies the county-level government registration institution as the legal custodian and official provincial reporting identifies Kunming registration reform. A Kunming municipal-news report quotes the Anning Natural Resources Bureau, but no first-party Anning registry portal or parcel-data service was verified, so registryFound remains null.",
+  "officialSources": [
+    {
+      "url": "https://dnr.yn.gov.cn/html/2024/wendalei_0222/4048862.html",
+      "role": "provincial official registration/cadastral guidance",
+      "access": "web search result and public page; general guidance, not an Anning parcel endpoint"
+    },
+    {
+      "url": "https://dnr.yn.gov.cn/html/2026/zhoushidongtai_0716/4053294.html",
+      "role": "provincial official Kunming registration-reform report",
+      "access": "web search result; confirms Kunming natural-resources registration context, not public parcel geometry"
+    },
+    {
+      "url": "https://www.kunming.cn/news/c/2023-02-20/13667713.shtml",
+      "role": "municipal-news local bureau reference",
+      "access": "public search result; quotes Anning Natural Resources Bureau, not a first-party service"
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "requestOutcomes": [
+    {
+      "route": "https://www.anning.gov.cn/",
+      "method": "GET",
+      "outcome": "DNS resolution failure for www.anning.gov.cn; no response received and no alternate TLS or certificate handling was attempted"
+    },
+    {
+      "route": "https://dnr.yn.gov.cn/html/2024/wendalei_0222/4048862.html",
+      "method": "GET/discovery",
+      "outcome": "Official provincial guidance was available; it describes registration and cadastral-map concepts but exposes no Anning viewer, parcel endpoint, native parcel ID, schema, CRS, or geometry"
+    },
+    {
+      "route": "https://dnr.yn.gov.cn/html/2026/zhoushidongtai_0716/4053294.html",
+      "method": "GET/discovery",
+      "outcome": "Official provincial Kunming registration-reform report was available; it is custodian/process context only and contains no public parcel response"
+    },
+    {
+      "route": "https://dnr.yn.gov.cn/html/syywxt/",
+      "method": "GET/discovery",
+      "outcome": "Official Yunnan business-system index was available; no Anning-specific cadastral viewer or anonymous parcel API was exposed in bounded inspection"
+    }
+  ],
+  "schemaAndCrs": null,
+  "resultCategory": "registration_context_found_no_verified_local_public_parcel_api",
+  "coverageAssessment": "No exact-point parcel hit was attempted because no public Anning parcel endpoint was identified. The exact WUP point was preserved and not shifted. This is not evidence of citywide absence.",
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "Anning's current first-party viewer/API, native parcel identity field, safe field schema, CRS, query semantics, and citywide coverage remain unverified. No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained."
+}

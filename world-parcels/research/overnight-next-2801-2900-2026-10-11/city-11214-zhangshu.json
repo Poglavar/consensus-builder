@@ -1,0 +1,66 @@
+{
+  "cityCode": 11214,
+  "queueRank": 2865,
+  "name": "Zhangshu",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [28.0505487238593, 115.533846014701],
+  "population2025": 208055,
+  "population2025k": 208.055,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zhangshu China cadastral parcel map official GIS Zhangshu City Natural Resources Bureau",
+        "result": "Discovery did not locate a Zhangshu-specific first-party cadastral viewer, public parcel-vector endpoint, or current map/API configuration. Results included general national/provincial registration information and unrelated city viewers.",
+        "actualResultUrls": ["https://www.rerc.com.cn/", "https://www.szgeoinfo.com.cn/", "https://pnr.sz.gov.cn/d-djtcx/djtcx/index.html"]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "樟树市 不动产登记 地籍图 查询 官方 自然资源局",
+        "result": "First-party Zhangshu government pages were found, including the city government portal and government-service portal. The service portal exposes a ‘涉企不动产登记线上办’ entry, but no anonymous cadastral map, parcel schema, or ID-plus-geometry API was exposed.",
+        "actualResultUrls": ["https://www.zhangshu.gov.cn/", "http://yczs.jxzwfww.gov.cn/?webid=116&regionCode=360982000000"]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "The first-party Zhangshu city government portal is evidenced. A specific Natural Resources Bureau cadastral custodian or local registry office was not independently identified in the retrieved pages.",
+    "publicMapLead": null,
+    "registryEvidence": "http://yczs.jxzwfww.gov.cn/?webid=116&regionCode=360982000000",
+    "registryEvidenceUrls": ["https://www.zhangshu.gov.cn/", "http://yczs.jxzwfww.gov.cn/?webid=116&regionCode=360982000000"]
+  },
+  "attemptsRecorded": [
+    {"method":"SEARCH","url":"https://www.zhangshu.gov.cn/","httpStatus":200,"outcome":"First-party Zhangshu government homepage loaded; it establishes the local government portal but did not expose a cadastral viewer or parcel-vector API in the inspected homepage."},
+    {"method":"GET","url":"https://www.zhangshu.gov.cn/","httpStatus":200,"outcome":"Current HTML loaded over TLS. Site metadata identifies 樟树市人民政府; no map bootstrap, parcel endpoint, schema, CRS, or safe geometry response was present."},
+    {"method":"SEARCH","url":"http://yczs.jxzwfww.gov.cn/?webid=116&regionCode=360982000000","httpStatus":200,"outcome":"First-party Jiangxi government-service page identifies 樟树市政务服务网 and includes a 涉企不动产登记线上办 service entry; it does not expose a public cadastral map or parcel geometry API."},
+    {"method":"GET","url":"http://yczs.jxzwfww.gov.cn/?webid=116&regionCode=360982000000","httpStatus":200,"outcome":"Current HTML loaded and was inspected for 不动产、地籍、宗地 and map/API references. The page exposed service navigation only; no anonymous parcel ID-plus-geometry response was obtained."},
+    {"method":"SEARCH","url":"https://www.rerc.com.cn/","httpStatus":200,"outcome":"National Real Estate Registration Center site was found as general agency information; no Zhangshu parcel-vector endpoint was provided."},
+    {"method":"SEARCH","url":"https://pnr.sz.gov.cn/d-djtcx/djtcx/index.html","httpStatus":200,"outcome":"Official Shenzhen cadastral viewer documentation was used only as a comparison for what a public cadastral service exposes; it is outside Zhangshu and is not evidence of Zhangshu coverage."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {"requestScope":"The exact WUP point [28.0505487238593,115.533846014701] was preserved; no coordinate shift or parcel query was made.","featureCount":null,"result":"No safe anonymous parcel ID-plus-geometry response was obtained."}
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if independently confirmed","full parcel polygon geometry","geometry CRS / coordinate reference metadata","public source/service metadata","retrieval date"],
+  "unsafeFieldsNotRequested": ["owner","address","contact","titleholder","personal data","tax/account","certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"sampleCount":0,"sampleFile":null,"nativeId":null,"nativeIdField":null,"exactWupPointTest":"No usable anonymous parcel-vector response; no hit/miss inference."},
+  "coverageAssessment": {"claimedScope":"No Zhangshu-specific public cadastral-vector scope was found.","verifiedOpenScope":"Local government and registration-service navigation were evidenced, but anonymous geometry, schema, CRS, native identity and open coverage were not verified.","citywideVerified":false,"countrywideVerified":false,"geometryVerified":false},
+  "runtimeReadiness":"held_no_verified_public_geometry",
+  "serialReviewerQualification":"not qualified; independent serial review still required",
+  "scopeLimits": ["Exact WUP point was preserved and not shifted to force a hit.","A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.","No parcel polygon or source-specific raw attribute set is retained.","No citywide polygon completeness, current API, CRS, native identity semantics, or update cadence was verified.","This packet records research only and is not source integration or runtime admission."],
+  "uncertainty":"A dedicated Zhangshu cadastral service may exist behind a separate local, provincial, or authenticated workflow, but its current anonymous public URL, schema, geometry endpoint, CRS, native identity semantics, and municipal coverage were not established safely."
+}

@@ -1,0 +1,116 @@
+{
+  "cityCode": 643,
+  "queueRank": 1645,
+  "name": "Portmore",
+  "country": "Jamaica",
+  "countryCode": "JM",
+  "iso2": "JM",
+  "iso3": "JAM",
+  "locId": 388,
+  "point": [17.9884712093431, -76.9329770762808],
+  "population2025": 347722,
+  "population2025k": 347.722,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Portmore Jamaica official cadastral map parcel National Land Agency eLandJamaica",
+        "result": "First-party discovery found the current NLA eLandJamaica interactive map, the official NLA ArcGIS parcel layer, and NLA pages listing the Portmore Master Map and cadastral mapping products.",
+        "actualResultUrls": [
+          "https://apps.nla.gov.jm/elandv2/interactivemap.aspx",
+          "https://www.nla.gov.jm/content/master-map-series",
+          "https://www.nla.gov.jm/content/nla-price-list-maps-cadastral-road-maps",
+          "https://geospatial.nla.gov.jm/nlagis/rest/services/eLandjamaicaSept2024/MapServer/16"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Portmore Jamaïque carte cadastrale parcelles National Land Agency eLandJamaica",
+        "result": "Jamaica's official sources are English-language; the French-language discovery variant did not identify a separate local-language cadastral service. The first-party NLA viewer and parcel service remained the relevant official result.",
+        "actualResultUrls": [
+          "https://apps.nla.gov.jm/elandv2/interactivemap.aspx",
+          "https://www.nla.gov.jm/content/master-map-series"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://apps.nla.gov.jm/elandv2/interactivemap.aspx",
+      "observation": "Current NLA eLandJamaica public map page; its UI loads the official parcel FeatureLayer and offers parcel/cadastral-map search.",
+      "custodian": "National Land Agency (NLA), Jamaica"
+    },
+    {
+      "url": "https://geospatial.nla.gov.jm/nlagis/rest/services/eLandjamaicaSept2024/MapServer/16",
+      "observation": "Official ArcGIS Feature Layer named Parcels. Metadata says the cadastral index is maintained by NLA, is projected to JAD2001 with WGS84 datum, and has polygon geometry.",
+      "custodian": "National Land Agency (NLA), Jamaica"
+    },
+    {
+      "url": "https://www.nla.gov.jm/content/master-map-series",
+      "observation": "Official NLA master-map catalogue lists Portmore (2005) as a seven-sheet master map and states that NLA offers cadastral maps and digital parcel data.",
+      "custodian": "National Land Agency (NLA), Jamaica"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://apps.nla.gov.jm/elandv2/interactivemap.aspx",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched viewer HTML. Current JavaScript configuration exposed the parcel layer URL and EPSG:3448/Jamaica Metric Grid usage."
+    },
+    {
+      "url": "https://apps.nla.gov.jm/elandv2/elandScripts/d_features.js",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "outcome": "Fetched current viewer script. It configures the Parcels FeatureLayer as MapServer/16, queries OBJECTID_1, and requests geometry; unsafe display fields were not requested for the retained sample."
+    },
+    {
+      "url": "https://geospatial.nla.gov.jm/nlagis/rest/services/eLandjamaicaSept2024/MapServer/16?f=pjson",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Layer schema and spatial reference fetched. Geometry is esriGeometryPolygon; native OID field is OBJECTID_1; source/latest spatial reference is 102095/3448."
+    },
+    {
+      "url": "https://geospatial.nla.gov.jm/nlagis/rest/services/eLandjamaicaSept2024/MapServer/16/query",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Bounded envelope query around the exact WUP point, in EPSG:3448, with intersects, returnGeometry=true, outFields=OBJECTID_1, outSR=4326, and resultRecordCount=3 returned three polygon features: OBJECTID_1 53834, 76043, and 76373. The service reported exceededTransferLimit because the bounded area contains more than three features; only the first three were retained."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official NLA viewer and NLA parcel FeatureLayer are a real national cadastral/parcel custodian route with a Portmore-specific master-map product and an anonymous parcel geometry response. This is source evidence, not runtime adapter qualification.",
+  "verifiedSample": true,
+  "sampleFile": "portmore-parcels-sample.geojson",
+  "publicParcelGeometryFound": true,
+  "sourceCandidate": {
+    "operator": "National Land Agency (NLA), Jamaica",
+    "viewerUrls": ["https://apps.nla.gov.jm/elandv2/interactivemap.aspx"],
+    "serviceUrl": "https://geospatial.nla.gov.jm/nlagis/rest/services/eLandjamaicaSept2024/MapServer/16",
+    "layerId": 16,
+    "crs": "EPSG:3448 (JAD2001 / Jamaica Metric Grid); returned sample reprojected by ArcGIS to EPSG:4326",
+    "sampleFile": "portmore-parcels-sample.geojson"
+  },
+  "verifiedParcelResponse": {
+    "countRetained": 3,
+    "nativeIdentityField": "OBJECTID_1",
+    "ids": ["53834", "76043", "76373"],
+    "responseCrs": "EPSG:4326"
+  },
+  "sourceIds": ["OBJECTID_1:53834", "OBJECTID_1:76043", "OBJECTID_1:76373"],
+  "resultCategory": "official_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "NLA's Jamaica cadastral index / parcel dataset; official NLA catalogue separately lists the Portmore Master Map.",
+    "verifiedOpenScope": "Anonymous parcel geometry was verified only in the bounded envelope around the supplied point; citywide Portmore completeness was not tested.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_serial_review_required",
+  "remainingUncertainty": "The layer metadata says the cadastral index has varying currency and is not homogeneously updated. The bounded query was intentionally capped at three features and does not establish citywide coverage. The service exposes additional source fields, but none were retained or requested beyond the safe native identity and geometry sample. Independent serial review and adapter qualification remain required."
+}

@@ -1,0 +1,18 @@
+{
+  "taskId": "city:4836",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-4836-emalahleni.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/emalahleni-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T174007-12e29b4c/stdout.jsonl",
+    "tmp/valhalla-parcel-research/4836/layer-alt.json",
+    "tmp/valhalla-parcel-research/4836/point-correct.json",
+    "tmp/valhalla-parcel-research/4836/extent-correct.json"
+  ],
+  "reason": "WUP queue and packet agree on code 4836, rank 2682, South Africa, exact point and 220586 persons. The worker trace shows English discovery and one mixed English/isiZulu-terminology search; the packet's stated local query is not an exact transcript match. Original public ArcGIS cache shows polygon Cadastre layer 0 in EPSG:4326, with only UniqueID attributes: two exact-point features (F87910, P118731) and three bounded features (E2276802, E2278967, E2278968). The bounded response is transfer-limited. Zero polygons were durably sampled. This proves bounded geometry, not citywide completeness or an admitted adapter. Fresh exact-ID reads, forced paging, 13 cells, independent metric GEOS checks, source binding, and headed Details verification are absent.",
+  "retainedFullPolygons": 0,
+  "runtimeAdmitted": false,
+  "checkedAt": "2026-10-11T17:44:11Z"
+}

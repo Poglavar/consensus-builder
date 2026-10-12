@@ -1,0 +1,91 @@
+{
+  "purpose": "resumable WUP cadastral-source research packet",
+  "schemaVersion": 1,
+  "kind": "city-parcel-research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 9594,
+  "queueRank": 3136,
+  "name": "Duyun",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [26.264120483783, 107.511712924868],
+  "population2025": 191596,
+  "population2025k": 191.596,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Duyun China cadastral map parcel official land registration map API",
+        "result": "No Duyun-specific public parcel viewer or anonymous parcel geometry API was found. Results included official Duyun government material identifying the local Natural Resources Bureau's land-right registration and cadastral-management responsibilities, plus general Chinese cadastral-query guidance.",
+        "actualResultUrls": [
+          "https://www.duyun.gov.cn/ztzl/cxzt/zzzb/tzgg/202506/P020250628531014123774.pdf",
+          "https://www.mnr.gov.cn/zt/td/bdcdj/"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "都匀市 不动产登记 地籍图 官方 地图 服务",
+        "result": "The official Duyun government result confirms that the Duyun Natural Resources Bureau handles land-right confirmation, forest-right registration, and real-estate cadastral management. Discovery did not expose a public Duyun cadastral map viewer, current viewer JavaScript/configuration, or anonymous parcel API.",
+        "actualResultUrls": [
+          "https://www.duyun.gov.cn/ztzl/cxzt/zzzb/tzgg/202506/P020250628531014123774.pdf",
+          "https://www.duyun.gov.cn/zwfw/",
+          "https://guizhou.chinatax.gov.cn/sjpd/qnzzz/gzdt_59986/202212/t20221216_77543048.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Duyun government responsibilities document identifies 都匀市自然资源局 (Duyun Municipal Natural Resources Bureau) as responsible for land-right confirmation, forest-right registration, and real-estate cadastral management. This evidences a local registry/custodian, not public parcel-data access.",
+  "officialSources": [
+    {
+      "url": "https://www.duyun.gov.cn/ztzl/cxzt/zzzb/tzgg/202506/P020250628531014123774.pdf",
+      "role": "local registry/custodian evidence",
+      "access": "TLS-verified public GET returned HTTP 200; PDF retained only in ignored scratch cache"
+    },
+    {
+      "url": "https://www.duyun.gov.cn/",
+      "role": "official city website and viewer-discovery entry point",
+      "access": "TLS-verified public GET returned HTTP 200; homepage scripts/links did not expose a parcel service"
+    },
+    {
+      "url": "https://www.duyun.gov.cn/zwfw/",
+      "role": "official city public-service entry point",
+      "access": "TLS-verified public GET returned HTTP 200; page did not expose a cadastral viewer or parcel API"
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "requestOutcomes": [
+    {
+      "route": "https://www.duyun.gov.cn/",
+      "method": "GET",
+      "outcome": "HTTP 200; inspected current HTML and linked JavaScript references, with no cadastral viewer or parcel endpoint exposed"
+    },
+    {
+      "route": "https://www.duyun.gov.cn/zwfw/",
+      "method": "GET",
+      "outcome": "HTTP 200; official service portal loaded, but no public cadastral map/API route or configuration was exposed"
+    },
+    {
+      "route": "https://www.duyun.gov.cn/ztzl/cxzt/zzzb/tzgg/202506/P020250628531014123774.pdf",
+      "method": "GET",
+      "outcome": "HTTP 200; official PDF confirms local cadastral/registration custodian duties, but contains no anonymous parcel ID+geometry service"
+    },
+    {
+      "route": "https://www.duyun.gov.cn/so/s?searchWord=%E4%B8%8D%E5%8A%A8%E4%BA%A7",
+      "method": "GET",
+      "outcome": "Public site-search request returned a minimal empty response; no parcel viewer/API lead was obtained"
+    }
+  ],
+  "schemaAndCrs": null,
+  "resultCategory": "local_registry_custodian_found_no_public_parcel_api",
+  "coverageAssessment": "No exact-point parcel hit was attempted because no public Duyun parcel endpoint was identified. The exact WUP point was preserved and not shifted. This is not evidence of citywide absence.",
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The current Duyun cadastral viewer/API, native parcel identity field, safe field schema, geometry encoding, CRS, query semantics, and citywide coverage remain unverified. No owner, address, contact, titleholder, personal, tax/account, or other unsafe fields were requested or retained."
+}

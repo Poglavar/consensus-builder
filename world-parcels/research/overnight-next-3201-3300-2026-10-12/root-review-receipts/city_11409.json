@@ -1,0 +1,17 @@
+{
+  "taskId": "city:11409",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-11409-sultanganj.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/sultanganj-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T06:48:15Z",
+  "findings": {
+    "identity": "WUP 2025 source archive SHA-256 matched handoff; raw source row, immutable ranked roster, pending queue, and packet agree on code, rank, country, point, and population persons.",
+    "searches": "Packet records executed English and local-language query text, result, and URLs.",
+    "geometry": "Zero retained polygons; no unsafe parcel fields or synthetic IDs were introduced. Bhagalpur land-record service and Bihar BhuNaksha support custody; Sultanganj selector responses are metadata, while attempted extents were null or 204. No native parcel ID or full polygon.",
+    "admission": "Fresh exact native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification are not independently evidenced; city remains held. Unavailable routes or null results do not establish citywide absence."
+  }
+}

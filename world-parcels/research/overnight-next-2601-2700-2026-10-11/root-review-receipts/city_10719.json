@@ -1,0 +1,21 @@
+{
+  "taskId": "city:10719",
+  "decision": "held",
+  "checkedAt": "2026-10-11T17:36:40Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-10719-tenali.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/tenali-service-review.json"
+  ],
+  "identity": "Code 10719, rank 2676, Tenali, India, point [16.2384731991918, 80.6452406809308], 220719 persons agree across ranked roster, pending queue, and packet.",
+  "searchReview": "Paired packet records executed English and Telugu queries with result URLs; paired service review records outcomes.",
+  "sampleReview": "Zero full polygons retained; safe native parcel ID, geometry and metric GEOS checks therefore cannot be qualified.",
+  "firstPartyCheck": "Official APSAC app and web-map configuration independently identify the state cadastral MapServer; its anonymous metadata returned HTTP 403. The Tenali municipal map route returned a loading shell. No Tenali native-ID feature, adapter qualification, or headed Details-panel check.",
+  "firstPartyUrls": [
+    "https://apsac.ap.gov.in/gisportal/sharing/rest/content/items/7e3b53a1a265421483fbcbb26c275834/data?f=json",
+    "https://apsac.ap.gov.in/gisserver/rest/services/REVENUE/cadastral_ap_cache/MapServer?f=pjson",
+    "https://tenali.cdma.ap.gov.in/ulbprofile/tenali/gis-map"
+  ],
+  "admissionGates": "No independently evidenced fresh native-ID adapter reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Runtime admission remains held; unavailable services do not prove citywide absence."
+}

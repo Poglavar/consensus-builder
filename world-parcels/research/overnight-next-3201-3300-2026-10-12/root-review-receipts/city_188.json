@@ -1,0 +1,18 @@
+{
+  "taskId": "city:188",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-188-col-n.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/col-n-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T06:02:29Z",
+  "findings": {
+    "identity": "WUP 2025 archive hash matches the handoff; the source row, ranked roster, queue and packet agree on code 188, rank 3229, Panama, point [9.35225163372513, -79.8597360411826], and 187007 persons.",
+    "searches": "Packet records executed English and Spanish queries, first-party result URLs, and bounded official service requests.",
+    "custody": "Keep local registryFound unresolved (null). ANATI national procedures and an IGN populated-place map do not establish a Colón parcel source.",
+    "geometry": "No parcel polygon or native parcel ID was returned or retained. The identified IGN layer is non-parcel geography; its direct REST anti-automation challenge is not citywide absence evidence.",
+    "admission": "No independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, or headed Details-panel verification. No runtime admission."
+  }
+}

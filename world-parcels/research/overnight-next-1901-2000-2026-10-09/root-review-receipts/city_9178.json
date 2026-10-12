@@ -1,0 +1,19 @@
+{
+  "taskId": "city:9178",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-9178-yanjiao.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/yanjiao-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T19:47:49.592030Z",
+  "reason": "Yanjiao government announcement confirms the local real-property registration hall. No public parcel response, native ID, or qualification exists. targetPointHit=false records that no test completed, not a negative hit.",
+  "firstPartyCheck": {
+    "url": "https://www.yanjiao.gov.cn/shows/12/9586.html",
+    "httpStatus": 200,
+    "title": "关于燕郊行政审批大厅、燕郊社保服务平台、燕郊医保服务平台、燕郊不动产登记大厅迁入新址办公的公告",
+    "observedInstitutionalTerms": "燕郊不动产登记大厅; 三河市人民政府办公室"
+  },
+  "admissionGates": "No parcel geometry response or native identity; fresh ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed details check unproven."
+}

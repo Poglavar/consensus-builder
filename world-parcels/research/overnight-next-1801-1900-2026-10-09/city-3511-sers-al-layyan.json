@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "wupCityCode": 3511,
+  "cityCode": 3511,
+  "cityId": "wup2025:3511",
+  "name": "Sers Al Layyan",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "centerLatLon": [30.4530031406614, 30.9429228461777],
+  "point": [30.4530031406614, 30.9429228461777],
+  "population2025": 303302,
+  "population2025k": 303.302,
+  "populationUnit": "persons",
+  "queuePriority": 1891,
+  "queueRank": 1891,
+  "cohorts": ["overnight-next-1801-1900-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sers Al Layyan Egypt cadastral map official land registry parcel map Egyptian General Survey Authority",
+        "result": "First-party discovery identified the Egyptian General Survey Authority (ESA) as the national survey and cadastral-map custodian, with official map, digital-map, coordinate-certificate, parcel-subdivision, and land-use-change services. No Sers Al Layyan-specific open parcel layer or public parcel feature response was found.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/egypt_maps.aspx",
+          "https://www.egis.idsc.gov.eg/server/rest/services?f=pjson"
+        ]
+      },
+      {
+        "language": "Arabic (native/local)",
+        "query": "سرس الليان خريطة كادسترية سجل عيني رسمي هيئة المساحة المصرية قطعة أرض",
+        "result": "البحث من المصادر الرسمية حدّد الهيئة المصرية العامة للمساحة وخدمات الخرائط الرقمية وشهادة الإحداثيات وتغيير تخصيص قطعة أرض. لم يظهر مسار عام خاص بسرس الليان يعيد معرّف قطعة وهندسة مضلع، ولم تُستنتج غيبة السجل من ذلك.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/egypt_maps.aspx",
+          "https://moj.gov.eg/",
+          "https://portal.eta.gov.eg/ar/node/1001"
+        ]
+      }
+    ],
+    "officialViewer": "https://www.esa.gov.eg/testmap.aspx",
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://www.esa.gov.eg/main.aspx",
+        "status": 200,
+        "outcome": "Official ESA homepage retrieved. It describes the authority's historical role in producing ownership/cadastral records and maps, but returned no Sers Al Layyan parcel features."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.esa.gov.eg/services.aspx",
+        "status": 200,
+        "outcome": "Official ESA services page retrieved. It lists paper and digital maps, coordinate certificates, parcel-boundary separation, land-use change, and topographic mapping; no anonymous parcel-ID-plus-geometry endpoint or city-specific service was exposed."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.esa.gov.eg/testmap.aspx",
+        "status": 200,
+        "outcome": "Official ESA directorate page retrieved. Current HTML uses a static image map of directorates and a Google Maps JavaScript include; no cadastral feature service, schema, CRS, or parcel query configuration was present."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.egis.idsc.gov.eg/server/rest/services?f=pjson",
+        "status": 200,
+        "outcome": "Official Egyptian Information and Decision Support Center ArcGIS service directory retrieved. A bounded name review found general survey/agriculture/housing and indicator services but no clearly identified public cadastral, parcel, or property layer for Sers Al Layyan; no parcel query was issued."
+      },
+      {
+        "method": "GET",
+        "url": "https://moj.gov.eg/",
+        "status": "discovery-only",
+        "outcome": "The official Ministry of Justice site was identified as the Ministry portal with a Real Estate Registration link in search results; no anonymous cadastral geometry service was evidenced or queried."
+      },
+      {
+        "method": "GET",
+        "url": "https://portal.eta.gov.eg/ar/node/1001",
+        "status": 200,
+        "outcome": "Official Egyptian Tax Authority page retrieved and confirms local tax coverage for the Sers Al Layyan police section, but this is tax-administration scope, not a cadastral parcel map; no parcel fields or geometry were requested or retained."
+      }
+    ],
+    "schema": {
+      "nativeFieldMapping": null,
+      "compositeKeyProvenance": null,
+      "crs": "unverified; no parcel geometry response obtained"
+    }
+  },
+  "registryFound": null,
+  "registryBasis": "The national ESA cadastral/survey mandate and general map services are evidenced, but no Sers Al Layyan-specific local registry, cadastral layer, map procedure, or anonymous parcel geometry route was verified. National agency documentation alone is not treated as a local registry finding.",
+  "verifiedParcelResponse": null,
+  "statusDetail": "national_cadastral_custodian_identified_no_city_specific_open_parcel_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Egyptian General Survey Authority national survey, ownership-map, and digital-map services; the IDSC national GIS service directory was also checked.",
+    "verifiedOpenScope": "ESA institutional/service documentation and a general IDSC ArcGIS directory only; Sers Al Layyan parcel coverage, extent, native identity, and citywide geometry were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_national_cadastral_custodian_no_local_open_geometry",
+  "sourceIds": [],
+  "technicalBlocker": "No public, anonymous, city-specific parcel feature service was exposed by the current ESA viewer/configuration or the bounded IDSC service-directory review. No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe owner/address/titleholder lookup, or TLS exception was used.",
+  "remainingUncertainty": "ESA or a local Monufia office may provide non-public, request-based, or separately indexed cadastral products. Current public Sers Al Layyan layer availability, native parcel identity field, CRS, update currency, and parcel geometry coverage remain unresolved. The exact WUP point was preserved and was not used as a forced hit/miss test.",
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification required",
+  "sampleGeojson": null
+}

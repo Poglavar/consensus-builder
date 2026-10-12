@@ -1,0 +1,20 @@
+{
+  "taskId": "city:7599",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-7599-toba-tek-singh.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/toba-tek-singh-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T17:12:51Z",
+  "finding": "UN archive, immutable queue, and packet agree on Pakistan city 7599, rank 2657, WUP point and 222349 persons. English and Urdu searches with result URLs are recorded. First-party Punjab viewer and land-record custody are evidenced; Toba-specific hierarchy is bearer gated and the cited ArcGIS host was unavailable. No city-specific native ID or polygon is retained. A login wall and unavailable route do not establish citywide absence.",
+  "missingAdmissionGates": [
+    "city-specific native parcel polygon and exact-ID read",
+    "forced paging and stable complete manifest",
+    "13 bounded cells",
+    "metric full-polygon GEOS checks",
+    "source binding",
+    "headed Details-panel verification"
+  ]
+}

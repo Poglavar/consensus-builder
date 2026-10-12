@@ -1,0 +1,30 @@
+{
+  "taskId": "city:11899",
+  "decision": "held",
+  "checkedAt": "2026-10-11T22:13:48Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-11899-bongaigaon.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/bongaigaon-service-review.json",
+    "tmp/valhalla-parcel-research/bongaigaon/circles-13.json",
+    "tmp/valhalla-parcel-research/bongaigaon/villages-130101.json",
+    "tmp/valhalla-parcel-research/bongaigaon/parcel-1.json",
+    "tmp/valhalla-parcel-research/bongaigaon/parcel-2.json",
+    "tmp/valhalla-parcel-research/bongaigaon/parcel-3.json",
+    "tmp/valhalla-parcel-research/runs/20261011T220825-cf26344f/stdout.jsonl"
+  ],
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "durableSamplePolygonCount": 0,
+  "originalCachePolygonCount": 3,
+  "admissionGates": {
+    "freshNativeIdReads": true,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Rank 2889, code 11899, India, exact WUP point and 206362 persons match the immutable queue and source roster. English and Assamese searches are recorded in the worker run. The original first-party cache contains three full EPSG:32646 polygons from one town sheet with safe native IDs and no owner fields; independent GEOS inspection found each valid with zero pairwise overlap. This bounded sample does not meet the required 13-cell metric check, forced paging, source binding or headed Details verification, so runtime admission remains held."
+}

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 3322,
+  "cityId": "wup2025:3322",
+  "name": "Oita",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso3": "JPN",
+  "centerLatLon": [33.2290393280175, 131.638400049328],
+  "point": [33.2290393280175, 131.638400049328],
+  "queueRank": 1533,
+  "population2025": 372190,
+  "population2025k": 372.19,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Oita City official cadastral parcel map GIS land parcel map Japan",
+        "result": "First-party discovery found Oita City's official cadastral-survey page and the official Oita Map portal. The city page describes cadastral surveying and links to the national survey-status map; the public portal landing/configuration was fetched but did not expose a verified cadastral parcel layer or anonymous parcel API. G-Space catalogs Ministry of Justice registry-map data for Oita municipality code 44201.",
+        "actualResultUrls": [
+          "https://www.city.oita.oita.jp/o162/chiseki/chiseki.html",
+          "https://www2.wagmap.jp/oitacity/Portal",
+          "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2025-1-1913",
+          "https://front.geospatial.jp/moj-chizu-xml-readme/moj-chizu-shp-download/"
+        ]
+      },
+      {
+        "language": "Japanese",
+        "query": "大分市 公式 地籍図 公図 地番図 GIS",
+        "result": "大分市公式ページで、土地の地番・境界・面積等を明らかにする地籍調査を実施していること、実施済み・実施中地域は国土調査Webサイトの地籍調査状況マップで確認できることを確認した。大分市の公開型おおいたマップは取得したが、地籍・公図の匿名ポリゴンAPIは確認できなかった。G空間情報センターには大分市（法務局コード44201）の登記所備付地図データが掲載されている。",
+        "actualResultUrls": [
+          "https://www.city.oita.oita.jp/o162/chiseki/chiseki.html",
+          "https://www2.wagmap.jp/oitacity/Portal",
+          "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2025-1-1913",
+          "https://houmukyoku.moj.go.jp/oita/content/001408798.pdf"
+        ]
+      }
+    ]
+  },
+  "sourceAssessment": {
+    "officialCityService": "Oita City official cadastral-survey program and the public Oita Map portal were evidenced. The portal landing page/configuration did not identify a public cadastral parcel layer or anonymous parcel feature endpoint.",
+    "localRegistryProcedure": "Oita City states that cadastral surveying creates cadastral maps and ledgers clarifying parcel-level land information, and directs users to the national survey-status map for completed/in-progress areas. This evidences local cadastral custody/program scope, not an anonymous citywide runtime service.",
+    "openGeometrySource": "G-Space CKAN dataset houmusyouchizu-2025-1-1913, maintained by the Ministry of Justice, catalogs Oita City (Oita Legal Affairs Bureau) registry-office map data under municipality code 44201. Anonymous 2024 and 2025 ZIP resources were listed; each is about 314 MB and contains map XML rather than a bounded feature response.",
+    "nativeIdentity": "Not inspected in a bounded geometry response; no identity was retained.",
+    "sourceFields": [],
+    "fieldMapping": {},
+    "compositeKeyProvenance": "No source feature was retained and no composite key was constructed. The catalog is a registry-map XML archive; native parcel identity would require inspecting the archive's map XML schema in a future bounded review.",
+    "crs": "Not verified from a downloaded feature response. The catalog metadata provides an Oita-area spatial extent but no retained parcel geometry.",
+    "sampleFile": null,
+    "sampleScope": "No polygon retained: no safe bounded parcel feature response was obtained. This is not evidence of citywide absence or map coverage failure."
+  },
+  "verifiedSample": false,
+  "targetGeometryEvidence": "no_bounded_safe_geometry_response_obtained; no_retained_sample",
+  "coverageAssessment": {
+    "claimedScope": "Oita City official cadastral-survey program/public map pages plus the Ministry of Justice registry-map catalog for municipality code 44201.",
+    "verifiedOpenScope": "Official city custody/program evidence, public portal landing/configuration fetch, CKAN dataset metadata, resource names, formats and sizes were verified. Parcel schema, CRS, native ID and citywide completeness were not verified from a feature response.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "requestsAndEndpointChecks": [
+    {"url": "https://www.city.oita.oita.jp/o162/chiseki/chiseki.html", "method": "GET; first-party; TLS verification enabled", "status": "HTTP page found", "summary": "Official Oita cadastral-survey page; describes parcel-level cadastral surveying and links to the national survey-status map. No parcel API exposed."},
+    {"url": "https://www2.wagmap.jp/oitacity/Portal", "method": "GET; public portal; TLS verification enabled", "status": "HTTP page found", "summary": "Oita Map landing/configuration fetched and inspected for current public layers/endpoints; no verified cadastral parcel layer or anonymous parcel feature response identified."},
+    {"url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=houmusyouchizu-2025-1-1913", "method": "GET; anonymous; TLS verification enabled", "status": "HTTP 200 JSON", "summary": "CKAN metadata returned Oita municipality 44201 registry-map resources 44201-3200-2024.zip and 44201-3200-2025.zip, both ZIP/XML archives of approximately 314 MB."},
+    {"url": "https://front.geospatial.jp/moj-chizu-xml-readme/", "method": "GET; public documentation; TLS verification enabled", "status": "HTTP page found", "summary": "Public documentation explains Ministry of Justice registry-office map XML and G-Space conversions; it does not provide a bounded Oita feature response."},
+    {"url": "https://houmukyoku.moj.go.jp/oita/content/001408798.pdf", "method": "GET; first-party legal-affairs bureau notice; TLS verification enabled", "status": "Search result/official PDF located", "summary": "Official Oita Legal Affairs Bureau notice about high-precision registry-office map creation in named Oita districts; not an anonymous parcel API and no geometry retained."}
+  ],
+  "safeFieldAllowlist": ["safe public parcel/source ID", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "A local cadastral program and a public national registry-map catalog were evidenced, but no public city parcel viewer/API was qualified and no bounded anonymous geometry response with a native safe ID was inspected. Runtime integration remains held.",
+  "remainingUncertainty": "The public Oita Map's deeper current configuration may expose non-cadastral layers not visible from the landing page; the large registry-map XML archives were not downloaded or parsed in this attempt; parcel identity and CRS therefore remain unverified. No owner, address, lot, title, tax, or personal fields were requested or retained.",
+  "nextStep": "If runtime qualification is required, inspect the current Oita Map JavaScript/configuration and independently parse a small, source-approved subset of the 44201 registry-map XML archive, retaining only stable public IDs and geometry.",
+  "identityPolicy": "No GeoJSON sample retained. Future samples must use exactly one stable native source identity as properties.id and geometry only.",
+  "cohort": "overnight-next-1501-1600",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

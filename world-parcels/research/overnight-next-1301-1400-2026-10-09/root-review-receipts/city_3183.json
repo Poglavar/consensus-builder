@@ -1,0 +1,17 @@
+{
+  "taskId": "city:3183",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-3183-mykolaiv.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/mykolaiv-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-09T14:49:22.288645Z",
+  "reason": "Municipal portal exposes a named land-parcel register, supporting local custody. The register route returned HTTP 404 and no anonymous parcel geometry or native ID was verified; the route failure does not establish citywide absence.",
+  "firstPartyUrlsChecked": [
+    "https://mbase.mkrada.gov.ua/home",
+    "https://mbase.mkrada.gov.ua/register/3262621605964022967"
+  ],
+  "admissionGates": "No fresh native-ID read, forced paging, 13 bounded cells, metric full-polygon checks, source binding, or headed Details verification."
+}

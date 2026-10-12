@@ -1,0 +1,24 @@
+{
+  "taskId": "city:3511",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-3511-sers-al-layyan.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/sers-al-layyan-service-review.json",
+    "tmp/valhalla-parcel-research/3511/egis.json",
+    "tmp/valhalla-parcel-research/3511/esa.html",
+    "tmp/valhalla-parcel-research/3511/esa-testmap.html"
+  ],
+  "checkedAt": "2026-10-10T17:55:37Z",
+  "registryFound": null,
+  "reason": "National ESA map services evidenced; city-specific registry and anonymous native-ID polygon response unresolved; no independent adapter qualification.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

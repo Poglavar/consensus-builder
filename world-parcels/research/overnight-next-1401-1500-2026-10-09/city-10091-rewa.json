@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityId": "wup2025:10091",
+  "cityCode": 10091,
+  "queueRank": 1485,
+  "name": "Rewa",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [24.5408180036904, 81.3027561052089],
+  "population2025": 383019,
+  "population2025k": 383.019,
+  "populationUnit": "persons",
+  "status": "complete",
+  "resultCategory": "official_cadastral_map_geometry_unverified",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rewa Madhya Pradesh official cadastral parcel map land records Bhu Naksha",
+        "result": "First-party discovery found the Madhya Pradesh government MP Bhulekh land-records portal, the Government of India DILRMP Rewa district map-digitization page, and the official Rewa divisional administration site. The sources describe cadastral maps/land-record services, but no city-specific anonymous parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://mpbhulekh.gov.in/mpbhulekh.do",
+          "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/432",
+          "https://rewadivisionmp.nic.in/",
+          "https://services.india.gov.in/service/detail/check-dissemination-of-naksha-parcel-map-of-madhya-pradesh-online-1"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "रीवा मध्य प्रदेश भू नक्शा खसरा नक्शा सरकारी पोर्टल",
+        "result": "Hindi-language discovery identified the official MP Bhulekh service as the Madhya Pradesh land-record custodian and describes certified Khasra, B-1/Khatauni, and map-copy services. The official Rewa administration source confirms Rewa as the district/divisional administrative location. No safe parcel ID and geometry were exposed.",
+        "actualResultUrls": [
+          "https://mpbhulekh.gov.in/mpbhulekh.do",
+          "https://www.services.mp.gov.in/eservice/eServices?srvs=19",
+          "https://rewadivisionmp.nic.in/",
+          "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/432"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://mpbhulekh.gov.in/mpbhulekh.do",
+    "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/432",
+    "https://rewadivisionmp.nic.in/"
+  ],
+  "registryBasis": "An official Madhya Pradesh land-records and map service is evidenced, and the Government of India DILRMP page is specifically scoped to District Name: REWA. This establishes an official cadastral/map custodian route, not citywide parcel completeness or a verified city feature layer.",
+  "source": {
+    "sourceId": "IN-10091-REWA-MP-BHULEKH-DILRMP-REVIEW",
+    "name": "Madhya Pradesh official MP Bhulekh / Bhu-Naksha land-record map services",
+    "url": "https://mpbhulekh.gov.in/mpbhulekh.do",
+    "operator": "Commissioner Land Records / Revenue Department, Government of Madhya Pradesh",
+    "serviceType": "Public land-record and cadastral-map procedure reviewed; no safe anonymous parcel feature response verified.",
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Madhya Pradesh land-record/map services with DILRMP reporting scoped to Rewa district.",
+    "verifiedOpenScope": "Official service and district-level digitization/map-status evidence; Rewa city parcel feature coverage, schema, native IDs, CRS, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "technicalBlocker": "Direct HTTPS requests to mpbhulekh.gov.in and webgis2.mpbhulekh.gov.in timed out. The DILRMP endpoint's certificate could not be verified by the local curl trust store; no certificate exception was used. Search-indexed official pages were sufficient to document the custodian and Rewa scope, but not to retrieve a safe feature response. No login, credentials, CAPTCHA bypass, or private-token route was attempted.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "The official portal may expose parcel geometry after interactive district/tehsil/village selection or through a current WebGIS endpoint. Exact-point hit status, native parcel identity, CRS, geometry retrieval, request reliability, and citywide completeness remain unverified. No absence inference is made from the timeout.",
+  "nextStep": "Hold runtime integration. A later researcher may follow the current MP Bhulekh viewer configuration to an anonymous feature endpoint, verify Rewa's administrative hierarchy, and retain at most three full polygons only after confirming stable native IDs and safe geometry fields.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []}
+}

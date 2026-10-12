@@ -1,0 +1,29 @@
+{
+  "taskId": "city:2204",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-2204-rangreth.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/rangreth-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T03:41:02Z",
+  "queueIdentity": {
+    "rank": 3128,
+    "cityCode": 2204,
+    "name": "Rangreth",
+    "country": "India",
+    "point": [
+      34.0207106014512,
+      74.8014402245299
+    ],
+    "populationPersons": 192099
+  },
+  "finding": "English and Urdu searches are recorded with result URLs. The saved JKLR client shows an authenticated API; its anonymous district call was reported as HTTP 401. The saved public planning-layer metadata has a polygon schema with unsafe personal fields, but no safe feature was fetched and its custody/scope was not qualified for Rangreth. The separate land-records host timed out; neither response establishes absence.",
+  "firstPartyCacheInspected": "tmp/valhalla-parcel-research/rangreth/arcgis-parcel-layer.json",
+  "geometrySamplesRetained": 0,
+  "admissionGates": "No fresh native-ID adapter reads, forced paging, 13 bounded cells, metric GEOS full-polygon validity/overlap/operation checks, source binding, or headed Details-panel verification. No runtime/catalog/report admission.",
+  "absenceInference": "None; a login wall, timeout, unavailable viewer, or point/extent miss is not citywide absence."
+}

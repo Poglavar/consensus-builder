@@ -1,0 +1,72 @@
+{
+  "cityCode": 6324,
+  "queueRank": 1707,
+  "city": "Indramayu",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "point": [-6.35590114253333, 108.33109350538],
+  "population2025": 335572,
+  "population2025k": 335.572,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Indramayu official cadastral parcel map land registry Indonesia",
+        "result": "First-party discovery identified the Ministry of Agrarian Affairs and Spatial Planning / National Land Agency (ATR/BPN) BHUMI public spatial portal, plus the official Indramayu Satu Peta geospatial portal. BHUMI documentation describes open access to land-spatial layers, but no anonymous parcel geometry response was verified for this city.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/", "https://atlas.atrbpn.go.id/", "https://satupeta.indramayukab.go.id/"]
+      },
+      {
+        "language": "Indonesian",
+        "query": "peta bidang tanah kadaster resmi Indramayu ATR BPN",
+        "result": "Penelusuran pihak pertama menemukan portal BHUMI ATR/BPN dan portal resmi Satu Peta Kabupaten Indramayu. Portal Satu Peta menyediakan katalog geospasial publik, tetapi tidak ditemukan respons geometri bidang tanah yang dapat digunakan secara anonim.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/", "https://bhumi.atrbpn.go.id/bantuan/landing", "https://satupeta.indramayukab.go.id/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Kementerian Agraria dan Tata Ruang/Badan Pertanahan Nasional (ATR/BPN), with Kabupaten Indramayu Satu Peta as a local government geospatial catalog",
+  "registryEvidence": {
+    "nationalViewerUrl": "https://bhumi.atrbpn.go.id/",
+    "localPortalUrl": "https://satupeta.indramayukab.go.id/",
+    "viewerText": "BHUMI ATR/BPN describes itself as an interactive land-spatial map platform and states that official reference use requires an ATR/BPN public-information request.",
+    "localPortalText": "Satu Peta Kabupaten Indramayu is a portal for managing and sharing geospatial data; its public API catalog was readable anonymously."
+  },
+  "sourceReview": {
+    "service": "BHUMI ATR/BPN public map portal and Satu Peta Kabupaten Indramayu public catalog",
+    "baseUrls": ["https://bhumi.atrbpn.go.id/", "https://konsolbhumi.atrbpn.go.id/", "https://satupeta.indramayukab.go.id/"],
+    "officialAssetsInspected": ["BHUMI /", "BHUMI /peta", "BHUMI /konsolbhumi.html", "konsolbhumi.atrbpn.go.id/", "Satu Peta /api/openapi.json"],
+    "nativeFieldMapping": "No parcel response was obtained; no native parcel field mapping established.",
+    "compositeKeyProvenance": "Not applicable; no parcel-level composite key was returned.",
+    "crs": "unverified; no parcel geometry response",
+    "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "public service and layer metadata"]
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://bhumi.atrbpn.go.id/", "outcome": "200; public landing page readable; it embeds the current public console; no login used"},
+    {"method": "GET", "url": "https://bhumi.atrbpn.go.id/peta", "outcome": "200; same public application shell; no parcel geometry response"},
+    {"method": "GET", "url": "https://bhumi.atrbpn.go.id/konsolbhumi.html", "outcome": "200; current iframe configuration inspected; it points to konsolbhumi.atrbpn.go.id"},
+    {"method": "GET", "url": "https://konsolbhumi.atrbpn.go.id/", "outcome": "200; current JavaScript bundle inspected; no anonymous parcel geometry endpoint was identified in the loaded public assets"},
+    {"method": "GET", "url": "https://satupeta.indramayukab.go.id/", "outcome": "200; official local geospatial portal readable"},
+    {"method": "GET", "url": "https://satupeta.indramayukab.go.id/api/openapi.json", "outcome": "200; public API schema readable; catalog routes include datasets, mapsets, feature metadata and geojson"},
+    {"method": "GET", "url": "https://satupeta.indramayukab.go.id/api/datasets", "outcome": "200; public catalog returned datasets, including land-management indicators but no parcel polygon layer verified"},
+    {"method": "GET", "url": "https://satupeta.indramayukab.go.id/api/mapset", "outcome": "200; public mapset catalog returned general thematic maps; no parcel layer verified"},
+    {"method": "GET", "url": "https://satupeta.indramayukab.go.id/api/geojson/indramayu", "outcome": "422 validation error; no GeoJSON or parcel identity returned"},
+    {"method": "GET", "url": "https://satupeta.indramayukab.go.id/api/", "outcome": "200; Swagger UI shell readable; no geometry requested from unsafe or private routes"}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not performed against parcel geometry; no hit/miss inference", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "ATR/BPN national land-spatial portal plus Kabupaten Indramayu public geospatial catalog", "verifiedOpenScope": "Public portal shells and catalog metadata only; parcel vector response not verified", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": [
+    "The exact WUP point [-6.35590114253333, 108.33109350538] was preserved and not shifted.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, unusable UI, or validation error is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set or GeoJSON sample was retained.",
+    "Packet completion records executed attempts only; it does not qualify or admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Anonymous parcel-level stable identity, schema, CRS, geometry endpoint behavior and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

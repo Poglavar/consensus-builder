@@ -1,0 +1,15 @@
+{
+  "taskId": "city:10787",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-10787-siwan.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/siwan-service-review.json",
+    "tmp/valhalla-parcel-research/10787/extent2.json",
+    "tmp/valhalla-parcel-research/10787/plotxy.json",
+    "tmp/valhalla-parcel-research/10787/urban_levels.json"
+  ],
+  "checkedAt": "2026-10-10T18:19:12.975828Z",
+  "reviewFinding": "Queue identity and bilingual search records agree. Original viewer cache confirms Siwan urban map metadata and EPSG:32645, but the point response is empty and no safe native ID plus full polygon is retained. A point miss is not citywide absence. No live adapter qualification or headed Details verification."
+}

@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-10182-shulan.json",
+  "cityCode": 10182,
+  "queueRank": 3174,
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "Shulan Municipal Natural Resources Bureau (舒兰市自然资源局) and its catalog-listed Shulan Real Estate Registration Center (舒兰市不动产登记中心), evidenced by official Shulan government information-disclosure pages and the linked public catalog service.",
+  "publicMapLead": null,
+  "queryOutcomes": "Separate English and Simplified Chinese discovery queries were executed and recorded in the city record. They established local custodian/catalog evidence but did not identify a public Shulan cadastral viewer or anonymous parcel ID+geometry API.",
+  "requestOutcomes": "The official Shulan homepage and Natural Resources Bureau catalog returned HTTP 200 over HTTP and were inspected with their current JavaScript/configuration. The catalog's public JSONP endpoints returned category IDs and 99 registration-document metadata records, including the local registration-center publisher, but no parcel geometry, safe native parcel ID, schema, CRS, or viewer route. A TLS-verified request to the Jilin provincial natural-resources site returned 200. The Shulan HTTPS host produced a TLS internal-alert failure; no certificate exception was authorized. An initial broad curl probe used -k while checking reachability; it was not used as evidence and is disclosed here for auditability. No login, credentials, CAPTCHA/Cloudflare bypass, private token, or unsafe field request was used.",
+  "schemaAndCrs": null,
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [44.4131968645505, 126.946736675919] was preserved and not moved.",
+    "No exact-point hit, map-extent miss, timeout, login wall, TLS failure, or unusable UI was treated as evidence of citywide absence.",
+    "A local registry custodian is evidenced, but no public parcel response, native ID, field schema, CRS, or geometry was verified.",
+    "No GeoJSON sample is included because no safe native parcel identity and full polygon were observed.",
+    "The catalog response was document metadata only; raw source-specific attributes were not retained in the city packet.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or admission."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "The local custodian and public registration catalog are evidenced, but bounded anonymous parcel ID+geometry access was unavailable during this attempt; independent serial review is required before any adapter/runtime qualification."
+  },
+  "uncertainty": "The current Shulan viewer, service routes, native field schema, CRS, query semantics, and citywide coverage remain unknown."
+}

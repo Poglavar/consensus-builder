@@ -1,0 +1,31 @@
+{
+  "taskId": "city:8492",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-8492-kendari.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/kendari-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz"
+  ],
+  "checkedAt": "2026-10-09T15:37:00.287044Z",
+  "reason": "First-party BHUMI documentation describes bidang tanah and NIB-based search, while the Kendari asset GIS is a separate asset source. Viewer timeouts yielded no bounded anonymous parcel response, safe native ID, geometry, CRS, or adapter qualification. Timeout is not citywide absence; registryFound remains unresolved.",
+  "firstPartyPagesChecked": [
+    "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+    "https://bhumi.atrbpn.go.id/bantuan/katalog_data"
+  ],
+  "identityCheck": {
+    "cityCode": 8492,
+    "queueRank": 1383,
+    "country": "Indonesia",
+    "point": [
+      -3.99122776823972,
+      122.520273611264
+    ],
+    "populationPersons": 408731,
+    "matches2025WupRow": true
+  },
+  "searchCheck": "Two separately recorded English and local-language queries with actual result URLs in packet and paired review; Makurdi local-language search used Hausa and did not establish a Tiv/Idoma source.",
+  "polygonCheck": "Zero full polygons retained; no safe source-native parcel ID plus complete polygon response.",
+  "admissionGates": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are not independently evidenced."
+}

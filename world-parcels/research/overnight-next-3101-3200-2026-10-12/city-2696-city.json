@@ -1,0 +1,95 @@
+{
+  "cityCode": 2696,
+  "queueRank": 3137,
+  "name": "Шелепино",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "locId": 643,
+  "capital": false,
+  "point": [57.9878035862067, 38.8478465092283],
+  "population2025": 191350,
+  "population2025k": 191.35,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shelepino Russia official cadastral map Rosreestr parcel GIS",
+        "result": "Discovery identified Russia's public cadastral-map route now associated with the National Spatial Data System (NSPD), the Rosreestr federal cadastral authority, and the official Yaroslavl regional Rosreestr office. The Рыбинск municipal land-resources page also links the public cadastral map. No anonymous parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://rosreestr.gov.ru/",
+          "https://yamo.adm.yar.ru/gos_organ/rosreestr.php",
+          "https://rybinsk.ru/economy/land"
+        ]
+      },
+      {
+        "language": "Russian (local)",
+        "query": "Шелепино Рыбинский район Ярославская область официальный кадастровая карта Росреестр",
+        "result": "Russian-language discovery identified the official Yaroslavl regional Rosreestr office and the Рыбинск municipal land-resources page, which references the public cadastral map. Search evidence also shows that Шелепино is an ambiguous settlement name in Yaroslavl Oblast; the WUP point was preserved and no name-only parcel match was inferred.",
+        "actualResultUrls": [
+          "https://yamo.adm.yar.ru/gos_organ/rosreestr.php",
+          "https://rybinsk.ru/economy/land",
+          "https://yamo.adm.yar.ru/doc/2020/03/7%20%D0%A0%D0%B5%D0%B5%D1%81%D1%82%D1%80%20%D0%93%D0%9F%D0%97%D0%A3%202019.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Federal Service for State Registration, Cadastre and Cartography (Rosreestr), with the official Yaroslavl regional Rosreestr office as regional custodian context; the Рыбинск municipal land-resources page is a local public-service route.",
+    "scope": "A real official cadastral/map and regional administrative route is evidenced, but the exact WUP place-name/administrative match and citywide parcel coverage were not independently verified.",
+    "evidenceUrls": [
+      "https://yamo.adm.yar.ru/gos_organ/rosreestr.php",
+      "https://rybinsk.ru/economy/land",
+      "https://nspd.gov.ru/map?thematic=PKK"
+    ],
+    "scopeNote": "The federal and regional Rosreestr pages establish cadastral custody; the Рыбинск page establishes a municipal land-information route. This is not proof that a public parcel API is callable or that the queue point lies within Рыбинск municipal coverage."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Rosreestr/NSPD public cadastral-map route and Yaroslavl regional/Рыбинск official pages",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "attemptedRoutes": [
+      {
+        "method": "GET",
+        "url": "https://nspd.gov.ru/map?thematic=PKK",
+        "outcome": "Timed out after 20 seconds; no HTML, JavaScript, configuration, schema, CRS, or feature response inspected."
+      },
+      {
+        "method": "GET",
+        "url": "https://rosreestr.gov.ru/",
+        "outcome": "Timed out after 8 seconds; no login, credential, or token flow attempted."
+      },
+      {
+        "method": "GET",
+        "url": "https://yamo.adm.yar.ru/gos_organ/rosreestr.php",
+        "outcome": "HTTP 200 received; official regional Rosreestr custody page inspected. It documents cadastral/map functions but did not expose a bounded anonymous parcel-vector endpoint."
+      },
+      {
+        "method": "GET",
+        "url": "https://rybinsk.ru/economy/land",
+        "outcome": "HTTP 200 received before bounded timeout; official municipal land-resources page inspected and its public cadastral-map reference recorded. No parcel feature response obtained."
+      }
+    ],
+    "note": "The exact WUP point [57.9878035862067, 38.8478465092283] was preserved and not shifted or used as an absence test. No parcel ID, geometry, schema, CRS, or bounded anonymous parcel response was obtained."
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "Шелепино is not a unique settlement name in Yaroslavl Oblast; the official routes reviewed do not independently resolve the WUP point to a single local administrative custodian.",
+    "NSPD and Rosreestr public map endpoints were unavailable within bounded anonymous requests, so viewer JavaScript/configuration and service schema could not be inspected.",
+    "The municipal page and regional Rosreestr page evidence service/custody context, not a callable citywide parcel API or complete coverage.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration or runtime admission."
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 3257,
+  "queueRank": 1918,
+  "name": "Anantnag",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [33.7357851010235, 75.1541599949264],
+  "population2025": 299385,
+  "population2025k": 299.385,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Anantnag official cadastral map parcel GIS land records Jammu Kashmir government",
+        "result": "Found the official District Anantnag land-records page, the J&K Revenue land-records viewer, and the Government of India DILRMP Anantnag map/ULPIN status page.",
+        "actualResultUrls": [
+          "https://anantnag.nic.in/service/land-records-info/",
+          "https://d14fnjoywemmi.cloudfront.net/jklr/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/14"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "अनंतनाग आधिकारिक भू नक्शा भूमि अभिलेख जम्मू कश्मीर",
+        "result": "Found the official Hindi search route to the Anantnag district land-records custodian and the Government of India NAKSHA land-map programme; no separate public Anantnag parcel API was identified.",
+        "actualResultUrls": [
+          "https://anantnag.nic.in/service/land-records-info/",
+          "https://naksha.dolr.gov.in/NakshaPortal/",
+          "https://d14fnjoywemmi.cloudfront.net/jklr/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://anantnag.nic.in/service/land-records-info/",
+      "operator": "District Anantnag, Government of Jammu & Kashmir",
+      "evidence": "The official district land-records page directs users to the J&K Revenue land-records system and identifies the Tehsildar office in Anantnag; this is local district custodian evidence, not a parcel feature endpoint."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr/",
+      "operator": "Revenue Department, Government of Jammu & Kashmir",
+      "evidence": "The current public JKLR application identifies itself as the J&K Government land-records digitization system. Its current JavaScript configuration points to https://d14fnjoywemmi.cloudfront.net/jklr-api."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/14",
+      "operator": "Department of Land Resources, Government of India, DILRMP",
+      "evidence": "The official dashboard is scoped to State/UT Jammu & Kashmir and District Anantnag and presents cadastral-map, geo-referencing, land-parcel and ULPIN status fields. It is administrative coverage evidence, not a parcel geometry response."
+    },
+    {
+      "url": "https://naksha.dolr.gov.in/NakshaPortal/",
+      "operator": "Department of Land Resources, Government of India",
+      "evidence": "The official NAKSHA portal describes the national GIS-integrated urban land-survey programme; no Anantnag parcel response was obtained in this bounded attempt."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://anantnag.nic.in/service/land-records-info/",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official district land-records page retrieved; it refers users to jkrevenue.nic.in and gives the Anantnag Tehsildar office route."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr/",
+      "method": "GET",
+      "status": 200,
+      "summary": "Current JKLR HTML and JavaScript retrieved. The application was reachable without login, but the UI is an authenticated revenue workflow."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr/assets/index-CKGBOSSj.js",
+      "method": "GET",
+      "status": 200,
+      "summary": "Current JavaScript inspected. It declares JSON routes including get-districts, get-tehsil-by-district, get-village-by-tehsil and land-record lookup routes; no public geometry endpoint or safe anonymous parcel route was exposed."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-districts",
+      "method": "POST without credentials",
+      "status": 401,
+      "summary": "Anonymous request returned Unauthorized; no login, token acquisition, CAPTCHA bypass or credentialed retry was attempted."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-tehsil-by-district",
+      "method": "POST without credentials",
+      "status": 401,
+      "summary": "Anonymous request returned Unauthorized; no district/tehsil enumeration or parcel request was attempted after the authentication wall."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-village-by-tehsil",
+      "method": "POST without credentials",
+      "status": 401,
+      "summary": "Anonymous request returned Unauthorized; no village or parcel geometry response was obtained."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/14",
+      "method": "GET via first-party discovery",
+      "status": 200,
+      "summary": "Anantnag district DILRMP status page retrieved; displayed status headings but no bounded parcel ID-plus-geometry response."
+    },
+    {
+      "url": "https://naksha.dolr.gov.in/NakshaPortal/",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official NAKSHA portal was found through discovery; no city-specific parcel response was requested or retained."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": null,
+    "crs": "Not obtained; no parcel geometry response was returned.",
+    "geometryType": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Jammu & Kashmir government land-records system, with Anantnag district custodian and Government of India DILRMP district status evidenced.",
+    "verifiedOpenScope": "Anantnag district land-records referral and current JKLR application were verified. Anonymous parcel-level IDs and geometry were not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No exact-point parcel query was completed; this is not evidence of citywide absence. The WUP point was preserved exactly and was not shifted."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["native parcel ID if independently obtained", "geometry if independently obtained"],
+  "unsafeFieldsNotRetained": ["owner", "address", "contact", "titleholder", "tax/account", "legal description", "mutation details", "rights/interests"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_registry_and_viewer_verified_no_anonymous_parcel_response",
+  "remainingUncertainty": "The current JKLR viewer and API route family were confirmed, but the API requires authentication and no bounded anonymous parcel ID-plus-geometry response was available. DILRMP status evidence does not establish citywide parcel availability, exact-point coverage, or a safe public geometry service.",
+  "nextStep": "Serial reviewer should independently qualify whether an authenticated-free public cadastral map/API exists and, if so, verify stable native parcel identity, schema, CRS and a bounded safe geometry response before any adapter admission."
+}

@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-6290-orizaba.json",
+  "cityCode": 6290,
+  "queueRank": 1913,
+  "city": "Orizaba",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "H. Ayuntamiento de Orizaba / Coordinación de Catastro Municipal, with state Delegación Regional de Catastro en Orizaba corroboration",
+  "serviceUrl": "https://tesoreria.orizaba.gob.mx/Impuestos/BuscaCuenta/2",
+  "scope": "Official municipal cadastral custodian, Treasury cadastral-key lookup, state regional-cadastre references, and official planning evidence; parcel geometry coverage was not verified.",
+  "schemaAndCrs": "No usable parcel feature schema, CRS, geometry type, or ID-plus-geometry response was returned. The Treasury HTML exposes cadastral-key input fields only.",
+  "nativeIdentity": "None established. The structured cadastral key was recorded as source evidence only; no synthetic identity or guessed parcel key was used.",
+  "fieldMapping": {
+    "sourceKeyFieldsObserved": ["txtDelegacion", "txtMunicipio", "txtLocalidad", "txtRegion", "txtManzana", "txtLote", "txtNivel", "txtDepartamento", "txtTipo"],
+    "retainedFeatureFields": []
+  },
+  "requestOutcome": "English and Spanish discovery found first-party municipal Catastro/Treasury and state cadastral references. Direct GET requests to the municipal home, planning page, Treasury lookup, state manzanero page, state Orizaba delegation reference, and INEGI map record succeeded or were discoverable, but no anonymous parcel geometry/API route was exposed. No POST lookup was submitted because it would require a property/account key and could return unsafe property data.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained because no safe native-ID-plus-geometry response was obtained.",
+  "safeFieldAllowlist": ["native parcel identifier if later exposed", "geometry"],
+  "unsafeDataPolicy": "Owner, titleholder, address, contact, tax/account, legal-description, and rights/title fields were not requested or retained.",
+  "officialCustodyEvidence": "The municipal transparency site identifies a dedicated Coordinación de Catastro Municipal, the official municipal directory lists Catastro, and the official Veracruz state finance page lists the Delegación Regional de Catastro en Orizaba. These are local/regional custodian evidence, distinct from general national mapping sources.",
+  "limits": [
+    "A public cadastral-key/account lookup does not prove an open parcel geometry API or complete city coverage.",
+    "No exact-point feature response was available; this is not evidence of parcel absence.",
+    "No native ID, CRS, geometry type, or stable composite-key semantics were verified.",
+    "No raw source attribute set or parcel polygon was retained.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Independent review must confirm whether the current municipal/state cadastral infrastructure has an anonymous map/API, its schema/CRS/native identity, safe field exposure, and Orizaba-wide coverage before adapter admission."
+}

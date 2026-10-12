@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "kind": "city_parcel_source_research",
+  "cityCode": 6137,
+  "queueRank": 2432,
+  "name": "Mianwali",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "point": [32.582053843092, 71.5407388936502],
+  "population2025": 241207,
+  "population2025k": 241.207,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mianwali Pakistan official land records cadastral map GIS Punjab Land Records Authority",
+        "result": "Official Punjab PULSE viewer found; its current HTML advertises a Mianwali Cadastral Maps sublayer. Official Punjab land-record authority and Mianwali land-use sources were also found. The underlying ArcGIS service is token-gated for direct anonymous metadata and feature access; no parcel geometry was verified.",
+        "actualResultUrls": [
+          "https://lis.pulse.gop.pk/",
+          "https://www.punjab-zameen.gov.pk/",
+          "https://pmu-lgcdd.gop.pk/mianwali/"
+        ]
+      },
+      {
+        "language": "Urdu",
+        "query": "میانوالی زمین ریکارڈ نقشہ کادسترل پارسل سرکاری",
+        "result": "Search found the official Punjab Land Records Authority and the official PULSE Mianwali cadastral-map viewer; no safe anonymous parcel feature response was verified.",
+        "actualResultUrls": [
+          "https://lis.pulse.gop.pk/",
+          "https://www.punjab-zameen.gov.pk/",
+          "https://mianwali.punjab.gov.pk/"
+        ]
+      }
+    ]
+  },
+  "sourceIds": [],
+  "nativeIdReadiness": "not_ready_no_anonymous_geometry",
+  "targetGeometryEvidence": "none accepted",
+  "coverageAssessment": {
+    "claimedScope": "Punjab PULSE urban land-system viewer and its Mianwali cadastral-map layer; official Punjab land-record and Mianwali planning sources.",
+    "verifiedOpenScope": "Mianwali layer advertised in the official viewer only; direct ArcGIS service access is token-gated.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held",
+  "resultCategory": "official_city_cadastral_layer_token_gated_no_geometry",
+  "nextStep": "Retry the official PULSE cadastral service when a documented anonymous route is available, then validate a bounded Mianwali geometry response containing only safe native parcel IDs and geometry.",
+  "remainingUncertainty": "The viewer's Mianwali layer may contain cadastral polygons, but token-gated ArcGIS metadata prevented inspection of CRS, schema, extent, and features. No exact-point absence or citywide absence is inferred."
+}

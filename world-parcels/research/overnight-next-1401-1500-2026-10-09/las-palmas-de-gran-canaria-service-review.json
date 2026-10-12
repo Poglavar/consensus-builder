@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-654-las-palmas-de-gran-canaria.json",
+  "purpose": "Document first-party Spanish cadastral context, local municipal parcel-map evidence, and bounded anonymous geometry access.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Spanish Directorate-General for the Cadastre provides the national public cadastral map/WMS. The official Las Palmas de Gran Canaria municipal ArcGIS REST service exposes a local parcel cartography layer (PARCELA_ar) with polygon geometry and safe objectid/globalid fields. The exact WUP point did not intersect a returned municipal polygon; a bounded approximately 2 km envelope query returned two polygons. This is evidence of a public local parcel-map service and bounded geometry access, not citywide completeness or exact-point absence.",
+  "registryAssessment": "A local first-party municipal parcel/cartography map is evidenced by the Ayuntamiento-linked SIT Las Palmas ArcGIS service. The Spanish national cadastral custodian is the Dirección General del Catastro; the municipal layer is not treated as a substitute for official cadastral ownership or title records.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.sedecatastro.gob.es/OVCInicio.aspx?Seguir=S",
+      "observation": "Official Sede Electrónica del Catastro describes the public property search and cartographic viewer."
+    },
+    {
+      "url": "https://www.catastro.hacienda.gob.es/es-ES/wms.html",
+      "observation": "Official Catastro WMS documentation identifies the public national cadastral map service, its Spain-wide scope excluding the foral systems, supported CRS including EPSG:4326 and Canary Islands UTM zone 28, and non-mass-download limitation."
+    },
+    {
+      "url": "https://www.laspalmasgc.es/es/areas-tematicas/innovacion/visores-geograficos-municipales/",
+      "observation": "Official municipal page lists the municipality's geographic viewers."
+    },
+    {
+      "url": "https://sit.laspalmasgc.es/server/rest/services/geursa/Parcela/MapServer",
+      "observation": "First-party municipal SIT ArcGIS MapServer named geursa/Parcela; service metadata describes Cartografía base/Carto PGO Las Palmas G.C., EPSG:3857 display extent, GeoJSON query support, and parcel sublayers PARCELA_ln and PARCELA_ar."
+    },
+    {
+      "url": "https://sit.laspalmasgc.es/server/rest/services/geursa/Parcela/MapServer/2",
+      "observation": "Layer metadata identifies PARCELA_ar as polygon geometry sourced in EPSG:32628 and exposes safe fields objectid (OID) and globalid (GlobalID), plus geometry. No owner, address, contact, titleholder, tax, or account fields were requested or retained."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "official cadastral parcel map Las Palmas de Gran Canaria Spain WMS API Catastro",
+      "result": "Found official national Catastro viewer/WMS documentation and the official municipal SIT parcel MapServer.",
+      "actualResultUrls": [
+        "https://www.sedecatastro.gob.es/OVCInicio.aspx?Seguir=S",
+        "https://www.catastro.hacienda.gob.es/es-ES/wms.html",
+        "https://sit.laspalmasgc.es/server/rest/services/geursa/Parcela/MapServer"
+      ]
+    },
+    {
+      "language": "Spanish",
+      "query": "Sede Electrónica Catastro visor cartográfico Las Palmas de Gran Canaria parcela",
+      "result": "Found the official Spanish Catastro viewer/WMS material and the municipal geographic-viewer page linking to local mapping context; the municipal SIT parcel REST service was then inspected directly.",
+      "actualResultUrls": [
+        "https://www.sedecatastro.gob.es/OVCInicio.aspx?Seguir=S",
+        "https://www.catastro.hacienda.gob.es/es-ES/wms.html",
+        "https://www.laspalmasgc.es/es/areas-tematicas/innovacion/visores-geograficos-municipales/",
+        "https://sit.laspalmasgc.es/server/rest/services/geursa/Parcela/MapServer"
+      ]
+    }
+  ],
+  "safeFieldAllowlist": ["objectid", "globalid", "geometry"],
+  "nativeFieldMapping": {
+    "canonicalIdentity": "globalid",
+    "fallbackIdentity": "objectid",
+    "sourceLayer": "PARCELA_ar",
+    "sourceGeometryType": "esriGeometryPolygon",
+    "sourceSpatialReference": "EPSG:32628",
+    "responseSpatialReference": "EPSG:4326",
+    "compositeKeyProvenance": null
+  },
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "https://sit.laspalmasgc.es/server/rest/services/geursa/Parcela/MapServer/2",
+    "sampleCount": 2,
+    "sampleFile": "las-palmas-de-gran-canaria-parcel-samples.geojson",
+    "nativeIds": ["{50334F29-2A5A-4B44-AA2B-C45F9FA4FBEC}", "{C29A2E8D-F0C9-4A07-B48E-6EC9DC1A1D36}"],
+    "nativeIdField": "globalid",
+    "exactWupPointTest": "No feature returned for the exact WUP point query; this is not treated as citywide absence or a definitive parcel miss.",
+    "requestEvidence": [
+      "Layer metadata GET returned HTTP 200 and confirmed polygon geometry, source EPSG:32628, and safe objectid/globalid fields.",
+      "Exact-point anonymous query using the WUP coordinate transformed to EPSG:3857, returnGeometry=true, outFields=objectid,globalid, returned HTTP 200 with zero features.",
+      "Bounded anonymous envelope query approximately 2 km wide around the WUP point, resultRecordCount=3, orderByFields=objectid, outFields=objectid,globalid, returnGeometry=true, outSR=4326, f=geojson returned HTTP 200 with two polygon features; only two were retained."
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal SIT parcel/cartography layer for Las Palmas de Gran Canaria; national Catastro WMS documentation describes Spain-wide cadastral map scope.",
+    "verifiedOpenScope": "Anonymous access to the municipal PARCELA_ar layer metadata and a bounded geometry query was verified. Exact-point inclusion and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "attempts": [
+    {
+      "url": "https://sit.laspalmasgc.es/server/rest/services/geursa/Parcela/MapServer",
+      "httpStatus": 200,
+      "result": "Anonymous service metadata returned; local municipal parcel/cartography service and PARCELA_ar sublayer were identified."
+    },
+    {
+      "url": "https://sit.laspalmasgc.es/server/rest/services/geursa/Parcela/MapServer/2?f=pjson",
+      "httpStatus": 200,
+      "result": "Anonymous layer metadata returned polygon geometry, source EPSG:32628, and fields objectid/globalid; no unsafe fields were requested for retention."
+    },
+    {
+      "url": "https://sit.laspalmasgc.es/server/rest/services/geursa/Parcela/MapServer/2/query?where=1%3D1&geometry=-1718185.65,3263414.58&geometryType=esriGeometryPoint&inSR=102100&spatialRel=esriSpatialRelIntersects&outFields=objectid,globalid&returnGeometry=true&outSR=4326&f=geojson",
+      "httpStatus": 200,
+      "result": "Exact WUP-point query returned an empty FeatureCollection. This bounded result is not evidence of citywide absence."
+    },
+    {
+      "url": "https://sit.laspalmasgc.es/server/rest/services/geursa/Parcela/MapServer/2/query?where=1%3D1&geometry=-1719185.65,3262414.58,-1717185.65,3264414.58&geometryType=esriGeometryEnvelope&inSR=102100&spatialRel=esriSpatialRelIntersects&outFields=objectid,globalid&returnGeometry=true&outSR=4326&resultRecordCount=3&orderByFields=objectid&f=geojson",
+      "httpStatus": 200,
+      "result": "Bounded approximately 2 km envelope returned two polygon features; two safe-ID polygons were retained after removing all source-specific properties except canonical globalid."
+    },
+    {
+      "url": "https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1",
+      "result": "Attempted official national Catastro WMS capabilities request; the direct curl attempt returned HTTP 400 in this environment. Official WMS documentation was retained as scope and CRS evidence; no geometry was inferred from the failed capabilities request."
+    }
+  ],
+  "remainingUncertainty": "The municipal layer's relationship to the current authoritative national cadastral parcel database, exact WUP-point parcel inclusion, update date, and citywide feature completeness remain uncertain. No owner/address/titleholder or other unsafe data was requested.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any real adapter."
+}

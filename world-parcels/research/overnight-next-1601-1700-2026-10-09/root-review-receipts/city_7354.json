@@ -1,0 +1,17 @@
+{
+  "taskId": "city:7354",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-7354-oak-ridge.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/oak-ridge-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/oak-ridge-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/7354/extent-query.json",
+    "tmp/valhalla-parcel-research/7354/point-query.json",
+    "tmp/valhalla-parcel-research/7354/layer-metadata.json"
+  ],
+  "checkedAt": "2026-10-10T11:11:10Z",
+  "reason": "Oak Ridge immutable WUP identity and two English search attempts match the cohort. Original first-party Orange County ArcGIS response contains three full polygon features with safe PARCEL IDs matching the durable sample; its exceededTransferLimit flag means the bounded result is incomplete. Exact-point zero is not citywide absence. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not independently evidenced.",
+  "runtimeAdmission": false
+}

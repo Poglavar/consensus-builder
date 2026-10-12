@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09T00:00:00Z",
+  "cityRecord": "city-8103-petrolina.json",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "purpose": "Independent service review for Petrolina official cadastral and parcel-oriented sources.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Petrolina has evidenced municipal cadastral custody through first-party Cadastro Imobiliário, cadastral-survey, loteamento, and georeferencing/update material. No public anonymous parcel feature service, live viewer configuration, safe native ID, schema/CRS, or geometry was verified. Runtime readiness remains held.",
+  "registryAssessment": "The official Prefeitura material establishes a municipal Cadastro Imobiliário and municipal urban-development procedures. This is local cadastral evidence, not title or ownership evidence.",
+  "coverageAssessment": {
+    "claimedScope": "Municipal Cadastro Imobiliário and related lot/parcel procedures in Petrolina.",
+    "verifiedOpenScope": "First-party municipal legal and procedure documents plus official state GeoPE login page; no parcel feature response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://petrolina.pe.gov.br/wp-content/uploads/2026/01/cd59a452-7240-4cc0-bd60-e3c078a788e2-DISPOSICAO-PRELIMINAR.pdf",
+      "operator": "Prefeitura Municipal de Petrolina",
+      "scope": "Updated municipal tax code material; establishes Cadastro Imobiliário and lot individualization concepts."
+    },
+    {
+      "url": "https://petrolina.pe.gov.br/wp-content/uploads/2019/01/1.4_Levantamento_Cadastral.pdf",
+      "operator": "Prefeitura Municipal de Petrolina / urban licensing",
+      "scope": "Official cadastral-survey procedure; references location, limits, areas, plans, and municipal inscription."
+    },
+    {
+      "url": "https://petrolina.pe.gov.br/wp-content/uploads/2019/01/2.2_Loteamento.pdf",
+      "operator": "Prefeitura Municipal de Petrolina / urban licensing",
+      "scope": "Official loteamento procedure; references autonomous lots, blocks, plans, and municipal approval."
+    },
+    {
+      "url": "https://petrolina.pe.gov.br/wp-content/uploads/2022/04/41-50.pdf",
+      "operator": "Prefeitura Municipal de Petrolina",
+      "scope": "Municipal budget evidence for georeferencing and updating the Cadastro Imobiliário."
+    },
+    {
+      "url": "https://geope.pe.gov.br/login",
+      "operator": "Governo de Pernambuco / NIPAE-SAD",
+      "scope": "Official state property platform; login-gated and not treated as an open municipal parcel service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Petrolina Pernambuco official cadastral parcel map GIS municipal geospatial portal",
+      "result": "First-party municipal cadastral and urban-development documents found; no public parcel API or viewer endpoint found.",
+      "actualResultUrls": ["https://petrolina.pe.gov.br/wp-content/uploads/2026/01/cd59a452-7240-4cc0-bd60-e3c078a788e2-DISPOSICAO-PRELIMINAR.pdf", "https://petrolina.pe.gov.br/wp-content/uploads/2019/01/1.4_Levantamento_Cadastral.pdf", "https://petrolina.pe.gov.br/wp-content/uploads/2019/01/2.2_Loteamento.pdf", "https://petrolina.pe.gov.br/wp-content/uploads/2022/04/41-50.pdf"]
+    },
+    {
+      "language": "Portuguese (Brazil)",
+      "query": "Petrolina PE cadastro imobiliário mapa parcelas georreferenciamento prefeitura oficial",
+      "result": "Official Cadastro Imobiliário, levantamento cadastral, loteamento, and georeferencing/update evidence found; no public anonymous parcel geometry service verified.",
+      "actualResultUrls": ["https://petrolina.pe.gov.br/wp-content/uploads/2026/01/cd59a452-7240-4cc0-bd60-e3c078a788e2-DISPOSICAO-PRELIMINAR.pdf", "https://petrolina.pe.gov.br/wp-content/uploads/2019/01/1.4_Levantamento_Cadastral.pdf", "https://petrolina.pe.gov.br/wp-content/uploads/2019/01/2.2_Loteamento.pdf", "https://petrolina.pe.gov.br/wp-content/uploads/2022/04/41-50.pdf", "https://geope.pe.gov.br/login"]
+    }
+  ],
+  "attempts": [
+    "Ran separate English and Brazilian Portuguese first-party discovery queries.",
+    "Reviewed official municipal cadastral/tax, cadastral-survey, loteamento, and budget/georeferencing evidence.",
+    "Attempted anonymous GET of the municipal homepage; it returned HTTP 403 access denied, so no current JavaScript/configuration could be followed.",
+    "Fetched the official municipal PDF endpoints where available; they documented cadastral procedures and custody but exposed no parcel feature schema or geometry service.",
+    "Reviewed the official GeoPE landing/login page; it is login-gated state property management and was not used for restricted lookup.",
+    "Did not log in, use credentials/private tokens, defeat CAPTCHA or access controls, request owner/titleholder/personal/tax data, shift the immutable WUP point, or retain geometry."
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not asserted; no parcel response was obtained and no map extent miss was treated as citywide absence.",
+    "requestEvidence": [
+      {"url": "https://petrolina.pe.gov.br/", "method": "GET; anonymous", "httpStatus": 403, "assessment": "Official homepage blocked by an access-denied response; viewer/configuration unavailable."},
+      {"url": "https://petrolina.pe.gov.br/wp-content/uploads/2026/01/cd59a452-7240-4cc0-bd60-e3c078a788e2-DISPOSICAO-PRELIMINAR.pdf", "method": "GET; anonymous", "httpStatus": 200, "assessment": "Cadastral/legal document; no geometry."},
+      {"url": "https://petrolina.pe.gov.br/wp-content/uploads/2019/01/1.4_Levantamento_Cadastral.pdf", "method": "GET; anonymous", "httpStatus": 200, "assessment": "Cadastral procedure document; no geometry."},
+      {"url": "https://geope.pe.gov.br/login", "method": "GET; anonymous", "httpStatus": 200, "assessment": "Login page only; no restricted access attempted."}
+    ]
+  },
+  "safeFieldAllowlist": ["safe native parcel ID if later verified", "geometry", "CRS/layer metadata", "request status/content type", "public service metadata"],
+  "nextStep": "Serial reviewer should independently inspect the current municipal portal or GIS configuration, verify a safe parcel layer/schema/CRS/native identity with a bounded anonymous request, and qualify coverage and adapter boundaries; keep runtime held.",
+  "remainingUncertainty": "Live municipal viewer/configuration and any parcel endpoint remain unverified; parcel availability, native identity, geometry schema/CRS, update currency, exact-point containment, and citywide completeness remain unknown."
+}

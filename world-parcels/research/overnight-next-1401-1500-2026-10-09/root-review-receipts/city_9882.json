@@ -1,0 +1,11 @@
+{
+  "taskId": "city:9882",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-9882-heze.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/heze-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T16:38:29Z",
+  "reason": "WUP archive and queue identity match; English and Chinese searches are recorded. Cached first-party Heze registration portal and configuration establish local custody but expose article/category services, not a safe native-ID parcel polygon response. Public geometry and independent adapter qualification remain unresolved."
+}

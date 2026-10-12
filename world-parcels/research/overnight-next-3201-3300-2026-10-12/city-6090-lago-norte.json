@@ -1,0 +1,107 @@
+{
+  "cityCode": 6090,
+  "queueRank": 3266,
+  "name": "Lago Norte",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "locId": 76,
+  "capital": false,
+  "point": [-15.7507845018991, -47.8822399881169],
+  "population2025": 184434,
+  "population2025k": 184.434,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lago Norte Brazil official cadastral parcel map GIS land registry Brasília",
+        "result": "First-party discovery found SEDUH's official Geoportal page and the IDE-DF public ArcGIS REST MapServer, including the Lote Luos parcel polygon layer.",
+        "actualResultUrls": [
+          "https://www.seduh.df.gov.br/plataforma-geoportal-da-lei-6-412-2019/",
+          "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/IDEDF/MapServer"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil, local)",
+        "query": "Lago Norte Brasil cadastro predial mapa de lotes parcelas Geoportal oficial Brasília",
+        "result": "A pesquisa em português found SEDUH's public Geoportal, the official Portal Parcelamentos do Solo, and the IDE-DF service. The IDE-DF layer identifies RA-XVIII Lago Norte through its coded region field and returns bounded parcel geometry anonymously.",
+        "actualResultUrls": [
+          "https://www.seduh.df.gov.br/plataforma-geoportal-da-lei-6-412-2019/",
+          "https://parcelamentosdosolo.seduh.df.gov.br/consulta",
+          "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/IDEDF/MapServer/138"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Secretaria de Estado de Desenvolvimento Urbano e Habitação do Distrito Federal (SEDUH), through the official Geoportal and IDE-DF public map service.",
+    "localScope": "The service's LUOS layer contains coded RA-XVIII (Lago Norte) parcel records; this is local Distrito Federal urban-lot map evidence, not merely national-agency prose.",
+    "sourceService": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/IDEDF/MapServer/138"
+  },
+  "parcelDiscovery": {
+    "geometryFound": true,
+    "sampleFiles": ["city-6090-lago-norte-sample.geojson"],
+    "source": "IDE-DF Publico/IDEDF MapServer layer 138, Lote Luos",
+    "nativeIdField": "objectid",
+    "crs": "EPSG:31983 source; sample reprojected by server to EPSG:4326",
+    "boundedResponse": "where=lu_ra_luos=18, outFields=objectid,lu_cod_par, returnGeometry=true, resultRecordCount=3, orderByFields=objectid ASC",
+    "fieldMapping": {
+      "nativeIdentity": "objectid (ArcGIS OID; retained as GeoJSON properties.id string)",
+      "safeGeometry": "shape polygon",
+      "otherDocumentedFields": ["lu_cod_par", "lu_ra_luos"],
+      "compositeKeyProvenance": null
+    },
+    "note": "The exact WUP point query returned zero intersecting features. This is recorded as a point-level miss only; the RA-XVIII bounded query established city/administrative-area parcel coverage and supplied three retained polygons. No coordinate was shifted."
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://www.seduh.df.gov.br/plataforma-geoportal-da-lei-6-412-2019/",
+      "outcome": "HTTP 200 via first-party discovery; page states the GeoPortal is public and provides exact lot location and urban/cartographic information."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/IDEDF/MapServer",
+      "outcome": "HTTP 200; public ArcGIS REST service metadata identifies CADASTRO_TERRITORIAL and LUOS groups, supported JSON/GeoJSON queries, and service CRS EPSG:31983."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/IDEDF/MapServer/138?f=pjson",
+      "outcome": "HTTP 200; Lote Luos polygon layer metadata exposed native objectid OID, lu_cod_par, lu_ra_luos, shape, and EPSG:31983. Unsafe owner/address/titleholder/tax/account fields were not requested or retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/IDEDF/MapServer/138/query?f=geojson&where=1%3D1&geometry=...WUP%20point...&spatialRel=esriSpatialRelIntersects",
+      "outcome": "HTTP 200; zero features at the exact transformed WUP point. This is not evidence of citywide absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/IDEDF/MapServer/138/query?f=geojson&where=lu_ra_luos%3D18&outFields=objectid%2Clu_cod_par&returnGeometry=true&resultRecordCount=3&outSR=4326&orderByFields=objectid%20ASC",
+      "outcome": "HTTP 200; bounded anonymous GeoJSON response returned three full polygons with native objectids 7, 8, and 16. The response indicated exceededTransferLimit because additional RA-XVIII records exist; only three were retained."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": "ArcGIS Feature Layer, polygon geometry",
+    "nativeIdField": "objectid",
+    "geometryCrs": "EPSG:31983 source; server output EPSG:4326",
+    "fieldMapping": {"objectid": "stable native ArcGIS OID", "shape": "safe parcel polygon geometry"},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The Lote Luos layer is an urban land-use/lot layer and may not equal the complete legal cadastral fabric or registry title dataset.",
+    "The exact WUP point fell outside a returned polygon; the point was not moved and the miss was not generalized.",
+    "The sample is limited to three records from a bounded RA-XVIII query; it is not citywide completeness evidence.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception were used.",
+    "Independent serial review is required before adapter or runtime qualification."
+  ],
+  "admissionDecision": "held",
+  "geometrySamples": ["city-6090-lago-norte-sample.geojson"]
+}

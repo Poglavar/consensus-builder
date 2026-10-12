@@ -1,0 +1,57 @@
+{
+  "cityRecord": "city-4930-riohacha.json",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 4930,
+  "queueRank": 2390,
+  "city": "Riohacha",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "attempt": 1,
+  "scope": "First-party discovery and bounded anonymous inspection of official Riohacha/IGAC cadastral or map services.",
+  "discovery": {
+    "english": "Found Alcaldía de Riohacha basic cartography, IGAC open geospatial-data catalogue, IGAC ArcGIS REST, and the Riohacha 1:2,000 MapServer.",
+    "spanish": "Encontró la cartografía básica oficial de Riohacha, referencias distritales de ordenamiento y gestión catastral, y los servicios REST del IGAC.",
+    "urls": [
+      "https://riohacha-laguajira.gov.co/NuestraAlcaldia/Paginas/Cartografia-Basica.aspx",
+      "https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales",
+      "https://mapas2.igac.gov.co/server3/rest/services/carto/carto2000riohacha44001000/MapServer",
+      "https://mapas2.igac.gov.co/server/rest/services/otros/TableroCeM/FeatureServer",
+      "https://www.riohacha-laguajira.gov.co/Secretarias/Paginas/Direccion-de-Ordenamiento-Urbanistico-y-Espacio-Publico.aspx"
+    ]
+  },
+  "requests": [
+    {
+      "route": "GET IGAC Riohacha MapServer metadata",
+      "url": "https://mapas2.igac.gov.co/server3/rest/services/carto/carto2000riohacha44001000/MapServer?f=pjson",
+      "outcome": "Service metadata was available through the public REST directory/web inspection.",
+      "safeFields": "service/layer names, CRS 9377, extents and descriptive metadata only"
+    },
+    {
+      "route": "GET IGAC TableroCeM service metadata",
+      "url": "https://mapas2.igac.gov.co/server/rest/services/otros/TableroCeM/FeatureServer?f=pjson",
+      "outcome": "Service metadata was available through public REST directory/web inspection; layers include municipality, query and service catalogue resources.",
+      "safeFields": "service/layer metadata only"
+    },
+    {
+      "route": "GET/POST bounded anonymous service/query checks",
+      "url": "https://mapas2.igac.gov.co/server/rest/services/otros/TableroCeM/FeatureServer/3 and https://mapas2.igac.gov.co/server/rest/services/TerrenosPreRec/FeatureServer",
+      "outcome": "Direct worker requests timed out after 20-30 seconds. No parcel ID-plus-geometry response was retained.",
+      "safeFields": "none returned"
+    }
+  ],
+  "schemaCrs": {
+    "observed": "EPSG:9377 / MAGNA-SIRGAS 2018 Origen-Nacional in IGAC service metadata",
+    "geometry": "No parcel geometry returned; no sample GeoJSON written."
+  },
+  "nativeFieldMapping": {
+    "observed": "No parcel layer schema was obtained. Riohacha base-cartography layer names are not parcel identity fields.",
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry", "source CRS", "service/layer identifier", "municipality code"],
+  "unsafeFieldsNotRequested": ["owner", "titleholder", "address", "contact", "title", "tax/account", "personal data"],
+  "registryAssessment": "true: official IGAC and district cartographic/cadastral custodians are evidenced, although no safe parcel feature response was qualified.",
+  "coverageLimits": ["No citywide parcel coverage verified", "No exact-point parcel hit", "No parcel polygon retained", "Worker request timeouts are not evidence of absence", "Map extent/service metadata is not parcel admission"],
+  "runtimeReadiness": "held",
+  "qualification": "Not qualified for runtime integration or admission. Serial reviewer must independently verify a real parcel adapter and native identity before any runtime consideration."
+}

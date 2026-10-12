@@ -1,0 +1,16 @@
+{
+  "taskId": "city:5609",
+  "decision": "held",
+  "checkedAt": "2026-10-11T18:24:05Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-5609-kashan.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/kashan-service-review.json"
+  ],
+  "firstPartyUrlsChecked": [
+    "https://kashannezam.ir/e-map-system-launch"
+  ],
+  "review": "WUP source archive SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114 independently checked. Its 2025 city code 5609, rank 2708 in the immutable roster, Iran, point [33.9825665407198,51.4323242939136], and 218559 persons agree with packet and queue. English and Persian searches are recorded. The Kashan engineering organization first-party page confirms an authenticated building-plan map/archive with Kashan Municipality; it grounds local map/record custody but does not independently establish a cadastral registry or public parcel geometry. Timed-out anonymous service probes do not prove absence. No polygon or safe native ID is retained. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel proof are missing. Held; no admission or acceptance metrics."
+}

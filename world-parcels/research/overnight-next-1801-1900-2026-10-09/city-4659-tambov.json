@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 4659,
+  "queueRank": 1826,
+  "cityId": "queue:1826",
+  "name": "Tambov",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "point": [52.7296605666545, 41.4328653529227],
+  "centerLatLon": [52.7296605666545, 41.4328653529227],
+  "population2025": 314026,
+  "population2025k": 314.026,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tambov Russia official cadastral map parcels GIS Rosreestr public cadastral map land registry",
+        "result": "Discovery identified the Rosreestr public cadastral-map/National Spatial Data Platform route and a municipal regulation describing cadastral-plan/map services involving the Tambov regional Rosreestr administration. No publicly reachable anonymous parcel ID-plus-geometry service was exposed by the inspected results.",
+        "actualResultUrls": [
+          "https://rosreestr.gov.ru/",
+          "https://nspd.gov.ru/",
+          "https://tambov-gov.ru/doc/39956",
+          "https://www.onlinetambov.ru/news/society/publichnaya-kadastrovaya-karta-teper-dostupna-na-tsifrovoy-platforme-nacionalnaya-sistema-prostrans/"
+        ]
+      },
+      {
+        "language": "native/local (Russian)",
+        "query": "Тамбов официальный геопортал кадастровая карта земельные участки Росреестр ГИС",
+        "result": "Russian-language discovery found the official national NS PD/PKK route, reporting that the public cadastral map moved to NS PD and is available without authorization, plus a Tambov municipal regulation naming the regional Rosreestr administration in cadastral-plan/map procedures. The current service endpoint and parcel feature schema were not retrievable anonymously from this environment.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/",
+          "https://rosreestr.gov.ru/",
+          "https://tambov-gov.ru/doc/39956",
+          "https://www.onlinetambov.ru/news/society/publichnaya-kadastrovaya-karta-teper-dostupna-na-tsifrovoy-platforme-nacionalnaya-sistema-prostrans/"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Web discovery followed by TLS-verified bounded GET attempts; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, coordinate shift, or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://tambov-gov.ru/doc/39956",
+      "observation": "Municipal regulation for Tambov city’s service approving land-plot layout schemes on the cadastral plan/map identifies the Tambov regional Rosreestr administration as a participating cadastral/registration authority. This is local procedure/custody evidence, not an open parcel API."
+    },
+    {
+      "url": "https://nspd.gov.ru/",
+      "observation": "Official National Spatial Data Platform route identified by first-party/officially reported material as the current home of the public cadastral map. Direct anonymous GET timed out before HTML or JavaScript/configuration could be inspected."
+    },
+    {
+      "url": "https://rosreestr.gov.ru/",
+      "observation": "Official federal Rosreestr portal identified as the national cadastral/registration authority route. Direct anonymous GET timed out in this environment."
+    },
+    {
+      "url": "https://www.onlinetambov.ru/news/society/publichnaya-kadastrovaya-karta-teper-dostupna-na-tsifrovoy-platforme-nacionalnaya-sistema-prostrans/",
+      "observation": "Local Tambov publication reports the public cadastral map moved to NS PD and is available without authorization; used as discovery/context evidence only, not as the authoritative service itself."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://nspd.gov.ru/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS-enabled curl timed out after 20 seconds; no response body or route metadata. This is an access/availability limit, not evidence of cadastral absence."
+    },
+    {
+      "url": "https://pkk.rosreestr.ru/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Legacy public-map host timed out after 12 seconds; no response body or API route metadata."
+    },
+    {
+      "url": "https://pkk5.rosreestr.ru/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Legacy public-map host timed out after 12 seconds; no response body or API route metadata."
+    },
+    {
+      "url": "https://rosreestr.gov.ru/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS-enabled curl timed out after 12 seconds; no service configuration or parcel endpoint could be inspected."
+    },
+    {
+      "url": "https://tambov-gov.ru/doc/39956",
+      "method": "GET via indexed first-party/local-government legal publication result",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Procedure text was inspected through discovery output; it evidences cadastral-plan/map workflow and Rosreestr participation, but contains no public parcel geometry response."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Tambov city and Tambov Oblast cadastral/registration administration, with the federal NS PD public-map route.",
+    "verifiedOpenScope": "Local custodial/procedure evidence only; no anonymous parcel geometry, schema, CRS, stable native identity, or citywide open coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current NS PD viewer JavaScript/configuration, API route, access controls, parcel schema, CRS, stable native identity and citywide coverage remain unresolved. Host timeouts and no endpoint in the inspected discovery material are access/inspection limits, not evidence of citywide absence. The exact WUP point was preserved and never shifted; no exact-point hit or miss was inferred.",
+  "nextStep": "A later attempt may inspect the current NS PD viewer/API route when reachable and issue only a bounded anonymous ID-plus-geometry request if its public configuration reveals one. Keep runtime readiness held pending independent serial qualification."
+}

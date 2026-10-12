@@ -1,0 +1,150 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09T00:00:00Z",
+  "cityCode": 7163,
+  "queueRank": 1268,
+  "cityId": "wup:7163",
+  "name": "Maragha",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "centerLatLon": [26.6934115499495, 31.5436594623774],
+  "point": [26.6934115499495, 31.5436594623774],
+  "population2025": 440011,
+  "population2025k": 440.011,
+  "populationUnit": "persons",
+  "year": 2025,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Maragha Egypt official cadastral map parcel GIS land registry Sohag",
+        "result": "Official Egyptian Survey Authority map-service pages, the official ITDA registry-office directory, and an official Ministry of Justice notice were found. No anonymous first-party parcel-vector endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://itda.gov.eg/en/offices-sgl-en.html",
+          "https://www.alamiria.com/Sec/TashTxt?id=3v6fSYjAkYU%3D",
+          "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "مراغة مصر خريطة كادسترية قطع الأراضي سجل عقاري GIS رسمي",
+        "result": "مصادر رسمية مصرية أثبتت وجود مكتب سجل تجاري بالمراغة، وخدمات الهيئة المصرية العامة للمساحة والخرائط الرقمية، وإشعار وزارة العدل الذي يسمي مدينة المراغة ضمن الأقسام المساحية المؤجلة. لم يظهر رد مجهول آمن يحتوي على مضلعات قطع أراضٍ.",
+        "actualResultUrls": [
+          "https://itda.gov.eg/en/offices-sgl-en.html",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.alamiria.com/Sec/TashTxt?id=3v6fSYjAkYU%3D",
+          "https://mediadr.sis.gov.eg/xmlui/bitstream/handle/123456789/81944/WQ268_20241202_5974.pdf?isAllowed=y&sequence=2"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://itda.gov.eg/en/offices-sgl-en.html",
+      "observation": "Official ITDA Commercial Registry Offices Directory lists a Sohag-area Maragha Office at Low Cost Housing - Maragha. This is local registry-office evidence, not a public cadastral geometry feed."
+    },
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "observation": "Official Egyptian General Survey Authority page describes its historical role in maps and property books for agricultural land and built property."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "observation": "Official Survey Authority digital-map page says digital maps can be requested for a specified location, scale, layers, format, and projection; this is a purchase/request workflow and does not expose anonymous parcel vectors."
+    },
+    {
+      "url": "https://www.alamiria.com/Sec/TashTxt?id=3v6fSYjAkYU%3D",
+      "observation": "Official Government Printing Authority result for Ministry of Justice Decision 6911/2025 names (Maragha Center) Maragha City and Bani Hilal among Sohag cadastral sections whose real-property-register start was postponed. The page's certificate was not accepted by the local curl client, so no TLS exception was used; the indexed first-party result was recorded only as institutional evidence."
+    },
+    {
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer",
+      "observation": "Public official IDSC ArcGIS service metadata exposes Building, CITY, CENTER, STATE, and Equipments resources. It is administrative/building context, not an identified parcel layer."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer?f=pjson",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Returned service metadata. Layers were Building, CITY, CENTER, and STATE; no parcel/cadastral layer was exposed."
+    },
+    {
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer/0?f=pjson",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Returned schema identifying layer 0 as polygon Building, not parcels; no parcel identity or parcel geometry retained."
+    },
+    {
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=false&resultRecordCount=1&f=json",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "ArcGIS returned an error body (code 400 Unable to complete operation); this was not treated as evidence of absence and no geometry was retained."
+    },
+    {
+      "url": "https://itda.gov.eg/en/offices-sgl-en.html",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official directory HTML retrieved; Maragha Office entry confirmed."
+    },
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official Survey Authority services HTML retrieved; digital-map and cadastral-adjacent services listed, with no parcel payload."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official digital-map procurement page retrieved; it requires a requested location/layers/format and does not provide an anonymous parcel API."
+    },
+    {
+      "url": "https://www.alamiria.com/Sec/TashTxt?id=3v6fSYjAkYU%3D",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 0,
+      "outcome": "TLS certificate verification failed because the host presented a self-signed certificate. No exception was authorized or used; the first-party indexed search result was used only for the recorded institutional observation."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official ITDA directory evidence identifies a Maragha registry office, and an official Ministry of Justice notice identifies Maragha City and Bani Hilal as cadastral sections in Maragha Center. This establishes local registry/cadastre context, not a public vector source or runtime admission.",
+  "registryEvidenceUrls": [
+    "https://itda.gov.eg/en/offices-sgl-en.html",
+    "https://www.alamiria.com/Sec/TashTxt?id=3v6fSYjAkYU%3D"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+    "kind": "Official Egyptian Survey Authority digital-map request/purchase service",
+    "publisher": "Egyptian General Survey Authority",
+    "scope": "Digital maps can be requested by location, scale, layers, format, and projection; anonymous public parcel-vector delivery was not verified.",
+    "safeSampleFile": null,
+    "sampleAttributes": "none retained",
+    "nativeFields": []
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not executed against a verified parcel feature layer. Exact WUP point [26.6934115499495, 31.5436594623774] remains unchanged; no absence inference is made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Egyptian Survey Authority, registry-office, Ministry of Justice, and IDSC GIS sources relevant to Maragha/Sohag were reviewed.",
+    "verifiedOpenScope": "Local registry/cadastral institutional context and public administrative/building GIS metadata; no anonymous safe parcel polygon response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "official_registry_context_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "The official Survey Authority may hold digital parcel/map products, but its public page describes a request/purchase process rather than anonymous vector access. The IDSC public GIS service did not expose a parcel layer. No owner, address, contact, titleholder, tax, account, or other unsafe fields were requested or retained; citywide completeness and exact-point parcel membership remain unknown."
+}

@@ -1,0 +1,47 @@
+{
+  "taskId": "city:11563",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-11563-dumka.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/dumka-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T23:11:28Z",
+  "city": "Dumka",
+  "identityCheck": {
+    "officialArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "queueRank": 2934,
+    "country": "India",
+    "pointLatLon": [
+      24.2716418466786,
+      87.2478089454765
+    ],
+    "populationPersons": 203306,
+    "queueRosterPacketMatch": true
+  },
+  "searchLanguages": [
+    "English",
+    "Hindi"
+  ],
+  "registryFound": true,
+  "durableSamplePolygonCount": 0,
+  "safeNativeParcelIdAndFullPolygonVerified": false,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Official Dumka district land-records page identifies the Revenue Section and JharBhoomi link. The Bhu-Naksha/JharBhoomi attempts did not return a bounded anonymous parcel vector response. Timeouts and unusable viewer responses do not establish citywide absence.",
+  "sourceChecks": [
+    {
+      "url": "https://dumka.nic.in/service/land-records/",
+      "observation": "Independently opened first-party district page; it names the Revenue Section, Dumka and links JharBhoomi."
+    }
+  ],
+  "absenceInference": false
+}

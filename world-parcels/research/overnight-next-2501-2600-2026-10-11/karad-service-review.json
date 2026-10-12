@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-8880-karad.json",
+  "cityCode": 8880,
+  "queueRank": 2535,
+  "name": "Karad",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [17.282531820445, 74.1841171096136],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html", "httpStatus": "timeout", "outcome": "Official Maharashtra Bhu-Naksha viewer did not connect within 30 seconds; no HTML, JavaScript/configuration, schema, CRS, parcel ID, or geometry response was obtained."},
+    {"method": "GET", "url": "https://bhumiabhilekh.maharashtra.gov.in/", "httpStatus": "timeout", "outcome": "Official Maharashtra Bhumi Abhilekh portal timed out in the bounded shell request; web discovery exposed the department service description but no live payload was harvested."},
+    {"method": "GET", "url": "https://mahabhumi.gov.in/Mahabhumilink/", "httpStatus": 404, "outcome": "The portal root route returned 404 from the shell request; official web discovery still identified the current Mahabhumi land-records portal and Mahabhu-Nakasha service. No alternate authenticated/private route was pursued."},
+    {"method": "GET", "url": "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp", "httpStatus": 200, "outcome": "Official NIC Bhu-Naksha implementation-status page loaded and lists Maharashtra as an implementation state; it is general service documentation, not Karad parcel geometry."},
+    {"method": "GET", "url": "https://mrsac.gov.in/writereaddata/MRSAC/map/15674903765d6e01480e7b4TH_STR_Karad.pdf", "httpStatus": "web-search result available", "outcome": "Official MRSAC Karad village-map PDF was identified; its map credits village maps from the Land Record Department, Government of Maharashtra. It is retained only as discovery evidence, not as vector parcel geometry."}
+  ],
+  "schemaAndCrs": {"geometryType": null, "geometryCrs": null, "nativeFieldMapping": null, "compositeKeyProvenance": null, "rawAttributesRetained": false, "inspection": "No safe anonymous parcel feature response was obtained. The live viewer timed out and no service schema or CRS could be inspected."},
+  "sampleGeoJSON": null,
+  "safeFieldAllowlist": ["stable native parcel identity if independently evidenced", "full parcel polygon geometry if independently evidenced", "source URL", "observed coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Official Maharashtra cadastral-map custody and a Karad-specific map lead are evidenced, but no parcel feature response, native identity, schema, CRS, or geometry was qualified; research does not admit a runtime adapter."},
+  "scopeLimits": ["No exact-point parcel result was obtained; this is not evidence of citywide absence.", "No citywide extent or completeness claim is made.", "No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception were used.", "Packet completion records research only; it is not source integration or runtime admission."],
+  "uncertainty": "Karad's official cadastral map route and state land-record custodian are evidenced, but live parcel access and native service details remain unresolved."
+}

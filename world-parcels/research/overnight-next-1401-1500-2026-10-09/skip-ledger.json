@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "attempted": [
+    {
+      "rank": 1453,
+      "cityCode": 1076,
+      "name": "Juba",
+      "country": "South Sudan",
+      "iso2": "SS",
+      "pop2025k": 391.311,
+      "plausibility": "Low",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/africa-capitals-2026-10-08/city-juba.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1459,
+      "cityCode": 686,
+      "name": "Soyo",
+      "country": "Angola",
+      "iso2": "AO",
+      "pop2025k": 389.945,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-followup-2026-10-08/africa-ws-city-686.json",
+          "cityId": "wup2025:686",
+          "cityName": "Soyo",
+          "parcelStatus": "no_verified_sample_candidate_extent_excludes_target",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-city-686.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-city-686.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1495,
+      "cityCode": 2565,
+      "name": "Mbale City",
+      "country": "Uganda",
+      "iso2": "UG",
+      "pop2025k": 380.565,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-mbale-city.json",
+          "cityId": "wup2025:2565",
+          "cityName": "Mbale City",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/growth-top20-2026-10-07/city-2565.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-city-mbale-city.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-followup-services.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "identityReviewRequired": []
+}

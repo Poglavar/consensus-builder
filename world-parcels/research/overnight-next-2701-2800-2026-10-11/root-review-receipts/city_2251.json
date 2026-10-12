@@ -1,0 +1,14 @@
+{
+  "taskId": "city:2251",
+  "decision": "held",
+  "checkedAt": "2026-10-11T20:21:13Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-2251-bandundu.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/bandundu-service-review.json"
+  ],
+  "firstPartyCustodyUrl": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+  "review": "Immutable WUP queue and ranked roster agree on code 2251, rank 2797, Democratic Republic of the Congo, point [-3.31491303789637, 17.3818653925339], and 212016 persons. Official directory lists Bandundu-Ville in Kwilu; packet records English and French searches. No anonymous native parcel ID or geometry, bounded cells, pagination, metric GEOS checks, source binding, or headed Details-panel verification. No full polygons retained; runtime/catalog/coverage admission remains held."
+}

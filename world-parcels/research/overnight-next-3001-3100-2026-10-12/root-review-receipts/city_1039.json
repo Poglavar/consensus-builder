@@ -1,0 +1,51 @@
+{
+  "taskId": "city:1039",
+  "decision": "held",
+  "checkedAt": "2026-10-12T01:06:14Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-1039-sokod.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/sokod-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 1039,
+    "rank": 3026,
+    "country": "Togo",
+    "point": [
+      8.9874745970454,
+      1.14326931680368
+    ],
+    "populationPersons": 197651
+  },
+  "checks": {
+    "bilingualExecutedSearches": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "registryFound": true,
+  "firstPartyEvidence": {
+    "cacheFilesInspected": [
+      "tmp/valhalla-parcel-research/city-1039/open-data-config.json",
+      "tmp/valhalla-parcel-research/city-1039/wms-capabilities.xml",
+      "tmp/valhalla-parcel-research/city-1039/dccfe.html",
+      "tmp/valhalla-parcel-research/city-1039/dccfe-headers.txt"
+    ],
+    "openLayerCount": 177,
+    "nonOpenLayerCount": 277,
+    "cadastrePublicLayerCount": 0,
+    "cadastreNonOpenLayerCount": 1,
+    "officialSourceUrls": [
+      "https://mail.dadc.gouv.tg/index.php/contacts.html",
+      "https://otr.tg/images/2024/PDF/07/COMMUNIQUE-N021-2024-0TR-CG-CI-DCCF-NUMERO-UNIQUE-PARCELLAIRE.pdf"
+    ]
+  },
+  "reason": "OTR/DCCFE has a Sokodé division; saved Geodata configuration has 177 public layers and 277 non-open-data layers, with the cadastre entry only in the latter; saved WMS lists no parcel layer and WFS was unauthorized.",
+  "absenceConclusion": null
+}

@@ -1,0 +1,17 @@
+{
+  "taskId": "city:2773",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-2773-hafar-al-batin.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/hafar-al-batin-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/2773/hafar-service.html",
+    "tmp/valhalla-parcel-research/2773/hafar-service.headers",
+    "tmp/valhalla-parcel-research/2773/umaps.html",
+    "tmp/valhalla-parcel-research/2773/umaps.headers",
+    "tmp/valhalla-parcel-research/2773/main-73KWGRT7.js"
+  ],
+  "checkedAt": "2026-10-10T17:58:12.627545Z",
+  "reason": "Official municipal viewer and portal configuration were seen, but no parcel ID plus polygon response or qualified adapter was evidenced."
+}

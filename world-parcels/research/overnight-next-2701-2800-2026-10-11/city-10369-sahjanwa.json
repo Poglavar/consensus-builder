@@ -1,0 +1,155 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel services for Sahjanwa, Uttar Pradesh, India; source and coverage claims are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 10369,
+  "queueRank": 2722,
+  "name": "Sahjanwa",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [26.7468697678411, 83.232704000047],
+  "population2025": 217480,
+  "population2025k": 217.48,
+  "populationUnit": "persons",
+  "aliases": ["sahjanwa"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sahjanwa Uttar Pradesh official cadastral parcel map GIS land records",
+        "result": "Found the Government of Uttar Pradesh Board of Revenue land-records portal, official UP BhuNaksha cadastral-map portal, and the state GIS portal. The BhuNaksha public application was inspected; metadata routes were reachable but parcel geometry/extent routes returned an upstream 403 without credentials.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/",
+          "https://upbhulekh.gov.in/",
+          "https://bor.up.nic.in/Department_login.aspx",
+          "https://stategisportal.nic.in/stategisportal/Home/State/9"
+        ]
+      },
+      {
+        "language": "Hindi / local-language attempt",
+        "query": "सहजनवा उत्तर प्रदेश आधिकारिक भू नक्शा भू अभिलेख GIS प्लॉट नक्शा",
+        "result": "Found the official Hindi UP BhuNaksha and Board of Revenue portals. The public BhuNaksha API resolved Uttar Pradesh, Gorakhpur (गोरखपुर), and Sahjanwan (सहजनवां) administrative selections, but no anonymous parcel geometry response was obtained.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=188",
+          "https://bor.up.nic.in/?search_key=HOMECENTER"
+        ]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "observation": "Official Uttar Pradesh BhuNaksha application titled Access to BhuNaksha Land Records. Current JavaScript configuration identifies the public API base as https://upbhunaksha.gov.in/bhunakshaserver and exposes map/plot lookup routes; the application itself presents a login wall."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "observation": "Official Uttar Pradesh Revenue Board land-records portal describing online land records and links to BhuNaksha/land-map services."
+    },
+    {
+      "url": "https://bor.up.nic.in/Department_login.aspx",
+      "observation": "Official Uttar Pradesh Board of Revenue page identifies भूलेख (भू-नक्शा / शजरा) and public revenue-map procedures; this is local state registry/procedure evidence, not a parcel geometry response."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.map.up.gov.in/",
+      "method": "GET viewer HTML and current JavaScript bundles",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "State GIS viewer loaded and exposed only a general multi-layer GIS application; no Sahjanwa parcel layer or public parcel endpoint was identified there."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "method": "GET current viewer HTML and JavaScript",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Current JavaScript/configuration exposed API base https://upbhunaksha.gov.in/bhunakshaserver, public metadata endpoints, and parcel/map endpoints. Login uses CAPTCHA; no login or credentials were attempted."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain",
+      "outcome": "Returned state code 09."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/getStateName",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain",
+      "outcome": "Returned Uttar Pradesh."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Returned [District, Tehsil, Village]."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST form level=1&codes=09, then level=2&codes=188, then level=3&codes=188,00949",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Resolved Gorakhpur code 188, Sahjanwan/Sahjanwa tehsil code 00949, and a large Sahjanwa tehsil village list. The list included village codes and hasData flags but did not provide parcel geometry."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/getGisCodeFromLevels?gisLevels=188%2C00949%2C801159",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "text/plain",
+      "outcome": "Returned concatenated GIS code 18800949801159 for a Census-derived Sahjanwa town code attempt; this did not establish that a corresponding map layer exists."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+      "method": "POST gisLevels=18800949801159 and comparable Sahjanwa village-code attempts",
+      "httpStatus": 500,
+      "contentType": "application/json",
+      "outcome": "Returned an upstream 403 from the backend createGisCode call. This is an access/service failure, not evidence of absent coverage. No geometry request was escalated or retried with credentials."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY",
+      "method": "POST route inspected but not executed",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Current JavaScript exposes this route with giscode, x, y, and plotno parameters. It was not called because no verified GIS code/CRS/extent was available and the extent route was already blocked."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A current official Uttar Pradesh Board of Revenue cadastral-map procedure and the official UP BhuNaksha land-records application were verified, including live administrative metadata for Gorakhpur/Sahjanwan. Local custodianship is state-level Uttar Pradesh Revenue Board; no Sahjanwa municipal custodian or anonymous parcel geometry endpoint was established.",
+  "registryEvidenceUrls": [
+    "https://upbhunaksha.gov.in/",
+    "https://upbhulekh.gov.in/",
+    "https://bor.up.nic.in/Department_login.aspx"
+  ],
+  "verifiedSample": false,
+  "sampleFile": null,
+  "sampleFiles": [],
+  "publicParcelGeometryFound": false,
+  "source": "up-bhunaksha",
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "nativeSchema": {
+    "geometryType": "not observed",
+    "crs": "not observed",
+    "nativeIdentityUsed": null,
+    "nativeIdentityAlternativesObserved": [],
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": "No parcel record was returned; no native identity was inferred from administrative village codes or internal row positions."
+  },
+  "resultCategory": "primary_source_investigated_registry_verified_geometry_unavailable",
+  "coverageAssessment": {
+    "claimedScope": "Uttar Pradesh state land-records/cadastral-map service with administrative village selection.",
+    "verifiedOpenScope": "Administrative metadata only for Uttar Pradesh -> Gorakhpur -> Sahjanwan; no parcel geometry or map extent response.",
+    "countrywideVerified": false,
+    "citywideCompleteness": false
+  },
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "south-asia",
+  "remainingUncertainty": "The exact WUP point was preserved and not shifted. The service's village metadata indicates a local cadastral workflow, but the town/village GIS code associated with the WUP point and its CRS/parcel schema were not independently verified. Login/CAPTCHA-protected or upstream-forbidden routes remain untested. No exact-point miss or service failure is treated as citywide absence."
+}

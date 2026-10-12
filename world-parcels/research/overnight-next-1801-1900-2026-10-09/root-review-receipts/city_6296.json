@@ -1,0 +1,28 @@
+{
+  "taskId": "city:6296",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-6296-girza.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/girza-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T16:27:03.918288Z",
+  "reason": "Official ESA mapping/cadastral procedures and Giza map coverage support institutional context, but do not establish a Girza parcel layer. No anonymous native-ID geometry response; the TLS failure and timeout do not establish absence. The packet's true custody value is limited to national ESA custody, not city-level coverage.",
+  "identity": {
+    "cityCode": 6296,
+    "queueRank": 1833,
+    "country": "Egypt",
+    "point": [
+      29.4502276806298,
+      31.2508723763762
+    ],
+    "populationPersons": 312801,
+    "verifiedAgainst": "2025 WUP archive (SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114) and pending queue"
+  },
+  "searchLanguagesVerified": [
+    "English",
+    "Arabic"
+  ],
+  "retainedFullPolygons": 0,
+  "admissionGates": "No qualifying parcel response or fresh native-ID adapter read. Forced paging, 13 bounded cells, metric GEOS validity/overlap/operation checks, source binding and headed Details-panel verification are not evidenced."
+}

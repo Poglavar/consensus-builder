@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-6786-franca.json",
+  "cityCode": 6786,
+  "queueRank": 1692,
+  "name": "Franca",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "sourceReview": "First-party Prefeitura de Franca pages evidence a municipal Cadastro Fiscal Imobiliário, a public cadastral consultation service, and a published 2023 cadastral map. No anonymous public parcel ID-plus-geometry response was verified.",
+  "queryReview": {
+    "englishDiscovery": "Completed; official municipal cadastral-map and cadastral-service pages found.",
+    "localLanguageDiscovery": "Completed in Brazilian Portuguese; official municipal cadastral custodian and service pages found.",
+    "exactPoint": [-20.5278309058245, -47.396802438379],
+    "bboxLonLat": null,
+    "returned": 0,
+    "ids": [],
+    "geometry": null,
+    "mapExtentOrPointMiss": null
+  },
+  "requestOutcomes": "Official municipal pages returned 200 through bounded first-party web access. The linked Sil Tecnologia service timed out on a bounded anonymous GET. The public workflow documents CAPTCHA/image text and address-based lookup, but no geometry endpoint was exposed. No authentication or CAPTCHA bypass was attempted.",
+  "safeFieldAllowlist": ["native parcel identity if later documented", "geometry", "geometry CRS", "public layer metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSample": null,
+  "scopeLimits": [
+    "Municipal cadastral custody is evidenced, but no public parcel layer/schema/CRS/native identity was verified.",
+    "The official cadastral PDF/DWG publication is not a bounded native parcel feature response and no polygon was retained.",
+    "No owner, titleholder, address, contact, personal, tax/account, legal/title, or other unsafe fields were requested or retained.",
+    "No exact-point hit/miss inference was made.",
+    "Runtime readiness remains held pending independent serial adapter review."
+  ],
+  "uncertainty": "The linked public consultation may provide cadastral facts for an entered address, but its backend, parcel geometry availability, native identity semantics, CRS, and citywide coverage remain unresolved. Timeout or CAPTCHA does not establish absence.",
+  "runtimeReadiness": "held_serial_review"
+}

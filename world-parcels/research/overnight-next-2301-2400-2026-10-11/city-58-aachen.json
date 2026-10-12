@@ -1,0 +1,65 @@
+{
+  "cityCode": 58,
+  "queueRank": 2396,
+  "name": "Aachen",
+  "country": "Germany",
+  "countryCode": "DE",
+  "point": [50.7798266066411, 6.10963543428455],
+  "population2025": 243905,
+  "population2025k": 243.905,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Aachen official cadastral map parcel viewer Germany Flurstücke",
+        "result": "Found the official City of Aachen maps/cadastre page, the Aachen Geoportal, and the official StädteRegion Aachen cadastral page; NRW Geobasis INSPIRE parcel services were also identified.",
+        "actualResultUrls": [
+          "https://www.aachen.de/in-aachen-leben/planen-bauen/karten-kataster-und-vermessungen/",
+          "https://www.staedteregion-aachen.de/de/navigation/aemter/kataster-und-vermessungsamt-a-62/liegenschaftskataster",
+          "https://geoportal.aachen.de/"
+        ]
+      },
+      {
+        "language": "German",
+        "query": "Aachen Liegenschaftskarte Flurstücke offizielles Geoportal",
+        "result": "Found that the StädteRegion Aachen maintains the Liegenschaftskataster for Aachen and that the City Geoportal includes Flurstücke; official NRW Geobasis documentation identifies the public ALKIS/INSPIRE WFS.",
+        "actualResultUrls": [
+          "https://www.staedteregion-aachen.de/de/navigation/aemter/kataster-und-vermessungsamt-a-62/liegenschaftskataster",
+          "https://serviceportal.aachen.de/suche/-/vr-bis-detail/dienstleistung/4414/show",
+          "https://www.wfs.nrw.de/geobasis/wfs_nw_inspire-flurstuecke_alkis"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "StädteRegion Aachen, Kataster- und Vermessungsamt (A 62); the City of Aachen states its cadastral extracts are prepared/sold locally but the cadastral register is maintained by StädteRegion Aachen.",
+  "source": {
+    "service": "Geobasis NRW INSPIRE WFS NW Flurstücke/Grundstücke ALKIS",
+    "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_inspire-flurstuecke_alkis",
+    "scope": "North Rhine-Westphalia cadastral parcels derived from ALKIS; public service, not a city-specific adapter.",
+    "nativeCrs": "EPSG:25832",
+    "outputCrs": "EPSG:4326",
+    "nativeIdentity": "nationalCadastralReference",
+    "fieldMapping": {"id": "nationalCadastralReference", "parcelPolygon": "gml:surfaceMember/gml:posList"},
+    "compositeKeyProvenance": "The returned feature also exposed gml:id/localId and a national cadastral reference. The retained canonical identity is nationalCadastralReference=05417107202889______; no synthetic row number is used."
+  },
+  "attemptsRecorded": [
+    {"route": "City of Aachen official cadastral page", "method": "GET/search discovery", "outcome": "success; confirms Geoportal and cadastral map context", "url": "https://www.aachen.de/in-aachen-leben/planen-bauen/karten-kataster-und-vermessungen/"},
+    {"route": "StädteRegion Aachen official custodian page", "method": "GET/search discovery", "outcome": "success; identifies local cadastral custodian and parcel records", "url": "https://www.staedteregion-aachen.de/de/navigation/aemter/kataster-und-vermessungsamt-a-62/liegenschaftskataster"},
+    {"route": "Aachen Geoportal viewer HTML/JavaScript", "method": "GET", "outcome": "success; current inline viewer references config endpoint /geoas-lib/api/inline/config/aachen-extern and displays Flurstücke in the layer catalog", "url": "https://geoportal.aachen.de/extern/inline?basemap=web61482881ca3e4ky73o&blop=1&lang=de&lat=50.7798266066411&lng=6.10963543428455&zl=18"},
+    {"route": "Aachen Geoportal anonymous configuration", "method": "GET", "outcome": "blocked; HTTP response JSON was {\"error\":\"Sie sind nicht angemeldet!\"}; no login attempted", "url": "https://geoportal.aachen.de/geoas-lib/api/inline/config/aachen-extern"},
+    {"route": "NRW INSPIRE WFS capabilities", "method": "GET", "outcome": "success; cp:CadastralParcel and cp:CadastralZoning advertised in EPSG:25832", "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_inspire-flurstuecke_alkis?service=WFS&request=GetCapabilities"},
+    {"route": "NRW WFS bounded exact-point parcel request", "method": "GET", "outcome": "success; WFS 2.0 GML3 returned one parcel for bbox around transformed WUP point; exact point is within retained polygon", "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_inspire-flurstuecke_alkis?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp:CadastralParcel&bbox=296240,5629320,296246,5629328,urn:ogc:def:crs:EPSG::25832&count=3&outputFormat=GML3"},
+    {"route": "NRW WFS GeoJSON output", "method": "GET", "outcome": "failed; application/json and application/geo+json were rejected; unchanged GML was converted locally to CRS84 for the retained sample", "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_inspire-flurstuecke_alkis"}
+  ],
+  "boundedResponse": {"featureCount": 1, "nativeIdentity": "05417107202889______", "exactPointHit": true, "sampleGeometryRetained": true, "sampleGeometryFile": "aachen-parcel-sample.geojson", "retainedPolygonCount": 1},
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsExcluded": ["owner", "titleholder", "address", "contact", "tax", "account", "personal", "protected cadastral data"],
+  "limitations": ["A bounded point query does not establish citywide completeness or absence elsewhere.", "The local Aachen viewer configuration was login-gated; the retained geometry comes from the official state NRW public WFS, not from an inferred private/local endpoint.", "No credentials, private token, CAPTCHA bypass, unsafe fields, or TLS exception was used.", "This packet is research evidence only and is not source integration/admission."],
+  "runtimeReadiness": "held",
+  "completionSummary": "complete=true; geometrySample=true; registryFound=true; runtimeReadiness=held"
+}

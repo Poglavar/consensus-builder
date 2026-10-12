@@ -1,0 +1,13 @@
+{
+  "taskId": "packet:3342",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-3342-bologna.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/bologna-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/bologna-parcel-samples.geojson"
+  ],
+  "checkedAt": "2026-10-09T13:34:12Z",
+  "rootFinding": "Bologna: immutable rank 1253, country, point and 443849 persons match queue; English and Italian searches are recorded. Official SIT layer metadata identifies polygon geometry, PARTKEY, EPSG:23032 and supportsPagination false. One retained full polygon has only safe id, is valid in EPSG:23032 and does not prove citywide coverage. The original raw feature response and independent fresh-ID/forced-paging/13-cell/metric-overlap/source-binding/headed-Details qualification are absent; hold admission."
+}

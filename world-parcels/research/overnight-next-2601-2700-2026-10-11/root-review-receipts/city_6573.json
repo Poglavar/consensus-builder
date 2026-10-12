@@ -1,0 +1,30 @@
+{
+  "taskId": "city:6573",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-6573-flower-mound.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/flower-mound-service-review.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-6573-flower-mound-sample.geojson",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/provenance.json"
+  ],
+  "checkedAt": "2026-10-11T15:56:28Z",
+  "reason": "Flower Mound municipal ArcGIS parcel layer 0 exposed polygon geometry and PID. A fresh bounded exact-PID read returned the same three full polygons as the safe sample, but no independently qualified runtime adapter, forced paging, 13 bounded cells, metric GEOS overlap/operation checks, source binding, or headed Details-panel proof is present. The WUP-point zero is a local miss, not citywide absence.",
+  "custodyFinding": "true; first-party cadastral custodian evidence; geometry discovery and citywide coverage assessed separately",
+  "firstPartyUrls": [
+    "https://gismaps.flower-mound.com/wafmp/rest/services/Basemap/Parcels_MS/MapServer/0"
+  ],
+  "qualification": {
+    "directExactNativeIdRead": true,
+    "freshAdapterNativeIdReads": false,
+    "fullPolygonsRetained": 3,
+    "sampleMatchesFreshSourceGeometry": true,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeAdmitted": false
+}

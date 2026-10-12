@@ -1,0 +1,105 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 10495,
+  "queueRank": 3109,
+  "name": "Karaikudi",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [10.078338869205, 78.7772950944301],
+  "population2025": 193126,
+  "population2025k": 193.126,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Karaikudi Tamil Nadu official cadastral parcel map land records survey map",
+        "result": "First-party discovery identified Tamil Nadu Government Land Management System (TN-GLMS), Tamil Nadu land-record e-Services, the Department of Survey and Settlement TamilNilam Geo-Info service, and the Sivaganga district Survey and Land Record page. The district page explicitly includes Karaikudi taluk and describes digitization of FMB and computerized land records. No public bounded parcel feature response was exposed by discovery.",
+        "actualResultUrls": [
+          "https://tnglms.in/",
+          "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+          "https://play.google.com/store/apps/details?id=org.tnega.tamil.nilam",
+          "https://sivaganga.nic.in/departments/survey/",
+          "https://eservices.tn.gov.in/",
+          "https://tamilnilam.tn.gov.in/citizen"
+        ]
+      },
+      {
+        "language": "Tamil (native/local-language discovery)",
+        "query": "காரைக்குடி தமிழ்நாடு அதிகாரப்பூர்வ நில அளவை வரைபடம் பட்டா நில பதிவுகள்",
+        "result": "First-party Tamil-language discovery surfaced Tamil Nadu land-record services and TamilNilam/Department of Survey and Settlement material describing survey-number, subdivision, FMB and map-based land-record access. No anonymous parcel ID-plus-geometry response or downloadable citywide cadastral layer was exposed.",
+        "actualResultUrls": [
+          "https://tnglms.in/",
+          "https://tamilnilam.tn.gov.in/citizen",
+          "https://eservices.tn.gov.in/",
+          "https://www.tngis.tn.gov.in/apps.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Sivaganga district Survey and Land Record page identifies the district Survey and Land Records function, lists Karaikudi among its taluks, and describes digitization of FMB and computerized land records. Tamil Nadu Government TN-GLMS and Department of Survey and Settlement services provide the state public map/land-record leads. This evidences a local district/state registry custodian, not a verified parcel API response.",
+  "officialSources": [
+    {
+      "url": "https://sivaganga.nic.in/departments/survey/",
+      "observation": "Official Sivaganga district page: Survey and Land Record department; Karaikudi is listed as a taluk; page describes FMB digitization, computerized land records and online patta transfer. No parcel API schema or geometry response exposed."
+    },
+    {
+      "url": "https://tnglms.in/",
+      "observation": "Tamil Nadu Government Land Management System describes integration of RoR, cadastral maps/FMB and related land systems and links to land-record services. No bounded anonymous parcel response was observed."
+    },
+    {
+      "url": "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+      "observation": "Government Services Portal describes official Tamil Nadu Patta, A-Register, FMB/Chitta/TSLR query flows by district, rural/urban area, taluk/town, village/ward, survey and subdivision. It is a service description, not a geometry endpoint."
+    },
+    {
+      "url": "https://play.google.com/store/apps/details?id=org.tnega.tamil.nilam",
+      "observation": "Department of Survey and Settlement TamilNilam Geo-Info description says map and survey/subdivision navigation can visualize land records and FMB sketches. No safe public API or parcel geometry was obtained."
+    },
+    {
+      "url": "https://www.tngis.tn.gov.in/apps.html",
+      "observation": "Official Tamil Nadu GIS application directory and disclaimer; public GIS lead, but no parcel response was retained and the site warns that spatial data is informational and subject to maintenance/revision."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": "Tamil Nadu Department of Survey and Settlement / Sivaganga district Survey and Land Records / TN-GLMS (public cadastral-service leads; direct parcel API not verified)",
+  "sourceIds": [],
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://tnglms.in/",
+      "outcome": "TLS-verified curl request completed and returned the official TN-GLMS HTML page. The page described land-parcel, land-survey and integrated land-record modules, but did not expose a bounded anonymous parcel ID+geometry response or usable public service schema in the retrieved HTML. No unsafe fields requested."
+    },
+    {
+      "method": "GET",
+      "url": "https://eservices.tn.gov.in/",
+      "outcome": "TLS-verified curl request timed out after 20 seconds with no response body. No login, credentials, CAPTCHA/Cloudflare bypass, or TLS exception was used; no parcel request was attempted without viewer configuration."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.tngis.tn.gov.in/apps.html",
+      "outcome": "TLS-verified curl request timed out after 20 seconds with no response body. Search discovery provided the official application-directory description, but no API route, schema, CRS, ID or geometry was observed."
+    },
+    {
+      "method": "GET",
+      "url": "https://sivaganga.nic.in/departments/survey/",
+      "outcome": "Official district survey-page evidence was available through first-party discovery. No bounded parcel feature request or geometry endpoint was exposed by the page."
+    }
+  ],
+  "schemaAndCrs": null,
+  "resultCategory": "local_registry_and_public_cadastral_service_lead_verified_but_parcel_api_unavailable",
+  "coverageAssessment": {
+    "claimedScope": "Tamil Nadu state land-record/FMB services with Sivaganga district and Karaikudi taluk custodian evidence.",
+    "verifiedOpenScope": "Official local/state registry and cadastral-service leads are evidenced, but no anonymous bounded ID+geometry response, source schema, CRS, or citywide parcel coverage was verified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "TamilNilam/TN-GLMS may expose parcel or FMB data through interactive workflows when reachable and when survey/town identifiers are supplied, but current public JavaScript/configuration, API routes, field schema, CRS, and citywide coverage remain unverified. The exact WUP point was preserved and not used as an absence test. No GeoJSON sample is retained because no safe native parcel identity and full polygon were observed. This packet is research evidence only and is not source integration or admission."
+}

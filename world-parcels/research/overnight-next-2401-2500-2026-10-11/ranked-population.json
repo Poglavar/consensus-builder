@@ -1,0 +1,2975 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-11T11:15:23.072Z",
+  "scope": "UN WUP 2025 Degree of Urbanization city settlement population ranks 2401–2500, including source plausibility flags.",
+  "source": {
+    "organization": "United Nations, Department of Economic and Social Affairs, Population Division",
+    "publication": "World Urbanization Prospects: The 2025 Revision, Online Edition",
+    "downloadPage": "https://population.un.org/wup/downloads?tab=Cities",
+    "bulkFile": "WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "downloadUrl": "https://population.un.org/wup/assets/Download/Cities/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "localSourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "retrievedAt": "2026-10-08",
+    "populationField": "Pop for Year=2025; units are thousands; ranking does not remove low-plausibility rows.",
+    "identity": "City_Code is the WUP settlement identity; coordinates use the Year=2025 PWCent fields and are settlement points, not municipal boundaries or cadastral coverage claims. Some older normalized queue coordinates differ; e.g. Dighwara old point 25.969189,84.824243 vs this source point 25.9220863,84.8502742."
+  },
+  "counts": {
+    "full2025CityRows": 12138,
+    "rankedRows": 100,
+    "attempted": 7,
+    "identityReviewRequired": 0,
+    "pending": 93,
+    "reviewedAttemptCrosswalks": 35,
+    "reviewedDifferentSettlements": 4,
+    "capitalPriorChecksScanned": 156,
+    "capitalRosterRowsScanned": 225,
+    "runtimeCityConfigsScanned": 193
+  },
+  "method": {
+    "ranking": "Sort all unique 2025 City_Code rows by Pop descending; numeric City_Code breaks equal-population ties.",
+    "exactAttempt": "Skip when a registry row or non-queue research artifact carries the same WUP city code, or when an explicit reviewed decision in attempt-crosswalks.json confirms the prior city attempt.",
+    "identityReview": "Unresolved same-country name/alias and coordinate proximity or named artifacts remain review candidates. Decisions in attempt-crosswalks.json preserve resolved candidate evidence; rejected evidence paths are scoped to the listed artifacts so later evidence can still count.",
+    "queueOnly": "Largest-city and batch queue membership by itself does not count as an attempt. Explicit checked:false placeholders without attempt evidence are not skipped.",
+    "runtimeConfigs": "All runtime city configurations were parsed and recorded as identity-review candidates; configuration presence alone is not treated as a city research attempt.",
+    "priorCapitalChecks": "All 156 checked=true, previously_checked records in the 225-entry world-capitals roster are matched; exact WUP IDs count directly and same-country name/centroid aliases remain identity-review candidates.",
+    "scopeCaveat": "WUP DEGURBA settlements can differ from municipalities and metropolitan governance units; review crosswalks before treating a match as identical."
+  },
+  "roster": [
+    {
+      "rank": 2401,
+      "cityCode": 8674,
+      "name": "Merauke",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "iso3": "IDN",
+      "locId": 360,
+      "capital": false,
+      "pop2025k": 243.395,
+      "plausibility": "Moderate",
+      "point": [
+        -8.50153904477425,
+        140.398973062248
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "merauke"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2402,
+      "cityCode": 6387,
+      "name": "Adıyaman",
+      "country": "Türkiye",
+      "iso2": "TR",
+      "iso3": "TUR",
+      "locId": 792,
+      "capital": false,
+      "pop2025k": 243.388,
+      "plausibility": "High",
+      "point": [
+        37.761903101735,
+        38.2673873771064
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "ad yaman"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2403,
+      "cityCode": 9285,
+      "name": "Dharashiv",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 243.276,
+      "plausibility": "High",
+      "point": [
+        18.1925717850976,
+        76.0411273316765
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "dharashiv"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2404,
+      "cityCode": 6908,
+      "name": "Kamituga",
+      "country": "Democratic Republic of the Congo",
+      "iso2": "CD",
+      "iso3": "COD",
+      "locId": 180,
+      "capital": false,
+      "pop2025k": 243.261,
+      "plausibility": "Low",
+      "point": [
+        -3.0608716400503,
+        28.1886540042187
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kamituga"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2405,
+      "cityCode": 3980,
+      "name": "Ho",
+      "country": "Ghana",
+      "iso2": "GH",
+      "iso3": "GHA",
+      "locId": 288,
+      "capital": false,
+      "pop2025k": 243.211,
+      "plausibility": "Moderate",
+      "point": [
+        6.60780596849067,
+        0.473621018796183
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "ho"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2406,
+      "cityCode": 11014,
+      "name": "Wuchuan",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 243.195,
+      "plausibility": "High",
+      "point": [
+        21.4417247361586,
+        110.784492524304
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "wuchuan"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2407,
+      "cityCode": 6867,
+      "name": "Quiha",
+      "country": "Ethiopia",
+      "iso2": "ET",
+      "iso3": "ETH",
+      "locId": 231,
+      "capital": false,
+      "pop2025k": 243.11,
+      "plausibility": "Low",
+      "point": [
+        13.4774131318195,
+        39.5427550561283
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "quiha"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2408,
+      "cityCode": 223,
+      "name": "Dapaong",
+      "country": "Togo",
+      "iso2": "TG",
+      "iso3": "TGO",
+      "locId": 768,
+      "capital": false,
+      "pop2025k": 242.985,
+      "plausibility": "High",
+      "point": [
+        10.8653115109985,
+        0.202410967618096
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "dapaong"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2409,
+      "cityCode": 1529,
+      "name": "Pokhariya",
+      "country": "Nepal",
+      "iso2": "NP",
+      "iso3": "NPL",
+      "locId": 524,
+      "capital": false,
+      "pop2025k": 242.966,
+      "plausibility": "Low",
+      "point": [
+        27.0544856098853,
+        84.7451093928861
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "pokhariya"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2410,
+      "cityCode": 6131,
+      "name": "Kambove",
+      "country": "Democratic Republic of the Congo",
+      "iso2": "CD",
+      "iso3": "COD",
+      "locId": 180,
+      "capital": false,
+      "pop2025k": 242.939,
+      "plausibility": "Low",
+      "point": [
+        -10.8708215640277,
+        26.5956203553808
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kambove"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2411,
+      "cityCode": 2149,
+      "name": "Windsor",
+      "country": "Canada",
+      "iso2": "CA",
+      "iso3": "CAN",
+      "locId": 124,
+      "capital": false,
+      "pop2025k": 242.885,
+      "plausibility": "Moderate",
+      "point": [
+        42.2970404281255,
+        -82.9940374441006
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "windsor"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2412,
+      "cityCode": 3561,
+      "name": "Poltava",
+      "country": "Ukraine",
+      "iso2": "UA",
+      "iso3": "UKR",
+      "locId": 804,
+      "capital": false,
+      "pop2025k": 242.753,
+      "plausibility": "Moderate",
+      "point": [
+        49.5832455136996,
+        34.5435147270093
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "15",
+      "aliases": [
+        "poltava"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2413,
+      "cityCode": 1697,
+      "name": "Gayara",
+      "country": "Iraq",
+      "iso2": "IQ",
+      "iso3": "IRQ",
+      "locId": 368,
+      "capital": false,
+      "pop2025k": 242.69,
+      "plausibility": "Moderate",
+      "point": [
+        35.7688232707963,
+        43.2883689814454
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "gayara"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2414,
+      "cityCode": 11185,
+      "name": "Khajauli",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 242.567,
+      "plausibility": "Moderate",
+      "point": [
+        26.441727041218,
+        86.1324777988631
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "khajauli"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2415,
+      "cityCode": 11746,
+      "name": "Lanxi",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 242.478,
+      "plausibility": "High",
+      "point": [
+        29.2197881381243,
+        119.467490166732
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "lanxi"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2416,
+      "cityCode": 6212,
+      "name": "Hoshiarpur",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 242.396,
+      "plausibility": "Moderate",
+      "point": [
+        31.5263564171585,
+        75.9092613371255
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "hoshiarpur"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2417,
+      "cityCode": 9467,
+      "name": "Kannauj",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 242.353,
+      "plausibility": "Moderate",
+      "point": [
+        27.0474475821003,
+        79.9190693565481
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kannauj"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2418,
+      "cityCode": 12087,
+      "name": "Putuo District",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 242.329,
+      "plausibility": "High",
+      "point": [
+        29.9537409177113,
+        122.288864034767
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "putuo district"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2419,
+      "cityCode": 6107,
+      "name": "Monclova",
+      "country": "Mexico",
+      "iso2": "MX",
+      "iso3": "MEX",
+      "locId": 484,
+      "capital": false,
+      "pop2025k": 242.237,
+      "plausibility": "Moderate",
+      "point": [
+        26.9153350977265,
+        -101.42864874481
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "monclova"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2420,
+      "cityCode": 7091,
+      "name": "Salatiga",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "iso3": "IDN",
+      "locId": 360,
+      "capital": false,
+      "pop2025k": 242.116,
+      "plausibility": "High",
+      "point": [
+        -7.3357599139726,
+        110.497825017967
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "salatiga"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2421,
+      "cityCode": 818,
+      "name": "Boma",
+      "country": "Democratic Republic of the Congo",
+      "iso2": "CD",
+      "iso3": "COD",
+      "locId": 180,
+      "capital": false,
+      "pop2025k": 242.042,
+      "plausibility": "Moderate",
+      "point": [
+        -5.8308666761627,
+        13.0561881029742
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "boma"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2422,
+      "cityCode": 1857,
+      "name": "Khmelnytskyi",
+      "country": "Ukraine",
+      "iso2": "UA",
+      "iso3": "UKR",
+      "locId": 804,
+      "capital": false,
+      "pop2025k": 242.022,
+      "plausibility": "Moderate",
+      "point": [
+        49.420271522017,
+        26.9903339006871
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "15",
+      "aliases": [
+        "khmelnytskyi"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2423,
+      "cityCode": 9862,
+      "name": "Acheng",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 242.003,
+      "plausibility": "High",
+      "point": [
+        45.5435692926115,
+        126.974995418161
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "acheng"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2424,
+      "cityCode": 7800,
+      "name": "Pasuruan",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "iso3": "IDN",
+      "locId": 360,
+      "capital": false,
+      "pop2025k": 241.959,
+      "plausibility": "High",
+      "point": [
+        -7.65908681106045,
+        112.897873679759
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "pasuruan"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2425,
+      "cityCode": 6808,
+      "name": "Bojnurd",
+      "country": "Iran (Islamic Republic of)",
+      "iso2": "IR",
+      "iso3": "IRN",
+      "locId": 364,
+      "capital": false,
+      "pop2025k": 241.786,
+      "plausibility": "High",
+      "point": [
+        37.4740395617604,
+        57.3279053484777
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "bojnurd"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2426,
+      "cityCode": 2931,
+      "name": "Córdoba",
+      "country": "Spain",
+      "iso2": "ES",
+      "iso3": "ESP",
+      "locId": 724,
+      "capital": false,
+      "pop2025k": 241.778,
+      "plausibility": "Moderate",
+      "point": [
+        37.8877717912882,
+        -4.78225054209289
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "25",
+      "aliases": [
+        "cordoba"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2427,
+      "cityCode": 6455,
+      "name": "Attock",
+      "country": "Pakistan",
+      "iso2": "PK",
+      "iso3": "PAK",
+      "locId": 586,
+      "capital": false,
+      "pop2025k": 241.714,
+      "plausibility": "Moderate",
+      "point": [
+        33.7752547607076,
+        72.3600997544152
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "attock"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2428,
+      "cityCode": 3174,
+      "name": "Bielefeld",
+      "country": "Germany",
+      "iso2": "DE",
+      "iso3": "DEU",
+      "locId": 276,
+      "capital": false,
+      "pop2025k": 241.573,
+      "plausibility": "High",
+      "point": [
+        52.0195333690261,
+        8.54753242156078
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "bielefeld"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2429,
+      "cityCode": 5639,
+      "name": "Thanlyin",
+      "country": "Myanmar",
+      "iso2": "MM",
+      "iso3": "MMR",
+      "locId": 104,
+      "capital": false,
+      "pop2025k": 241.523,
+      "plausibility": "Moderate",
+      "point": [
+        16.7569322094155,
+        96.2551214234546
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "thanlyin"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2430,
+      "cityCode": 2533,
+      "name": "Tambacounda",
+      "country": "Senegal",
+      "iso2": "SN",
+      "iso3": "SEN",
+      "locId": 686,
+      "capital": false,
+      "pop2025k": 241.254,
+      "plausibility": "Moderate",
+      "point": [
+        13.7695399393791,
+        -13.669452812406
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "tambacounda"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2431,
+      "cityCode": 5192,
+      "name": "Ore",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "iso3": "NGA",
+      "locId": 566,
+      "capital": false,
+      "pop2025k": 241.251,
+      "plausibility": "Moderate",
+      "point": [
+        6.75134262995026,
+        4.88111110104281
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "ore"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2432,
+      "cityCode": 6137,
+      "name": "Mianwali",
+      "country": "Pakistan",
+      "iso2": "PK",
+      "iso3": "PAK",
+      "locId": 586,
+      "capital": false,
+      "pop2025k": 241.207,
+      "plausibility": "High",
+      "point": [
+        32.582053843092,
+        71.5407388936502
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "mianwali"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2433,
+      "cityCode": 11831,
+      "name": "Kamarda",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 241.081,
+      "plausibility": "Low",
+      "point": [
+        21.9435677602839,
+        87.9713883863074
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kamarda"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2434,
+      "cityCode": 4538,
+      "name": "Bejaia",
+      "country": "Algeria",
+      "iso2": "DZ",
+      "iso3": "DZA",
+      "locId": 12,
+      "capital": false,
+      "pop2025k": 241.071,
+      "plausibility": "High",
+      "point": [
+        36.7407344530971,
+        5.04971418819759
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "bejaia"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2435,
+      "cityCode": 4768,
+      "name": "Novorossiysk",
+      "country": "Russian Federation",
+      "iso2": "RU",
+      "iso3": "RUS",
+      "locId": 643,
+      "capital": false,
+      "pop2025k": 241.011,
+      "plausibility": "High",
+      "point": [
+        44.722052530374,
+        37.7586750932388
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "novorossiysk"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2436,
+      "cityCode": 11928,
+      "name": "Xinchang",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 240.747,
+      "plausibility": "High",
+      "point": [
+        29.504836785613,
+        120.892381225387
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "xinchang"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2437,
+      "cityCode": 9395,
+      "name": "Payyanur",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 240.715,
+      "plausibility": "High",
+      "point": [
+        12.1186390957407,
+        75.1968061737617
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "payyanur"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2438,
+      "cityCode": 6341,
+      "name": "Phan Rang – Tháp Chàm",
+      "country": "Viet Nam",
+      "iso2": "VN",
+      "iso3": "VNM",
+      "locId": 704,
+      "capital": false,
+      "pop2025k": 240.48,
+      "plausibility": "Moderate",
+      "point": [
+        11.5740556022641,
+        108.993045466091
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "phan rang thap cham"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2439,
+      "cityCode": 11974,
+      "name": "Fenghua District",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 240.478,
+      "plausibility": "High",
+      "point": [
+        29.6712844273615,
+        121.412302463759
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "fenghua district"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2440,
+      "cityCode": 12120,
+      "name": "Dazhuang",
+      "country": "China, Taiwan Province of China",
+      "iso2": "TW",
+      "iso3": "TWN",
+      "locId": 158,
+      "capital": false,
+      "pop2025k": 240.428,
+      "plausibility": "High",
+      "point": [
+        24.2365914463175,
+        120.545548452817
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "8",
+      "aliases": [
+        "dazhuang"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2441,
+      "cityCode": 7030,
+      "name": "Neyshabur",
+      "country": "Iran (Islamic Republic of)",
+      "iso2": "IR",
+      "iso3": "IRN",
+      "locId": 364,
+      "capital": false,
+      "pop2025k": 240.369,
+      "plausibility": "High",
+      "point": [
+        36.2129689731323,
+        58.793986536782
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "neyshabur"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2442,
+      "cityCode": 7293,
+      "name": "Ezbet Nazif",
+      "country": "Egypt",
+      "iso2": "EG",
+      "iso3": "EGY",
+      "locId": 818,
+      "capital": false,
+      "pop2025k": 240.283,
+      "plausibility": "High",
+      "point": [
+        26.2836672865176,
+        31.9429236500534
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "ezbet nazif"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2443,
+      "cityCode": 10191,
+      "name": "Rajapalayam",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 240.28,
+      "plausibility": "High",
+      "point": [
+        9.44850087810631,
+        77.5687641508353
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "rajapalayam"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2444,
+      "cityCode": 5930,
+      "name": "Mawlamyine",
+      "country": "Myanmar",
+      "iso2": "MM",
+      "iso3": "MMR",
+      "locId": 104,
+      "capital": false,
+      "pop2025k": 240.192,
+      "plausibility": "Moderate",
+      "point": [
+        16.4722950478395,
+        97.6356668184421
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "mawlamyine"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2445,
+      "cityCode": 1060,
+      "name": "Somerset West",
+      "country": "South Africa",
+      "iso2": "ZA",
+      "iso3": "ZAF",
+      "locId": 710,
+      "capital": false,
+      "pop2025k": 239.943,
+      "plausibility": "Moderate",
+      "point": [
+        -34.1117110675583,
+        18.8527113403246
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "somerset west"
+      ],
+      "attemptState": "attempted",
+      "attemptEvidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/1060/city-1060-provider-1060.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/1060/provider-1060-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2446,
+      "cityCode": 5975,
+      "name": "Corpus Christi",
+      "country": "United States of America",
+      "iso2": "US",
+      "iso3": "USA",
+      "locId": 840,
+      "capital": false,
+      "pop2025k": 239.855,
+      "plausibility": "Moderate",
+      "point": [
+        27.7290358614509,
+        -97.3978332058705
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "32",
+      "aliases": [
+        "corpus christi"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2447,
+      "cityCode": 683,
+      "name": "Linz",
+      "country": "Austria",
+      "iso2": "AT",
+      "iso3": "AUT",
+      "locId": 40,
+      "capital": false,
+      "pop2025k": 239.484,
+      "plausibility": "High",
+      "point": [
+        48.2828956944352,
+        14.2940528100907
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "linz"
+      ],
+      "attemptState": "attempted",
+      "attemptEvidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/683/city-683-provider-683.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/683/provider-683-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2448,
+      "cityCode": 10481,
+      "name": "Dohrighat",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 239.251,
+      "plausibility": "High",
+      "point": [
+        26.3058723309714,
+        83.4955352337764
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "dohrighat"
+      ],
+      "attemptState": "attempted",
+      "attemptEvidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/india-city-10481.json",
+          "cityId": "wup2025:10481",
+          "cityName": "Dohrighat",
+          "parcelStatus": "no_verified_sample_candidate_citywide",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        }
+      ],
+      "possiblePriorMatches": [
+        {
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/india-city-10481.json",
+          "matchedName": "Dohrighat",
+          "field": "name",
+          "identityConfidence": "review-required",
+          "kind": "structured-city-name-candidate",
+          "source": "research-file"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2449,
+      "cityCode": 4831,
+      "name": "Ouargla",
+      "country": "Algeria",
+      "iso2": "DZ",
+      "iso3": "DZA",
+      "locId": 12,
+      "capital": false,
+      "pop2025k": 239.221,
+      "plausibility": "High",
+      "point": [
+        31.9462184540671,
+        5.33708363718061
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "ouargla"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2450,
+      "cityCode": 6197,
+      "name": "Đà Lạt",
+      "country": "Viet Nam",
+      "iso2": "VN",
+      "iso3": "VNM",
+      "locId": 704,
+      "capital": false,
+      "pop2025k": 239.212,
+      "plausibility": "Moderate",
+      "point": [
+        11.9503046382408,
+        108.446220374784
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "a lat"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2451,
+      "cityCode": 11502,
+      "name": "Hai'an",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 239.163,
+      "plausibility": "Moderate",
+      "point": [
+        32.5362861690921,
+        120.457679904862
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "hai an"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2452,
+      "cityCode": 8068,
+      "name": "Governador Valadares",
+      "country": "Brazil",
+      "iso2": "BR",
+      "iso3": "BRA",
+      "locId": 76,
+      "capital": false,
+      "pop2025k": 239.06,
+      "plausibility": "Moderate",
+      "point": [
+        -18.8696123423888,
+        -41.9590411819791
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "governador valadares"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2453,
+      "cityCode": 7078,
+      "name": "Playa del Carmen",
+      "country": "Mexico",
+      "iso2": "MX",
+      "iso3": "MEX",
+      "locId": 484,
+      "capital": false,
+      "pop2025k": 238.944,
+      "plausibility": "High",
+      "point": [
+        20.6506057933015,
+        -87.0728192508159
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "playa del carmen"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2454,
+      "cityCode": 4046,
+      "name": "Veraval",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 238.718,
+      "plausibility": "High",
+      "point": [
+        20.9112470797304,
+        70.3750770969452
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "veraval"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2455,
+      "cityCode": 6692,
+      "name": "Xilinhot",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 238.715,
+      "plausibility": "High",
+      "point": [
+        43.9364409165245,
+        116.065867557069
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "xilinhot"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2456,
+      "cityCode": 3031,
+      "name": "Pattaya",
+      "country": "Thailand",
+      "iso2": "TH",
+      "iso3": "THA",
+      "locId": 764,
+      "capital": false,
+      "pop2025k": 238.411,
+      "plausibility": "Low",
+      "point": [
+        12.9298716398823,
+        100.899623454323
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "pattaya"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2457,
+      "cityCode": 2588,
+      "name": "Mokpo-si",
+      "country": "Republic of Korea",
+      "iso2": "KR",
+      "iso3": "KOR",
+      "locId": 410,
+      "capital": false,
+      "pop2025k": 238.374,
+      "plausibility": "High",
+      "point": [
+        34.8057728840816,
+        126.407413695808
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "mokpo si"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2458,
+      "cityCode": 805,
+      "name": "Dosso",
+      "country": "Niger",
+      "iso2": "NE",
+      "iso3": "NER",
+      "locId": 562,
+      "capital": false,
+      "pop2025k": 238.28,
+      "plausibility": "Moderate",
+      "point": [
+        13.0456404444586,
+        3.20001790033246
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "dosso"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2459,
+      "cityCode": 5316,
+      "name": "Derudeib",
+      "country": "Sudan",
+      "iso2": "SD",
+      "iso3": "SDN",
+      "locId": 729,
+      "capital": false,
+      "pop2025k": 238.164,
+      "plausibility": "Moderate",
+      "point": [
+        17.5427002007629,
+        36.0820530437939
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "derudeib"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2460,
+      "cityCode": 5953,
+      "name": "Ota",
+      "country": "Japan",
+      "iso2": "JP",
+      "iso3": "JPN",
+      "locId": 392,
+      "capital": false,
+      "pop2025k": 237.865,
+      "plausibility": "Low",
+      "point": [
+        36.2997431106329,
+        139.411530957691
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "ota"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2461,
+      "cityCode": 1460,
+      "name": "Diourbel",
+      "country": "Senegal",
+      "iso2": "SN",
+      "iso3": "SEN",
+      "locId": 686,
+      "capital": false,
+      "pop2025k": 237.795,
+      "plausibility": "High",
+      "point": [
+        14.6532998914477,
+        -16.2297341855647
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "diourbel"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2462,
+      "cityCode": 1972,
+      "name": "Monywa",
+      "country": "Myanmar",
+      "iso2": "MM",
+      "iso3": "MMR",
+      "locId": 104,
+      "capital": false,
+      "pop2025k": 237.751,
+      "plausibility": "Moderate",
+      "point": [
+        22.1148978187163,
+        95.1466501424968
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "monywa"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2463,
+      "cityCode": 3095,
+      "name": "Jinju-si",
+      "country": "Republic of Korea",
+      "iso2": "KR",
+      "iso3": "KOR",
+      "locId": 410,
+      "capital": false,
+      "pop2025k": 237.707,
+      "plausibility": "High",
+      "point": [
+        35.1856844205804,
+        128.100758236721
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "jinju si"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2464,
+      "cityCode": 727,
+      "name": "Tal Afar",
+      "country": "Iraq",
+      "iso2": "IQ",
+      "iso3": "IRQ",
+      "locId": 368,
+      "capital": false,
+      "pop2025k": 237.454,
+      "plausibility": "Moderate",
+      "point": [
+        36.375160174627,
+        42.4433754456661
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "tal afar"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2465,
+      "cityCode": 10927,
+      "name": "Dhaka",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 237.385,
+      "plausibility": "Moderate",
+      "point": [
+        26.6517408470602,
+        85.1429506226499
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "dhaka"
+      ],
+      "attemptState": "attempted",
+      "attemptEvidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/india-city-10927.json",
+          "cityId": "wup2025:10927",
+          "cityName": "Dhaka",
+          "parcelStatus": "no_verified_sample_candidate_citywide",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        }
+      ],
+      "possiblePriorMatches": [
+        {
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/india-city-10927.json",
+          "matchedName": "Dhaka",
+          "field": "name",
+          "identityConfidence": "review-required",
+          "kind": "structured-city-name-candidate",
+          "source": "research-file"
+        },
+        {
+          "kind": "city-name-file-candidate",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/dhaka.json",
+          "identityConfidence": "review-required"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2466,
+      "cityCode": 5706,
+      "name": "Babol",
+      "country": "Iran (Islamic Republic of)",
+      "iso2": "IR",
+      "iso3": "IRN",
+      "locId": 364,
+      "capital": false,
+      "pop2025k": 237.234,
+      "plausibility": "Moderate",
+      "point": [
+        36.5542482564011,
+        52.6764570025977
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "babol"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2467,
+      "cityCode": 5823,
+      "name": "Palanpur",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 237.198,
+      "plausibility": "High",
+      "point": [
+        24.1733539009712,
+        72.4305474520064
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "palanpur"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2468,
+      "cityCode": 5597,
+      "name": "Imperatriz",
+      "country": "Brazil",
+      "iso2": "BR",
+      "iso3": "BRA",
+      "locId": 76,
+      "capital": false,
+      "pop2025k": 237.188,
+      "plausibility": "Moderate",
+      "point": [
+        -5.51712507222712,
+        -47.4746385528263
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "imperatriz"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2469,
+      "cityCode": 6120,
+      "name": "Manikganj",
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "iso3": "BGD",
+      "locId": 50,
+      "capital": false,
+      "pop2025k": 237.163,
+      "plausibility": "Moderate",
+      "point": [
+        23.8530998172502,
+        89.9946007071417
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "manikganj"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2470,
+      "cityCode": 11267,
+      "name": "Lakhnaur",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 237.133,
+      "plausibility": "Low",
+      "point": [
+        26.2172442779952,
+        86.3331972166177
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "lakhnaur"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2471,
+      "cityCode": 2953,
+      "name": "Raqqa",
+      "country": "Syrian Arab Republic",
+      "iso2": "SY",
+      "iso3": "SYR",
+      "locId": 760,
+      "capital": false,
+      "pop2025k": 237.106,
+      "plausibility": "Moderate",
+      "point": [
+        35.9534864536779,
+        39.0115827606218
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "raqqa"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2472,
+      "cityCode": 6702,
+      "name": "Bonsa Bota",
+      "country": "Ethiopia",
+      "iso2": "ET",
+      "iso3": "ETH",
+      "locId": 231,
+      "capital": false,
+      "pop2025k": 237.061,
+      "plausibility": "Moderate",
+      "point": [
+        6.52511068371666,
+        38.8286285048554
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "bonsa bota"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2473,
+      "cityCode": 4197,
+      "name": "Kassel",
+      "country": "Germany",
+      "iso2": "DE",
+      "iso3": "DEU",
+      "locId": 276,
+      "capital": false,
+      "pop2025k": 236.992,
+      "plausibility": "Moderate",
+      "point": [
+        51.3151466598024,
+        9.48755550595054
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kassel"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2474,
+      "cityCode": 889,
+      "name": "Oxnard",
+      "country": "United States of America",
+      "iso2": "US",
+      "iso3": "USA",
+      "locId": 840,
+      "capital": false,
+      "pop2025k": 236.988,
+      "plausibility": "Moderate",
+      "point": [
+        34.1891769911221,
+        -119.181411608013
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "32",
+      "aliases": [
+        "oxnard"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2475,
+      "cityCode": 7033,
+      "name": "Bhola",
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "iso3": "BGD",
+      "locId": 50,
+      "capital": false,
+      "pop2025k": 236.949,
+      "plausibility": "Moderate",
+      "point": [
+        22.6801901601284,
+        90.6457930671368
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "bhola"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2476,
+      "cityCode": 11851,
+      "name": "Diamond Harbour",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 236.861,
+      "plausibility": "Low",
+      "point": [
+        22.1943272160878,
+        88.2027360986345
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "diamond harbour"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2477,
+      "cityCode": 6707,
+      "name": "Shenmu",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 236.84,
+      "plausibility": "Low",
+      "point": [
+        38.83164073715,
+        110.494899998938
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "shenmu"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2478,
+      "cityCode": 304,
+      "name": "Fomboni",
+      "country": "Comoros",
+      "iso2": "KM",
+      "iso3": "COM",
+      "locId": 174,
+      "capital": false,
+      "pop2025k": 236.75,
+      "plausibility": "Moderate",
+      "point": [
+        -12.2875705957458,
+        43.7459836687972
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "fomboni"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2479,
+      "cityCode": 1698,
+      "name": "Ha'il",
+      "country": "Saudi Arabia",
+      "iso2": "SA",
+      "iso3": "SAU",
+      "locId": 682,
+      "capital": false,
+      "pop2025k": 236.744,
+      "plausibility": "Moderate",
+      "point": [
+        27.514253891658,
+        41.6853367270333
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "ha il"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2480,
+      "cityCode": 7919,
+      "name": "Sampit",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "iso3": "IDN",
+      "locId": 360,
+      "capital": false,
+      "pop2025k": 236.458,
+      "plausibility": "Moderate",
+      "point": [
+        -2.54093722817364,
+        112.95508783912
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "sampit"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2481,
+      "cityCode": 1115,
+      "name": "Chuncheon",
+      "country": "Republic of Korea",
+      "iso2": "KR",
+      "iso3": "KOR",
+      "locId": 410,
+      "capital": false,
+      "pop2025k": 236.384,
+      "plausibility": "High",
+      "point": [
+        37.8733050972798,
+        127.739060231154
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "chuncheon"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2482,
+      "cityCode": 11085,
+      "name": "Modanganj",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 236.293,
+      "plausibility": "Low",
+      "point": [
+        25.2391985531884,
+        85.166035424369
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "modanganj"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2483,
+      "cityCode": 11447,
+      "name": "Amarpur",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 236.273,
+      "plausibility": "Moderate",
+      "point": [
+        25.0756633192345,
+        86.8910842088802
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "amarpur"
+      ],
+      "attemptState": "attempted",
+      "attemptEvidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/india-city-11447.json",
+          "cityId": "wup2025:11447",
+          "cityName": "Amarpur",
+          "parcelStatus": "no_verified_sample_candidate_citywide",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        }
+      ],
+      "possiblePriorMatches": [
+        {
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/india-city-11447.json",
+          "matchedName": "Amarpur",
+          "field": "name",
+          "identityConfidence": "review-required",
+          "kind": "structured-city-name-candidate",
+          "source": "research-file"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2484,
+      "cityCode": 2873,
+      "name": "Cergy",
+      "country": "France",
+      "iso2": "FR",
+      "iso3": "FRA",
+      "locId": 250,
+      "capital": false,
+      "pop2025k": 236.261,
+      "plausibility": "High",
+      "point": [
+        49.0307145049654,
+        2.07419103679125
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "26",
+      "aliases": [
+        "cergy"
+      ],
+      "attemptState": "attempted",
+      "attemptEvidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/2873/city-2873-provider-2873.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/2873/provider-2873-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2485,
+      "cityCode": 1750,
+      "name": "Mostaganem",
+      "country": "Algeria",
+      "iso2": "DZ",
+      "iso3": "DZA",
+      "locId": 12,
+      "capital": false,
+      "pop2025k": 236.15,
+      "plausibility": "High",
+      "point": [
+        35.9289660060987,
+        0.092761752960048
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "mostaganem"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2486,
+      "cityCode": 7686,
+      "name": "Funtua",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "iso3": "NGA",
+      "locId": 566,
+      "capital": false,
+      "pop2025k": 236.087,
+      "plausibility": "High",
+      "point": [
+        11.5233930546313,
+        7.31389341294504
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "funtua"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2487,
+      "cityCode": 152,
+      "name": "Malé",
+      "country": "Maldives",
+      "iso2": "MV",
+      "iso3": "MDV",
+      "locId": 462,
+      "capital": true,
+      "pop2025k": 236.072,
+      "plausibility": "Low",
+      "point": [
+        4.17427779591284,
+        73.5075651271312
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "male"
+      ],
+      "attemptState": "attempted",
+      "attemptEvidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/world-capitals-2026-10-08/asia-index.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/world-capitals-2026-10-08/city-male.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "possiblePriorMatches": [
+        {
+          "kind": "same-country-name-coordinate-candidate",
+          "evidenceFile": "research/world-capitals-2026-10-08/city-male.json",
+          "cityId": "capital:MV:male",
+          "cityName": "Male",
+          "parcelStatus": "verified_sample_partial_coverage",
+          "checked": null,
+          "distanceKm": 1.19,
+          "identityConfidence": "probable-review-required",
+          "source": "registry"
+        },
+        {
+          "kind": "city-name-file-candidate",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/world-capitals-2026-10-08/male-acceptance.json",
+          "identityConfidence": "review-required"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2488,
+      "cityCode": 1582,
+      "name": "Mbanza-Ngungu",
+      "country": "Democratic Republic of the Congo",
+      "iso2": "CD",
+      "iso3": "COD",
+      "locId": 180,
+      "capital": false,
+      "pop2025k": 236.056,
+      "plausibility": "High",
+      "point": [
+        -5.24781208336063,
+        14.8666010891615
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "mbanza ngungu"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2489,
+      "cityCode": 4079,
+      "name": "Sinnuris",
+      "country": "Egypt",
+      "iso2": "EG",
+      "iso3": "EGY",
+      "locId": 818,
+      "capital": false,
+      "pop2025k": 235.984,
+      "plausibility": "High",
+      "point": [
+        29.4169701753478,
+        30.8619741843524
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "sinnuris"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2490,
+      "cityCode": 4448,
+      "name": "Linxia",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 235.932,
+      "plausibility": "High",
+      "point": [
+        35.59703891698,
+        103.204231229815
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "linxia"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2491,
+      "cityCode": 2941,
+      "name": "Bertoua",
+      "country": "Cameroon",
+      "iso2": "CM",
+      "iso3": "CMR",
+      "locId": 120,
+      "capital": false,
+      "pop2025k": 235.399,
+      "plausibility": "Moderate",
+      "point": [
+        4.57760574521567,
+        13.6902117440134
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "bertoua"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2492,
+      "cityCode": 1136,
+      "name": "Tarija",
+      "country": "Bolivia (Plurinational State of)",
+      "iso2": "BO",
+      "iso3": "BOL",
+      "locId": 68,
+      "capital": false,
+      "pop2025k": 235.198,
+      "plausibility": "Moderate",
+      "point": [
+        -21.5272876339429,
+        -64.729187896428
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "tarija"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2493,
+      "cityCode": 10254,
+      "name": "Haixing",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 235.153,
+      "plausibility": "High",
+      "point": [
+        40.3054836112596,
+        122.133213526113
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "haixing"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2494,
+      "cityCode": 3072,
+      "name": "Al-Hasakah",
+      "country": "Syrian Arab Republic",
+      "iso2": "SY",
+      "iso3": "SYR",
+      "locId": 760,
+      "capital": false,
+      "pop2025k": 235.085,
+      "plausibility": "Moderate",
+      "point": [
+        36.5048131265848,
+        40.743608765039
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "al hasakah"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2495,
+      "cityCode": 6666,
+      "name": "Blumenau",
+      "country": "Brazil",
+      "iso2": "BR",
+      "iso3": "BRA",
+      "locId": 76,
+      "capital": false,
+      "pop2025k": 234.982,
+      "plausibility": "Moderate",
+      "point": [
+        -26.9108502744984,
+        -49.0866976473072
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "blumenau"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2496,
+      "cityCode": 6388,
+      "name": "Nalchik",
+      "country": "Russian Federation",
+      "iso2": "RU",
+      "iso3": "RUS",
+      "locId": 643,
+      "capital": false,
+      "pop2025k": 234.831,
+      "plausibility": "High",
+      "point": [
+        43.4935772664619,
+        43.6257957772128
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "nalchik"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2497,
+      "cityCode": 8208,
+      "name": "Juazeiro do Norte",
+      "country": "Brazil",
+      "iso2": "BR",
+      "iso3": "BRA",
+      "locId": 76,
+      "capital": false,
+      "pop2025k": 234.71,
+      "plausibility": "High",
+      "point": [
+        -7.22175845200656,
+        -39.315110914862
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "juazeiro do norte"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2498,
+      "cityCode": 10251,
+      "name": "Tanda",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 234.61,
+      "plausibility": "Moderate",
+      "point": [
+        26.5470116453175,
+        82.6613289269547
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "tanda"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2499,
+      "cityCode": 10108,
+      "name": "Shanxian",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 234.538,
+      "plausibility": "Moderate",
+      "point": [
+        34.792488201439,
+        116.080663490125
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "shanxian"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2500,
+      "cityCode": 11788,
+      "name": "Haining",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 234.399,
+      "plausibility": "Moderate",
+      "point": [
+        30.5261412507848,
+        120.68573614063
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "haining"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ]
+}

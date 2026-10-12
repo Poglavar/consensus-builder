@@ -1,0 +1,50 @@
+{
+  "cityCode": 11564,
+  "queueRank": 2768,
+  "name": "Ruijin",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [25.8792390423004, 116.032452581471],
+  "population2025": 214037,
+  "population2025k": 214.037,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ruijin Jiangxi official natural resources bureau real estate registration cadastral map parcel",
+        "result": "Search identified an official Ganzhou Natural Resources Bureau guide for real-estate registration-record queries and a Ganzhou government response explicitly describing Ruijin's registration workflow; no Ruijin public parcel-vector service was found.",
+        "actualResultUrls": [
+          "https://bnr.ganzhou.gov.cn/gzzrzy/c102695/202504/8f4d4e1f3c5d4a6cbc96d917181fb94c.shtml",
+          "https://apps.ganzhou.gov.cn/xsqwlwzweb/szfbmwz/getContent?id=b9280c854058905ca6bf55523583"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "瑞金市 自然资源局 不动产登记 地籍图 宗地 查询 官方",
+        "result": "First-party search material from the Ganzhou government says rural house-land registration in Ruijin is entered and certified by the Ruijin Real Estate Registration Center after review against survey results; no anonymous parcel geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://apps.ganzhou.gov.cn/xsqwlwzweb/szfbmwz/getContent?id=b9280c854058905ca6bf55523583",
+          "https://rerc.com.cn/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Ganzhou government response identifies the Ruijin Real Estate Registration Center as the registration custodian for Ruijin's rural house-land registration workflow. This establishes local registry custody, not public parcel-vector access.",
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "resultCategory": "local_registry_evidenced_no_public_safe_parcel_geometry",
+  "remainingUncertainty": "A restricted or unindexed Ruijin cadastral route may exist. No public anonymous service exposing a safe native parcel identity plus geometry, schema, or CRS was verified.",
+  "scopeLimits": [
+    "No citywide completeness or absence claim.",
+    "No exact-point parcel-hit inference; the WUP point is preserved exactly in latitude/longitude order.",
+    "No owner, address, contact, titleholder, personal identity, tax/account, certificate/title, or other unsafe fields were requested or retained.",
+    "No parcel polygon or sample GeoJSON is retained.",
+    "Research packet only; no registry, catalog, runtime, queue, or identity-ledger files were changed."
+  ]
+}

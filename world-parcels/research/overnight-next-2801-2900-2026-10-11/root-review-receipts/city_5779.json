@@ -1,0 +1,25 @@
+{
+  "taskId": "city:5779",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-5779-moga.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/moga-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T214657-65f35570/stdout.jsonl",
+    "tmp/valhalla-parcel-research/5779/cadastral.html"
+  ],
+  "checkedAt": "2026-10-11T21:49:45Z",
+  "reason": "Moga rank 2868, India, exact WUP point and 207709 persons match the immutable queue. Executed English and Punjabi searches are visible in the run trace. First-party Punjab Cadastral Map HTML lists Moga as district 20 and dependent tehsil/village selectors. No native parcel ID plus full polygon response, sample, or independent adapter qualification is evidenced; the public map lead does not establish citywide open coverage.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

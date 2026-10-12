@@ -1,0 +1,15 @@
+{
+  "taskId": "city:7759",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-7759-jijiga.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/jijiga-service-review.json",
+    "tmp/valhalla-parcel-research/7759/eland-maps.html",
+    "tmp/valhalla-parcel-research/7759/eland-registration.html"
+  ],
+  "checkedAt": "2026-10-09T14:30:20Z",
+  "reason": "Jijiga WUP identity and bilingual searches match the original source and queue. Official city/regional/national routes establish possible custody but no Jijiga-specific anonymous parcel response, safe native ID, or polygon. The saved e-Land files are application shells; maintenance, timeout, and TLS limitations do not establish absence. Every live adapter, spatial, source-binding, and headed Details gate remains unproved; registryFound stays unresolved."
+}

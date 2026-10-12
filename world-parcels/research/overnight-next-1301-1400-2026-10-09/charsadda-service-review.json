@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5177-charsadda.json",
+  "cityCode": 5177,
+  "purpose": "Document first-party discovery, current public land-record routes, bounded anonymous access review, and evidence limits.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "unsafeFieldsRequested": false, "citywideCompletenessAsserted": false},
+  "assessment": "The official KP Board of Revenue CLRMIS landing page is public but directs users to account creation, NADRA biometric verification, login, and ownership search using personal identity fields. The page does not expose an anonymous parcel map/API. Official Charsadda-specific documentation confirms historical digitization work, but does not provide current public parcel geometry.",
+  "registryAssessment": "The KP Board of Revenue is the provincial land-record custodian and Charsadda is specifically evidenced in the digitization pilot documentation. No current city-specific public cadastral registry/map endpoint was established, so registryFound remains null.",
+  "queries": [
+    {"language": "English", "query": "Charsadda Pakistan official cadastral parcel map land records GIS service", "outcome": "Official KP Board of Revenue CLRMIS, KP settlement/digitization project, Charsadda master plan, and Charsadda digitization-pilot documentation found; no anonymous parcel-vector service found.", "actualResultUrls": ["https://efard.kplr.gkp.pk/", "https://sdlr.kp.gov.pk/", "https://urbanpolicyunit.gkp.pk/wp-content/uploads/2025/05/4.-Charsadda-City-Final-Master-Plan-2024-2042.pdf", "https://unhabitat.org.pk/digitization-of-land-records/"]},
+    {"language": "Urdu", "query": "خیبر پختونخوا چارسدہ سرکاری اراضی ریکارڈ نقشہ کادستر پارسل", "outcome": "Urdu search found official KP land-record/digitization references and Urdu instructions on CLRMIS, but no separate Charsadda parcel API or map route.", "actualResultUrls": ["https://efard.kplr.gkp.pk/", "https://sdlr.kp.gov.pk/", "https://unhabitat.org.pk/digitization-of-land-records/"]}
+  ],
+  "attempts": [
+    {"url": "https://efard.kplr.gkp.pk/", "method": "GET", "httpStatus": 200, "result": "Current official landing page loaded. It exposes public instructions and links to Citizen Login/Register; it states ownership search requires registered name, father's name, and CNIC. No parcel map/API or anonymous geometry response was present. No login, registration, biometric step, or unsafe field request was attempted."},
+    {"url": "https://sdlr.kp.gov.pk/", "method": "GET", "httpStatus": 200, "result": "Official settlement/digitization project page loaded; it describes GIS mapping and land-record digitization for merged districts, but did not expose Charsadda parcel geometry or an anonymous query route."},
+    {"url": "https://unhabitat.org.pk/digitization-of-land-records/", "method": "GET", "httpStatus": 200, "result": "Official project documentation loaded. It records a Board of Revenue digitization pilot initially in District Charsadda, with GIS labs and land/map layers; it provides no current public parcel endpoint."},
+    {"url": "https://urbanpolicyunit.gkp.pk/wp-content/uploads/2025/05/4.-Charsadda-City-Final-Master-Plan-2024-2042.pdf", "method": "GET", "httpStatus": 200, "result": "Official Charsadda master-plan PDF downloaded for administrative context. It identifies provincial land-record/revenue and Board of Revenue supervision and ongoing computerization; it is not machine-readable parcel geometry."}
+  ],
+  "geometryEvidence": {"sourceUrl": null, "sampleFile": null, "nativeIdField": null, "nativeFieldMapping": {}, "compositeKeyProvenance": null, "sampleCount": 0, "crs": null, "queryExtent": null},
+  "geometryDecision": {"verified": false, "sourceId": null, "nativeIdField": null, "sampleCount": 0, "exactWupPointTest": "No anonymous parcel query route was available; the exact WUP point was not shifted or treated as an absence test.", "retentionNote": "No GeoJSON retained because no safe native parcel identity plus full polygon response was obtained."},
+  "remainingUncertainty": "The public CLRMIS page may front services available after account/biometric authentication, but credentials and personal fields are out of scope. Historical Charsadda GIS work does not establish current open access, schema, CRS, parcel identity, or citywide coverage. No CAPTCHA, login, credential, private-token, unsafe-field, or TLS-bypass attempt was made.",
+  "safeFieldAllowlist": ["native parcel ID if publicly exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter",
+  "researchAttempt": 1
+}

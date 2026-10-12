@@ -1,0 +1,1241 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "6345",
+  "cityName": "Lindberg",
+  "sourceId": "arlington-tax-parcels",
+  "candidateSha256": "efa17bebf38383f0f0ba8a2a6f9c09411b86e57fb6627db86ebd42c96a1fea9a",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 116,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 116,
+      "collectedUniqueCount": 116
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 352
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 10,
+      "distinctFeatureQueries": 10,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "/root/code/consensus-builder-parcel-qualification-20261011-round2/tmp/parcel-qualification/cities/6345/attempt-02/evidence/metric-report.json",
+      "inputSha256": "e341df3a521c82cc164ea05d23110fe4347d0ad7f8541ddb84f30f9f99a64b30",
+      "featureCount": 116,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32614",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "e341df3a521c82cc164ea05d23110fe4347d0ad7f8541ddb84f30f9f99a64b30",
+  "featureCount": 116,
+  "sampleIds": [
+    "US-TX-ARLINGTON-8200544",
+    "US-TX-ARLINGTON-8200501",
+    "US-TX-ARLINGTON-8200543"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -97.145,
+        32.646,
+        -97.144,
+        32.647
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "US-TX-ARLINGTON-8201422"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -97.144,
+        32.646,
+        -97.143,
+        32.647
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "US-TX-ARLINGTON-8200537",
+        "US-TX-ARLINGTON-8200538",
+        "US-TX-ARLINGTON-8200539",
+        "US-TX-ARLINGTON-8200540",
+        "US-TX-ARLINGTON-8200545",
+        "US-TX-ARLINGTON-8200541",
+        "US-TX-ARLINGTON-8200544",
+        "US-TX-ARLINGTON-8200543",
+        "US-TX-ARLINGTON-8200542",
+        "US-TX-ARLINGTON-8200551",
+        "US-TX-ARLINGTON-8201422"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -97.143,
+        32.646,
+        -97.142,
+        32.647
+      ],
+      "complete": true,
+      "featureCount": 21,
+      "ids": [
+        "US-TX-ARLINGTON-8200509",
+        "US-TX-ARLINGTON-8200537",
+        "US-TX-ARLINGTON-8200508",
+        "US-TX-ARLINGTON-8200747",
+        "US-TX-ARLINGTON-8200500",
+        "US-TX-ARLINGTON-8200502",
+        "US-TX-ARLINGTON-8200507",
+        "US-TX-ARLINGTON-8200504",
+        "US-TX-ARLINGTON-8200545",
+        "US-TX-ARLINGTON-8200506",
+        "US-TX-ARLINGTON-8200505",
+        "US-TX-ARLINGTON-8200503",
+        "US-TX-ARLINGTON-8200544",
+        "US-TX-ARLINGTON-8200501",
+        "US-TX-ARLINGTON-8200543",
+        "US-TX-ARLINGTON-8200546",
+        "US-TX-ARLINGTON-8200547",
+        "US-TX-ARLINGTON-8200548",
+        "US-TX-ARLINGTON-8200549",
+        "US-TX-ARLINGTON-8200550",
+        "US-TX-ARLINGTON-8200551"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -97.145,
+        32.647,
+        -97.144,
+        32.648
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "US-TX-ARLINGTON-8201421",
+        "US-TX-ARLINGTON-8201420",
+        "US-TX-ARLINGTON-8201413",
+        "US-TX-ARLINGTON-8201412",
+        "US-TX-ARLINGTON-8201411",
+        "US-TX-ARLINGTON-8201410",
+        "US-TX-ARLINGTON-8201409",
+        "US-TX-ARLINGTON-8201408",
+        "US-TX-ARLINGTON-8201395",
+        "US-TX-ARLINGTON-8201396",
+        "US-TX-ARLINGTON-8201397",
+        "US-TX-ARLINGTON-8201398",
+        "US-TX-ARLINGTON-8201415",
+        "US-TX-ARLINGTON-8201418",
+        "US-TX-ARLINGTON-8201422"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -97.144,
+        32.647,
+        -97.143,
+        32.648
+      ],
+      "complete": true,
+      "featureCount": 21,
+      "ids": [
+        "US-TX-ARLINGTON-8200543",
+        "US-TX-ARLINGTON-8200542",
+        "US-TX-ARLINGTON-8200551",
+        "US-TX-ARLINGTON-8200552",
+        "US-TX-ARLINGTON-8200553",
+        "US-TX-ARLINGTON-8201420",
+        "US-TX-ARLINGTON-8200554",
+        "US-TX-ARLINGTON-8201419",
+        "US-TX-ARLINGTON-8200558",
+        "US-TX-ARLINGTON-8200557",
+        "US-TX-ARLINGTON-8200556",
+        "US-TX-ARLINGTON-8200555",
+        "US-TX-ARLINGTON-8201413",
+        "US-TX-ARLINGTON-8201414",
+        "US-TX-ARLINGTON-8200567",
+        "US-TX-ARLINGTON-8200568",
+        "US-TX-ARLINGTON-8200569",
+        "US-TX-ARLINGTON-8200570",
+        "US-TX-ARLINGTON-8201394",
+        "US-TX-ARLINGTON-8201395",
+        "US-TX-ARLINGTON-8201422"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -97.143,
+        32.647,
+        -97.142,
+        32.648
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "ids": [
+        "US-TX-ARLINGTON-8200546",
+        "US-TX-ARLINGTON-8200547",
+        "US-TX-ARLINGTON-8200548",
+        "US-TX-ARLINGTON-8200549",
+        "US-TX-ARLINGTON-8200550",
+        "US-TX-ARLINGTON-8200551",
+        "US-TX-ARLINGTON-8200561",
+        "US-TX-ARLINGTON-8200560",
+        "US-TX-ARLINGTON-8200559",
+        "US-TX-ARLINGTON-8200562",
+        "US-TX-ARLINGTON-8200558",
+        "US-TX-ARLINGTON-8200563",
+        "US-TX-ARLINGTON-8200565",
+        "US-TX-ARLINGTON-8200566",
+        "US-TX-ARLINGTON-8200564",
+        "US-TX-ARLINGTON-8200512",
+        "US-TX-ARLINGTON-8200567"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -97.145,
+        32.648,
+        -97.144,
+        32.649
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "US-TX-ARLINGTON-8201408",
+        "US-TX-ARLINGTON-8201417",
+        "US-TX-ARLINGTON-8201395",
+        "US-TX-ARLINGTON-8201396",
+        "US-TX-ARLINGTON-8201397",
+        "US-TX-ARLINGTON-8201398",
+        "US-TX-ARLINGTON-8201415",
+        "US-TX-ARLINGTON-8201418",
+        "US-TX-ARLINGTON-8201400",
+        "US-TX-ARLINGTON-8201401",
+        "US-TX-ARLINGTON-8201402",
+        "US-TX-ARLINGTON-8201403",
+        "US-TX-ARLINGTON-8201404",
+        "US-TX-ARLINGTON-8201405"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -97.144,
+        32.648,
+        -97.143,
+        32.649
+      ],
+      "complete": true,
+      "featureCount": 18,
+      "ids": [
+        "US-TX-ARLINGTON-6700504",
+        "US-TX-ARLINGTON-6700503",
+        "US-TX-ARLINGTON-6700691",
+        "US-TX-ARLINGTON-6700692",
+        "US-TX-ARLINGTON-6700693",
+        "US-TX-ARLINGTON-6700694",
+        "US-TX-ARLINGTON-8200567",
+        "US-TX-ARLINGTON-8200568",
+        "US-TX-ARLINGTON-8200569",
+        "US-TX-ARLINGTON-8200570",
+        "US-TX-ARLINGTON-8201394",
+        "US-TX-ARLINGTON-8201395",
+        "US-TX-ARLINGTON-8200765",
+        "US-TX-ARLINGTON-8200575",
+        "US-TX-ARLINGTON-8200576",
+        "US-TX-ARLINGTON-8200577",
+        "US-TX-ARLINGTON-8201399",
+        "US-TX-ARLINGTON-8201400"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -97.143,
+        32.648,
+        -97.142,
+        32.649
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "US-TX-ARLINGTON-6700694",
+        "US-TX-ARLINGTON-6700695",
+        "US-TX-ARLINGTON-6700696",
+        "US-TX-ARLINGTON-6700697",
+        "US-TX-ARLINGTON-6700698",
+        "US-TX-ARLINGTON-8200565",
+        "US-TX-ARLINGTON-8200566",
+        "US-TX-ARLINGTON-8200564",
+        "US-TX-ARLINGTON-8200512",
+        "US-TX-ARLINGTON-8200567",
+        "US-TX-ARLINGTON-8200768",
+        "US-TX-ARLINGTON-8200767",
+        "US-TX-ARLINGTON-8200766",
+        "US-TX-ARLINGTON-8200765"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -97.144,
+        32.645,
+        -97.143,
+        32.646
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "US-TX-ARLINGTON-8200536",
+        "US-TX-ARLINGTON-8200537",
+        "US-TX-ARLINGTON-8200538",
+        "US-TX-ARLINGTON-8200539",
+        "US-TX-ARLINGTON-8200540",
+        "US-TX-ARLINGTON-8201422",
+        "US-TX-ARLINGTON-8200990"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -97.144,
+        32.649,
+        -97.143,
+        32.65
+      ],
+      "complete": true,
+      "featureCount": 19,
+      "ids": [
+        "US-TX-ARLINGTON-6700504",
+        "US-TX-ARLINGTON-6700505",
+        "US-TX-ARLINGTON-6700506",
+        "US-TX-ARLINGTON-6700507",
+        "US-TX-ARLINGTON-6700508",
+        "US-TX-ARLINGTON-6700509",
+        "US-TX-ARLINGTON-6700510",
+        "US-TX-ARLINGTON-6700511",
+        "US-TX-ARLINGTON-6700512",
+        "US-TX-ARLINGTON-6700500",
+        "US-TX-ARLINGTON-6700503",
+        "US-TX-ARLINGTON-6700513",
+        "US-TX-ARLINGTON-6700541",
+        "US-TX-ARLINGTON-6700542",
+        "US-TX-ARLINGTON-6700543",
+        "US-TX-ARLINGTON-6700691",
+        "US-TX-ARLINGTON-6700692",
+        "US-TX-ARLINGTON-6700693",
+        "US-TX-ARLINGTON-6700694"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -97.146,
+        32.647,
+        -97.145,
+        32.648
+      ],
+      "complete": true,
+      "featureCount": 4,
+      "ids": [
+        "US-TX-ARLINGTON-8201409",
+        "US-TX-ARLINGTON-8201408",
+        "US-TX-ARLINGTON-8201417",
+        "US-TX-ARLINGTON-8201422"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -97.142,
+        32.647,
+        -97.141,
+        32.648
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "US-TX-ARLINGTON-8200688",
+        "US-TX-ARLINGTON-8200660",
+        "US-TX-ARLINGTON-8200546",
+        "US-TX-ARLINGTON-8200661",
+        "US-TX-ARLINGTON-8200689",
+        "US-TX-ARLINGTON-8200662",
+        "US-TX-ARLINGTON-8200691",
+        "US-TX-ARLINGTON-8200690",
+        "US-TX-ARLINGTON-8200563",
+        "US-TX-ARLINGTON-8200720",
+        "US-TX-ARLINGTON-8200721",
+        "US-TX-ARLINGTON-8200722",
+        "US-TX-ARLINGTON-8200723",
+        "US-TX-ARLINGTON-8200693"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 43,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:09.697Z",
+      "queryHash": "945f3bc9fb3e214187417be21cab077cdffc96c70a44b2f79bd6a5134bf8eb28",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 784
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:10.488Z",
+      "queryHash": "945f3bc9fb3e214187417be21cab077cdffc96c70a44b2f79bd6a5134bf8eb28",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 756
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:11.247Z",
+      "queryHash": "595e11b61b4d2c06d7d67733dd9bef8bc4da87726bc8abf206a41859fe7a5933",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 294
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:11.544Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 293
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:11.841Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 206
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:12.049Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 225
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:12.276Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 193
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:12.471Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 204
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:12.677Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 197
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:12.877Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:13.069Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:13.259Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:13.448Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:13.639Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:13.828Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:14.016Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 252
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:14.270Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:14.461Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:14.650Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:14.842Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:15.030Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:15.220Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:15.411Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:15.602Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:15.788Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 235
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:16.024Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:16.211Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:16.403Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:16.595Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:16.785Z",
+      "queryHash": "5f6eb8bc65f6afc5ce8cacafe08ce51510e973fc125388b41cdf1156ba24f005",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 254
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:17.040Z",
+      "queryHash": "c577e877c7408eb378f2af2270df8fa23111806b75403e65d17f988dd81c6b2a",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 377
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:17.418Z",
+      "queryHash": "5b216f78d8a4d020420282649c3f810d067b7cc50ae400daf6f47acf82370a9b",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 241
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:17.659Z",
+      "queryHash": "d6f22b2de48f1427298224e65b6a74ee7d25ff121acd6c1a8664621fa19cd295",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 251
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:17.911Z",
+      "queryHash": "1237ff3cf657fad15b8c2472d11dd66223b686f33c4c64fba49ce04dba11a749",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 264
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:18.176Z",
+      "queryHash": "7f4aab0b9589b357ce6d21b60b5ede152508b8b814142e5d7c3abb53c6e06230",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 247
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:18.424Z",
+      "queryHash": "2158ce125a0181cb9102cb7e73fc6b350a0e3a3874aa33cbcdaaf62e6da02162",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 242
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:18.667Z",
+      "queryHash": "7a84469d6eca45061594912c44d6511a0be22e6a7444829bbca1369cb7b0ba2b",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 282
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:18.949Z",
+      "queryHash": "94883a88f37b7fa3ef82eeff39d06c38596a3054bf11ae1feb9fecb7831eaa3e",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 252
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:19.201Z",
+      "queryHash": "3009063efe45db10ff87cc47ab7f7e449ddbdab85d1295dfe1d13995f2ed6feb",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 252
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:19.455Z",
+      "queryHash": "945f3bc9fb3e214187417be21cab077cdffc96c70a44b2f79bd6a5134bf8eb28",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 329
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:19.796Z",
+      "queryHash": "08a1f1d26e13992bab31b5371186546c0e58cbff9fc5e11be8b9c2b690f0b3f3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:20.032Z",
+      "queryHash": "64b427ab4def58bfcef0d9637dda01e183b098b253bcea9d1f1988fd5b36c3be",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 321
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gis2.arlingtontx.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T13:08:20.355Z",
+      "queryHash": "238a5d92c31790b7b4cbb8f74955a3d9d3c8d11332c051600f490a4b402b6a81",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 200,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 318
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

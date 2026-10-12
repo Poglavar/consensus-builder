@@ -1,0 +1,79 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 3771,
+  "queueRank": 2883,
+  "name": "`Amran",
+  "aliases": ["amran"],
+  "country": "Yemen",
+  "countryCode": "YE",
+  "iso3": "YEM",
+  "point": [15.6607315656098, 43.9336407643564],
+  "population2025": 206728,
+  "population2025k": 206.728,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yemen cadastral map parcel Amran official land registry GIS",
+        "result": "First-party discovery identified the General Authority for Land, Survey and Urban Planning (GALSUP), an official report of its Amran branch discussing city planning and neighborhood-unit plans, and a public ArcGIS Yemen administrative-boundary service. No first-party public parcel viewer or anonymous parcel geometry endpoint was found.",
+        "actualResultUrls": ["https://galsup.gov.ye/", "https://galsup.gov.ye/?p=1046", "https://services1-nocdn.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Yemen_IDR_Map_WFL1/FeatureServer/7"]
+      },
+      {
+        "language": "Arabic",
+        "query": "اليمن عمران السجل العقاري خريطة الأراضي مسح عقاري رسمي",
+        "result": "Arabic first-party discovery found GALSUP service documentation describing surveying, detailed maps, and property registration through branches, plus an official GALSUP report about the Amran branch. The material describes service/procedure workflows, not an anonymous parcel map/API response.",
+        "actualResultUrls": ["https://galsup.gov.ye/?p=1046", "https://moh-alsaraf.site/", "https://www.yemen-nic.info/db/laws_ye/detail.php?ID=11318&print=Y"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "GALSUP is the first-party national land/survey/urban-planning custodian, and its official Amran-branch report records local planning and neighborhood-unit work in Amran.",
+    "localCustodianScope": "GALSUP branch in Amran Governorate; observed scope is planning/survey/land administration. Local parcel coverage for the WUP city point was not verified.",
+    "urls": ["https://galsup.gov.ye/", "https://galsup.gov.ye/?p=1046"]
+  },
+  "officialSources": [
+    {"url": "https://galsup.gov.ye/", "observation": "Official GALSUP site; current public site content identifies the authority and publishes land/survey/urban-planning activity."},
+    {"url": "https://galsup.gov.ye/?p=1046", "observation": "Official report on the GALSUP Amran branch; discusses general plan and neighborhood-unit plans for Amran city and secondary cities."},
+    {"url": "https://services1-nocdn.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Yemen_IDR_Map_WFL1/FeatureServer/7", "observation": "Public ArcGIS Feature Layer named YemenAdministrativeBoundaries_CopyFeatures1; schema is administrative boundaries, not cadastral parcels."},
+    {"url": "https://moh-alsaraf.site/", "observation": "Service guide surfaced by Arabic discovery; describes surveying, maps, and land-registration procedures and requires applicant documents/branch interaction, not public parcel geometry."},
+    {"url": "https://www.yemen-nic.info/db/laws_ye/detail.php?ID=11318&print=Y", "observation": "Officially hosted cadastral-registration law describing property records and maps; legal/procedural evidence only."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": {
+    "name": "Yemen General Authority for Land, Survey and Urban Planning (GALSUP); public Yemen administrative-boundary ArcGIS layer",
+    "viewerUrl": "https://galsup.gov.ye/",
+    "serviceBase": "https://services1-nocdn.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Yemen_IDR_Map_WFL1/FeatureServer/7",
+    "administrativeSelection": {"governorate": "Amran", "city": "`Amran"},
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": null,
+    "geometryType": null
+  },
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://galsup.gov.ye/", "outcome": "Browser discovery retrieved the official public site; no parcel viewer/API or public cadastral geometry route was exposed in the inspected page."},
+    {"method": "GET", "url": "https://galsup.gov.ye/?p=1046", "outcome": "Official Amran branch report retrieved; planning and neighborhood-unit work described, but no parcel IDs or parcel geometry."},
+    {"method": "GET", "url": "https://services1-nocdn.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Yemen_IDR_Map_WFL1/FeatureServer/7?f=pjson", "outcome": "HTTP 200; layer metadata retrieved. Layer is administrative-boundary data with a governorate-name field, not parcel data; no cadastral fields or parcel CRS qualified."},
+    {"method": "GET", "url": "https://services1-nocdn.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Yemen_IDR_Map_WFL1/FeatureServer/7/query?where=1%3D1&outFields=*&returnGeometry=false&resultRecordCount=3&f=pjson", "outcome": "HTTP 200; bounded attribute-only administrative response returned. No parcel identity or geometry requested/retained."},
+    {"method": "GET", "url": "https://galsup.gov.ye/", "outcome": "Local curl attempt timed out after 20 seconds with no bytes; browser discovery separately retrieved the site. No TLS exception or bypass used."},
+    {"method": "GET", "url": "https://slrb.gov.ye/", "outcome": "DNS resolution failed; no request completed. This was not treated as evidence of absence."}
+  ],
+  "resultCategory": "city_registry_found_geometry_not_verified",
+  "coverageAssessment": {
+    "claimedScope": "GALSUP national land/survey/urban-planning authority with an Amran branch and reported local planning activity.",
+    "verifiedOpenScope": "Official authority, Amran branch evidence, procedural cadastral references, and public administrative-boundary service were verified; no open parcel coverage or citywide parcel completeness was verified.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "runtimeReadiness": "held_pending_serial_adapter_review",
+  "remainingUncertainty": "The exact WUP point [15.6607315656098, 43.9336407643564] was preserved in latitude/longitude order and not shifted. Parcel map extent, native parcel identity fields, parcel schema, CRS, update state, and citywide completeness remain unverified. A timeout, DNS failure, or lack of an exposed public route is not evidence of citywide absence. No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained. This packet is research evidence only and is not source integration or admission."
+}

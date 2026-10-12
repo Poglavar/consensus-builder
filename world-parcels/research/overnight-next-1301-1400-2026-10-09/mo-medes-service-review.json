@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-243-mo-medes.json",
+  "cityCode": 243,
+  "purpose": "Document first-party discovery, current public cadastral/property routes, request outcomes, scope limits, and uncertainty.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "unsafeFieldsRequested": false, "citywideCompletenessAsserted": false},
+  "assessment": "The official IGCA site identifies the national cadastral authority. Public MinFin portals expose property-registration forms and map-assisted inscription context, but no anonymous parcel API, schema, CRS, safe native parcel ID, or bounded geometry response was found for Moçâmedes.",
+  "registryAssessment": "IGCA is a national custodian. No Moçâmedes local registry/cadastre/map custodian was evidenced, and the municipal plan is planning material rather than a parcel registry; registryFound remains null.",
+  "queries": [
+    {"language": "English", "query": "Moçâmedes Angola cadastral map parcel official", "outcome": "Official IGCA and MinFin property portals found; no public Moçâmedes parcel-vector service identified.", "actualResultUrls": ["https://www.igca.gov.ao/home", "https://inscrevaja.minfin.gov.ao/", "https://frontoffice.minfin.gov.ao/frontoffice/cadastrar-patrimonio?operation=01&patrimonyTypeV3=03"]},
+    {"language": "Portuguese", "query": "Moçâmedes Angola cadastro predial mapa parcelas registro oficial", "outcome": "Official IGCA, Inscreva Já/SIGT, and Moçâmedes PDM references found; no anonymous parcel geometry endpoint identified.", "actualResultUrls": ["https://www.igca.gov.ao/home", "https://inscrevaja.minfin.gov.ao/", "https://frontoffice.minfin.gov.ao/frontoffice/cadastrar-patrimonio?operation=01&patrimonyTypeV3=03", "https://lex.ao/docs/presidente-da-republica/2024/decreto-presidencial-n-o-177-24-de-29-de-julho/"]}
+  ],
+  "attempts": [
+    {"url": "https://www.igca.gov.ao/home", "method": "GET", "httpStatus": "TLS error", "result": "TLS verification failed because the certificate subject did not match the requested host; no certificate exception or retry bypass was used. Search-indexed official content was recorded, but no service configuration was obtained."},
+    {"url": "https://inscrevaja.minfin.gov.ao/", "method": "GET", "httpStatus": 200, "result": "Public landing page loaded. It describes property inscription and a national property database; no anonymous parcel-vector API was exposed."},
+    {"url": "https://frontoffice.minfin.gov.ao/frontoffice/cadastrar-patrimonio?operation=01&patrimonyTypeV3=03", "method": "GET", "httpStatus": 200, "result": "Public SIGT form loaded. It exposes registration/location fields and map-assisted workflow context, but no safe anonymous parcel query or geometry response was attempted or found. No login or unsafe fields used."},
+    {"url": "https://lex.ao/docs/presidente-da-republica/2024/decreto-presidencial-n-o-177-24-de-29-de-julho/", "method": "GET", "httpStatus": "search-indexed/accessible", "result": "Moçâmedes municipal plan ratification and planning scope recorded; not treated as cadastral parcel evidence."}
+  ],
+  "geometryEvidence": {"sourceUrl": null, "sampleFile": null, "nativeIdField": null, "nativeFieldMapping": {}, "compositeKeyProvenance": null, "sampleCount": 0, "crs": null, "queryExtent": null},
+  "geometryDecision": {"verified": false, "sourceId": null, "nativeIdField": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not attempted because no public parcel service was identified; the exact WUP point [-15.2064827640758, 12.1564980141967] was not shifted.", "retentionNote": "No GeoJSON retained; no native identity or full geometry was evidenced."},
+  "remainingUncertainty": "Search discovery and public portal inspection cannot establish citywide cadastral absence. The IGCA hostname certificate issue prevented direct page inspection, while MinFin public workflows may rely on authenticated or internal services. A future attempt should inspect any officially documented public map/API route if one becomes available.",
+  "safeFieldAllowlist": ["native parcel identity", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter",
+  "researchAttempt": 1
+}

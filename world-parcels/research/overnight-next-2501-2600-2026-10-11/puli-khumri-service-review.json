@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-4129-puli-khumri.json",
+  "cityCode": 4129,
+  "queueRank": 2574,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "service": "No verified public Puli Khumri cadastral parcel service",
+  "officialEvidence": [
+    {"url": "https://pms.moj.gov.af/", "observation": "Official Ministry of Justice PRMIS/PMS public app identifies itself as a property-registration management system and loads runtime.358bb16035bccaa0.js, polyfills.d17a62ab3eeeeed4.js, and main.733b75d24438b70d.js."},
+    {"url": "https://pulekhumri-m.gov.af/index.php/", "observation": "Official Puli Khumri municipal site was reachable and establishes the local municipal custodian, but the inspected public content exposed notices and general municipal information, not a parcel map/API or safe parcel geometry."},
+    {"url": "https://www.mail.gov.af/dr/%D9%85%D8%AF%DB%8C%D8%B1%DB%8C%D8%AA-%D8%AA%D8%AE%D9%86%DB%8C%DA%A9%DB%8C-%D8%B3%D9%88%DB%8C-%DA%A9%D8%AF%D8%B3%D8%AA%D8%B1", "observation": "Official Dari page describes cadastral survey responsibilities including drawing land parcels on master maps; it does not expose a Puli Khumri public viewer or parcel response."},
+    {"url": "https://www.mudh.gov.af/sites/default/files/2019-10/%D8%B3%D8%AA%D8%B1%D8%A7%D8%AA%DB%8C%DA%98%DB%8C%20%D8%AA%D8%B7%D8%A8%DB%8C%D9%82%DB%8C%20%D8%A7%D8%B1%D8%AA%D9%82%D8%A7%DB%8C%20%D8%A7%D8%AF%D8%A7%D8%B1%DB%80%20%D9%85%D8%B3%D8%AA%D9%82%D9%84%20%D8%A7%D8%B1%D8%A7%D8%B6%DB%8C%20%D8%A7%D9%81%D8%BA%D8%A7%D9%86%D8%B3%D8%AA%D8%A7%D9%86%20%D8%A8%D9%87%20%DB%8C%DA%A9%20%D9%86%D9%87%D8%A7%D8%AF%20%D9%85%D8%B9%D8%A7%D8%B5%D8%B1.pdf", "observation": "Official Dari strategy document describes integration of cadastral survey and land administration in the Afghanistan land authority; it is national policy/administration evidence, not a city-specific open parcel service."}
+  ],
+  "requestsAndEndpointChecks": [
+    {"url": "https://pms.moj.gov.af/", "method": "GET", "status": "200", "observation": "Public HTML retrieved; current JavaScript bundle inspected. No map endpoint was exposed in the HTML."},
+    {"url": "https://pms.moj.gov.af/main.733b75d24438b70d.js", "method": "GET", "status": "200", "observation": "Bundle configuration sets apiUrl/apiURL to /api. No public parcel geometry service, CRS, or safe native parcel schema was identified in the bounded string inspection."},
+    {"url": "https://pms.moj.gov.af/api/Geolocation/check-afghanistan", "method": "GET", "status": "200", "response": "{\"success\":true,\"isAllowed\":false,\"clientIp\":\"<redacted: research host address>\",\"message\":\"Access denied: Not from Afghanistan\"}", "observation": "Public health/check endpoint explicitly geo-blocked this environment; this is not evidence of parcel absence."},
+    {"url": "https://pms.moj.gov.af/api/Geolocation/info", "method": "GET", "status": "200", "observation": "Returned public geolocation data identifying the request as Finland; no parcel data."},
+    {"url": "https://pms.moj.gov.af/api/Setup/GetProvinces", "method": "GET", "status": "403", "observation": "Protected route returned the same Afghanistan-only access denial; no schema or geometry."},
+    {"url": "https://pms.moj.gov.af/api/UserProfile/getProfile", "method": "GET", "status": "403", "observation": "Protected route returned Afghanistan-only access denial; no login was attempted."},
+    {"url": "https://pms.moj.gov.af/api/property", "method": "GET", "status": "403", "observation": "Protected property route returned Afghanistan-only access denial; no credentials, private token, or unsafe owner/address fields were requested."}
+  ],
+  "sourceFieldMapping": null,
+  "safeFieldAllowlist": ["stable native parcel identity", "geometry", "CRS", "source scope/provenance"],
+  "sample": {"file": null, "featureCount": 0, "nativeIds": [], "propertiesPolicy": "No sample retained because no native parcel identity and geometry were verified."},
+  "coverageAssessment": {"claimedScope": "Afghanistan national/general registration and cadastral documentation plus Puli Khumri municipal website.", "verifiedOpenScope": null, "countrywideVerified": false},
+  "uncertainty": [
+    "No city-local registry map/API, anonymous parcel response, schema/CRS, safe native parcel identity, or parcel geometry was verified.",
+    "The exact WUP point [35.9542599717416, 68.7067244197448] was preserved and not shifted; no exact-point or extent inference was made.",
+    "The PRMIS/PMS app is public, but its API is restricted by Afghanistan geolocation and protected routes returned 403 from this environment; no login or bypass was attempted.",
+    "Municipal and national land/cadastre references establish custodianship/procedure only, not an open Puli Khumri parcel service.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "Packet completion is research only; runtimeReadiness remains held pending independent serial adapter qualification."
+  ],
+  "runtimeReadiness": "held",
+  "technicalBlocker": "No safe anonymous Puli Khumri parcel geometry endpoint was available after bounded first-party English and Dari/Pashto discovery, public viewer bundle inspection, and anonymous GET checks; PMS geolocation restrictions blocked protected API routes."
+}

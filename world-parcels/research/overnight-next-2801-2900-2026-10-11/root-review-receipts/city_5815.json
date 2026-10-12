@@ -1,0 +1,16 @@
+{
+  "taskId": "city:5815",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-5815-kabondo-dianda.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/kabondo-dianda-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T20:45:52Z",
+  "identityCheck": "WUP 2025 checksum-verified source, immutable ranked roster, pending queue and packet agree: rank 2817, Kabondo-Dianda, Democratic Republic of the Congo (COD), point [-8.90850556802448, 25.6662900880047], 211167 persons.",
+  "researchCheck": "English and local-language executed query records include actual result URLs. No full polygon or source-proven safe native parcel ID was retained; no sample GeoJSON accompanies this packet.",
+  "firstPartyPageChecked": "https://www.affairesfoncieres.gouv.cd/",
+  "custodyDecision": "DRC Ministry homepage returned HTTP 200 and identifies national land/cadastre administration. No Kabondo-Dianda-specific open parcel service is evidenced; the cadastre.gouv.cd DNS failure is unresolved, not citywide absence.",
+  "reason": "No independently evidenced live adapter qualification: fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are missing. Research completion does not establish runtime admission."
+}

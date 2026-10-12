@@ -1,0 +1,121 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 11015,
+  "queueRank": 3070,
+  "name": "Rafiganj",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "capital": false,
+  "point": [24.8197040704828, 84.6332459441564],
+  "population2025": 195539,
+  "population2025k": 195.539,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rafiganj Bihar official cadastral parcel map land records GIS Bihar Bhunaksha",
+        "result": "First-party discovery identified Government of Bihar Revenue and Land Reforms land-record services and the official Bihar BhuNaksha cadastral map viewer. The official viewer documents district/subdivision/circle/mauza selection and a public map backend.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://biharbhumi.bihar.gov.in/",
+          "https://state.bihar.gov.in/lrc/CitizenHome.html"
+        ]
+      },
+      {
+        "language": "Hindi (local)",
+        "query": "रफीगंज बिहार सरकारी भू नक्शा जमीन रिकॉर्ड खसरा",
+        "result": "Hindi-language discovery identified the Government of Bihar BiharBhumi portal and its भू-मानचित्र service, plus the official BhuNaksha Bihar viewer. The first-party viewer's live location API enumerated Aurangabad district and Rafiganj circle using English and Hindi labels.",
+        "actualResultUrls": [
+          "https://biharbhumi.bihar.gov.in/",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://bhunaksha.bihar.gov.in/10/indexmain.jsp"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Directorate of Land Records & Survey / Revenue and Land Reforms Department, Government of Bihar; Bihar BhuNaksha public cadastral map service",
+    "locality": "Aurangabad district, Rafiganj subdivision/circle context",
+    "evidenceUrls": [
+      "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "https://biharbhumi.bihar.gov.in/",
+      "https://state.bihar.gov.in/lrc/CitizenHome.html"
+    ],
+    "scopeNote": "The official BhuNaksha service exposed Aurangabad district code 34, subdivision code 01, and Rafiganj circle code 06. This evidences a local cadastral-map service, not complete municipal or citywide parcel coverage."
+  },
+  "officialSources": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "observation": "Current first-party Bihar BhuNaksha landing page states that the service is cadastral mapping software for digitized cadastral maps and links to the map viewer."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+      "observation": "Current first-party viewer HTML loads config.js and index.js; the UI exposes district, sub-division, circle, mauza, survey type, map instance, sheet, and plot selection."
+    },
+    {
+      "url": "https://biharbhumi.bihar.gov.in/",
+      "observation": "Government of Bihar portal identifies Bihar land-record services, including भू-मानचित्र (land map)."
+    },
+    {
+      "url": "https://state.bihar.gov.in/lrc/CitizenHome.html",
+      "observation": "Government of Bihar Revenue and Land Reforms Department describes responsibility for land records, survey, settlement, and maintenance of rights records."
+    }
+  ],
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Government of Bihar BhuNaksha",
+    "nativeIdField": "plot identifier returned by MapInfo/getPlotAtXY (not observed in a successful response)",
+    "crs": null,
+    "boundedResponse": {
+      "locationEnumeration": {
+        "state": "10",
+        "district": {"code": "34", "label": "AURANGABAD / औरंगाबाद"},
+        "subdivision": {"code": "01", "label": "Aurangabad / औरंगाबाद"},
+        "circle": {"code": "06", "label": "Rafiganj"},
+        "observation": "The live ListsAfterLevel response returned Rafiganj as an available circle and returned a large mauza list for the circle; no directly named Rafiganj town mauza was identified in the bounded text search."
+      }
+    },
+    "fieldMapping": {
+      "documentedViewerIdentity": "plot ID / plot number handled by MapInfo/getPlotAtXY and selectPlot",
+      "safeGeometry": "plot geometry rendered through the BhuNaksha WMS PLOT_LIST layer",
+      "observedSourceFields": ["id", "kide", "plotNo", "center_x", "center_y", "xmin", "ymin", "xmax", "ymax"],
+      "note": "These names were observed in current JavaScript response handling only; no parcel feature response was retained and no raw attribute set is included."
+    },
+    "note": "The exact WUP point was preserved and not shifted. No zero-hit or map extent miss is treated as evidence of citywide absence."
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/index.jsp", "outcome": "200; official BhuNaksha landing page retrieved."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp", "outcome": "200; current public viewer HTML retrieved; viewer controls and JavaScript assets identified."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/config.js", "outcome": "200; current configuration inspected; service root is the parent path ../rest and WMS endpoint is exposed."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/index.js", "outcome": "200; current JavaScript inspected; ListsAfterLevel, getPlotAtXY, WMS, and plot-selection routes identified."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count", "outcome": "200; state 10 returned seven location/map-selection levels."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "outcome": "200; state 10 and district code 34 returned Aurangabad subdivision and Rafiganj circle code 06; subsequent circle enumeration returned mauza records."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/WMS?service=WMS&request=GetCapabilities", "outcome": "500 with empty body; no service metadata or geometry returned."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY", "outcome": "405 Allow: POST,OPTIONS for the unparameterized probe; no parcel response. A valid giscode and projected map coordinates were not available without selecting a specific mauza/map instance, so no fabricated identify request was made."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity if returned", "full parcel geometry", "geometry CRS", "public location codes and labels", "public map-service metadata"],
+  "coverageAssessment": {
+    "claimedScope": "Bihar BhuNaksha location and cadastral-map service for published Bihar administrative selections.",
+    "verifiedOpenScope": "Official service existence and Aurangabad/Rafiganj administrative enumeration were verified anonymously. No anonymous parcel polygon or successful identify response was verified for Rafiganj.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The exact WUP point was not shifted and was not used as an absence test.",
+    "The BhuNaksha viewer requires a specific mauza/map instance and projected map context for identify; the bounded anonymous route inspection did not produce a valid Rafiganj-town parcel response.",
+    "The HTTP 500 WMS capabilities result and HTTP 405 unparameterized identify result indicate request/route limitations, not citywide absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or admission."
+  ]
+}

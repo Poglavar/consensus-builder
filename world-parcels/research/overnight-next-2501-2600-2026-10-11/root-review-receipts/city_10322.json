@@ -1,0 +1,43 @@
+{
+  "taskId": "city:10322",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-10322-laibin.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/laibin-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/root-review-receipts/source-evidence/city_10322-first-party-query.json"
+  ],
+  "checkedAt": "2026-10-11T13:45:49.829759Z",
+  "reason": "Held: WUP rank 2514 identity and English/Chinese executed searches match the immutable queue. A saved first-party Guangxi ArcGIS POST response has one unchanged polygon with only OBJECTID and native ZDID 240565597900398104; it intersects the exact WUP point. The province-wide layer and point hit do not establish citywide coverage or runtime admission. Independent adapter qualification, forced paging, 13 bounded cells, metric GEOS overlap/operation checks, source binding, and headed Details verification are missing.",
+  "sourceCheck": {
+    "originalCache": "tmp/valhalla-parcel-research/laibin/query-post.json",
+    "originalResponseSha256": "1761e60329486bb33f0d1cd75726cbc8c89b20a6c47fd5cb0f497cc36983d53e",
+    "durableResponseSha256": "1761e60329486bb33f0d1cd75726cbc8c89b20a6c47fd5cb0f497cc36983d53e",
+    "responseGeometryType": "esriGeometryPolygon",
+    "responseCrs": "EPSG:4326",
+    "nativeIdField": "ZDID",
+    "nativeId": "240565597900398104",
+    "featureCount": 1,
+    "safeFields": [
+      "OBJECTID",
+      "ZDID"
+    ],
+    "rings": 3,
+    "vertices": 83,
+    "exactPointIntersects": true
+  },
+  "geometryReview": {
+    "fullPolygonsRetained": 1,
+    "safeNativeIdVerified": true
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

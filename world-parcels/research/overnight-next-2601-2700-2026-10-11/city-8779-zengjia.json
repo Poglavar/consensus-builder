@@ -1,0 +1,52 @@
+{
+  "cityCode": 8779,
+  "queueRank": 2635,
+  "name": "Zengjia",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [29.607675850683, 106.325626686476],
+  "population2025": 224076,
+  "population2025k": 224.076,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zengjia Chongqing cadastral parcel map official China",
+        "result": "First-party discovery identified Chongqing's municipal Planning and Natural Resources Bureau as the relevant custodian and its official guidance for cadastral-map and real-estate-registration lookup. The official materials direct users to the Chongqing government Yu Kuai Ban service; no anonymous parcel feature endpoint was discovered.",
+        "actualResultUrls": [
+          "https://ghzrzyj.cq.gov.cn/zwgk_186/zczxwdk_378544/wdzt/ywyd/202403/t20240314_13037887.html",
+          "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/yzzd/202003/t20200323_5980576.html",
+          "https://gxq.cq.gov.cn/zj/zjz/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "曾家 重庆 地籍图 地图 官方 不动产登记",
+        "result": "First-party Chinese discovery found the official Chongqing bureau guidance stating that cadastral maps may be queried through registration service halls or the Yu Kuai Ban real-estate service, and the official Zengjia town page. No anonymous parcel ID-plus-geometry response or public cadastral download was found.",
+        "actualResultUrls": [
+          "https://ghzrzyj.cq.gov.cn/zwgk_186/zczxwdk_378544/wdzt/ywyd/202403/t20240314_13037887.html",
+          "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/zcwj/202205/t20220512_10708940.html",
+          "https://gxq.cq.gov.cn/zj/zjz/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "Chongqing Municipal Planning and Natural Resources Bureau is the evidenced city-level custodian for cadastral-map and real-estate-registration lookup; the official Chongqing High-Tech Zone site identifies Zengjia Town as a local administrative locality.",
+    "urls": [
+      "https://ghzrzyj.cq.gov.cn/zwgk_186/zczxwdk_378544/wdzt/ywyd/202403/t20240314_13037887.html",
+      "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/yzzd/202003/t20200323_5980576.html",
+      "https://gxq.cq.gov.cn/zj/zjz/"
+    ]
+  },
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "sampleFiles": []
+}

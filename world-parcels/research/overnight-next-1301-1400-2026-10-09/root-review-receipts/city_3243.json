@@ -1,0 +1,12 @@
+{
+  "taskId": "city:3243",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-3243-sanhur.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/sanhur-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-09T15:13:18.534465Z",
+  "reason": "Official ESA pages and cached HTTP 200 response describe survey/map custody and a map request/quotation workflow, while Fayoum GIS evidence does not establish a Sanhur parcel service. registryFound remains null. No anonymous safe native parcel ID/full polygon or any adapter, 13-cell, metric GEOS, source-binding, or headed Details verification is evidenced; no citywide absence is inferred."
+}

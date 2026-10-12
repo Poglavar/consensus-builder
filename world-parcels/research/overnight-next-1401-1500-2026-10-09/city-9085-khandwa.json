@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9085,
+  "cityId": "wup2025:9085",
+  "name": "Khandwa",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "queueRank": 1435,
+  "rank": 1435,
+  "point": [21.8279491406534, 76.3483034039176],
+  "centerLatLon": [21.8279491406534, 76.3483034039176],
+  "pointBasis": "Exact immutable WUP 2025 locator; not shifted and not a parcel-coverage claim.",
+  "population2025": 394910,
+  "population2025k": 394.91,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Khandwa district administration identifies the Office of the Superintendent of Land Records and directs users to MP Bhulekh for spatial and non-spatial land-record data. The official DILRMP dashboard reports Khandwa tehsil cadastral-map and parcel digitization status. This evidences a relevant government custodian and public service, not a successful parcel response.",
+  "registryEvidenceUrls": [
+    "https://khandwa.nic.in/en/service/land-records/",
+    "https://khandwa.nic.in/khandwa-gis/",
+    "https://mpbhulekh.gov.in/",
+    "https://webgis2.mpbhulekh.gov.in/",
+    "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/450"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_not_enabled_no_verified_public_geometry",
+  "runtimeAssessment": {
+    "status": "held_not_enabled_no_verified_public_geometry",
+    "reason": "Official MP Bhulekh/WebGIS and Khandwa GIS hosts were attempted anonymously with normal TLS, but timed out before HTML/configuration or API responses could be inspected. No native parcel identity, schema, CRS, or full polygon was inferred. This is not evidence of citywide absence."
+  },
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Khandwa Madhya Pradesh official cadastral parcel map GIS land records",
+        "result": "First-party results found the Khandwa district land-records page, Khandwa GIS portal, MP Bhulekh service, and the Government of India DILRMP Khandwa tehsil status page.",
+        "actualResultUrls": ["https://khandwa.nic.in/en/service/land-records/", "https://khandwa.nic.in/khandwa-gis/", "https://mpbhulekh.gov.in/", "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/450"],
+        "executionMethod": "Independent web search followed by first-party source inspection."
+      },
+      {
+        "language": "Hindi",
+        "query": "खंडवा मध्य प्रदेश आधिकारिक भू-नक्शा खसरा नक्शा भूलेख",
+        "result": "Hindi discovery found the official Hindi Khandwa land-records page, which directs users to MP Bhulekh and identifies district land-record administration; the official Khandwa GIS portal was also identified.",
+        "actualResultUrls": ["https://khandwa.nic.in/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E4% a1%E0%A5%8D%E0%A4%B8/", "https://khandwagis.mp.gov.in/", "https://mpbhulekh.gov.in/"],
+        "executionMethod": "Independent Hindi-language web search followed by first-party source inspection."
+      }
+    ],
+    "requests": [
+      {"url": "https://mpbhulekh.gov.in/", "method": "GET", "status": "timeout", "summary": "Anonymous public portal request timed out after 30 seconds; no HTML or current JavaScript/configuration obtained."},
+      {"url": "https://webgis2.mpbhulekh.gov.in/", "method": "GET", "status": "timeout", "summary": "Anonymous WebGIS 2.0 request timed out after 12 seconds; no public API route or response obtained."},
+      {"url": "https://khandwagis.mp.gov.in/", "method": "GET", "status": "timeout", "summary": "Anonymous official Khandwa GIS request timed out after 12 seconds; no map configuration or service endpoint obtained."},
+      {"url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/450", "method": "GET", "status": "HTTP 200 via indexed first-party page", "summary": "Official DILRMP page reports Khandwa tehsil with 754/754 digitized villages, 222/222 cadastral maps geo-referenced and 200393 total land parcels; no parcel geometry endpoint was exposed by the page."}
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Khandwa district land-record office, MP Bhulekh/WebGIS public service, Khandwa GIS portal, and DILRMP status evidence.",
+    "verifiedOpenScope": "Official custodian/service existence and DILRMP coverage statistics; no current viewer configuration, anonymous parcel response, native field mapping, CRS, or geometry.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel or survey identifier if exposed", "geometry", "CRS", "source layer/service metadata"],
+  "nativeFieldMapping": {"sourceFieldsObserved": [], "retainedIdentity": null, "retainedIdentityProvenance": "No successful parcel feature response; no native identity inferred or fabricated."},
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "registration or encumbrance details"],
+  "remainingUncertainty": "The official services may expose geometry through a different village-level workflow, require transient availability, or be inaccessible from this environment. Timeout and lack of exact-point response do not establish parcel absence or citywide lack of coverage.",
+  "nextStep": "A serial reviewer may independently inspect the live MP Bhulekh/WebGIS configuration and a bounded village-level anonymous parcel response. Qualify an adapter only after a stable native parcel identity and full polygon are observed."
+}

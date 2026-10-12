@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-9285-dharashiv.json",
+  "schemaVersion": 1,
+  "cityCode": 9285,
+  "queueRank": 2403,
+  "city": "Dharashiv",
+  "country": "India",
+  "countryCode": "IN",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "outcome": "complete_packet_no_verified_geometry",
+  "queries": [
+    {"language": "English", "query": "Dharashiv Maharashtra official cadastral parcel map land records GIS Bhu Naksha Mahabhumi", "outcome": "Official Maharashtra service catalog, official Dharashiv land-records page, and official Mahabhunakasha viewer found; no open parcel feature response found.", "urls": ["https://bhumiabhilekh.maharashtra.gov.in/Services", "https://osmanabad.gov.in/service/land-records/", "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp"]},
+    {"language": "Marathi", "query": "धाराशिव भू नकाशा महाभूमि सिटी सर्वे प्लॉट नकाशा अधिकृत", "outcome": "Same official custodian/viewer leads found; no usable bounded geometry response found.", "urls": ["https://bhumiabhilekh.maharashtra.gov.in/Services", "https://dharashiv.maharashtra.gov.in/", "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp"]}
+  ],
+  "requestOutcomes": [
+    {"url": "https://bhumiabhilekh.maharashtra.gov.in/Services", "method": "GET", "result": "HTTP 200 HTML; official catalog names Mahabhunakasha/e-Nakasha and describes village, city-survey and plot maps."},
+    {"url": "https://osmanabad.gov.in/service/land-records/", "method": "GET", "result": "HTTP 200 HTML; official Dharashiv Land Record Office page and Maharashtra service links."},
+    {"url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp", "method": "GET", "result": "Timeout at 30s with browser-like headers and cookie jar; no response body."},
+    {"url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html", "method": "GET", "result": "Timeout at 20s with browser-like headers; no response body."}
+  ],
+  "viewerInspection": {"performed": false, "reason": "Both official public viewer routes timed out before HTML/JavaScript/configuration could be obtained; no login, CAPTCHA, credential, token bypass, or TLS exception was attempted."},
+  "registryAssessment": {"registryFound": true, "basis": "Official district land-records custodian and official state map service evidenced.", "limitation": "Custodian/service evidence is not parcel geometry verification."},
+  "safeFieldAllowlist": ["native parcel ID", "geometry", "source CRS", "layer/service identity"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "personal data"],
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "scopeLimits": ["No citywide absence inferred from exact-point or map-route timeout.", "No countrywide coverage inferred from Maharashtra state service prose.", "No parcel sample retained because no nonempty geometry response was received."],
+  "uncertainty": "The current public viewer/API may be reachable from another network or during a service-availability window; schema, CRS, parcel identity semantics and Dharashiv city coverage remain unverified.",
+  "completion": {"packetFilesWritten": ["city-9285-dharashiv.json", "dharashiv-service-review.json"], "sampleGeoJSONWritten": false, "sourceIntegrationAdmitted": false}
+}

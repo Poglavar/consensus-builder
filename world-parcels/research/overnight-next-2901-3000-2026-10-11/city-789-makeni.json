@@ -1,0 +1,74 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 789,
+  "queueRank": 2977,
+  "name": "Makeni",
+  "country": "Sierra Leone",
+  "countryCode": "SL",
+  "iso3": "SLE",
+  "locId": 694,
+  "capital": false,
+  "point": [8.88653786826289, -12.0441301941181],
+  "population2025": 200865,
+  "population2025k": 200.865,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Makeni Sierra Leone official cadastral parcel map GIS land registry site:gov.sl",
+        "result": "First-party results identified the Ministry of Lands, Housing and Country Planning (MLHCP) portal, the National Land Commission (NLC), and an official government anti-corruption presentation documenting the Surveys and Lands regional office in Makeni. No anonymous public parcel viewer or feature API was identified.",
+        "actualResultUrls": ["https://app.molhcp.gov.sl/", "https://www.nlc.gov.sl/services", "https://www.anticorruption.gov.sl/slides/slide/ministry-of-lands-country-planning-and-environment-474/pdf_content"]
+      },
+      {
+        "language": "Krio (local/native)",
+        "query": "Makeni Sierra Leone wan map plot land registry official",
+        "result": "The first-party discovery result set did not expose a Krio-language cadastral viewer or anonymous parcel service. The official NLC and MLHCP English portals were the relevant first-party land-administration sources returned and inspected.",
+        "actualResultUrls": ["https://www.nlc.gov.sl/digital-portal", "https://app.molhcp.gov.sl/", "https://sllap.molhcp.gov.sl/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Sierra Leone Ministry of Lands, Housing and Country Planning Surveys and Lands Directorate, with the National Land Commission as the national land-administration coordinating body; the official regional-office evidence specifically names Makeni.",
+    "locality": "The official government presentation states that regional offices in Makeni, Kono, Kenema and Bo include Surveys and Lands and Country Planning divisions, and that the Surveys and Lands division scrutinizes and signs regional survey plans and is custodian of government lands in the regions.",
+    "evidenceUrls": ["https://www.anticorruption.gov.sl/slides/slide/ministry-of-lands-country-planning-and-environment-474/pdf_content", "https://app.molhcp.gov.sl/services.aspx", "https://www.nlc.gov.sl/services"],
+    "scopeNote": "This establishes first-party land/cadastre custodianship and survey-plan procedures, not public parcel-data availability, citywide coverage, or legal title coverage."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "https://app.molhcp.gov.sl/",
+    "nativeIdField": null,
+    "nativeIdentityObserved": null,
+    "crs": null,
+    "boundedResponse": null,
+    "note": "The current MLHCP portal and services page were inspected for viewer links, JavaScript/configuration, map/API endpoints, schema and CRS. The portal describes requesting cadastral surveys, uploading approved survey plans and land registration through LMIS, but routes users to account registration/login. The NLC digital portal states that interactive cadastral maps are a future feature and is under development, pilot phase coming soon. No anonymous safe parcel ID+geometry response was available; no GeoJSON was retained."
+  },
+  "requestOutcomes": [
+    {"method": "GET/search", "url": "https://app.molhcp.gov.sl/", "outcome": "Official MLHCP portal retrieved. It identifies Surveys & Mapping, land registration and cadastral survey services; no public parcel viewer or feature service was exposed."},
+    {"method": "GET", "url": "https://app.molhcp.gov.sl/services.aspx", "outcome": "Official service page retrieved. It explains cadastral surveys and approved survey plans and links survey requests to account registration; no anonymous map/API, schema or CRS was exposed."},
+    {"method": "GET", "url": "https://app.molhcp.gov.sl/login.aspx", "outcome": "Official portal login route retrieved; authentication gate observed. No credentials, private token, owner or titleholder fields were requested."},
+    {"method": "GET", "url": "https://app.molhcp.gov.sl/register.aspx", "outcome": "Official portal registration route retrieved; account workflow observed. No account was created and no private/authenticated data was accessed."},
+    {"method": "GET", "url": "https://nlc.gov.sl/digital-portal", "outcome": "Official NLC digital land portal retrieved. It lists land search and interactive cadastral maps as planned features but explicitly says under development/pilot phase coming soon; no map/API endpoint was exposed."},
+    {"method": "GET", "url": "https://sllap.molhcp.gov.sl/", "outcome": "Official Sierra Leone Land Administration Project site retrieved; inspected page was informational/news content with no public parcel viewer or feature service exposed."},
+    {"method": "GET/search", "url": "https://www.anticorruption.gov.sl/slides/slide/ministry-of-lands-country-planning-and-environment-474/pdf_content", "outcome": "Official government presentation identifies the Makeni regional Surveys and Lands office and its survey-plan and government-land custodial functions; it does not publish parcel geometry or an API."},
+    {"method": "GET/search", "url": "https://www.nlc.gov.sl/services", "outcome": "Official NLC services page describes cadastral survey and mapping across Sierra Leone and digital land services, but no live anonymous parcel layer was exposed."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel geometry", "geometry CRS", "source layer/service metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The exact WUP point was preserved in latitude/longitude order and never shifted; no anonymous exact-point parcel query was available to execute.",
+    "The evidenced regional Surveys and Lands office and national land agencies may hold additional paper or authenticated digital records, but this research did not log in, create an account, or test private routes.",
+    "No public parcel schema, CRS, native parcel identity, or bounded ID+geometry response was observed; this is an access and publication limitation, not evidence of citywide parcel absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate or other unsafe fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or admission."
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "cityRecord": "city-6490-qionglai.json",
+  "cityCode": 6490,
+  "queueRank": 2777,
+  "city": "Qionglai",
+  "country": "China",
+  "countryCode": "CN",
+  "reviewStatus": "held",
+  "reviewOutcome": "Separate English and Chinese discovery identified official local and provincial natural-resources routes, but direct official portal requests returned HTTP 412 before map/API inspection. No parcel geometry or safe native identity was verified.",
+  "queryAndRequestOutcomes": "English query: Qionglai Sichuan cadastral parcel map official land registry GIS. Native query: 邛崃 不动产登记 地籍图 官方 地图. Direct GET requests to https://www.qionglai.gov.cn/, https://mpnr.chengdu.gov.cn/ql/, and the HTTP version of the Chengdu Qionglai path returned HTTP 412. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification disablement was used.",
+  "cityOrLocalCustodian": "邛崃市人民政府 and 邛崃市规划和自然资源局 are identified as the relevant local-government/custodian context; 四川省自然资源厅 is only general provincial-agency context. A local public registry/map service was not actually evidenced.",
+  "safeFieldAllowlist": ["stable native parcel ID if later verified", "geometry if later verified", "geometry CRS", "source layer/schema metadata", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"],
+  "schemaAndCrs": null,
+  "sampleGeojson": null,
+  "scopeLimits": ["No citywide completeness or legal/public-use admission claim.", "No exact-point absence inference; WUP point remains exactly [30.4106348251649,103.461716288344].", "No parcel polygons were retained because no safe geometry response was obtained.", "HTTP 412 gating is a route failure, not evidence of citywide absence."],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "Independent serial review is still needed for adapter qualification, identity semantics, service stability, update cadence, and runtime policy; the current attempt did not reach a parcel service.",
+  "integrationDisposition": "Research packet only; no registry/catalog/runtime files changed."
+}

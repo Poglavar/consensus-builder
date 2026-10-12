@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-5008-edendale.json",
+  "cityCode": 5008,
+  "queueRank": 1668,
+  "city": "Edendale",
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official KZN and national cadastral routes plus an official Edendale cadastral planning map were found. Bounded anonymous inspection did not recover a verified Msunduzi/Edendale parcel API response, safe native parcel identity, schema, CRS, or geometry. Runtime remains held.",
+  "queryOutcomes": "Separate English and isiZulu first-party discovery queries are recorded in city-5008-edendale.json. English results found the KZN cadastral dashboard, Chief Surveyor-General viewers, and Edendale cadastral PDF; isiZulu results did not expose a separate public parcel service.",
+  "requestOutcomes": "The KZN dashboard HTML opened but its anonymous ArcGIS REST item/data requests returned 403. The eThekwini Parcels service was identified from first-party ArcGIS metadata but direct map/query requests failed local TLS verification; no TLS exception was used. The CSG viewer host was not resolvable. The official Edendale PDF was fetched/reviewed as static map evidence.",
+  "scopeLimits": [
+    "The official KZN cadastral dashboard and Edendale cadastral PDF establish map/custodian evidence, not an open parcel adapter.",
+    "The eThekwini cadastral service is a different municipal service and its advertised extent does not cover the exact Edendale point; no coverage inference was made.",
+    "No exact-point hit or miss, map extent miss, timeout, login wall, or unusable UI was treated as evidence of citywide absence, and the WUP point was not shifted.",
+    "The static PDF labels were not converted into synthetic identities or digitized into retained geometry.",
+    "No GeoJSON sample was retained because no safe native parcel geometry and identity response was obtained.",
+    "This packet is research evidence only and must not be treated as source integration or adapter admission."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentityPolicy": "No machine-readable native parcel identity was obtained; do not synthesize one from PDF labels, response order, dashboard rows, or internal records.",
+  "nativeFieldMapping": {},
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no parcel geometry retained",
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "A restricted, separately configured, or browser-only KZN/CSG cadastral service may exist. Public Msunduzi coverage, parcel schema, CRS, native identity, and safe anonymous runtime access remain unresolved.",
+  "retainedSample": null
+}

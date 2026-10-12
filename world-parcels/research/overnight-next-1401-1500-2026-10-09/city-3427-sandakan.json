@@ -1,0 +1,58 @@
+{
+  "cityCode": 3427,
+  "queueRank": 1412,
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "point": [5.85411312679987, 118.067448321289],
+  "population2025": 400980,
+  "population2025k": 400.98,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sandakan Malaysia official cadastral map parcel land registry Sabah JUPEM eKadaster",
+        "result": "Official sources identify Sabah's Lands and Surveys Department (JTU) as the state land and survey custodian. JTU lists JTUWMA Pro as a registered-user system for geometrical cadastral information; no anonymous parcel geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://jtu.sabah.gov.my/index.cfm?section=Home",
+          "https://pro.jtuwma.net/account/login",
+          "https://www.jupem.gov.my/ebiz/info-korp",
+          "https://sites.google.com/jupem.gov.my/jupemgeospatialwebservices/home"
+        ]
+      },
+      {
+        "language": "Malay",
+        "query": "Sandakan Sabah peta kadaster rasmi lot tanah JUPEM pejabat tanah",
+        "result": "Official Malay-language JTU material names Pejabat Juruukur Daerah Sandakan and Pejabat Penolong Pemungut Hasil Tanah Sandakan. JTUWMA Pro is described as requiring registered-user access; no anonymous safe parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://jtu.sabah.gov.my/homepage3/index.cfm?action=section2&id=0AA7301E24DC3709&lang=BM&section=administration",
+          "https://jtu.sabah.gov.my/homepage3/index.cfm?action=jtu2&lang=bm&section=administration",
+          "https://pro.jtuwma.net/account/login",
+          "https://www.jupem.gov.my/orang-awam/peta-laman"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Jabatan Tanah dan Ukur Negeri Sabah (Lands and Surveys Department Sabah)",
+    "localOffice": "Pejabat Juruukur Daerah Sandakan / Office of District Surveyor Sandakan",
+    "localOfficeEvidenceUrl": "https://jtu.sabah.gov.my/homepage3/index.cfm?action=section2&id=0AA7301E24DC3709&lang=BM&section=administration",
+    "localOfficeAddress": "Bangunan Urusetia Negeri Sabah, Batu 7, Jalan Labuk, 90000 Sandakan",
+    "sourceScope": "State land and survey administration; the official site also lists a Sandakan district survey office and cadastral-related services.",
+    "geometryAccess": "JTUWMA Pro advertises land parcel information and geometrical cadastral information but presents a sign-in page; no credentials were used."
+  },
+  "geometry": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "No anonymous parcel feature query was available from the reviewed first-party routes. The exact WUP point was not used as evidence of absence.",
+    "crs": null
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "A real local registry custodian was verified, but no anonymous safe-ID geometry response and no independently qualified adapter were found.",
+    "adapterAdmission": false
+  }
+}

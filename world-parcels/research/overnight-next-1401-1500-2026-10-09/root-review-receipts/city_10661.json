@@ -1,0 +1,12 @@
+{
+  "taskId": "city:10661",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-10661-tamkuhi-raj.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/tamkuhi-raj-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:20:46Z",
+  "reason": "Queue identity and English/Hindi searches match. Official Kushinagar tehsil/revenue custody and UP Bhulekh are evidenced. Cached first-party app JavaScript exposes API bases, but bounded anonymous routes returned error bodies. There is no safe native-ID polygon read, sample, adapter paging/13-cell/metric GEOS/source-binding qualification, or headed Details proof. No citywide absence is inferred."
+}

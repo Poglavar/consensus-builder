@@ -1,0 +1,56 @@
+{
+  "cityRecord": "city-11206-sihui.json",
+  "schemaVersion": "1.0",
+  "cityCode": 11206,
+  "queueRank": 1694,
+  "city": "Sihui",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "First-party Guangdong and Sihui government sources establish a local natural-resources/real-property service custodian and formal inquiry route, but bounded anonymous inspection found no public parcel ID plus geometry response. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Simplified Chinese discovery queries, outcomes, and actual URLs are recorded in city-11206-sihui.json. Results identified the official Sihui government-services portal, the Sihui Natural Resources Bureau disclosure system, and a Guangdong official registration-unit map.",
+  "requestOutcomes": "The Sihui Natural Resources Bureau request page returned HTTP 200 and was identity/contact/verification gated; no submission was made. The official Guangdong services page and map PDF were found through public web access, while bounded curl retries returned empty replies/status 000. No public parcel viewer/API route, schema, CRS, native parcel ID, or geometry response was verified. No credentials, private tokens, CAPTCHA/Cloudflare bypass, TLS disablement, formal submission, or unsafe lookup was used.",
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeIdentityPolicy": "Do not synthesize a parcel identity from map labels, response order, regional registration-unit numbers, or internal row numbers.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no parcel geometry retained",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel feature service was reached. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Sihui municipal natural-resources and real-property service/procedure routes; regional registration-unit mapping is separately documented.",
+    "verifiedOpenScope": "Institutional custody/procedure and regional map evidence only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "The official local custodian evidence does not prove that a public vector parcel service exists.",
+    "The regional registration-unit PDF is not a parcel layer and was not converted into synthetic parcel geometry.",
+    "No exact-point hit/miss, map extent miss, timeout, empty reply, verification wall, or unavailable UI was treated as evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested, logged, or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; independent serial review remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "The current viewer/API route, parcel schema, CRS, stable native parcel identity, citywide coverage, update currency, and anonymous runtime access remain unresolved. A restricted, authenticated, formal-request, or not-yet-published cadastral service may exist.",
+  "retainedSample": null
+}

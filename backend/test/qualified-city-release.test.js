@@ -11,7 +11,8 @@ const json = file => JSON.parse(read(file));
 const digest = file => createHash('sha256').update(read(file)).digest('hex');
 const manifests = [
     json('world-parcels/research/qualification-admission-2026-10-11.json'),
-    json('world-parcels/research/qualification-admission-2026-10-11-round2.json')
+    json('world-parcels/research/qualification-admission-2026-10-11-round2.json'),
+    json('world-parcels/research/qualification-admission-2026-10-12-round2.json')
 ];
 const admittedCities = manifests.flatMap(manifest => manifest.cities);
 const registry = json('world-parcels/registry.json');
@@ -27,6 +28,9 @@ describe('qualified city production admission', () => {
         expect(new Set(admittedCities.map(city => city.cityCode)).size).toBe(admittedCities.length);
         expect(manifests[1].cityCount).toBe(108);
         expect(manifests[1].cities.every(city => city.primaryReview.status === 'admitted')).toBe(true);
+        // The 2026-10-12 jurisdiction-first release, written by scripts/admit-qualified-cities.mjs.
+        expect(manifests[2].cityCount).toBe(205);
+        expect(manifests[2].cities.every(city => city.primaryReview.status === 'admitted')).toBe(true);
     });
 
     it.each(admittedCities)('$appCityId resolves the qualified source with reproducible, non-repaired evidence', city => {

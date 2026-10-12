@@ -1,0 +1,18 @@
+{
+  "cityRecord": "city-8630-biak-kota.json",
+  "cityCode": 8630,
+  "queueRank": 3258,
+  "attempt": 1,
+  "reviewStatus": "complete_pending_serial_runtime_review",
+  "registryFound": null,
+  "summary": "Official Indonesian ATR/BPN BHUMI and ATLAS surfaces were reached and inspected, and Kantor Pertanahan Kabupaten Biak Numfor was evidenced as the local custodian. No safe anonymous Biak Kota cadastral parcel ID-plus-polygon response was qualified.",
+  "custodian": "Kantor Pertanahan Kabupaten Biak Numfor is the local custodian reference; ATR/BPN is the national source authority.",
+  "requests": "English and Indonesian discovery, official portal GETs, current viewer HTML/JavaScript inspection, and bounded public-source checks are recorded in the city record. No credentials, unsafe fields, CAPTCHA/Cloudflare bypass, or TLS disable was used.",
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdFields": [], "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "geometry": {"verified": false, "sampleCount": 0, "sampleFile": null, "retainedFeatureProperties": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point [-1.16994554589976, 136.081198390132] and population 184918 persons are preserved.", "No exact-point hit, viewer miss, or unavailable route is treated as citywide absence.", "No raw source-specific attributes were retained.", "Completion is not source integration/admission."],
+  "runtimeReadiness": "held_independent_adapter_review",
+  "admissionDecision": "held",
+  "uncertainty": ["Native parcel IDs, CRS, polygons, and coverage remain unverified.", "No sample GeoJSON was written."]
+}

@@ -1,0 +1,32 @@
+{
+  "taskId": "city:3687",
+  "decision": "held",
+  "checkedAt": "2026-10-11T19:11:26.951Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-3687-th-i-b-nh.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/th-i-b-nh-service-review.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 3687,
+    "rank": 2745,
+    "country": "Viet Nam",
+    "point": [
+      20.4481823356867,
+      106.333012330417
+    ],
+    "populationPersons": 215012
+  },
+  "researchChecks": {
+    "englishAndLocalLanguageQueries": true,
+    "verifiedFullPolygonCount": 0,
+    "safeNativeParcelIdResponse": false,
+    "sourceBinding": false,
+    "freshLiveAdapterReads": false,
+    "forcedPaging": false,
+    "boundedCellCount": 0,
+    "metricGeosValidityAndOverlap": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Official Thái Bình registry procedure and VBDLIS deployment establish custody context, but public route exposed no anonymous parcel schema or polygon; MPLIS login wall is an access limitation, not citywide absence."
+}

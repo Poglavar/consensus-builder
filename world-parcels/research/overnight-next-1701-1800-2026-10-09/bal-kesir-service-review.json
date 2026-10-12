@@ -1,0 +1,61 @@
+{
+  "cityRecord": "city-2100-bal-kesir.json",
+  "schemaVersion": "1.0",
+  "cityCode": 2100,
+  "queueRank": 1753,
+  "city": "Balıkesir",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official TKGM Parsel Sorgu and the Balıkesir Kadastro Müdürlüğü are evidenced. The current public viewer shell and configured MEGSİS host were inspected, but bounded anonymous probing returned no usable parcel feature response; no sample geometry is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Turkish first-party discovery queries are recorded in city-2100-bal-kesir.json with actual result URLs.",
+  "requestOutcomes": "The official viewer shell, current JavaScript/configuration, local custodian page, service base, and bounded public API/documentation guesses were requested. The shell was readable; tested API/documentation routes returned 404. No credentials, private tokens, CAPTCHA bypass, unsafe fields, or globally disabled TLS verification were used.",
+  "scopeLimits": [
+    "Exact WUP point [39.6482845461937, 27.8923654435003] was preserved in latitude/longitude order; no coordinate shift or citywide absence inference was made.",
+    "The verified scope is service identity and local custodianship only, not complete Balıkesir coverage.",
+    "A zero exact-point hit, map extent limitation, timeout, login wall, unusable UI, or route-not-found response is not evidence of citywide cadastral absence.",
+    "No stable native parcel ID, source schema, CRS feature response, or full parcel polygon was obtained.",
+    "No owner, address, titleholder, contact, personal, tax, account, registration, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate-reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": null,
+  "geometryQuality": "not applicable; no parcel geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": "https://parselsorgu.tkgm.gov.tr/",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not completed against a verified public parcel feature route; point preserved without shifting.",
+    "requestEvidence": [
+      "https://parselsorgu.tkgm.gov.tr/",
+      "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/",
+      "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/Province",
+      "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/AdministrativeQuery/GetProvinceList"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "TKGM national parcel-location service with Balıkesir Kadastro Müdürlüğü local custodianship.",
+    "verifiedOpenScope": "Public service shell and custodian identity only; no anonymous parcel feature response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Native parcel identity, feature schema, CRS, polygon extraction, currentness and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-4035-ivanovo.json",
+  "purpose": "Document first-party registry/map discovery, current viewer evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Ivanovo regional sources evidence cadastral-registration custody and procedures. The current national public-map route is NSPD, but no anonymous safe parcel-ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "The official Ivanovo regional property department identifies the Ivanovo Rosreestr office and Roskadastr branch; official regional service pages document state cadastral registration and cadastral-evaluation functions. These are local/regional custodial and procedural sources, not an open parcel feature feed.",
+  "officialPrimarySources": [
+    {"url": "https://dui.ivanovoobl.ru/deyatelnost/gosudarstvennye-uslugi/predostavlenie-zemelnogo-uchastka-nakhodyashchegosya-v-sobstvennosti-ivanovskoy-oblasti-na-kotorom-r/", "observation": "Official regional property-department service page names the Ivanovo Rosreestr office and Roskadastr branch and gives their regional addresses/contact details."},
+    {"url": "https://mfc.ivanovoobl.ru/services/detail.php?ELEMENT_ID=41818&target_id=6_0", "observation": "Official Ivanovo regional MFC portal documents state cadastral registration and registration-of-rights service procedure."},
+    {"url": "https://dui.ivanovoobl.ru/deyatelnost/podvedomstvennye-organizatsii/gbu-io-tsentr-kadastrovoy-otsenki/", "observation": "Official regional page identifies the Ivanovo cadastral-evaluation institution and its Ivanovo address."},
+    {"url": "https://nspd.gov.ru/", "observation": "Current first-party national spatial-data platform route identified as the public cadastral-map channel; service retrieval was not successful here."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://nspd.gov.ru/",
+    "observedTechnology": "NSPD was identified as the current first-party route, but its viewer JavaScript/configuration was not retrieved in this environment.",
+    "observedControls": [],
+    "schemaAndCrs": "Not verified from a successful service response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://nspd.gov.ru/", "method": "GET", "normalTlsVerification": true, "result": "Bounded direct curl request timed out after 5 seconds at connection establishment; no HTML, JavaScript configuration, API route, or layer response was retrieved."},
+    {"url": "https://rosreestr.gov.ru/", "method": "GET", "normalTlsVerification": true, "result": "Bounded direct curl request timed out after 5 seconds; no service configuration was retrieved."},
+    {"url": "https://ivanovoobl.ru/", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 HTML response received, but this root page did not provide a parcel feature service or viewer configuration."},
+    {"url": "https://37cko.ru/", "method": "GET", "normalTlsVerification": true, "result": "Bounded direct curl request timed out after 12 seconds; no service response was retrieved."},
+    {"url": "https://lkkadastr.ru/ivanovskaja-oblast/", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 HTML response received, but this is a Roskadastr service/contact page, not an anonymous parcel geometry feed; no login was attempted."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No WUP-point parcel query was submitted because the public service route and safe request shape were not verified."},
+  "coverageAssessment": {"claimedScope": "Ivanovo regional cadastral-registration custody and procedures; NSPD national public map.", "verifiedOpenScope": "No anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "Exact viewer configuration, layer schema, CRS, native parcel identity, anonymous query shape, and coverage remain unverified. Timeout or unavailable UI is not evidence of cadastral absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

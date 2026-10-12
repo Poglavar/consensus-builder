@@ -1,0 +1,16 @@
+{
+  "taskId": "city:4561",
+  "decision": "held",
+  "checkedAt": "2026-10-11T18:24:05Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-4561-tembilahan.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/tembilahan-service-review.json"
+  ],
+  "firstPartyUrlsChecked": [
+    "https://bhumi.atrbpn.go.id/"
+  ],
+  "review": "WUP source archive SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114 independently checked. Its 2025 city code 4561, rank 2710 in the immutable roster, Indonesia, point [-0.321883867103769,103.153174414403], and 218371 persons agree with packet and queue. English and Indonesian searches are recorded. Official ATR/BPN BHUMI is a national viewer; no local Tembilahan registry custodian was independently established, so registryFound remains unresolved (null). The viewer/wrapper/bundle investigation and search interstitial yielded no qualifying Tembilahan parcel response. No polygon or safe native ID is retained. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel proof are missing. Held; no admission or acceptance metrics."
+}

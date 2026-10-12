@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-3561-poltava.json",
+  "cityCode": 3561,
+  "queueRank": 2412,
+  "name": "Poltava",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "pointLatLon": [49.5832455136996, 34.5435147270093],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://mbk.rada-poltava.gov.ua/docs/user/main-page/","httpStatus":200,"outcome":"Official Poltava City Council GIS documentation identifies the portal as a public urban-planning cadastral map/data service."},
+    {"method":"SEARCH","url":"https://mbk.rada-poltava.gov.ua/docs/user/map/","httpStatus":200,"outcome":"Official local map documentation states that the public map supports coordinate and cadastral-number search and a layer catalog."},
+    {"method":"GET","url":"https://mbk.rada-poltava.gov.ua/map/","httpStatus":200,"outcome":"Current public map HTML loaded. SSR configuration showed center [34.4654,49.6422], supported SRIDs [3395,5563,7829,100003,3857,4326], and the main map's active layers array was empty; no parcel geometry endpoint was exposed in this route's configuration."},
+    {"method":"GET","url":"https://mbk.rada-poltava.gov.ua/assets/index-DlN8wbIx.js","httpStatus":200,"outcome":"Current JavaScript bundle inspected. It exposed public basemap URLs and the municipal address suggestion route, but no safe parcel-feature API route in the inspected bundle."},
+    {"method":"GET","url":"https://mbk.rada-poltava.gov.ua/api/suggest/address_id_map?limit=3&key=Полтава","httpStatus":200,"outcome":"Anonymous bounded request returned three public address suggestions with opaque address IDs and coordinates. This is address search evidence, not parcel geometry; no address records were retained."},
+    {"method":"GET","url":"https://mbk.rada-poltava.gov.ua/api-hub/tms/1/ua/10/602/350.png","httpStatus":200,"outcome":"The guessed TMS route returned the portal HTML shell rather than an image, so it was not treated as a tile or parcel response. No further guessed IDs were issued."},
+    {"method":"GET","url":"https://map.land.gov.ua/kadastrova-karta","httpStatus":0,"outcome":"Official national Public Cadastral Map request timed out after 20 seconds. This is a transport failure/availability limit, not evidence of absence."},
+    {"method":"GET","url":"https://geo.rv.ua/api-user/dzk.api","httpStatus":200,"outcome":"A JSON response was reachable at a non-Poltava regional GIS host, but it was not a Poltava local custodian and was not used as cadastral evidence or queried for parcel data."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "https://mbk.rada-poltava.gov.ua/map/ SSR window.__pinia and window.ctx; JavaScript https://mbk.rada-poltava.gov.ua/assets/index-DlN8wbIx.js",
+    "apiBase": "No parcel API base exposed by the inspected current main-map configuration or bundle.",
+    "geometryCrs": "No parcel geometry response obtained. The municipal configuration advertises SRIDs 3395, 5563, 7829, 100003, 3857, and 4326; no reprojection was performed.",
+    "nativeIdentity": "No parcel identity obtained. The opaque address suggestion IDs were not treated as parcel identities.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {"requestScope":"one public address-suggestion GET limited to three results","featureCount":0,"parcelFeatureCount":0}
+  },
+  "localCustodianAssessment": "Poltava City Council's GIS portal is direct local-service evidence. The StateGeoCadastre/land.gov.ua material is national agency evidence and was kept distinct. The reachable geo.rv.ua endpoint is another-region infrastructure and is not treated as a local Poltava registry.",
+  "safeFieldAllowlist": ["stable native parcel identity if independently evidenced","polygon geometry if returned by the source","source service URL","source CRS / coordinate order","retrieval date"],
+  "unsafeFieldsNotRequested": ["owner","address","contact","titleholder","tax/account","certificate/title","personal data"],
+  "qualification": {"serialReviewerRequired": true,"runtimeReadiness":"held","reason":"A local public GIS service is evidenced, but no parcel feature schema or bounded safe ID+geometry response was obtained. Adapter qualification remains a separate serial review."},
+  "scopeLimits": ["The exact WUP point was preserved and was not shifted.","The national service timeout and the absence of an active parcel layer in the inspected municipal map are not citywide absence determinations.","No full parcel polygons are retained because no safely verified parcel response was obtained.","No owner, address, contact, titleholder, tax/account, or personal fields were requested or retained.","Research packet completion does not mean source integration, admission, or runtime readiness."],
+  "uncertainty": "Local portal availability and its public map/search documentation are verified. Current parcel-layer publication, endpoint discovery, coverage, update cadence, and anonymous parcel geometry access remain unresolved; the official national map was unavailable within the bounded timeout."
+}

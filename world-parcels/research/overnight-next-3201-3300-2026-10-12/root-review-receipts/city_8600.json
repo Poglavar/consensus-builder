@@ -1,0 +1,13 @@
+{
+  "taskId": "city:8600",
+  "decision": "held",
+  "checkedAt": "2026-10-12T05:52:14Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-8600-bandikui.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/bandikui-service-review.json"
+  ],
+  "reason": "WUP archive SHA-256 and its 2025 row confirm Bandikui code 8600, rank 3220 in the immutable queue, India, point [27.0502803263627, 76.5736780879062], and 187457 persons. English and Hindi searches with actual result URLs are recorded. The official Rajasthan Revenue Board Apna Khata page links its BhuNaksha cadastral map; Bandikui municipal and planning leads support the local scope, so registryFound true remains a custody finding only. The retained route header files are empty following BhuNaksha timeouts; no first-party native-ID polygon response or sample exists. A timeout is not citywide absence. Fresh exact-ID reads, forced paging, thirteen bounded cells, metric geometry checks, source binding, and headed Details verification are missing. Runtime admission remains held."
+}

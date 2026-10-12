@@ -1,0 +1,51 @@
+{
+  "taskId": "city:5331",
+  "observation": "Root inspected the original first-party HTML, layer metadata, and bounded GeoJSON cache; these are discovery evidence, not adapter admission.",
+  "originalCacheSha256": {
+    "cityGisHtml": "f0aefb2994c5a45021b5e213e11068396aecb3fcb819b7d06e10811c1a354153",
+    "parcelViewerHtml": "59ab705305531ad2cd6f33494cf471ac0c98777d668c740d88392012db7468c1",
+    "layerMetadata": "fe79f7410bef60c6a028de09357f1d130860e69906b70c69dc2fd1d3f5e195cf",
+    "query100mGeoJson": "de9334e163fa5045f6026afed3fa866279dde619d82fda93aebc555f4e2db1bd"
+  },
+  "layer": {
+    "endpoint": "https://gismaps.kingcounty.gov/ArcGIS/rest/services/Property/KingCo_Parcels/MapServer/0",
+    "geometryType": "esriGeometryPolygon",
+    "sourceSpatialReferenceWkid": 2926,
+    "extentSpatialReferenceLatestWkid": 3857,
+    "maxRecordCount": 1000,
+    "supportsPagination": true,
+    "safeFieldsObserved": [
+      "OBJECTID",
+      "PIN"
+    ]
+  },
+  "boundedResponse": {
+    "featureCount": 3,
+    "nativePins": [
+      "7203600220",
+      "7203600150",
+      "7203600135"
+    ],
+    "objectIds": [
+      159877,
+      159880,
+      159881
+    ],
+    "geometryTypes": [
+      "Polygon",
+      "Polygon",
+      "Polygon"
+    ],
+    "propertiesOnly": [
+      "OBJECTID",
+      "PIN"
+    ],
+    "allRingsClosed": true,
+    "exceededTransferLimit": true
+  },
+  "limits": [
+    "The response is truncated at three records and is not a complete bounded manifest.",
+    "No Federal Way fresh exact PIN read, forced paging, thirteen aligned cells, metric GEOS audit, source binding, or headed Details-panel verification was recorded.",
+    "The separate Seattle adapter uses a different FeatureServer endpoint; its tested cells are in Seattle, not Federal Way."
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "cityCode": 2004,
+  "queueRank": 3140,
+  "city": "Saida",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "point": [34.8476062951272, 0.150704190374577],
+  "population2025": 191050,
+  "population2025k": 191.05,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Saida Algeria official cadastral parcel map land registry viewer API cadastre",
+        "result": "First-party discovery identified Algeria's official DGDN/FADAELDJAZAIR land-data portal and an official Saida tourism administration page listing the local Cadastre office. The public portal was not reachable within the bounded anonymous request, and no parcel API, schema, CRS, or safe parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://fadaeldjazair.mf.gov.dz/fr/",
+          "https://officetourisme-saida.dz/OTS/fr/information-pratiques/administration-public",
+          "https://www.mf.gov.dz/images/pdf/Revue_de_presse/Decembre2024/revue_de_presse_du_lundi_16_Decembre_2024.pdf"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "سعيدة الجزائر الخريطة العقارية السجل العقاري قطع الأراضي مسح الأراضي رسمي",
+        "result": "أثبت البحث وجود بوابة فضاء الجزائر التابعة للمديرية العامة للأملاك الوطنية وخدمات مسح الأراضي، كما ظهر مرجع رسمي محلي لمصلحة الكاداستر بسعيدة. لم تُتح استجابة عامة مجهولة تتضمن معرّف قطعة وهندسة كاملة، ولم يتم اعتبار تعذر الوصول دليلاً على غياب التغطية.",
+        "actualResultUrls": [
+          "https://fadaeldjazair.mf.gov.dz/fr/",
+          "https://officetourisme-saida.dz/OTS/ar/s-ydt-qrybt/almwq-aljghrafy",
+          "https://www.apn.dz/documents/JOD/9_legislature/jod_9leg_281.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Algeria's Direction Générale du Domaine National (DGDN) / Ministry of Finance is the national cadastral and land-registration custodian; the Saida local Cadastre office is listed by the official Saida tourism administration page.",
+  "registryEvidence": {
+    "nationalCustodianUrls": [
+      "https://www.mf.gov.dz/images/pdf/Revue_de_presse/Decembre2024/revue_de_presse_du_lundi_16_Decembre_2024.pdf",
+      "https://www.apn.dz/documents/JOD/9_legislature/jod_9leg_281.pdf"
+    ],
+    "localEvidenceUrls": [
+      "https://officetourisme-saida.dz/OTS/fr/information-pratiques/administration-public"
+    ],
+    "interpretation": "An actual first-party local cadastre office reference and an official national land-data portal are evidenced, so registryFound is true. This does not establish an open anonymous parcel geometry service or citywide coverage."
+  },
+  "sourceReview": {
+    "service": "FADAELDJAZAIR official geographic land-data portal; local Saida Cadastre office reference",
+    "baseUrl": "https://fadaeldjazair.mf.gov.dz/fr/",
+    "officialAssetsInspected": [
+      "https://officetourisme-saida.dz/OTS/fr/information-pratiques/administration-public",
+      "https://fadaeldjazair.mf.gov.dz/fr/"
+    ],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": "unverified; no parcel geometry response obtained",
+    "safeFieldAllowlist": [
+      "stable native parcel identifier only, if independently confirmed",
+      "full parcel polygon geometry",
+      "geometry CRS / coordinate reference metadata",
+      "public service and layer metadata"
+    ]
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://fadaeldjazair.mf.gov.dz/fr/",
+      "outcome": "Anonymous TLS-verified curl request timed out after 20 seconds; no HTML, JavaScript/configuration, service route, schema, CRS, parcel ID, or geometry was obtained. No TLS verification bypass was used."
+    },
+    {
+      "method": "GET",
+      "url": "https://officetourisme-saida.dz/OTS/fr/information-pratiques/administration-public",
+      "outcome": "First-party Saida tourism administration page was found by discovery and lists CADASTRE at Rue Awad Abdelkader Sidi el chikh, Saida, with public office telephone/fax details. No map/API or parcel data was exposed; contact details were not retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.mf.gov.dz/images/pdf/Revue_de_presse/Decembre2024/revue_de_presse_du_lundi_16_Decembre_2024.pdf",
+      "outcome": "Official Ministry of Finance publication describes FADAELDJAZAIR as a land-data service for obtaining cadastral/land-registry documents; it does not expose a public parcel-vector endpoint in the inspected material."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.apn.dz/documents/JOD/9_legislature/jod_9leg_281.pdf",
+      "outcome": "Official parliamentary document describes FADAELDJAZAIR launch and its cadastral-document services, initially regional and subject to gradual expansion; no anonymous parcel geometry response or Saida coverage confirmation was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "outcome": "Official ASGA cartographic viewer lead was discovered. Its exposed layers are 1:200,000 cartography, wilaya, communes and thematic mapping, not a parcel cadastre; no parcel geometry was requested or retained."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against parcel geometry; the official land portal did not return a usable anonymous geometry response. The exact WUP point was preserved and not shifted."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Algerian national land-data/cadastral portal with local Saida Cadastre office evidence",
+    "verifiedOpenScope": "Official custodian and local-office evidence only; no anonymous parcel vector response",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "A timeout, unavailable UI, or lack of an exact-point response was not treated as evidence of citywide parcel absence.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set was retained.",
+    "No sample GeoJSON is retained because no safe native parcel identity plus full polygon geometry was obtained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The official FADAELDJAZAIR portal and Saida Cadastre office are evidenced, but public route availability, current JavaScript/configuration, parcel schema, native identity semantics, CRS, geometry delivery, Saida coverage and citywide completeness remain unresolved."
+}

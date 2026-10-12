@@ -1,0 +1,15 @@
+{
+  "taskId": "identity:10768",
+  "decision": "resolved",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/root-identity-10768-first-party-evidence.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/root-identity-decision-overlay.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/identity-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/skip-ledger.json",
+    "world-parcels/research/overnight-cities-2026-10-08/city-7988-suining.json",
+    "world-parcels/registry.json"
+  ],
+  "checkedAt": "2026-10-11T13:25:42.164Z"
+}

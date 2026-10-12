@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-10385-rajnandgaon.json",
+  "purpose": "Document separate English/native-language discovery, local registry custody, current viewer routes, request outcomes, safe field limits, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official local/state cadastral custody and a city-named village extent were verified, but safe source-native parcel geometry and stable parcel identity remain unverified.",
+  "registryAssessment": "Rajnandgaon district administration is the local government custodian for published revenue services; Chhattisgarh Revenue and Disaster Management Department operates the state BhuNaksha cadastral viewer.",
+  "officialPrimarySources": [
+    {"url": "https://rajnandgaon.nic.in/en/service/revenue-services/", "operator": "District Rajnandgaon, Government of Chhattisgarh", "scope": "Local revenue-service and land-document service page."},
+    {"url": "https://revenue.cg.nic.in/bhunaksha/", "operator": "Chhattisgarh Revenue and Disaster Management Department", "scope": "Public cadastral map viewer."},
+    {"url": "https://revenue.cg.nic.in/", "operator": "Chhattisgarh Revenue and Disaster Management Department", "scope": "Official department portal linking Bhuiyan/BhuNaksha services."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Rajnandgaon official cadastral parcel map GIS Chhattisgarh Bhu Naksha", "result": "Official state viewer and district revenue-service page found; no safe vector parcel response established.", "actualResultUrls": ["https://revenue.cg.nic.in/bhunaksha/", "https://rajnandgaon.nic.in/en/service/revenue-services/"]},
+    {"language": "Hindi", "query": "राजनांदगांव भू नक्शा आधिकारिक छत्तीसगढ़ खसरा नक्शा", "result": "Official Chhattisgarh BhuNaksha/land-record pages found; city-named village selector resolved, but no safe parcel polygon+ID response was retained.", "actualResultUrls": ["https://revenue.cg.nic.in/bhunaksha/", "https://revenue.cg.nic.in/citizenui/", "https://rajnandgaon.nic.in/hi/service/revenue-services/"]}
+  ],
+  "requestEvidence": [
+    {"url": "https://revenue.cg.nic.in/bhunaksha/rest/Levels/count", "method": "POST", "requestFields": {"state": "22"}, "httpStatus": 200, "assessment": "Viewer reports four hierarchical levels."},
+    {"url": "https://revenue.cg.nic.in/bhunaksha/rest/Levels/ListsAfterLevel", "method": "POST", "requestFields": {"state": "22", "level": "0", "codes": "", "hasmap": "true"}, "httpStatus": 200, "assessment": "Returned district list including code 42 राजनांदगाँव."},
+    {"url": "https://revenue.cg.nic.in/bhunaksha/rest/Levels/ListsAfterLevel", "method": "POST", "requestFields": {"state": "22", "level": "2", "codes": "42,05,", "hasmap": "true"}, "httpStatus": 200, "assessment": "Returned RI choices including code 15 राजनांदगांव."},
+    {"url": "https://revenue.cg.nic.in/bhunaksha/rest/Levels/ListsAfterLevel", "method": "POST", "requestFields": {"state": "22", "level": "3", "codes": "42,05,15,", "hasmap": "true"}, "httpStatus": 200, "assessment": "Returned village code 364 राजनांदगांव, plus चिखली and नंदई."},
+    {"url": "https://revenue.cg.nic.in/bhunaksha/rest/MapInfo/getVVVVExtentGeoref", "method": "POST", "requestFields": {"state": "22", "gisLevels": "42,05,15,364,", "srs": "0"}, "httpStatus": 200, "contentType": "application/json", "assessment": "Returned gisCode 420515.364 and extent xmin -859.250250315034, ymin 146.074637417283, xmax 2859.89209089368, ymax 2277.55388390899; attribution says updated 2026-02-24 17:10:19.675187."},
+    {"url": "https://revenue.cg.nic.in/bhunaksha/rest/Layers/getLayers", "method": "POST", "requestFields": {"state": "22", "layerType": "TABLE_THEMES", "giscode": "420515.364"}, "httpStatus": 200, "contentType": "application/json", "assessment": "Returned layer metadata including polygon geometryType for thematic layers; no parcel-native feature schema."},
+    {"url": "https://revenue.cg.nic.in/bhunaksha/WMS?SERVICE=WMS&REQUEST=GetCapabilities", "method": "GET", "httpStatus": 500, "contentType": null, "assessment": "Empty response body; not treated as evidence of source absence."},
+    {"url": "https://revenue.cg.nic.in/bhunaksha/ScalarDatahandler", "method": "GET", "requestFields": {"OP": "4", "state": "22", "levels": "42,05,15,364,", "x": "0", "y": "0"}, "httpStatus": 200, "contentType": "application/json", "assessment": "Returned village extent with has_data N for the arbitrary local-coordinate probe; not an exact WUP-point test and not evidence of citywide absence."}
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not used as an eligibility gate; the public viewer extent uses an undisclosed local coordinate system and no coordinate transformation was asserted.",
+    "reason": "The current public JavaScript/configuration exposes WMS/raster map layers and JSON selector/extent services, but no safe bounded parcel feature endpoint was verified.",
+    "safeFieldAllowlist": ["stable native parcel ID if independently evidenced", "full parcel geometry only"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official state BhuNaksha viewer covers the selected Rajnandgaon cadastral village, while the district administration publishes local revenue services.",
+    "verifiedOpenScope": "Selector hierarchy and village extent verified anonymously; parcel-native geometry and ID semantics unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": "Administrative selector path 42/05/15/364 and GIS village code 4205364 are source location keys, not asserted parcel identities.",
+  "remainingUncertainty": "The extent is valid for the selected village, but parcel vector access, native ID field, CRS, and relationship to the WUP point remain unresolved.",
+  "runtimeAssessment": "held_pending_serial_review",
+  "nextStep": "Serial reviewer should inspect current viewer behavior for an anonymous parcel identify/vector route and qualify native ID stability before any adapter consideration.",
+  "cohort": "overnight-next-2601-2700-2026-10-11",
+  "cohortState": "research_complete_pending_serial_review",
+  "integrationState": "not_integrated"
+}

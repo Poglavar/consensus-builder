@@ -1,0 +1,12 @@
+{
+  "taskId": "city:11790",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-11790-longyan.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/longyan-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T14:34:00Z",
+  "findings": "Immutable WUP code 11790, rank 1328, China, point [25.0997041427901,117.024047113305], and 422165 persons match the ranked roster. English and Simplified Chinese executed searches are recorded. The first-party municipal organization page confirms registration and cadastral-survey custody, and the public platform configuration exists, but no safe native parcel ID or full polygon was returned. Sample count is zero. Fresh ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed details verification are absent; no runtime admission."
+}

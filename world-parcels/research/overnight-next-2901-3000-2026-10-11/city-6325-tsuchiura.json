@@ -1,0 +1,86 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 6325,
+  "queueRank": 2912,
+  "name": "Tsuchiura",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso3": "JPN",
+  "locId": 392,
+  "capital": false,
+  "point": [36.044482350239, 140.184266697251],
+  "population2025": 205004,
+  "population2025k": 205.004,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tsuchiura city official cadastral parcel map GIS 土浦市 地番図 公図 GIS",
+        "result": "First-party Tsuchiura results identified the city's cadastral-survey procedure page and its official つちうらマップ planning/road information viewer. The city page says cadastral-map and cadastral-register copies are obtained at the Road Management Division cadastral desk; it does not advertise a public parcel API.",
+        "actualResultUrls": [
+          "https://www.city.tsuchiura.lg.jp/kankyo-kotsu-machizukuri/toshikeikaku-machizukuri/page005980.html",
+          "https://www.city.tsuchiura.lg.jp/kankyo-kotsu-machizukuri/toshikeikaku-machizukuri/toshikeikaku/page000546.html",
+          "https://www.sonicweb-asp.jp/tsuchiura/"
+        ]
+      },
+      {
+        "language": "Japanese (local)",
+        "query": "土浦市 公式 地籍図 地番図 公図 GIS つちうらマップ",
+        "result": "土浦市公式の地籍調査事業ページは、地籍図・地籍簿を作成し登記所へ送付する制度と、成果資料の窓口交付を説明している。公式つちうらマップは認定路線網図・都市計画情報の公開サービスで、公開設定に地籍・筆界ポリゴン層は確認できなかった。",
+        "actualResultUrls": [
+          "https://www.city.tsuchiura.lg.jp/kankyo-kotsu-machizukuri/toshikeikaku-machizukuri/page005980.html",
+          "https://www.city.tsuchiura.lg.jp/temporary/page004578.html",
+          "https://www.sonicweb-asp.jp/tsuchiura/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Tsuchiura City Road Management Division, cadastral affairs desk (道路管理課 地籍業務係), for cadastral-survey result copies and related procedure; the public map viewer is operated through the city's official つちうらマップ publication.",
+    "locality": "Tsuchiura, Ibaraki, Japan",
+    "evidenceUrls": [
+      "https://www.city.tsuchiura.lg.jp/kankyo-kotsu-machizukuri/toshikeikaku-machizukuri/page005980.html",
+      "https://www.city.tsuchiura.lg.jp/kankyo-kotsu-machizukuri/toshikeikaku-machizukuri/toshikeikaku/page000546.html",
+      "https://www.sonicweb-asp.jp/tsuchiura/"
+    ],
+    "scopeNote": "A local cadastral procedure/custodian is evidenced, but no public city parcel geometry service or downloadable parcel layer was evidenced in this attempt."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "https://www.sonicweb-asp.jp/tsuchiura/",
+    "nativeIdField": null,
+    "nativeIdentityObserved": null,
+    "crs": "Viewer configuration declares sonicEpsg EPSG:2451; observed API geometries are returned as longitude/latitude coordinates, but no parcel layer was exposed.",
+    "boundedResponse": {"requestScope": "official viewer API feature instances", "count": 1, "nativeLayer": "i_08203_address", "geometryType": "Point", "note": "The bounded response was an address reference point, not a parcel polygon."},
+    "note": "No parcel polygon was retained. The official viewer's current configuration lists road, zoning/planning, address and facility layers; it does not list a cadastral parcel layer. This is not evidence of citywide parcel absence."
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://www.city.tsuchiura.lg.jp/kankyo-kotsu-machizukuri/toshikeikaku-machizukuri/page005980.html", "outcome": "HTTP/web retrieval successful; official local cadastral-survey procedure, results, and cadastral desk were documented."},
+    {"method": "GET", "url": "https://www.city.tsuchiura.lg.jp/kankyo-kotsu-machizukuri/toshikeikaku-machizukuri/toshikeikaku/page000546.html", "outcome": "HTTP/web retrieval successful; official city page directs users to つちうらマップ for planning information and distinguishes it from certified land information."},
+    {"method": "GET", "url": "https://www.sonicweb-asp.jp/tsuchiura/", "outcome": "HTTP 200; official viewer landing page retrieved."},
+    {"method": "GET", "url": "https://www.sonicweb-asp.jp/tsuchiura/map.js?ver=1.0.189", "outcome": "HTTP 200; current JavaScript configuration inspected. API base is https://www.sonicweb-asp.jp/tsuchiura/api/, viewer CRS setting is EPSG:2451, and configured published layers contain no cadastral parcel layer."},
+    {"method": "GET", "url": "https://www.sonicweb-asp.jp/tsuchiura/api/feature/i_08203_address/instance?detail=0&files=0", "outcome": "HTTP 200; anonymous JSON response with address reference points and native feature IDs. No unsafe attributes requested or retained; response is not parcel data."},
+    {"method": "GET", "url": "https://www.sonicweb-asp.jp/tsuchiura/api/feature/5015(th_11)/instance?detail=0&files=0", "outcome": "HTTP 200; anonymous JSON response with zoning polygons and feature IDs. This is planning/zoning geometry, not parcel geometry, and no sample was retained."},
+    {"method": "GET", "url": "https://www.sonicweb-asp.jp/tsuchiura/api/feature/6156(th_1)/instance?detail=0&files=0", "outcome": "HTTP 200; empty response for the configured road feature type at the default instance route; not interpreted as absence."},
+    {"method": "GET", "url": "https://www.sonicweb-asp.jp/tsuchiura/api/feature/i_08203_address/instance/331692?detail=1&files=0", "outcome": "HTTP 200; one bounded address point with native feature ID and geometry; no unsafe fields requested or retained."}
+  ],
+  "safeFieldAllowlist": ["stable native identity when parcel source is proven", "full parcel geometry when parcel source is proven", "geometry CRS", "source layer/service metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The city procedure and cadastral desk are evidenced, but the public viewer inspected in this attempt exposes no parcel layer or parcel API.",
+    "No exact-point parcel query was possible because no parcel service was published; this is not evidence of citywide absence and the WUP point was not shifted.",
+    "Observed API geometries were non-parcel address/zoning data and were not retained as a parcel sample.",
+    "No owner, address attribute, contact, titleholder, personal, tax, account, certificate, or other unsafe field was requested or retained.",
+    "This packet is research evidence only and is not source integration or admission."
+  ]
+}

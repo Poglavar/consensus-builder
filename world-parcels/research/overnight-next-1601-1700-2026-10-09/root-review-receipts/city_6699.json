@@ -1,0 +1,19 @@
+{
+  "taskId": "city:6699",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-6699-bilbeis.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/bilbeis-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/bilbeis/esa-services.html",
+    "tmp/valhalla-parcel-research/bilbeis/sellingmaproomdigital.aspx.html"
+  ],
+  "checkedAt": "2026-10-10T11:07:19Z",
+  "reason": "ESA first-party services and digital-map pages confirm a map request workflow, not a Bilbeis parcel feature response. No safe native ID or full polygon is evidenced. Registry custody remains unresolved, and all live adapter gates, source binding, and headed Details verification are missing.",
+  "firstPartyUrlsChecked": [
+    "https://www.esa.gov.eg/services.aspx",
+    "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+  ],
+  "verifiedFullPolygonCount": 0,
+  "runtimeAdmitted": false
+}

@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-10387-gudiyatham.json",
+  "cityCode": 10387,
+  "queueRank": 2558,
+  "name": "Gudiyatham",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [12.9464886593116, 78.868948251972],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://eservices.tn.gov.in/", "httpStatus": null, "outcome": "Anonymous TLS-verified GET with desktop browser User-Agent, Accept, Tamil/English Accept-Language, cookie jar, and 12-second timeout timed out; no response body or service configuration obtained."},
+    {"method": "GET", "url": "https://tamilnilam.tn.gov.in/citizen", "httpStatus": null, "outcome": "Official TamilNilam Geo-Info citizen portal was identified by first-party discovery as the map/land-record application; direct anonymous retrieval did not complete within the bounded probe, so no API or geometry was qualified."},
+    {"method": "GET", "url": "https://www.tngis.tn.gov.in/apps.html", "httpStatus": 200, "outcome": "Official TNGIS application page loaded in discovery and exposed a login/CAPTCHA shell plus informational application content; no anonymous parcel service URL, schema, or geometry response was exposed."},
+    {"method": "GET", "url": "https://www.tnurbantree.tn.gov.in/gudiyatham/", "httpStatus": null, "outcome": "Official Gudiyatham Municipality portal was found by discovery; the bounded page fetch timed out. Search material identifies local jurisdiction and land/planning context, not a parcel API."},
+    {"method": "GET", "url": "https://www.tnurbantree.tn.gov.in/gudiyatham/wp-content/uploads/sites/114/2020/09/Gudiyatham-Master-Plan.pdf", "httpStatus": 200, "outcome": "Official planning PDF found; it is a planning/master-plan document, not a safe parcel feature service, and no parcel geometry was retained."},
+    {"method": "GET", "url": "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/", "httpStatus": 200, "outcome": "Official NIC Tamil Nadu announcement confirms Integrated Land Record combining textual records, FMB/maps and Chitta, and links to eservices.tn.gov.in and tamilnilam.tn.gov.in/citizen."}
+  ],
+  "viewerInspection": {"officialViewer": "TNGIS and TamilNilam were inspected through first-party discovery/page content; TNGIS exposed login/CAPTCHA controls and no public parcel layer configuration. No credentialed route, CAPTCHA bypass, private token, or alternate TLS mode was used.", "publicServiceFound": false, "schema": null, "crs": null, "geometryType": null},
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "rawAttributesRetained": false,
+  "sampleGeoJSON": null,
+  "safeFieldAllowlist": ["stable native parcel identity if independently evidenced", "full parcel polygon geometry if independently evidenced", "source URL", "observed coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "A state/local registry custodian is evidenced, but no anonymous parcel polygon, stable native parcel identity, schema, CRS, or bounded geometry response was obtained; research does not admit a runtime adapter."},
+  "scopeLimits": ["The exact WUP point was preserved in latitude/longitude order and was not shifted to force a hit.", "No exact-point parcel result was obtained; this is not evidence of citywide absence.", "Official state services may require interactive selection, session state, or access controls; no login or CAPTCHA bypass was attempted.", "No citywide completeness, districtwide completeness, or countrywide coverage claim is made.", "No credentials, private tokens, unsafe fields, TLS exception, or retained raw source attribute set was used.", "Packet completion records research only; it is not source integration or runtime admission."],
+  "uncertainty": "Tamil Nadu has official land-record and map-related services relevant to Gudiyatham, but this attempt did not qualify an open parcel feature service or geometry response. Retry from another network or inspect a permitted public viewer session if a future attempt can do so without credentials or CAPTCHA bypass."
+}

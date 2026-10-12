@@ -1,0 +1,9290 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Digitization of Cadastral Maps and Geo Referencing | Public Report</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	
+    <link rel="stylesheet" href="/GeoDashboard/vendor/bootstrap/css/bootstrap.min.css" />
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="/GeoDashboard/css/base.css" />
+    <link rel="stylesheet" href="/GeoDashboard/css/base-responsive.css" />
+    <link rel="stylesheet" href="/GeoDashboard/css/animate.min.css" />
+    <link rel="stylesheet" href="/GeoDashboard/css/slicknav.min.css" />
+    <link rel="stylesheet" href="/GeoDashboard/css/font-awesome.min.css" />
+    <link href="/GeoDashboard/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <script src="/GeoDashboard/js/popper.min.js"></script>
+</head>
+<style>
+.error {
+	color:red;
+	font-size: 12px;
+}
+.bar1, .bar2, .bar3 {
+    width: 25px;
+    height: 3px;
+    background-color: #fff;
+    margin: 5px 0;
+    transition: 0.4s;
+}
+
+.change .bar1 {
+  	-webkit-transform: rotate(-45deg) translate(-5px, 5px);
+  	transform: rotate(-45deg) translate(-5px, 5px);
+}
+
+.change .bar2 {opacity: 0;}
+
+.change .bar3 {
+  	-webkit-transform: rotate(45deg) translate(-5px, -7px);
+  	transform: rotate(45deg) translate(-5px, -7px);
+}
+
+#b-homedb {
+	min-height: 457px;
+}
+.container-fluid {
+	width:90%;
+}
+.globalnav-bg, .footer-bs {
+    background-color: #dbdbaa!important;
+}
+th {
+	white-space: break-word;
+}
+
+</style>
+<body>
+	<div style="display:none;">
+		<h1>Heading1</h1><h2>Heading2</h2>
+	</div>
+	
+	<!-- Accessibility -->
+	<div class="container-fluid d-flex clearfix" id="b-accessibility">
+		<div class="b-ministryname">
+			<div class="text-right d-inline-block font-weight-bold b-acc-goi pr-sm-2">
+				<span>उत्तर प्रदेश सरकार</span>
+			</div>
+			<div class="d-inline-block font-weight-bold b-acc-ministry pl-sm-2">
+				<span>Government of Uttar Pradesh</span>
+			</div>
+		</div>
+		
+		<div class="ml-auto d-flex b-acc-icons">
+			<div class="align-self-center">
+
+				<div class="d-inline-block h-100 px-3">
+					<img src="/GeoDashboard/images/icons/ico-site-search.png" alt="site search icon" title="Site search" class="dropdown-toggle" data-toggle="dropdown" style="cursor: pointer;">
+
+					<div class="dropdown-menu p-0 border-0 b-search">
+						<label for="site-search" style="display:none;">Site search</label>
+				        <input type="text" class="form-control float-left b-site-search" id="site-search" placeholder="Search" style="width: 150px; border-radius: 0;">
+					    <div class="input-group-btn float-left">
+					      <button class="btn" type="submit" style="border-radius: 0; background: #505050; color: white; box-shadow: 0 0 0 0.2rem rgba(0,123,255,0);"> 
+					      	<span style="display:none;">Search</span>
+					        <span class="fas fa-search"></span>
+					      </button>
+					    </div>
+				    </div>
+				</div>
+
+				<div class="d-inline-block h-100 px-3 dropdown">
+					<img src="/GeoDashboard/images/icons/ico-social.png" alt="social sites links" title="Social links" class="dropdown-toggle" data-toggle="dropdown" style="cursor: pointer;">
+
+					<div class="dropdown-menu b-social-dropdown" style="min-width: 50px; width: 50px">
+				        <a href="javascript:void(0)" class="dropdown-item"> <span style="display:none;">Facebook link</span><span class="fab fa-facebook-f"></span> </a>
+				        <a href="javascript:void(0);" class="dropdown-item"> <span style="display:none;">Twitter link</span><span class="fab fa-twitter"></span> </a>
+				        <a href="javascript:void(0)" class="dropdown-item"> <span style="display:none;">Youtube link</span><span class="fab fa-youtube"></span> </a>
+				    </div>
+				</div>
+				
+
+				<div class="d-inline-block h-100 px-3">
+					<a href="#b-homedb" class="align-self-center b-skiptomain" title="Skip to main content">
+						<img src="/GeoDashboard/images/icons/ico-skip.png" alt="skip to main content icon">
+					</a>
+				</div>
+
+				<div class="d-inline-block h-100 px-3">
+					<img src="/GeoDashboard/images/icons/ico-accessibility.png" alt="accessibility icon" title="Accessibility Dropdown" class="dropdown-toggle" data-toggle="dropdown" style="cursor: pointer;">
+
+					<div class="dropdown-menu b-accessibility-dropdown" style="min-width: 50px; width: 50px">
+				        <a href="javascript:void(0);" class="dropdown-item" title="Increase font size"> <span class="font-weight-bold"> A<sup>+</sup> </span> </a>
+				        <a href="javascript:void(0)" class="dropdown-item" title="Reset font size"> <span class="font-weight-bold"> A </span> </a>
+				        <a href="javascript:void(0);" class="dropdown-item" title="Decrease font size"> <span class="font-weight-bold"> A<sup>-</sup> </span> </a>
+				        <a href="javascript:void(0)" class="dropdown-item bg-dark" title="High contrast"> <span class="font-weight-bold text-white"> A </span> </a>
+				    </div>
+				</div>
+
+				<div class="d-inline-block h-100 px-3">
+					<a href="javascript:void(0)" title="Sitemap">
+						<img src="/GeoDashboard/images/icons/ico-sitemap.png" alt="sitemap icon">
+					</a>
+				</div>
+
+			</div>
+			
+		</div>
+		
+	</div>
+
+	<!-- Header -->
+	<div class="container-fluid clearfix" id="b-header">
+		<div class="float-left d-flex h-100">
+			<img src="/GeoDashboard/images/bor_logo.png" class="align-self-center b-emblem-image" style="width:100px;" title="National Emblem of India" alt="emblem of india logo">
+		</div>
+
+		<div class="float-left d-flex h-100">
+			<h2 class="align-self-center pl-3 b-appname"><span class="font-weight-bold">Digitization of Cadastral Maps and Geo Referencing</span> <br><span class="b-appfullname"> (Dashboard)</span></h2>
+		</div>
+	</div>
+	
+	<!-- Global Navigation -->
+	<div class="globalnav-bg">
+		<div class="container-fluid">
+			<nav class="navbar navbar-expand-sm navbar-dark px-0">
+				<div class="d-flex w-100 b-nav-mobile">
+					<button class="navbar-toggler align-self-center b-btn-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar" onclick="myFunction(this)">
+						<span style="display:none;">Menu</span>
+						<div>
+						  <div class="bar1"></div>
+						  <div class="bar2"></div>
+						  <div class="bar3"></div>
+						</div>
+					</button>
+					<a href="https://upbhulekh.gov.in/" class="btn btn-outline-light align-self-center ml-auto b-btn-login">
+						Back to Home
+					</a>
+					
+				</div>
+				
+				<div class="collapse navbar-collapse" id="collapsibleNavbar">
+					<ul class="navbar-nav main-menu d-flex">
+						<li class="nav-item d-block"> <a href="/GeoDashboard/public_dashboard" class="nav-link">Dashboard</a> </li>
+						<li class="nav-item d-block"> <a href="/GeoDashboard/unavailable_maps" class="nav-link">Unavailable Maps</a> </li>
+						<li class="nav-item d-block"> <a href="/GeoDashboard/plot_count" class="nav-link">Plot Count</a> </li>
+						<li class="nav-item d-block ml-auto b-loginbut"> <a href="https://upbhulekh.gov.in/" class="nav-link">Back to Home</a></li>
+						
+					</ul>
+				</div>
+
+			</nav>
+		</div>
+	</div>
+
+	<script>
+function myFunction(x) {
+  x.classList.toggle("change");
+}
+</script>
+	
+
+
+	<div class="my-5" id="b-homedb">
+
+			<div class="container-fluid">
+				
+				<div class="">
+					<div class="row text-center">
+						<div class="col-md-1">
+							<div class="form-group">
+								<label for="stateCode">State</label>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<select name="stateCode" class="form-control">
+									<option value="0">Uttar Pradesh</option>   
+								</select>
+							</div>
+						</div>
+						<div class="col-md-1">
+							<div class="form-group">
+								<label for="districtCode">District:</label>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<select name="districtCode" class="form-control" id="districtDash">
+									<option value="">चयन करे</option>
+									
+							       		<option  value="146">Agra (आगरा)</option>   
+							   		
+							       		<option  value="143">Aligarh (अलीगढ़)</option>   
+							   		
+							       		<option  value="178">Ambedkarnagar (अम्बेडकरनगर)</option>   
+							   		
+							       		<option  value="203">Amethi (अमेठी)</option>   
+							   		
+							       		<option  value="137">Amroha (अमरोहा)</option>   
+							   		
+							       		<option  value="162">Auraya (औरैया)</option>   
+							   		
+							       		<option  value="177">Ayodhya (अयोध्या)</option>   
+							   		
+							       		<option  value="191">Azamgarh (आजमगढ)</option>   
+							   		
+							       		<option  value="149">Badaun (बदायूँ)</option>   
+							   		
+							       		<option  value="139">Bagpat (बागपत)</option>   
+							   		
+							       		<option  value="193">Ballia (बलिया)</option>   
+							   		
+							       		<option  value="182">Balrampur (बलरामपुर)</option>   
+							   		
+							       		<option  value="170">Banda (बाँदा)</option>   
+							   		
+							       		<option  value="176">Barabanki (बाराबंकी)</option>   
+							   		
+							       		<option  value="150">Bareilly (बरेली)</option>   
+							   		
+							       		<option  value="185">Basti (बस्ती)</option>   
+							   		
+							       		<option  value="180">Behraich (बहराइच)</option>   
+							   		
+							       		<option  value="198">Bhadohi (भदोही)</option>   
+							   		
+							       		<option  value="134">Bijnor (बिजनौर)</option>   
+							   		
+							       		<option  value="142">Bulandshahar (बुलन्द शहर)</option>   
+							   		
+							       		<option  value="196">Chandauli (चन्दौली)</option>   
+							   		
+							       		<option  value="171">Chitrakoot (चित्रकूट)</option>   
+							   		
+							       		<option  value="190">Deoria (देवरिया)</option>   
+							   		
+							       		<option  value="201">Etah (एटा)</option>   
+							   		
+							       		<option  value="161">Etawah (इटावा)</option>   
+							   		
+							       		<option  value="159">Farrukhabad (फर्रूखाबाद)</option>   
+							   		
+							       		<option  value="172">Fatehpur (फतेहपुर)</option>   
+							   		
+							       		<option selected value="147">Firozabad (फिरोजाबाद)</option>   
+							   		
+							       		<option  value="141">Gbnagar (गौतम बुद्ध नगर)</option>   
+							   		
+							       		<option  value="140">Ghaziabad (गाजियाबाद)</option>   
+							   		
+							       		<option  value="195">Ghazipur (गाजीपुर)</option>   
+							   		
+							       		<option  value="183">Gonda (गोंडा)</option>   
+							   		
+							       		<option  value="188">Gorakhpur (गोरखपुर)</option>   
+							   		
+							       		<option  value="168">Hamirpur (हमीरपुर)</option>   
+							   		
+							       		<option  value="204">Hapur (हापुड़)</option>   
+							   		
+							       		<option  value="155">Hardoi (हरदोई)</option>   
+							   		
+							       		<option  value="144">Hathras (हाथरस)</option>   
+							   		
+							       		<option  value="165">Jalaun (जालौन)</option>   
+							   		
+							       		<option  value="194">Jaunpur (जौनपुर)</option>   
+							   		
+							       		<option  value="166">Jhansi (झांसी)</option>   
+							   		
+							       		<option  value="160">Kannauj (कन्नौज)</option>   
+							   		
+							       		<option  value="163">Kanpurdehat (कानपुर देहात)</option>   
+							   		
+							       		<option  value="164">Kanpurnagar (कानपुर नगर)</option>   
+							   		
+							       		<option  value="202">Kasganj (कासगंज)</option>   
+							   		
+							       		<option  value="174">Kaushambhi (कौशाम्बी)</option>   
+							   		
+							       		<option  value="153">Kheri (खीरी)</option>   
+							   		
+							       		<option  value="189">Kushinagar (कुशीनगर)</option>   
+							   		
+							       		<option  value="167">Lalitpur (ललितपुर)</option>   
+							   		
+							       		<option  value="157">Lucknow (लखनऊ)</option>   
+							   		
+							       		<option  value="187">Maharajganj (महाराजगंज)</option>   
+							   		
+							       		<option  value="169">Mahoba (महोबा)</option>   
+							   		
+							       		<option  value="148">Mainpuri (मैनपुरी)</option>   
+							   		
+							       		<option  value="145">Mathura (मथुरा)</option>   
+							   		
+							       		<option  value="192">Mau (मऊ)</option>   
+							   		
+							       		<option  value="138">Meerut (मेरठ)</option>   
+							   		
+							       		<option  value="199">Mirzapur (मिर्जापुर)</option>   
+							   		
+							       		<option  value="135">Moradabad (मुरादाबाद)</option>   
+							   		
+							       		<option  value="133">Muzaffarnagar (मुजफफर नगर)</option>   
+							   		
+							       		<option  value="151">Pilibhit (पीलीभीत)</option>   
+							   		
+							       		<option  value="173">Pratapgarh (प्रतापगढ)</option>   
+							   		
+							       		<option  value="175">Prayagraj (प्रयागराज)</option>   
+							   		
+							       		<option  value="158">Raebareli (रायबरेली)</option>   
+							   		
+							       		<option  value="136">Rampur (रामपुर)</option>   
+							   		
+							       		<option  value="132">Saharanpur (सहारनपुर)</option>   
+							   		
+							       		<option  value="205">Sambhal (सम्भल)</option>   
+							   		
+							       		<option  value="186">Santkabirnagar (सन्तकबीर नगर)</option>   
+							   		
+							       		<option  value="152">Shahjahanpur (शाहजहांपुर)</option>   
+							   		
+							       		<option  value="206">Shamli (शामली)</option>   
+							   		
+							       		<option  value="181">Shravasti (श्रावस्ती)</option>   
+							   		
+							       		<option  value="184">Sidharthnagar (सिद्धार्थनगर)</option>   
+							   		
+							       		<option  value="154">Sitapur (सीतापुर)</option>   
+							   		
+							       		<option  value="200">Sonbhadra (सोनभद्र)</option>   
+							   		
+							       		<option  value="179">Sultanpur (सुल्तानपुर)</option>   
+							   		
+							       		<option  value="156">Unnao (उन्नाव)</option>   
+							   		
+							       		<option  value="197">Varanasi (वाराणसी)</option>   
+							   		
+								</select>
+							</div>
+						</div>
+						<div class="col-md-1">
+							<div class="form-group">
+								<label for="districtCode">Tehsil:</label>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<select name="tehsilCode" class="form-control" id="tehsilDash">
+									<option value="">चयन करे</option>
+									
+							       		<option  value="00773">Jasrana (जसराना)</option>   
+							   		
+							       		<option  value="00771">Tundla (टूण्डला)</option>   
+							   		
+							       		<option  value="00772">Firozabad (फिरोजाबाद)</option>   
+							   		
+							       		<option selected value="00774">Shikohabad (शिकोहावाद)</option>   
+							   		
+							       		<option  value="01040">Sirsaganj (सिरसागंज)</option>   
+							   		
+								</select>
+							</div>
+						</div>
+						<div class="col-md-1">
+							<div class="form-group">
+								<label>&nbsp;</label>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<a href="/GeoDashboard/public_report" class="btn btn-success">Complete Report</a>
+							</div>
+						</div>
+					</div>
+					
+					<hr style="margin-bottom:30px;">
+					
+					<div class="row text-center" id="sortable-cards">
+					    <div class="col-md-12 p-4 table-responsive">
+			        		<table class="table table-striped table-hover"> <!--text-nowrap-->
+								<thead>
+									<tr>
+										<th>S.No.</th>
+										<th>District</th>
+										
+										<th>Tehsil</th>
+										
+										
+										<th>Village</th>
+										<th>Village Code</th>
+										
+										<th>Revenue Village</th>
+										<th>Village Khatauni</th>
+										<th>Scannable Village</th>
+										<th>Scanned Village</th>
+										<th>Verified Village</th>
+										<th>Linked Village (Bhunaksha)</th>
+										<th>Geo Reference Village</th>
+										<th>Remaining Village</th>
+										<th>Scannable Mapsheet</th>
+										<th>Scanned Mapsheet</th>
+										<th>Verified Mapsheet</th>
+										<th>Linked Mapsheet (Bhunaksha)</th>
+										<th>Geo Reference Mapsheet</th>
+										<th>Remaining Mapsheet</th>
+									</tr>
+								</thead>
+								<tbody>
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									<tr>
+										<td>1</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>अकबरपुर गीतमसिंह</td>
+										<td>125797</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>2</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>अंगदपुर</td>
+										<td>125936</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>3</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>अतापुर</td>
+										<td>126028</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>4</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>अधमपुर</td>
+										<td>125935</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>5</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>अब्बासपुर</td>
+										<td>126018</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>6</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>अरमराजट्ट</td>
+										<td>125981</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										<td>2</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>7</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>असरावली</td>
+										<td>126026</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>8</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>असलेमपुरवीरान</td>
+										<td>125987</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>9</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>असुआ</td>
+										<td>125961</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>10</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>आरौंज</td>
+										<td>125975</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										<td>2</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>11</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>आँवरी</td>
+										<td>125966</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>12</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>आसदेवमई नूरपुर</td>
+										<td>125943</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>13</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>इटौली</td>
+										<td>125944</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>14</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>इन्दरई</td>
+										<td>125836</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>15</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>इन्दुमई</td>
+										<td>125934</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>16</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>ऊवटी</td>
+										<td>125965</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>17</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>एमादिदौली</td>
+										<td>125971</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>18</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>कटैना हर्षा</td>
+										<td>125854</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>3</td>
+										<td>3</td>
+										<td>3</td>
+										<td>3</td>
+										<td>3</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>19</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>कंथरी</td>
+										<td>126038</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>20</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>कनवारा</td>
+										<td>125816</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>21</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>करनपुर</td>
+										<td>126022</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>22</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>कलूपुरा</td>
+										<td>125814</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>23</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>कल्यानपुर अंगदपुर</td>
+										<td>125994</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>24</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>किरथरा मुहम्मदपुर</td>
+										<td>125985</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>25</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>किशनपुर अरमराजट</td>
+										<td>125984</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>26</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>किशनपुरमौहम्मदावाद</td>
+										<td>125963</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>27</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>कुढ़ी</td>
+										<td>125848</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>28</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>कुतवपुरहरगनपुर</td>
+										<td>126006</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>29</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>कुशुआमई</td>
+										<td>125858</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>30</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>केशोंपुर</td>
+										<td>125844</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>31</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>खरगपुर</td>
+										<td>125828</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>32</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>खुशालपुर</td>
+										<td>125995</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>33</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>खेरिया शिकमी फरीदा</td>
+										<td>125847</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>34</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>खैरगढ़</td>
+										<td>125824</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>35</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>गड़ौरा</td>
+										<td>125808</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>36</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>गढि़या शिकमी खैरगढ़</td>
+										<td>125819</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>37</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>गढ़ीदान सहाय</td>
+										<td>218721</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>38</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>गलामई</td>
+										<td>125990</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>39</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>गांगई</td>
+										<td>125974</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>40</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>गोविन्दपुर</td>
+										<td>125937</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>41</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>ग्यामई</td>
+										<td>126034</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>42</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>घाघऊ</td>
+										<td>126001</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>43</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>घुनपई</td>
+										<td>125829</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>44</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>चमरौली</td>
+										<td>125992</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>45</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>चहरई</td>
+										<td>125969</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>46</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>चितावली</td>
+										<td>125953</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>47</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>छरीछप्पर</td>
+										<td>126003</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>48</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>छीछामई</td>
+										<td>125977</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>49</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>जखारा</td>
+										<td>125827</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>50</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>जफराबाद</td>
+										<td>125997</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>51</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>जमालीपुर</td>
+										<td>126016</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>52</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>जरौली</td>
+										<td>125826</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>53</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>जलालपुर</td>
+										<td>125793</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>54</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>जलालपुर मरघटी</td>
+										<td>125973</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>55</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>जसलई</td>
+										<td>125976</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>56</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>जहाँगीरपुर गैलरई</td>
+										<td>125982</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>57</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>जिजोली</td>
+										<td>125928</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>58</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>जेवड़ा</td>
+										<td>125988</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>59</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>डाहिनी</td>
+										<td>125967</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>60</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>ततारपुर</td>
+										<td>126027</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>61</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>तरामई</td>
+										<td>125949</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>62</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>थानूमई</td>
+										<td>125859</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>63</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>दखिनारा</td>
+										<td>125942</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>3</td>
+										<td>3</td>
+										<td>3</td>
+										<td>3</td>
+										<td>3</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>64</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>दपामई</td>
+										<td>125787</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>65</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>दरगपुर</td>
+										<td>125811</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>66</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>दरिगापुर मोहनीपुर</td>
+										<td>125931</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>67</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>दिखतौली</td>
+										<td>125951</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>68</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>दिनौली गोरवा</td>
+										<td>125856</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>69</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>दिवायची</td>
+										<td>125945</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>70</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>दुगना</td>
+										<td>125809</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>71</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>धनपुरा</td>
+										<td>126013</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>72</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>धौरऊहिम्मतपुर</td>
+										<td>125998</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>73</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नगला ऊमर</td>
+										<td>125980</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>74</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नगला कांस मजरा भामई</td>
+										<td>125834</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>75</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नगला किरार</td>
+										<td>125795</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>76</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नगला केशों</td>
+										<td>125798</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>77</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नगला खैय्यातान</td>
+										<td>125823</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>78</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नगला चन्दा</td>
+										<td>126015</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>79</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नगला जाट</td>
+										<td>125855</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>80</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नगला वाजदार</td>
+										<td>125991</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>81</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नगला सकटू</td>
+										<td>125846</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>82</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नगला सेंदलाल</td>
+										<td>125958</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>83</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नगला हरिया</td>
+										<td>125831</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>84</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नगला हिम्मत</td>
+										<td>125817</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>85</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नन्दपुर</td>
+										<td>125799</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>86</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>न.बलुआ</td>
+										<td>125939</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>87</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नया वांस</td>
+										<td>125825</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>88</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नसीरपुर</td>
+										<td>126029</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>89</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नसूपुर सजैती</td>
+										<td>126036</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>90</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नायकपुर</td>
+										<td>125849</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>91</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नावली</td>
+										<td>125930</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>92</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>निकाऊ</td>
+										<td>125805</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>93</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>निजामपुर गढूमा</td>
+										<td>125964</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>94</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>निहालपुर</td>
+										<td>125996</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>95</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नीव खेरिया</td>
+										<td>125978</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>96</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>नौशहरा</td>
+										<td>125954</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>97</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>पड़रिया</td>
+										<td>125852</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>98</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>पथरौआ</td>
+										<td>125807</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>99</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>पिथनपुर</td>
+										<td>126037</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>100</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>पृथ्वीपुर</td>
+										<td>125845</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>101</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>पौहपगढ़</td>
+										<td>125801</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>102</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>प्रतापपुर</td>
+										<td>125803</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>103</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>फजलनगर</td>
+										<td>126035</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>104</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>फतेहपुर कटैना</td>
+										<td>125850</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>105</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>फतेहपुर कर्खा</td>
+										<td>126017</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>106</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>फतेहपुर म.बड़ागांव</td>
+										<td>126039</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>107</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>फरीदा बरौली</td>
+										<td>125842</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>108</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>बछलई</td>
+										<td>125853</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>109</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>बदनपुर</td>
+										<td>125857</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>110</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>बनवीरपुर कुढ़ी</td>
+										<td>125843</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>111</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>बनीपुर</td>
+										<td>126043</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>112</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>बनीपुरा</td>
+										<td>125821</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>113</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>बवाइन</td>
+										<td>125818</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>114</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>बुढ़रई</td>
+										<td>125946</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>115</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>बूढा भरथरा</td>
+										<td>125957</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>116</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>बृह्मावाद लाक्षपुर</td>
+										<td>126012</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>117</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>बैरनी सनौरा</td>
+										<td>125838</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>118</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>भकारि</td>
+										<td>125792</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>119</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>भगवन्तपुर</td>
+										<td>125804</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>120</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>भढाईपुरा</td>
+										<td>126009</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>121</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>भामई</td>
+										<td>125833</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>122</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>भीकनपुर सांखिनी</td>
+										<td>125794</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>123</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>मक्खनपुर</td>
+										<td>126213</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>124</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>माडंई</td>
+										<td>126040</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>125</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>मुबारकपुर खास</td>
+										<td>126023</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>126</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>मु.सराय जावई</td>
+										<td>125959</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>127</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>मुहम्मदपुर झुमझुम</td>
+										<td>125968</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>128</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>मुहम्मदपुर नवादा</td>
+										<td>125929</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>129</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>मुहम्मदपुर माडई</td>
+										<td>126041</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>130</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>मुहम्मदपुर लभौआ</td>
+										<td>125940</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>131</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>मुहम्मदपुर वैरई</td>
+										<td>125970</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>132</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>मेवली</td>
+										<td>126008</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>133</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>मेहराबाद</td>
+										<td>218722</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>134</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>मैयामई</td>
+										<td>125950</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>135</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>मोहनीपुर</td>
+										<td>125932</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>136</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>मौहब्बतपुर अहीर</td>
+										<td>125979</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>137</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>मौहम्‍मदाबाद उर्फ शिकोहाबाद</td>
+										<td>218724</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>138</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>रजोपुरा</td>
+										<td>126020</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>139</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>रढ़ौआ</td>
+										<td>125839</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>140</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>रनुआँ खेड़ा</td>
+										<td>125986</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>141</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>रपड़ी</td>
+										<td>126030</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>3</td>
+										<td>3</td>
+										<td>3</td>
+										<td>3</td>
+										<td>3</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>142</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>रसूलपुर</td>
+										<td>126005</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>143</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>रहचटी</td>
+										<td>125947</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>144</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>रहना</td>
+										<td>125796</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>145</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>रहल</td>
+										<td>126025</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>146</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>राजपुर वलाई</td>
+										<td>125983</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>147</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>रामनगर</td>
+										<td>126042</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>148</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>रामनगरराजपुरवलाई</td>
+										<td>125938</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>149</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>रीठरा</td>
+										<td>125960</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>150</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>रूधऊ</td>
+										<td>126010</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>151</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>रूपसपुर</td>
+										<td>125933</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>152</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>रैपुरा</td>
+										<td>125815</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>153</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>लाटूमई</td>
+										<td>125941</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>154</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>लालई</td>
+										<td>125822</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>155</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>वझेरा खुर्द</td>
+										<td>125835</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>156</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>वदनपुर कर्खा</td>
+										<td>126000</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>157</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>वरियारमऊ</td>
+										<td>126007</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>158</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>वरौली</td>
+										<td>125841</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>159</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>वहोरनपुर</td>
+										<td>125989</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>160</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>वाकलपुर</td>
+										<td>125972</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>161</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>वासदेवमई</td>
+										<td>125956</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>162</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>विजौली</td>
+										<td>125840</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>163</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>विदरखा</td>
+										<td>125948</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>164</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>विल्टीगढ़ देवजीत</td>
+										<td>125832</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>165</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>विल्टीगढ़ रघोल</td>
+										<td>125837</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>166</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>शहजलपुर</td>
+										<td>125952</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>167</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>शहजादपुर दिदौली</td>
+										<td>126033</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>168</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>शाहपुर</td>
+										<td>125962</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>169</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>शेखपुरा</td>
+										<td>125806</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>170</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>शेखूपुर गढ़ी</td>
+										<td>126031</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>171</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>शेखूपुर हाथवन्त</td>
+										<td>125800</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>3</td>
+										<td>3</td>
+										<td>3</td>
+										<td>3</td>
+										<td>3</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>172</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>शोभनपुर</td>
+										<td>125860</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>173</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>श्यावरी</td>
+										<td>125812</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>174</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>सन्दलपुर</td>
+										<td>125830</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>175</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>समोहा</td>
+										<td>126019</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>2</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>176</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>सरमई</td>
+										<td>125813</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>177</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>सलेमपुर वरियारमऊ</td>
+										<td>125999</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>178</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>सांखिनी</td>
+										<td>125810</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>179</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>साढूपुर</td>
+										<td>125993</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>180</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>सांथी</td>
+										<td>125820</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>181</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>सिकन्दरपुर</td>
+										<td>126002</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>182</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>सुजावलपुर</td>
+										<td>126014</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>183</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>सूरजपुर रूधैनी</td>
+										<td>126044</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>184</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>सौरख</td>
+										<td>126011</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>185</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>हरगनपुर</td>
+										<td>126004</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>3</td>
+										<td>3</td>
+										<td>3</td>
+										<td>3</td>
+										<td>0</td>
+										<td>3</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>186</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>हरिनगर</td>
+										<td>125955</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>187</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>हरिहा</td>
+										<td>126024</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>5</td>
+										<td>5</td>
+										<td>5</td>
+										<td>5</td>
+										<td>5</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>188</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>हुसैनपुर गढि़या</td>
+										<td>125861</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>189</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>हुसैनपुर जगै</td>
+										<td>125851</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									<tr>
+										<td>190</td>
+										
+									   	
+									   	
+									   	<td><a href="/GeoDashboard/public_report?distCode=147">Firozabad</a></td>
+										<td>Shikohabad</td>
+									   	
+									   	
+										
+										
+										<td>हैवतपुर कर्खा</td>
+										<td>126021</td>
+										
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>1</td>
+										<td>0</td>
+										
+										
+										
+									</tr>
+									
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									
+									
+									<tr>
+										
+										
+										
+										<th colspan="5">Total</th>
+										
+										<th>190</th>
+										<th>190</th>
+										<th>181</th>
+										<th>181</th>
+										<th>181</th>
+										<th>181</td>
+										<th>165</th>
+										<th>16</th>
+										<th>220</th>
+										<th>220</th>
+										<th>220</th>
+										<th>220</th>
+										<th>200</th>
+										<th>20</th>
+									</tr>
+									
+								</tbody>
+							</table>
+			        	</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	<!----------- Footer ------------>
+	<div class="footer-bs">
+	    <footer class="container">
+	        <div class="text-center b-footer-credit" style="color: #000!important">
+	        	Designed, developed and hosted by <a class="font-weight-bold" href="https://www.nic.in/">National Informatics Centre, UP State Unit, Lucknow</a>
+	        </div>
+	    </footer>
+	</div>
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="/GeoDashboard/vendor/jquery/jquery.min.js"></script>
+  <script src="/GeoDashboard/vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="/GeoDashboard/js/jquery.slicknav.min.js"></script>
+
+  <!-- Menu Toggle Script -->
+  <script>
+    $("#menu-toggle").click(function(e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+    });
+  
+  	$("#districtDash").change(function(){
+	    var districtcode = $(this).val();
+	    $.ajax({
+	        type: 'GET',
+	        url: "/GeoDashboard/public_report_data?distCode=" + districtcode,
+	        success: function(data) {
+	        	$('#sortable-cards').html(data);
+	        },
+	        error:function(){
+	            alert("error");
+	        }
+	    });
+	    $.ajax({
+	        type: 'GET',
+	        url: "/GeoDashboard/get_tehsils?distCode=" + districtcode,
+	        success: function(data){
+	            var options = $('#tehsilDash'), option="";
+	            options.empty();
+	            option = '<option value="">चयन करे</option>';
+	            for(var i=0; i<data.length; i++){
+	                option = option + "<option value='"+data[i].tehsilCodeCensus + "'>"+ data[i].tnameEng + " ("+ data[i].tname +")</option>";
+	            }
+	            options.append(option);
+	        },
+	        error:function(){
+	            alert("error");
+	        }
+	    });
+	});
+  
+  	$("#tehsilDash").change(function(){
+	    var districtcode = $('#districtDash').val();
+	    var tehsilcode = $(this).val();
+	    $.ajax({
+	        type: 'GET',
+	        url: "/GeoDashboard/public_report_data?distCode=" + districtcode + "&tehsilCode=" + tehsilcode,
+	        success: function(data) {
+	        	$('#sortable-cards').html(data);
+	        },
+	        error:function(){
+	            alert("error");
+	        }
+	    });
+	});
+  </script>
+
+  <script src="/GeoDashboard/vendor/jquery-ui/jquery-ui.js"></script>
+    
+</body>
+</html>

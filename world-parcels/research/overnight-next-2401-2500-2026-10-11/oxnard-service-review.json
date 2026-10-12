@@ -1,0 +1,28 @@
+{
+  "cityRecord": "city-889-oxnard.json",
+  "cityCode": 889,
+  "queueRank": 2474,
+  "name": "Oxnard",
+  "country": "United States of America",
+  "countryCode": "US",
+  "pointLatLon": [34.1891769911221, -119.181411608013],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://maps.oxnard.org/arcgis/rest/services/BasemapLayers/MapServer/2","httpStatus":200,"outcome":"Official City of Oxnard ArcGIS parcel Feature Layer metadata loaded; polygon geometry, APN, OBJECTID, source CRS WKID 102645, and GeoJSON support were observed."},
+    {"method":"GET","url":"https://maps.oxnard.org/arcgis/rest/services/BasemapLayers/MapServer/2?f=pjson","httpStatus":200,"outcome":"Layer configuration/schema loaded. Geometry is esriGeometryPolygon; native fields inspected were OBJECTID, APN, APN_SUFFIX, SITE_USE, ACREAGE, and SITUS. Only OBJECTID/APN were requested from the query; unsafe fields were not requested or retained."},
+    {"method":"GET","url":"https://maps.oxnard.org/arcgis/rest/services/BasemapLayers/MapServer/2/query","httpStatus":200,"outcome":"Bounded anonymous envelope query around the exact preserved WUP point returned 125 GeoJSON polygon features with outFields=OBJECTID,APN and outSR=4326. Three full polygons with APN-only properties were retained in oxnard-sample.geojson."},
+    {"method":"SEARCH","url":"https://www.oxnard.gov/city-clerks-office/public-records","httpStatus":"search result","outcome":"City first-party page links GIS and spatial data, supporting local City GIS custodianship; it is not itself a parcel-vector response."},
+    {"method":"SEARCH","url":"https://maps.venturacounty.gov/arcgis/rest/services/SDs/Basemap/MapServer/9","httpStatus":"search result","outcome":"County first-party parcel layer was identified as a corroborating route. No county sample was retained because the City-hosted layer already provided the bounded safe response."}
+  ],
+  "schemaAndCrs": {"viewerConfig":"ArcGIS REST layer metadata directly exposed the service schema; no browser login or private token was needed.","parcelApi":"https://maps.oxnard.org/arcgis/rest/services/BasemapLayers/MapServer/2/query","geometryCrs":"Source WKID 102645 / latest WKID 2229; retained sample requested and returned in EPSG:4326 coordinate order [longitude, latitude].","nativeIdentity":"APN (source field); OBJECTID is a source OID and was not used in retained properties.","sourceFieldMapping":{"APN":"stable native parcel identity","SHAPE":"full parcel polygon geometry","OBJECTID":"source object identifier, query-only"},"boundedAnonymousResponse":"125 features in the specified envelope; not a citywide extract."},
+  "localCustodianAssessment":"City of Oxnard GIS Division is the local municipal GIS custodian evidenced by the City-hosted service copyright and City GIS pages. Ventura County GIS is a corroborating county service. General national material was not used as local registry evidence.",
+  "safeFieldAllowlist":["stable native parcel identity (APN)","full parcel polygon geometry","source service URL","source CRS / coordinate order","retrieval date"],
+  "unsafeFieldsNotRequested":["owner","address","contact","titleholder","tax/account","certificate/title","personal data"],
+  "sampleGeoJSON":"oxnard-sample.geojson",
+  "qualification":{"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"A real public parcel geometry service is evidenced, but independent serial review is required before adapter/runtime consideration."},
+  "scopeLimits":["The exact WUP point and latitude/longitude order were preserved; no coordinate was shifted to force a hit.","The bounded query is not evidence of citywide completeness or legal title status.","Only three full polygons are retained; each has exactly one canonical native identity in properties.","No owner, address, contact, titleholder, tax/account, certificate, or personal fields were requested or retained.","No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used.","This packet records research completion only and is not source integration or runtime admission."],
+  "uncertainty":"The public first-party City parcel layer and safe APN-plus-geometry response are verified for a bounded Oxnard envelope. Citywide coverage, update cadence, APN identity stability, licensing, and legal cadastral authority remain unverified."
+}

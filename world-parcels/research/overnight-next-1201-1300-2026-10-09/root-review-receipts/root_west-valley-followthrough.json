@@ -1,0 +1,15 @@
+{
+  "taskId": "root:west-valley-followthrough",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5646-west-valley-city.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/west-valley-city-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/west-valley-city-parcel-samples.geojson",
+    "backend/parcels/source-catalog.json",
+    "frontend/js/city-config.js"
+  ],
+  "checkedAt": "2026-10-09T10:57:43.476001Z",
+  "reviewBasis": "WUP 5646/rank 1202/US/463325 persons and the unchanged point match the roster and bulk source. One safe PARCEL_ID polygon is retained. A fresh exact-ID read through the existing Utah statewide SaltLake-filtered adapter returned the sampled canonical ID. Only English searches are saved; 13 bounded cells, forced paging, independent metric full-polygon checks, source binding, and headed Details verification remain unevidenced. County and statewide geometry equivalence is not established."
+}

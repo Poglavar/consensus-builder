@@ -1,0 +1,13 @@
+{
+  "taskId": "legacy:6034",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-2026-10-09/city-6034-brighton.json",
+    "world-parcels/research/overnight-next-2026-10-09/brighton-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:35:29.764178Z",
+  "reason": "Brighton: identity matches the immutable roster. Only English searches are recorded. The packet reports a zero match in the limited INSPIRE freehold subset, but the original GML/ZIP response is not retained for independent metric verification. No safe full polygon/native-ID read or adapter qualification is evidenced; zero at one point is not absence."
+}

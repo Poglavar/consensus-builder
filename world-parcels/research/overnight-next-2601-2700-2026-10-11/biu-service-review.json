@@ -1,0 +1,80 @@
+{
+  "cityRecord": "city-8816-biu.json",
+  "cityCode": 8816,
+  "queueRank": 2677,
+  "name": "Biu",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [10.6138838266667, 12.1878908378812],
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "attempts": [
+    {
+      "route": "BOGIS official information site",
+      "url": "https://bogis.bornostate.gov.ng/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Loaded. The site identifies BOGIS as responsible for Borno land administration, title, registration, searches, and a land database. It provides no public parcel map/API link in the fetched page.",
+      "evidenceFile": "tmp/valhalla-parcel-research/8816/bogis-home.html"
+    },
+    {
+      "route": "Borno State Land Use Regulations 2022",
+      "url": "https://bogis.bornostate.gov.ng/assets/web/docx/2.%20Borno%20State%20Land%20Use%20Regulations%202022.pdf",
+      "method": "GET/search",
+      "httpStatus": 200,
+      "outcome": "Official regulation states that the BOGIS Digital Data Repository is the official state repository, includes land-use cadastre, and contains the BOGIS Land Administration System and Cadastral Administration System. It specifies UTM 32N/Minna as the official coordinate system and says maps/data can be viewed or downloaded, but it exposes no anonymous parcel feature endpoint.",
+      "evidenceFile": "tmp/valhalla-parcel-research/8816/bogis-regulations.pdf"
+    },
+    {
+      "route": "BOGIS application portal landing page and current JavaScript/configuration",
+      "url": "https://app.bogis.bornostate.gov.ng/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Loaded the current portal bundle and anonymous landing-page configuration. It is a citizen self-service application workflow with registration/login and document/application submission; no anonymous cadastral map or parcel search was exposed.",
+      "evidenceFile": "tmp/valhalla-parcel-research/8816/bogis-app.html"
+    },
+    {
+      "route": "Candidate public BOGIS API routes",
+      "url": "https://app.bogis.bornostate.gov.ng/api/properties and https://app.bogis.bornostate.gov.ng/api/map",
+      "method": "GET",
+      "httpStatus": 404,
+      "outcome": "Both bounded anonymous requests returned HTTP 404. This is a route miss only; it does not establish absence of cadastral data or citywide absence.",
+      "evidenceFile": "tmp/valhalla-parcel-research/8816/api-properties-response.html, api-map-response.html, api-properties-status.txt, api-map-status.txt"
+    },
+    {
+      "route": "BOGIS robots and sitemap discovery",
+      "url": "https://bogis.bornostate.gov.ng/robots.txt and https://bogis.bornostate.gov.ng/sitemap.xml",
+      "method": "GET",
+      "httpStatus": "200 / 404",
+      "outcome": "robots.txt loaded; sitemap.xml returned 404. No parcel API route was disclosed.",
+      "evidenceFile": "tmp/valhalla-parcel-research/8816/robots.txt and sitemap-response"
+    }
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if a first-party parcel response is later verified",
+    "full parcel geometry",
+    "source layer/type name",
+    "CRS",
+    "non-sensitive schema metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedGeoJSON": null,
+  "scopeLimits": [
+    "No parcel geometry or native parcel ID response was returned, so no GeoJSON sample was retained.",
+    "BOGIS state-level custodian evidence is distinct from verified Biu-specific open parcel coverage.",
+    "The exact WUP point was preserved and not shifted; no exact-point miss, extent miss, timeout, login wall, or unusable portal is treated as evidence of citywide absence.",
+    "No unsafe owner, address, contact, titleholder, tax, account, applicant, or personal fields were requested or retained.",
+    "Runtime readiness remains held pending independent serial qualification of a real adapter."
+  ],
+  "uncertainty": "BOGIS documents a real local/state cadastral and land-registry mandate and a digital repository/CAS, but its public pages and current anonymous portal did not expose a safe vector parcel service. Coverage and source-native identity for Biu remain unverified.",
+  "runtimeReadiness": "held",
+  "completionSummary": {
+    "packetComplete": true,
+    "geometryVerified": false,
+    "registryFound": true,
+    "runtimeHeld": true,
+    "sampleFile": null
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "taskId": "city:1684",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-1684-tver.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/tver-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T09:53:00.986353Z",
+  "reviewNote": "Official Tver municipal land department and 2025 cadastral-work pages support local administrative custody. National map routes timed out in the paired review; no native parcel ID, complete polygon, source CRS or live adapter qualification was evidenced. English and Russian searches are recorded; no absence inferred from access failure.",
+  "firstPartyUrlsChecked": [
+    "https://www.tver.ru/administration/structure/departament-upravleniya-imushchestvom-i-zemelnymi-resursami/",
+    "https://www.tver.ru/administration/munitsipalnoe-imushchestvo/karta-plany-territoriy-2025/",
+    "https://www.tver.ru/administration/munitsipalnoe-imushchestvo/kompl.php"
+  ],
+  "admissionGatesVerified": false
+}

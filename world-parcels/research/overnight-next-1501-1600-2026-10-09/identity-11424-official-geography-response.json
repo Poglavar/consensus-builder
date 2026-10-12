@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "root_identity_first_party_response_extract",
+  "cityCode": 11424,
+  "checkedAt": "2026-10-10T08:14:44.361719Z",
+  "responses": [
+    {
+      "source": "jiangsu-municipal-plan",
+      "url": "https://www.taizhou.gov.cn/zfxxgk/fdzdgknr/ghjh/qtlsghjh/art/2019/art_6827a3a0daba461d932a07ff6e796ef1.html",
+      "httpStatus": 200,
+      "responseSha256": "0d6998283c9dabc1bd5ae290e8ecfdc4649266e21f9035b1cca44b0f0151bd68",
+      "responseBytes": 48783,
+      "observedText": "现状评价 第六条  自然条件 泰州地处长江北岸、江淮下游，位于江苏中部，东近黄海，南临长江，地理坐标为北纬32°01′57″～33°10′59″、东经119°38′24″～120°32′20″；全市总面积5787.36平方公里，其中陆地面积占78.83%，水域面积占21.17%。 泰州属于江淮冲积平原区，地形地貌以平原、圩洼为主，境内地形平坦，总体地势中间高、南北低。 泰州属亚热带湿润气候区，季风明显，雨量充沛。降雨年际间变化大，年内又集中在汛期。6、7月的梅雨和8、9月的台"
+    },
+    {
+      "source": "zhejiang-municipal-site",
+      "url": "https://www.zjtz.gov.cn/art/2023/6/28/art_1229423985_59077121.html",
+      "httpStatus": 200,
+      "responseSha256": "d7d4acc4df575ce3eb52e5c2ec90a4d45c54ac94581eeef85145158744b00b1c",
+      "responseBytes": 21330,
+      "observedText": " 作为我国民营经济重要发祥地，浙江台州，这个位于长江三角洲中心的城市抢抓住了机遇，提出“接轨大上海、融入长三角”，对接上海等地丰富的资源，异地借力，加速了当地产业高质量发展。 2020年7月，在全市长三角一体化发展大会上，台州市委书记李跃旗提出“建设长三角南翼充满活力的新兴增长极”的目标。他表示，要从台州发展优势和特点出发，突出“三个彰显”，即彰显民营经济、先进制造和生态宜居的优势，在扬优势、展所长中提升台州在长三角一体化中的显示度。 近日，“2023上海主流媒体看台州”活动"
+    }
+  ],
+  "scope": "Identity geography only; no parcel coverage or runtime conclusion."
+}

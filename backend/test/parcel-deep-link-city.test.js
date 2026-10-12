@@ -65,7 +65,8 @@ describe('parcelIdToCityId — unambiguous and shared prefixes', () => {
         expect(route.parcelIdToCityId('FR-PCI-75105000AD0011')).toBeNull();
         expect(route.parcelIdToCityId('AU-VIC-PARCEL-152244627')).toBeNull();
         expect(route.parcelIdToCityId('ZA-CCT-C0160007000951650000000000')).toBe('cape_town');
-        expect(route.parcelIdToCityId('BE-GRB-ADP-4455664')).toBe('antwerp');
+        // Flanders' GRB prefix is shared by every admitted Flemish city since 2026-10-12, so it names none of them.
+        expect(route.parcelIdToCityId('BE-GRB-ADP-4455664')).toBeNull();
         expect(route.parcelIdToCityId('NL-BRK-11460432670000')).toBeNull();
         expect(route.parcelIdToCityId('DE-NRW-05344102100105______')).toBeNull();
         expect(route.parcelIdToCityId('US-CA-SF-0256005')).toBe('san_francisco');

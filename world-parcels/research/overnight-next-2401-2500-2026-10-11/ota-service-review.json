@@ -1,0 +1,42 @@
+{
+  "cityRecord": "city-5953-ota.json",
+  "cityCode": 5953,
+  "queueRank": 2460,
+  "name": "Ota",
+  "country": "Japan",
+  "countryCode": "JP",
+  "pointLatLon": [36.2997431106329, 139.411530957691],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://www.city.ota.gunma.jp/page/3866.html","outcome":"Official Ota City urban-planning map page. It provides static planning-map PDFs/images and explicitly warns that the map is not guaranteed or certifying cadastral evidence; no parcel API or cadastral polygon layer is exposed."},
+    {"method":"SEARCH","url":"https://www.city.ota.gunma.jp/page/1024840.html","outcome":"Official Ota City cadastral-survey implementation page. It lists survey implementation/results notices and identifies the city Rural Development Division, National Land Survey Section as contact. This is local custodian/procedure evidence, not a live parcel service."},
+    {"method":"SEARCH","url":"https://www.city.ota.gunma.jp/page/1055200.html","outcome":"Official Ota City results-viewing notice. It says 2024 fiscal-year field-attendance results for parts of Kasukawa, Izuka, and Nitta-Shimoeda were available for related land-rights holders to inspect in person at Ota City Hall during a stated period. No downloadable geometry or anonymous query endpoint is provided."},
+    {"method":"SEARCH","url":"https://www.moj.go.jp/MINJI/minji05_00494.html","outcome":"Official Ministry of Justice notice states that nationwide electronic registry-office map data is publicly released through the G-Space Information Center, with updated data extracted in February 2026. The notice describes a download channel and data specifications; it does not provide a city-specific anonymous query endpoint in the page inspected."},
+    {"method":"GET","url":"https://www.city.ota.gunma.jp/page/3866.html","outcome":"Anonymous HTTPS page retrieval succeeded; page HTML exposed only static urban-planning map assets and contact links. No JavaScript/configuration for a parcel viewer or ArcGIS/OGC parcel service was present in the inspected page."},
+    {"method":"GET","url":"https://www.city.ota.gunma.jp/page/1024840.html","outcome":"Anonymous HTTPS page retrieval succeeded; cadastral-survey notices and local contact were readable. No parcel geometry endpoint, schema, or safe native parcel identity was returned."},
+    {"method":"GET","url":"https://www.city.ota.gunma.jp/page/1055200.html","outcome":"Anonymous HTTPS page retrieval succeeded; local results-viewing scope and dates were readable. The page provides an image of an area location map, not full parcel polygons, and no machine-readable parcel response."},
+    {"method":"GET","url":"https://www.moj.go.jp/MINJI/minji05_00494.html","outcome":"Anonymous HTTPS page retrieval succeeded; official national publication route confirmed. No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS-verification exception used. No individual parcel geometry was downloaded or retained."}
+  ],
+  "schemaAndCrs": {
+    "serviceType": "No public parcel API qualified",
+    "localService": "Ota City official HTML notices/static map page",
+    "nationalService": "Ministry of Justice registry-map electronic-data publication via G-Space Information Center",
+    "geometryType": null,
+    "nativeCrs": null,
+    "queryCrs": null,
+    "nativeIdentityCandidates": [],
+    "sourceFieldMapping": {"safeIdentity":null,"geometry":null,"unsafeFieldsExcluded":["owner","address","contact","titleholder","tax/account","legal description","personal data","mailing data","user/audit fields"]},
+    "boundedAnonymousResponse": {"requestScope":"Exact WUP point [36.2997431106329,139.411530957691] in latitude/longitude order; no coordinate shift performed","featureCount":null,"nativeIdentity":null,"geometryRetained":false,"outcome":"No public parcel query endpoint was exposed by the inspected first-party routes; no point-hit or citywide absence inference made"}
+  },
+  "sourceFieldMapping": {"serviceLayer":null,"identityProvenance":"No anonymous feature response established a native parcel identity","compositeKeyProvenance":null},
+  "localCustodianAssessment":"Ota City is evidenced as the local cadastral-survey/procedure custodian through its official National Land Survey Section pages and in-person results-viewing notice. The Ministry of Justice is the national registry-map custodian. Ota’s urban-planning map is general planning documentation and is not cadastral evidence.",
+  "safeFieldAllowlist":["stable native parcel identity if independently confirmed from an anonymous response","full parcel polygon only when bounded and anonymously returned","source service URL","native CRS and requested output CRS","retrieval date"],
+  "unsafeFieldsNotRequested":["owner","address","contact","titleholder","tax/account","property value","legal description","personal data","mailing data","user/audit fields"],
+  "sampleGeoJSON":null,
+  "qualification":{"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"A local cadastral procedure is evidenced, but no public anonymous parcel service, schema/CRS, stable native identity, or bounded full parcel polygon was returned. No GeoJSON sample is retained."},
+  "scopeLimits":["Exact WUP point [36.2997431106329,139.411530957691] was preserved and not shifted.","No exact-point hit was attempted against a parcel endpoint because none was exposed; this is not evidence of citywide absence.","Static planning maps and a location image are not full parcel polygons and were not retained as GeoJSON.","The local results notice is scoped to selected survey areas and an in-person viewing period; it does not establish citywide digital coverage or update cadence.","The Ministry of Justice/G-Space publication route was documented but no individual parcel download or polygon was qualified in this attempt.","No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS-verification exception was used.","This research packet does not admit or integrate a runtime adapter."],
+  "uncertainty":"Local custodianship/procedure is well evidenced, but current citywide machine-readable parcel coverage, anonymous access, native identifiers, CRS, geometry quality, and freshness remain unverified. Runtime readiness remains held for serial review."
+}

@@ -1,0 +1,25 @@
+{
+  "cityRecord": "city-1103-bhuj.json",
+  "cityCode": 1103,
+  "queueRank": 2956,
+  "name": "Bhuj",
+  "country": "India",
+  "attempt": 1,
+  "reviewStatus": "complete_research_hold",
+  "registryFound": true,
+  "registrySummary": "Official Kachchh district pages identify the City Survey Superintendent Office, Bhuj and the Superintendent Land Records office. The pages describe property-card and city-survey duties, establishing a local custodian.",
+  "sourceCandidate": {
+    "publisher": "District Administration Kachchh / Government of Gujarat",
+    "urls": ["https://kachchh.nic.in/city-survey/", "https://kachchh.nic.in/superintendent-land-records/"],
+    "kind": "Bhuj City Survey and Gujarat land-record/property-card services",
+    "coverage": "Local office and state service routes evidenced; citywide open parcel-vector coverage unverified"
+  },
+  "queryAndRequestReview": "English and Gujarati first-party discovery was performed. Official pages were retrieved where available. AnyRoR, e-Milkat, and state land-record routes were identified, but bounded anonymous requests did not produce a safe ID+geometry response. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification exception was used.",
+  "geometryReview": {"verified": false, "sampleFile": null, "featureCount": 0, "nativeIdField": null, "crs": null, "reason": "No public feature service or unchanged parcel polygon with a qualified native identity was obtained."},
+  "safeFieldAllowlist": ["stable native parcel identity if source-proven", "full parcel geometry", "geometry CRS", "public source/service URL", "source layer/service metadata", "retrieval date"],
+  "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "scopeLimits": ["Exact WUP point [23.2440402736592, 69.6745939677779] was preserved in latitude/longitude order and not shifted.", "No exact-point zero-hit or map-extent miss was treated as citywide absence.", "Registry custody does not establish open geometry access, schema, CRS, native identity semantics, or citywide coverage."],
+  "uncertainty": "Further source-specific viewer inspection may be possible in a normal public browser workflow, but the current bounded anonymous evidence is insufficient to retain geometry or qualify an adapter."
+}

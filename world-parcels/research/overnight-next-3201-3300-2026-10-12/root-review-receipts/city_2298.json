@@ -1,0 +1,26 @@
+{
+  "taskId": "city:2298",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-2298-riobamba.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/riobamba-service-review.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/riobamba-sample.geojson",
+    "tmp/valhalla-parcel-research/riobamba/city-bounded.geojson",
+    "tmp/valhalla-parcel-research/riobamba/root25-layer.json",
+    "tmp/valhalla-parcel-research/riobamba/layer-pjson.json",
+    "tmp/valhalla-parcel-research/riobamba/point-query.geojson"
+  ],
+  "checkedAt": "2026-10-12T06:59:03Z",
+  "findings": {
+    "identity": "WUP 2025 City_Code 2298, rank 3252, Riobamba, Ecuador, point [-1.66794420087962,-78.652907240598], 185620 persons; original archive hash matches cohort provenance.",
+    "searches": "Packet records English and Spanish queries, outcomes, and first-party URLs; separate search execution logs were not retained.",
+    "custody": "Packet identifies municipal cadastral pages; cached urban-view metadata credits GAD Riobamba. Cached sampled layer 25 has blank description and copyright and a different serviceItemId, so that credit alone does not bind layer 25 to the municipality. Registry custody and polygon source binding are distinct.",
+    "geometry": "Three retained full Polygons with only string IDs 17, 19, 21 match cached first-party layer-25 response. Cached metadata has FID as system-maintained OID; cached response reports exceededTransferLimit true. Sample polygons are locally valid and pairwise nonoverlapping in metric GEOS; complete paging and durable identity are not established. Exact-point urban-view zero is not citywide absence.",
+    "admission": "Held: layer-25 source binding, stable native identity, forced complete paging, 13 bounded cells, full metric checks, and headed Details-panel verification are unevidenced."
+  }
+}

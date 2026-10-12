@@ -1,0 +1,21 @@
+{
+  "taskId": "city:7800",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-7800-pasuruan.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pasuruan-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-11T11:44:22Z",
+  "reason": "The WUP 2025 source and immutable queue agree on rank 2424, Indonesia, exact point, and 241959 persons. The execution log confirms English and Indonesian searches; packet wording differs slightly from executed query text but language and subject match. Official ATR/BPN documentation confirms BHUMI/ATLAS geospatial services, but the saved public proxy response is an upstream-HTML JSON error and no Pasuruan native-ID polygon response was obtained. RegistryFound remains null; no polygon is retained. The 404/proxy/auth boundary is not citywide absence. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent.",
+  "firstPartySourcesChecked": [
+    "https://bhumi.atrbpn.go.id/bantuan/peta",
+    "https://bhumi.atrbpn.go.id/peta"
+  ],
+  "reviewedRawArtifacts": [
+    "tmp/valhalla-parcel-research/pasuruan/proxy-response.json",
+    "tmp/valhalla-parcel-research/pasuruan/8815-bbff2c697dacdd84.js",
+    "tmp/valhalla-parcel-research/runs/20261011T113905-3730f08f/stdout.jsonl"
+  ]
+}

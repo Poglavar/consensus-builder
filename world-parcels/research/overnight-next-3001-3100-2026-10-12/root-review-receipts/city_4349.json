@@ -1,0 +1,28 @@
+{
+  "taskId": "city:4349",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-4349-swindon.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/swindon-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json"
+  ],
+  "checkedAt": "2026-10-12T02:02:16.763132Z",
+  "city": "Swindon",
+  "queueRank": 3059,
+  "registryFound": true,
+  "identityCheck": "City code, rank, country, exact 2025 point and population persons match pending queue, ranked roster and original WUP 2025 source rows; source archive SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114 was rechecked.",
+  "searchAndSourceCheck": "Two executed English searches cover the local official language. HM Land Registry documents INSPIRE index polygons and native IDs, but the public WMS is non-queryable, WFS disabled, and the Swindon GML download still self-redirects before payload retrieval.",
+  "polygonCheck": "Zero full parcel polygons and zero safe native ID plus geometry payloads are retained in the paired evidence; within the three-polygon limit. No original parcel response exists here from which geometry acceptance metrics can be independently computed.",
+  "runtimeQualification": {
+    "freshNativeIdReads": "not_evidenced",
+    "forcedPaging": "not_evidenced",
+    "boundedCells13": "not_evidenced",
+    "metricGeosValidityAndOverlap": "not_evidenced",
+    "sourceBinding": "not_evidenced",
+    "headedDetailsPanel": "not_evidenced"
+  },
+  "holdReason": "No independently qualified live parcel adapter or headed Details-panel verification. Research completion does not admit city coverage.",
+  "scopeLimit": "Public-access failures and absent point tests do not establish citywide parcel absence. No registry, catalog, city config or generated coverage state changed."
+}

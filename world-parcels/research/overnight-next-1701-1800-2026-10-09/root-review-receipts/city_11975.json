@@ -1,0 +1,20 @@
+{
+  "taskId": "city:11975",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-11975-nagaon.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/nagaon-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "tmp/valhalla-parcel-research/11975/response.html",
+    "tmp/valhalla-parcel-research/11975/dharitreecore.js",
+    "tmp/valhalla-parcel-research/11975/circles.json",
+    "tmp/valhalla-parcel-research/11975/villages.json",
+    "tmp/valhalla-parcel-research/11975/location.js",
+    "tmp/valhalla-parcel-research/runs/20261010T133319-b3511fa9/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T13:39:14Z",
+  "registryFound": true,
+  "reason": "Official Nagaon district revenue-service evidence supports land-record custody, and cached first-party Dharitree HTML/JS plus eight circle rows confirm an administrative lookup. The village response cache is empty and the saved location.js artifact is a 404 page, so the packet's claim that this JavaScript was retrieved is not supported by that cache. No parcel ID plus full polygon or open city-bounded geometry service was verified.",
+  "admission": "Held: no verified full native parcel polygon and ID; independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details-panel verification are missing. Runtime, catalog, city configuration and generated coverage remain unchanged."
+}

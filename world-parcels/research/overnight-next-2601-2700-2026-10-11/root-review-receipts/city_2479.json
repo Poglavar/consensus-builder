@@ -1,0 +1,29 @@
+{
+  "taskId": "city:2479",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-2479-mongo.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/mongo-service-review.json",
+    "tmp/valhalla-parcel-research/mongo-2479/anats.html",
+    "tmp/valhalla-parcel-research/mongo-2479/anats.js"
+  ],
+  "checkedAt": "2026-10-11T16:55:06.677Z",
+  "reason": "Mongo code/rank/country/unchanged WUP point and 223205 persons match the immutable roster and pending queue. English and French search queries and results are documented. The ANATS first-party site confirms the national secure-titles agency and publicly lists a Mongo/Guéra office, but its cadastral function is not established; registryFound remains null. No parcel service, safe native ID, full geometry, or sample was obtained. An opaque site or bounded search does not establish citywide absence.",
+  "sourceConfirmationUrls": [
+    "https://www.anats.td/",
+    "https://connect.gouv.td/"
+  ],
+  "registryCustody": "null: ANATS office presence alone does not establish local cadastral custody",
+  "sampleFullPolygons": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "integrationState": "not_integrated"
+}

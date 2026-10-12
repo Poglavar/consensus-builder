@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5743-albuquerque.json",
+  "cityCode": 5743,
+  "purpose": "Document first-party discovery, official local parcel GIS routes, bounded access attempts, safe-field handling, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The City of Albuquerque publishes a local citywide parcel GIS/download page, an Advanced Map Viewer, and an official ArcGIS REST service listing city- and county-maintained parcel layers. The direct REST and archive retrievals were attempted but timed out or failed to complete from this environment; no feature response or polygon is claimed.",
+  "registryAssessment": "registryFound=true is supported by the official City of Albuquerque local GIS parcel download/viewer and its official local ArcGIS service. It does not establish complete, current, or ownership-level cadastral coverage.",
+  "safeFieldAllowlist": ["native parcel ID if later confirmed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {
+      "language": "English",
+      "query": "site:cabq.gov Albuquerque parcel map GIS official",
+      "outcome": "Found official City GIS pages, citywide parcel download, viewer documentation, and official ArcGIS REST service.",
+      "actualResultUrls": ["https://www.cabq.gov/gis", "https://www.cabq.gov/gis/geographic-information-systems-data", "https://www.cabq.gov/gis/advanced-map-viewer", "https://abqgis01.cabq.gov/arcgis/rest/services/agis/BaseMapLayers/MapServer"]
+    },
+    {
+      "language": "English (United States local usage)",
+      "query": "Albuquerque mapa de parcelas GIS oficial",
+      "outcome": "No distinct Spanish-language official parcel service found; official English City GIS source used.",
+      "actualResultUrls": ["https://www.cabq.gov/gis", "https://www.cabq.gov/gis/geographic-information-systems-data", "https://www.bernco.gov/planning/gis.aspx"]
+    }
+  ],
+  "attempts": [
+    {"url":"https://www.cabq.gov/gis/geographic-information-systems-data","method":"GET/search-open","result":"Official page loaded in research search/open; lists citywide Parcels and City Parcels Shapefile."},
+    {"url":"https://abqgis01.cabq.gov/datadownload/CityParcels.zip","method":"GET","result":"Archive download route followed from the official page; did not complete in the environment. No archive contents used."},
+    {"url":"https://abqgis01.cabq.gov/arcgis/rest/services/agis/BaseMapLayers/MapServer","method":"GET/search-open","result":"Official indexed service metadata observed; lists City Maintained, Bernalillo County Assessor, and County Maintained parcel layers; Web Mercator 3857 and GeoJSON support reported."},
+    {"url":"https://abqgis01.cabq.gov/arcgis/rest/services/agis/BaseMapLayers/MapServer/4?f=pjson","method":"GET","result":"Direct layer metadata request timed out; no schema or identity field claimed."},
+    {"url":"https://abqgis01.cabq.gov/arcgis/rest/services/agis/BaseMapLayers/MapServer/5?f=pjson","method":"GET","result":"Direct layer metadata request timed out; no schema or identity field claimed."},
+    {"url":"https://abqgis01.cabq.gov/arcgis/rest/services/agis/BaseMapLayers/MapServer/4/query","method":"GET","parameters":"point geometry -106.564811229385,35.1087162408547; inSR=4326; intersects; safe fields only; returnGeometry=true; outSR=4326; resultRecordCount=3","result":"Direct anonymous exact-point query request did not complete because the host timed out. This is not evidence of a zero hit or citywide absence."},
+    {"url":"https://www.bernco.gov/planning/gis.aspx","method":"GET","result":"Official county GIS route linked by the City was attempted; research tool returned HTTP 403. No county data retained."}
+  ],
+  "geometryEvidence": {"sampleFile":null,"sampleCount":0,"nativeIdentityField":null,"requestedFields":[],"retainedProperties":[]},
+  "geometryDecision": {"verified":false,"sourceId":"https://abqgis01.cabq.gov/arcgis/rest/services/agis/BaseMapLayers/MapServer","nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"Not completed because direct REST host timed out; exact WUP point remained unchanged."},
+  "remainingUncertainty": "The attempt did not retrieve a feature response, confirm the native parcel identity field, inspect feature-level CRS transformation, or independently validate current citywide coverage. City and county parcel layers may represent different cadastral concepts; the City FAQ says City platted parcel lines and County Assessor ownership boundaries are distinct.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

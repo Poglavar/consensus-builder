@@ -1,0 +1,89 @@
+{
+  "descriptor": {
+    "id": "us-wa-watech-statewide-parcels",
+    "name": "Washington State Parcels (WaTech Parcels_2026) — statewide",
+    "adapter": "arcgis",
+    "countryCode": "US",
+    "pageSize": 500,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "maxConcurrentQueries": 2,
+    "cityIds": [
+      "5413"
+    ],
+    "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+    "operator": "Washington Technology Solutions (WaTech) Washington State Parcels Project; data from Washington counties",
+    "endpoint": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0",
+    "idField": "PARCEL_ID_NR",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPattern": ".+",
+    "outFields": [
+      "PARCEL_ID_NR",
+      "OBJECTID"
+    ],
+    "idPrefix": "US-WA-STATEWIDE-",
+    "metricSrid": 32610,
+    "stateCode": "WA",
+    "attributeNotNull": [
+      "PARCEL_ID_NR"
+    ],
+    "attributeExclusions": {
+      "PARCEL_ID_NR": [
+        "",
+        " "
+      ]
+    },
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "nativeGeometryMode": "parts",
+    "partsCoordinatePrecision": 9,
+    "scope": "Washington statewide compilation of participating counties' assessment parcels (layer Parcels_2026). PARCEL_ID_NR is the WaTech statewide key: three-digit county FIPS, a dash, and the county parcel number; all source rows sharing it form one native parcel.",
+    "caveats": [
+      "Coverage is by participating counties, not a guaranteed statewide set: 38 county FIPS codes observed 2026-10-12; Asotin County (FIPS 003) absent.",
+      "Rows with null or blank PARCEL_ID_NR (29,340 statewide on 2026-10-12) have no native identity and are excluded.",
+      "Some county parcels are published as several disjoint rows sharing one PARCEL_ID_NR (observed in Yakima County); all components are fetched and dissolved (polygon union) into one canonical parcel.",
+      "Assessment mapping, not a boundary survey; layer also publishes owner, address and value fields, which are not requested."
+    ],
+    "attribution": "Washington Technology Solutions (WaTech) and Washington State counties. Adapted to WGS84.",
+    "catalogueUrl": "https://geo.wa.gov/",
+    "evidenceFile": "research/statewide-us-2026-10-12/WA.json",
+    "discovery": {
+      "jurisdiction": {
+        "countryCode": "US",
+        "admin1": [
+          "US-WA"
+        ],
+        "excludeAdmin1": [],
+        "basis": "WaTech publishes Parcels_2026 as the Washington State Parcels Project compilation of all counties that supply digital tax parcels (38 of 39 county FIPS codes present on 2026-10-12; Asotin absent).",
+        "evidence": [
+          "research/statewide-us-2026-10-12/WA.json",
+          "research/subnational/US/WA.json"
+        ]
+      },
+      "paceMs": 1000
+    }
+  },
+  "city": {
+    "code": "5413",
+    "name": "Bellevue",
+    "point": [
+      -122.166399898028,
+      47.6694577413674
+    ]
+  },
+  "sampleIds": [
+    "US-WA-STATEWIDE-033-2547210210",
+    "US-WA-STATEWIDE-033-2547210200"
+  ],
+  "absentId": "US-WA-STATEWIDE-999-9999999999",
+  "metricEpsg": "EPSG:32610",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Washington State Parcels (WaTech Parcels_2026) — statewide",
+      "WaTech publishes Parcels_2026 as the Washington State Parcels Project compilation of all counties that supply digital tax parcels (38 of 39 county FIPS codes present on 2026-10-12; Asotin absent)."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

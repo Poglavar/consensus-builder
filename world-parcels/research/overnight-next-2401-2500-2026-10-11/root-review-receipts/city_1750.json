@@ -1,0 +1,19 @@
+{
+  "taskId": "city:1750",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-1750-mostaganem.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/mostaganem-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/provenance.json"
+  ],
+  "checkedAt": "2026-10-11T13:03:43Z",
+  "queueRank": 2485,
+  "registryFound": true,
+  "samplePolygonCount": 0,
+  "reason": "Official Algerian Gazette 2023 No. 62 identifies the wilaya cadastre and land-registration directorate. Viewer routes timed out or failed TLS; no public polygon or native ID was read.",
+  "custodySourceUrl": "https://www.joradp.dz/FTP/jo-francais/2023/F2023062.pdf",
+  "admissionGate": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification.",
+  "citywideAbsenceInferred": false
+}

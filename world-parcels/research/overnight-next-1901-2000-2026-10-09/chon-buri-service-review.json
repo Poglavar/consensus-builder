@@ -1,0 +1,59 @@
+{
+  "cityRecord": "city-2848-chon-buri.json",
+  "cityCode": 2848,
+  "queueRank": 1943,
+  "city": "Chon Buri",
+  "country": "Thailand",
+  "countryCode": "TH",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Thailand Department of Lands (DOL) LandsMaps, linked by the official Chon Buri Provincial Land Office",
+  "serviceUrl": "https://landsmaps.dol.go.th/",
+  "discoveryUrls": [
+    "https://landsmaps.dol.go.th/",
+    "https://www.dol.go.th/chonburi/home/",
+    "https://www.dol.go.th/landmap/home/",
+    "https://www.dol.go.th/media/813280899755020288/2026/01/hrgY73ZEAKC6Jv25WXb9uneo.pdf"
+  ],
+  "attemptedRoutes": [
+    {
+      "route": "GET https://landsmaps.dol.go.th/",
+      "outcome": "timed out after 30 seconds during direct retrieval; no HTML, JavaScript bundle, configuration, API route, schema, CRS, or parcel response was obtained"
+    },
+    {
+      "route": "Official DOL Chon Buri page and linked LandsMaps entry",
+      "outcome": "succeeded in first-party web discovery; page identifies the Chon Buri Provincial Land Office and links the public LandsMaps parcel-search service"
+    },
+    {
+      "route": "Official DOL LandsMaps manual PDF",
+      "outcome": "succeeded; manual says users select province and district, enter a title-deed number, and receive the parcel shape; it documents lookup workflow only"
+    },
+    {
+      "route": "Exact WUP point [13.3535501806016, 100.982057260807]",
+      "outcome": "not queried because no anonymous coordinate or bounded parcel endpoint was identified; no point-hit or absence inference was made"
+    }
+  ],
+  "scope": "Evidence covers the official Chon Buri local land-office custodian and the national public parcel viewer workflow. Citywide parcel coverage, map extent, and anonymous geometry retrieval were not verified.",
+  "schemaAndCrs": "Unavailable; the live viewer timed out before its current JavaScript/configuration or a response could be inspected.",
+  "nativeIdentity": "Unavailable; no safe native parcel identifier was exposed in an anonymous response.",
+  "fieldMapping": {},
+  "compositeKeyProvenance": null,
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON sample retained because no unchanged native parcel geometry and stable native identity were obtained.",
+  "safeFieldAllowlist": [
+    "geometry",
+    "stable native parcel identifier if later exposed"
+  ],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, personal, tax/account, legal-description, or ownership fields were requested or retained. No login, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used.",
+  "officialCustodyEvidence": "The official Chon Buri Provincial Land Office page links LandsMaps, while the Department of Lands manual describes parcel-shape lookup. This distinguishes an evidenced local registry custodian and official public map service from general national agency prose.",
+  "limits": [
+    "The public LandsMaps host timed out on direct retrieval, preventing current viewer JavaScript/configuration and API inspection.",
+    "No anonymous parcel geometry, schema, CRS, or native ID response was obtained.",
+    "No exact-point query was run and no absence claim is made.",
+    "The manual describes title-deed lookup, not a citywide downloadable parcel layer.",
+    "Runtime readiness remains held pending independent serial qualification of a real adapter."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A functioning public viewer or separate bounded endpoint may exist, but the attempted direct route was unavailable in this research attempt; further work needs a current anonymous response with safe native identity and geometry evidence."
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "city:1047",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-1047-busto-arsizio.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/busto-arsizio-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/1047/capabilities.xml",
+    "tmp/valhalla-parcel-research/1047/getfeatureinfo.html",
+    "tmp/valhalla-parcel-research/1047/getfeatureinfo.headers"
+  ],
+  "checkedAt": "2026-10-10T17:58:12.627545Z",
+  "reason": "Official WMS returned one safe parcel identity without polygon geometry; no independently qualified adapter or headed Details evidence."
+}

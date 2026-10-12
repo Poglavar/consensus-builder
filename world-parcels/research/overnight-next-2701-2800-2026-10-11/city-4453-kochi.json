@@ -1,0 +1,105 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for Kochi, Japan; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 4453,
+  "queueRank": 2703,
+  "name": "Kochi",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso3": "JPN",
+  "point": [33.5615392469952, 133.539615389448],
+  "population2025": 218972,
+  "population2025k": 218.972,
+  "populationUnit": "persons",
+  "aliases": ["kochi"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kochi City Japan official cadastral parcel map GIS land parcel open data",
+        "result": "Found official Kochi City cadastral-survey page, official Kochi City budget describing public GIS construction and parcel-reference-map preparation, and national MLIT cadastral-information guidance; no city-bounded polygon API was established.",
+        "actualResultUrls": [
+          "https://www.city.kochi.kochi.jp/soshiki/62/chisekichousa.html",
+          "https://www.city.kochi.kochi.jp/uploaded/life/249937_1036902_misc.pdf",
+          "https://www.mlit.go.jp/tochi_fudousan_kensetsugyo/tochi_fudousan_kensetsugyo_tk17_000001_00063.html"
+        ]
+      },
+      {
+        "language": "Japanese",
+        "query": "高知市 地籍図 GIS 土地 筆界 地図 公式",
+        "result": "Found official Kochi City pages for cadastral-survey results/procedures and parcel-reference maps; the city says parcel-reference maps are based on registry maps and local tax conditions, while cadastral-result drawings are handled through the city office. No downloadable public polygon response was verified.",
+        "actualResultUrls": [
+          "https://www.city.kochi.kochi.jp/soshiki/62/chisekichousa.html",
+          "https://www.city.kochi.kochi.jp/soshiki/62/chiseki-seika.html",
+          "https://www.city.kochi.kochi.jp/soshiki/14/syoumei.html",
+          "https://www.city.kochi.kochi.jp/uploaded/life/249937_1036902_misc.pdf"
+        ]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://www.city.kochi.kochi.jp/soshiki/62/chisekichousa.html",
+      "observation": "Kochi City Cadastral Survey Division explains that cadastral surveys measure each parcel and produce cadastral maps and registers; certified results are sent to the registry office and copies are kept at city hall. This evidences a local cadastral procedure, not a public vector endpoint."
+    },
+    {
+      "url": "https://www.city.kochi.kochi.jp/soshiki/62/chiseki-seika.html",
+      "observation": "Kochi City provides a procedure page for issuing cadastral-survey result drawings and explains that treatment depends on the type of result. No machine-readable parcel service was exposed."
+    },
+    {
+      "url": "https://www.city.kochi.kochi.jp/soshiki/14/syoumei.html",
+      "observation": "Kochi City says its parcel-reference map (地番参考図) is prepared from registry-office public maps and local conditions/tax information. It is a reference product and not a verified open cadastral geometry service."
+    },
+    {
+      "url": "https://www.city.kochi.kochi.jp/uploaded/life/249937_1036902_misc.pdf",
+      "observation": "FY2026 Kochi City budget describes construction/operation of a public GIS and preparation of parcel-reference maps, but does not provide a live endpoint or current parcel-layer URL in the inspected document."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://services6.arcgis.com/yogEhrEiATcZmbcU/ArcGIS/rest/services/%E5%9C%B0%E7%95%AA%E5%9B%B3/FeatureServer",
+      "method": "GET service metadata",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "A public ArcGIS service named 地番図 was reachable. Metadata identifies a static, anonymously queryable service in EPSG:3857, but its full extent is approximately 140.00–140.18°E, not Kochi at 133.54°E; publisher/city ownership was not established."
+    },
+    {
+      "url": "https://services6.arcgis.com/yogEhrEiATcZmbcU/ArcGIS/rest/services/%E5%9C%B0%E7%95%AA%E5%9B%B3/FeatureServer/0",
+      "method": "GET layer metadata",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Layer metadata reports geometryType esriGeometryPoint, native object ID FID, and only native fields FID, 大字名称, 表示文字列. It is not a full parcel-polygon layer."
+    },
+    {
+      "url": "https://services6.arcgis.com/yogEhrEiATcZmbcU/ArcGIS/rest/services/%E5%9C%B0%E7%95%AA%E5%9B%B3/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=133.5385%2C33.5605%2C133.5407%2C33.5625&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "method": "GET bounded anonymous query",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "outcome": "Returned an empty FeatureCollection for a bounded Kochi-area envelope. Because the service extent is elsewhere and the layer is points, this is not evidence of citywide absence and no sample was retained."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Kochi City first-party pages evidence a local cadastral-survey and cadastral-result procedure, but no public city-bounded parcel geometry endpoint was verified.",
+  "registryEvidenceUrls": [
+    "https://www.city.kochi.kochi.jp/soshiki/62/chisekichousa.html",
+    "https://www.city.kochi.kochi.jp/soshiki/62/chiseki-seika.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Kochi City cadastral-survey and parcel-reference-map procedures described by first-party city sources.",
+    "verifiedOpenScope": "No city-bounded public parcel polygon response verified. The inspected ArcGIS candidate is a point layer whose extent is outside Kochi.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "asia",
+  "remainingUncertainty": "Kochi City is actively documenting cadastral surveys and parcel-reference maps, and its FY2026 budget describes a public GIS project, but the current public GIS endpoint, parcel-layer schema, geometry coverage, CRS, and stable safe parcel identity were not established in this bounded anonymous inspection. No exact-point hit or map extent miss is treated as citywide absence."
+}

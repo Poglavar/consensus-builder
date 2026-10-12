@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 2831,
+  "wupCityCode": 2831,
+  "queueRank": 2641,
+  "cityId": "wup2025:2831",
+  "name": "Songea",
+  "country": "United Republic of Tanzania",
+  "countryCode": "TZ",
+  "iso2": "TZ",
+  "iso3": "TZA",
+  "point": [-10.6700269346208, 35.6433691225135],
+  "centerLatLon": [-10.6700269346208, 35.6433691225135],
+  "population2025": 223567,
+  "population2025k": 223.567,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": null,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "Tanzania Ministry of Lands, Housing and Human Settlements Development e-Ardhi / GeoServer deployment; Songea parcel coverage not verified",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Songea Tanzania official cadastral map parcel GIS land registry",
+        "result": "Found the official Ministry land-rent portal, its e-Ardhi link, the official e-Ardhi application, an anonymous GeoServer WFS capability document exposing spatial-unit layers, and the official Songea Municipal Council site. No indexed Songea parcel download or city-specific public parcel endpoint was found.",
+        "actualResultUrls": ["https://landrent.lands.go.tz/", "https://eardhi.lands.go.tz/", "https://songeamc.go.tz/", "https://www.lands.go.tz/"]
+      },
+      {
+        "language": "Swahili",
+        "query": "Songea Tanzania ramani ya cadastral ardhi kiwanja usajili",
+        "result": "Found official Swahili Ministry and Songea municipal material describing plot surveying, registration/formalization, and digital land services, but no public Songea parcel geometry or local cadastral feature service.",
+        "actualResultUrls": ["https://songeamc.go.tz/", "https://www.mkurabita.go.tz/how-do-i/urban-property-formalization", "https://www.lands.go.tz/uploads/documents/sw-1682059525-MIONGOZO%20%28FINAL%29.pdf"]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://eardhi.lands.go.tz/",
+      "operator": "Tanzania Ministry of Lands, Housing and Human Settlements Development",
+      "scope": "National e-Ardhi application; city coverage not established",
+      "observation": "Current application shell was retrieved. Its JavaScript configuration exposed SERVER_URL https://eardhi.lands.go.tz/gw, GRAPHQL_API https://eardhi.lands.go.tz/api, and GEOSERVER_API https://eardhi.lands.go.tz/map/geoserver/taspro."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "operator": "Tanzania Ministry e-Ardhi GeoServer",
+      "scope": "Public service layer catalogue; not proven Songea coverage",
+      "observation": "Anonymous HTTP 200 WFS capabilities returned spatial_units, survey_spatial_units, tp_spatial_units, regularization_scheme_parcels and related layers."
+    },
+    {
+      "url": "https://songeamc.go.tz/",
+      "operator": "Songea Municipal Council",
+      "scope": "Local municipal government information",
+      "observation": "Official municipal site confirms the local council and advertises digital government services, but the retrieved content did not expose an anonymous parcel map, cadastral API, or downloadable parcel geometry."
+    },
+    {
+      "url": "https://www.mkurabita.go.tz/how-do-i/urban-property-formalization",
+      "operator": "Tanzania Property and Business Formalization Program",
+      "scope": "National formalization procedure",
+      "observation": "Official Swahili procedure says applications for surveying and title go through land offices at the relevant council; it is general procedure evidence, not Songea local registry evidence."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://landrent.lands.go.tz/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Swahili land-rent portal loaded and linked users to e-Ardhi for regions including others beyond the examples. No parcel geometry was returned."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Current JavaScript application shell loaded. Configuration inspection identified the public GeoServer base; no login or credentials were used."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "GET",
+      "status": "HTTP 200 application/xml",
+      "summary": "Anonymous WFS capabilities response returned. It advertised spatial_units and related parcel/spatial-unit layers."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=taspro:spatial_units&outputFormat=application/json",
+      "method": "GET",
+      "status": "HTTP 200 application/json",
+      "summary": "Schema response declared native integer id, native string uid, and MultiPolygon geom, alongside many source attributes. Only id, uid, and geom were requested in subsequent probes; no unsafe fields were requested or retained."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows",
+      "method": "GET with WFS GetFeature bbox",
+      "status": "timeout after 30 seconds",
+      "summary": "Bounded Songea-area bbox [35.60,-10.72,35.69,-10.62] in EPSG:4326, count=3, propertyName=id,uid,geom. No response bytes were received."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows",
+      "method": "GET with WFS GetFeature exact-point neighborhood",
+      "status": "timeout after 20 seconds",
+      "summary": "Bounded bbox [35.6429,-10.6705,35.6438,-10.6695] in EPSG:4326, count=1, propertyName=id,uid,geom. No response bytes were received. The WUP point was not shifted."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official national e-Ardhi application and anonymous GeoServer layer catalogue only.",
+    "verifiedOpenScope": "Capabilities and schema are public; Songea feature coverage and responsive parcel query are unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "No Songea local registry/cadastre custodian or local parcel procedure endpoint was independently evidenced; general national procedure and municipal-government evidence only."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "No geometry retained because both bounded Songea feature requests timed out.",
+    "crs": "WFS request used EPSG:4326 and the service schema declared MultiPolygon geometry; a successful Songea feature response was not obtained.",
+    "identityReadiness": "Potential native identities are id and uid per DescribeFeatureType, but semantics were not independently verified from a Songea feature.",
+    "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+    "attributesRequested": "Only id, uid, and geom were requested in parcel probes. No owner, address, contact, titleholder, personal, tax, account, or document fields were requested or retained."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "Serial review must independently qualify Songea coverage, a responsive anonymous parcel query, native identity semantics, CRS/axis handling, and geometry quality before runtime use.",
+  "scopeLimits": [
+    "Exact WUP point [-10.6700269346208,35.6433691225135] is preserved in latitude/longitude order and was not shifted.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.",
+    "No retained GeoJSON sample because no safe Songea feature response was obtained.",
+    "Packet completion is research evidence only and is not source integration/admission.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception used."
+  ],
+  "identityPolicy": "No GeoJSON was retained. If later obtained, retain exactly one stable native parcel identity in properties.id; keep native field mapping and composite-key provenance in city/service-review metadata.",
+  "nextStep": "Serial reviewer should retry the official e-Ardhi GeoServer route, inspect current map configuration for Songea/council coverage, and independently validate a bounded response before considering adapter qualification."
+}

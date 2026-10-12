@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1620-khansahib.json",
+  "cityCode": 1620,
+  "purpose": "Document first-party discovery, local revenue-service custody, current viewer inspection, and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Budgam district pages provide local Khansahib revenue-administration evidence and link public land-record procedures to the J&K Revenue Department. The current JK-Revenue frontend was retrieved and inspected, but its discovered API surface is authenticated administrative functionality. The public LRIS host timed out from this environment, and no anonymous safe parcel polygon or native parcel ID was obtained.",
+  "registryAssessment": "Local registry/revenue custody is evidenced by the official Budgam district Revenue Online Services page, its Khansahib SDM listing, and direct links to Fard, Aks Masavi/Latha, mutation, demarcation, Girdawari, Jamabandi, encumbrance and Land Passbook procedures. This is local service evidence, not proof of citywide public vector coverage.",
+  "officialPrimarySources": [
+    {"url": "https://budgam.nic.in/revenue-online-services/", "observation": "Official district page lists land-record and revenue procedures and links them to the J&K Revenue Department."},
+    {"url": "https://budgam.nic.in/administrative-setup/", "observation": "Official district page lists SDM Khansahib and Assistant Commissioner Revenue."},
+    {"url": "https://jkrevenue.nic.in/revenueplus/", "observation": "Official J&K Revenue land-record service endpoint linked by the district page; anonymous parcel geometry was not verified."},
+    {"url": "https://stategisportal.nic.in/stategisportal/home/map/1", "observation": "Official State GIS Portal / BharatMaps J&K map viewer identified; no parcel feature route was qualified."}
+  ],
+  "queries": [
+    {"language": "English", "query": "Khansahib Jammu Kashmir official cadastral map land records parcel viewer", "outcome": "Official LRIS, Budgam revenue services, Khansahib administration and State GIS sources found; no safe anonymous parcel polygon.", "actualResultUrls": ["https://services.india.gov.in/service/detail/land-records-information-system-jammu-and-kashmir-1", "https://budgam.nic.in/revenue-online-services/", "https://budgam.nic.in/administrative-setup/", "https://stategisportal.nic.in/stategisportal/home/map/1"]},
+    {"language": "Urdu", "query": "خانصاحب کشمیر سرکاری اراضی ریکارڈ نقشہ کھسرہ", "outcome": "Official J&K land-record and Budgam revenue-service context found; no separate public vector parcel endpoint or safe anonymous polygon.", "actualResultUrls": ["https://services.india.gov.in/service/detail/land-records-information-system-jammu-and-kashmir-1", "https://budgam.nic.in/revenue-online-services/", "https://jkrevenue.nic.in/revenueplus/"]}
+  ],
+  "attempts": [
+    {"url": "https://budgam.nic.in/revenue-online-services/", "method": "GET", "httpStatus": 200, "result": "Official local revenue-service page retrieved; safe procedure links recorded."},
+    {"url": "https://budgam.nic.in/administrative-setup/", "method": "GET", "httpStatus": 200, "result": "Official Khansahib SDM and district revenue contacts page retrieved."},
+    {"url": "https://landrecords.jk.gov.in/", "method": "GET", "httpStatus": "timeout", "result": "Connection did not complete; no credentials, token, CAPTCHA bypass, or TLS-verification disablement used."},
+    {"url": "https://d14fnjoywemmi.cloudfront.net/jklr/", "method": "GET", "httpStatus": 200, "result": "Current frontend loaded; discovered authenticated administrative API routes, so no login or protected request was attempted."},
+    {"url": "https://stategisportal.nic.in/stategisportal/home/map/1", "method": "GET", "httpStatus": "not independently completed", "result": "Official viewer identified in discovery; no bounded parcel feature request completed."},
+    {"url": "https://igr.jk.gov.in/", "method": "GET", "httpStatus": 200, "result": "Official Registration Department custody context retrieved; no geometry service exposed."}
+  ],
+  "safeFieldAllowlist": ["safe parcel/cadastral identifier if exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "nativeIdField": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not run against a qualified parcel-vector endpoint; WUP point preserved unchanged.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Official Budgam local revenue pages, J&K Revenue/LRIS entry points, current JK-Revenue frontend, and State GIS viewer.", "verifiedOpenScope": "Local revenue-service custody and procedure links only; no anonymous parcel schema, native ID, CRS, or polygon.", "citywideVerified": false, "countrywideVerified": false},
+  "remainingUncertainty": "Public LRIS reachability, current anonymous map-session behavior, State GIS parcel-layer availability, exact parcel membership at [33.9561470392247, 74.6014209746197], and citywide coverage remain unresolved.",
+  "runtimeReadiness": "held_quality_review",
+  "integrationState": "not_integrated"
+}

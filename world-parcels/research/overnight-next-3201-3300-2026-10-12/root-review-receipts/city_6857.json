@@ -1,0 +1,18 @@
+{
+  "taskId": "city:6857",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-6857-qingbaijiang.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/qingbaijiang-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T07:59:14Z",
+  "findings": {
+    "identity": "Original SHA-256-matching UN WUP 2025 compressed archive, immutable ranked roster, pending queue and city packet agree: rank 3282, Qingbaijiang, China, point [30.8884626190814, 104.236949783366], 183561 persons.",
+    "searches": "Packet records separate executed English and Chinese queries, result URLs and request outcomes.",
+    "custody": "registryFound=true is grounded in the retained first-party Sichuan service HTML and HTTP 200 headers: it names 成都市青白江区规划和自然资源局 and requires 权籍调查表、宗地图以及宗地界址点坐标. The TLS failure on the local-government hostname is an access limit, not absence.",
+    "geometry": "No retained parcel polygon, native parcel ID, schema or CRS; zero samples. Service HTML is procedural evidence, not a first-party parcel response/cache acceptance artifact.",
+    "admission": "Held: no fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding or headed Details-panel proof. No registry/catalog/runtime/report admission."
+  }
+}

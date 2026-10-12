@@ -1,0 +1,29 @@
+{
+  "taskId": "city:5720",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-5720-guas-lindas-de-goi-s.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/guas-lindas-de-goi-s-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T03:41:02Z",
+  "queueIdentity": {
+    "rank": 3126,
+    "cityCode": 5720,
+    "name": "Águas Lindas de Goiás",
+    "country": "Brazil",
+    "point": [
+      -15.7442164512803,
+      -48.2764269014505
+    ],
+    "populationPersons": 192415
+  },
+  "finding": "English and Portuguese searches are recorded with result URLs. The saved Prodata response is a login form; IBGE materials are general cartography. Municipal fiscal-cadastre administration is evidenced, but no public native-ID parcel geometry was retrieved. Registry custody remains recorded as unresolved in the paired packet, not as absence.",
+  "firstPartyCacheInspected": "tmp/valhalla-parcel-research/5720/prodata.html",
+  "geometrySamplesRetained": 0,
+  "admissionGates": "No fresh native-ID adapter reads, forced paging, 13 bounded cells, metric GEOS full-polygon validity/overlap/operation checks, source binding, or headed Details-panel verification. No runtime/catalog/report admission.",
+  "absenceInference": "None; a login wall, timeout, unavailable viewer, or point/extent miss is not citywide absence."
+}

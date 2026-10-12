@@ -1,0 +1,27 @@
+{
+  "taskId": "city:3771",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-3771-amran.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/amran-service-review.json",
+    "tmp/valhalla-parcel-research/amran/admin-layer.json",
+    "tmp/valhalla-parcel-research/amran/admin-query.json"
+  ],
+  "checkedAt": "2026-10-11T22:08:15Z",
+  "reason": "Queue identity matches rank 2883, Yemen, exact point, and 206728 persons. English and Arabic searches are recorded in the paired packet. First-party GALSUP and Amran branch evidence supports registryFound=true; the cached ArcGIS layer is administrative boundaries and its bounded response has no parcel IDs or parcel geometry. DNS failure and timeout are unresolved access observations, not evidence of citywide absence. No source polygon was retained. No independent live adapter admission gates are evidenced.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "registryFound": true,
+  "publicParcelGeometryFound": false,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

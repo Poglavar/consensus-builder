@@ -1,0 +1,77 @@
+{
+  "cityCode": 11034,
+  "queueRank": 3012,
+  "name": "Zixing",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [25.951835582064, 113.234825992777],
+  "population2025": 198617,
+  "population2025k": 198.617,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zixing China official natural resources bureau cadastral map parcel GIS real estate registration",
+        "result": "Official Hunan government-service results identified the Zixing Natural Resources Bureau and a county-level service item for locally handled real-estate registration-material queries. An official Hunan provincial geospatial platform was also identified, but no safe anonymous parcel-vector endpoint or geometry response was exposed.",
+        "actualResultUrls": [
+          "https://zwfw-new.hunan.gov.cn/hnzwfw/1/11/130/index.htm",
+          "https://zwfw-new.hunan.gov.cn/onething/service/hnservicepowerinfo.jsp?areacode=431081999000&business_activity_classificati=&charName=&dghy=&life_event=&main=1&make_transaction=&minSeq=&orgId=1ba47406f1f0460f9a2b1bd7eb127adc&pager.desc=true&pager.offset=90&themesType=&transact_level=&type=xndtbm&typeIds=&typeid=1ba47406f1f0460f9a2b1bd7eb127adc&word=",
+          "https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html",
+          "https://zrzyt.hunan.gov.cn/zrzyt/tslm/ywgz/chgis/201608/t20160823_4397411.html"
+        ]
+      },
+      {
+        "language": "Chinese (native/local)",
+        "query": "资兴市 自然资源局 不动产登记资料查询 地籍图 地理信息 公共服务平台",
+        "result": "官方中文结果确认资兴市政务服务旗舰店列有资兴市自然资源局，并且湖南政务服务网列出“属地办理的不动产登记资料查询”这一县级服务事项。湖南省自然资源厅资料还确认资兴曾建设覆盖全市域的数字地理空间公共服务平台，但没有公开匿名宗地ID加完整面几何的当前接口响应。",
+        "actualResultUrls": [
+          "https://zwfw-new.hunan.gov.cn/hnzwfw/1/11/130/index.htm",
+          "https://zwfw-new.hunan.gov.cn/onething/service/hnservicepowerinfo.jsp?areacode=431081999000&business_activity_classificati=&charName=&dghy=&life_event=&main=1&make_transaction=&minSeq=&orgId=1ba47406f1f0460f9a2b1bd7eb127adc&pager.desc=true&themesType=&transact_level=&type=xndtbm&typeIds=&typeid=1ba47406f1f0460f9a2b1bd7eb127adc&word=",
+          "https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html",
+          "https://zrzyt.hunan.gov.cn/zrzyt/tslm/ywgz/chgis/201608/t20160823_4397411.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "资兴市自然资源局 / Zixing Natural Resources Bureau",
+    "scope": "Official Hunan government-service pages identify the bureau as the county-level implementing body for locally handled real-estate registration-material queries and related land/natural-resources services.",
+    "evidenceUrls": [
+      "https://zwfw-new.hunan.gov.cn/hnzwfw/1/11/130/index.htm",
+      "https://zwfw-new.hunan.gov.cn/onething/service/hnservicepowerinfo.jsp?areacode=431081999000&business_activity_classificati=&charName=&dghy=&life_event=&main=1&make_transaction=&minSeq=&orgId=1ba47406f1f0460f9a2b1bd7eb127adc&pager.desc=true&themesType=&transact_level=&type=xndtbm&typeIds=&typeid=1ba47406f1f0460f9a2b1bd7eb127adc&word="
+    ],
+    "scopeNote": "This evidences a local registry custodian and service responsibility, not public citywide parcel-vector access. The Hunan geospatial platform and 2015 digital-Zixing report are recorded separately as general geospatial-platform evidence."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": null,
+    "attemptedRoutes": [
+      {"method":"GET","url":"https://zwfw-new.hunan.gov.cn/hnzwfw/1/11/130/index.htm","httpStatus":200,"outcome":"Official Zixing service-portal shell reachable; it lists the Zixing Natural Resources Bureau, but exposes no anonymous parcel viewer/API or safe geometry response."},
+      {"method":"GET","url":"https://zwfw-new.hunan.gov.cn/onething/service/hnservicepowerinfo.jsp?areacode=431081999000&business_activity_classificati=&charName=&dghy=&life_event=&main=1&make_transaction=&minSeq=&orgId=1ba47406f1f0460f9a2b1bd7eb127adc&pager.desc=true&pager.offset=90&themesType=&transact_level=&type=xndtbm&typeIds=&typeid=1ba47406f1f0460f9a2b1bd7eb127adc&word=","httpStatus":200,"outcome":"Official service listing reachable; it identifies the county-level locally handled real-estate registration-material query under Zixing Natural Resources Bureau, but no public machine-readable parcel schema, CRS, ID, or polygon route was exposed."},
+      {"method":"GET","url":"https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html","httpStatus":0,"outcome":"Official Hunan geospatial-platform request timed out after 20 seconds from the research host. This is not evidence of citywide parcel absence; no TLS bypass was used."},
+      {"method":"GET","url":"https://zrzyt.hunan.gov.cn/zrzyt/tslm/ywgz/chgis/201608/t20160823_4397411.html","httpStatus":200,"outcome":"Official Hunan Natural Resources Department article confirms the historical Digital Zixing geospatial framework and a citywide multi-scale geospatial database/public platform, but provides no current anonymous parcel ID-plus-polygon service endpoint."}
+    ],
+    "note": "The exact WUP point [25.951835582064, 113.234825992777] was preserved in latitude/longitude order and was not shifted or used as an absence test. No exact-point hit/miss or citywide absence inference was made."
+  },
+  "schemaAndCrs": {"viewerConfig":"Not exposed","geometryCrs":"Not observed","nativeIdentity":"Not observed","sourceFieldMapping":{},"compositeKeyProvenance":null},
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed anonymously", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Local registry custody is evidenced, but no current safe anonymous parcel response with stable native identity, schema, CRS, and unchanged polygon was qualified."},
+  "scopeLimits": ["Exact WUP point preserved; no coordinate shift.","A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide parcel absence.","No raw source-specific attribute set or GeoJSON sample retained.","General Hunan geospatial-platform evidence was kept distinct from local Zixing registry custody.","This packet is research completion only and does not admit or integrate a runtime source."],
+  "uncertainty": "The local custodian and service responsibility are verified, but current public anonymous parcel-vector reachability, citywide coverage, schema, CRS, stable native identity, and update cadence remain unresolved."
+}

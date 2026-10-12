@@ -1,0 +1,24 @@
+{
+  "taskId": "city:2831",
+  "decision": "held",
+  "checkedAt": "2026-10-11T16:46:46Z",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-2831-songea.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/songea-service-review.json",
+    "tmp/valhalla-parcel-research/songea/capabilities.xml",
+    "tmp/valhalla-parcel-research/songea/spatial_units-schema.json",
+    "tmp/valhalla-parcel-research/songea/spatial_units-bbox.json",
+    "tmp/valhalla-parcel-research/songea/eardhi.headers"
+  ],
+  "identityFinding": "Official WUP 2025 archive SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, rank roster, queue, and packet agree: code 2831, rank 2641, United Republic of Tanzania, [-10.6700269346208,35.6433691225135] latitude/longitude, 223567 persons.",
+  "searchFinding": "Paired packet and review record English and Swahili query text, result URLs, and first-party e-Ardhi requests; no separate query-execution transcript was retained.",
+  "custodyFinding": null,
+  "custodyReason": "National e-Ardhi catalogue and a municipal site do not prove a Songea local record custodian or parcel coverage. This remains unresolved, not false absence.",
+  "geometryFinding": "Zero retained full parcel polygons. Cached first-party WFS capabilities and schema advertise spatial_units with id, uid and geom, but no Songea feature response is preserved. A cached earlier GetFeature failed on nonexistent property the_geom; later reported bounded queries timed out. Neither result establishes citywide absence.",
+  "qualificationFinding": "No fresh native-ID parcel read, forced paging, 13 bounded cells, independent metric GEOS checks, source binding, or headed Details-panel verification; runtime remains held.",
+  "runtimeAdmitted": false
+}

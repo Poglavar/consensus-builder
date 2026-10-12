@@ -1,0 +1,12 @@
+{
+  "taskId": "city:11313",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-11313-lakhisarai.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/lakhisarai-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T15:28:48.327452Z",
+  "reason": "The immutable WUP 2025 row, ranked roster, queue, and packet agree on Lakhisarai, India, rank 2587, point [25.1729540585916,86.0979357275509], and 227316 persons. Official Bihar BhuNaksha and land-record pages support registryFound=true, but attempted level routes returned generic HTML errors and no parcel vector, safe native ID, or polygon was verified. The purported native/local query is written in English, so bilingual executed search evidence is incomplete. No citywide absence follows from the route errors. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification are missing."
+}

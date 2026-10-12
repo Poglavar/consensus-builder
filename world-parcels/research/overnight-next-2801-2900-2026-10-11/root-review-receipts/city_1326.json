@@ -1,0 +1,17 @@
+{
+  "taskId": "city:1326",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-1326-kyaukpyu.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/kyaukpyu-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T20:35:48Z",
+  "identityCheck": "Rank 2809; Myanmar; point [19.4256588638842, 93.5472947778845]; 211359 persons. Verified against the immutable cohort rosters and SHA-256-checked UN WUP 2025 source archive. English and Burmese query records include actual result URLs. No sample polygon or native parcel ID is retained.",
+  "custodyDecision": "National SLRD records/map responsibilities are evidenced, but a Kyaukpyu local custodian is unresolved. The Yangon-only land-form portal, Cloudflare challenge, and timeout do not establish Kyaukpyu absence.",
+  "firstPartyUrlsChecked": [
+    "https://slrd.gov.mm/en"
+  ],
+  "reason": "No public full parcel polygon with safe native ID or independently qualified live adapter. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are not evidenced. This is a held research result, not citywide cadastral absence or runtime admission."
+}

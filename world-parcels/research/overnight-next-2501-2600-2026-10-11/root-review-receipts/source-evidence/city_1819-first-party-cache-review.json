@@ -1,0 +1,34 @@
+{
+  "taskId": "city:1819",
+  "checkedAt": "2026-10-11T14:03:07Z",
+  "originalCacheFiles": {
+    "tax-layer.json": {
+      "path": "tmp/valhalla-parcel-research/regina/tax-layer.json",
+      "sha256": "7ec9e5bc45601f66213fd766eb43114d0410ade3ff99eeb61da3fc3cada13275"
+    },
+    "parcels-layer.json": {
+      "path": "tmp/valhalla-parcel-research/regina/parcels-layer.json",
+      "sha256": "c6af85dd06064fbc17b575109170e29c4504b91067e84a8ecb4a8000e2473709"
+    },
+    "tax-query.geojson": {
+      "path": "tmp/valhalla-parcel-research/regina/tax-query.geojson",
+      "sha256": "fee3c5ea830998199141c48646df1375e75e2fd1e28b20d3d4ae2fccb9e98746"
+    }
+  },
+  "observed": {
+    "taxLayer": "Tax Parcels",
+    "geometryType": "esriGeometryPolygon",
+    "sourceWkid": 26913,
+    "otherLayer": "ASSESSMENT_REGIONS",
+    "pointResponseFeatureCount": 1,
+    "pointResponseProperties": [
+      {
+        "OBJECTID": 15492
+      }
+    ],
+    "pointResponseGeometryTypes": [
+      "Polygon"
+    ],
+    "durableSamplePolygonCount": 0
+  }
+}

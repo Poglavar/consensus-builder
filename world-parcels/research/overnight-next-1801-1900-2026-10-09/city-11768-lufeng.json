@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 11768,
+  "queueRank": 1835,
+  "cityId": "queue:1835",
+  "name": "Lufeng",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [22.9435827974516, 115.647540555873],
+  "centerLatLon": [22.9435827974516, 115.647540555873],
+  "population2025": 312588,
+  "population2025k": 312.588,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lufeng China official cadastral parcel map natural resources real estate registration GIS Guangdong",
+        "result": "First-party results identified the official Lufeng Natural Resources Bureau, its local real-estate registration custodian, and an official notice describing a map-based real-estate query service. The public service route was not available to an anonymous bounded request and no parcel ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://www.lufengshi.gov.cn/gtzy/zfxxgkml/qita/gzdt/content/post_920279.html",
+          "https://www.lufengshi.gov.cn/swlfzrj/gkmlpt/content/1/1199/post_1199473.html",
+          "https://www.lufengshi.gov.cn/gtzy/"
+        ]
+      },
+      {
+        "language": "native/local (Simplified Chinese)",
+        "query": "陆丰市 不动产登记 地籍图 宗地图 自然资源 官方 GIS",
+        "result": "Native-language first-party results established Lufeng Natural Resources Bureau custody, the Lufeng Real Estate Registration Center, and official cadastral-boundary/registration notices. The official map-query notice points to a Guangdong public platform but states that real-name face authentication is used; no anonymous safe parcel geometry response was retrieved.",
+        "actualResultUrls": [
+          "https://www.lufengshi.gov.cn/gtzy/zfxxgkml/qita/gzdt/content/post_920279.html",
+          "https://www.lufengshi.gov.cn/gtzy/zxgg/content/post_1129000.html",
+          "https://www.lufengshi.gov.cn/swlfzrj/gkmlpt/content/1/1199/post_1199473.html"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "First-party web discovery followed by TLS-verified bounded GETs; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.lufengshi.gov.cn/swlfzrj/gkmlpt/content/1/1199/post_1199473.html",
+      "observation": "Official Lufeng Natural Resources Bureau page lists unified natural-resources confirmation/registration, cadastral investigation, real-estate surveying, and a subordinate Lufeng Real Estate Registration Center. This evidences local registry custody, not an open parcel feature service."
+    },
+    {
+      "url": "https://www.lufengshi.gov.cn/gtzy/zfxxgkml/qita/gzdt/content/post_920279.html",
+      "observation": "Official Lufeng notice says Shanwei's public real-estate registration platform launched the map-based query service at the Guangdong route below; it describes map lookup and limited natural-property/encumbrance results and says real-name face authentication is used. It does not publish a safe anonymous parcel feature schema or geometry response."
+    },
+    {
+      "url": "https://www.lufengshi.gov.cn/gtzy/zxgg/content/post_1129000.html",
+      "observation": "Official Lufeng notice from the local real-estate registration center references cadastral-survey rules and attached parcel maps for registration-boundary notices, establishing local procedure evidence but not a public vector endpoint."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.lufengshi.gov.cn/swlfzrj/gkmlpt/content/1/1199/post_1199473.html",
+      "method": "GET via first-party web reader",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official custodian/function page loaded; no viewer configuration, parcel layer, schema, CRS, or anonymous geometry API exposed."
+    },
+    {
+      "url": "https://www.lufengshi.gov.cn/gtzy/zfxxgkml/qita/gzdt/content/post_920279.html",
+      "method": "GET via first-party web reader",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official notice loaded; it documented the map-query route and authentication/privacy limits, but no public service JavaScript/configuration or safe parcel response was exposed."
+    },
+    {
+      "url": "http://www.gdzwfw.gov.cn/hlwbdcdj_gkcx/proxyWebService/nature",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Bounded request returned an empty reply; no response body, schema, CRS, ID field, or geometry. This is an unavailable route result, not evidence of parcel absence."
+    },
+    {
+      "url": "https://www.gdzwfw.gov.cn/hlwbdcdj_gkcx/proxyWebService/nature",
+      "method": "GET",
+      "httpStatus": 502,
+      "contentType": "text/plain",
+      "assessment": "TLS-verified bounded request returned HTTP 502 from the network access gateway; no viewer JavaScript/configuration or parcel response was obtained. No certificate exception was used."
+    },
+    {
+      "url": "https://www.lufengshi.gov.cn/gtzy/zxgg/content/post_1129000.html",
+      "method": "GET via first-party web reader",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official cadastral-boundary notice loaded and references attached parcel-map images; the images are not retained because they are not safe machine-readable parcel geometry and include registration context."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Lufeng City local natural-resources and real-estate-registration administration in Shanwei, Guangdong, China.",
+    "verifiedOpenScope": "Local registry custody and official map-query procedure evidence only; anonymous parcel geometry, service schema/CRS, and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The current public platform route, authentication/access controls, viewer JavaScript/configuration, parcel schema, CRS, stable native parcel identity, update currency, geometry quality, and citywide coverage remain unresolved. The exact WUP point was preserved and never shifted; no exact-point hit or miss inference was made. Registration notices contain owner/address and other sensitive context, which was not retained in the packet."
+}

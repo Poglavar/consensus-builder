@@ -1,0 +1,113 @@
+{
+  "cityCode": 9424,
+  "queueRank": 3045,
+  "name": "Xujiagou",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [36.1254534823907, 114.136610110726],
+  "population2025": 196663,
+  "population2025k": 196.663,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xujiagou China cadastral map parcel land registry official; 36.1254534823907, 114.136610110726 official map",
+        "result": "Search identified the official Anyang Tianditu public geospatial portal and an official Anyang/Anyang County planning document mentioning Xujiagou Township (许家沟乡), but no official anonymous parcel endpoint or parcel geometry for the WUP point.",
+        "actualResultUrls": [
+          "https://henan.tianditu.gov.cn/anyang/",
+          "https://oss.dahe.cn/bdtypt/file/pdf/2025/08/12/1754984897802444.pdf"
+        ]
+      },
+      {
+        "language": "Chinese (中文)",
+        "query": "徐家沟 地籍图 不动产 登记 官方；36.1254534823907 114.136610110726 徐家沟；安阳 徐家沟 自然资源和规划局",
+        "result": "Search identified the official Anyang Tianditu portal (主办单位：安阳市自然资源和规划局), the national Natural Resources Registration Center site, and official planning material for 许家沟乡. Results did not expose a public anonymous cadastral parcel query with a stable parcel ID and geometry.",
+        "actualResultUrls": [
+          "https://henan.tianditu.gov.cn/anyang/",
+          "https://rerc.com.cn/",
+          "https://oss.dahe.cn/bdtypt/file/pdf/2025/08/12/1754984897802444.pdf"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "route": "https://henan.tianditu.gov.cn/anyang/",
+        "method": "GET",
+        "outcome": "HTTP 200; official portal HTML retrieved",
+        "inspection": "Portal identifies the Anyang Natural Resources and Planning Bureau as host and links to online map, thematic layers, service resources, and the national web-map catalogue."
+      },
+      {
+        "route": "https://henan.tianditu.gov.cn/anyang/map.htm",
+        "method": "GET",
+        "outcome": "HTTP 200; public online-map page retrieved",
+        "inspection": "Current page loads Tianditu JavaScript API and map.js. The inspected configuration exposes basemap, place search, geocoding/search, administrative, routing, and transit functions; no cadastral/parcel layer or ID-plus-geometry request was present."
+      },
+      {
+        "route": "https://henan.tianditu.gov.cn/anyang/services.htm",
+        "method": "GET",
+        "outcome": "HTTP 200; thematic-service landing page retrieved",
+        "inspection": "Page links to general thematic services and an online-update portal, but did not identify a public parcel/cadastre service."
+      },
+      {
+        "route": "https://www.webmap.cn/main.do?method=index1",
+        "method": "GET",
+        "outcome": "HTTP 200; national geospatial resource catalogue retrieved",
+        "inspection": "Catalogue is administered by the National Geomatics Center under the Ministry of Natural Resources and describes general public map datasets; no Xujiagou parcel layer was qualified."
+      },
+      {
+        "route": "https://rerc.com.cn/",
+        "method": "GET",
+        "outcome": "Official national real-estate registration center site identified by discovery; no anonymous city parcel API qualified",
+        "inspection": "National custodian/procedure context only; no login, identity verification, owner lookup, titleholder lookup, or unsafe field request made."
+      }
+    ]
+  },
+  "registryFound": null,
+  "custodians": [
+    {
+      "name": "Anyang Municipal Natural Resources and Planning Bureau / Anyang Tianditu public geospatial platform",
+      "scope": "Local municipal geospatial map custodian and public map portal; the portal is not qualified here as a cadastral parcel API.",
+      "evidence": "https://henan.tianditu.gov.cn/anyang/"
+    },
+    {
+      "name": "Ministry of Natural Resources, Real Estate Registration Center",
+      "scope": "National real-estate-registration institutional custodian and procedural source; no public Xujiagou parcel service was qualified.",
+      "evidence": "https://rerc.com.cn/"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native cadastral parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "The exact WUP point and population are preserved; no coordinate was shifted.",
+    "A zero exact-point hit or absence of a public parcel route is not evidence of citywide parcel absence.",
+    "No anonymous ID-plus-geometry response, parcel schema, CRS, or citywide vector coverage was qualified.",
+    "No owner, address, contact, titleholder, tax, account, or other unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "The public Anyang map may have protected or non-indexed thematic services not exposed in the inspected HTML/JavaScript.",
+    "Xujiagou/许家沟 is a place name and township context; the WUP city record does not itself establish a cadastral administrative boundary.",
+    "No independent serial runtime adapter qualification was performed."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

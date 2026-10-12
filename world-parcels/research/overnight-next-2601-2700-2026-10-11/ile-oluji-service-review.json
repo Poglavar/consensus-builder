@@ -1,0 +1,76 @@
+{
+  "cityRecord": "city-5101-ile-oluji.json",
+  "cityCode": 5101,
+  "queueRank": 2624,
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "requests": [
+    {
+      "route": "https://www.odsglandministry.org/",
+      "method": "GET (first-party discovery)",
+      "outcome": "HTTP page found. Official Ondo State Ministry of Lands & Housing LandsApp landing page; describes land and survey applications, tracking, payments, public documents, and verification. No anonymous parcel geometry endpoint exposed."
+    },
+    {
+      "route": "https://odsglandministry.org/LandServices/Services",
+      "method": "GET",
+      "outcome": "HTTP page found. Official public catalogue lists land-existence/search and verification, survey, title, and related services. Service actions were linked to /Identity/Account/AccessDenied, so no account was created and no login/private route was attempted."
+    },
+    {
+      "route": "https://www.ondolandportal.org/",
+      "method": "GET",
+      "outcome": "HTTP page found. Public portal exposes Search, Verify, Property Map, and service navigation, with an account login/register path. It is corroborating state land-registry/service context, not a verified parcel source by itself."
+    },
+    {
+      "route": "https://www.ondolandportal.org/map/",
+      "method": "GET",
+      "outcome": "HTTP 500. Page source nevertheless exposed JavaScript calls to /api/v1/public/search/?q=... and POST /api/v1/public/verify/. No map or geometry payload was returned."
+    },
+    {
+      "route": "https://www.ondolandportal.org/api/v1/public/search/?q=Ile%20Oluji",
+      "method": "GET",
+      "outcome": "HTTP 404 HTML response. No public search result, parcel identifier, schema, CRS, or geometry."
+    },
+    {
+      "route": "https://www.ondolandportal.org/api/v1/public/verify/",
+      "method": "GET (route discovery only)",
+      "outcome": "HTTP 404 HTML response. The page JavaScript describes a POST document-verification operation, but no verification was attempted because it would require document identifiers/codes and is outside parcel geometry research."
+    },
+    {
+      "route": "https://ondostate.gov.ng/wp-content/uploads/2022/11/ONDO-STATE-LAND-REGISTRATION-1.pdf",
+      "method": "GET (first-party procedure evidence)",
+      "outcome": "Official Ondo State land-registration procedure document found in discovery. It describes statutory land registration context, but provides no anonymous parcel API or safe parcel geometry."
+    },
+    {
+      "route": "https://osgof.gov.ng/cadastral-legal-surveys/",
+      "method": "GET (national agency context)",
+      "outcome": "Official Office of the Surveyor-General of the Federation cadastral/legal-survey page found. It is general national agency prose, not evidence of an Ile Oluji local registry or open parcel layer."
+    }
+  ],
+  "schemaCrs": {
+    "status": "not observed",
+    "observed": null,
+    "qualificationFailure": "No parcel feature response was obtained from the official state portal or property-map routes; therefore no native ID, geometry schema, CRS, pagination, or coverage can be qualified."
+  },
+  "nativeFieldMapping": {
+    "observedOnly": [],
+    "retained": false,
+    "note": "No native parcel response or source attribute set was received."
+  },
+  "compositeKeyProvenance": null,
+  "sampleFiles": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier",
+    "parcel polygon geometry",
+    "source CRS only when explicitly returned"
+  ],
+  "scopeLimits": [
+    "The exact WUP point [7.21327029939233, 4.87358681690888] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit, HTTP 500/404, access-denied route, login wall, or unusable map page is evidence of citywide cadastral absence.",
+    "The local state land/survey custodian is evidenced, but no qualified anonymous Ile Oluji parcel ID-plus-full-polygon service was found.",
+    "No owner, address, contact, titleholder, certificate/title, tax/account, personal, or other unsafe fields were requested or retained.",
+    "No GeoJSON sample is retained because no safe native parcel identity plus full polygon was obtained.",
+    "Packet completion records research attempts only; it is not source integration or admission. runtimeReadiness remains held pending independent serial adapter qualification."
+  ],
+  "uncertainty": "The Ondo portals may require authenticated or paid workflows, may have a separate internal map service, or may have incomplete public deployment. The observed failures and access controls establish only current bounded availability and do not establish cadastral absence."
+}

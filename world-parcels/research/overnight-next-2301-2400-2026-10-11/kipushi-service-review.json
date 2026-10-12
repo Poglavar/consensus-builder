@@ -1,0 +1,62 @@
+{
+  "cityRecord": "city-6513-kipushi.json",
+  "cityCode": 6513,
+  "queueRank": 2360,
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-11",
+  "requestOutcomes": [
+    {
+      "route": "English and French first-party web discovery",
+      "request": "Search queries recorded in city-6513-kipushi.json",
+      "outcome": "Official Ministry of Land Affairs directory found Kipushi-Nord and Kipushi-Sud under Haut-Katanga; official service pages describe land-search procedures."
+    },
+    {
+      "route": "https://bic.cd/",
+      "request": "Anonymous HTTPS GET of the public landing page and current JavaScript bundle/configuration",
+      "outcome": "The public viewer landing page loads. Its stated digital parcel coverage is Nord-Kivu and Sud-Kivu only, so no Kipushi coverage was evidenced."
+    },
+    {
+      "route": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/available_provinces?select=*",
+      "request": "Anonymous GET without an API key",
+      "outcome": "HTTP 401, No API key found. No response data, schema, or parcel geometry was retained; no token or credential was used."
+    },
+    {
+      "route": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/parcels?select=*&limit=1",
+      "request": "Anonymous bounded parcel GET without an API key",
+      "outcome": "HTTP 401, No API key found. No parcel ID, fields, CRS, or geometry was obtained."
+    },
+    {
+      "route": "https://vqrcggcqgnkanngqhcga.supabase.co/functions/v1/home-bic-counts",
+      "request": "Anonymous HTTPS GET of the public aggregate function",
+      "outcome": "HTTP 200 aggregate counters returned, but no parcel geometry or city-specific Kipushi data was present."
+    },
+    {
+      "route": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "request": "Read-only inspection of the official land-search procedure page",
+      "outcome": "The page describes a formal request requiring parcel/reference information and personal requester details; no form was submitted and no unsafe fields were queried."
+    }
+  ],
+  "localRegistryCustodian": {
+    "found": true,
+    "evidence": "The Ministry directory explicitly lists Kipushi-Nord and Kipushi-Sud as Haut-Katanga circumscriptions.",
+    "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+  },
+  "scopeLimits": [
+    "Research covered public first-party discovery, the BIC viewer's current public page/bundle, and anonymous bounded REST requests only.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe owner/title/address/tax query was used.",
+    "No parcel polygon was retained because no safe native identity plus public geometry response was available.",
+    "The official custodian listing is not equivalent to citywide digital parcel coverage."
+  ],
+  "safeFieldAllowlist": ["native stable parcel ID", "geometry", "source field names in metadata only", "CRS", "source URL", "retrieval timestamp"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleGeojson": null,
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Independent serial adapter qualification remains outstanding; this packet records source discovery only and does not claim source integration/admission.",
+  "uncertainty": [
+    "BIC's advertised province coverage may change independently of the Ministry's local registry records.",
+    "The 401 responses and absence of a public geometry route do not establish citywide parcel absence.",
+    "The exact WUP point was preserved as [longitude, latitude] per queue convention and was not shifted to seek a parcel hit."
+  ]
+}

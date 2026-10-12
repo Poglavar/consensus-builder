@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-2837-sa-dah.json",
+  "cityCode": 2837,
+  "queueRank": 3262,
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "queryAndRequestOutcome": "Separate English and Arabic first-party discovery identified GALSUP, its Sa'dah branch/master-plan publication, and official registry legal text. The current official website was fetched and its HTML/current linked assets inspected. No anonymous parcel ID-plus-geometry response was obtained.",
+  "attemptedRoutes": [
+    {"route": "https://galsup.gov.ye/", "outcome": "Official GALSUP site reachable over default TLS; current HTML/assets inspected; no public parcel vector service exposed."},
+    {"route": "https://t.me/s/galsub?before=133", "outcome": "Official GALSUP channel publication evidences the Sa'dah branch and city master-plan work; no parcel API or geometry exposed."},
+    {"route": "https://agoye.gov.ye/page.php?id=374", "outcome": "Official legal text evidences Yemen registry/map procedure and parcel-record concepts; no parcel data endpoint."},
+    {"route": "https://galsup.gov.ye/index.php?rest_route=/", "outcome": "REST discovery reference observed from official page headers; no parcel layer was exposed or queried."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "geometrySamples": [],
+  "scopeLimits": [
+    "Exact WUP point [16.9437494990938, 43.7483092176651] was preserved in latitude/longitude order and was not shifted.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.",
+    "No raw source-specific attribute set or unsafe ownership/address/titleholder/tax/account field was requested or retained.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+    "No GeoJSON sample is retained because no safe native parcel identity and full parcel polygon were observed.",
+    "No registry/catalog/runtime configuration, global report, queue ledger, or another city's file was changed."
+  ],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "Local registry and planning custodian evidence is established, but no open parcel vector service or bounded parcel ID-plus-geometry response was obtained. Independent serial adapter qualification remains required."},
+  "uncertainty": "A branch-mediated or unpublished GALSUP workflow may expose cadastral maps or parcel records; public online availability was not demonstrated in this attempt.",
+  "runtimeEligible": false,
+  "recommendedDisposition": "Hold for serial reviewer retry against any current GALSUP branch/map workflow, with independent parcel-layer qualification.",
+  "completionSummary": {"packetComplete": true, "registryFound": true, "cityPointParcelSample": false, "runtimeReadiness": "held", "nextAttemptNeeded": true}
+}

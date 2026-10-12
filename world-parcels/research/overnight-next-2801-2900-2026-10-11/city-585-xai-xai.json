@@ -1,0 +1,76 @@
+{
+  "cityCode": 585,
+  "queueRank": 2857,
+  "name": "Xai-Xai",
+  "country": "Mozambique",
+  "countryCode": "MZ",
+  "iso3": "MOZ",
+  "locId": 508,
+  "capital": false,
+  "point": [-25.0581700647289, 33.6923127795461],
+  "population2025": 208703,
+  "population2025k": 208.703,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xai-Xai Mozambique cadastral parcel map official land registry",
+        "result": "First-party discovery found the official MOZGIS national geospatial portal and a portal search result for an Xai-Xai hosted service plus the Município da Xai-Xai map service. The exposed layers are administrative, transport, hydrography, facilities, and other base-map layers; no parcel layer was advertised.",
+        "actualResultUrls": [
+          "https://www.mozgis.gov.mz/",
+          "https://www.mozgis.gov.mz/portal/sharing/rest/search?q=Xai-Xai&f=pjson",
+          "https://www.mozgis.gov.mz/serverfederated/rest/services/Hosted/Xai_Xai/FeatureServer",
+          "https://www.mozgis.gov.mz/serverfederated/rest/services/Município_da_Xai_Xai/MapServer"
+        ]
+      },
+      {
+        "language": "Portuguese (local/official)",
+        "query": "Xai-Xai Moçambique cadastro predial mapa parcelas oficial registo de terras",
+        "result": "First-party Portuguese-language discovery found the official municipal Xai-Xai map service and the Ministério da Administração Estatal / PDUL Xai-Xai report. The report describes cadastral coverage differences in urbanized and semi-urbanized areas, but does not expose a public parcel API or safe parcel identities. The official portal service inspection found no parcel/talhão layer.",
+        "actualResultUrls": [
+          "https://www.mozgis.gov.mz/serverfederated/rest/services/Município_da_Xai_Xai/MapServer",
+          "https://www.pdul.gov.mz/content/download/641/3502/file/DIISB%20-%20Xai-Xai.pdf",
+          "https://nossoterritorio.mta.gov.mz/participacao-publica/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Município da Xai-Xai / official MOZGIS publication; national geospatial portal managed by Agência Nacional de Desenvolvimento Geo-espacial (ADE)",
+    "locality": "Xai-Xai municipality, Gaza, Mozambique",
+    "evidenceUrls": [
+      "https://www.mozgis.gov.mz/serverfederated/rest/services/Município_da_Xai_Xai/MapServer",
+      "https://www.mozgis.gov.mz/serverfederated/rest/services/Hosted/Xai_Xai/FeatureServer",
+      "https://www.pdul.gov.mz/content/download/641/3502/file/DIISB%20-%20Xai-Xai.pdf"
+    ],
+    "scopeNote": "A first-party municipality-specific public map/service is evidenced. It is not a verified open cadastral parcel service: the hosted Xai_Xai service exposes 16 layers covering facilities, roads, rivers, lakes, administrative boundaries, and related base data, with no parcel/talhão layer. The PDUL report is documentary evidence about varying cadastral conditions, not a parcel endpoint."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": null,
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": {
+      "service": "https://www.mozgis.gov.mz/serverfederated/rest/services/Hosted/Xai_Xai/FeatureServer",
+      "inspectedLayers": [13, 14],
+      "layerNames": ["Limite do Posto Administrativo", "Limites do Distrito"],
+      "request": "where=1=1, outFields=objectid, returnGeometry=false, resultRecordCount=3",
+      "result": "Layer 13 returned three administrative OBJECTID values and layer 14 returned two; no parcel geometry or parcel identity was requested or retained.",
+      "crs": "EPSG:4326 (service metadata); no parcel CRS applicable"
+    },
+    "note": "No parcel polygon was retained. The exact WUP point was preserved and not shifted; a point hit/miss was not used as a citywide absence test."
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The public Xai-Xai service may be incomplete relative to municipal operational data; no authenticated or private route was attempted.",
+    "The PDUL report indicates that cadastral geometry and registration coverage varies by urbanization zone, but does not establish publicly queryable citywide parcel coverage.",
+    "A FIKANI portal TLS GET failed certificate verification in the local curl environment; no certificate exception was used, and this was not treated as evidence of absence.",
+    "No owner, address, titleholder, contact, tax, account, or other unsafe fields were requested or retained."
+  ]
+}

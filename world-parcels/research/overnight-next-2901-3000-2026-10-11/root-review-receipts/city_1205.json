@@ -1,0 +1,28 @@
+{
+  "taskId": "city:1205",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-1205-mahajanga.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/mahajanga-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T23:02:03Z",
+  "reason": "The inspected SIG-TGRNR map and Boeny administrative data do not supply a verified cadastral parcel identity and full polygon for Mahajanga. Administrative boundaries and a login-gated viewer do not establish citywide parcel absence. All admission gates remain unproved.",
+  "registryFound": null,
+  "identityVerifiedAgainstOriginalWup": true,
+  "bilingualExecutedSearchesRecorded": true,
+  "durableSamplePolygonCount": 0,
+  "firstPartyUrlsChecked": [
+    "https://www.e-voary.mg/tgrn/index.php/coba.php/carteIntercative"
+  ],
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:11352",
+  "cityCode": 11352,
+  "wupCityCode": 11352,
+  "name": "Xinghua",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "rank": 1511,
+  "queueRank": 1511,
+  "point": [32.9267606826109, 119.833282019117],
+  "centerLatLon": [32.9267606826109, 119.833282019117],
+  "pointBasis": "Exact WUP2025 point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 375876,
+  "population2025k": 375.876,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Xinghua government material identifies the Xinghua Natural Resources and Planning Bureau as responsible for local natural-resource and real-estate confirmation/registration, cadastral survey, real-estate surveying and geospatial public services. The official Xinghua government service site lists real-estate registration services. This establishes local registry custody, not anonymous parcel geometry availability.",
+  "registryEvidenceUrls": [
+    "https://www.xinghua.gov.cn/fdzdgknr/jggk/jgzyzn/art/2024/art_84a989c46abc492080301cd2cad34437.html",
+    "https://tzxh.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132128101442233504000715001007&iddept_yw_inf=113212810144223350400071500100701&ql_kind=07&webId=70",
+    "https://www.jschy.cn/zxzx/detail.aspx?id=14225&mtt=14"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official 2023 project report documents a Tianditu·Xinghua portal and public geospatial platform, with citywide vector and place-name/POI data, but the cited portal URL http://jiangsu.tianditu.gov.cn/xinghua/ returned HTTP 404 during this attempt. No current JavaScript/configuration or anonymous safe parcel feature response exposing a native ID and complete polygon was verified. No credentials, CAPTCHA bypass, certificate exception or unsafe property query was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_platform_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "The local bureau has statutory/administrative responsibility for cadastral and real-estate registration work, and an official surveying-institute report says the Tianditu·Xinghua project produced citywide vector and public geospatial-platform data.",
+    "verifiedOpenScope": "Local registry custodian and historical public geospatial-platform evidence verified; current parcel layer, schema, CRS, native identity and anonymous geometry response were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xinghua China official cadastral parcel map GIS land registration public service",
+        "scope": "Identify the local registry custodian and an official public cadastral or geospatial map route.",
+        "result": "Search located the official Xinghua Natural Resources and Planning Bureau page, the official Xinghua government service page for real-estate registration, and the official Jiangsu Surveying Institute report documenting Tianditu·Xinghua. No current anonymous parcel feature endpoint was identified.",
+        "actualResultUrls": [
+          "https://www.xinghua.gov.cn/fdzdgknr/jggk/jgzyzn/art/2024/art_84a989c46abc492080301cd2cad34437.html",
+          "https://tzxh.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132128101442233504000715001007&iddept_yw_inf=113212810144223350400071500100701&ql_kind=07&webId=70",
+          "https://www.jschy.cn/zxzx/detail.aspx?id=14225&mtt=14",
+          "http://jiangsu.tianditu.gov.cn/xinghua/"
+        ],
+        "executionMethod": "Separate English web search followed by first-party page inspection."
+      },
+      {
+        "language": "native/local",
+        "query": "兴化市 官方 不动产登记 地籍图 GIS 宗地 地图",
+        "scope": "Independent Chinese-language discovery for a local official registry or cadastral-map route.",
+        "result": "Chinese-language search located the official Xinghua government Natural Resources and Planning Bureau page, the Xinghua government service portal, and the official Tianditu·Xinghua project report. The report documents a public geospatial platform but does not expose a current parcel schema or safe anonymous parcel query.",
+        "actualResultUrls": [
+          "https://www.xinghua.gov.cn/fdzdgknr/jggk/jgzyzn/art/2024/art_84a989c46abc492080301cd2cad34437.html",
+          "https://tzxh.jszwfw.gov.cn/",
+          "https://www.jschy.cn/zxzx/detail.aspx?id=14225&mtt=14",
+          "http://jiangsu.tianditu.gov.cn/xinghua/"
+        ],
+        "executionMethod": "Separate Chinese web search followed by first-party page inspection."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The 404 response for the documented portal is an access/current-route finding only and does not support citywide absence. Parcel-layer existence, current viewer configuration, service URL, CRS, schema, stable native identity, safe field availability, polygon availability and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify a current official Xinghua/Taizhou/Jiangsu cadastral or Tianditu service. Do not enable runtime from this packet alone."
+}

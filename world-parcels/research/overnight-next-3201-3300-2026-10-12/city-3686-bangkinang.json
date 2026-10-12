@@ -1,0 +1,40 @@
+{
+  "cityCode": 3686,
+  "queueRank": 3238,
+  "name": "Bangkinang",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "point": [0.338457470897586, 101.019047247477],
+  "population2025": 186431,
+  "population2025k": 186.431,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {"queries": [
+    {"language": "English", "query": "Bangkinang Indonesia official cadastral parcel map land office ATR BPN geoportal", "result": "Official ATR/BPN ATLAS and BHUMI surfaces were identified. No safe anonymous Bangkinang parcel ID plus polygon response was found.", "actualResultUrls": ["https://atlas.atrbpn.go.id/", "https://bhumi.atrbpn.go.id/", "https://data.kamparkab.go.id/dataset/peta-administrasi-kabupaten-kampar/resource/059c5e18-208d-4546-82dc-91c285493e80"]},
+    {"language": "Indonesian (native/local discovery language)", "query": "Bangkinang peta bidang tanah resmi BPN Kampar pertanahan", "result": "Portal ATR/BPN and Kampar government references were found, but no safe anonymous cadastral parcel-vector response for Bangkinang was identified.", "actualResultUrls": ["https://atlas.atrbpn.go.id/", "https://bhumi.atrbpn.go.id/", "https://kamparkab.go.id/"]}
+  ]},
+  "officialSourceAssessment": {"localCustodian": "Kantor Pertanahan Kabupaten Kampar is the evidenced local land-office custodian in official/public Kampar references, but an open parcel service was not verified.", "regionalOrNationalSources": ["ATR/BPN ATLAS", "ATR/BPN BHUMI"], "registryEvidence": "National catalog/map surfaces and local administrative references were verified; cadastral polygon coverage and public feature access were not."},
+  "requestOutcomes": "TLS-verified anonymous GET of https://atlas.atrbpn.go.id/ and https://bhumi.atrbpn.go.id/ returned HTTP 200. Current Next.js HTML and JavaScript entrypoints were fetched and inspected; no safe anonymous Bangkinang parcel feature route was exposed. No login, credentials, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS exception was used.",
+  "attemptedRoutes": [
+    {"route": "ATR/BPN ATLAS portal", "url": "https://atlas.atrbpn.go.id/", "outcome": "HTTP 200; public catalog inspected; no qualified Bangkinang parcel polygon response."},
+    {"route": "ATR/BPN BHUMI portal", "url": "https://bhumi.atrbpn.go.id/", "outcome": "HTTP 200; current viewer HTML/JS inspected; no safe anonymous parcel ID+geometry response."},
+    {"route": "Kampar administrative data reference", "url": "https://data.kamparkab.go.id/dataset/peta-administrasi-kabupaten-kampar/resource/059c5e18-208d-4546-82dc-91c285493e80", "outcome": "Administrative mapping reference only; not cadastral parcel geometry."}
+  ],
+  "scopeLimits": ["Exact WUP point [0.338457470897586, 101.019047247477] was preserved and not shifted.", "A map-extent miss or absent exposed route is not treated as citywide absence.", "No retained sample GeoJSON was written because no full safe parcel polygon and stable native parcel identity were obtained.", "Packet completion records research status only; it is not source integration/admission."],
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata"],
+  "nativeFieldMapping": {},
+  "compositeKeyProvenance": null,
+  "crs": null,
+  "geometryQuality": "No parcel polygon retrieved.",
+  "geometryDecision": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "exactWupPointTest": "No cadastral feature response; exact point was not used to infer absence."},
+  "coverageAssessment": {"claimedScope": "Bounded official ATR/BPN and Kampar-source discovery.", "verifiedOpenScope": "No open cadastral parcel coverage verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "A parcel layer may exist behind an authenticated, unindexed, or map-session route. Native IDs, CRS, polygon geometry, and completeness remain unestablished through safe anonymous requests."
+}

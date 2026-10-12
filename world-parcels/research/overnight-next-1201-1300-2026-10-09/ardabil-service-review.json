@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2959-ardabil.json",
+  "purpose": "Document bounded anonymous review of Iranian cadastral and registration service candidates relevant to Ardabil.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "SSAA, My.SSAA, Shamim, and the National Cartographic Center Rasa catalog were identified as relevant national service candidates. Anonymous access did not yield a map viewer, current JavaScript/configuration, schema, CRS, parcel ID, or geometry response.",
+  "registryAssessment": "No local Ardabil registry/map/procedure was independently evidenced in the bounded first-party review; registryFound is null. National institutional discovery is not treated as local registry evidence or source admission.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "officialPrimarySources": [
+    {"url": "https://ssaa.ir", "observation": "National deeds/properties registration organization domain; direct request timed out."},
+    {"url": "https://my.ssaa.ir/portal", "observation": "National registration-services portal; direct request timed out and no login was attempted."},
+    {"url": "https://shamim.ssaa.ir", "observation": "SSAA Shamim cadastral/GNSS candidate; direct request timed out and no credentials were used."},
+    {"url": "https://rasa.ncc.org.ir", "observation": "National Cartographic Center catalog candidate; DNS unavailable from this environment."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Ardabil Iran official cadastral parcel map web GIS cadastre land registry", "result": "National SSAA, My.SSAA, Shamim, and NCC/Rasa candidates found; no verified open Ardabil parcel geometry.", "resultUrls": ["https://ssaa.ir", "https://my.ssaa.ir/portal", "https://shamim.ssaa.ir", "https://rasa.ncc.org.ir"]},
+    {"language": "Persian", "query": "سامانه نقشه کاداستر اردبیل پلاک ثبتی نقشه املاک سازمان ثبت اسناد و املاک", "result": "نتایج، خدمات ملی کاداستر را نشان دادند؛ سرویس عمومی ناشناس هندسه پارسل اردبیل تأیید نشد.", "resultUrls": ["https://ssaa.ir", "https://my.ssaa.ir/portal", "https://shamim.ssaa.ir", "https://cadastre.mimt.gov.ir"]}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not performed against a verified cadastral endpoint; exact point [38.245604918789, 48.2877089979808] remains unchanged and no absence inference is made.", "requestEvidence": []},
+  "attempts": [
+    {"url": "https://ssaa.ir", "method": "GET; anonymous; TLS verification enabled", "httpStatus": "timeout", "result": "No response within 8 seconds."},
+    {"url": "https://my.ssaa.ir/portal", "method": "GET; anonymous; TLS verification enabled", "httpStatus": "timeout", "result": "No response within 8 seconds; no login attempted."},
+    {"url": "https://shamim.ssaa.ir", "method": "GET; anonymous; TLS verification enabled", "httpStatus": "timeout", "result": "No response within 8 seconds; no credentials used."},
+    {"url": "https://rasa.ncc.org.ir", "method": "GET; anonymous; TLS verification enabled", "httpStatus": "DNS failure", "result": "Host could not be resolved."},
+    {"url": "https://cadastre.mimt.gov.ir", "method": "GET; anonymous; TLS verification enabled", "httpStatus": "not completed", "result": "No response observed before the bounded request window ended; mining-cadastre context only."}
+  ],
+  "coverageAssessment": {"claimedScope": "National Iranian cadastral/registration service candidates.", "verifiedOpenScope": "No public vector service verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "An authenticated or separately published Iranian cadastral service may exist. This review did not access identity-gated records, request private fields, defeat controls, or infer absence from timeout/DNS failure. Runtime readiness remains held."
+}

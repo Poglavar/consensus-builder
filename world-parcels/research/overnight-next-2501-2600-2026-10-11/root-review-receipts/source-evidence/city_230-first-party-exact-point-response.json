@@ -1,0 +1,83 @@
+{
+  "url": "https://geoportal.moenchengladbach.de/server/rest/services/K01_Geobasisdaten/Liegenschaftskataster_Flurstuecke/FeatureServer/16/query?f=pjson&where=1%3D1&geometry=6.44310604421825%2C51.1806893343769&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=ALKIS_ID&outSR=4326&returnGeometry=true",
+  "checkedAt": "2026-10-11T15:35:52.990125Z",
+  "httpStatus": 200,
+  "response": {
+    "objectIdFieldName": "OBJECTID",
+    "globalIdFieldName": "",
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": {
+      "wkid": 4326,
+      "latestWkid": 4326
+    },
+    "fields": [
+      {
+        "name": "ALKIS_ID",
+        "alias": "ALKIS_ID",
+        "type": "esriFieldTypeString",
+        "length": 20
+      }
+    ],
+    "features": [
+      {
+        "attributes": {
+          "ALKIS_ID": "DENW24AL60000S6f"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                6.442473226589005,
+                51.180630083537395
+              ],
+              [
+                6.442482385982994,
+                51.18076988184497
+              ],
+              [
+                6.442568836245542,
+                51.18076722174523
+              ],
+              [
+                6.442709326714359,
+                51.18076290138768
+              ],
+              [
+                6.442740131004544,
+                51.18076195617532
+              ],
+              [
+                6.442758765576938,
+                51.18076138337423
+              ],
+              [
+                6.4429123005651014,
+                51.180756655521414
+              ],
+              [
+                6.44329301289797,
+                51.1808474391975
+              ],
+              [
+                6.4434231320811195,
+                51.18065510269545
+              ],
+              [
+                6.443225464585255,
+                51.180607374762154
+              ],
+              [
+                6.442980772438045,
+                51.18061475949179
+              ],
+              [
+                6.442473226589005,
+                51.180630083537395
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  }
+}

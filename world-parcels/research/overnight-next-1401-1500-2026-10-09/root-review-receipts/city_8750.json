@@ -1,0 +1,16 @@
+{
+  "taskId": "city:8750",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-8750-potiskum.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/potiskum-service-review.json",
+    "tmp/valhalla-parcel-research/8750/yogis-login.html"
+  ],
+  "checkedAt": "2026-10-09T16:35:02Z",
+  "reason": "WUP code 8750, rank 1427, Nigeria, unchanged point and 397981 persons match the roster and queue. English and Hausa executed searches are recorded. The cached first-party Yobe State Geographic Information Services page is a login form, supporting local custodian identity but yielding no anonymous safe-ID polygon, schema or CRS. The access wall does not establish Potiskum-wide absence. No adapter admission gates or headed Details verification are evidenced. Registry custody is supported; runtime remains held.",
+  "registryFoundReviewed": true,
+  "retainedFullPolygonCount": 0,
+  "admission": false
+}

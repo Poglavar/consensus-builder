@@ -1,0 +1,20 @@
+{
+  "taskId": "city:2898",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-2898-sanandaj.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/sanandaj-service-review.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz"
+  ],
+  "checkedAt": "2026-10-10T14:38:07Z",
+  "reason": "Municipal and national portal routes timed out. No first-party parcel feature, safe native ID, polygon, or live adapter qualification; cadastral custody remains unresolved.",
+  "checks": {
+    "immutableQueueIdentity": "matched WUP 2025 source and both cohort rosters",
+    "bilingualQueries": "English and local-language queries with recorded outcomes and URLs inspected",
+    "retainedFullPolygons": 0,
+    "adapterQualified": false,
+    "runtimeAdmission": false
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 7408,
+  "wupCityCode": 7408,
+  "queueRank": 1923,
+  "name": "Bugama",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "point": [4.73791423171116, 6.85992338332404],
+  "centerLatLon": [4.73791423171116, 6.85992338332404],
+  "population2025": 299022,
+  "population2025k": 299.022,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "No safe public parcel geometry was obtained; the unchanged WUP point was not shifted and no zero-hit inference was made.",
+  "nativeIdReadiness": "none",
+  "registryFound": null,
+  "registryBasis": "No Rivers State parcel registry, cadastral map layer, or anonymous geometry API was evidenced. The Rivers State Surveyor-General platform identifies a land-management service but presents account-gated C-of-O processing rather than a public parcel viewer or schema.",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bugama Nigeria official cadastral parcel map land records GIS Rivers State",
+        "result": "Found the official Office of the Surveyor-General of the Federation service page and the Rivers State government portal, plus the Rivers State Surveyor-General land-management platform. No Bugama-specific public parcel layer or geometry API was found.",
+        "actualResultUrls": [
+          "https://osgof.gov.ng/",
+          "https://osgof.gov.ng/services/",
+          "https://riversstate.gov.ng/",
+          "https://www.sgriv.com/"
+        ]
+      },
+      {
+        "language": "Kalabari",
+        "query": "Buguma Kalabari ilẹ̀ ilẹ̀ map cadastral official",
+        "result": "No first-party Kalabari-language cadastral result was identified. Official Nigerian language information lists Kalabari among Rivers languages; general web evidence identifies Buguma as a Kalabari/Rivers State locality, but this did not expose a parcel service.",
+        "actualResultUrls": [
+          "https://nico.gov.ng/languages-in-nigeria/",
+          "https://www.sgriv.com/"
+        ]
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Rivers State land administration and survey services were checked at official or purported official entry points; no public city-specific parcel layer was exposed.",
+    "verifiedOpenScope": "None for parcel geometry or parcel schema. The public SGRIV landing page was inspected, but parcel data requires an account/process and no anonymous map/API route was exposed in the current page JavaScript.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attemptedRoutes": [
+    {
+      "route": "GET https://www.sgriv.com/",
+      "outcome": "succeeded; current Next.js page and public JavaScript were inspected; page describes Rivers State Surveyor-General land management and C-of-O workflow, but no anonymous parcel viewer or geometry endpoint was exposed"
+    },
+    {
+      "route": "GET https://osgof.gov.ng/",
+      "outcome": "succeeded; national Surveyor-General agency homepage inspected; general requests for maps, coordinates, and cadastral surveys only, with no Bugama parcel service"
+    },
+    {
+      "route": "GET https://osgof.gov.ng/services/",
+      "outcome": "succeeded; general cadastral and mapping service descriptions inspected; not a city/local registry or public parcel API"
+    },
+    {
+      "route": "GET https://riversstate.gov.ng/",
+      "outcome": "succeeded; official Rivers State portal inspected; no public cadastral viewer or parcel API located"
+    },
+    {
+      "route": "GET https://nico.gov.ng/languages-in-nigeria/",
+      "outcome": "succeeded; Kalabari identified as a Rivers language for native-language query selection; no cadastral data"
+    },
+    {
+      "route": "Bugama/Buguma exact-point parcel query at [4.73791423171116, 6.85992338332404]",
+      "outcome": "not executed because no public parcel endpoint was identified; no absence conclusion drawn"
+    }
+  ],
+  "schemaAndCrs": "No parcel service schema, CRS, native ID field, or geometry response was available from an anonymous public route.",
+  "nativeIdentity": "None observed. No synthetic identity was created.",
+  "fieldMapping": {},
+  "safeFieldAllowlist": ["geometry", "stable native parcel id if a future public service exposes one"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, personal, tax/account, legal-description, or ownership fields were requested. No login, credentials, private token, CAPTCHA bypass, or certificate exception was used.",
+  "sourceIds": [
+    "https://www.sgriv.com/",
+    "https://osgof.gov.ng/",
+    "https://osgof.gov.ng/services/",
+    "https://riversstate.gov.ng/"
+  ],
+  "runtimeReadiness": "held",
+  "resultCategory": "no_anonymous_public_city_parcel_service_evidenced",
+  "blocker": "No public, anonymous Bugama/Rivers parcel layer or geometry API was found; the available Rivers land-management workflow is account/process oriented.",
+  "remainingUncertainty": "Bugama may be represented under the spelling Buguma and/or in a non-public Rivers State land registry. A map extent miss, unavailable UI, or lack of an anonymous endpoint is not evidence of citywide cadastral absence.",
+  "nextStep": "Independent serial reviewer should check whether the Rivers State Surveyor-General can expose a public parcel/map endpoint and whether Bugama is indexed under Buguma or an administrative LGA dataset before any adapter consideration."
+}

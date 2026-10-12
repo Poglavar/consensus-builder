@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 6933,
+  "queueRank": 1959,
+  "name": "Wonosobo",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "point": [-7.3602326784642, 109.924000072133],
+  "population2025": 295758,
+  "population2025k": 295.758,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Wonosobo Indonesia official cadastral parcel map ATR BPN geoportal Jawa Tengah",
+        "result": "Found official ATR/BPN BHUMI and ATLAS documentation and the official BIG Satu Peta land-ownership layer with a Jawa Tengah sublayer. No separate Wonosobo local parcel API was identified.",
+        "actualResultUrls": ["https://atlas.atrbpn.go.id/", "https://bhumi.atrbpn.go.id/peta", "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer"]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Wonosobo peta bidang tanah resmi ATR BPN geoportal Jawa Tengah",
+        "result": "Found official ATR/BPN BHUMI guidance, Wonosobo government geographic/planning pages, and the official BIG Satu Peta service. The public parcel layer is a sparse provincial land-rights dataset; Wonosobo-specific open geometry was not verified.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/peta", "https://website.wonosobokab.go.id/page/geografis-kabupaten-wonosobo", "https://website.wonosobokab.go.id/page/peta-pengembangan-wilayah"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+      "operator": "Badan Informasi Geospasial / BIG Satu Peta",
+      "evidence": "Public ArcGIS MapServer lists the land-ownership map and Jawa Tengah sublayer 25."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "operator": "Ministry of Agrarian Affairs and Spatial Planning / National Land Agency (ATR/BPN)",
+      "evidence": "Official public BHUMI map route; official help and ATLAS pages describe public spatial land datasets including bidang tanah."
+    },
+    {
+      "url": "https://website.wonosobokab.go.id/page/peta-pengembangan-wilayah",
+      "operator": "Wonosobo Regency Government",
+      "evidence": "Local government planning/map page establishes local geographic context, but does not expose a cadastral parcel service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer?f=pjson",
+      "method": "GET",
+      "status": 200,
+      "summary": "Anonymous verified-TLS request returned the service directory; land-ownership map is layer 10 and Jawa Tengah is sublayer 25."
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/25?f=pjson",
+      "method": "GET",
+      "status": 200,
+      "summary": "Layer metadata returned polygon geometry, EPSG:4326 extent, objectid OID, and fields objectid, kecamatan, kelurahan, tipehak, nib, shape."
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/25/query",
+      "method": "GET",
+      "status": 200,
+      "summary": "Bounded Wonosobo-city envelope 109.919,-7.365 to 109.929,-7.355 returned zero features. Wider boxes covering about 33 km and the full Wonosobo regency returned 16,479 and 21,388 features respectively; this demonstrates sparse broader coverage, not a city hit."
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/25/query?where=kecamatan%3D%27Wonosobo%27&returnCountOnly=true&f=json",
+      "method": "GET",
+      "status": 200,
+      "summary": "Attribute-filtered query returned count 0; no citywide absence is inferred."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official BHUMI landing HTML retrieved over verified TLS."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official public map HTML and current JavaScript bundle references retrieved; no login or private token used."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/panel/items/layers?filter%5Bdefault%5D%5B_eq%5D=true&filter%5Bstatus%5D%5B_eq%5D=published&fields=*,fields.*",
+      "method": "GET",
+      "status": 200,
+      "summary": "Anonymous request returned JSON HTTP 200 but no usable layer object in the response. No BHUMI feature geometry was retained."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": "nib",
+    "fallbackOidField": "objectid",
+    "compositeKey": null,
+    "fieldMapping": {
+      "nib": "Native Nomor Identifikasi Bidang field in BIG layer metadata; no Wonosobo feature was retrieved.",
+      "objectid": "Service OID only; not used as a retained identity.",
+      "geometry": "Polygon shape returned by the service when features are available."
+    },
+    "crs": "EPSG:4326 confirmed from layer metadata.",
+    "geometryType": "esriGeometryPolygon"
+  },
+  "coverageAssessment": {
+    "claimedScope": "BIG Satu Peta land-ownership map, Jawa Tengah sublayer 25, with provincial geographic extent.",
+    "verifiedOpenScope": "Layer is publicly queryable and has broader records, but no feature intersects the tested Wonosobo city envelope and the kecamatan filter returned zero.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "Zero exact/bounded city result is an open-layer coverage limitation, not evidence of parcel absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["nib", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "status-of-rights details", "tipehak", "luas"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_national_and_provincial_cadastral_metadata_geometry_unverified_for_city",
+  "remainingUncertainty": "BIG coverage is sparse and did not return Wonosobo city features. BHUMI/ATLAS is official but its anonymous feature route was not usable in this attempt. Local Kantor Pertanahan Kabupaten Wonosobo custody and a stable safe feature identity were not independently evidenced.",
+  "nextStep": "Serial reviewer should independently retest BIG layer 25 around alternate Wonosobo urban boxes and the current BHUMI map/API route before any adapter admission."
+}

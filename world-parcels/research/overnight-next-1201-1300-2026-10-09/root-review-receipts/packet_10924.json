@@ -1,0 +1,19 @@
+{
+  "taskId": "packet:10924",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-10924-zhanjiang.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/zhanjiang-service-review.json",
+    "tmp/valhalla-parcel-research/10924/zhanjiang-home.html",
+    "tmp/valhalla-parcel-research/10924/entry.html",
+    "tmp/valhalla-parcel-research/10924/dchy-config.js",
+    "tmp/valhalla-parcel-research/10924/mapTable-7581cadc.js",
+    "tmp/valhalla-parcel-research/10924/dchy.headers",
+    "tmp/valhalla-parcel-research/10924/mapserver.headers",
+    "tmp/valhalla-parcel-research/10924/point.headers"
+  ],
+  "checkedAt": "2026-10-09T13:41:53Z",
+  "reason": "Queue code 10924, rank 1265, China, point and 440587 persons match. English and Chinese searches are documented. First-party portal and registration page support local custody; cached viewer config points to an administrative-boundary layer, while metadata and exact-point attempts yielded no parcel response. Timeout is unresolved access, not citywide absence. No parcel sample or independent runtime qualification; held."
+}

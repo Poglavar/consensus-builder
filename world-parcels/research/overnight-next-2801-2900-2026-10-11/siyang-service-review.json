@@ -1,0 +1,18 @@
+{
+  "cityRecord": "city-10984-siyang.json",
+  "cityCode": 10984,
+  "queueRank": 2841,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": null,
+  "registryCustodian": "Siyang County Natural Resources and Planning Bureau is evidenced as the county-level implementing authority by the official government service guide; this is custodian/procedure evidence, not open parcel-service evidence.",
+  "publicMapLead": "Jiangsu Natural Resources Department portal and Tianditu were checked as public-map leads; no anonymous Siyang parcel-vector endpoint was qualified.",
+  "queryOutcomes": "Separate English and Chinese discovery queries were performed. Official Chinese government guidance established the local registration custodian and cadastral-material workflow; no public safe parcel ID-plus-geometry service was found.",
+  "requestOutcomes": "The official government guide and Jiangsu portal were reachable; Siyang HTTPS failed certificate hostname verification, HTTP returned 493, and Tianditu returned 418. No TLS exception, login, credential, CAPTCHA/Cloudflare bypass, private token, or unsafe field request was used.",
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdField": null, "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point [33.7157182408341, 118.697138369806] was preserved and not moved to force a hit.", "No exact-point hit or miss was inferred.", "No parcel polygon or raw source-specific attribute set is retained.", "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.", "Independent serial review is required before adapter/runtime qualification."],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "No anonymous public parcel ID-plus-geometry response, schema, CRS, native identity semantics, or citywide open coverage was qualified."},
+  "uncertainty": "The local custodian and cadastral workflow are evidenced by official government guidance, while the public service routes inspected did not expose safe parcel geometry. This is not evidence of citywide absence."
+}

@@ -1,0 +1,16 @@
+{
+  "taskId": "city:4302",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-4302-akita.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/akita-service-review.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-4302-akita-sample.geojson",
+    "tmp/valhalla-parcel-research/akita-2026-converted.geojson"
+  ],
+  "checkedAt": "2026-10-11T16:13:09Z",
+  "reason": "Queue identity and English/Japanese search records match. The original public converted GeoJSON cache has 135993 features; its first three native IDs and full polygon geometries match the safe retained samples exactly. The samples are far from the WUP locator and do not prove citywide scope. Fresh live adapter exact-ID reads, forced paging, 13 bounded cells, independent metric GEOS overlap/operation checks, source binding, and headed Details verification are not evidenced; hold without runtime admission.",
+  "custodyFinding": "true in the packet, grounded in official registry-office map catalog and public converted geometry; source semantics require qualification",
+  "retainedFullPolygons": 3,
+  "runtimeAdmitted": false
+}

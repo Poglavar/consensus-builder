@@ -1,0 +1,28 @@
+{
+  "taskId": "city:6843",
+  "decision": "held",
+  "checkedAt": "2026-10-12T01:43:59.492558Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-6843-banjarnegara.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/banjarnegara-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/root-review-receipts/source-evidence/city_6843-root-review.json"
+  ],
+  "city": "Banjarnegara",
+  "queueRank": 3046,
+  "identityCheck": "Exact code, rank, country, coordinate, and 2025 population in persons match the immutable queue, ranked roster, and original hash-verified WUP 2025 row.",
+  "searchCheck": "English and Indonesian queries with actual result URLs are recorded in the paired city packet.",
+  "polygonCheck": "No retained full polygons; zero is within the three-polygon maximum. No native parcel ID or geometry was qualified.",
+  "runtimeQualification": {
+    "freshNativeIdReads": "not_evidenced",
+    "forcedPaging": "not_evidenced",
+    "boundedCells13": "not_evidenced",
+    "metricGeosValidityAndOverlap": "not_evidenced",
+    "sourceBinding": "not_evidenced",
+    "headedDetailsPanel": "not_evidenced"
+  },
+  "reviewNotes": "Official Banjarnegara government article confirms the local land office and Peta Bidang Tanah work; first-party BHUMI client advertises umum:Persil. Cached direct capability response is HTTP 404 and proxy returns a parse error. No native-ID polygon read, schema/CRS, or independent adapter qualification exists. Route failures do not prove absence.",
+  "scopeLimit": "Research completion is not integration or admission; route failure, login/loading shell, and timeout do not establish citywide absence."
+}

@@ -1,0 +1,53 @@
+{
+  "taskId": "city:8723",
+  "decision": "held",
+  "checkedAt": "2026-10-12T06:07:04Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-8723-nguru.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/nguru-service-review.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "tmp/valhalla-parcel-research/nguru/yhpdc.html",
+    "tmp/valhalla-parcel-research/nguru/yobe-gis.headers"
+  ],
+  "identityCheck": {
+    "queueRank": 3230,
+    "cityCode": 8723,
+    "country": "Nigeria",
+    "pointLatLon": [
+      12.8756421295139,
+      10.447944244719
+    ],
+    "populationPersons": 186988,
+    "matchedImmutableRoster": true
+  },
+  "researchCheck": {
+    "separateEnglishAndLocalLanguageQueries": true,
+    "durableFullParcelPolygons": 0,
+    "safeNativeParcelIdAndPolygonResponse": false,
+    "custodyValue": null
+  },
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "originalCacheSha256": {
+    "tmp/valhalla-parcel-research/nguru/yhpdc.html": "2c2c85927afc351d54a5d88d989bf97bf48698d6d55d249643666593b3d763e7",
+    "tmp/valhalla-parcel-research/nguru/yobe-gis.headers": "fb6dbbb9eee9cc05b616ff065b883868877b37a4668aea5d33faa3a7f35a2011"
+  },
+  "reason": "Official Yobe property agency page supports a state land/property body; the YOGIS route cache is HTTP 404. No public parcel polygon response, safe native parcel ID, or adapter qualification is evidenced. Custody remains unresolved (null), not absent.",
+  "scopeLimit": "A missing public response, point feature, timeout, 404, 502, or unavailable viewer does not establish citywide parcel absence. No runtime or coverage admission.",
+  "custodyBasis": {
+    "value": null,
+    "basis": "The original Yobe Housing and Property Development Corporation HTML cache evidences a state property body. Official YOGIS government material identifies a statewide land-record agency, but the inspected material does not establish Nguru-specific parcel-record custody or a public vector service. Keep unresolved as null.",
+    "firstPartyUrls": [
+      "https://www.yhpdc.yb.gov.ng/index.html",
+      "https://saber.pfm.yb.gov.ng/wp-content/uploads/2024/07/YOGIS-Law.pdf"
+    ]
+  }
+}

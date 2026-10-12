@@ -1,0 +1,15 @@
+{
+  "taskId": "city:4677",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-4677-reno.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/reno-service-review.json",
+    "tmp/valhalla-parcel-research/root-review-2636/citymaps-metadata.json"
+  ],
+  "reason": "WUP rank 2636, code 4677, United States, point and 223960 persons match roster and queue; English and local-language search records are present. Fresh first-party City of Reno MapServer metadata names Washoe County Assessor as parcel source, supporting registryFound true, while the Washoe FeatureServer layer still returned HTTP 403 on independent recheck. No safe native-ID polygon response or sample is retained. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding and headed Details verification are missing; 403 is not citywide absence.",
+  "retainedFullPolygons": 0,
+  "runtimeAdmitted": false,
+  "checkedAt": "2026-10-11T16:40:59Z"
+}

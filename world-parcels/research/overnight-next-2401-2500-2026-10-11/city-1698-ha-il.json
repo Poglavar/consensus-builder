@@ -1,0 +1,115 @@
+{
+  "cityCode": 1698,
+  "queueRank": 2479,
+  "name": "Ha'il",
+  "aliases": ["ha il", "Hail", "حائل"],
+  "country": "Saudi Arabia",
+  "countryCode": "SA",
+  "iso3": "SAU",
+  "point": [27.514253891658, 41.6853367270333],
+  "population2025": 236744,
+  "population2025k": 236.744,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Saudi Arabia official cadastral map parcel viewer Ha'il municipality GIS parcels",
+        "result": "First-party discovery identified the General Authority for Real Estate Geospatial Real Estate Portal, the National Geospatial Platform, and Balady urban/municipal map services. The results describe land-parcel/map coverage at national or service level but did not expose a Ha'il-specific anonymous parcel API or downloadable parcel geometry.",
+        "actualResultUrls": [
+          "https://rega.gov.sa/%D8%A7%D9%84%D9%87%D9%8A%D8%A6%D8%A9/%D8%A7%D9%84%D9%85%D8%B5%D8%B7%D9%84%D8%AD%D8%A7%D8%AA-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A%D8%A9/%D8%A8%D9%88%D8%A7%D8%A8%D8%A9-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1-%D8%A7%D9%84%D8%AC%D9%8A%D9%88%D9%85%D9%83%D8%A7%D9%86%D9%8A%D8%A9/",
+          "https://www.geoportal.sa/geoportal/",
+          "https://www.balady.gov.sa/ar/services/14444/guide",
+          "https://momah.gov.sa/ar/e-services"
+        ]
+      },
+      {
+        "language": "Arabic (local/official)",
+        "query": "السعودية حائل خريطة كادستر قطع الأراضي منصة رسمية",
+        "result": "أظهرت النتائج بوابة العقار الجيومكانية التابعة للهيئة العامة للعقار، والمنصة الجيومكانية الوطنية، وخدمات بلدي للخرائط الحضرية وقطع الأراضي. الوصف الرسمي عام/وطني ولم يُظهر نقطة وصول عامة مجهولة لقطع أراضي حائل أو استجابة هندسية قابلة للفحص.",
+        "actualResultUrls": [
+          "https://rega.gov.sa/%D8%A7%D9%84%D9%87%D9%8A%D8%A6%D8%A9/%D8%A7%D9%84%D9%85%D8%B5%D8%B7%D9%84%D8%AD%D8%A7%D8%AA-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A%D8%A9/%D8%A8%D9%88%D8%A7%D8%A8%D8%A9-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1-%D8%A7%D9%84%D8%AC%D9%8A%D9%88%D9%85%D9%83%D8%A7%D9%86%D9%8A%D8%A9/",
+          "https://www.geosa.gov.sa/ar/About/Pages/OfficialSaudiMap.aspx",
+          "https://www.balady.gov.sa/ar/services/14444/guide"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "officialNationalCustodian": "General Authority for Real Estate (REGA) and General Authority for Survey and Geospatial Information (GEOSA) national geospatial/real-estate portals",
+    "localCustodian": null,
+    "assessment": "Official sources evidence national real-estate/geospatial map services and a land-parcels category, but no Ha'il municipal/local cadastral custodian, public layer endpoint, or city-specific coverage was independently established. registryFound remains null rather than false."
+  },
+  "sourceResearch": {
+    "attemptedRoutes": [
+      {
+        "route": "REGA Geospatial Real Estate Portal description",
+        "url": "https://rega.gov.sa/%D8%A7%D9%84%D9%87%D9%8A%D8%A6%D8%A9/%D8%A7%D9%84%D9%85%D8%B5%D8%B7%D9%84%D8%AD%D8%A7%D8%AA-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A%D8%A9/%D8%A8%D9%88%D8%A7%D8%A8%D8%A9-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1-%D8%A7%D9%84%D8%AC%D9%8A%D9%88%D9%85%D9%83%D8%A7%D9%86%D9%8A%D8%A9/",
+        "method": "GET/search",
+        "outcome": "HTTP 200/search content retrieved. It describes interactive spatial/descriptive real-estate maps including cities, neighborhoods, land parcels, and spatial search. No public service URL, field schema, CRS, native parcel identity, or Ha'il geometry was exposed in the page content."
+      },
+      {
+        "route": "National Geoportal viewer",
+        "url": "https://www.geoportal.sa/geoportal/",
+        "method": "GET",
+        "outcome": "TLS-verified HTTP 200. Current HTML loads /Geoportal/static/js/main.c4b26dc9.js. Inspection of that current bundle confirms a Land Parcels catalog link to GeoNetwork, but no parcel request endpoint or bounded parcel response was exposed."
+      },
+      {
+        "route": "National Geoportal Land Parcels catalog search",
+        "url": "https://geocatalog.geoportal.sa/geonetwork/srv/eng/catalog.search#/search?query_string=%7B%22tag.%5C%5C*%22:%7B%22Land%20Parcels%22:true%7D%7D&from=1&to=30",
+        "method": "GET",
+        "outcome": "HTTP 200 catalog HTML retrieved. The catalog route is a search UI; direct guessed API paths returned service-not-found/404 responses. No record describing a Ha'il parcel layer, service URL, schema, CRS, or geometry was obtained."
+      },
+      {
+        "route": "GEOSA official Saudi map description",
+        "url": "https://www.geosa.gov.sa/ar/About/Pages/OfficialSaudiMap.aspx",
+        "method": "GET/search",
+        "outcome": "HTTP 200/search content retrieved. It identifies the official national map as an administrative-boundary reference available through geoportal.sa, not a city parcel layer; no Ha'il parcel data was exposed."
+      },
+      {
+        "route": "Balady approved land-plan service guide",
+        "url": "https://www.balady.gov.sa/ar/services/14444/guide",
+        "method": "GET",
+        "outcome": "HTTP 200 redirected to an official PDF guide. It documents an authenticated/procedural approved-land-plan service; no anonymous Ha'il parcel API or geometry was exposed and no application was submitted."
+      },
+      {
+        "route": "Ministry of Municipalities and Housing e-services",
+        "url": "https://momah.gov.sa/ar/e-services",
+        "method": "GET",
+        "outcome": "HTTP 200. General service directory content retrieved, including land-related services. No public Ha'il cadastral layer, native ID schema, CRS, or parcel geometry was exposed."
+      }
+    ],
+    "exactPointTest": "Not performed against a parcel endpoint because no anonymous Ha'il parcel endpoint was identified. Exact WUP point [27.514253891658, 41.6853367270333] was preserved without shifting; no hit/miss or citywide absence inference is made.",
+    "schemaCrs": "unverified; no parcel response obtained",
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "geometry": {
+      "verified": false,
+      "sampleCount": 0,
+      "sampleFile": null,
+      "reason": "No safe anonymous native parcel ID plus full polygon response was available."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate-reference metadata",
+    "source layer and public service metadata"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [27.514253891658, 41.6853367270333] is retained in latitude/longitude order; no coordinate shift was made.",
+    "National REGA/GEOSA/Balady descriptions are not evidence of a Ha'il local registry endpoint or citywide cadastral coverage.",
+    "A catalog UI, unavailable API, login/procedural service, or absence of an anonymous geometry response is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, personal, tax/account, deed contents, or other unsafe fields were requested or retained.",
+    "Packet completion records research execution only; it is not source integration/admission."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Saudi Arabia's official portals clearly describe land-parcel and urban-map capabilities, but Ha'il-specific public access, service endpoint, native parcel identity semantics, schema, CRS, licensing, update cadence, and citywide coverage remain unresolved. No claim is made about parcel absence, ownership, title, or completeness.",
+  "retainedSample": null
+}

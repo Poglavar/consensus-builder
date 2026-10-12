@@ -1,0 +1,32 @@
+{
+  "cityRecord": "city-2520-gold-coast.json",
+  "cityCode": 2520,
+  "queueRank": 1926,
+  "city": "Gold Coast",
+  "country": "Australia",
+  "countryCode": "AU",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Queensland Government Department of Resources; public Gold Coast cadastral ArcGIS FeatureServer view",
+  "serviceUrl": "https://services-ap1.arcgis.com/lnVW0dLI3fvST2hd/ArcGIS/rest/services/Gold_Coast_Cadastre_view/FeatureServer/0",
+  "scope": "Gold Coast cadastral polygon view; Queensland Government documentation describes the underlying DCDB/QSCF as statewide cadastral coverage. Exact-point response was verified, but citywide completeness was not tested.",
+  "schemaAndCrs": "Layer metadata: esriGeometryPolygon, OBJECTID, LOTPLAN and other source fields; bounded query returned GeoJSON with outSR=4326. Native layer CRS details were inspected but retained sample is normalised to EPSG:4326.",
+  "nativeIdentity": "LOTPLAN, evidenced by the layer field and returned values 5BUP4497, 00000BUP4497, and 6BUP4497. OBJECTID was observed as a fallback OID only; no synthetic row number was used.",
+  "fieldMapping": {"id": "LOTPLAN", "geometry": "geometry"},
+  "compositeKey": null,
+  "requestOutcome": "Verified-TLS public GET metadata, bounded ID-only probe, exact WUP-point GeoJSON query, and a coordinate-order diagnostic. Correct ArcGIS x,y request order (longitude,latitude) returned three polygons; the uncorrected latitude,longitude diagnostic returned zero and was not used as absence evidence. No login, CAPTCHA bypass, unsafe fields, or private records were accessed.",
+  "retainedSample": "gold-coast-parcels-sample.geojson",
+  "retainedProperties": "Each of three full polygon features contains exactly {\"id\": \"<LOTPLAN>\"}; no raw source attribute set is retained.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, tax/account, property-name, house-address, legal-description, or application fields were retained.",
+  "officialCustodyEvidence": "Queensland Government Department of Resources ArcGIS metadata identifies the DCDB cadastral layer and its property-boundary purpose; Business Queensland documents public access through Queensland Globe, downloads and live web map services.",
+  "limits": [
+    "A local public service hit is not proof of complete citywide coverage.",
+    "The exact WUP point hit three likely strata/building-unit-related parcel polygons; no semantic filtering was applied.",
+    "The source exposes additional fields that were intentionally not retained.",
+    "RuntimeReadiness remains held pending independent serial qualification."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "LOTPLAN identity semantics and whether the view mixes base, strata, volumetric, or building-unit parcels need independent qualification. The response establishes a safe anonymous geometry route, not legal title truth or adapter admission."
+}

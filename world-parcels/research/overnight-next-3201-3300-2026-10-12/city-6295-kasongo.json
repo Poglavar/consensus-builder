@@ -1,0 +1,160 @@
+{
+  "cityCode": 6295,
+  "queueRank": 3257,
+  "name": "Kasongo",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso2": "CD",
+  "iso3": "COD",
+  "locId": 180,
+  "capital": false,
+  "point": [-4.43176027529522, 26.665145048636],
+  "population2025": 184984,
+  "population2025k": 184.984,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kasongo Democratic Republic of the Congo official cadastral parcel map GIS Maniema land registry",
+        "result": "First-party discovery identified the DRC Ministry of Land Affairs (Affaires foncières) directory, which lists Kasongo as a Maniema land-registration/cadastral district. The ministry site and the BIC digital-cadastre site were inspected, but no public anonymous Kasongo parcel viewer/API or geometry service was exposed.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://affairesfoncieres.gouv.cd/",
+          "https://bic.cd/"
+        ]
+      },
+      {
+        "language": "French (official/local operating language)",
+        "query": "Kasongo RDC cadastre parcellaire carte service officiel circonscription foncière Maniema",
+        "result": "La recherche en français a confirmé la circonscription foncière de Kasongo dans la province du Maniema sur le répertoire officiel. Le BIC annonce un cadastre numérique limité aux provinces du Nord-Kivu et du Sud-Kivu; aucune couche publique de parcelles pour Kasongo/Maniema n'a été exposée.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://bic.cd/",
+          "https://servicepublic.gouv.cd/service/4642"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Ministère des Affaires foncières de la République démocratique du Congo; circonscription foncière de Kasongo, Maniema",
+    "scope": "The official ministry directory lists Kasongo among Maniema's land/cadastral districts.",
+    "evidenceUrls": [
+      "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "https://servicepublic.gouv.cd/service/4642"
+    ],
+    "scopeNote": "This evidences a local registry/cadastral custodian, not an open citywide parcel-vector feed. No separate Kasongo municipal web viewer was evidenced."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "DRC Ministry of Land Affairs directory and BIC official digital-cadastre site",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null,
+    "note": "No anonymous safe parcel ID-plus-geometry response was obtained. The exact WUP point was preserved and was not shifted; no citywide absence inference was made."
+  },
+  "requestOutcomes": [
+    {
+      "method": "SEARCH",
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "outcome": "First-party discovery result and page identify Kasongo as a Maniema circonscription foncière."
+    },
+    {
+      "method": "GET",
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "outcome": "HTTP 200. Official directory retrieved; it provides custodian/district listing but no parcel layer, viewer configuration, public API, schema, CRS, or geometry response."
+    },
+    {
+      "method": "GET",
+      "url": "https://affairesfoncieres.gouv.cd/",
+      "outcome": "HTTP 200. Official ministry site retrieved; general cadastre and land-service information was visible, but no anonymous Kasongo parcel endpoint was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://bic.cd/",
+      "outcome": "HTTP 200. Current JavaScript/configuration was inspected. The public BIC application uses an anonymous Supabase-backed cadastral public view, and its page states service availability for Nord-Kivu and Sud-Kivu; no Maniema/Kasongo coverage was claimed."
+    },
+    {
+      "method": "GET",
+      "url": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/cadastral_parcels_public?select=id,parcel_number,parcel_type,province,ville,commune,quartier,territoire,latitude,longitude&province=ilike.*Maniema*&limit=3",
+      "outcome": "HTTP 200 with an empty bounded response. This is a service-scope/data result only and is not evidence of citywide absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/cadastral_parcels_public?select=id,parcel_number,parcel_type,province,ville,commune,quartier,territoire,latitude,longitude&ville=ilike.*Kasongo*&limit=3",
+      "outcome": "HTTP 200 with an empty bounded response. This exact-name query was not treated as an exact-point or citywide absence finding."
+    },
+    {
+      "method": "GET",
+      "url": "https://servicepublic.gouv.cd/service/4642",
+      "outcome": "Official service description retrieved; it explains cadastral/title procedures and field measurement, but exposes no anonymous parcel geometry service."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": "BIC public view fields inspected include id, parcel_number, parcel_type, province, ville, commune, quartier, territoire, latitude, longitude; no geometry column was available in the requested safe projection.",
+    "nativeIdField": "id (service schema observed, but no Kasongo feature returned)",
+    "geometryCrs": null,
+    "sourceFieldMapping": {
+      "id": "BIC cadastral_parcels_public.id",
+      "parcel_number": "BIC cadastral_parcels_public.parcel_number",
+      "latitude": "BIC cadastral_parcels_public.latitude",
+      "longitude": "BIC cadastral_parcels_public.longitude"
+    },
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "featureCount": 0,
+      "result": "No Kasongo/Maniema public-view rows returned; zero is not an absence finding."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public service/layer metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal data",
+    "tax/account",
+    "certificate/title"
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable Kasongo parcel geometry endpoint was reached; exact WUP point [-4.43176027529522, 26.665145048636] was preserved in latitude/longitude order and not shifted. No hit/miss inference was made."
+  },
+  "coverageAssessment": {
+    "claimedScope": "DRC Ministry of Land Affairs local circonscription plus BIC digital cadastral service",
+    "verifiedOpenScope": "Local Kasongo custodian evidenced; BIC public service states North/South Kivu availability, with no verified Maniema parcel feed",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "Exact WUP point [-4.43176027529522, 26.665145048636] was preserved in latitude/longitude order; no coordinate shift was made.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide cadastral absence.",
+    "No native parcel identity for a Kasongo feature, geometry CRS, or full polygon geometry was verified, so no sample GeoJSON is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, title, or other unsafe fields were requested or retained.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "Kasongo's official local land/cadastral custodian is evidenced by the ministry directory, but the current local parcel register, public viewer/API endpoint, native identity semantics, geometry CRS, anonymous geometry delivery, update behavior, and citywide completeness remain unresolved."
+}

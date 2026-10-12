@@ -8207,7 +8207,1852 @@
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [22.2862518536, 113.942260841835], fallbackDataset: [113.942260841835, 22.2862518536] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'hk-landsd-csdi-lot', idPrefix: 'HK-LANDSD-CSDI-LOT-CSUID-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hong Kong Lands Department · CSDI Lots · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
-        }
+        },
+        aachen: {
+            id: 'aachen', wupCityCode: '58',
+            label: translateCityText('city.labels.aachen', 'Aachen, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.7798266066411, 6.10963543428455], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.7798266066411, 6.10963543428455], fallbackDataset: [6.10963543428455, 50.7798266066411] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        szczecin: {
+            id: 'szczecin', wupCityCode: '71',
+            label: translateCityText('city.labels.szczecin', 'Szczecin, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.4353064484097, 14.5350485616163], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.4353064484097, 14.5350485616163], fallbackDataset: [14.5350485616163, 53.4353064484097] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        liepaja: {
+            id: 'liepaja', wupCityCode: '85',
+            label: translateCityText('city.labels.liepaja', 'Liepaja, Latvia'),
+            currency: { locale: 'lv-LV', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [56.512130385031, 21.0132738810649], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [56.512130385031, 21.0132738810649], fallbackDataset: [21.0132738810649, 56.512130385031] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'lv-vzd-geolatvija-vraa-wfs', idPrefix: 'LV-VZD-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'State Land Service of Latvia / Geolatvija · cadastral references · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        klaipeda: {
+            id: 'klaipeda', wupCityCode: '87',
+            label: translateCityText('city.labels.klaipeda', 'Klaipėda, Lithuania'),
+            currency: { locale: 'lt-LT', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [55.6958163069443, 21.1516808865547], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [55.6958163069443, 21.1516808865547], fallbackDataset: [21.1516808865547, 55.6958163069443] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'lt-inspire-cp-wfs', idPrefix: 'LT-INSP-CADASTRAL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Lithuanian INSPIRE Geoportal / National Land Service · cadastral references · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ioannina: {
+            id: 'ioannina', wupCityCode: '99',
+            label: translateCityText('city.labels.ioannina', 'Ioannina, Greece'),
+            currency: { locale: 'el-GR', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [39.661766124509, 20.8488973626991], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [39.661766124509, 20.8488973626991], fallbackDataset: [20.8488973626991, 39.661766124509] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gr-ktimatologio-active-parcels-arcgis', idPrefix: 'GR-ATHENS-KAEK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hellenic Cadastre (Ktimatologio) active cadastral layer, adapted to WGS84. Athens-center sample only; broader coverage and currentness unverified.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ashkelon: {
+            id: 'ashkelon', wupCityCode: '118',
+            label: translateCityText('city.labels.ashkelon', 'Ashkelon, Israel'),
+            currency: { locale: 'he-IL', code: 'ILS' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [31.6704500086532, 34.5726448021409], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [31.6704500086532, 34.5726448021409], fallbackDataset: [34.5726448021409, 31.6704500086532] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bruges: {
+            id: 'bruges', wupCityCode: '226',
+            label: translateCityText('city.labels.bruges', 'Bruges, Belgium'),
+            currency: { locale: 'nl-BE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.2050163863974, 3.22000581359789], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.2050163863974, 3.22000581359789], fallbackDataset: [3.22000581359789, 51.2050163863974] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'be-vlaanderen-grb-adp', idPrefix: 'BE-GRB-ADP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        stargard: {
+            id: 'stargard', wupCityCode: '241',
+            label: translateCityText('city.labels.stargard', 'Stargard, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.3382279105169, 15.030564201468], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.3382279105169, 15.030564201468], fallbackDataset: [15.030564201468, 53.3382279105169] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        tartu: {
+            id: 'tartu', wupCityCode: '267',
+            label: translateCityText('city.labels.tartu', 'Tartu, Estonia'),
+            currency: { locale: 'et-EE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [58.3707823955219, 26.7215611740785], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [58.3707823955219, 26.7215611740785], fallbackDataset: [26.7215611740785, 58.3707823955219] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'ee-maaamet-kataster-wfs', idPrefix: 'EE-KATASTER-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Estonian Land and Spatial Development Board / public cadastral WFS · cadastral references · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ashdod: {
+            id: 'ashdod', wupCityCode: '285',
+            label: translateCityText('city.labels.ashdod', 'Ashdod, Israel'),
+            currency: { locale: 'he-IL', code: 'ILS' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [31.7987303087695, 34.65004462462], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [31.7987303087695, 34.65004462462], fallbackDataset: [34.65004462462, 31.7987303087695] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        christchurch: {
+            id: 'christchurch', wupCityCode: '336',
+            label: translateCityText('city.labels.christchurch', 'Christchurch, New Zealand'),
+            currency: { locale: 'en-NZ', code: 'NZD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-43.5242720408165, 172.621043454784], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-43.5242720408165, 172.621043454784], fallbackDataset: [172.621043454784, -43.5242720408165] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nz-linz-primary-parcels-arcgis', idPrefix: 'nz-linz:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        kortrijk: {
+            id: 'kortrijk', wupCityCode: '385',
+            label: translateCityText('city.labels.kortrijk', 'Kortrijk, Belgium'),
+            currency: { locale: 'nl-BE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8375977978937, 3.28211721466875], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8375977978937, 3.28211721466875], fallbackDataset: [3.28211721466875, 50.8375977978937] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'be-vlaanderen-grb-adp', idPrefix: 'BE-GRB-ADP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        krefeld: {
+            id: 'krefeld', wupCityCode: '389',
+            label: translateCityText('city.labels.krefeld', 'Krefeld, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3332048663585, 6.57862288660859], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3332048663585, 6.57862288660859], fallbackDataset: [6.57862288660859, 51.3332048663585] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        gorzow_wielkopolski: {
+            id: 'gorzow_wielkopolski', wupCityCode: '399',
+            label: translateCityText('city.labels.gorzow_wielkopolski', 'Gorzów Wielkopolski, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.7429409230698, 15.2389393766615], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.7429409230698, 15.2389393766615], fallbackDataset: [15.2389393766615, 52.7429409230698] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        daugavpils: {
+            id: 'daugavpils', wupCityCode: '420',
+            label: translateCityText('city.labels.daugavpils', 'Daugavpils, Latvia'),
+            currency: { locale: 'lv-LV', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [55.8797490625731, 26.5364228926285], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [55.8797490625731, 26.5364228926285], fallbackDataset: [26.5364228926285, 55.8797490625731] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'lv-vzd-geolatvija-vraa-wfs', idPrefix: 'LV-VZD-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'State Land Service of Latvia / Geolatvija · cadastral references · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        larissa: {
+            id: 'larissa', wupCityCode: '422',
+            label: translateCityText('city.labels.larissa', 'Larissa, Greece'),
+            currency: { locale: 'el-GR', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [39.6319994376837, 22.418368874792], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [39.6319994376837, 22.418368874792], fallbackDataset: [22.418368874792, 39.6319994376837] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gr-ktimatologio-active-parcels-arcgis', idPrefix: 'GR-ATHENS-KAEK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hellenic Cadastre (Ktimatologio) active cadastral layer, adapted to WGS84. Athens-center sample only; broader coverage and currentness unverified.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ghent: {
+            id: 'ghent', wupCityCode: '531',
+            label: translateCityText('city.labels.ghent', 'Ghent, Belgium'),
+            currency: { locale: 'nl-BE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.054687121172, 3.73169926424364], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.054687121172, 3.73169926424364], fallbackDataset: [3.73169926424364, 51.054687121172] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'be-vlaanderen-grb-adp', idPrefix: 'BE-GRB-ADP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bocholt: {
+            id: 'bocholt', wupCityCode: '534',
+            label: translateCityText('city.labels.bocholt', 'Bocholt, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.837162361442, 6.61679793943415], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.837162361442, 6.61679793943415], fallbackDataset: [6.61679793943415, 51.837162361442] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        zielona_gora: {
+            id: 'zielona_gora', wupCityCode: '544',
+            label: translateCityText('city.labels.zielona_gora', 'Zielona Góra, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.9373160500613, 15.5023625952977], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.9373160500613, 15.5023625952977], fallbackDataset: [15.5023625952977, 51.9373160500613] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        panevezys: {
+            id: 'panevezys', wupCityCode: '559',
+            label: translateCityText('city.labels.panevezys', 'Panevėžys, Lithuania'),
+            currency: { locale: 'lt-LT', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [55.7321711890858, 24.3528850529477], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [55.7321711890858, 24.3528850529477], fallbackDataset: [24.3528850529477, 55.7321711890858] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'lt-inspire-cp-wfs', idPrefix: 'LT-INSP-CADASTRAL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Lithuanian INSPIRE Geoportal / National Land Service · cadastral references · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        haifa: {
+            id: 'haifa', wupCityCode: '583',
+            label: translateCityText('city.labels.haifa', 'Haifa, Israel'),
+            currency: { locale: 'he-IL', code: 'ILS' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.812430848624, 35.0251596262198], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.812430848624, 35.0251596262198], fallbackDataset: [35.0251596262198, 32.812430848624] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lower_hutt: {
+            id: 'lower_hutt', wupCityCode: '629',
+            label: translateCityText('city.labels.lower_hutt', 'Lower Hutt, New Zealand'),
+            currency: { locale: 'en-NZ', code: 'NZD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-41.2116311605753, 174.915386248703], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-41.2116311605753, 174.915386248703], fallbackDataset: [174.915386248703, -41.2116311605753] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nz-linz-primary-parcels-arcgis', idPrefix: 'nz-linz:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        leiden: {
+            id: 'leiden', wupCityCode: '674',
+            label: translateCityText('city.labels.leiden', 'Leiden, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.1673646768043, 4.4726761074768], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.1673646768043, 4.4726761074768], fallbackDataset: [4.4726761074768, 52.1673646768043] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        koszalin: {
+            id: 'koszalin', wupCityCode: '685',
+            label: translateCityText('city.labels.koszalin', 'Koszalin, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.19411056018, 16.1902100834576], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.19411056018, 16.1902100834576], fallbackDataset: [16.1902100834576, 54.19411056018] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        palmerston_north: {
+            id: 'palmerston_north', wupCityCode: '763',
+            label: translateCityText('city.labels.palmerston_north', 'Palmerston North, New Zealand'),
+            currency: { locale: 'en-NZ', code: 'NZD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-40.352703279079, 175.614308591725], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-40.352703279079, 175.614308591725], fallbackDataset: [175.614308591725, -40.352703279079] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nz-linz-primary-parcels-arcgis', idPrefix: 'nz-linz:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        aalst: {
+            id: 'aalst', wupCityCode: '804',
+            label: translateCityText('city.labels.aalst', 'Aalst, Belgium'),
+            currency: { locale: 'nl-BE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.9435433390796, 4.03960887199254], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.9435433390796, 4.03960887199254], fallbackDataset: [4.03960887199254, 50.9435433390796] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'be-vlaanderen-grb-adp', idPrefix: 'BE-GRB-ADP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        zoetermeer: {
+            id: 'zoetermeer', wupCityCode: '806',
+            label: translateCityText('city.labels.zoetermeer', 'Zoetermeer, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.0580064519999, 4.50259377674063], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.0580064519999, 4.50259377674063], fallbackDataset: [4.50259377674063, 52.0580064519999] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lubin: {
+            id: 'lubin', wupCityCode: '816',
+            label: translateCityText('city.labels.lubin', 'Lubin, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3979869466992, 16.1963940635763], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3979869466992, 16.1963940635763], fallbackDataset: [16.1963940635763, 51.3979869466992] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        netanya: {
+            id: 'netanya', wupCityCode: '844',
+            label: translateCityText('city.labels.netanya', 'Netanya, Israel'),
+            currency: { locale: 'he-IL', code: 'ILS' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.3143145554001, 34.8598375549541], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.3143145554001, 34.8598375549541], fallbackDataset: [34.8598375549541, 32.3143145554001] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        hamilton_nz: {
+            id: 'hamilton_nz', wupCityCode: '888',
+            label: translateCityText('city.labels.hamilton_nz', 'Hamilton, New Zealand'),
+            currency: { locale: 'en-NZ', code: 'NZD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-37.7752941478825, 175.273989779784], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-37.7752941478825, 175.273989779784], fallbackDataset: [175.273989779784, -37.7752941478825] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nz-linz-primary-parcels-arcgis', idPrefix: 'nz-linz:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        sint_niklaas: {
+            id: 'sint_niklaas', wupCityCode: '926',
+            label: translateCityText('city.labels.sint_niklaas', 'Sint-Niklaas, Belgium'),
+            currency: { locale: 'nl-BE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.1653252425065, 4.14783441472725], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.1653252425065, 4.14783441472725], fallbackDataset: [4.14783441472725, 51.1653252425065] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'be-vlaanderen-grb-adp', idPrefix: 'BE-GRB-ADP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        legnica: {
+            id: 'legnica', wupCityCode: '937',
+            label: translateCityText('city.labels.legnica', 'Legnica, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.2058512284457, 16.1741221611038], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.2058512284457, 16.1741221611038], fallbackDataset: [16.1741221611038, 51.2058512284457] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        chania: {
+            id: 'chania', wupCityCode: '951',
+            label: translateCityText('city.labels.chania', 'Chania, Greece'),
+            currency: { locale: 'el-GR', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [35.508865587634, 24.0224198967439], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [35.508865587634, 24.0224198967439], fallbackDataset: [24.0224198967439, 35.508865587634] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gr-ktimatologio-active-parcels-arcgis', idPrefix: 'GR-ATHENS-KAEK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hellenic Cadastre (Ktimatologio) active cadastral layer, adapted to WGS84. Athens-center sample only; broader coverage and currentness unverified.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        hadera: {
+            id: 'hadera', wupCityCode: '961',
+            label: translateCityText('city.labels.hadera', 'Hadera, Israel'),
+            currency: { locale: 'he-IL', code: 'ILS' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.4372849491784, 34.9185599229164], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.4372849491784, 34.9185599229164], fallbackDataset: [34.9185599229164, 32.4372849491784] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        heemskerk: {
+            id: 'heemskerk', wupCityCode: '1043',
+            label: translateCityText('city.labels.heemskerk', 'Heemskerk, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.4875107568307, 4.64912920315651], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.4875107568307, 4.64912920315651], fallbackDataset: [4.64912920315651, 52.4875107568307] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        slupsk: {
+            id: 'slupsk', wupCityCode: '1053',
+            label: translateCityText('city.labels.slupsk', 'Słupsk, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.4636975832782, 17.0213199178476], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.4636975832782, 17.0213199178476], fallbackDataset: [17.0213199178476, 54.4636975832782] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        rehovot: {
+            id: 'rehovot', wupCityCode: '1075',
+            label: translateCityText('city.labels.rehovot', 'Rehovot, Israel'),
+            currency: { locale: 'he-IL', code: 'ILS' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [31.8958134072658, 34.8097538728296], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [31.8958134072658, 34.8097538728296], fallbackDataset: [34.8097538728296, 31.8958134072658] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        papakura: {
+            id: 'papakura', wupCityCode: '1120',
+            label: translateCityText('city.labels.papakura', 'Papakura, New Zealand'),
+            currency: { locale: 'en-NZ', code: 'NZD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-37.0379819273102, 174.906818249879], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-37.0379819273102, 174.906818249879], fallbackDataset: [174.906818249879, -37.0379819273102] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nz-linz-primary-parcels-arcgis', idPrefix: 'nz-linz:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        nantes: {
+            id: 'nantes', wupCityCode: '1152',
+            label: translateCityText('city.labels.nantes', 'Nantes, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [47.2226716545731, -1.55741025412737], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [47.2226716545731, -1.55741025412737], fallbackDataset: [-1.55741025412737, 47.2226716545731] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        haarlem: {
+            id: 'haarlem', wupCityCode: '1158',
+            label: translateCityText('city.labels.haarlem', 'Haarlem, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.3821638892441, 4.64006831462338], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.3821638892441, 4.64006831462338], fallbackDataset: [4.64006831462338, 52.3821638892441] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        pila: {
+            id: 'pila', wupCityCode: '1167',
+            label: translateCityText('city.labels.pila', 'Pila, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.1513682979439, 16.7464328052244], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.1513682979439, 16.7464328052244], fallbackDataset: [16.7464328052244, 53.1513682979439] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        glenfield: {
+            id: 'glenfield', wupCityCode: '1232',
+            label: translateCityText('city.labels.glenfield', 'Glenfield, New Zealand'),
+            currency: { locale: 'en-NZ', code: 'NZD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-36.769531623771, 174.735780487087], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-36.769531623771, 174.735780487087], fallbackDataset: [174.735780487087, -36.769531623771] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nz-linz-primary-parcels-arcgis', idPrefix: 'nz-linz:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        hoofddorp: {
+            id: 'hoofddorp', wupCityCode: '1267',
+            label: translateCityText('city.labels.hoofddorp', 'Hoofddorp, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.3054351617886, 4.66703282561631], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.3054351617886, 4.66703282561631], fallbackDataset: [4.66703282561631, 52.3054351617886] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        leszno: {
+            id: 'leszno', wupCityCode: '1275',
+            label: translateCityText('city.labels.leszno', 'Leszno, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.8427843893659, 16.5773027600746], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.8427843893659, 16.5773027600746], fallbackDataset: [16.5773027600746, 51.8427843893659] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        otumoetai: {
+            id: 'otumoetai', wupCityCode: '1338',
+            label: translateCityText('city.labels.otumoetai', 'Otūmoetai, New Zealand'),
+            currency: { locale: 'en-NZ', code: 'NZD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-37.6995938088887, 176.14886316288], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-37.6995938088887, 176.14886316288], fallbackDataset: [176.14886316288, -37.6995938088887] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nz-linz-primary-parcels-arcgis', idPrefix: 'nz-linz:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        dordrecht: {
+            id: 'dordrecht', wupCityCode: '1373',
+            label: translateCityText('city.labels.dordrecht', 'Dordrecht, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.8143926922208, 4.67469211847365], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.8143926922208, 4.67469211847365], fallbackDataset: [4.67469211847365, 51.8143926922208] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        hurth: {
+            id: 'hurth', wupCityCode: '1375',
+            label: translateCityText('city.labels.hurth', 'Hürth, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8574852314233, 6.89340663734576], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8574852314233, 6.89340663734576], fallbackDataset: [6.89340663734576, 50.8574852314233] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        daliyat_al_karmel: {
+            id: 'daliyat_al_karmel', wupCityCode: '1400',
+            label: translateCityText('city.labels.daliyat_al_karmel', 'Daliyat al-Karmel, Israel'),
+            currency: { locale: 'he-IL', code: 'ILS' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.7014534889277, 35.0558952294538], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.7014534889277, 35.0558952294538], fallbackDataset: [35.0558952294538, 32.7014534889277] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        mechelen: {
+            id: 'mechelen', wupCityCode: '1474',
+            label: translateCityText('city.labels.mechelen', 'Mechelen, Belgium'),
+            currency: { locale: 'nl-BE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.025998805418, 4.48126862657754], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.025998805418, 4.48126862657754], fallbackDataset: [4.48126862657754, 51.025998805418] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'be-vlaanderen-grb-adp', idPrefix: 'BE-GRB-ADP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        alphen_aan_den_rijn: {
+            id: 'alphen_aan_den_rijn', wupCityCode: '1475',
+            label: translateCityText('city.labels.alphen_aan_den_rijn', 'Alphen aan den Rijn, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.1332574588064, 4.65782890208914], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.1332574588064, 4.65782890208914], fallbackDataset: [4.65782890208914, 52.1332574588064] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        tira: {
+            id: 'tira', wupCityCode: '1502',
+            label: translateCityText('city.labels.tira', 'Tira, Israel'),
+            currency: { locale: 'he-IL', code: 'ILS' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.2342787180447, 34.9544323813687], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.2342787180447, 34.9544323813687], fallbackDataset: [34.9544323813687, 32.2342787180447] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        alkmaar: {
+            id: 'alkmaar', wupCityCode: '1571',
+            label: translateCityText('city.labels.alkmaar', 'Alkmaar, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.6522439366888, 4.78238265594386], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.6522439366888, 4.78238265594386], fallbackDataset: [4.78238265594386, 52.6522439366888] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        leuven: {
+            id: 'leuven', wupCityCode: '1572',
+            label: translateCityText('city.labels.leuven', 'Leuven, Belgium'),
+            currency: { locale: 'nl-BE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8812852650943, 4.70774709568462], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8812852650943, 4.70774709568462], fallbackDataset: [4.70774709568462, 50.8812852650943] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'be-vlaanderen-grb-adp', idPrefix: 'BE-GRB-ADP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        marl: {
+            id: 'marl', wupCityCode: '1573',
+            label: translateCityText('city.labels.marl', 'Marl, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.6681556413441, 7.10509206272269], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.6681556413441, 7.10509206272269], fallbackDataset: [7.10509206272269, 51.6681556413441] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        wroclaw: {
+            id: 'wroclaw', wupCityCode: '1580',
+            label: translateCityText('city.labels.wroclaw', 'Wrocław, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.1052197969447, 17.0226844994164], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.1052197969447, 17.0226844994164], fallbackDataset: [17.0226844994164, 51.1052197969447] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        rosh_haayin: {
+            id: 'rosh_haayin', wupCityCode: '1597',
+            label: translateCityText('city.labels.rosh_haayin', 'Rosh HaAyin, Israel'),
+            currency: { locale: 'he-IL', code: 'ILS' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.105795719819, 34.9640712304425], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.105795719819, 34.9640712304425], fallbackDataset: [34.9640712304425, 32.105795719819] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        gouda: {
+            id: 'gouda', wupCityCode: '1664',
+            label: translateCityText('city.labels.gouda', 'Gouda, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.020062520535, 4.71398619919552], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.020062520535, 4.71398619919552], fallbackDataset: [4.71398619919552, 52.020062520535] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        gniezno: {
+            id: 'gniezno', wupCityCode: '1673',
+            label: translateCityText('city.labels.gniezno', 'Gniezno, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.5344430787909, 17.6064312677703], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.5344430787909, 17.6064312677703], fallbackDataset: [17.6064312677703, 52.5344430787909] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        kafr_yasif: {
+            id: 'kafr_yasif', wupCityCode: '1688',
+            label: translateCityText('city.labels.kafr_yasif', 'Kafr Yasif, Israel'),
+            currency: { locale: 'he-IL', code: 'ILS' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.9538350684818, 35.1826472209271], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.9538350684818, 35.1826472209271], fallbackDataset: [35.1826472209271, 32.9538350684818] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        remscheid: {
+            id: 'remscheid', wupCityCode: '1756',
+            label: translateCityText('city.labels.remscheid', 'Remscheid, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.1817871834151, 7.2043470437967], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.1817871834151, 7.2043470437967], fallbackDataset: [7.2043470437967, 51.1817871834151] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        wejherowo: {
+            id: 'wejherowo', wupCityCode: '1763',
+            label: translateCityText('city.labels.wejherowo', 'Wejherowo, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.6054036640665, 18.2391802227089], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.6054036640665, 18.2391802227089], fallbackDataset: [18.2391802227089, 54.6054036640665] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        beersheba: {
+            id: 'beersheba', wupCityCode: '1864',
+            label: translateCityText('city.labels.beersheba', 'Beersheba, Israel'),
+            currency: { locale: 'he-IL', code: 'ILS' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [31.2545180899882, 34.7869140000578], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [31.2545180899882, 34.7869140000578], fallbackDataset: [34.7869140000578, 31.2545180899882] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        wollongong: {
+            id: 'wollongong', wupCityCode: '1898',
+            label: translateCityText('city.labels.wollongong', 'Wollongong, Australia'),
+            currency: { locale: 'en-AU', code: 'AUD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-34.3954725106608, 150.8905776549], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-34.3954725106608, 150.8905776549], fallbackDataset: [150.8905776549, -34.3954725106608] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'au-nsw-six-cadastre-lot', idPrefix: 'AU-NSW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NSW Spatial Services / Department of Customer Service, cadastral lots; adapted to WGS84. See publisher conditions.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        purmerend: {
+            id: 'purmerend', wupCityCode: '1927',
+            label: translateCityText('city.labels.purmerend', 'Purmerend, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.5033693716876, 4.96148509531992], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.5033693716876, 4.96148509531992], fallbackDataset: [4.96148509531992, 52.5033693716876] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        hagen: {
+            id: 'hagen', wupCityCode: '1928',
+            label: translateCityText('city.labels.hagen', 'Hagen, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3659087620314, 7.46735353305389], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3659087620314, 7.46735353305389], fallbackDataset: [7.46735353305389, 51.3659087620314] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        gdynia: {
+            id: 'gdynia', wupCityCode: '1935',
+            label: translateCityText('city.labels.gdynia', 'Gdynia, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.5322041862711, 18.5076341710355], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.5322041862711, 18.5076341710355], fallbackDataset: [18.5076341710355, 54.5322041862711] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        taibe: {
+            id: 'taibe', wupCityCode: '1947',
+            label: translateCityText('city.labels.taibe', 'Taibe, Israel'),
+            currency: { locale: 'he-IL', code: 'ILS' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.2649299482491, 35.0081305909969], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.2649299482491, 35.0081305909969], fallbackDataset: [35.0081305909969, 32.2649299482491] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        hoorn: {
+            id: 'hoorn', wupCityCode: '2008',
+            label: translateCityText('city.labels.hoorn', 'Hoorn, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.6558213441406, 5.06975918263357], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.6558213441406, 5.06975918263357], fallbackDataset: [5.06975918263357, 52.6558213441406] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ostrow_wielkopolski: {
+            id: 'ostrow_wielkopolski', wupCityCode: '2014',
+            label: translateCityText('city.labels.ostrow_wielkopolski', 'Ostrów Wielkopolski, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.6497384459528, 17.8138050881419], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.6497384459528, 17.8138050881419], fallbackDataset: [17.8138050881419, 51.6497384459528] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        munster: {
+            id: 'munster', wupCityCode: '2088',
+            label: translateCityText('city.labels.munster', 'Münster, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.9527203351823, 7.6263298998742], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.9527203351823, 7.6263298998742], fallbackDataset: [7.6263298998742, 51.9527203351823] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        umm_al_fahm: {
+            id: 'umm_al_fahm', wupCityCode: '2105',
+            label: translateCityText('city.labels.umm_al_fahm', 'Umm al-Fahm, Israel'),
+            currency: { locale: 'he-IL', code: 'ILS' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.5239214711844, 35.1523058461333], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.5239214711844, 35.1523058461333], fallbackDataset: [35.1523058461333, 32.5239214711844] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        unna: {
+            id: 'unna', wupCityCode: '2167',
+            label: translateCityText('city.labels.unna', 'Unna, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.5396885168331, 7.65878768202864], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.5396885168331, 7.65878768202864], fallbackDataset: [7.65878768202864, 51.5396885168331] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        inowroclaw: {
+            id: 'inowroclaw', wupCityCode: '2172',
+            label: translateCityText('city.labels.inowroclaw', 'Inowrocław, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.7902336993022, 18.2590588435053], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.7902336993022, 18.2590588435053], fallbackDataset: [18.2590588435053, 52.7902336993022] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        modiin_maccabim_reut: {
+            id: 'modiin_maccabim_reut', wupCityCode: '2184',
+            label: translateCityText('city.labels.modiin_maccabim_reut', 'Modiin-Maccabim-Reut, Israel'),
+            currency: { locale: 'he-IL', code: 'ILS' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [31.8986246886273, 35.0077621307069], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [31.8986246886273, 35.0077621307069], fallbackDataset: [35.0077621307069, 31.8986246886273] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'il-govmap-cadastral-parcel-rows', idPrefix: 'govmap:row:', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        livermore: {
+            id: 'livermore', wupCityCode: '2218',
+            label: translateCityText('city.labels.livermore', 'Livermore, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [37.678488891042, -121.767840355486], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [37.678488891042, -121.767840355486], fallbackDataset: [-121.767840355486, 37.678488891042] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ca-calfire-statewide-parcels', idPrefix: 'US-CA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'CAL FIRE, California Statewide Parcels Public View (county assessor parcel data). Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        rouen: {
+            id: 'rouen', wupCityCode: '2239',
+            label: translateCityText('city.labels.rouen', 'Rouen, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.4334014958952, 1.08426580718412], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.4334014958952, 1.08426580718412], fallbackDataset: [1.08426580718412, 49.4334014958952] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ludenscheid: {
+            id: 'ludenscheid', wupCityCode: '2244',
+            label: translateCityText('city.labels.ludenscheid', 'Lüdenscheid, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.2199872933547, 7.63018199810285], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.2199872933547, 7.63018199810285], fallbackDataset: [7.63018199810285, 51.2199872933547] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        kalisz: {
+            id: 'kalisz', wupCityCode: '2249',
+            label: translateCityText('city.labels.kalisz', 'Kalisz, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7549404064184, 18.0833173060179], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.7549404064184, 18.0833173060179], fallbackDataset: [18.0833173060179, 51.7549404064184] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bussum: {
+            id: 'bussum', wupCityCode: '2319',
+            label: translateCityText('city.labels.bussum', 'Bussum, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2773118416372, 5.16304422962181], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.2773118416372, 5.16304422962181], fallbackDataset: [5.16304422962181, 52.2773118416372] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        iserlohn: {
+            id: 'iserlohn', wupCityCode: '2320',
+            label: translateCityText('city.labels.iserlohn', 'Iserlohn, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3791903656589, 7.68570083680636], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3791903656589, 7.68570083680636], fallbackDataset: [7.68570083680636, 51.3791903656589] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        tczew: {
+            id: 'tczew', wupCityCode: '2325',
+            label: translateCityText('city.labels.tczew', 'Tczew, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.0908371715605, 18.7843364944908], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.0908371715605, 18.7843364944908], fallbackDataset: [18.7843364944908, 54.0908371715605] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        hilversum: {
+            id: 'hilversum', wupCityCode: '2395',
+            label: translateCityText('city.labels.hilversum', 'Hilversum, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2216945481736, 5.17282299607963], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.2216945481736, 5.17282299607963], fallbackDataset: [5.17282299607963, 52.2216945481736] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        opole: {
+            id: 'opole', wupCityCode: '2401',
+            label: translateCityText('city.labels.opole', 'Opole, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.6681692860732, 17.9404125955347], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.6681692860732, 17.9404125955347], fallbackDataset: [17.9404125955347, 50.6681692860732] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        almere: {
+            id: 'almere', wupCityCode: '2470',
+            label: translateCityText('city.labels.almere', 'Almere, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.377455091164, 5.24278468537167], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.377455091164, 5.24278468537167], fallbackDataset: [5.24278468537167, 52.377455091164] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        hamm: {
+            id: 'hamm', wupCityCode: '2471',
+            label: translateCityText('city.labels.hamm', 'Hamm, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.6789688105277, 7.78773684717369], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.6789688105277, 7.78773684717369], fallbackDataset: [7.78773684717369, 51.6789688105277] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        torun: {
+            id: 'torun', wupCityCode: '2476',
+            label: translateCityText('city.labels.torun', 'Toruń, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.0245852712266, 18.6212481126872], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.0245852712266, 18.6212481126872], fallbackDataset: [18.6212481126872, 53.0245852712266] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        zeist: {
+            id: 'zeist', wupCityCode: '2544',
+            label: translateCityText('city.labels.zeist', 'Zeist, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.0897846498778, 5.23582173112321], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.0897846498778, 5.23582173112321], fallbackDataset: [5.23582173112321, 52.0897846498778] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        grudziadz: {
+            id: 'grudziadz', wupCityCode: '2549',
+            label: translateCityText('city.labels.grudziadz', 'Grudziądz, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.4788249167263, 18.7571110836073], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.4788249167263, 18.7571110836073], fallbackDataset: [18.7571110836073, 53.4788249167263] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        s_hertogenbosch: {
+            id: 's_hertogenbosch', wupCityCode: '2615',
+            label: translateCityText('city.labels.s_hertogenbosch', '\'s-Hertogenbosch, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7066884581067, 5.31629111142042], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.7066884581067, 5.31629111142042], fallbackDataset: [5.31629111142042, 51.7066884581067] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        elblag: {
+            id: 'elblag', wupCityCode: '2620',
+            label: translateCityText('city.labels.elblag', 'Elbląg, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.1668551128978, 19.4103120545885], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.1668551128978, 19.4103120545885], fallbackDataset: [19.4103120545885, 54.1668551128978] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        amersfoort: {
+            id: 'amersfoort', wupCityCode: '2682',
+            label: translateCityText('city.labels.amersfoort', 'Amersfoort, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.1691038816767, 5.39728040800154], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.1691038816767, 5.39728040800154], fallbackDataset: [5.39728040800154, 52.1691038816767] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        wloclawek: {
+            id: 'wloclawek', wupCityCode: '2687',
+            label: translateCityText('city.labels.wloclawek', 'Włocławek, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.6505942526297, 19.0626658622382], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.6505942526297, 19.0626658622382], fallbackDataset: [19.0626658622382, 52.6505942526297] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lelystad: {
+            id: 'lelystad', wupCityCode: '2749',
+            label: translateCityText('city.labels.lelystad', 'Lelystad, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.5058770190195, 5.47327676910043], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.5058770190195, 5.47327676910043], fallbackDataset: [5.47327676910043, 52.5058770190195] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        siegen: {
+            id: 'siegen', wupCityCode: '2750',
+            label: translateCityText('city.labels.siegen', 'Siegen, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8899005634816, 8.02247385221933], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8899005634816, 8.02247385221933], fallbackDataset: [8.02247385221933, 50.8899005634816] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        rybnik: {
+            id: 'rybnik', wupCityCode: '2754',
+            label: translateCityText('city.labels.rybnik', 'Rybnik, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.099180479429, 18.5383788655106], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.099180479429, 18.5383788655106], fallbackDataset: [18.5383788655106, 50.099180479429] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        eindhoven: {
+            id: 'eindhoven', wupCityCode: '2813',
+            label: translateCityText('city.labels.eindhoven', 'Eindhoven, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4432163203009, 5.45844256201511], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.4432163203009, 5.45844256201511], fallbackDataset: [5.45844256201511, 51.4432163203009] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        freiburg_im_breisgau: {
+            id: 'freiburg_im_breisgau', wupCityCode: '2814',
+            label: translateCityText('city.labels.freiburg_im_breisgau', 'Freiburg im Breisgau, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.0006635061131, 7.83778338402154], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.0006635061131, 7.83778338402154], fallbackDataset: [7.83778338402154, 48.0006635061131] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        jastrzebie_zdroj: {
+            id: 'jastrzebie_zdroj', wupCityCode: '2818',
+            label: translateCityText('city.labels.jastrzebie_zdroj', 'Jastrzębie-Zdrój, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.9518257086113, 18.5908434066578], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.9518257086113, 18.5908434066578], fallbackDataset: [18.5908434066578, 49.9518257086113] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        oss: {
+            id: 'oss', wupCityCode: '2876',
+            label: translateCityText('city.labels.oss', 'Oss, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7661201043065, 5.52895010311022], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.7661201043065, 5.52895010311022], fallbackDataset: [5.52895010311022, 51.7661201043065] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        gliwice: {
+            id: 'gliwice', wupCityCode: '2881',
+            label: translateCityText('city.labels.gliwice', 'Gliwice, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.2974825733379, 18.6726701509765], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.2974825733379, 18.6726701509765], fallbackDataset: [18.6726701509765, 50.2974825733379] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        veenendaal: {
+            id: 'veenendaal', wupCityCode: '2937',
+            label: translateCityText('city.labels.veenendaal', 'Veenendaal, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.0224599462408, 5.55574016955085], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.0224599462408, 5.55574016955085], fallbackDataset: [5.55574016955085, 52.0224599462408] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        gutersloh: {
+            id: 'gutersloh', wupCityCode: '2938',
+            label: translateCityText('city.labels.gutersloh', 'Gütersloh, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.9044262053087, 8.38418745049793], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.9044262053087, 8.38418745049793], fallbackDataset: [8.38418745049793, 51.9044262053087] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ede: {
+            id: 'ede', wupCityCode: '2997',
+            label: translateCityText('city.labels.ede', 'Ede, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.0353765306542, 5.65323487609329], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.0353765306542, 5.65323487609329], fallbackDataset: [5.65323487609329, 52.0353765306542] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        helmond: {
+            id: 'helmond', wupCityCode: '3056',
+            label: translateCityText('city.labels.helmond', 'Helmond, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4711841170888, 5.66069182320304], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.4711841170888, 5.66069182320304], fallbackDataset: [5.66069182320304, 51.4711841170888] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        pabianice: {
+            id: 'pabianice', wupCityCode: '3061',
+            label: translateCityText('city.labels.pabianice', 'Pabianice, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.6609967628735, 19.3534282663508], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.6609967628735, 19.3534282663508], fallbackDataset: [19.3534282663508, 51.6609967628735] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        leeuwarden: {
+            id: 'leeuwarden', wupCityCode: '3115',
+            label: translateCityText('city.labels.leeuwarden', 'Leeuwarden, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.2003327872053, 5.80785745182904], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.2003327872053, 5.80785745182904], fallbackDataset: [5.80785745182904, 53.2003327872053] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        nijmegen: {
+            id: 'nijmegen', wupCityCode: '3173',
+            label: translateCityText('city.labels.nijmegen', 'Nijmegen, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.8273681725996, 5.82030557604345], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.8273681725996, 5.82030557604345], fallbackDataset: [5.82030557604345, 51.8273681725996] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bielefeld: {
+            id: 'bielefeld', wupCityCode: '3174',
+            label: translateCityText('city.labels.bielefeld', 'Bielefeld, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.0195333690261, 8.54753242156078], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.0195333690261, 8.54753242156078], fallbackDataset: [8.54753242156078, 52.0195333690261] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        tychy: {
+            id: 'tychy', wupCityCode: '3178',
+            label: translateCityText('city.labels.tychy', 'Tychy, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.1188429468754, 18.987175031002], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.1188429468754, 18.987175031002], fallbackDataset: [18.987175031002, 50.1188429468754] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        maastricht: {
+            id: 'maastricht', wupCityCode: '3230',
+            label: translateCityText('city.labels.maastricht', 'Maastricht, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8485108833663, 5.69710839005175], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8485108833663, 5.69710839005175], fallbackDataset: [5.69710839005175, 50.8485108833663] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        arnhem: {
+            id: 'arnhem', wupCityCode: '3285',
+            label: translateCityText('city.labels.arnhem', 'Arnhem, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.9720027817995, 5.91461730519761], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.9720027817995, 5.91461730519761], fallbackDataset: [5.91461730519761, 51.9720027817995] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        herford: {
+            id: 'herford', wupCityCode: '3286',
+            label: translateCityText('city.labels.herford', 'Herford, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.1186742740275, 8.67431041713781], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.1186742740275, 8.67431041713781], fallbackDataset: [8.67431041713781, 52.1186742740275] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        plock: {
+            id: 'plock', wupCityCode: '3289',
+            label: translateCityText('city.labels.plock', 'Płock, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.5430998887522, 19.7195485490596], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.5430998887522, 19.7195485490596], fallbackDataset: [19.7195485490596, 52.5430998887522] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        apeldoorn: {
+            id: 'apeldoorn', wupCityCode: '3340',
+            label: translateCityText('city.labels.apeldoorn', 'Apeldoorn, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2088941318488, 5.97243707164198], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.2088941318488, 5.97243707164198], fallbackDataset: [5.97243707164198, 52.2088941318488] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        russelsheim_am_main: {
+            id: 'russelsheim_am_main', wupCityCode: '3341',
+            label: translateCityText('city.labels.russelsheim_am_main', 'Rüsselsheim am Main, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.990515288114, 8.43382940878915], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.990515288114, 8.43382940878915], fallbackDataset: [8.43382940878915, 49.990515288114] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'hessen-alkis-vereinfacht-wfs', idPrefix: 'DE-HE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hessisches Landesamt für Bodenmanagement und Geoinformation · parcels · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        zwolle: {
+            id: 'zwolle', wupCityCode: '3393',
+            label: translateCityText('city.labels.zwolle', 'Zwolle, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.5132062071371, 6.09243811399258], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.5132062071371, 6.09243811399258], fallbackDataset: [6.09243811399258, 52.5132062071371] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        karlsruhe: {
+            id: 'karlsruhe', wupCityCode: '3394',
+            label: translateCityText('city.labels.karlsruhe', 'Karlsruhe, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.0084967221897, 8.4011625005132], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.0084967221897, 8.4011625005132], fallbackDataset: [8.4011625005132, 49.0084967221897] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bielsko_biala: {
+            id: 'bielsko_biala', wupCityCode: '3397',
+            label: translateCityText('city.labels.bielsko_biala', 'Bielsko-Biała, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.8178778643515, 19.0423255904236], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.8178778643515, 19.0423255904236], fallbackDataset: [19.0423255904236, 49.8178778643515] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        heerlen: {
+            id: 'heerlen', wupCityCode: '3446',
+            label: translateCityText('city.labels.heerlen', 'Heerlen, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.9001389828976, 5.99426673932929], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.9001389828976, 5.99426673932929], fallbackDataset: [5.99426673932929, 50.9001389828976] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        mannheim: {
+            id: 'mannheim', wupCityCode: '3447',
+            label: translateCityText('city.labels.mannheim', 'Mannheim, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.485482134892, 8.47482558079509], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.485482134892, 8.47482558079509], fallbackDataset: [8.47482558079509, 49.485482134892] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        piotrkow_trybunalski: {
+            id: 'piotrkow_trybunalski', wupCityCode: '3449',
+            label: translateCityText('city.labels.piotrkow_trybunalski', 'Piotrków Trybunalski, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4086733870137, 19.6836162711193], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.4086733870137, 19.6836162711193], fallbackDataset: [19.6836162711193, 51.4086733870137] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        deventer: {
+            id: 'deventer', wupCityCode: '3499',
+            label: translateCityText('city.labels.deventer', 'Deventer, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2589851524138, 6.17977057589214], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.2589851524138, 6.17977057589214], fallbackDataset: [6.17977057589214, 52.2589851524138] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        olsztyn: {
+            id: 'olsztyn', wupCityCode: '3502',
+            label: translateCityText('city.labels.olsztyn', 'Olsztyn, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.7665732876546, 20.4978271160328], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.7665732876546, 20.4978271160328], fallbackDataset: [20.4978271160328, 53.7665732876546] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        groningen: {
+            id: 'groningen', wupCityCode: '3552',
+            label: translateCityText('city.labels.groningen', 'Groningen, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.2187480982514, 6.5694015697624], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.2187480982514, 6.5694015697624], fallbackDataset: [6.5694015697624, 53.2187480982514] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        paderborn: {
+            id: 'paderborn', wupCityCode: '3553',
+            label: translateCityText('city.labels.paderborn', 'Paderborn, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7199802103556, 8.75710708517565], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.7199802103556, 8.75710708517565], fallbackDataset: [8.75710708517565, 51.7199802103556] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        tomaszow_mazowiecki: {
+            id: 'tomaszow_mazowiecki', wupCityCode: '3555',
+            label: translateCityText('city.labels.tomaszow_mazowiecki', 'Tomaszów Mazowiecki, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.5340194073462, 20.0135606379077], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.5340194073462, 20.0135606379077], fallbackDataset: [20.0135606379077, 51.5340194073462] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        almelo: {
+            id: 'almelo', wupCityCode: '3605',
+            label: translateCityText('city.labels.almelo', 'Almelo, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.3551248247847, 6.65940688231402], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.3551248247847, 6.65940688231402], fallbackDataset: [6.65940688231402, 52.3551248247847] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        hengelo: {
+            id: 'hengelo', wupCityCode: '3656',
+            label: translateCityText('city.labels.hengelo', 'Hengelo, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2689917662346, 6.80085741213038], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.2689917662346, 6.80085741213038], fallbackDataset: [6.80085741213038, 52.2689917662346] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        giessen: {
+            id: 'giessen', wupCityCode: '3657',
+            label: translateCityText('city.labels.giessen', 'Gießen, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.5871854112385, 8.67930634779687], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.5871854112385, 8.67930634779687], fallbackDataset: [8.67930634779687, 50.5871854112385] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'hessen-alkis-vereinfacht-wfs', idPrefix: 'DE-HE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hessisches Landesamt für Bodenmanagement und Geoinformation · parcels · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        warszawa_warsaw: {
+            id: 'warszawa_warsaw', wupCityCode: '3660',
+            label: translateCityText('city.labels.warszawa_warsaw', 'Warszawa (Warsaw), Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2229170530915, 21.0008161096485], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.2229170530915, 21.0008161096485], fallbackDataset: [21.0008161096485, 52.2229170530915] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        enschede: {
+            id: 'enschede', wupCityCode: '3707',
+            label: translateCityText('city.labels.enschede', 'Enschede, Netherlands'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2156183904437, 6.88434157506402], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.2156183904437, 6.88434157506402], fallbackDataset: [6.88434157506402, 52.2156183904437] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        darmstadt: {
+            id: 'darmstadt', wupCityCode: '3708',
+            label: translateCityText('city.labels.darmstadt', 'Darmstadt, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.8775164874442, 8.65106829046502], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.8775164874442, 8.65106829046502], fallbackDataset: [8.65106829046502, 49.8775164874442] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'hessen-alkis-vereinfacht-wfs', idPrefix: 'DE-HE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hessisches Landesamt für Bodenmanagement und Geoinformation · parcels · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        legionowo: {
+            id: 'legionowo', wupCityCode: '3710',
+            label: translateCityText('city.labels.legionowo', 'Legionowo, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.4039665953965, 20.9252703477092], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.4039665953965, 20.9252703477092], fallbackDataset: [20.9252703477092, 52.4039665953965] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        heidelberg: {
+            id: 'heidelberg', wupCityCode: '3756',
+            label: translateCityText('city.labels.heidelberg', 'Heidelberg, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.3910185824291, 8.6720920591206], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.3910185824291, 8.6720920591206], fallbackDataset: [8.6720920591206, 49.3910185824291] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        kielce: {
+            id: 'kielce', wupCityCode: '3758',
+            label: translateCityText('city.labels.kielce', 'Kielce, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8750758566059, 20.6275441266407], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8750758566059, 20.6275441266407], fallbackDataset: [20.6275441266407, 50.8750758566059] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        wolomin: {
+            id: 'wolomin', wupCityCode: '3805',
+            label: translateCityText('city.labels.wolomin', 'Wołomin, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.342697415251, 21.2337346051155], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.342697415251, 21.2337346051155], fallbackDataset: [21.2337346051155, 52.342697415251] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        pforzheim: {
+            id: 'pforzheim', wupCityCode: '3849',
+            label: translateCityText('city.labels.pforzheim', 'Pforzheim, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.8884978124238, 8.69418460384127], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.8884978124238, 8.69418460384127], fallbackDataset: [8.69418460384127, 48.8884978124238] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        radom: {
+            id: 'radom', wupCityCode: '3851',
+            label: translateCityText('city.labels.radom', 'Radom, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3964628828514, 21.1526507651136], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3964628828514, 21.1526507651136], fallbackDataset: [21.1526507651136, 51.3964628828514] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        hanau: {
+            id: 'hanau', wupCityCode: '3895',
+            label: translateCityText('city.labels.hanau', 'Hanau, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.1192991264763, 8.92227699927494], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.1192991264763, 8.92227699927494], fallbackDataset: [8.92227699927494, 50.1192991264763] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'hessen-alkis-vereinfacht-wfs', idPrefix: 'DE-HE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hessisches Landesamt für Bodenmanagement und Geoinformation · parcels · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        nowy_sacz: {
+            id: 'nowy_sacz', wupCityCode: '3897',
+            label: translateCityText('city.labels.nowy_sacz', 'Nowy Sącz, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.6140452924349, 20.6998999214814], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.6140452924349, 20.6998999214814], fallbackDataset: [20.6998999214814, 49.6140452924349] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        davis: {
+            id: 'davis', wupCityCode: '3926',
+            label: translateCityText('city.labels.davis', 'Davis, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [38.553067679527, -121.743239448172], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [38.553067679527, -121.743239448172], fallbackDataset: [-121.743239448172, 38.553067679527] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ca-calfire-statewide-parcels', idPrefix: 'US-CA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'CAL FIRE, California Statewide Parcels Public View (county assessor parcel data). Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        tarnow: {
+            id: 'tarnow', wupCityCode: '3942',
+            label: translateCityText('city.labels.tarnow', 'Tarnów, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.0164917071665, 20.9877709077343], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.0164917071665, 20.9877709077343], fallbackDataset: [20.9877709077343, 50.0164917071665] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        sindelfingen: {
+            id: 'sindelfingen', wupCityCode: '3984',
+            label: translateCityText('city.labels.sindelfingen', 'Sindelfingen, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.6952777912253, 9.00720562643213], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.6952777912253, 9.00720562643213], fallbackDataset: [9.00720562643213, 48.6952777912253] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lomza: {
+            id: 'lomza', wupCityCode: '3986',
+            label: translateCityText('city.labels.lomza', 'Łomża, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.1714002876591, 22.0646901929271], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.1714002876591, 22.0646901929271], fallbackDataset: [22.0646901929271, 53.1714002876591] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        gerlingen: {
+            id: 'gerlingen', wupCityCode: '4027',
+            label: translateCityText('city.labels.gerlingen', 'Gerlingen, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.8110813845571, 9.09691074394977], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.8110813845571, 9.09691074394977], fallbackDataset: [9.09691074394977, 48.8110813845571] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        elk: {
+            id: 'elk', wupCityCode: '4029',
+            label: translateCityText('city.labels.elk', 'Elk, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.8234849792281, 22.3576680534356], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.8234849792281, 22.3576680534356], fallbackDataset: [22.3576680534356, 53.8234849792281] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        madera: {
+            id: 'madera', wupCityCode: '4056',
+            label: translateCityText('city.labels.madera', 'Madera, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [36.9636127025836, -120.063186461836], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [36.9636127025836, -120.063186461836], fallbackDataset: [-120.063186461836, 36.9636127025836] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ca-calfire-statewide-parcels', idPrefix: 'US-CA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'CAL FIRE, California Statewide Parcels Public View (county assessor parcel data). Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        siedlce: {
+            id: 'siedlce', wupCityCode: '4072',
+            label: translateCityText('city.labels.siedlce', 'Siedlce, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.1656867656902, 22.2767061227765], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.1656867656902, 22.2767061227765], fallbackDataset: [22.2767061227765, 52.1656867656902] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        suwalki: {
+            id: 'suwalki', wupCityCode: '4115',
+            label: translateCityText('city.labels.suwalki', 'Suwałki, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.1043061997561, 22.9331027875897], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.1043061997561, 22.9331027875897], fallbackDataset: [22.9331027875897, 54.1043061997561] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        stalowa_wola: {
+            id: 'stalowa_wola', wupCityCode: '4157',
+            label: translateCityText('city.labels.stalowa_wola', 'Stalowa Wola, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.5664297325734, 22.0568167437462], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.5664297325734, 22.0568167437462], fallbackDataset: [22.0568167437462, 50.5664297325734] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        kassel: {
+            id: 'kassel', wupCityCode: '4197',
+            label: translateCityText('city.labels.kassel', 'Kassel, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3151466598024, 9.48755550595054], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3151466598024, 9.48755550595054], fallbackDataset: [9.48755550595054, 51.3151466598024] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'hessen-alkis-vereinfacht-wfs', idPrefix: 'DE-HE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hessisches Landesamt für Bodenmanagement und Geoinformation · parcels · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        rzeszow: {
+            id: 'rzeszow', wupCityCode: '4199',
+            label: translateCityText('city.labels.rzeszow', 'Rzeszów, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.0320723876861, 22.0039593163143], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.0320723876861, 22.0039593163143], fallbackDataset: [22.0039593163143, 50.0320723876861] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        heilbronn: {
+            id: 'heilbronn', wupCityCode: '4238',
+            label: translateCityText('city.labels.heilbronn', 'Heilbronn, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.1519115615472, 9.21652129447529], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.1519115615472, 9.21652129447529], fallbackDataset: [9.21652129447529, 49.1519115615472] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lublin: {
+            id: 'lublin', wupCityCode: '4280',
+            label: translateCityText('city.labels.lublin', 'Lublin, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.2411675205158, 22.5517979898529], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.2411675205158, 22.5517979898529], fallbackDataset: [22.5517979898529, 51.2411675205158] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        przemysl: {
+            id: 'przemysl', wupCityCode: '4318',
+            label: translateCityText('city.labels.przemysl', 'Przemyśl, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.7865703940357, 22.7720844417991], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.7865703940357, 22.7720844417991], fallbackDataset: [22.7720844417991, 49.7865703940357] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        reutlingen: {
+            id: 'reutlingen', wupCityCode: '4354',
+            label: translateCityText('city.labels.reutlingen', 'Reutlingen, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.494515205626, 9.2093446638816], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.494515205626, 9.2093446638816], fallbackDataset: [9.2093446638816, 48.494515205626] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        zamosc: {
+            id: 'zamosc', wupCityCode: '4356',
+            label: translateCityText('city.labels.zamosc', 'Zamość, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.7217702281141, 23.2609637553334], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.7217702281141, 23.2609637553334], fallbackDataset: [23.2609637553334, 50.7217702281141] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        chelm: {
+            id: 'chelm', wupCityCode: '4394',
+            label: translateCityText('city.labels.chelm', 'Chełm, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.1343001957731, 23.4775917479072], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.1343001957731, 23.4775917479072], fallbackDataset: [23.4775917479072, 51.1343001957731] },
+            parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source', sourceId: 'pl-gugik-uldk', idPrefix: 'PL-ULDK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        constance: {
+            id: 'constance', wupCityCode: '4430',
+            label: translateCityText('city.labels.constance', 'Constance, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [47.6744214989573, 9.17309580098738], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [47.6744214989573, 9.17309580098738], fallbackDataset: [9.17309580098738, 47.6744214989573] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        fulda: {
+            id: 'fulda', wupCityCode: '4504',
+            label: translateCityText('city.labels.fulda', 'Fulda, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.5519779322862, 9.69246242762928], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.5519779322862, 9.69246242762928], fallbackDataset: [9.69246242762928, 50.5519779322862] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'hessen-alkis-vereinfacht-wfs', idPrefix: 'DE-HE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Hessisches Landesamt für Bodenmanagement und Geoinformation · parcels · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        toulon: {
+            id: 'toulon', wupCityCode: '4540',
+            label: translateCityText('city.labels.toulon', 'Toulon, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [43.1183148051142, 5.91190474692264], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [43.1183148051142, 5.91190474692264], fallbackDataset: [5.91190474692264, 43.1183148051142] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ravensburg: {
+            id: 'ravensburg', wupCityCode: '4689',
+            label: translateCityText('city.labels.ravensburg', 'Ravensburg, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [47.7945532106953, 9.62553797821608], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [47.7945532106953, 9.62553797821608], fallbackDataset: [9.62553797821608, 47.7945532106953] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        strasbourg: {
+            id: 'strasbourg', wupCityCode: '4832',
+            label: translateCityText('city.labels.strasbourg', 'Strasbourg, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.5776653862353, 7.74205726308135], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.5776653862353, 7.74205726308135], fallbackDataset: [7.74205726308135, 48.5776653862353] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ulm: {
+            id: 'ulm', wupCityCode: '4833',
+            label: translateCityText('city.labels.ulm', 'Ulm, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.3989825933644, 9.98693462795703], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.3989825933644, 9.98693462795703], fallbackDataset: [9.98693462795703, 48.3989825933644] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        hazel_dell: {
+            id: 'hazel_dell', wupCityCode: '5217',
+            label: translateCityText('city.labels.hazel_dell', 'Hazel Dell, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [45.6532383734832, -122.569426017328], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [45.6532383734832, -122.569426017328], fallbackDataset: [-122.569426017328, 45.6532383734832] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-wa-watech-statewide-parcels', idPrefix: 'US-WA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Washington Technology Solutions (WaTech) and Washington State counties. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bellevue: {
+            id: 'bellevue', wupCityCode: '5413',
+            label: translateCityText('city.labels.bellevue', 'Bellevue, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [47.6694577413674, -122.166399898028], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [47.6694577413674, -122.166399898028], fallbackDataset: [-122.166399898028, 47.6694577413674] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-wa-watech-statewide-parcels', idPrefix: 'US-WA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Washington Technology Solutions (WaTech) and Washington State counties. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        yakima: {
+            id: 'yakima', wupCityCode: '5440',
+            label: translateCityText('city.labels.yakima', 'Yakima, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [46.5950341911278, -120.53759265329], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [46.5950341911278, -120.53759265329], fallbackDataset: [-120.53759265329, 46.5950341911278] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-wa-watech-statewide-parcels', idPrefix: 'US-WA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Washington Technology Solutions (WaTech) and Washington State counties. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        zwickau: {
+            id: 'zwickau', wupCityCode: '5472',
+            label: translateCityText('city.labels.zwickau', 'Zwickau, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.7132491597848, 12.4833751663692], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.7132491597848, 12.4833751663692], fallbackDataset: [12.4833751663692, 50.7132491597848] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'dresden-saxony-gml-wfs', idPrefix: 'DE-SN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GeoSN Saxony ALKIS parcel geometry · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        chemnitz: {
+            id: 'chemnitz', wupCityCode: '5551',
+            label: translateCityText('city.labels.chemnitz', 'Chemnitz, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8270132341809, 12.9110519091696], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8270132341809, 12.9110519091696], fallbackDataset: [12.9110519091696, 50.8270132341809] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'dresden-saxony-gml-wfs', idPrefix: 'DE-SN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GeoSN Saxony ALKIS parcel geometry · adapted' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        anchorage: {
+            id: 'anchorage', wupCityCode: '5571',
+            label: translateCityText('city.labels.anchorage', 'Anchorage, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [61.2001872597905, -149.82840565615], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [61.2001872597905, -149.82840565615], fallbackDataset: [-149.82840565615, 61.2001872597905] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ak-statewide-parcels-agol', idPrefix: 'US-AK-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Alaska local governments; compiled ArcGIS Online layer AK_Parcels. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        layton: {
+            id: 'layton', wupCityCode: '5788',
+            label: translateCityText('city.labels.layton', 'Layton, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [41.1024668531369, -112.008818127792], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [41.1024668531369, -112.008818127792], fallbackDataset: [-112.008818127792, 41.1024668531369] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ut-ugrc-statewide-parcels', idPrefix: 'US-UT-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Utah Geospatial Resource Center and Utah counties. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ogden: {
+            id: 'ogden', wupCityCode: '5810',
+            label: translateCityText('city.labels.ogden', 'Ogden, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [41.2172850013019, -111.961087851707], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [41.2172850013019, -111.961087851707], fallbackDataset: [-111.961087851707, 41.2172850013019] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ut-ugrc-statewide-parcels', idPrefix: 'US-UT-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Utah Geospatial Resource Center and Utah counties. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        boulder: {
+            id: 'boulder', wupCityCode: '6089',
+            label: translateCityText('city.labels.boulder', 'Boulder, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [40.0140689394027, -105.261838065455], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [40.0140689394027, -105.261838065455], fallbackDataset: [-105.261838065455, 40.0140689394027] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-co-oit-statewide-parcels', idPrefix: 'US-COLORADO-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Colorado Governor\'s Office of Information Technology GIS and contributing counties. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        greeley: {
+            id: 'greeley', wupCityCode: '6165',
+            label: translateCityText('city.labels.greeley', 'Greeley, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [40.4065900589356, -104.71555057375], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [40.4065900589356, -104.71555057375], fallbackDataset: [-104.71555057375, 40.4065900589356] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-co-oit-statewide-parcels', idPrefix: 'US-COLORADO-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Colorado Governor\'s Office of Information Technology GIS and contributing counties. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        south_central: {
+            id: 'south_central', wupCityCode: '6665',
+            label: translateCityText('city.labels.south_central', 'South Central, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [45.7817768816123, -108.549285709368], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [45.7817768816123, -108.549285709368], fallbackDataset: [-108.549285709368, 45.7817768816123] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-mt-helena-parcels', idPrefix: 'US-MT-HELENA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Montana Department of Revenue and county GIS offices; integrated by Montana State Library. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        urbandale: {
+            id: 'urbandale', wupCityCode: '7009',
+            label: translateCityText('city.labels.urbandale', 'Urbandale, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [41.6149025063095, -93.6594933902087], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [41.6149025063095, -93.6594933902087], fallbackDataset: [-93.6594933902087, 41.6149025063095] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ia-des-moines-parcels', idPrefix: 'US-IA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Iowa Department of Homeland Security & Emergency Management; University of Iowa public mirror. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bradenton: {
+            id: 'bradenton', wupCityCode: '7093',
+            label: translateCityText('city.labels.bradenton', 'Bradenton, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [27.461361061327, -82.582711212242], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [27.461361061327, -82.582711212242], fallbackDataset: [-82.582711212242, 27.461361061327] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        sarasota: {
+            id: 'sarasota', wupCityCode: '7107',
+            label: translateCityText('city.labels.sarasota', 'Sarasota, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [27.3213005254979, -82.5086315166656], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [27.3213005254979, -82.5086315166656], fallbackDataset: [-82.5086315166656, 27.3213005254979] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bayonet_point: {
+            id: 'bayonet_point', wupCityCode: '7120',
+            label: translateCityText('city.labels.bayonet_point', 'Bayonet Point, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.2700137222575, -82.7070769589785], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.2700137222575, -82.7070769589785], fallbackDataset: [-82.7070769589785, 28.2700137222575] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        tampa: {
+            id: 'tampa', wupCityCode: '7159',
+            label: translateCityText('city.labels.tampa', 'Tampa, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.0030986140797, -82.4702888424246], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.0030986140797, -82.4702888424246], fallbackDataset: [-82.4702888424246, 28.0030986140797] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        fargo: {
+            id: 'fargo', wupCityCode: '7198',
+            label: translateCityText('city.labels.fargo', 'Fargo, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [46.8614438595037, -96.8024909909751], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [46.8614438595037, -96.8024909909751], fallbackDataset: [-96.8024909909751, 46.8614438595037] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-nd-gishub-statewide-parcels', idPrefix: 'US-ND-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'North Dakota GIS Hub State Parcel Program and North Dakota counties. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ventura_bay: {
+            id: 'ventura_bay', wupCityCode: '7211',
+            label: translateCityText('city.labels.ventura_bay', 'Ventura Bay, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [27.9100995716056, -82.3147524355478], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [27.9100995716056, -82.3147524355478], fallbackDataset: [-82.3147524355478, 27.9100995716056] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lakeland: {
+            id: 'lakeland', wupCityCode: '7250',
+            label: translateCityText('city.labels.lakeland', 'Lakeland, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.0176498923629, -81.9426377334415], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.0176498923629, -81.9426377334415], fallbackDataset: [-81.9426377334415, 28.0176498923629] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        forest_city: {
+            id: 'forest_city', wupCityCode: '7419',
+            label: translateCityText('city.labels.forest_city', 'Forest City, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.6545129049095, -81.4377636401185], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.6545129049095, -81.4377636401185], fallbackDataset: [-81.4377636401185, 28.6545129049095] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        port_saint_lucie: {
+            id: 'port_saint_lucie', wupCityCode: '7528',
+            label: translateCityText('city.labels.port_saint_lucie', 'Port Saint Lucie, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [27.2987598439619, -80.357237726397], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [27.2987598439619, -80.357237726397], fallbackDataset: [-80.357237726397, 27.2987598439619] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        saint_johns_park: {
+            id: 'saint_johns_park', wupCityCode: '7540',
+            label: translateCityText('city.labels.saint_johns_park', 'Saint Johns Park, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [30.2820297974115, -81.7388077386963], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [30.2820297974115, -81.7388077386963], fallbackDataset: [-81.7388077386963, 30.2820297974115] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        holiday_hill: {
+            id: 'holiday_hill', wupCityCode: '7573',
+            label: translateCityText('city.labels.holiday_hill', 'Holiday Hill, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [30.3432082180442, -81.5857638197135], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [30.3432082180442, -81.5857638197135], fallbackDataset: [-81.5857638197135, 30.3432082180442] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        jacksonville_beach: {
+            id: 'jacksonville_beach', wupCityCode: '7584',
+            label: translateCityText('city.labels.jacksonville_beach', 'Jacksonville Beach, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [30.3079308989275, -81.4038356066191], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [30.3079308989275, -81.4038356066191], fallbackDataset: [-81.4038356066191, 30.3079308989275] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-fl-dor-statewide-cadastral', idPrefix: 'US-FL-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        kenosha: {
+            id: 'kenosha', wupCityCode: '7828',
+            label: translateCityText('city.labels.kenosha', 'Kenosha, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [42.5784858065008, -87.8410657652837], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [42.5784858065008, -87.8410657652837], fallbackDataset: [-87.8410657652837, 42.5784858065008] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-wi-v12-statewide-parcels', idPrefix: 'US-WI-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Wisconsin State Cartographer\'s Office, Wisconsin Land Information Program and Wisconsin counties. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        racine: {
+            id: 'racine', wupCityCode: '7837',
+            label: translateCityText('city.labels.racine', 'Racine, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [42.7232104953445, -87.8044867117979], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [42.7232104953445, -87.8044867117979], fallbackDataset: [-87.8044867117979, 42.7232104953445] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-wi-v12-statewide-parcels', idPrefix: 'US-WI-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Wisconsin State Cartographer\'s Office, Wisconsin Land Information Program and Wisconsin counties. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ludlow: {
+            id: 'ludlow', wupCityCode: '7855',
+            label: translateCityText('city.labels.ludlow', 'Ludlow, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [39.1283327727324, -84.5943579148481], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [39.1283327727324, -84.5943579148481], fallbackDataset: [-84.5943579148481, 39.1283327727324] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-oh-ogrip-statewide-parcels', idPrefix: 'US-OH-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Ohio Geographically Referenced Information Program (OGRIP) and Ohio county auditors. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        fort_wayne: {
+            id: 'fort_wayne', wupCityCode: '7913',
+            label: translateCityText('city.labels.fort_wayne', 'Fort Wayne, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [41.0690939195421, -85.1300955495992], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [41.0690939195421, -85.1300955495992], fallbackDataset: [-85.1300955495992, 41.0690939195421] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-in-indianamap-statewide-parcels', idPrefix: 'US-IN-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'IndianaMap / Indiana Geographic Information Office and Indiana counties. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        greensboro: {
+            id: 'greensboro', wupCityCode: '7969',
+            label: translateCityText('city.labels.greensboro', 'Greensboro, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [36.0643485281769, -79.7946139332298], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [36.0643485281769, -79.7946139332298], fallbackDataset: [-79.7946139332298, 36.0643485281769] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-nc-onemap-statewide-parcels', idPrefix: 'US-NC-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NC OneMap, NC Center for Geographic Information and Analysis, and North Carolina counties. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        toledo: {
+            id: 'toledo', wupCityCode: '7983',
+            label: translateCityText('city.labels.toledo', 'Toledo, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [41.6697459831271, -83.5721153382202], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [41.6697459831271, -83.5721153382202], fallbackDataset: [-83.5721153382202, 41.6697459831271] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-oh-ogrip-statewide-parcels', idPrefix: 'US-OH-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Ohio Geographically Referenced Information Program (OGRIP) and Ohio county auditors. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        firestone_park: {
+            id: 'firestone_park', wupCityCode: '8053',
+            label: translateCityText('city.labels.firestone_park', 'Firestone Park, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [41.0591020042923, -81.487870623553], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [41.0591020042923, -81.487870623553], fallbackDataset: [-81.487870623553, 41.0591020042923] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-oh-ogrip-statewide-parcels', idPrefix: 'US-OH-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Ohio Geographically Referenced Information Program (OGRIP) and Ohio county auditors. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        euclid: {
+            id: 'euclid', wupCityCode: '8060',
+            label: translateCityText('city.labels.euclid', 'Euclid, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [41.510843325213, -81.57541713518], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [41.510843325213, -81.57541713518], fallbackDataset: [-81.57541713518, 41.510843325213] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-oh-ogrip-statewide-parcels', idPrefix: 'US-OH-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Ohio Geographically Referenced Information Program (OGRIP) and Ohio county auditors. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        fairland: {
+            id: 'fairland', wupCityCode: '8158',
+            label: translateCityText('city.labels.fairland', 'Fairland, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [39.0669362280002, -76.9540592052469], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [39.0669362280002, -76.9540592052469], fallbackDataset: [-76.9540592052469, 39.0669362280002] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-md-imap-statewide-parcel-boundaries', idPrefix: 'US-MD-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MD iMAP, Maryland Department of Planning, SDAT. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        columbia_md: {
+            id: 'columbia_md', wupCityCode: '8165',
+            label: translateCityText('city.labels.columbia_md', 'Columbia (MD), United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [39.2048448908618, -76.8403726722015], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [39.2048448908618, -76.8403726722015], fallbackDataset: [-76.8403726722015, 39.2048448908618] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-md-imap-statewide-parcel-boundaries', idPrefix: 'US-MD-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MD iMAP, Maryland Department of Planning, SDAT. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        wilmington: {
+            id: 'wilmington', wupCityCode: '8228',
+            label: translateCityText('city.labels.wilmington', 'Wilmington, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [39.7459671684999, -75.5615080662526], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [39.7459671684999, -75.5615080662526], fallbackDataset: [-75.5615080662526, 39.7459671684999] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-de-firstmap-statewide-parcels', idPrefix: 'US-DE-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'State of Delaware FirstMap and Delaware counties. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        springfield_ma: {
+            id: 'springfield_ma', wupCityCode: '8463',
+            label: translateCityText('city.labels.springfield_ma', 'Springfield (MA), United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [42.1113118931937, -72.5784998231599], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [42.1113118931937, -72.5784998231599], fallbackDataset: [-72.5784998231599, 42.1113118931937] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ma-massgis-l3-tax-parcels', idPrefix: 'US-MA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        worcester: {
+            id: 'worcester', wupCityCode: '8469',
+            label: translateCityText('city.labels.worcester', 'Worcester, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [42.2597734886551, -71.8070882719052], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [42.2597734886551, -71.8070882719052], fallbackDataset: [-71.8070882719052, 42.2597734886551] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ma-massgis-l3-tax-parcels', idPrefix: 'US-MA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        fall_river: {
+            id: 'fall_river', wupCityCode: '8481',
+            label: translateCityText('city.labels.fall_river', 'Fall River, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [41.6955271095878, -71.1534456550269], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [41.6955271095878, -71.1534456550269], fallbackDataset: [-71.1534456550269, 41.6955271095878] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ma-massgis-l3-tax-parcels', idPrefix: 'US-MA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lowell: {
+            id: 'lowell', wupCityCode: '8505',
+            label: translateCityText('city.labels.lowell', 'Lowell, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [42.6417314473143, -71.3181810964044], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [42.6417314473143, -71.3181810964044], fallbackDataset: [-71.3181810964044, 42.6417314473143] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ma-massgis-l3-tax-parcels', idPrefix: 'US-MA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lawrence: {
+            id: 'lawrence', wupCityCode: '8517',
+            label: translateCityText('city.labels.lawrence', 'Lawrence, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [42.7075937387977, -71.1639769493182], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [42.7075937387977, -71.1639769493182], fallbackDataset: [-71.1639769493182, 42.7075937387977] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ma-massgis-l3-tax-parcels', idPrefix: 'US-MA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lynn: {
+            id: 'lynn', wupCityCode: '8523',
+            label: translateCityText('city.labels.lynn', 'Lynn, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [42.4692858620628, -70.9553412983168], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [42.4692858620628, -70.9553412983168], fallbackDataset: [-70.9553412983168, 42.4692858620628] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'us-ma-massgis-l3-tax-parcels', idPrefix: 'US-MA-STATEWIDE-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
     };
 
     function ensureProjectionDefinitions() {

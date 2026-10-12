@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-11146-yangchun.json",
+  "cityCode": 11146,
+  "queueRank": 2654,
+  "attempt": 1,
+  "serviceReview": {
+    "discovery": [
+      {"route": "https://www.yangchun.gov.cn/", "type": "official municipal government portal", "outcome": "HTTP 200 with browser user-agent; no public cadastral viewer or parcel API link was identified in the inspected page."},
+      {"route": "https://www.yangchun.gov.cn/yjyczrzy/gkmlpt/mguide", "type": "official local Natural Resources Bureau information guide", "outcome": "HTTP 200 with browser user-agent; confirms the local bureau and public disclosure route, but exposes no parcel feature service."},
+      {"route": "https://www.yangchun.gov.cn/jdhy/rdhy/content/post_846656.html", "type": "official municipal service guide", "outcome": "HTTP 200 with browser user-agent; identifies the Yangchun Real Estate Registration Center, but no anonymous cadastral geometry route is exposed."},
+      {"route": "https://www.yangchun.gov.cn/zxzx/gsgg/content/post_925331.html", "type": "official registration announcement", "outcome": "Indexed official page reviewed as local registration evidence; no safe parcel ID plus geometry response."}
+    ],
+    "viewerAndApiInspection": {
+      "configurationSource": "https://www.yangchun.gov.cn/",
+      "observedService": null,
+      "schemaRequest": null,
+      "exactPointRequest": {"method": null, "url": null, "parameters": {"lat": 22.1824354126937, "lon": 111.777718601226}, "outcome": "Not executed because no public parcel viewer/API route was exposed; no point-level hit or miss is claimed."},
+      "boundedRequest": null,
+      "requestNotes": ["Initial curl request without a browser user-agent received an empty reply; repeating the same official routes with a normal browser user-agent returned HTTP 200.", "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception was used."]
+    },
+    "safeFieldAllowlist": ["native parcel identifier if later evidenced", "geometry"],
+    "retainedSamples": 0,
+    "sampleIdentity": null,
+    "scopeLimits": [
+      "Official pages establish a local Natural Resources Bureau and Real Estate Registration Center, but not an open parcel dataset.",
+      "No exact-point query was completed; the WUP point was not shifted.",
+      "No raw source-specific attributes or parcel geometry are retained.",
+      "The absence of a discovered public endpoint is a discovery limitation, not evidence of citywide cadastral absence."
+    ],
+    "uncertainty": "A public parcel service may exist behind an unlinked portal, a Guangdong provincial platform, or a non-indexed workflow. A later attempt should inspect only publicly exposed official configuration/routes and independently qualify CRS, native identity, safe fields and coverage."
+  },
+  "runtimeReadiness": "held"
+}

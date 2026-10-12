@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 4312,
+  "queueRank": 1735,
+  "cityId": "wup2025:4312",
+  "name": "Murcia",
+  "country": "Spain",
+  "countryCode": "ES",
+  "point": [37.9871660929647, -1.13561881899431],
+  "centerLatLon": [37.9871660929647, -1.13561881899431],
+  "population2025": 330966,
+  "population2025k": 330.966,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Murcia Spain official cadastral map parcel GIS API Catastro Murcia Ayuntamiento",
+        "result": "First-party results identified the Ayuntamiento de Murcia geovisor, the municipal Geoportal service directory, the SITAM ArcGIS parcel layer, and Spain's Dirección General del Catastro WMS/INSPIRE services.",
+        "actualResultUrls": [
+          "https://geovisor.murcia.es/",
+          "https://geoportal.murcia.es/directorio-de-servicios",
+          "https://sitam.murcia.es/server/rest/services/capa_parcelas_publicas_shp/MapServer/0",
+          "https://www.catastro.hacienda.gob.es/es-ES/wms.html"
+        ]
+      },
+      {
+        "language": "Spanish (local/official)",
+        "query": "Murcia visor cartográfico parcelas catastro Ayuntamiento de Murcia",
+        "result": "Las fuentes oficiales muestran el Visor cartográfico del Ayuntamiento de Murcia, su Geoportal y un servicio SITAM de parcelas públicas. El visor expone búsquedas por referencia catastral y descarga GeoJSON, pero no se obtuvo una respuesta anónima de parcela segura desde su interfaz; el servicio SITAM consultado no devolvió una entidad en el punto WUP.",
+        "actualResultUrls": [
+          "https://geovisor.murcia.es/",
+          "https://geoportal.murcia.es/directorio-de-servicios",
+          "https://sitam.murcia.es/server/rest/services/capa_parcelas_publicas_shp/MapServer/0",
+          "https://www.sedecatastro.gob.es/Accesos/SECAccDescargaDatos.aspx"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://geovisor.murcia.es/",
+      "operator": "Ayuntamiento de Murcia; Servicio Central de Cartografía e Información Urbanística",
+      "observation": "The public municipal viewer identifies EPSG:25830, supports coordinate and cadastral-reference searches, and advertises vector download including GeoJSON. It is a local municipal map/procedure custodian, but its current page did not provide a directly inspectable parcel response in this bounded anonymous attempt."
+    },
+    {
+      "url": "https://geoportal.murcia.es/directorio-de-servicios",
+      "operator": "Geoportal del Ayuntamiento de Murcia",
+      "observation": "The official directory identifies municipal WMS publication through geoserver.murcia.es/geoserver/wms and describes the Geoportal as the municipal spatial-data dissemination channel. The listed public layers were not asserted to be cadastral parcel geometry."
+    },
+    {
+      "url": "https://sitam.murcia.es/server/rest/services/capa_parcelas_publicas_shp/MapServer/0",
+      "operator": "SITAM / Ayuntamiento de Murcia",
+      "observation": "Public ArcGIS Feature Layer named parcelas_publicas_shp, polygon geometry, query formats JSON/GeoJSON/PBF, source spatial reference EPSG:25830. Safe fields include FID, fid_1, refcat, and geometry; the layer also exposes potentially unsafe descriptive fields, which were not requested."
+    },
+    {
+      "url": "https://www.catastro.hacienda.gob.es/es-ES/wms.html",
+      "operator": "Dirección General del Catastro, Ministerio de Hacienda",
+      "observation": "National first-party cadastral WMS documentation confirms public cadastral cartography, parcel layer availability, WGS84/UTM CRS options, and GetFeatureInfo reference-cadastral lookup. This is a national custodian, not Murcia's local registry."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://geovisor.murcia.es/",
+      "method": "GET; official HTML and linked JavaScript inspection",
+      "status": "HTTP 200",
+      "summary": "The public viewer loaded and exposed municipal search/download controls, EPSG:25830, cadastral-reference search, and GeoJSON export wording. No credentials, login, CAPTCHA bypass, or private token was used."
+    },
+    {
+      "url": "https://sitam.murcia.es/server/rest/services/capa_parcelas_publicas_shp/MapServer/0?f=pjson",
+      "method": "GET",
+      "status": "HTTP 200; JSON",
+      "summary": "Layer metadata returned polygon geometry, native source spatial reference EPSG:25830, maxRecordCount 2000, GeoJSON query support, and field schema. Safe identity candidates were FID/fid_1/refcat; no feature was retained."
+    },
+    {
+      "url": "https://sitam.murcia.es/server/rest/services/capa_parcelas_publicas_shp/MapServer/0/query",
+      "method": "GET; bounded point query at exact WUP point, inSR EPSG:4326, outSR EPSG:4326, outFields=FID,refcat, returnGeometry=true",
+      "status": "HTTP 200; empty GeoJSON FeatureCollection",
+      "summary": "The public layer returned zero features at the exact WUP point. This is recorded as a point-query miss only, not as evidence of citywide absence or layer-wide failure."
+    },
+    {
+      "url": "http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx",
+      "method": "GET; bounded GetCapabilities and GetFeatureInfo probes",
+      "status": "HTTP 400 from the legacy endpoint",
+      "summary": "The documented legacy WMS endpoint rejected the bounded probes with HTTP 400. This is an endpoint/request limitation; no TLS exception or alternative insecure transport was used to bypass it."
+    },
+    {
+      "url": "https://geoportal.murcia.es/directorio-de-servicios",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official municipal service directory returned and documented the municipal WMS publication route. No parcel-specific WFS or safe geometry response was inferred from the directory alone."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Municipal geovisor/Geoportal and a public SITAM parcel layer are evidenced; national Catastro cartography is also documented.",
+    "verifiedOpenScope": "Public SITAM parcel layer metadata and bounded query capability; citywide parcel completeness not verified.",
+    "countrywideVerified": false,
+    "citywideParcelCoverageVerified": false
+  },
+  "qualityAssessment": {
+    "geometryQuality": "not sampled; exact-point query returned no feature",
+    "identityReadiness": "not ready; no safe native parcel feature response was retrieved",
+    "attributesRequested": "only safe schema fields FID, refcat and geometry were requested; no owner, address, contact, titleholder, tax, account, or personal fields were requested",
+    "safeFieldAllowlist": ["native parcel identifier", "geometry", "source layer name", "CRS", "service metadata"]
+  },
+  "sourceFields": {
+    "layer": "parcelas_publicas_shp",
+    "safeIdentityCandidates": ["FID", "fid_1", "refcat"],
+    "geometryField": "Shape",
+    "crs": "EPSG:25830",
+    "mappingNote": "No retained feature; native field mapping is documented for qualification only."
+  },
+  "crs": "EPSG:25830",
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_viewer_and_layer_documented_no_verified_sample",
+  "blocker": "No safe native parcel feature with geometry was retrieved. The exact WUP-point query was empty, and the municipal viewer's advertised download workflow was not converted into a verified bounded parcel response.",
+  "remainingUncertainty": "The public SITAM layer may cover only public parcels and its citywide completeness, update status, identity semantics, and geometry validity remain unverified. The WUP-point miss, WMS HTTP 400, and viewer inspection limitation do not establish citywide absence.",
+  "nextStep": "On a later attempt, inspect the municipal viewer's current network/configuration routes and obtain at most three safe parcel features from a bounded area, preserving only a stable native identifier and full geometry after verifying CRS and identity semantics.",
+  "registryBasis": "The Ayuntamiento de Murcia geovisor and Geoportal are first-party local map/data custodians; the SITAM service is a first-party municipal parcel layer. The national Catastro service is recorded separately as a general national agency source.",
+  "registryEvidenceUrls": [
+    "https://geovisor.murcia.es/",
+    "https://geoportal.murcia.es/directorio-de-servicios",
+    "https://sitam.murcia.es/server/rest/services/capa_parcelas_publicas_shp/MapServer/0"
+  ],
+  "identityPolicy": "No GeoJSON retained because no safe native parcel identity and geometry response was verified."
+}

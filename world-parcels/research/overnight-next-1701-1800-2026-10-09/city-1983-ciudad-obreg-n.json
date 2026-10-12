@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 1983,
+  "queueRank": 1760,
+  "cityId": "wup2025:1983",
+  "name": "Ciudad Obregón",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "point": [27.4767875541059, -109.939512313423],
+  "centerLatLon": [27.4767875541059, -109.939512313423],
+  "population2025": 326226,
+  "population2025k": 326.226,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ciudad Obregón Mexico cadastral parcels GIS land registry official",
+        "result": "Official results identified Cajeme municipal cadastral value-map publications, the Cajeme municipal land-alignment/deslinde service, and the Sonora cadastral/registry institute. No anonymous public parcel feature service, parcel API, or geometry-plus-native-ID response was found.",
+        "actualResultUrls": [
+          "https://transparenciav2.cajeme.gob.mx/PLinks/XLVIII%20INFORMACIN%20RELEVANTE/Tablas%20de%20Valores%20Unitarios%20para%20el%20Municipio%20de%20Cajeme/2025/Planos%20y%20Tablas%20de%20Valores%20Unitarios%20de%20Suelo%20y%20Construccion%20del%20H.%20Ayuntamiento%20de%20Cajeme%2C%20Sonora%20Ejercicio%202025%20%28Boletin%20Oficial%29.pdf",
+          "https://cajeme.sonora.gob.mx/tramites-y-servicios/deslinde",
+          "https://icreson.sonora.gob.mx/acerca-de/oficinas-jurisdiccionales",
+          "https://appcajeme.cajeme.gob.mx/Inicio"
+        ]
+      },
+      {
+        "language": "Spanish (native/local)",
+        "query": "Ciudad Obregón catastro parcelas mapa oficial Ayuntamiento de Cajeme Sonora",
+        "result": "Los resultados oficiales documentan la Dirección de Servicios Catastrales de Cajeme, planos/tablas de valores y el trámite municipal de deslinde; también ubican la oficina registral de Cajeme de ICRESon. No se verificó un visor público anónimo ni una API de geometría parcelaria con identificador nativo seguro.",
+        "actualResultUrls": [
+          "https://boletinoficial.sonora.gob.mx/images/2022/12/2022CCX52XXV.pdf",
+          "https://transparenciav2.cajeme.gob.mx/PLinks/XLVIII%20INFORMACIN%20RELEVANTE/Tablas%20de%20Valores%20Unitarios%20para%20el%20Municipio%20de%20Cajeme/2024/Planos%20y%20Tablas%20de%20Valores%20Unitarios%20de%20Suelo%20y%20Construccion%20del%20H.%20Ayuntamiento%20de%20Cajeme.%20Sonora.%20Ejercicio%202024%20%28boletin%29.pdf",
+          "https://cajeme.sonora.gob.mx/tramites-y-servicios",
+          "https://icreson.sonora.gob.mx/index.php?id=51&option=com_sppagebuilder&view=page"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://cajeme.sonora.gob.mx/tramites-y-servicios/deslinde",
+      "operator": "H. Ayuntamiento de Cajeme, municipal Desarrollo Urbano",
+      "observation": "Official local procedure for a boundary survey/deslinde; it requires a deed or registered title and returns a deslinde copy. It is a workflow, not an anonymous parcel geometry service."
+    },
+    {
+      "url": "https://boletinoficial.sonora.gob.mx/images/2022/12/2022CCX52XXV.pdf",
+      "operator": "Boletín Oficial del Estado de Sonora / Ayuntamiento de Cajeme",
+      "observation": "Official publication contains Cajeme cadastral value maps for Ciudad Obregón, including Dirección de Catastro and map sheets. It is a published map/value product, not a machine-readable parcel endpoint."
+    },
+    {
+      "url": "https://transparenciav2.cajeme.gob.mx/PLinks/XLVIII%20INFORMACIN%20RELEVANTE/Tablas%20de%20Valores%20Unitarios%20para%20el%20Municipio%20de%20Cajeme/2025/Planos%20y%20Tablas%20de%20Valores%20Unitarios%20de%20Suelo%20y%20Construccion%20del%20H.%20Ayuntamiento%20de%20Cajeme%2C%20Sonora%20Ejercicio%202025%20%28Boletin%20Oficial%29.pdf",
+      "operator": "Ayuntamiento de Cajeme / Estado de Sonora",
+      "observation": "Official 2025 cadastral value publication for Cajeme/ Ciudad Obregón. It evidences local cadastral stewardship and map publication but exposes no safe parcel-ID/geometry API."
+    },
+    {
+      "url": "https://icreson.sonora.gob.mx/acerca-de/oficinas-jurisdiccionales",
+      "operator": "Instituto Catastral y Registral del Estado de Sonora (ICReson)",
+      "observation": "Official state page identifies the Cajeme/ Ciudad Obregón registry office. It is registry-office information, not public cadastral geometry or an anonymous parcel service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://appcajeme.cajeme.gob.mx/Inicio",
+      "method": "GET; inspected returned HTML and linked JavaScript references",
+      "status": "HTTP page available",
+      "summary": "Municipal application landing page loaded. The returned page did not expose a cadastral viewer, parcel layer, feature-service URL, schema, CRS, or safe parcel-ID response. No login or credentials were used."
+    },
+    {
+      "url": "https://cajeme.sonora.gob.mx/tramites-y-servicios/deslinde",
+      "method": "GET",
+      "status": "official page available",
+      "summary": "Municipal deslinde procedure confirmed local land-boundary service and required title/deed workflow. No public geometry endpoint or parcel identifier response was exposed."
+    },
+    {
+      "url": "https://boletinoficial.sonora.gob.mx/images/2022/12/2022CCX52XXV.pdf",
+      "method": "GET via official indexed document",
+      "status": "official PDF found",
+      "summary": "Inspected search-indexed official cadastral value-map publication. It contains map sheets and cadastral-value context, but no machine-readable parcel response, safe native IDs, or API configuration."
+    },
+    {
+      "url": "https://transparenciav2.cajeme.gob.mx/PLinks/XLVIII%20INFORMACIN%20RELEVANTE/Tablas%20de%20Valores%20Unitarios%20para%20el%20Municipio%20de%20Cajeme/2025/Planos%20y%20Tablas%20de%20Valores%20Unitarios%20de%20Suelo%20y%20Construccion%20del%20H.%20Ayuntamiento%20de%20Cajeme%2C%20Sonora%20Ejercicio%202025%20%28Boletin%20Oficial%29.pdf",
+      "method": "GET via official indexed document",
+      "status": "official PDF found",
+      "summary": "2025 official value-map publication was identified for Cajeme/ Ciudad Obregón; no public parcel geometry or safe identity endpoint was available in the inspected material."
+    },
+    {
+      "url": "https://icreson.sonora.gob.mx/acerca-de/oficinas-jurisdiccionales",
+      "method": "GET",
+      "status": "official page available",
+      "summary": "Confirmed the state registry office for Cajeme/ Ciudad Obregón. No anonymous cadastral map/API, schema, CRS, or geometry response was exposed."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Cajeme municipal cadastral administration and value-map publications; Sonora state cadastral/registry office coverage.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "citywideParcelCoverageVerified": false
+  },
+  "qualityAssessment": {
+    "geometryQuality": "not sampled",
+    "identityReadiness": "not ready; no public native parcel identity plus geometry response",
+    "attributesRequested": "none beyond public service/schema discovery; no owner, address, contact, titleholder, tax, or account fields requested",
+    "safeFieldAllowlist": ["native parcel identifier if publicly exposed", "geometry", "source layer name", "CRS", "service metadata"]
+  },
+  "sourceFields": null,
+  "crs": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "local_cadastral_stewardship_no_open_geometry",
+  "blocker": "No anonymous first-party Ciudad Obregón/Cajeme parcel viewer or API with safe native parcel identity, schema, CRS, and geometry response was verified after bounded English and Spanish discovery.",
+  "remainingUncertainty": "Municipal cadastral maps, offline products, or authenticated/request-based records may exist. Search results, map-publication inspection, and the absence of an exact-point/API hit do not establish citywide parcel absence.",
+  "nextStep": "On a later attempt, inspect any current official Cajeme/ICReson map application JavaScript or documented GIS endpoint for a geometry-plus-native-ID response before considering adapter qualification.",
+  "registryBasis": null,
+  "registryEvidenceUrls": [],
+  "identityPolicy": "No GeoJSON retained because no safe, verified native parcel identity and geometry response was available."
+}

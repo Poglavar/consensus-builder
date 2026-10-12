@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-3207-nam-nh.json",
+  "cityCode": 3207,
+  "queueRank": 1620,
+  "city": "Nam Định",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Nam Định provincial land-registration and land/environment custodians were evidenced, but no anonymous city-bounded parcel ID plus geometry response was verified. This is not evidence of citywide cadastral absence.",
+  "queryOutcomes": "English and Vietnamese discovery queries are recorded in city-3207-nam-nh.json. Results identified official provincial and national procedure/documentation pages, not an open parcel service.",
+  "requestOutcomes": "Nam Định provincial portal direct GET failed TLS certificate-chain verification and was not bypassed; bandovn.vn timed out in a bounded anonymous GET; a non-government GIS.vn API page returned 200 but was not treated as a registry source and no parcel query was made; an official provincial decision was available through first-party search/open and documented the land-registration office mandate.",
+  "scopeLimits": [
+    "No city boundary or complete Nam Định cadastral coverage was established.",
+    "No exact-point hit/miss was used as an absence claim.",
+    "No parcel geometry, native ID or source-specific attributes were retained.",
+    "General national agency prose and a non-government API advertisement are not treated as proof of a Nam Định open registry adapter.",
+    "No login, private token, CAPTCHA/Cloudflare bypass, unsafe owner/address/titleholder field, or TLS-disable operation was used."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentityPolicy": "No native parcel identity was observed; no synthetic identity was created. If a future public response is found, retain only one stable native identity in GeoJSON properties and document native field mapping and composite-key provenance here.",
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Official local custody is evidenced, but anonymous map/API access, city scope, schema, CRS and parcel geometry remain unknown. TLS failure and timeout are transport/access outcomes only.",
+  "retainedSample": null
+}

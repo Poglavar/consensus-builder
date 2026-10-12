@@ -1,0 +1,139 @@
+{
+  "cityCode": 10592,
+  "queueRank": 2819,
+  "name": "Lanling",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [34.8558118936324, 118.048780324756],
+  "population2025": 211103,
+  "population2025k": 211.103,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lanling China official cadastral parcel map GIS natural resources planning bureau",
+        "result": "First-party discovery located the official Lanling County government page for the Lanling Real Estate Registration and Trading Center, the official county Natural Resources and Planning Bureau organization page, and a county master-planning page. These establish the local custodians and planning context but did not expose an anonymous cadastral parcel-vector viewer or API.",
+        "actualResultUrls": [
+          "https://www.lanling.gov.cn/info/11022/64635.htm",
+          "https://www.lanling.gov.cn/ztzl/ggqsydw/jgzn_bm_jgsz.jsp?deptcode=lanlinggtj&urltype=tree.TreeTempUrl&wbtreeid=11022",
+          "https://www.lanling.gov.cn/info/1428/5499.htm"
+        ]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "兰陵县 不动产登记 地籍图 自然资源和规划局 官方 地图",
+        "result": "中文 first-party discovery confirmed 兰陵县不动产登记交易中心 and 兰陵县自然资源和规划局. The official organization page states responsibility for unified natural-resource and real-estate registration, cadastral/right-of-property investigation, cadastral surveying, results use, and geographic-information public services. No public anonymous parcel geometry, safe parcel ID, viewer configuration, schema, or CRS was exposed.",
+        "actualResultUrls": [
+          "https://www.lanling.gov.cn/info/11022/64635.htm",
+          "https://www.lanling.gov.cn/ztzl/ggqsydw/jgzn_bm_jgsz.jsp?deptcode=lanlinggtj&urltype=tree.TreeTempUrl&wbtreeid=11022",
+          "https://www.lanling.gov.cn/info/1428/5499.htm"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Lanling County Natural Resources and Planning Bureau (兰陵县自然资源和规划局) and its Lanling County Real Estate Registration and Trading Center (兰陵县不动产登记交易中心), both identified on the official Lanling County government website.",
+    "publicMapLead": "The county government page links to the Linyi/Shandong public data portal (临沂公共数据开放网), but no cadastral parcel layer was evidenced.",
+    "registryEvidence": null,
+    "registryEvidenceUrls": [
+      "https://www.lanling.gov.cn/info/11022/64635.htm",
+      "https://www.lanling.gov.cn/ztzl/ggqsydw/jgzn_bm_jgsz.jsp?deptcode=lanlinggtj&urltype=tree.TreeTempUrl&wbtreeid=11022"
+    ]
+  },
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.lanling.gov.cn/info/11022/64635.htm",
+      "httpStatus": 200,
+      "outcome": "Official county page identifies the Real Estate Registration and Trading Center and says it handles county-level natural-resource and real-estate registration, rights investigation services, registration information-platform support, and registration-record query/use/sharing support. It does not publish a public parcel-vector endpoint or safe parcel identity schema."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.lanling.gov.cn/ztzl/ggqsydw/jgzn_bm_jgsz.jsp?deptcode=lanlinggtj&urltype=tree.TreeTempUrl&wbtreeid=11022",
+      "httpStatus": 200,
+      "outcome": "Official county organization page identifies the Natural Resources and Planning Bureau, its natural-resource and real-estate unified registration/cadastral-investigation duties, cadastral surveying, results management, and geographic-information public-service role. It does not expose an anonymous parcel layer, schema, CRS, or native parcel-ID route."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.lanling.gov.cn/info/1428/5499.htm",
+      "httpStatus": 200,
+      "outcome": "Official county master-planning publication from the county resources-planning authority was reachable and links a planning archive. It is planning material, not a public cadastral parcel-vector service."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.lanling.gov.cn/",
+      "httpStatus": 200,
+      "outcome": "Official county homepage loaded anonymously. Inspected navigation exposed government, public-service, and public-data links but no parcel viewer or safe cadastral API route."
+    },
+    {
+      "method": "GET",
+      "url": "http://lydata.sd.gov.cn/linyi/index?siteCode=3713",
+      "httpStatus": null,
+      "outcome": "Anonymous request timed out after approximately 20 seconds from the research environment. No content, endpoint, geometry, or absence inference was made; no TLS exception or bypass was used."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [34.8558118936324, 118.048780324756] was preserved in latitude/longitude order; no coordinate shift or parcel query was used.",
+      "featureCount": null,
+      "result": "No public Lanling parcel-vector route or safe ID-plus-geometry response was identified."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal data",
+    "tax/account",
+    "certificate/title"
+  ],
+  "sampleGeoJSON": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel-vector response; no hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Lanling County local registration custodian and official county public-data/planning links.",
+    "verifiedOpenScope": "Local custodian and statutory cadastral/registration responsibilities were evidenced; no anonymous Lanling parcel-vector coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "The exact WUP point was preserved and was not shifted to force a parcel hit.",
+    "A zero exact-point hit, map extent miss, timeout, or absence of a parcel route in public search results was not treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, parcel schema, local service CRS, or stable parcel-identity semantics were verified.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "Official county pages clearly identify the local Natural Resources and Planning Bureau and Real Estate Registration and Trading Center, including cadastral and registration responsibilities. The public data link timed out and the accessible official pages did not expose an anonymous parcel-vector route, schema, CRS, safe native identity, or citywide open coverage. Runtime readiness remains held."
+}

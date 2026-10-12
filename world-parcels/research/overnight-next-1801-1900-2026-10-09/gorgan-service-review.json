@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-6246-gorgan.json",
+  "cityCode": 6246,
+  "queueRank": 1849,
+  "city": "Gorgan",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Iran's SSAA cadastral/land-registration systems and the Golestan provincial registration office in Gorgan were identified. No anonymous public parcel response with a stable native ID and geometry was verified, so no GeoJSON sample was retained.",
+  "queryOutcomes": "Separate English and Persian discovery queries are recorded in city-6246-gorgan.json. They identified SSAA, Shamim, and the Golestan provincial registration custodian; non-official map/GIS results were not treated as cadastral service evidence.",
+  "requestOutcomes": [
+    {"route":"https://ssaa.ir","method":"GET","status":"timeout","outcome":"National SSAA host did not respond within the 20-second request limit; no login, credentials, CAPTCHA/Cloudflare bypass or retry escalation used."},
+    {"route":"https://gs.ssaa.ir","method":"GET","status":"timeout/incomplete","outcome":"Golestan provincial SSAA host was attempted as the local registration custodian; the request did not yield a readable public parcel service response."},
+    {"route":"https://shamim.ssaa.ir","method":"GET","status":"not verified","outcome":"Official Shamim cadastral positioning/service identity was identified by discovery, but no usable anonymous viewer/API response or parcel schema was obtained."},
+    {"route":"https://www.samanehha.com/web/327/%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D8%B4%D9%85%DB%8C%D9%85","method":"GET/search discovery","status":200,"outcome":"Secondary Persian documentation describes Shamim as an SSAA cadastral positioning system with restricted organizational access; it is procedural context, not parcel geometry evidence."}
+  ],
+  "requestCoordinates": {"wupPointLatLon":[36.8372658716276,54.4407998384708],"coordinateOrderNote":"WUP point preserved as latitude/longitude. No exact-point query completed; no coordinate shift applied."},
+  "safeFieldAllowlist": ["stable native parcel ID if exposed", "polygon geometry", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": {"source":null,"retainedSample":null},
+  "geometryQuality": "No parcel geometry response obtained; zero samples retained.",
+  "geometryDecision": {"verified":false,"sourceId":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"Not completed because no usable anonymous parcel service response was obtained; this is not evidence of parcel absence.","requestEvidence":"tmp/valhalla-parcel-research/6246/"},
+  "coverageAssessment": {"claimedScope":"Iranian SSAA national cadastral infrastructure and Golestan provincial/Gorgan registration custodian.","verifiedOpenScope":"Service identities and custodian evidence only; anonymous parcel schema, CRS, stable IDs, geometry and citywide coverage unverified.","citywideVerified":false,"countrywideVerified":false},
+  "scopeLimits": [
+    "The attempted SSAA-related hosts did not provide a usable anonymous parcel response.",
+    "No exact-point hit, extent miss, timeout or login/restricted-service result is evidence of citywide parcel absence.",
+    "Shamim appears to be an organizational cadastral positioning/service system; richer access was not attempted because it could require authorization.",
+    "No owner, address, titleholder, contact, tax/account, personal or unsafe fields were requested, logged or retained.",
+    "Packet completion is research evidence only and does not admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review remains required",
+  "uncertainty": "A current public map route may be exposed through a different SSAA or provincial viewer path, or require an interactive authorized session. Parcel completeness, legal status, update currency, stable native identity, CRS and citywide coverage remain unverified."
+}

@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 8153,
+  "queueRank": 2352,
+  "name": "Abak",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso2": "NG",
+  "iso3": "NGA",
+  "point": [4.98542874500456, 7.78822366120289],
+  "population2025": 248528,
+  "population2025k": 248.528,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_geometry",
+  "registryFound": true,
+  "registryBasis": "AkwaGIS is identified by the official Akwa Ibom State Government site as its Lands/Akwa GIS service. The first-party AkwaGIS land-search page describes anonymous Land PIN or Plan/COD validation and states that a paid result can display a parcel polygon, but no safe anonymous parcel geometry was obtained.",
+  "resultCategory": "official_state_land_registry_with_no_safe_anonymous_geometry",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Abak Nigeria cadastral parcel map official land registry GIS Akwa Ibom",
+        "result": "Found the official AkwaGIS land-search, FAQ, about, and Akwa Ibom State Government pages. The service is a state land registry/GIS with Land PIN and Plan/COD validation; no public city download or safe anonymous parcel geometry endpoint was identified.",
+        "actualResultUrls": [
+          "https://akwagis.akwaibomstate.gov.ng/land-search",
+          "https://akwagis.akwaibomstate.gov.ng/faqs",
+          "https://akwaibomstate.gov.ng/"
+        ]
+      },
+      {
+        "language": "Ibibio (native/local discovery)",
+        "query": "Abak Nigeria Ibibio cadastral land map official Akwa Ibom",
+        "result": "No Ibibio-language first-party cadastral viewer or parcel API was found. Search results led to the same official AkwaGIS/state land service and general non-cadastral material; no local-language parcel source was established.",
+        "actualResultUrls": [
+          "https://akwagis.akwaibomstate.gov.ng/land-search",
+          "https://akwaibomstate.gov.ng/"
+        ]
+      }
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://akwaibomstate.gov.ng/",
+      "operator": "Akwa Ibom State Government",
+      "evidence": "Official state homepage exposes Lands - Akwa GIS as a state service."
+    },
+    {
+      "url": "https://akwagis.akwaibomstate.gov.ng/land-search",
+      "operator": "AkwaGIS / Akwa Ibom State Ministry of Lands",
+      "evidence": "First-party public-search page states that every registered parcel has a unique Land PIN and that a paid search can show a parcel polygon; the free step is only record validation."
+    },
+    {
+      "url": "https://akwagis.akwaibomstate.gov.ng/faqs",
+      "operator": "AkwaGIS",
+      "evidence": "First-party FAQ identifies AkwaGIS as the Akwa Ibom State GIS for land administration and says it operates under the Ministry of Lands."
+    },
+    {
+      "url": "https://akwagis.akwaibomstate.gov.ng/about",
+      "operator": "AkwaGIS",
+      "evidence": "First-party about page describes the platform as the state land-information and administration system and cites state mapping/land workflows."
+    }
+  ],
+  "attempts": [
+    {
+      "stage": "official-state-discovery",
+      "method": "GET",
+      "url": "https://akwaibomstate.gov.ng/",
+      "status": "200; official state page links Lands - Akwa GIS"
+    },
+    {
+      "stage": "official-registry-documentation",
+      "method": "GET",
+      "url": "https://akwagis.akwaibomstate.gov.ng/land-search",
+      "status": "200; public Land PIN / Plan-COD validation page loaded; it describes parcel polygons only after a paid result"
+    },
+    {
+      "stage": "official-registry-faq",
+      "method": "GET",
+      "url": "https://akwagis.akwaibomstate.gov.ng/faqs",
+      "status": "200; identifies AkwaGIS as official state land administration platform"
+    },
+    {
+      "stage": "official-registry-about",
+      "method": "GET",
+      "url": "https://akwagis.akwaibomstate.gov.ng/about",
+      "status": "200; describes state GIS/land-information scope"
+    },
+    {
+      "stage": "viewer-javascript-configuration-probe",
+      "method": "GET",
+      "url": "https://akwagis.akwaibomstate.gov.ng/_next/static/chunks/",
+      "status": "200 for page-referenced JavaScript chunks; current bundle exposed client route names for /search/validate and /search/initiate but no usable anonymous public parcel geometry request or CRS/schema endpoint"
+    },
+    {
+      "stage": "candidate-public-api-probe",
+      "method": "GET",
+      "url": "https://akwagis.akwaibomstate.gov.ng/api/search/validate",
+      "status": "404; no public GET API route"
+    },
+    {
+      "stage": "candidate-public-api-probe",
+      "method": "GET",
+      "url": "https://akwagis.akwaibomstate.gov.ng/search/validate",
+      "status": "404; browser route is not a public GET API"
+    },
+    {
+      "stage": "candidate-public-api-probe",
+      "method": "GET",
+      "url": "https://akwagis.akwaibomstate.gov.ng/api/search/initiate",
+      "status": "404; no public GET API route"
+    },
+    {
+      "stage": "candidate-public-api-probe",
+      "method": "GET",
+      "url": "https://akwagis.akwaibomstate.gov.ng/search/initiate",
+      "status": "404; browser route is not a public GET API"
+    }
+  ],
+  "sourceFields": null,
+  "crs": null,
+  "safeFieldAllowlist": ["native parcel identifier only if independently established", "parcel geometry"],
+  "verifiedOpenScope": null,
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInRepository": 3,
+    "retainedGeoJsonPolygons": 0,
+    "citywideAbsenceInferred": false,
+    "exactPointCoverageProven": false,
+    "unsafeOwnerOrTitleFieldsRetained": false
+  },
+  "runtimeReadiness": "held_quality_review",
+  "runtimeEligible": false,
+  "blocker": "The official AkwaGIS service documents parcel polygons but requires a valid Land PIN or Plan/COD validation flow and paid detail unlock; no safe anonymous ID-plus-geometry response was available to qualify an adapter.",
+  "technicalBlocker": "Current Next.js page JavaScript exposed only browser route names and no usable public parcel endpoint, schema, CRS, or bounded geometry response. No credentials, payment, login, or unsafe owner/title lookup was attempted.",
+  "uncertainty": [
+    "The official service demonstrates state registry/GIS capability, not Abak-wide public parcel coverage.",
+    "No exact-point query was performed because the service requires a source-native Land PIN or Plan/COD identifier and the WUP point is not a parcel identifier.",
+    "A paid or authenticated detail flow may expose geometry, but it was out of scope; no citywide absence is inferred."
+  ],
+  "sourceIds": [],
+  "sampleFiles": [],
+  "nextStep": "A later attempt may inspect a newly documented official anonymous geometry endpoint or a safe source-native parcel identifier supplied by the custodian; do not use WUP coordinates as a synthetic parcel query.",
+  "identityPolicy": "Do not synthesize a parcel identity from UI row order, client route names, or internal request identifiers."
+}

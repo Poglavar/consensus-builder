@@ -1,0 +1,21 @@
+{
+  "cityRecord": "city-58-aachen.json",
+  "cityCode": 58,
+  "queueRank": 2396,
+  "name": "Aachen",
+  "country": "Germany",
+  "countryCode": "DE",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "scope": "StädteRegion Aachen is the evidenced local cadastral custodian for Aachen. A public Geobasis NRW INSPIRE WFS supplied a bounded parcel response. This does not claim citywide completeness, legal ownership, title, tax, address, or runtime adapter qualification.",
+  "queryAndRequestOutcome": "Separate English and German first-party discovery succeeded. The Aachen Geoportal was inspected and its current anonymous config request returned a German login-wall error. The official NRW WFS advertised parcel schema/CRS and returned one safe ID-plus-polygon response for a small bbox containing the exact WUP point.",
+  "schemaAndCrs": {"geometryType": "Polygon", "nativeCrs": "EPSG:25832", "retainedCrs": "OGC:CRS84 / GeoJSON coordinate order", "nativeIdentity": "nationalCadastralReference", "nativeFieldsObserved": ["gml:id", "identifier", "localId", "nationalCadastralReference", "areaValue", "label", "geometry"], "sourceFieldMapping": {"id": "nationalCadastralReference", "parcelPolygon": "gml:surfaceMember/gml:posList"}},
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": "aachen-parcel-sample.geojson",
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "A real bounded public geometry response is documented, but runtime integration/admission requires independent serial review."},
+  "scopeLimits": ["One exact-point hit is not evidence of citywide coverage.", "A login wall and unsupported GeoJSON output were recorded as route outcomes, not treated as source absence.", "No raw source-specific attribute set is retained.", "No coordinate was shifted to force a hit."],
+  "uncertainty": "The state service is official and public, while the local viewer's current configuration is anonymous-login gated. The sample proves a public NRW parcel route at the coordinate, but not that a city-specific local adapter is available or that all Aachen parcels have identical access semantics.",
+  "completionSummary": "complete=true; geometrySample=true; registryFound=true; runtimeReadiness=held"
+}

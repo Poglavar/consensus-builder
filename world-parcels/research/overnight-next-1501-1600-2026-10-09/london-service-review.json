@@ -1,0 +1,64 @@
+{
+  "cityRecord": "city-2303-london.json",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "cityCode": 2303,
+  "queueRank": 1579,
+  "name": "London",
+  "country": "Canada",
+  "countryCode": "CA",
+  "point": [42.9854320723653, -81.246421845116],
+  "population2025": 362006,
+  "population2025k": 362.006,
+  "populationUnit": "persons",
+  "researchOutcome": "official municipal parcel source found; bounded geometry request timed out",
+  "registryFound": true,
+  "officialSource": {
+    "operator": "City of London, Ontario",
+    "viewer": "https://london.ca/living-london/maps",
+    "service": "https://maps.london.ca/server/rest/services/References/ParcelMapping/MapServer/0",
+    "layer": "ProdGeoDB.PARCELMAPPING.AssessmentParcels",
+    "catalog": "https://opendata.london.ca/datasets/1b14d93461b34591b5bd32a881763dbe_53/explore"
+  },
+  "queryAndRequestOutcomes": [
+    {
+      "language": "English",
+      "query": "London Ontario official parcel map GIS cadastral property map City of London Ontario",
+      "outcome": "Municipal CityMap and ArcGIS parcel service found."
+    },
+    {
+      "language": "French",
+      "query": "London Ontario carte parcellaire officielle cadastre carte propriétés",
+      "outcome": "No separate French-language local parcel service found; English municipal service is the relevant source."
+    },
+    {
+      "url": "https://maps.london.ca/server/rest/services/References/ParcelMapping/MapServer/0",
+      "method": "GET",
+      "outcome": "Metadata returned: polygon layer, EPSG:26917, GeoJSON supported, OBJECTID/GIS_ID available."
+    },
+    {
+      "url": "https://maps.london.ca/server/rest/services/References/ParcelMapping/MapServer/0/query",
+      "method": "GET",
+      "outcome": "60-second timeout for exact WUP-point intersection request; no response body."
+    }
+  ],
+  "schemaAndCrs": {
+    "geometry": "esriGeometryPolygon",
+    "crs": "EPSG:26917",
+    "safeNativeIdentityCandidates": ["OBJECTID", "GIS_ID"],
+    "safeFieldsRequested": ["OBJECTID", "GIS_ID", "ParcelType", "PropertyCode", "geometry"],
+    "unsafeFields_not_requested": ["Owner1", "Owner2", "Owner3", "RollNo", "Legal1", "Legal2", "Legal3", "Legal4", "Legal5", "CondoNo"]
+  },
+  "compositeKeyProvenance": null,
+  "retainedSamples": [],
+  "scopeLimits": [
+    "Municipal layer metadata does not prove successful coverage at the WUP point.",
+    "A timeout is not evidence of citywide parcel absence.",
+    "No owner, address, contact, titleholder, tax/account, or personal fields were requested or retained.",
+    "No source-specific raw attribute set was retained.",
+    "This packet documents source research only; it does not admit a runtime provider."
+  ],
+  "uncertainty": "The municipal source is credible and locally scoped, but a serial reviewer must validate a live anonymous geometry-plus-ID response and identity stability before runtime qualification.",
+  "runtimeReadiness": "held",
+  "completion": "complete_research_packet_no_verified_geometry_sample"
+}

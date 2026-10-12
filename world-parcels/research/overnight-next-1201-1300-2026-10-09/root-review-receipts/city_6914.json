@@ -1,0 +1,23 @@
+{
+  "taskId": "city:6914",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-6914-haripur.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/haripur-service-review.json",
+    "tmp/valhalla-parcel-research/haripur/efard.html",
+    "tmp/valhalla-parcel-research/haripur/kplr.html"
+  ],
+  "checkedAt": "2026-10-09T11:55:58.511262Z",
+  "reason": "First-party Haripur district digitization and provincial land-record custody are supported; the cached e-Fard page requires account and biometric verification. No anonymous native parcel-ID polygon response or runtime qualification sequence is evidenced. District mauza progress does not establish citywide coverage.",
+  "identityCheck": "City code, rank, country, point and population persons match the immutable ranked roster, pending queue and integration ledger. English and native/local executed search query records and result URLs are present in the paired evidence.",
+  "retainedFullPolygonCount": 0,
+  "qualificationGates": "Fresh exact native-ID reads, complete forced paging, 13 bounded cells, metric GEOS validity/duplicate/overlap checks, source binding and headed Details-panel verification are not independently evidenced. No admission or runtime/catalog/report edit made.",
+  "originalCacheSha256": {
+    "tmp/valhalla-parcel-research/haripur/efard.html": "fa2f064fa5736049713d2041fb50caeb0194487ea88aef008c3a102a5778c999",
+    "tmp/valhalla-parcel-research/haripur/kplr.html": "8a4d3ba93466d29661c73cf7c7c6707f8fe2ad0d2e1867f3910f3b3cf15d35ae"
+  }
+}

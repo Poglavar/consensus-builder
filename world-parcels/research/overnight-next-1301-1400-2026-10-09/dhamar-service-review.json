@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4914-dhamar.json",
+  "purpose": "Document first-party Dhamar registry evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Official Yemen sources evidence national and Dhamar-local land/cadastral custody, but no anonymous parcel geometry-only response was verified. The packet is complete as a research record and runtime readiness remains held.",
+  "registryAssessment": "Local registry/map custody is evidenced by the official land authority, Dhamar branch references, and reporting of an electronic cadastral map project. The accessible ArcGIS layer is administrative-boundary data and is not treated as registry parcel coverage.",
+  "officialPrimarySources": [
+    {"url": "https://galsup.gov.ye/", "observation": "Official Yemen land authority site."},
+    {"url": "https://althawrah.ye/archives/1167995", "observation": "Reports the Dhamar land-authority branch's electronic cadastral map project."},
+    {"url": "https://t.me/s/galsubthamar?before=45", "observation": "Dhamar branch material discusses land-registry work and the need for cadastral mapping."},
+    {"url": "https://agoye.gov.ye/page.php?id=374", "observation": "Official legal text describes cadastral records and general/special property maps; not an open data endpoint."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Dhamar Yemen cadastral parcel map official land registry GIS", "result": "Official authority and Dhamar cadastral-map reporting found; no public parcel geometry verified.", "actualResultUrls": ["https://galsup.gov.ye/", "https://althawrah.ye/archives/1167995", "https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Yemen_IDR_Map_WFL1/FeatureServer/7"]},
+    {"language": "Arabic", "query": "اليمن ذمار السجل العقاري خريطة قطع الأراضي كادستر", "result": "Official authority, branch material, legal text, and Dhamar map-project report found; no anonymous parcel geometry verified.", "actualResultUrls": ["https://galsup.gov.ye/", "https://t.me/s/galsubthamar?before=45", "https://althawrah.ye/wp-content/uploads/2021/04/30-4-2021.pdf", "https://agoye.gov.ye/page.php?id=374"]}
+  ],
+  "geometryDecision": "No full polygon retained: no safe anonymous parcel geometry route was verified.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "The only successful geometry query was an administrative-boundary layer query; it was excluded from parcel evidence."},
+  "attempts": [
+    {"url": "https://galsup.gov.ye/", "method": "GET", "result": "Timed out; no public JS/config/API/schema/CRS response observed."},
+    {"url": "https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Yemen_IDR_Map_WFL1/FeatureServer/7?f=pjson", "method": "GET", "result": "Succeeded; schema identifies administrative boundary fields and EPSG:4326 support, not parcels."},
+    {"url": "https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Yemen_IDR_Map_WFL1/FeatureServer/7/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&f=geojson", "method": "GET", "result": "Succeeded with administrative polygons only; no parcel sample retained."},
+    {"url": "https://althawrah.ye/wp-content/uploads/2021/04/30-4-2021.pdf", "method": "GET", "result": "Reviewed Dhamar property-registration notice; no geometry service."}
+  ],
+  "coverageAssessment": {"claimedScope": "Official Yemen/Dhamar land-authority evidence plus one reachable non-cadastral administrative GIS layer.", "verifiedOpenScope": "No anonymous full parcel geometry response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "The Dhamar electronic cadastral-map project may expose a public or restricted system not discoverable from the reviewed pages; current viewer URL, schema, CRS, stable parcel IDs, and city coverage remain unverified.",
+  "runtimeAssessment": "Held; no adapter admission or runtime enablement is justified without independent verification of a real public parcel geometry service."
+}

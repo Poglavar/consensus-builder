@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-12050-jieshan.json",
+  "cityCode": 12050,
+  "queueRank": 2508,
+  "city": "Jieshan",
+  "country": "China",
+  "countryCode": "CN",
+  "wupPoint": [25.2662122133519, 118.900328047026],
+  "researchDate": "2026-10-11",
+  "outcome": "official custodian evidenced; no qualifying anonymous parcel geometry response",
+  "registryFound": true,
+  "custodian": {
+    "name": "Quangang District Natural Resources Bureau and subordinate Quangang District Real Estate Registration Center",
+    "scope": "Quangang District unified real-estate registration, cadastral survey, cadastral mapping and registration information platform",
+    "evidenceUrl": "https://www.qg.gov.cn/zwgk/zfjg/202012/t20201215_2479928.htm"
+  },
+  "queryOutcomes": "Separate English and Chinese discovery queries were executed and recorded in the city record. Results established Jieshan as 界山镇 in Quangang District and identified the local registration custodian, but did not reveal a public parcel viewer/API endpoint.",
+  "requestOutcomes": "Three official Quangang pages returned HTTP 200. Two broader natural-resources leads failed DNS resolution. No login, credentials, CAPTCHA bypass, unsafe fields, or TLS-verification exception was used. No parcel request could be made because no qualifying public endpoint was found.",
+  "attemptedRoutes": [
+    "https://www.qg.gov.cn/zwgk/zfjg/202012/t20201215_2479928.htm",
+    "https://www.qg.gov.cn/zwgk/gtzy/202111/t20211115_2652653.htm",
+    "https://www.qg.gov.cn/zwgk/zfxxgkzl/zjdxxgk/jsz/zfxxgkml/yzdgkqtxx/202512/t20251208_3238843.htm",
+    "https://www.fjgtzy.gov.cn/",
+    "https://www.mnr.gov.cn/"
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel geometry", "geometry CRS", "source service URL", "retrieval timestamp"],
+  "retainedSamples": [],
+  "scopeLimits": [
+    "No exact-point hit or bbox query was performed; absence of a discovered endpoint is not citywide absence.",
+    "Official registration notices are evidence of local registry activity, not evidence of open parcel geometry access.",
+    "No native field schema, CRS, parcel identity, or composite-key mapping was observed."
+  ],
+  "uncertainty": "The current public JavaScript/configuration for any Quangang parcel viewer was not found in this attempt, and the exact WUP coordinate was not shifted or used to force a hit.",
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "completion": "complete packet; held from runtime admission"
+}

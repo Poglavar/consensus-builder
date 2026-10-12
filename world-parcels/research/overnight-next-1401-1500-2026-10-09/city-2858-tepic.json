@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 2858,
+  "cityId": "wup2025:2858",
+  "name": "Tepic",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "iso3": "MEX",
+  "centerLatLon": [21.501849919445, -104.882150062866],
+  "point": [21.501849919445, -104.882150062866],
+  "queueRank": 1408,
+  "population2025": 401753,
+  "population2025k": 401.753,
+  "populationUnit": "persons",
+  "cohorts": ["overnight-next-1401-1500-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tepic Mexico official cadastral map parcel GIS Nayarit catastro predial",
+        "result": "Found official Tepic and Nayarit cadastral custodian/procedure sources. The reviewed public material describes digital cadastral cartography delivered by request and municipal manzana plans in PDF, but no anonymous parcel map/API with safe ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://tramites.nayarit.gob.mx/ciudadano/ficha/919",
+          "https://www.tepic.gob.mx/detalle/GobTepic_24-27_1_Web.pdf",
+          "https://transparenciafiscal.tepic.gob.mx/file.php?sub=128",
+          "https://www.implantepic.gob.mx/mapa-digital-interactivo/"
+        ]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "Tepic Nayarit catastro mapa catastral parcelas sitio oficial",
+        "result": "Encontradas fuentes oficiales del Ayuntamiento de Tepic y del Gobierno de Nayarit que identifican Catastro, cartografía catastral digital y procedimientos de atención. Las páginas revisadas no publican un visor parcelario anónimo ni una API pública con identificador y geometría segura.",
+        "actualResultUrls": [
+          "https://tramites.nayarit.gob.mx/ciudadano/ficha/919",
+          "https://tramites.nayarit.gob.mx/ciudadano/ficha/755",
+          "https://www.tepic.gob.mx/organigrama/",
+          "https://transparenciafiscal.tepic.gob.mx/file.php?sub=128"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Nayarit cadastral service record identifies the Dirección de Trámites y Servicios Catastrales / Dirección General de Catastro y Registro Público, gives a Tepic office, and offers digital cadastral cartography by predio, manzana, or localidad after an application and payment. Tepic's official materials separately identify the municipal Dirección de Catastro e Impuesto Predial and a municipal PDF planeria viewer. This evidences local/state custodians and procedures, not an open parcel data service.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://tramites.nayarit.gob.mx/ciudadano/ficha/919",
+      "operator": "Gobierno del Estado de Nayarit, Secretaría de Administración y Finanzas, Dirección de Trámites y Servicios Catastrales",
+      "observation": "Official service record says cadastral cartography can be supplied digitally by parcel, urban block, or locality, with cadastral key/location requested at the office; it is a paid application workflow and publishes no public map/API endpoint, schema, or CRS."
+    },
+    {
+      "url": "https://www.tepic.gob.mx/detalle/GobTepic_24-27_1_Web.pdf",
+      "operator": "XLIII Ayuntamiento de Tepic",
+      "observation": "Official government report says 2,084 DWG cadastral-map files were converted to PDF and 1,733 uploaded to a Visor de Planería de Catastro for municipal dependencies. It does not expose a public parcel API or machine-readable geometry service."
+    },
+    {
+      "url": "https://www.tepic.gob.mx/organigrama/",
+      "operator": "XLIII Ayuntamiento de Tepic, Dirección de Catastro e Impuesto Predial",
+      "observation": "Official organization page identifies the municipal cadastral and property-tax directorate."
+    },
+    {
+      "url": "https://transparenciafiscal.tepic.gob.mx/file.php?sub=128",
+      "operator": "H. XLIII Ayuntamiento de Tepic, Transparencia Fiscal",
+      "observation": "Official transparency index publishes cadastral-value and cadastral-services PDFs, but no public parcel layer or API."
+    },
+    {
+      "url": "https://www.implantepic.gob.mx/mapa-digital-interactivo/",
+      "operator": "IMPLAN Tepic",
+      "observation": "Current page JavaScript/HTML was inspected. Its embedded public maps are traffic accident history and Waze real-time traffic, not cadastral parcels; no cadastral service configuration was present."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://tramites.nayarit.gob.mx/ciudadano/ficha/919",
+      "method": "GET",
+      "status": "HTTP 200 / page retrieved",
+      "summary": "Official digital cadastral-cartography procedure inspected. It requires an application, identification/authorization, payment, and delivery by CD/USB or office workflow; no anonymous parcel endpoint."
+    },
+    {
+      "url": "https://tramites.nayarit.gob.mx/ciudadano/ficha/755",
+      "method": "GET",
+      "status": "HTTP 200 / page found",
+      "summary": "Official cadastral-plan/topographic service lead inspected; it describes field/cartography processing and required documents, not a public parcel service."
+    },
+    {
+      "url": "https://www.tepic.gob.mx/organigrama/",
+      "method": "GET",
+      "status": "HTTP 200 / page found in discovery",
+      "summary": "Municipal cadastral custodian identified. No viewer or service endpoint advertised on the reviewed page."
+    },
+    {
+      "url": "https://transparenciafiscal.tepic.gob.mx/file.php?sub=128",
+      "method": "GET",
+      "status": "HTTP 200 / HTML retrieved",
+      "summary": "Current transparency listing inspected; linked files are cadastral-value/service PDFs, not parcel geometries."
+    },
+    {
+      "url": "https://www.implantepic.gob.mx/mapa-digital-interactivo/",
+      "method": "GET",
+      "status": "HTTP 200 / HTML retrieved",
+      "summary": "Current page HTML and embedded JavaScript inspected. Iframes point to /mapa-interactivo/reporte-vial/ traffic maps; no WMS/WFS/REST/GeoJSON cadastral route, layer schema, or CRS was exposed."
+    },
+    {
+      "url": "https://www.tepic.gob.mx/detalle/GobTepic_24-27_1_Web.pdf",
+      "method": "GET",
+      "status": "HTTP 200 / official PDF indexed; direct fetch too large for browser text endpoint",
+      "summary": "Search-indexed official report text was used only for the planeria-viewer observation; it provides administrative evidence, not a parcel response."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Tepic municipal and Nayarit state cadastral custodians, procedures, and current public web pages reviewed.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "geometryDecision": "No GeoJSON retained. No qualifying anonymous official response containing a safe native parcel identity plus unchanged geometry was available. The exact WUP point was not used to infer absence.",
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "safeFieldAllowlist": ["stable native parcel or cadastral identity if publicly exposed", "geometry", "source CRS", "service layer name"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "private credentials or tokens"],
+  "remainingUncertainty": "The local and state cadastral custodians and digital-cartography procedures are evidenced, but the referenced municipal PDF planeria viewer's public URL/access route, parcel-layer schema, CRS, anonymous query behavior, exact-point inclusion, and citywide machine-readable coverage remain unverified. A failed public discovery does not establish citywide absence.",
+  "nextStep": "A serial reviewer should independently check whether the Tepic municipal Planería viewer or Nayarit cadastral system now exposes a public anonymous map/service endpoint, then qualify a geometry-only sample before any adapter consideration."
+}

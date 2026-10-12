@@ -1,0 +1,34 @@
+{
+  "taskId": "city:2038",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-2038-bajil.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/bajil-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T23:17:37Z",
+  "identityCheck": {
+    "officialArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "queueRank": 2940,
+    "country": "Yemen",
+    "pointLatLon": [15.0591081860975, 43.2862451175452],
+    "populationPersons": 202715,
+    "archiveQueueRosterPacketMatch": true
+  },
+  "searchLanguages": ["English", "Arabic"],
+  "registryFound": null,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "The paired packet records executed English and Arabic searches and national legal/GIS context, but no Bajil-local public parcel service, safe native ID or full polygon. The official Yemen land-registry law page is institutional context, not evidence of local custody or geometry. The direct DNS timeout and unavailable archaeological WMS are unresolved access outcomes, not citywide absence. No admission metric has an original parcel-response artifact to review.",
+  "absenceInference": false
+}

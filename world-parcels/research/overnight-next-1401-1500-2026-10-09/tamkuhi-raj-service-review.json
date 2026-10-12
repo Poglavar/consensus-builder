@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10661-tamkuhi-raj.json",
+  "purpose": "Document independent first-party local registry discovery and bounded anonymous cadastral-map access investigation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official English and Hindi discovery established the Kushinagar district revenue jurisdiction and UP Bhulekh/Bhu-Naksha services. The current UP Bhulekh JavaScript exposed encrypted API route names, but bounded anonymous requests did not produce parcel schema, safe native identity, or geometry. No GeoJSON sample is retained.",
+  "registryAssessment": "Local administrative custody is evidenced by the official Kushinagar district site listing Tamkuhi Raj as a tehsil and its Revenue Department directory naming SDM Tamkuhiraj. State cadastral service infrastructure is evidenced separately; this is not evidence of a city-specific open vector layer.",
+  "officialPrimarySources": [
+    {"title": "Kushinagar district tehsil directory", "url": "https://kushinagar.nic.in/tehsil/", "observation": "Official district administration lists Tamkuhi Raj as one of the district tehsils."},
+    {"title": "Kushinagar Hindi Revenue Department directory", "url": "https://kushinagar.nic.in/hi/%E0%A4%8F%E0%A4%B8%E0%A4%9F%E0%A5%80%E0%A4%A1%E0%A5%80-%E0%A4%94%E0%A4%B0-%E0%A4%AA%E0%A4%BF%E0%A4%A8-%E0%A4%95%E0%A5%8B%E0%A4%A1/", "observation": "Official district directory lists SDM Tamkuhiraj under the Revenue Department."},
+    {"title": "UP Bhulekh", "url": "https://upbhulekh.gov.in/", "observation": "Official Board of Revenue portal describes UP land records and parcel-map access."},
+    {"title": "UP Board of Revenue services", "url": "https://bor.up.nic.in/?search_key=HOMECENTER", "observation": "Official page describes public Bhu-Naksha/parcel-map and Bhu-lekh services."},
+    {"title": "Government of India Bhu-Naksha", "url": "https://www.bhunaksha.nic.in/bhunaksha/index.jsp", "observation": "NIC/Department of Land Resources page describes Bhu-Naksha as cadastral parcel-map management software intended for authorized state/UT officials."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Tamkuhi Raj Uttar Pradesh official cadastral map land records parcel GIS", "executionMethod": "Executed separate web search and first-party source review", "resultUrls": ["https://kushinagar.nic.in/tehsil/", "https://upbhulekh.gov.in/", "https://www.bhunaksha.nic.in/bhunaksha/index.jsp", "https://naksha.dolr.gov.in/NakshaPortal/"]},
+    {"language": "Hindi", "query": "तमकुही राज उत्तर प्रदेश आधिकारिक भूलेख नक्शा खसरा", "executionMethod": "Executed separate native-language web search and first-party source review", "resultUrls": ["https://kushinagar.nic.in/hi/%E0%A4%A4%E0%A4%B9%E0%A4%B8%E0%A5%80%E0%A4%B2/", "https://kushinagar.nic.in/hi/%E0%A4%8F%E0%A4%B8%E0%A4%9F%E0%A5%80%E0%A4%A1%E0%A5%80-%E0%A4%94%E0%A4%B0-%E0%A4%AA%E0%A4%BF%E0%A4%A8-%E0%A4%95%E0%A5%8B%E0%A4%A1/", "https://bor.up.nic.in/?search_key=HOMECENTER", "https://upbhulekh.gov.in/"]}
+  ],
+  "attempts": [
+    {"attempt": "UP Bhulekh current app HTML", "url": "https://upbhulekh.gov.in/", "result": "HTTP 200; current app scripts identified main.28b4c6cc26e3c370.js.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "UP Bhulekh current JavaScript/configuration", "url": "https://upbhulekh.gov.in/main.28b4c6cc26e3c370.js", "result": "HTTP 200; script exposed https://upbhulekh.gov.in/PublicBhuApi/api and /PublicBhuApi/bhunaksha route bases, with encrypted edata/request parameters. No safe native parcel schema was exposed in the inspected configuration.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "bounded anonymous district route probe", "url": "https://upbhulekh.gov.in/PublicBhuApi/api/districts_list", "result": "HTTP 500 JSON: No static resource api/districts_list. No retry with credentials or private headers.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "bounded anonymous Bhu-Naksha route probe", "url": "https://upbhulekh.gov.in/PublicBhuApi/bhunaksha", "result": "HTTP 500 JSON: No static resource bhunaksha. No retry with credentials or private headers.", "credentialsUsed": false, "personalPropertyFieldsRequested": false}
+  ],
+  "geometryDecision": {"publicParcelGeometryFound": false, "sampleFile": null, "details": "No anonymous safe parcel geometry response with stable native identity was verified; no GeoJSON retained."},
+  "coverageAssessment": {"claimedScope": "Official UP land-record/cadastral services and Kushinagar district revenue administration were identified.", "verifiedOpenScope": "Portal pages and current JavaScript were inspected; no queryable anonymous parcel feature response or citywide parcel coverage was verified.", "citywideVerified": false, "countrywideVerified": false},
+  "safeFieldAllowlist": ["id", "geometry"],
+  "remainingUncertainty": "The public UI may use encrypted requests or another Bhu-Naksha route not safely reproducible from anonymous bounded requests. A zero exact-point hit or absence inference is not made.",
+  "runtimeAssessment": "not enabled; root may run full adapter qualification"
+}

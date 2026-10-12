@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-3168-preston.json",
+  "reviewType": "serial-service-review",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 3168,
+  "queueRank": 3288,
+  "decision": "hold",
+  "registryFound": null,
+  "summary": "Hold. Official Preston City Council planning/local-land-charge services and HM Land Registry guidance were evidenced, but no safe anonymous native parcel identity plus full polygon was retrieved. No GeoJSON sample is retained.",
+  "queryAndRequestOutcome": "Separate English and locally targeted English discovery queries were executed and recorded in the paired city packet. Preston's official planning-map page returned a Cloudflare block to the bounded TLS-default request. HM Land Registry guidance was retrieved, but MapSearch is account-gated. No login, credential, bypass, unsafe-field request, or TLS exception was used.",
+  "attemptedRoutes": [
+    {"route": "https://www.preston.gov.uk/article/1065/Planning-public-maps?ccp=true", "outcome": "Official planning-map page identified by discovery; direct request returned HTTP 403 Cloudflare challenge before current viewer configuration could be inspected."},
+    {"route": "https://www.preston.gov.uk/article/2023/Local-land-charges-Official-search", "outcome": "Official local-land-charge request procedure identified; no parcel geometry endpoint."},
+    {"route": "https://www.gov.uk/get-information-about-property-and-land", "outcome": "Official HM Land Registry overview returned HTTP 200; title-plan and index-map procedures documented, no anonymous vector service."},
+    {"route": "https://www.gov.uk/guidance/mapsearch", "outcome": "Official MapSearch guidance returned HTTP 200; registered-land map viewing requires Business e-services portal access."},
+    {"route": "https://eservices.landregistry.gov.uk/", "outcome": "Account-gated official service route recorded; no login attempted."}
+  ],
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdFields": [], "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "geometry": {"verified": false, "sampleCount": 0, "sampleFile": null, "retainedFeatureProperties": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "Exact WUP point [53.762734204719, -2.70275969646812] and population 183362 persons are preserved.",
+    "A Cloudflare block, account wall, or unavailable public endpoint is not evidence of citywide parcel absence.",
+    "No raw source-specific attributes were retained and no GeoJSON sample was written.",
+    "Completion is not source integration/admission; runtime remains held pending independent adapter qualification."
+  ],
+  "runtimeReadiness": "held",
+  "admissionDecision": "held",
+  "uncertainty": "Local planning and land-charge evidence does not establish an open cadastral parcel feed. HM Land Registry map access is documented but requires an account, leaving anonymous schema/CRS/geometry and Preston coverage unverified.",
+  "reviewedFiles": [
+    "city-3168-preston.json",
+    "https://www.preston.gov.uk/article/1065/Planning-public-maps?ccp=true",
+    "https://www.preston.gov.uk/article/2023/Local-land-charges-Official-search",
+    "https://www.gov.uk/get-information-about-property-and-land",
+    "https://www.gov.uk/guidance/mapsearch"
+  ]
+}

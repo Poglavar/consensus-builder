@@ -1,0 +1,58 @@
+{
+  "cityRecord": "city-10899-dehri.json",
+  "cityCode": 10899,
+  "queueRank": 1548,
+  "reviewStatus": "complete",
+  "attempt": 1,
+  "reviewedAt": "2026-10-10",
+  "service": {
+    "name": "BhuNaksha Bihar",
+    "officialViewer": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+    "custodian": "Directorate of Land Records & Survey, Department of Revenue and Land Reforms, Government of Bihar",
+    "localRegistryEvidence": true,
+    "whyLocal": "The first-party viewer's live location API exposed ROHTAS/डिहरी/Dehri/डिहरी(161) cadastral hierarchy, rather than only describing a national land-records program."
+  },
+  "discovery": {
+    "english": {
+      "query": "Dehri Bihar official cadastral map land records parcel map",
+      "outcome": "Official BhuNaksha Bihar viewer found.",
+      "urls": ["https://bhunaksha.bihar.gov.in/10/index.jsp", "https://land.bihar.gov.in/landbihar/Default.aspx"]
+    },
+    "native": {
+      "query": "डेहरी बिहार आधिकारिक भू नक्शा खसरा नक्शा",
+      "outcome": "Official Bihar भू-नक्शा/राजस्व मानचित्र viewer found.",
+      "urls": ["https://bhunaksha.bihar.gov.in/10/index.jsp", "https://biharbhumi.bihar.gov.in/Biharbhumi/default/UserRegister"]
+    }
+  },
+  "requests": [
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/index.jsp", "outcome": "200 HTML viewer landing page; identified indexmain.jsp, config.js, index.js."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp", "outcome": "200 HTML map viewer; JavaScript confirmed REST hierarchy, extent, WMS, and scalar-data routes."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/config.js", "outcome": "200; service path is ../."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/index.js", "outcome": "200; route and parameter names inspected."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count", "parameters": {"state": "10"}, "outcome": "Returned 7 hierarchy levels."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "parameters": {"state": "10", "level": 0, "codes": "", "hasmap": true}, "outcome": "Returned Bihar districts including 32 ROHTAS."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "parameters": {"state": "10", "level": 1, "codes": "32,", "hasmap": true}, "outcome": "Returned subdivision 02 डिहरी and circle/village candidates."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "parameters": {"state": "10", "level": 3, "codes": "32,02,07,", "hasmap": true}, "outcome": "Returned village 1104 डिहरी(161)."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref", "parameters": {"state": "10", "gisLevels": "32,02,07,1104,CS,00,00,", "srs": "0"}, "outcome": "JSON identified gisCode CS32020711041610000 but xmin/xmax/ymin/ymax were null; no usable extent."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref", "parameters": {"state": "10", "gisLevels": "32,02,07,1104,RS,07,00,", "srs": "0"}, "outcome": "Empty response; no geometry or parcel IDs retained."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/WMS?service=WMS&request=GetCapabilities", "outcome": "Returned an HTML error page rather than WMS capabilities; not treated as parcel evidence."}
+  ],
+  "schemaAndCrs": {
+    "viewer": "OpenLayers map UI; JS uses map-local X/Y and WMS layers.",
+    "observedFields": ["district/subdivision/circle/village codes", "survey type", "map instance", "sheet", "gisCode", "xmin", "xmax", "ymin", "ymax", "attribution"],
+    "crs": "The extent response had epsg:null and the viewer requested srs=0; no authoritative CRS was exposed for this locality.",
+    "nativeIdentity": "No parcel identity was returned in the bounded successful locality/extent checks.",
+    "safeFieldAllowlist": ["stable native parcel ID if later exposed", "parcel geometry", "district/subdivision/circle/village/map codes", "survey type", "map instance", "sheet", "CRS metadata", "source URL"],
+    "excludedFields": ["owner", "address", "contact", "titleholder", "tax/account", "record-of-rights personal fields"]
+  },
+  "scopeLimits": [
+    "A null map extent is not evidence that Dehri has no cadastral coverage.",
+    "The exact WUP point [24.9138194772029,84.1792268507342] was preserved and not forced into the viewer's local coordinate system.",
+    "No full parcel polygon was retained because no safe bounded ID+geometry response was available.",
+    "No login, credential, private token, CAPTCHA bypass, or TLS exception was used.",
+    "No sample GeoJSON was created because there were zero qualifying polygons."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Serial adapter qualification remains outstanding; source discovery does not constitute source integration/admission.",
+  "uncertainty": "The viewer is first-party and locality-specific, but the selected Dehri map route did not expose a usable extent or parcel response during this bounded anonymous attempt."
+}

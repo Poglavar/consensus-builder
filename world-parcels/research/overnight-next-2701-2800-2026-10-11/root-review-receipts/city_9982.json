@@ -1,0 +1,25 @@
+{
+  "taskId": "city:9982",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-9982-caoxian.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/caoxian-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T19:57:51Z",
+  "city": "Caoxian",
+  "queueRank": 2779,
+  "populationPersons": 213400,
+  "identityCheck": "Exact WUP 2025 City_Code, rank, China, centroid and persons conversion match the verified source gzip, ranked roster and immutable pending queue.",
+  "searchCheck": "English and Chinese executed searches are recorded in the paired city and service-review files.",
+  "custodyCheck": "The packet leaves registryFound null: a national registration lead and other cities’ examples do not establish Caoxian local parcel custody.",
+  "sourceCheck": "No Caoxian public viewer/API, native ID or anonymous polygon response was obtained. Official Caoxian/Heze requests timed out at DNS; the national lead was inaccessible. These are access failures, not citywide absence.",
+  "sampleCheck": "No GeoJSON sample retained; zero full polygons.",
+  "admissionBlockers": [
+    "No live local parcel source or safe native-ID/geometry response",
+    "No adapter, forced paging, thirteen cells, full metric checks, source binding or headed Details verification"
+  ],
+  "disposition": "Held with unresolved local custodianship and geometry availability; no runtime/catalog/report admission."
+}

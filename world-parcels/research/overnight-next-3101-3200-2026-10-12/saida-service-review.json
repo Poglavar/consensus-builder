@@ -1,0 +1,83 @@
+{
+  "cityRecord": "city-2004-saida.json",
+  "schemaVersion": "1.0",
+  "cityCode": 2004,
+  "queueRank": 3140,
+  "city": "Saida",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "An official Saida Cadastre office reference and Algeria's DGDN/FADAELDJAZAIR land-data portal were evidenced. The portal timed out on the bounded anonymous request; no parcel ID plus full polygon geometry, schema, or CRS was obtained. No sample is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Arabic discovery queries, exact text and actual URLs are recorded in city-2004-saida.json.",
+  "requestOutcomes": "The official FADAELDJAZAIR GET timed out after 20 seconds. First-party Saida and Ministry/parliamentary documentation was recorded; no parcel geometry response was obtained.",
+  "attemptedRoutes": [
+    {
+      "route": "FADAELDJAZAIR official geographic land-data portal",
+      "url": "https://fadaeldjazair.mf.gov.dz/fr/",
+      "outcome": "Anonymous TLS-verified GET timed out after 20 seconds; no UI/config/API inspection was possible."
+    },
+    {
+      "route": "Saida local Cadastre office reference",
+      "url": "https://officetourisme-saida.dz/OTS/fr/information-pratiques/administration-public",
+      "outcome": "Official page lists the Saida Cadastre office; no parcel map or API exposed."
+    },
+    {
+      "route": "Ministry of Finance land-data documentation",
+      "url": "https://www.mf.gov.dz/images/pdf/Revue_de_presse/Decembre2024/revue_de_presse_du_lundi_16_Decembre_2024.pdf",
+      "outcome": "Official documentation confirms FADAELDJAZAIR land-document services; no public vector response."
+    },
+    {
+      "route": "Official parliamentary description of FADAELDJAZAIR",
+      "url": "https://www.apn.dz/documents/JOD/9_legislature/jod_9leg_281.pdf",
+      "outcome": "Describes cadastral-document functionality and regional rollout; no Saida geometry coverage confirmation."
+    },
+    {
+      "route": "ASGA general cartographic viewer",
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "outcome": "General 1:200,000 cartography and administrative/thematic layers, not a parcel service; no parcel geometry retained."
+    }
+  ],
+  "scopeLimits": [
+    "Exact WUP point [34.8476062951272, 0.150704190374577] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit/miss inference was made because no usable parcel geometry endpoint was reached.",
+    "No stable native parcel identity, full polygon geometry, CRS, source field mapping, or composite key was verified.",
+    "No unsafe ownership, address, titleholder, contact, tax/account, personal, or raw source-specific fields were requested or retained.",
+    "A timeout and service limitation are not evidence of cadastral absence or incomplete national coverage.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel geometry response; no hit/miss inference.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Algerian DGDN/FADAELDJAZAIR land-data service and local Saida Cadastre reference",
+    "verifiedOpenScope": "Official custodian/local-office evidence only; no anonymous parcel vector response",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Portal route behavior, current configuration, parcel schema, native IDs, CRS, geometry endpoint, Saida coverage, and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

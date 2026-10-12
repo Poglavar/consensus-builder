@@ -1,0 +1,17 @@
+{
+  "taskId": "packet:11542",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-11542-heyuan.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/heyuan-service-review.json",
+    "tmp/valhalla-parcel-research/11542/jg.json",
+    "tmp/valhalla-parcel-research/11542/common.js",
+    "tmp/valhalla-parcel-research/11542/wscx.html"
+  ],
+  "checkedAt": "2026-10-09T13:17:04Z",
+  "review": "Heyuan/China, WUP rank 1238, point [23.707934644016,114.682376540749], 449860 persons match the immutable roster and queue. English and Simplified Chinese executed searches are recorded. The cached first-party organization directory names the local natural-resources bureau and registration center; portal script and query menu show an attachment-map label and login-state checks. This supports custody, not anonymous parcel geometry or citywide absence. No full sample polygon is retained; native-ID geometry reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent."
+}

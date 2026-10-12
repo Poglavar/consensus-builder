@@ -1,0 +1,55 @@
+{
+  "cityRecord": "city-2486-borj-al-burullous.json",
+  "cityCode": 2486,
+  "queueRank": 3011,
+  "city": "Borj Al Burullous",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Arabic first-party discovery evidenced ESA as Egypt's national survey/cadastral custodian and Kafr El Sheikh's official spatial ArcGIS route naming برج البرلس. Anonymous service metadata and exact-point query attempts timed out or were not retrievable; no safe parcel geometry or native parcel identity was qualified, so no sample GeoJSON is retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, actual URLs, request routes, statuses, and limits are recorded in city-2486-borj-al-burullous.json.",
+  "custodians": [
+    {
+      "name": "Egyptian General Authority for Survey (ESA) / الهيئة المصرية العامة للمساحة",
+      "scope": "National cadastral, title-record survey, and map custodian",
+      "evidence": "https://www.esa.gov.eg/main2.aspx"
+    },
+    {
+      "name": "Kafr El Sheikh Governorate spatial-services portal / محافظة كفر الشيخ",
+      "scope": "Local government spatial map services; administrative Markaz layer includes Borj Al Burullous",
+      "evidence": "https://portal.kfs.gov.eg/server/rest/services/Services_MIL1/MapServer/legend"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [31.5671036020924, 31.0550484742231] was preserved; it was not moved to force a parcel hit.",
+    "No exact-point hit or miss is inferred from failed service access.",
+    "The local service evidence establishes a government spatial-map route, not public citywide parcel-vector coverage.",
+    "No polygon is retained because no safe native parcel ID-plus-geometry response was obtained.",
+    "No unsafe owner, address/contact, titleholder, personal, tax/account, or certificate fields were requested or retained.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "The first-party national custodian and local spatial route were evidenced, but public parcel identity, geometry, CRS, and citywide coverage were not qualified."
+  },
+  "uncertainty": "The official local viewer may expose more layers after normal browser interaction. This packet records bounded anonymous attempts and does not treat timeouts or unavailable responses as cadastral absence."
+}

@@ -1,0 +1,107 @@
+{
+  "cityCode": 8692,
+  "queueRank": 1966,
+  "name": "Hechuan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [29.9872370045603, 106.260533311066],
+  "population2025": 295189,
+  "population2025k": 295.189,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hechuan China official cadastral parcel map GIS natural resources real estate registration public map API",
+        "result": "First-party discovery found the official Hechuan District Planning and Natural Resources Bureau, its Real Estate Registration Affairs Center, official registration guidance, and a government report describing a rural cadastral-survey mobile platform. No public anonymous parcel feature viewer or parcel ID plus polygon endpoint was found.",
+        "actualResultUrls": [
+          "https://ghzrzyj.cq.gov.cn/zz/hcq/",
+          "https://ghzrzyj.cq.gov.cn/zz/hcq/zwgk/fdzdgknr/jgzn/?lm=%E8%B4%9F%E8%B4%A3%E4%BA%BA%E4%BF%A1%E6%81%AF",
+          "https://ghzrzyj.cq.gov.cn/zz/hcq/zwgk/jczwgk/qqdj/202401/t20240105_12793067.html",
+          "https://www.hc.gov.cn/bmxx/hmxx/202410/t20241030_13752927.html"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "合川区 自然资源局 不动产登记 地籍图 地图 服务 官方",
+        "result": "官方中文结果确认合川区规划和自然资源局承担统一确权登记、权籍调查、不动产测绘和地理信息公共服务管理，并列出合川区不动产登记事务中心；官方报道说明农村不动产地籍调查移动应用平台与登记系统及国土空间一张图贯通。未发现匿名公开宗地编号加完整面几何服务。",
+        "actualResultUrls": [
+          "https://ghzrzyj.cq.gov.cn/zz/hcq/zwgk/fdzdgknr/jgzn/?lm=%E8%B4%9F%E8%B4%A3%E4%BA%BA%E4%BF%A1%E6%81%AF",
+          "https://ghzrzyj.cq.gov.cn/zz/hcq/zwgk/jczwgk/qqdj/202401/t20240105_12793067.html",
+          "https://www.hc.gov.cn/bmxx/hmxx/202410/t20241030_13752927.html",
+          "https://ghzrzyj.cq.gov.cn/zwgk_186/fdzdgknr/czyjs/202603/P020260302354990732524.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Hechuan District Planning and Natural Resources Bureau material identifies the district bureau as responsible for unified natural-resource and real-estate registration, cadastral investigation, real-estate surveying, registration-data management and geographic-information public-service management, and identifies the Hechuan District Real Estate Registration Affairs Center as a subordinate custodian. This establishes local registry custody, not an open parcel geometry API.",
+  "officialSources": [
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/zz/hcq/zwgk/fdzdgknr/jgzn/?lm=%E8%B4%9F%E8%BD%A3%E4%BA%BA%E4%BF%A1%E6%81%AF",
+      "observation": "Official Hechuan bureau institutional-functions page; lists unified registration, cadastral investigation, real-estate surveying, registration data and geographic-information public-service responsibilities, and the district real-estate registration center."
+    },
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/zz/hcq/zwgk/jczwgk/qqdj/202401/t20240105_12793067.html",
+      "observation": "Official Hechuan real-estate registration service guide; documents local registration procedures and materials, but does not expose an anonymous parcel geometry service."
+    },
+    {
+      "url": "https://www.hc.gov.cn/bmxx/hmxx/202410/t20241030_13752927.html",
+      "observation": "Official Hechuan government report describing a rural cadastral-survey mobile application integrated with the real-estate registration system and territorial spatial one-map system; no public endpoint or safe parcel response is published."
+    },
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/zwgk_186/fdzdgknr/czyjs/202603/P020260302354990732524.pdf",
+      "observation": "Official 2026 budget document for the Hechuan District Real Estate Registration Affairs Center; states responsibility for local land, house and forest registration, registration certificates, registration information infrastructure and archives."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/zz/hcq/",
+      "method": "GET",
+      "outcome": "Search result and current official page were available through the public index; direct curl retrieval timed out after 25 seconds. No parcel viewer or public feature route was identified."
+    },
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/zz/hcq/zwgk/fdzdgknr/jgzn/?lm=%E8%B4%9F%E8%B4%A3%E4%BA%BA%E4%BF%A1%E6%81%AF",
+      "method": "GET/search inspection",
+      "outcome": "HTTP/public indexed official content inspected; local bureau and registration-center responsibilities confirmed. No anonymous parcel ID+geometry response, viewer configuration, schema or CRS exposed."
+    },
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/zz/hcq/zwgk/jczwgk/qqdj/202401/t20240105_12793067.html",
+      "method": "GET/search inspection",
+      "outcome": "Official indexed registration guide inspected; it documents application workflows and materials. Direct fetch intermittently timed out; no public parcel feature response or safe geometry route was obtained."
+    },
+    {
+      "url": "https://www.hc.gov.cn/bmxx/hmxx/202410/t20241030_13752927.html",
+      "method": "GET",
+      "outcome": "HTTP 200; official report retrieved. It describes the cadastral-survey mobile platform and system integration, but exposes no public API, schema, CRS or parcel geometry."
+    },
+    {
+      "url": "https://www.hc.gov.cn/zjhc/hcgk/dt/",
+      "method": "GET",
+      "outcome": "HTTP 200; official Hechuan map page retrieved and HTML/scripts inspected. It is a static map/image-information page with no cadastral layer, parcel endpoint, schema or CRS."
+    },
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/zwgk_186/fdzdgknr/czyjs/202603/P020260302354990732524.pdf",
+      "method": "GET/search inspection",
+      "outcome": "Official budget PDF indexed and inspected for custodian scope; no public parcel geometry route. No login, credentials or unsafe fields requested."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Hechuan District local planning/natural-resources and real-estate-registration custody and related official public information.",
+    "verifiedOpenScope": "Local registry custody, registration procedure and platform existence only; no open parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order. No exact-point hit/miss test was used. No parcel geometry or native parcel identity was retained. No map extent, timeout or unavailable UI was treated as evidence of citywide absence. Packet completion is not source integration/admission; serial reviewer qualification remains required."
+}

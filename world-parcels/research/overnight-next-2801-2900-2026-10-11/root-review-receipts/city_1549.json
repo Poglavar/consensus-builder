@@ -1,0 +1,22 @@
+{
+  "taskId": "city:1549",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-1549-palmira.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/palmira-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T20:30:38Z",
+  "identityCheck": "Rank 2806, Colombia, WUP point [3.5327459144323,-76.2976115817712], and 211585 persons match both immutable cohort rosters. English and Spanish executed queries have source URLs.",
+  "custodyDecision": "registryFound true is supported by first-party Palmira municipal cadastral-viewer documentation and IGAC public cadastral metadata. Current official Palmira and IGAC notices say IGAC resumed cadastral management in 2024; the packet's municipal/GO Catastral custodian wording should not be read as current custody.",
+  "reason": "IGAC U_TERRENO metadata describes a polygon layer in EPSG:4686 and says supportsPagination=false. The packet's bounded queries yielded a pagination error or timeout, and the municipal viewer was unavailable. No feature response, retained polygon, or native parcel ID was independently verified. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent; HTTP 400/500 and timeouts are not citywide absence.",
+  "firstPartyUrlsChecked": [
+    "https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales",
+    "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4?f=pjson",
+    "https://palmira.gov.co/ya-conoces-el-geovisor-para-consultas-catastrales-en-palmira-aqui-te-contamos/",
+    "https://palmira.gov.co/todos-los-tramites-catastrales-de-palmira-se-hacen-ante-el-igac/",
+    "https://www.igac.gov.co/noticias/el-igac-reasume-el-servicio-catastral-del-municipio-de-palmira-e-inaugura-punto-de-atencion-al-ciudadano-en-este-municipio"
+  ],
+  "firstPartyAccessNote": "IGAC layer metadata was readable; the municipal announcement and custody notices were checked through first-party indexed search excerpts because direct HTML requests returned 403 or 502."
+}

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-10934-shuyang.json",
+  "purpose": "Document first-party registry/map discovery, current viewer-route outcomes, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "The official Shuyang county service page identifies the local Natural Resources and Planning Bureau and a county-level real-estate registration procedure. The linked public-service iframe was blocked by HTTP 493 JFE Forbidden, so no current parcel viewer configuration or safe anonymous parcel feature response was verified.",
+  "registryAssessment": "Local registry custody is evidenced by the official procedure page naming 沭阳县自然资源和规划局 as implementing authority; registryFound is true. This is not evidence that parcel geometry is publicly downloadable.",
+  "officialPrimarySources": [
+    {
+      "url": "https://sqshuy.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132132201431342XJ4000715001013&iddept_yw_inf=1132132201431342XJ400071500101301&ql_kind=07&webId=75",
+      "observation": "Official Jiangsu government service page for Shuyang's easement-first-registration procedure; it names 沭阳县自然资源和规划局, gives county-level authority, office address and public service details. It does not expose parcel geometry."
+    },
+    {
+      "url": "https://sqshuy.jszwfw.gov.cn/",
+      "observation": "Official Shuyang service shell; its HTML links the public-service content through an iframe at the Suqian government service host."
+    },
+    {
+      "url": "https://sq.jszwfw.gov.cn/",
+      "observation": "Official Suqian government service portal identified during route discovery; no parcel feature service was exposed in the inspected shell."
+    }
+  ],
+  "viewerConfiguration": {
+    "documentedHomeUrl": "https://sqshuy.jszwfw.gov.cn/",
+    "observedServiceTypes": ["official Shuyang government service portal", "county-level real-estate registration procedure", "embedded public-service iframe"],
+    "iframeUrl": "https://zwfw.xzspj.suqian.gov.cn/sq_shuyang_yzw/sq_shuyang_index?ticket=null&moduleSite=321322",
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://sqshuy.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132132201431342XJ4000715001013&iddept_yw_inf=1132132201431342XJ400071500101301&ql_kind=07&webId=75",
+      "method": "GET/web open",
+      "normalTlsVerification": true,
+      "result": "Succeeded. Official page names the Shuyang County Natural Resources and Planning Bureau as implementing authority and documents a county-level registration procedure. No parcel geometry or parcel schema."
+    },
+    {
+      "url": "https://sqshuy.jszwfw.gov.cn/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Succeeded. HTML inspection found the embedded public-service iframe URL recorded in viewerConfiguration. No parcel layer or API URL was present in the shell."
+    },
+    {
+      "url": "https://zwfw.xzspj.suqian.gov.cn/sq_shuyang_yzw/sq_shuyang_index?ticket=null&moduleSite=321322",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 493 JFE Forbidden on bounded anonymous request. Viewer JavaScript/configuration and any parcel service were not inspectable. No retry with credentials, CAPTCHA bypass or certificate exception."
+    },
+    {
+      "url": "https://sq.jszwfw.gov.cn/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Succeeded. Official Suqian portal shell inspected as a parent service route; no public parcel feature response obtained."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No WUP-point parcel query submitted because no current public Shuyang parcel endpoint or viewer configuration was identified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official local service evidence covers registration custody and procedure only; it does not establish parcel-layer coverage.",
+    "verifiedOpenScope": "Local registry custodian and procedure verified; no current anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "The HTTP 493 result is an access limitation, not evidence of cadastral absence. Current viewer/API, parcel schema, CRS, native identity, geometry availability, safe field availability and citywide completeness remain unverified.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."
+  }
+}

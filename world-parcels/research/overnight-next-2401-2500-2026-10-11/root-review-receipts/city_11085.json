@@ -1,0 +1,17 @@
+{
+  "taskId": "city:11085",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-11085-modanganj.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/modanganj-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/root-review-receipts/source-evidence/city_11085-levels.json"
+  ],
+  "checkedAt": "2026-10-11T12:59:16Z",
+  "registryFound": true,
+  "queueRank": 2482,
+  "reason": "English and Hindi-term searches were recorded in the worker trace. The first-party BhuNaksha hierarchy response names Jehanabad and Modanganj, but it supplies no full parcel polygon, native parcel ID, or resolved village map scope.",
+  "admissionGate": "No independent live adapter qualification: fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details-panel verification are not evidenced.",
+  "samplePolygonCount": 0,
+  "citywideAbsenceInferred": false
+}

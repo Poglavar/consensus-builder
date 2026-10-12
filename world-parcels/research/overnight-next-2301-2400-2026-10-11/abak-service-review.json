@@ -1,0 +1,48 @@
+{
+  "cityRecord": "city-8153-abak.json",
+  "cityCode": 8153,
+  "queueRank": 2352,
+  "name": "Abak",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [4.98542874500456, 7.78822366120289],
+  "population2025": 248528,
+  "population2025k": 248.528,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held_quality_review",
+  "discoveryMethod": "first_party_english_and_ibibio_discovery_plus_anonymous_page_and_configuration_probes",
+  "sourceReview": "AkwaGIS is evidenced as the Akwa Ibom state land registry/GIS by first-party state and AkwaGIS pages. Its public page describes Land PIN or Plan/COD validation and parcel polygons in paid results, but no safe anonymous ID-plus-geometry response was obtained. This is registry evidence only, not source integration or admission.",
+  "queryOutcomes": {
+    "english": "Official AkwaGIS land-search, FAQ, about, and state homepage found; no public safe parcel geometry API found.",
+    "ibibio": "No Ibibio-language first-party cadastral viewer/API found; results led to the same official service or general non-cadastral material.",
+    "viewerConfiguration": "Current page JavaScript exposed /search/validate and /search/initiate browser route names but no usable anonymous parcel endpoint, schema, or CRS.",
+    "candidateApiRoutes": "GET probes to /api/search/validate, /search/validate, /api/search/initiate, and /search/initiate returned 404 HTML responses.",
+    "geometry": "No parcel geometry returned; no sample retained."
+  },
+  "safeFieldAllowlist": ["native parcel identifier only when stable and source-proven", "parcel geometry"],
+  "excludedFields": ["owner names", "addresses", "contact details", "titleholder information", "tax/account data", "payment details", "survey documents", "unsafe certificate details"],
+  "scopeLimits": {
+    "retainedGeoJsonPolygons": 0,
+    "maxRetainedGeoJsonPolygons": 3,
+    "citywideCoverageProven": false,
+    "exactPointCoverageProven": false,
+    "localRegistryOfficeProven": false,
+    "stateCustodianProven": true,
+    "citywideAbsenceInferred": false
+  },
+  "attemptsRecordedInCityRecord": true,
+  "uncertainty": "AkwaGIS documents a state registry and polygon-capable paid search, but anonymous public geometry access and Abak-specific coverage were not demonstrated. The WUP point was not used as a parcel identifier and no absence conclusion was drawn.",
+  "reviewDecision": "held_no_verified_public_geometry",
+  "evidenceUrls": [
+    "https://akwaibomstate.gov.ng/",
+    "https://akwagis.akwaibomstate.gov.ng/land-search",
+    "https://akwagis.akwaibomstate.gov.ng/faqs",
+    "https://akwagis.akwaibomstate.gov.ng/about"
+  ]
+}

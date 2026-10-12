@@ -1,0 +1,18 @@
+{
+  "taskId": "city:5357",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-5357-iligan.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/iligan-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:39:42Z",
+  "reason": "Official City Assessor custody and national LMB parcel-layer catalog are evidenced, but the WMS feature-info request timed out; no Iligan polygon or native parcel ID was obtained. The timeout and viewer gate do not establish absence.",
+  "firstPartyArtifactsInspected": [
+    "tmp/valhalla-parcel-research/iligan/layers.json",
+    "tmp/valhalla-parcel-research/iligan/script.js",
+    "tmp/valhalla-parcel-research/iligan/featureinfo.headers"
+  ],
+  "admissionGates": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. No runtime admission."
+}

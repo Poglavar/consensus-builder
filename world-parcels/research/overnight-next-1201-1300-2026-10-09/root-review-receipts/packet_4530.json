@@ -1,0 +1,16 @@
+{
+  "taskId": "packet:4530",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-4530-irapuato.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/irapuato-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-review-receipts/city_4530.json"
+  ],
+  "checkedAt": "2026-10-09T12:05:31Z",
+  "reason": "Irapuato code 4530, rank 1219, Mexico/MX, immutable point and 456628 persons match the WUP queue. English and Spanish searches are recorded in both paired files. Municipal GeoPortal, SIUS and Dirección de Catastro support local custody, but direct GeoPortal reads timed out and SIUS/VCCC require login. No anonymous safe native parcel ID or full polygon is evidenced; zero polygons are retained. Registry custody true does not imply accessible geometry, citywide coverage, or runtime admission.",
+  "qualificationCheck": "No independent evidence of fresh native-ID full-polygon reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, full-parcel source binding, or headed Details-panel verification. Keep held, unintegrated and unenabled. A timeout or login wall is not evidence of citywide absence."
+}

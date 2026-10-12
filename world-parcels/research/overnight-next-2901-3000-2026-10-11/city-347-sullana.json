@@ -1,0 +1,85 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 347,
+  "queueRank": 2960,
+  "name": "Sullana",
+  "country": "Peru",
+  "countryCode": "PE",
+  "iso3": "PER",
+  "locId": 604,
+  "capital": false,
+  "point": [-4.90245229069859, -80.6872738207331],
+  "population2025": 201523,
+  "population2025k": 201.523,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sullana Peru cadastral parcel map official SUNARP catastro GIS",
+        "result": "First-party results identified the Municipalidad Provincial de Sullana cadastral-plan approval, the municipal zoning/catastro procedure, and SUNARP's national Base Gráfica Registral viewer. No anonymous public parcel feature service was exposed.",
+        "actualResultUrls": [
+          "https://www.gob.pe/institucion/munisullana/normas-legales/2451071-1051-2019-mps",
+          "https://www.gob.pe/31733-solicitar-certificadode-zonificacion-y-vias",
+          "https://www.gob.pe/63173-acceder-al-visor-de-la-base-grafica-registral"
+        ]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "Sullana Perú catastro predios mapa oficial SUNARP municipalidad",
+        "result": "First-party results confirmed the municipal approval of the Plano Catastral del Distrito de Sullana, the municipal Subgerencia de desarrollo urbano, catastro y saneamiento procedure, and SUNARP's Base Gráfica Registral viewer. No anonymous ID-plus-geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://www.gob.pe/institucion/munisullana/normas-legales/2451071-1051-2019-mps",
+          "https://www.gob.pe/31733-solicitar-certificadode-zonificacion-y-vias",
+          "https://visor-bgr.sunarp.gob.pe/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Municipalidad Provincial de Sullana, including its Subgerencia de desarrollo urbano, catastro y saneamiento; SUNARP is the national registered-property graphic-registry custodian.",
+    "locality": "The municipal resolution approves the cadastral plan for the Distrito de Sullana. The municipal procedure is local to Sullana.",
+    "evidenceUrls": [
+      "https://www.gob.pe/institucion/munisullana/normas-legales/2451071-1051-2019-mps",
+      "https://www.gob.pe/31733-solicitar-certificadode-zonificacion-y-vias",
+      "https://www.gob.pe/institucion/sunarp/normas-legales/6098648-153-2024-sunarp-sn"
+    ],
+    "scopeNote": "A local cadastral plan and procedure are evidenced, but neither establishes a public downloadable parcel layer, current completeness, or citywide machine-readable coverage. SUNARP's viewer is national in stated scope but gated by identity and CAPTCHA."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "https://visor-bgr.sunarp.gob.pe/",
+    "nativeIdField": null,
+    "nativeIdentityObserved": null,
+    "crs": null,
+    "boundedResponse": null,
+    "note": "The official municipal and SUNARP routes were inspected. The municipal pages expose cadastral approval/procedure documents, not a public parcel API. The SUNARP viewer documentation states that access requires DNI, date of issuance, and CAPTCHA; no login, CAPTCHA, credentials, or unsafe fields were attempted. No safe anonymous parcel ID plus polygon response was available, so no GeoJSON was retained."
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://www.gob.pe/es/munisullana", "outcome": "HTTP 200; official Municipalidad Provincial de Sullana page retrieved. It links municipal planning and land-related documents but exposes no parcel feature service in the inspected HTML."},
+    {"method": "GET", "url": "https://www.gob.pe/institucion/munisullana/normas-legales/2451071-1051-2019-mps", "outcome": "First-party search result and official document route retrieved; resolution title states APROBAR EL PLANO CATASTRAL DEL DISTRITO DE SULLANA. The linked document is evidence of a cadastral plan, not a public machine-readable parcel endpoint."},
+    {"method": "GET", "url": "https://www.gob.pe/31733-solicitar-certificadode-zonificacion-y-vias", "outcome": "First-party municipal procedure retrieved; it identifies the Subgerencia de desarrollo urbano, catastro y saneamiento and requires applicant property documentation. No anonymous parcel geometry route is exposed."},
+    {"method": "GET", "url": "https://www.gob.pe/institucion/sunarp/normas-legales/6098648-153-2024-sunarp-sn", "outcome": "First-party SUNARP resolution retrieved; it describes WMS/Web Map access for municipalities with an interinstitutional agreement. It does not provide an anonymous Sullana endpoint."},
+    {"method": "GET", "url": "https://visor-bgr.sunarp.gob.pe/", "outcome": "Direct browser-like request timed out at approximately 40 seconds in this environment; no service schema or parcel response was obtained. This is temporary/unusable-route evidence, not evidence of data absence."},
+    {"method": "GET", "url": "https://serviciosenlinea.sunarp.gob.pe/portal/", "outcome": "First-party service portal identified by search; it lists Base Gráfica Registral among online services but does not expose an anonymous parcel API in the inspected result."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel geometry", "geometry CRS", "source layer/service metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The exact WUP point [-4.90245229069859, -80.6872738207331] was preserved and never shifted; no parcel query was available to execute at that coordinate.",
+    "The approved municipal cadastral plan may be a document or static cartography; its current digital format, schema, CRS, identifiers, and coverage were not established.",
+    "SUNARP's national viewer may contain Sullana parcels, but access requires user identity/date and CAPTCHA, and no anonymous public service was verified.",
+    "Registry presence means a first-party local cadastral custodian/procedure is evidenced; it does not establish public parcel-data access or citywide completeness.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or admission."
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-9651-yavatmal.json",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "purpose": "Document first-party Yavatmal/Maharashtra registry discovery, public route attempts, safe-field limits, and uncertainty.",
+  "assessment": "Official Yavatmal District Administration and Maharashtra Land Records pages establish local land-record service custody. Maharashtra Bhu-Naksha is the relevant official map route. No safe anonymous ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "registryFound=true is supported by the official district land-record page naming the District Collector Office in Yavatmal and by the Maharashtra Land Records department contact page identifying the Yavatmal Deputy Superintendent and District Superintendent of Land Records offices. This is local service custody evidence only; it is not source integration, ownership evidence, or proof of citywide parcel availability.",
+  "officialPrimarySources": [
+    {"url": "https://yavatmal.gov.in/en/service/land-records-and-village-form-7-12/", "observation": "Official Yavatmal district page labels Land Records and Village Form 7/12, places the service at the District Collector Office in Yavatmal, and links Mahabhulekh."},
+    {"url": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=22&source=DistrictContact", "observation": "Official Maharashtra Land Records contact page lists the Yavatmal Deputy Superintendent of Land Records office and the District Superintendent of Land Records office."},
+    {"url": "https://bhumiabhilekh.maharashtra.gov.in/?districtId=37", "observation": "Official Maharashtra Land Records page describes Bhu-Naksha as the route for survey-number maps and describes GIS-based land-record mapping; it is departmental information, not a verified feature response."},
+    {"url": "https://mahabhunakasha.mahabhumi.gov.in/27/", "observation": "Official Maharashtra Bhu-Naksha viewer route exposes state/district/taluka/village and plot-number concepts in indexed viewer content; direct bounded retrieval from this environment timed out."},
+    {"url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard", "observation": "Official Maharashtra portal identifies Mahabhunakasha as Maps with Land Records and is managed by the Revenue Department, Government of Maharashtra."}
+  ],
+  "viewerConfiguration": {
+    "candidateRoutes": ["https://mahabhunakasha.mahabhumi.gov.in/27/", "https://mahabhunakasha.mahabhumi.gov.in/mobile/www/index.html"],
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": "Not retained; no successful safe feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "geometry type", "source CRS", "source layer", "retrieval time"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://yavatmal.gov.in/en/service/land-records-and-village-form-7-12/", "method": "GET; anonymous public read with normal TLS verification", "result": "HTTP 200, 126299 bytes; official page and local land-record service custody verified; no parcel geometry response."},
+    {"url": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=22&source=DistrictContact", "method": "GET; anonymous public read via first-party search/open", "result": "Official contact page was available in first-party indexed content and lists Yavatmal land-record offices; direct curl DNS resolution timed out in the bounded attempt; no parcel geometry response."},
+    {"url": "https://mahabhunakasha.mahabhumi.gov.in/27/", "method": "GET; anonymous public read with normal TLS verification, 20-second bound", "result": "Timed out after 20 seconds; no HTML, JavaScript configuration, schema, CRS, or feature response obtained. Timeout is not treated as parcel absence."},
+    {"url": "https://mahabhunakasha.mahabhumi.gov.in/mobile/www/index.html", "method": "GET; anonymous public route discovery", "result": "Official mobile viewer route identified in first-party indexed content; no direct feature response or safe schema verification obtained."},
+    {"url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard", "method": "GET; anonymous public read via first-party indexed content", "result": "Official portal identifies Mahabhunakasha as Maps with Land Records; no parcel feature response."},
+    {"url": "https://bhumiabhilekh.maharashtra.gov.in/?districtId=37", "method": "GET; anonymous public read via first-party indexed content", "result": "Official departmental content describes survey-number maps and Bhu-Naksha; no parcel feature response."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "exactWupPointTest": "Not run: no anonymous parcel geometry layer was verified. Exact WUP point [20.3888007479135, 78.1221595260603] was preserved unchanged.", "query": "No point or extent parcel query submitted because the public service route and safe request shape were not verified."},
+  "coverageAssessment": {"claimedScope": "Yavatmal District Administration and Maharashtra Land Records custody plus the official Maharashtra Bhu-Naksha route.", "verifiedOpenScope": "No anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The public availability and schema of Yavatmal parcel geometry, including urban coverage, CRS, stable native identity, and citywide completeness, remain unverified. Timeouts and unusable viewer paths do not establish cadastral absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; this packet does not qualify an adapter or enable runtime."}
+}

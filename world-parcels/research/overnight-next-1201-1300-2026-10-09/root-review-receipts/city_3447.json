@@ -1,0 +1,18 @@
+{
+  "taskId": "city:3447",
+  "decision": "held",
+  "reason": "Mannheim rank 1241, Germany, immutable point and 448203 persons match the hashed WUP roster. The packet records English and German searches with result URLs. Original municipal viewer/configuration artifacts show the ALKIS Flurstuecke layer in EPSG:25832, but the service is WMS image rendering: GetFeatureInfo returned 'not all parameters!' and the exact-point HTML query returned no result. Neither gives a safe native ID with full polygon, and a point miss is not citywide absence. Fresh ID reads, forced paging, 13 bounded cells, metric topology checks, source binding and headed Details verification are unevidenced; no admission.",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-3447-mannheim.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/mannheim-service-review.json",
+    "tmp/valhalla-parcel-research/mannheim/viewer.html",
+    "tmp/valhalla-parcel-research/mannheim/config_1_ngms_global.js",
+    "tmp/valhalla-parcel-research/mannheim/ajax_get_ollayer.php_service_mannheim_c_10914521",
+    "tmp/valhalla-parcel-research/mannheim/getfeatureinfo.txt",
+    "tmp/valhalla-parcel-research/mannheim/ajax-query.txt"
+  ],
+  "checkedAt": "2026-10-09T12:04:22.939084Z"
+}

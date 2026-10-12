@@ -1,0 +1,17 @@
+{
+  "taskId": "root:macapa-followthrough",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2026-10-09/city-2928-macapa.json",
+    "world-parcels/research/overnight-next-2026-10-09/macapa-service-review.json",
+    "world-parcels/research/overnight-next-2026-10-09/macapa-parcel-samples-native.geojson",
+    "world-parcels/research/overnight-next-2026-10-09/macapa-distinct-manifest-and-raw-row-protocol-proof.json",
+    "world-parcels/research/overnight-next-2026-10-09/macapa-runtime-qualification.json",
+    "backend/parcels/arcgis-source.js",
+    "backend/test/arcgis-identical-join-rows.test.js"
+  ],
+  "checkedAt": "2026-10-09T10:57:43.476001Z",
+  "reviewBasis": "WUP 2928/rank 1176/BR/471922 persons and unchanged point match the roster and bulk source; English and Portuguese executed searches and three safe idlote polygons are saved. The new opt-in protocol passes targeted tests; a fresh bounded cell 0 read returned 26 distinct IDs from 43 raw rows. The earlier full adapter run completed only 9/13 cells; no new complete 13-cell, independent metric GEOS, source binding, or headed Details evidence exists. Original response cache cited for broader metrics is absent in this checkout."
+}

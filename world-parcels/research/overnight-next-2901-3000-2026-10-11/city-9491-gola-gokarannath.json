@@ -1,0 +1,150 @@
+{
+  "cityCode": 9491,
+  "queueRank": 2950,
+  "name": "Gola Gokarannath",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [28.0787701906687, 80.4722357400124],
+  "population2025": 201963,
+  "population2025k": 201.963,
+  "populationUnit": "persons",
+  "status": "complete",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "purpose": "City-specific cadastral and public parcel geometry investigation; registry evidence, retrieved geometry and runtime qualification are assessed separately.",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gola Gokarannath Uttar Pradesh official GIS cadastral map parcel land records",
+        "result": "First-party results identified the Government of Uttar Pradesh Bhulekh portal, Board of Revenue service page, cadastral-map digitization dashboard, and the current Bhu-Naksha viewer. Search results did not provide an anonymous city-bounded parcel feature response.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/",
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report",
+          "https://upbhunaksha.gov.in/bhunaksha/09/index.html"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "गोला गोकरणनाथ उत्तर प्रदेश आधिकारिक नक्शा भूलेख खसरा नक्शा",
+        "result": "First-party Hindi results identified Rajस्व परिषद Uttar Pradesh/Bhulekh land-record and bhu-naksha services. The official DARMS report confirms Gola Gokaran Nath tehsil in Kheri district and lists revenue villages, but search results did not expose city parcel geometry.",
+        "actualResultUrls": [
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhulekh.gov.in/",
+          "https://revenuedarms.up.gov.in/public_report?distCode=153&tehsilCode=00799"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "publisher": "Government of Uttar Pradesh / Board of Revenue",
+      "observation": "Official Bhulekh portal describes online land records, plot/gata status and links to bhu-naksha services. It is a state-level custodian, not a city-specific boundary dataset."
+    },
+    {
+      "url": "https://bor.up.nic.in/?search_key=HOMECENTER",
+      "publisher": "Board of Revenue, Uttar Pradesh",
+      "observation": "Official Hindi service page lists khatauni, khasra and bhu-naksha/shajra services, including revenue-village maps and gata boundaries."
+    },
+    {
+      "url": "https://revenuedarms.up.gov.in/public_report?distCode=153&tehsilCode=00799",
+      "publisher": "Government of Uttar Pradesh / DARMS",
+      "observation": "Official report identifies district Kheri and tehsil Gola Gokaran Nath (codes 153 and 00799) and returns the revenue-village catalog. This evidences a local tehsil land-record custodian, not citywide parcel geometry."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunaksha/09/index.html",
+      "publisher": "Government of Uttar Pradesh / National Informatics Centre",
+      "observation": "Current public Bhu-Naksha viewer loaded with state code 09 and exposes level selection, map extent and plot lookup routes in its JavaScript configuration."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://upbhunaksha.gov.in/bhunaksha/09/index.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current viewer HTML and JavaScript configuration retrieved anonymously over verified TLS; no login or CAPTCHA was used."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST",
+      "bodySummary": "level=1&codes=09, then level=2&codes=153, then level=3&codes=153,00799",
+      "httpStatus": 200,
+      "outcome": "Returned district, tehsil and village catalog JSON. District 153 is Kheri; tehsil 00799 is गोला; village results included Gola-area villages but no city parcel geometry."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "bodySummary": "gisLevels=153,00799,217899",
+      "httpStatus": 200,
+      "outcome": "Returned JSON with gisCode 15300799217899 and attribution for village गोला जेड अन्दर, but xmin/ymin/xmax/ymax were all 0.0. This is an unusable extent, not evidence of citywide absence."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY",
+      "method": "POST",
+      "bodySummary": "giscode=15300799217899, x=80.4722357400124, y=28.0787701906687, plotno=",
+      "httpStatus": 200,
+      "outcome": "Returned an empty JSON object. The request used the exact immutable WUP point as a bounded diagnostic; the viewer CRS was not qualified and a zero hit is not absence evidence."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotByPlotNo",
+      "method": "POST",
+      "bodySummary": "giscode=15300799217899, plotno=1",
+      "httpStatus": 200,
+      "outcome": "Returned an empty JSON object; no geometry or stable native parcel identity was qualified."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Uttar Pradesh revenue sources identify the Gola Gokaran Nath tehsil land-record/cadastral service and the current public Bhu-Naksha viewer. This is registry/cadastre-service evidence only; no city-bounded parcel geometry or anonymous schema was verified.",
+  "registryEvidenceUrls": [
+    "https://revenuedarms.up.gov.in/public_report?distCode=153&tehsilCode=00799",
+    "https://upbhulekh.gov.in/",
+    "https://upbhunaksha.gov.in/bhunaksha/09/index.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "sourceCandidate": {
+    "url": "https://upbhunaksha.gov.in/bhunaksha/09/index.html",
+    "publisher": "Government of Uttar Pradesh / National Informatics Centre",
+    "kind": "Bhu-Naksha cadastral map viewer",
+    "scope": "Gola Gokaran Nath tehsil is evidenced; city coverage, public geometry access, CRS and stable native parcel schema remain unverified",
+    "safeSampleFile": null,
+    "nativeFields": [],
+    "safeFieldAllowlist": ["stable native parcel identifier if exposed", "geometry", "source CRS"]
+  },
+  "verifiedParcelResponse": null,
+  "schemaAndCrs": {
+    "parcelSchema": "Not qualified anonymously",
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": "No raw source attributes retained",
+    "compositeKeyProvenance": "The viewer's administrative lookup used district 153 + tehsil 00799 + village code; no parcel-level composite identity was returned."
+  },
+  "geometrySamples": [],
+  "runtimeReadiness": "held_not_serially_qualified",
+  "admissionDecision": "held",
+  "coverageAssessment": {
+    "claimedScope": "Gola Gokaran Nath tehsil land records and cadastral-map viewer",
+    "verifiedOpenScope": "Administrative levels and viewer routes were verified; citywide parcel polygon coverage, CRS, safe native ID, and anonymous feature retrieval were not verified.",
+    "countrywideVerified": false
+  },
+  "safeFieldPolicy": {
+    "allowed": ["stable native parcel identifier", "geometry", "source CRS", "public service metadata"],
+    "excluded": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration detail"]
+  },
+  "scopeLimits": [
+    "No credentials, login, CAPTCHA bypass, private tokens or unsafe landholder fields were used.",
+    "The exact WUP point was preserved and not shifted.",
+    "No parcel polygon was retained because no safe native parcel identity and geometry were returned.",
+    "A zero exact-point hit, zero map extent, or empty response does not establish citywide absence.",
+    "Packet completion is not source integration or admission."
+  ],
+  "remainingUncertainty": "The Bhu-Naksha viewer may contain parcel maps for relevant urban or revenue units, but this attempt did not qualify a city-bounded public geometry response, CRS, parcel schema, or stable native parcel identity. A later attempt may inspect additional administrative units or viewer routes without treating the diagnostic empty responses as absence.",
+  "pointBasis": "Exact immutable WUP queue point; not shifted to force a parcel hit."
+}

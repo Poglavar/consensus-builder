@@ -1,0 +1,40 @@
+{
+  "taskId": "city:299",
+  "decision": "held",
+  "checkedAt": "2026-10-12T02:48:11Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/identity-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-299-atyrau.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/atyrau-service-review.json",
+    "tmp/valhalla-parcel-research/atyrau-wfs.xml",
+    "tmp/valhalla-parcel-research/atyrau-wms.xml",
+    "tmp/valhalla-parcel-research/2025Q4_Atyrau_EKGN_LANDPLOTS.csv"
+  ],
+  "queueIdentity": {
+    "cityCode": 299,
+    "rank": 3092,
+    "country": "Kazakhstan",
+    "point": [
+      47.10651870219,
+      51.9200147047847
+    ],
+    "populationPersons": 194044
+  },
+  "checks": {
+    "immutableQueueIdentity": true,
+    "bilingualExecutedSearchesRecorded": true,
+    "retainedFullPolygonLimitMet": true,
+    "freshExactNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "sourceNativeIdObservedInBoundedResponse": false,
+    "fullPolygonResponsesInspected": 0
+  },
+  "registryFound": true,
+  "reason": "Regional public WFS capabilities and an official attribute-only land-plot CSV establish a custodian and possible source, but no retained city-local parcel polygon or safe parcel-native identity was qualified. The reported exact-point zero is bounded and cannot establish citywide absence."
+}

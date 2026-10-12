@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10271",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-10271-namakkal.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/namakkal-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T20:45:52Z",
+  "identityCheck": "WUP 2025 checksum-verified source, immutable ranked roster, pending queue and packet agree: rank 2816, Namakkal, India (IND), point [11.2230113379326, 78.168212826509], 211231 persons.",
+  "researchCheck": "English and local-language executed query records include actual result URLs. No full polygon or source-proven safe native parcel ID was retained; no sample GeoJSON accompanies this packet.",
+  "firstPartyPageChecked": "https://namakkal.nic.in/service/land-records/",
+  "custodyDecision": "Namakkal district land-record page returned HTTP 200 and names Survey and Land Records at the Collector Office. This is a local custody and service lead. The TNGIS/e-Services timeout is unresolved, not citywide absence.",
+  "reason": "No independently evidenced live adapter qualification: fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are missing. Research completion does not establish runtime admission."
+}

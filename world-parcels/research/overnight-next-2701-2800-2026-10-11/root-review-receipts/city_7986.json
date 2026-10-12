@@ -1,0 +1,20 @@
+{
+  "taskId": "city:7986",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-7986-arifwala.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/arifwala-service-review.json",
+    "tmp/valhalla-parcel-research/7986/pulse.html",
+    "tmp/valhalla-parcel-research/7986/pakpattan-26-point-id-geometry.json"
+  ],
+  "checkedAt": "2026-10-11T19:30:45.679Z",
+  "reviewFindings": {
+    "identity": "Arifwala, PK, rank 2762, point [30.2910073270847,73.0632724019758], 214409 persons: packet matches immutable roster and pending queue.",
+    "custody": "The saved first-party PULSE viewer shell references the official Punjab cadastral MapServer; provincial land-record custody is supported.",
+    "geometry": "Original bounded first-party cache contains one Polygon with only OBJECTID 14255244; it covers the exact WUP point and is GEOS-valid after EPSG:32643 projection. Its area is about 1.66 km2, so parcel granularity and stable native parcel identity remain unproven. No durable sample is retained.",
+    "admission": "Held: one point response does not prove fresh exact-ID reads, forced paging, 13 bounded cells, duplicate/overlap and operation checks, source binding, or headed Details verification.",
+    "sourceResponseSha256": "27c8b4d1014cf9ff5acb6d349a5a2a3ec2685c8cdc207db77592e529ed6d6197"
+  }
+}

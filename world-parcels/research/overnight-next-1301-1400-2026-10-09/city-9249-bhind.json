@@ -1,0 +1,80 @@
+{
+  "cityCode": 9249,
+  "queueRank": 1390,
+  "name": "Bhind",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [26.561747327975, 78.7878870365716],
+  "population2025": 406712,
+  "population2025k": 406.712,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "Madhya Pradesh's official MP Bhulekh land-record service and the official District Bhind land-record page evidence a local/state cadastral-record custodian; the official district GIS page also publishes a Bhind GIS route. No anonymous parcel geometry or native parcel identifier was obtained.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bhind Madhya Pradesh official cadastral parcel map BhuNaksha land records",
+        "result": "Found the official District Bhind land-record page, the official Government of India DILRMP Bhind map-status page, and the District Bhind GIS page linking the district GIS platform. The current MP Bhulekh host was not reachable from the bounded anonymous request attempt.",
+        "actualResultUrls": [
+          "https://bhind.nic.in/en/service/land-records/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/420",
+          "https://bhind.nic.in/en/bhind-gis/",
+          "https://mpbhulekh.gov.in/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "भिंड मध्य प्रदेश आधिकारिक भू नक्शा खसरा नक्शा भूमि अभिलेख",
+        "result": "Found official Hindi District Bhind material and the MP Bhulekh service description for khasra, khatauni and map records. Search results also identified the official Government of India DILRMP Bhind status route; no safe parcel feature response was available anonymously.",
+        "actualResultUrls": [
+          "https://bhind.nic.in/",
+          "https://mpbhulekh.gov.in/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/420"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://bhind.nic.in/en/service/land-records/",
+      "role": "District Bhind, Government of Madhya Pradesh land-record service page",
+      "observation": "Identifies the district Land Records office and the Revenue/land-records custodian; it links the state land-record service route without exposing a safe parcel API in the page response."
+    },
+    {
+      "url": "https://mpbhulekh.gov.in/",
+      "role": "Madhya Pradesh official land-record service",
+      "observation": "Official service route for computerized land records and cadastral-map copies; bounded anonymous GET timed out, so current JavaScript/configuration and schema could not be inspected."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/420",
+      "role": "Government of India DILRMP Bhind map/ULPIN status page",
+      "observation": "Official Bhind district cadastral digitization-status route found in first-party discovery; it is status evidence, not an individual parcel feature response."
+    },
+    {
+      "url": "https://bhind.nic.in/en/bhind-gis/",
+      "role": "Official District Bhind GIS landing page",
+      "observation": "The page describes the district GIS platform and links http://bhindgis.mp.gov.in/; no parcel-layer schema or anonymous feature response was exposed in the inspected HTML."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous response containing a safe native parcel identifier and full polygon was obtained. The exact WUP point was preserved and not shifted. A timeout or unavailable viewer is not evidence of citywide parcel absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Madhya Pradesh land-record/cadastral service discovery for Bhind city and district.",
+    "verifiedOpenScope": "Official custodian pages and a district GIS landing page were verified from first-party sources; the live MP Bhulekh viewer/API and parcel schema were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

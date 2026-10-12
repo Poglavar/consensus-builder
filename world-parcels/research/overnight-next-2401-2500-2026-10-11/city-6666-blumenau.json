@@ -1,0 +1,42 @@
+{
+  "cityCode": 6666,
+  "queueRank": 2495,
+  "name": "Blumenau",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "point": [-26.9108502744984, -49.0866976473072],
+  "population2025": 234982,
+  "population2025k": 234.982,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Blumenau official cadastral parcel map GIS API cadastre Prefeitura geoprocessamento",
+        "result": "Official municipal GEO portal and ArcGIS REST services were found. The municipal Cadastro de Lotes FeatureServer exposes polygon parcels and safe native identifiers anonymously; no owner, address, tax/account, or personal fields were requested.",
+        "actualResultUrls": [
+          "https://geo.blumenau.sc.gov.br/",
+          "https://geo.blumenau.sc.gov.br/server/rest/services/Cadastro_Imobiliario/Lotes_Blumenau/FeatureServer",
+          "https://geo.blumenau.sc.gov.br/server/rest/services/Cadastro_Imobiliario/Lotes_Blumenau/FeatureServer/0"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Blumenau cadastro imobiliário mapa lotes geoprocessamento prefeitura",
+        "result": "Official Prefeitura service documentation identifies the municipal cadastral property consultation, the Secretaria de Planejamento Urbano (SEPLAN) as the responsible body, and the GEO portal as the base-cartography and lot-consultation service. The public FeatureServer returned parcel polygons anonymously.",
+        "actualResultUrls": [
+          "https://blumenau.sc.gov.br/secao/servicos/413/413",
+          "https://admin.blumenau.sc.gov.br/secao/noticias/125226",
+          "https://geo.blumenau.sc.gov.br/wfs/wfs.html",
+          "https://geo.blumenau.sc.gov.br/server/rest/services/Cadastro_Imobiliario/Lotes_Blumenau/FeatureServer/0"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "Attempt 1 completed. A first-party municipal cadastral parcel service was reached anonymously and returned bounded parcel identity plus polygon geometry. This packet is research evidence, not source integration or runtime admission.",
+  "runtimeReadiness": "held",
+  "serviceReview": "blumenau-service-review.json",
+  "sampleGeoJSON": "blumenau-sample.geojson"
+}

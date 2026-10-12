@@ -1,0 +1,27 @@
+{
+  "taskId": "city:8973",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-8973-waladgaon.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/waladgaon-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T213929-3394c21a/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-11T21:42:24Z",
+  "city": "Waladgaon",
+  "reason": "English and Marathi searches are logged. Official Maharashtra land-record and village-map leads support registry custody; direct BhuNaksha retrieval timed out. No parcel-native ID or polygon response was observed. Timeout is unresolved service access, not citywide absence.",
+  "identityVerifiedAgainst": "original WUP 2025 CSV, ranked roster, and pending queue: city code, rank, country, point, and population persons agree",
+  "bilingualExecutedSearchesVerified": true,
+  "durableSamplePolygonCount": 0,
+  "admissionGatesEvidenced": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeStateChanged": false
+}

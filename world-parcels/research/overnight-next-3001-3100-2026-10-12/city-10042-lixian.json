@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-12",
+  "wupCityCode": 10042,
+  "cityCode": 10042,
+  "queueRank": 3062,
+  "name": "Lixian",
+  "country": "China",
+  "countryCode": "CN",
+  "cityId": "wup2025:10042",
+  "point": [29.6450752850097, 111.755052231194],
+  "population2025": 195778,
+  "population2025k": 195.778,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lixian Hunan China official cadastral map parcel public map service",
+        "result": "First-party discovery found the official Lixian People's Government portal, the Hunan Tianditu public geospatial portal, and official Hunan government material describing the provincial unified real-estate registration platform. No anonymous public parcel feature service for Lixian was identified.",
+        "actualResultUrls": [
+          "https://www.li-xian.gov.cn/",
+          "https://hunan.tianditu.gov.cn/",
+          "https://www.hunan.gov.cn/hnszf/hnyw/zwdt/202303/t20230323_29288973.html"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "中国 湖南 澧县 不动产登记 地图 查询 官方",
+        "result": "First-party discovery confirmed 澧县自然资源局 as the local custodian responsible for unified natural-resource and real-estate-rights registration, cadastral survey, real-estate surveying, and geospatial data. Official pages exposed institutional and service information, but no safe anonymous parcel ID plus geometry response or public cadastral API.",
+        "actualResultUrls": [
+          "https://www.li-xian.gov.cn/lxxzf/jgzn/zfbm/lxzrzyj/content_84835",
+          "https://www.li-xian.gov.cn/lxxzf/jgzn/zfbm/lxzrzyj",
+          "https://zwfw-new.hunan.gov.cn/onething/service/index.jsp?areacode=430723999000&main=1&type=xndtfr&typeid=160&typename=%25u516C%25u7528%25u4E8B%25u4E1A"
+        ]
+      }
+    ],
+    "officialLeads": [
+      {
+        "url": "https://www.li-xian.gov.cn/lxxzf/jgzn/zfbm/lxzrzyj/content_84835",
+        "operator": "澧县自然资源局 (Lixian Natural Resources Bureau)",
+        "evidence": "Official county-government institutional page states that the bureau organizes unified confirmation/registration of natural resources and real estate, cadastral surveys, real-estate surveying, registration-data management, basic surveying, and geospatial public services. This is local custodian evidence, not evidence of an open parcel API."
+      },
+      {
+        "url": "https://www.li-xian.gov.cn/",
+        "operator": "澧县人民政府 (Lixian People's Government)",
+        "evidence": "Official county portal loaded and links the county Natural Resources Bureau and county government-service entry points. No parcel viewer or parcel API route was exposed in the inspected HTML."
+      },
+      {
+        "url": "https://hunan.tianditu.gov.cn/",
+        "operator": "Hunan Provincial Department of Natural Resources / Hunan Tianditu",
+        "evidence": "Official provincial geospatial public-service portal discovered. The bounded direct request timed out before viewer JavaScript/configuration or service endpoints could be inspected."
+      }
+    ]
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.li-xian.gov.cn/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "contentType": "text/html",
+      "summary": "Official county portal loaded. Inspected HTML exposed county service navigation and a Natural Resources Bureau link, but no parcel viewer, service URL, layer schema, CRS, or anonymous geometry endpoint."
+    },
+    {
+      "url": "https://www.li-xian.gov.cn/lxxzf/jgzn/zfbm/lxzrzyj/content_84835",
+      "method": "GET (discovery result; page content inspected through first-party search)",
+      "status": "Search result/page available",
+      "contentType": "text/html",
+      "summary": "Official institutional page identifies the local natural-resources and real-estate registration custodian and its cadastral/geospatial responsibilities; no public parcel response was obtained."
+    },
+    {
+      "url": "https://hunan.tianditu.gov.cn/",
+      "method": "GET",
+      "status": "timeout after 20 seconds",
+      "summary": "Bounded anonymous request did not complete; no TLS exception, login, CAPTCHA, or bypass was attempted. This is not evidence of cadastral absence."
+    },
+    {
+      "url": "https://portal.hunanbdc.cn/home",
+      "method": "GET",
+      "status": "timeout after 8 seconds",
+      "summary": "Officially referenced Hunan real-estate registration portal was probed anonymously; request timed out before HTML or viewer configuration was retrieved. No form was submitted and no protected or unsafe field was requested."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Lixian local registration/cadastre custodian and Hunan provincial public geospatial/real-estate-registration leads.",
+    "verifiedOpenScope": "Local institutional custody and public service/procedure leads only; no open parcel geometry coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "resultCategory": "official_local_registry_custodian_no_verified_open_parcel_geometry",
+  "sourceFields": null,
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "verifiedSample": false,
+  "sourceIds": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [29.6450752850097, 111.755052231194] was preserved in latitude/longitude order; no exact-point hit or miss was tested or inferred.",
+    "Local registration-custodian evidence is distinct from general provincial/national policy prose and does not establish an anonymous parcel API or citywide open coverage.",
+    "No parcel polygon, stable native parcel identity, source schema, CRS, or public map/API response was retrieved or retained; no GeoJSON sample is created.",
+    "A timeout, inaccessible viewer, map extent miss, login wall, or absent public endpoint is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current public parcel viewer/API route, layer schema, CRS, stable native parcel identity, citywide coverage, and anonymous runtime accessibility remain unresolved. No claim is made about parcel absence, legal title, ownership, or completeness of any Chinese cadastral dataset.",
+  "retainedSample": null
+}

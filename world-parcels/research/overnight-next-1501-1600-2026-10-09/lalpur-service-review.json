@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-3825-lalpur.json",
+  "purpose": "Document first-party registry/map discovery, current viewer configuration, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "A local Lalpur Upazila Land Office is evidenced by an official Bangladesh government page. The current DLRS viewer JavaScript exposes anonymous hierarchy, GeoJSON-sheet, and parcel vector-tile routes, but the Lalpur/Natore branch did not yield a parcel response.",
+  "registryAssessment": "Local custody is evidenced by the official Lalpur Upazila Land Office pages. DLRS is the national land-record and survey agency/viewer, not a substitute for proving citywide geometry.",
+  "officialPrimarySources": [
+    {"url": "https://acl.lalpur.natore.gov.bd/pages/static-pages/697f6dcf35ce18e1c06b18fd", "observation": "Official Lalpur Upazila Land Office page describes record maintenance, mutation/khatian correction, and survey-record supervision."},
+    {"url": "https://acl.lalpur.natore.gov.bd/pages/static-pages/697ffd8235ce18e1c06e09ab", "observation": "Official page for Lalpur Upazila and union land offices; local office/contact/procedure source."},
+    {"url": "https://settlement.gov.bd/Map/MapSearch", "observation": "Official DLRS online map-search viewer with division, district, survey, upazila, mouza, sheet, and plot controls."},
+    {"url": "https://map.land.gov.bd/", "observation": "Official national mouza-and-plot land-zoning viewer; page describes digitized/georeferenced mouza sheets and plot-based zoning."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://settlement.gov.bd/Map/MapSearch",
+    "observedTechnology": "Leaflet viewer with current MapSearch.js configuration inspected from the official page.",
+    "observedRoutes": ["/Map/GetDivisionList", "/Khatian/getdistrictlistdivisionwise", "/Khatian/GetSurveyListDistrictWise", "/Khatian/GetThanaListBySurveyMap", "/Khatian/GetMouzaListBySurveyMap", "/Khatian/GetMouzaListBySurveyMapForshet", "/Khatian/GetSheetJsonBySurvey", "/tiles/parcels/{rsnum}/{comcod}/{unitcod}/{z}/{x}/{y}.pbf", "/tiles/parcels/{rsnum}/{comcod}/{unitcod}/meta"],
+    "observedSurvey": "Natore district response listed BDS (rsnum 201901), status ongoing.",
+    "schemaAndCrs": "Not verified from a successful parcel or sheet feature response.",
+    "nativeFieldNames": "Not retained; no successful parcel feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://settlement.gov.bd/Map/MapSearch", "method": "GET", "normalTlsVerification": true, "result": "HTTP page retrieved; current MapSearch.js URL/configuration inspected."},
+    {"url": "https://settlement.gov.bd/Map/GetDivisionList", "method": "POST", "bodyClass": "Empty anonymous form body", "normalTlsVerification": true, "result": "HTTP JSON response listed Rajshahi division (unitcod 030000000)."},
+    {"url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise", "method": "POST", "bodyClass": "divid=030000000", "normalTlsVerification": true, "result": "HTTP JSON response listed Natore district (unitcod 031500000, comcod 4126)."},
+    {"url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise", "method": "POST", "bodyClass": "districtid=031500000; comcod=4126", "normalTlsVerification": true, "result": "HTTP JSON response listed BDS survey rsnum=201901, status ongoing."},
+    {"url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap", "method": "POST", "bodyClass": "comcod=4126; rsno1=201901; districtid=031500000", "normalTlsVerification": true, "result": "HTTP 200 with empty JSON array; no upazila/thana or Lalpur mouza route was returned. This is an endpoint/data-availability finding only, not evidence of cadastral absence."},
+    {"url": "https://settlement.gov.bd/Khatian/GetMouzaListBySurveyMap", "method": "POST", "bodyClass": "Not submitted because the preceding thana list was empty", "normalTlsVerification": true, "result": "Not attempted; no valid upazila/unit code was available."},
+    {"url": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey", "method": "POST", "bodyClass": "Not submitted because no mouza/sheet identity was available", "normalTlsVerification": true, "result": "Not attempted; no geometry response."},
+    {"url": "https://settlement.gov.bd/tiles/parcels/201901/4126/{unitcod}/meta", "method": "GET", "bodyClass": "Not submitted because no Lalpur unitcod was available", "normalTlsVerification": true, "result": "Not attempted; no parcel metadata or geometry response."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No point query was submitted; official hierarchy discovery stopped after the Natore BDS thana endpoint returned an empty array."},
+  "coverageAssessment": {"claimedScope": "Lalpur local land-office custody and national DLRS public viewer; official land-zoning project describes mouza/plot digitization generally.", "verifiedOpenScope": "Viewer routes and administrative responses only; no anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "Empty hierarchy response, lack of a point hit, and lack of a map extent are not evidence of absence. CRS, native identity, feature schema, parcel coverage, and citywide completeness remain unverified.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous native-ID-plus-complete-geometry response; packet does not qualify an adapter or enable runtime."}
+}

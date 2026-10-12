@@ -1,0 +1,17 @@
+{
+  "taskId": "city:4868",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-4868-brunswick.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/brunswick-service-review.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/brunswick-parcel-sample.geojson"
+  ],
+  "checkedAt": "2026-10-12T03:12:21Z",
+  "finding": "Brunswick, Germany, WUP rank 3108, point [52.2670413807688,10.5205000350202], 193277 persons matches both queue and ranked roster. English and German searches with result URLs are recorded. LGLN is the first-party custodian. Original city GeoPackage cache has 80772 flurstuecke features and contains all three retained native objid values plus the exact-point ID; the three retained full MultiPolygons have safe ID-only properties and independently pass metric validity and pairwise nonoverlap checks. The ArcGIS layer cache is a download metadata polygon layer rather than a parcel feature adapter. No fresh adapter native-ID reads, forced paging, 13 bounded cells, complete metric source checks, source binding, or headed Details verification is evidenced. Geometry discovery held; no runtime admission.",
+  "registryFound": true,
+  "geometrySamplesRetained": 3,
+  "runtimeAdmitted": false
+}

@@ -1,0 +1,18 @@
+{
+  "taskId": "city:6204",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-6204-owo.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/owo-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "tmp/valhalla-parcel-research/owo/ondostate-survey.pdf",
+    "tmp/valhalla-parcel-research/owo/landsapp.html",
+    "tmp/valhalla-parcel-research/owo/home.html",
+    "tmp/valhalla-parcel-research/owo/documents.html"
+  ],
+  "checkedAt": "2026-10-10T18:06:56Z",
+  "reason": "First-party Ondo survey procedure names the Owo area office and record-copy custody. Saved LandsApp home and documents responses are login pages, so the packet overstates documents-page access. No anonymous native-ID polygon response is evidenced; this does not establish citywide absence.",
+  "admissionGates": "Fresh exact native-ID polygon reads, forced paging, 13 bounded cells, independent metric GEOS validity/duplicate/overlap checks, source binding, and headed Details-panel verification are not evidenced; city remains excluded.",
+  "registryFound": true
+}

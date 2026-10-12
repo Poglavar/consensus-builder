@@ -1,0 +1,42 @@
+{
+  "cityCode": 6707,
+  "queueRank": 2477,
+  "name": "Shenmu",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [38.83164073715, 110.494899998938],
+  "population2025": 236840,
+  "population2025k": 236.84,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shenmu China cadastral parcel map official GIS natural resources",
+        "result": "Discovery identified the official Shaanxi Geographic Information Public Service Platform (Tianditu Shaanxi) and official Shaanxi procurement records naming the Shenmu real-estate registration service center. No public Shenmu parcel viewer, parcel API, safe parcel identity, schema, CRS declaration, or parcel geometry response was evidenced.",
+        "actualResultUrls": [
+          "https://shaanxi.tianditu.gov.cn/",
+          "https://shaanxi.tianditu.gov.cn/portal/resource",
+          "https://www.ccgp-shaanxi.gov.cn/freecms/site/shaanxi/ggxx/info/2023/8a69c14b8bd21397018bd744eb690d61.html",
+          "https://www.ccgp-shaanxi.gov.cn/gpx-bid-file/610821/gpx-bidcore/2024/9/30/8a69c44e9218572b0192427772793ac7.pdf?accessCode=6e20bc418b2d3bb1cf14b3d4e779547c"
+        ]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "神木市 自然资源和规划局 地籍图 不动产登记 地图 服务",
+        "result": "Discovery identified official records for 神木市不动产登记服务中心 and a Shenmu rural real-estate registration cadastral-survey database project. The official Shaanxi public GIS platform was identified, but no Shenmu-specific anonymous parcel map/API or safe parcel geometry was evidenced.",
+        "actualResultUrls": [
+          "https://www.ccgp-shaanxi.gov.cn/freecms/site/shaanxi/ggxx/info/2023/8a69c14b8bd21397018bd744eb690d61.html",
+          "https://www.ccgp-shaanxi.gov.cn/gpx-bid-file/610821/gpx-bidcore/2024/9/30/8a69c44e9218572b0192427772793ac7.pdf?accessCode=6e20bc418b2d3bb1cf14b3d4e779547c",
+          "https://shaanxi.tianditu.gov.cn/portalJx/",
+          "https://www.sxsm.gov.cn/zfxxgk/fdzdgknr/zfwj/szf/202507/P020250701568522441275.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "Attempt 1 completed. A local custodian is evidenced by official Shaanxi government procurement records naming Shenmu's real-estate registration service center and its cadastral-survey database project. The reachable public GIS infrastructure is provincial and exposes general map services, not a public Shenmu parcel service. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held",
+  "serviceReview": "shenmu-service-review.json"
+}

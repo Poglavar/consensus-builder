@@ -181,11 +181,11 @@ def _safe_descriptor(value):
     def safe_url(value):
         try:
             u=urlsplit(value)
-            host=u.hostname or ''
-            if ':' in host and not host.startswith('['): host=f'[{host}]'
-            if u.port: host+=f':{u.port}'
+            u.port  # raises ValueError on a malformed port
+            # Drop userinfo only; the host keeps the catalog's spelling so packets match it verbatim.
+            host=u.netloc.rsplit('@',1)[-1]
             query=urlencode([(k,v) for k,v in parse_qsl(u.query,keep_blank_values=True) if not secret.search(k)])
-            return urlunsplit((u.scheme,host if u.netloc else '',u.path,query,''))
+            return urlunsplit((u.scheme,host,u.path,query,''))
         except ValueError:
             return None
     def clean(item,key=''):

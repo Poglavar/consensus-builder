@@ -1,0 +1,138 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence and bounded public-route attempts.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 3973,
+  "queueRank": 3115,
+  "name": "Santa Teresa del Tuy",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "iso3": "VEN",
+  "locId": 862,
+  "capital": false,
+  "point": [10.2614220451008, -66.70143390535],
+  "population2025": 192733,
+  "population2025k": 192.733,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Santa Teresa del Tuy Venezuela cadastral parcel map official municipal cadastre IGVSB",
+        "result": "Discovery identified the national IGVSB authority and its current public services page, but no current public parcel viewer or downloadable parcel layer. Search also found a documented municipal cadastral plan for Municipio Independencia and references to the municipal Catastro office in Santa Teresa del Tuy.",
+        "actualResultUrls": [
+          "https://igvsb.gob.ve/",
+          "https://diariolavoz.net/2015/09/01/alcaldia-teresena-implementa-plan-municipal-de-catastro/",
+          "https://es.scribd.com/document/871013850/DARZI"
+        ]
+      },
+      {
+        "language": "Spanish (local)",
+        "query": "Santa Teresa del Tuy Venezuela catastro parcelas mapa oficial Alcaldía Independencia IGVSB",
+        "result": "La búsqueda en español confirmó que la Alcaldía del Municipio Independencia mantiene/ha mantenido una Dirección u Oficina de Catastro en Santa Teresa del Tuy y que el municipio ejecutó un plan de formación y conservación catastral; no se encontró un visor parcelario municipal público ni una respuesta anónima segura con geometría.",
+        "actualResultUrls": [
+          "https://igvsb.gob.ve/",
+          "https://diariolavoz.net/2015/09/01/alcaldia-teresena-implementa-plan-municipal-de-catastro/",
+          "https://es.scribd.com/document/871013850/DARZI"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Municipio Independencia, Estado Miranda, through its municipal Dirección/Oficina de Catastro in Santa Teresa del Tuy; national technical authority is Instituto Geográfico de Venezuela Simón Bolívar (IGVSB).",
+    "locality": "Santa Teresa del Tuy, Municipio Independencia, Estado Miranda, Venezuela",
+    "evidenceUrls": [
+      "https://diariolavoz.net/2015/09/01/alcaldia-teresena-implementa-plan-municipal-de-catastro/",
+      "https://es.scribd.com/document/871013850/DARZI",
+      "https://igvsb.gob.ve/"
+    ],
+    "scopeNote": "The municipal-plan report identifies a local cadastral office and cadastral work in the Santa Teresa/Cartanal parishes. It does not establish an open API, complete citywide coverage, current publication status, or correspondence between the WUP point and a particular cadastral sector. IGVSB is the national authority, not the local parcel custodian."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Municipio Independencia municipal cadastre / IGVSB national authority",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": {
+      "geometryReturned": false,
+      "publicParcelEndpointVerified": false
+    },
+    "fieldMapping": {
+      "nativeIdentity": null,
+      "safeGeometry": "full parcel geometry only if returned by a public first-party route",
+      "otherDocumentedFields": []
+    },
+    "note": "No parcel polygon or safe native parcel identifier was observed. The exact WUP point was preserved and was not used as a forced parcel-hit test. No sample GeoJSON is retained."
+  },
+  "officialSources": [
+    {
+      "url": "https://igvsb.gob.ve/",
+      "observation": "Current first-party IGVSB homepage returned 200 and exposed general geodesic, cartographic, geomatics, and mapoteca services; no public parcel viewer or parcel API link was identified in the inspected page."
+    },
+    {
+      "url": "https://diariolavoz.net/2015/09/01/alcaldia-teresena-implementa-plan-municipal-de-catastro/",
+      "observation": "Local reporting identifies the Municipality of Independencia municipal Catastro office in Santa Teresa del Tuy and describes a municipal cadastral plan covering Santa Teresa and Cartanal, including installation of SIGELIT and gvSIG. This is evidence of the local custodian, not an open data endpoint."
+    },
+    {
+      "url": "https://es.scribd.com/document/871013850/DARZI",
+      "observation": "A publicly indexed 2024 municipal cadastral survey drawing names the Alcaldía Socialista Municipio Independencia, Estado Miranda and a Directora de Catastro; it shows a municipal cadastral code layout and survey geometry in the municipality. No raw parcel dataset or public service endpoint was available from the document."
+    }
+  ],
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://igvsb.gob.ve/",
+      "outcome": "200; current first-party homepage retrieved and inspected for map, viewer, API, and cadastral-service links. General services were present; no public parcel route was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "http://www.igvsb.gob.ve/index.html",
+      "outcome": "301 to https://igvsb.gob.ve/index.html, then 404; no parcel content."
+    },
+    {
+      "method": "GET",
+      "url": "https://igvsb.gob.ve/index.html",
+      "outcome": "404; no parcel content."
+    },
+    {
+      "method": "GET",
+      "url": "http://visor.ide.igvsb.gob.ve/rgv/portal.php",
+      "outcome": "DNS resolution failed; historical viewer hostname unavailable. No retry with credentials or bypass was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://visor.ide.igvsb.gob.ve/rgv/portal.php",
+      "outcome": "DNS resolution failed; no current public viewer response."
+    },
+    {
+      "method": "GET",
+      "url": "https://alcaldiaindependencia.gob.ve/",
+      "outcome": "DNS resolution failed; no municipal web service response."
+    }
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identity if independently returned",
+    "full parcel geometry",
+    "geometry CRS",
+    "public source service and administrative codes needed to reproduce a safe request"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Municipio Independencia municipal cadastral program and national IGVSB cartographic/cadastral authority.",
+    "verifiedOpenScope": "Local custodian and historical/current institutional evidence only; no public parcel geometry service verified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The municipal cadastral office and plan are evidenced, but current public publication, API availability, and citywide parcel completeness are unverified.",
+    "The national IGVSB page exposes general mapping services but does not provide a usable public parcel endpoint in this attempt.",
+    "A missing or unresolved viewer is not evidence of citywide cadastral absence; no exact-point absence conclusion is made.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or adapter admission; serial reviewer qualification remains required."
+  ]
+}

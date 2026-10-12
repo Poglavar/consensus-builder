@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "wupCityCode": 1842,
+  "queueRank": 2531,
+  "cityId": "wup2025:1842",
+  "name": "Oke Iho",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "centerLatLon": [8.03631803180286, 3.35499252112648],
+  "point": [8.03631803180286, 3.35499252112648],
+  "population2025": 232348,
+  "population2025k": 232.348,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "sourceIds": [],
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Oke Iho Nigeria cadastral parcel map official land registry",
+        "result": "First-party Oyo State Digital Land Survey Plan Registry found. It is operated through the Office of the Surveyor General and supports public survey-plan verification by plan name or survey-plan number; it is not documented as an anonymous citywide parcel-download service.",
+        "actualResultUrls": ["https://lands.oyostate.gov.ng/survey-search.html", "https://lands.oyostate.gov.ng/oyo-giss.html"]
+      },
+      {
+        "language": "Yoruba",
+        "query": "Oke Iho ilẹ ìforúkọsílẹ̀ ilẹ̀ maapu kadasita Oyo",
+        "result": "The first-party Oyo State Digital Land Survey Plan Registry was returned again. No Oke Iho-specific parcel feature service or public geometry result was found.",
+        "actualResultUrls": ["https://lands.oyostate.gov.ng/survey-search.html", "https://lands.oyostate.gov.ng/"]
+      }
+    ]
+  },
+  "officialLeads": [
+    {
+      "url": "https://lands.oyostate.gov.ng/survey-search.html",
+      "operator": "Oyo State Government, Office of the Surveyor General",
+      "scope": "Oyo State Digital Land Survey Plan Registry; survey-plan verification for Oyo State, including Oke Iho as an Oyo locality",
+      "evidence": "The official page states that the service preserves survey-plan records and allows public searches by the name written on a plan or by survey-plan number. It lists basic approved display fields and says coordinates may be used internally to map a parcel."
+    },
+    {
+      "url": "https://lands.oyostate.gov.ng/oyo-giss.html",
+      "operator": "Oyo State Government, OyoGISS",
+      "scope": "State spatial-data and property-location programme",
+      "evidence": "The official OyoGISS page describes digitised property locations across the state and a spatial data portal, but no anonymous parcel feature endpoint was exposed in this attempt."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://lands.oyostate.gov.ng/survey-search.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "observation": "Official registry page loaded through first-party discovery. It documents search by survey-plan name or number and explicitly limits public display to approved basic survey information; no parcel geometry or native ID was returned in the page content."
+    },
+    {
+      "url": "https://las.oysglands.com/search/survey-search",
+      "method": "GET",
+      "httpStatus": 403,
+      "observation": "The official page's Search Now link resolved to this linked survey-search endpoint, but anonymous access was forbidden. No credentials, tokens, CAPTCHA bypass, or unsafe fields were attempted."
+    },
+    {
+      "url": "https://lands.oyostate.gov.ng/oyo-giss.html",
+      "method": "GET",
+      "httpStatus": "timeout",
+      "observation": "A direct anonymous fetch attempt timed out at 20 seconds; web discovery separately identified the official page and its OyoGISS description. This is not evidence of source absence."
+    },
+    {
+      "url": "https://lands.oyostate.gov.ng/",
+      "method": "GET",
+      "httpStatus": 200,
+      "observation": "First-party Oyo State lands site was returned by the native-language discovery query and identifies the Digital Survey Plan Registry service. No parcel feature response was obtained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Oyo State official survey-plan registry and OyoGISS programme",
+    "verifiedOpenScope": "Official registry documentation and linked public search route only; no anonymous parcel geometry/native identity response verified",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["native parcel identity if exposed", "geometry", "CRS", "source layer/theme name", "feature count", "service metadata"],
+  "nativeFieldMapping": "Not obtained; no parcel feature response was returned.",
+  "compositeKeyProvenance": "Not obtained; the public registry documentation describes survey-plan name or survey-plan number search, not a parcel composite key.",
+  "blocker": "The first-party public registry is a survey-plan verification workflow whose linked search endpoint returned 403 to anonymous access; no safe parcel ID-plus-geometry response or current viewer API configuration was available.",
+  "remainingUncertainty": "OyoGISS or the survey registry may expose additional interactive or authenticated mapping functionality. The failed endpoint and lack of exact-point geometry must not be interpreted as citywide absence.",
+  "nextStep": "A later attempt may inspect any publicly documented OyoGISS map bootstrap or anonymous bounded feature route, retaining only native IDs and geometry if returned.",
+  "resultCategory": "official_local_registry_metadata_no_verified_open_geometry",
+  "identityPolicy": "Do not synthesize a parcel ID; retain only a native parcel identity if the source exposes one."
+}

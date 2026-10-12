@@ -1,0 +1,56 @@
+{
+  "cityRecord": "city-9110-zhuozhou.json",
+  "cityCode": 9110,
+  "queueRank": 2633,
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "requests": [
+    {
+      "route": "https://zhuozhou.gov.cn/",
+      "method": "GET/search open",
+      "outcome": "Official municipal government portal reached in search/open inspection; HTTP 200 in the direct request. It exposes government information and links to municipal services, but no parcel viewer or parcel feature API was found in the inspected page."
+    },
+    {
+      "route": "https://www.zhuozhou.gov.cn/published/1612773776635.html",
+      "method": "GET/search open",
+      "outcome": "HTTP 200. Official institutional page titled 涿州市自然资源和规划局 (Zhuozhou Natural Resources and Planning Bureau). It confirms the local custodian; it is not a parcel geometry service and contained no usable viewer/API bootstrap."
+    },
+    {
+      "route": "http://bdzz.hbzwfw.gov.cn/",
+      "method": "GET",
+      "outcome": "Linked from the official bureau page as 政务服务. Direct request timed out after 20 seconds in the research environment. No retry with credentials or alternate private access was attempted; this is a route failure, not evidence of absence."
+    },
+    {
+      "route": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "outcome": "HTTP 418 CloudWAF response. General national map access was not usable for anonymous cadastral qualification. No challenge bypass, token, or login was attempted."
+    },
+    {
+      "route": "https://gjzwfw.www.gov.cn/fwmh/item/v3/item_11130681000798403R4130115089W00.do",
+      "method": "GET/search open",
+      "outcome": "Official national government-service result references a Zhuozhou natural-resources service location and land-rights documentation. It is procedural service evidence only; no parcel geometry or safe native parcel identity was returned."
+    }
+  ],
+  "schemaCrs": {
+    "status": "not qualified",
+    "reason": "No parcel feature response was obtained; native field schema, CRS, pagination, stable native identity, and geometry encoding could not be verified."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier",
+    "parcel polygon geometry",
+    "source CRS only when explicitly returned"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleFiles": [],
+  "scopeLimits": [
+    "The exact WUP point [39.4994615201978, 115.981555702499] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point parcel hit, map-extent result, or citywide absence claim is made.",
+    "No owner, address, contact, titleholder, certificate/title, tax/account, personal, or other unsafe fields were requested or retained.",
+    "The municipal registry custodian is evidenced by the official government institution page, but no public parcel integration endpoint is qualified.",
+    "No retained GeoJSON sample was created because no safe native parcel ID plus full polygon was obtained.",
+    "runtimeReadiness remains held pending independent serial adapter qualification."
+  ],
+  "uncertainty": "Zhuozhou may have cadastral data in internal or restricted real-estate-registration systems, or in a public map route not discoverable from the checked official pages. The timed-out service route and WAF response are route limitations, not evidence that Zhuozhou lacks cadastral coverage."
+}

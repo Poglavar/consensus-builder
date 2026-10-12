@@ -1,0 +1,68 @@
+{
+  "cityCode": 11323,
+  "queueRank": 2948,
+  "name": "Supaul",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [26.1191679890223, 86.596220516928],
+  "population2025": 202024,
+  "population2025k": 202.024,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Supaul Bihar official land records cadastral map GIS parcel service",
+        "result": "First-party discovery found the official Supaul District land-records page, Bihar Revenue & Land Reforms/BiharBhumi, the Directorate of Land Records & Survey, and BhuNaksha Bihar.",
+        "actualResultUrls": [
+          "https://supaul.nic.in/service/land-records-7/",
+          "https://biharbhumi.bihar.gov.in/",
+          "https://dlrs.bihar.gov.in/services.html",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "सुपौल बिहार आधिकारिक भू अभिलेख नक्शा खसरा सेवा",
+        "result": "The official Hindi Supaul page links land records to lrc.bih.nic.in; BiharBhumi exposes भू-मानचित्र and जमाबंदी services; no anonymous parcel GeoJSON response was qualified.",
+        "actualResultUrls": [
+          "https://supaul.nic.in/hi/service/%E0%A4%AD%E0%A5%82-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A4%BE%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+          "https://biharbhumi.bihar.gov.in/",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp"
+        ]
+      }
+    ],
+    "officialViewer": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+    "viewerConfiguration": "The current public BhuNaksha Bihar page loads config.js and index.js. The JS references /rest/Levels/count, /rest/Levels/ListsAfterLevel, /rest/MapInfo/getVVVVExtentGeoref, /rest/MapInfo/getPlotAtXY, /rest/Layers/getLayers, /rest/ScalarDatahandler, and the WMS endpoint. Location metadata identified Supaul as state 10, district 06, subdivision 01, circle 01, village code 0073; the response also exposed survey/map choices including SS, CS/RS, and map-status codes.",
+    "requests": [
+      {"method": "GET", "url": "https://supaul.nic.in/service/land-records-7/", "outcome": "HTTP 200; official district page identifies the Revenue and Land Reform Dept, Collectorate Campus, Supaul, and links lrc.bih.nic.in."},
+      {"method": "GET", "url": "https://supaul.nic.in/hi/service/%E0%A4%AD%E0%A5%82-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A4%BE%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/", "outcome": "HTTP 200; official Hindi land-records page confirms the same local Revenue and Land Reform Dept scope."},
+      {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/index.jsp", "outcome": "HTTP 200; public cadastral viewer shell retrieved."},
+      {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/config.js", "outcome": "HTTP 200; current configuration inspected; SERVICE_PATH is ../."},
+      {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/index.js", "outcome": "HTTP 200; current viewer routes and WMS layer names inspected."},
+      {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count", "outcome": "HTTP 200; response 7."},
+      {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "outcome": "HTTP 200; bounded anonymous response returned Bihar hierarchy and Supaul metadata, including 06/01/01/0073."},
+      {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref", "outcome": "HTTP 204 for bounded Supaul selections 06,01,01,0073,SS,02,00; no extent or CRS response."},
+      {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/ScalarDatahandler", "outcome": "HTTP 404 for bounded anonymous plot lookup; no plot JSON or geometry."},
+      {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY", "outcome": "Not executed because the required public map extent/gisCode was not returned; exact WUP point was not shifted or used to infer absence."}
+    ]
+  },
+  "registryFound": true,
+  "custodians": [
+    {"name": "Revenue and Land Reforms Department, Government of Bihar / Directorate of Land Records & Survey", "scope": "State land records, cadastral maps, survey and related public services for Bihar, including Supaul.", "evidence": "https://dlrs.bihar.gov.in/services.html"},
+    {"name": "Supaul District administration", "scope": "Local district land-record service entry point; the official page identifies the Revenue and Land Reform Department office in Supaul.", "evidence": "https://supaul.nic.in/service/land-records-7/"},
+    {"name": "BhuNaksha Bihar / NIC", "scope": "Public cadastral map viewer for digitized Bihar cadastral maps; operational parcel geometry was not qualified anonymously.", "evidence": "https://bhunaksha.bihar.gov.in/10/index.jsp"}
+  ],
+  "schemaAndCrs": {"parcelSchema": "Not obtained anonymously; viewer returned hierarchy metadata only and no parcel feature response.", "nativeIdFields": ["state", "district", "subdivision", "circle", "village", "plot number"], "geometryCrs": null, "fieldMapping": "No raw parcel attributes retained; route/UI names only.", "compositeKeyProvenance": "BhuNaksha hierarchy response identified 06/01/01/0073 for Supaul village selection; this is location provenance, not a qualified parcel identity."},
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["canonical native parcel identifier if independently qualified", "parcel geometry if publicly returned", "source CRS", "public service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point [26.1191679890223, 86.596220516928] was preserved in latitude/longitude order and was not shifted.", "No exact-point hit, map extent, or parcel geometry was used as evidence of citywide absence.", "HTTP 204/404 and the unusable anonymous plot route are access/response outcomes, not evidence of no parcels.", "No owner, address, contact, titleholder, personal, tax/account, or other unsafe fields were requested or retained.", "District/state registry evidence does not prove coverage of the WUP city boundary.", "Packet completion is not source integration/admission."],
+  "uncertainty": ["No stable parcel identity or public anonymous parcel feature schema was qualified.", "No CRS was returned for parcel geometry.", "The Supaul village hierarchy selection is evidenced, but the WUP point was not asserted to be a cadastral boundary or exact village location."],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "doNotInfer": ["A zero exact-point hit, HTTP 204/404, or map extent miss is not citywide parcel absence.", "A local/state registry being evidenced does not mean a runtime adapter is qualified.", "Location hierarchy codes are not a parcel identity without a returned plot record or geometry."]
+}

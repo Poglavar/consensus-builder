@@ -1,0 +1,94 @@
+{
+  "cityRecord": "city-11014-wuchuan.json",
+  "cityCode": 11014,
+  "queueRank": 2406,
+  "name": "Wuchuan",
+  "country": "China",
+  "countryCode": "CN",
+  "pointLatLon": [21.4417247361586, 110.784492524304],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "routes": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.gdwc.gov.cn/zfxxgk/zjswcszrzyj/index_11.html",
+      "httpStatus": 200,
+      "outcome": "Official Wuchuan Natural Resources Bureau page loaded; it is a local custodian site, but no parcel API was exposed by the inspected page."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.gdwc.gov.cn/attachment/0/274/274586/2161191.pdf",
+      "httpStatus": 200,
+      "outcome": "Official 2026 bureau budget document states responsibilities for cadastral management, land registration, cadastral surveying, and management of natural-resources and immovable-property registration data. Prose only; no geometry endpoint."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.gdwc.gov.cn/downpc/bmdh/jg/zr/zwgk/bdc/content/post_1922548.html",
+      "httpStatus": 200,
+      "outcome": "Official page identifies the Wuchuan Immovable Property Registration Center and its local address/contact route. No public parcel-vector service."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.gdwc.gov.cn/zjwctb/gkmlpt/content/1/1912/post_1912331.html?jump=true",
+      "httpStatus": 200,
+      "outcome": "Official Wuchuan page describes Guangdong's authenticated '以图查房' map inquiry, which can show cadastral/map context after identity authentication. No anonymous geometry response; login was not attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/map/index.html",
+      "httpStatus": 200,
+      "outcome": "Official Guangdong public map viewer loaded. Current HTML references map/js/map.min.js; inspected client configuration exposes public base-map WMTS and generic configured services, not a Wuchuan parcel layer."
+    },
+    {
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/map/js/map.min.js",
+      "httpStatus": 200,
+      "outcome": "Current JavaScript inspected. It contains generic service configuration routes such as sysconf/findAll.do, layerClassify/findAllLayers.do, and WFS support, but no city-specific parcel URL or anonymous Wuchuan parcel query was identified."
+    },
+    {
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/wxQuery/index.html",
+      "httpStatus": 200,
+      "outcome": "Official public map query page loaded; current client references js/index.js and base-map WMTS only. No parcel polygon endpoint was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "http://www.gdzwfw.gov.cn/hlwbdcdj_gkcx/proxyWebService/nature",
+      "httpStatus": null,
+      "outcome": "Ordinary unauthenticated request returned an empty reply; the official Wuchuan notice requires Guangdong government-service identity authentication. No retry with credentials or bypass was attempted."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": [
+      "https://guangdong.tianditu.gov.cn/map/index.html",
+      "https://guangdong.tianditu.gov.cn/map/js/map.min.js",
+      "https://guangdong.tianditu.gov.cn/wxQuery/index.html",
+      "https://guangdong.tianditu.gov.cn/wxQuery/js/index.js"
+    ],
+    "parcelApi": null,
+    "geometryCrs": "No parcel geometry response obtained; CRS and coordinate order therefore remain unverified for a Wuchuan parcel source.",
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "boundedAnonymousResponse": null
+  },
+  "localCustodianAssessment": "Wuchuan Natural Resources Bureau and Wuchuan Immovable Property Registration Center are city-level custodians evidenced by official Wuchuan government pages and documents. Guangdong Natural Resources / Guangdong government services are provincial custodians. The Guangdong Tianditu viewer is a general public mapping service, not evidence of a Wuchuan cadastral parcel layer. National/provincial agency prose was not treated as city geometry evidence.",
+  "safeFieldAllowlist": ["stable native parcel identity", "polygon geometry", "source service URL", "source CRS / coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "No anonymous parcel geometry or city-bounded public vector response was verified; a serial reviewer would need an independently qualified source before runtime consideration."
+  },
+  "scopeLimits": [
+    "The exact WUP point was preserved and was not shifted.",
+    "No exact-point parcel hit or miss was used as a citywide absence claim.",
+    "The authenticated map inquiry was not accessed because credentials/login were prohibited.",
+    "The public Guangdong map client was inspected for current JavaScript/configuration, but no Wuchuan parcel endpoint was found.",
+    "No GeoJSON sample is retained because no safe full parcel polygon was obtained.",
+    "No owner, address, contact, titleholder, tax/account, certificate, or personal fields were requested or retained."
+  ],
+  "uncertainty": "Local registry custody and cadastral duties are well evidenced, but anonymous parcel service reachability, parcel schema/CRS, coverage, update cadence, licensing, and runtime behavior remain unverified. The authentication wall and absent public vector endpoint are access limitations, not evidence of citywide cadastral absence."
+}

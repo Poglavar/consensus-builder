@@ -1,0 +1,54 @@
+{
+  "cityRecord": "city-8817-govardhan.json",
+  "cityCode": 8817,
+  "queueRank": 3087,
+  "city": "Govardhan",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Hindi first-party discovery identified the official Mathura district/Goverdhan tehsil custodian and the Uttar Pradesh Bhunaksha/Bhulekh services. The live viewer configuration was inspected. Mathura district 145, Govardhan tehsil 01048, and town village 124236 were confirmed; the service returned zero map extent and no plot geometry for bounded safe lookups. No sample GeoJSON was retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, official URLs, current viewer configuration, administrative-code lookups, map extent response, safe plot requests, and outcomes are recorded in city-8817-govardhan.json. No browser login, CAPTCHA/Cloudflare bypass, credential use, private token, TLS exception, or unsafe-field request occurred.",
+  "custodians": [
+    {
+      "name": "Government of Uttar Pradesh Revenue Council / UP Bhulekh and Bhunaksha",
+      "scope": "State land-record and cadastral-map service route used for Govardhan",
+      "evidence": "https://upbhunaksha.gov.in/"
+    },
+    {
+      "name": "Mathura District Administration / Goverdhan Tehsil",
+      "scope": "Local district and tehsil administrative custodian",
+      "evidence": "https://mathura.nic.in/tehsil/"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "canonical native parcel identifier if later evidenced",
+    "parcel geometry",
+    "source CRS",
+    "public service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "The exact WUP point [27.4957826951429, 77.4637808483488] was preserved in latitude/longitude order and was not shifted.",
+    "Zero map extent, unavailable-map status, empty plot lookup, or no-plot response is not evidence of citywide parcel absence.",
+    "No native parcel identity, geometry, schema, CRS, or sample GeoJSON is available from this attempt.",
+    "No unsafe owner, address/contact, titleholder, personal, tax/account, or certificate fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "The tested town village code 124236 is listed by the official dashboard as unavailable for cadastral mapping.",
+    "The viewer’s public level and map-info services were reachable, but anonymous parcel geometry was not exposed for the tested village.",
+    "No independent runtime adapter qualification was performed."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

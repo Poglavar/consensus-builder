@@ -1,0 +1,38 @@
+{
+  "cityCode": 11687,
+  "queueRank": 2377,
+  "name": "Dhupguri",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [26.5856214018981, 89.0051750146763],
+  "population2025": 245107,
+  "population2025k": 245.107,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dhupguri West Bengal official cadastral map parcel GIS land records",
+        "result": "First-party discovery found the official West Bengal Banglarbhumi land-record portal, whose public service page lists Plot Map Request and Mouza Map Request, and the Government of India DILRMP map-digitization status page for Dhupguri tehsil, Jalpaiguri. No safe anonymous parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+          "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/2211",
+          "https://jalpaiguri.gov.in/"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "ধূপগুড়ি পশ্চিমবঙ্গ সরকারি জমির নকশা ভূমি রেকর্ড ক‍্যাডাস্ট্রাল ম্যাপ",
+        "result": "Bengali-language discovery resolved the same official West Bengal land-record custodian and its plot/mouza map services. No public safe parcel feature response or Dhupguri-specific native parcel geometry was verified.",
+        "actualResultUrls": [
+          "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+          "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/2211"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "Official West Bengal land-record/map custody and Dhupguri tehsil digitization evidence are established. This packet is not source integration or runtime admission because no safely queryable anonymous parcel geometry was returned.",
+  "runtimeReadiness": "held"
+}

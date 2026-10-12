@@ -1,0 +1,28 @@
+{
+  "cityRecord": "city-9427-auraiya.json",
+  "cityCode": 9427,
+  "queueRank": 2601,
+  "name": "Auraiya",
+  "checkedAt": "2026-10-11",
+  "attempt": 2,
+  "service": "Uttar Pradesh Bhu-Naksha",
+  "official": true,
+  "registryFound": true,
+  "reviewStatus": "complete_but_held",
+  "queryAndRequestOutcome": "English and Hindi discovery both found first-party Auraiya/UP land-record sources. The official viewer resolved Uttar Pradesh, district 162 Auraiya, tehsil 00842 Auraiya, village 217676 Auraiya, EPSG:32644 extent, and an anonymous point lookup id C74JjoWBTzSfgpcuJJ8Ymw at the transformed WUP point. The polygon endpoint returned HTTP 401 and was not bypassed.",
+  "scopeLimits": ["Auraiya village extent is not proof of citywide coverage", "Exact-point lookup is not a citywide absence/presence test", "No polygon was retained because geometry was unavailable", "No owner, address, titleholder, contact, tax, or personal fields were requested"],
+  "safeFieldAllowlist": ["id", "kide", "bhucode", "gisCode", "CRS", "geometry", "bounded extent"],
+  "nativeFieldMapping": {"id": "portal plot identity", "kide": "plot-number label", "bhucode": "district-tehsil-village composite GIS code", "gisCode": "same composite code without separators"},
+  "compositeKeyProvenance": "Observed from official viewer configuration and requests: district 162 + tehsil 00842 + village 217676 = gisCode 16200842217676; this is administrative lookup provenance, not a substitute for a verified parcel-native key.",
+  "attemptedRoutes": [
+    {"route": "https://upbhunaksha.gov.in/", "outcome": "HTTP 200; current JS/configuration inspected"},
+    {"route": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/*", "outcome": "HTTP 200; state, labels, district, tehsil, village metadata resolved"},
+    {"route": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref", "outcome": "HTTP 200; village extent returned"},
+    {"route": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY", "outcome": "HTTP 200; bounded portal identity/bbox returned at transformed WUP point"},
+    {"route": "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot", "outcome": "HTTP 401; authorization required; no credentials or bypass used"}
+  ],
+  "uncertainty": "The packet establishes a relevant official local/state cadastral map service and a live village-scoped lookup, but not anonymous polygon access, a qualified native cadastral identifier, or citywide completeness.",
+  "runtimeReadiness": "held",
+  "integrationAdmission": "not admitted; serial review required",
+  "sampleGeojson": null
+}

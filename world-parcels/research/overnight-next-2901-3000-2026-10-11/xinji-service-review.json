@@ -1,0 +1,23 @@
+{
+  "cityRecord": "city-9298-xinji.json",
+  "cityCode": 9298,
+  "queueRank": 2903,
+  "city": "Xinji",
+  "country": "China",
+  "countryCode": "CN",
+  "reviewedAt": "2026-10-11",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "Separate English and Chinese discovery identified the official Xinji government site and local Natural Resources and Planning Bureau/real-estate registration custodian, but no safe anonymous parcel ID-plus-geometry service was exposed or qualified.",
+  "queryAndRequestOutcomes": "All executed discovery queries, URLs, direct GET routes, statuses, scratch evidence paths, and negative endpoint findings are recorded in city-9298-xinji.json.",
+  "custodians": [
+    {"name": "辛集市自然资源和规划局 / Xinji Natural Resources and Planning Bureau", "scope": "local land-use and natural-resources administration; identified in official Xinji government policy/service material", "evidence": "official Xinji government pages"},
+    {"name": "辛集市不动产登记中心 / Xinji real-estate registration center", "scope": "local real-estate registration procedure custodian", "evidence": "official Xinji government service article"}
+  ],
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdFields": [], "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point [37.9135274291282, 115.217027251809] was preserved in latitude/longitude order and not moved.", "No exact-point hit or miss is inferred from the absence of a discovered public endpoint.", "Official local custodian pages establish administrative responsibility, not citywide open vector coverage.", "No parcel polygon, native parcel identity, schema, or CRS was obtained.", "No owner, address/contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.", "Packet completion is not source integration/admission."],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "A local registry custodian is evidenced, but no anonymous public parcel ID-plus-geometry response, schema, CRS, or citywide coverage was qualified."},
+  "uncertainty": ["Current Xinji/Hebei public cadastral viewer or API route unresolved", "No safe native parcel ID", "No geometry or CRS", "No citywide coverage qualification", "Independent serial review required"]
+}

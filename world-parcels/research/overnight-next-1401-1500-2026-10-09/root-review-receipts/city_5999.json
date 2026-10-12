@@ -1,0 +1,11 @@
+{
+  "taskId": "city:5999",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-5999-mallawi.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/mallawi-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T16:14:53.914128Z",
+  "reason": "Official ESA custody exists, but Mallawi local registry and anonymous geometry are unresolved; MAGIC returns a login shell."
+}

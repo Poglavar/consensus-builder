@@ -1,0 +1,97 @@
+{
+  "cityCode": 11684,
+  "queueRank": 1519,
+  "name": "Haimen",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [31.8870442203471, 121.182814635024],
+  "population2025": 374644,
+  "population2025k": 374.644,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Haimen China official cadastral map parcel service natural resources bureau 海门 不动产登记 地籍图 官方",
+        "result": "First-party Haimen government results identified the Haimen Natural Resources and Planning Bureau, the Haimen real-estate registration service, official cadastral-survey/database work, and official planning material. No safe anonymous parcel feature response was verified.",
+        "actualResultUrls": [
+          "https://www.haimen.gov.cn/hmsrmzf/dwzsk/content/58b1527b-2766-4159-95a1-fd83ec962511.html",
+          "https://www.haimen.gov.cn/hmsgtj/jhzj/content/62ae5074-5455-47ea-9542-891af7b0b86c.html",
+          "https://www.haimen.gov.cn/hmsgtj/jgzn/jgzn.html",
+          "https://www.haimen.gov.cn/hmsgtj/gzgh/content/e29f385b-8af9-4175-9f5d-53048c521ba4.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "海门区 自然资源和规划局 不动产登记 地籍 地图 官方",
+        "result": "检索到海门区自然资源和规划局、不动产登记预约指南、权籍调查建库及数据汇交说明；未验证安全匿名宗地要素响应、原生宗地标识、坐标系或宗地几何接口。",
+        "actualResultUrls": [
+          "https://www.haimen.gov.cn/hmsrmzf/dwzsk/content/58b1527b-2766-4159-95a1-fd83ec962511.html",
+          "https://www.haimen.gov.cn/hmsgtj/jhzj/content/62ae5074-5455-47ea-9542-891af7b0b86c.html",
+          "https://www.haimen.gov.cn/hmsgtj/zcwj/zcwj.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "HAIMEN-NATURAL-RESOURCES-PLANNING-BUREAU-REAL-ESTATE-REGISTRATION",
+    "name": "Haimen Natural Resources and Planning Bureau / Haimen real-estate registration service",
+    "url": "https://www.haimen.gov.cn/hmsgtj/jgzn/jgzn.html",
+    "operator": "Haimen district government and Haimen Natural Resources and Planning Bureau; the official service guide directs users to Haimen natural-resources registration windows",
+    "serviceType": "Official local registry/cadastral custodian evidence; no safe anonymous parcel-vector response verified",
+    "layer": "Official bureau, registration-service, and cadastral-survey/database pages; no parcel layer response qualified",
+    "nativeIdField": null,
+    "nativeIdEvidence": "Reviewed official pages describe registration services and cadastral-survey/database work but expose no parcel feature schema, stable native identity field, CRS, or safe geometry response.",
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Local registry/cadastral custody is evidenced. No owner, address, titleholder, tax, contact, or other unsafe fields were requested. Runtime admission is not implied."
+  },
+  "requests": [
+    {"url": "https://www.haimen.gov.cn/hmsrmzf/dwzsk/content/58b1527b-2766-4159-95a1-fd83ec962511.html", "method": "GET; anonymous with TLS verification", "httpStatus": 403, "result": "Search result identified the official Haimen real-estate registration network-appointment guide, but direct retrieval was refused by the official site edge. Search content confirms the guide directs users to Haimen Natural Resources and Planning Bureau registration service. No parcel endpoint exposed."},
+    {"url": "https://www.haimen.gov.cn/hmsgtj/jgzn/jgzn.html", "method": "GET; anonymous with TLS verification", "httpStatus": 403, "result": "Official Haimen Natural Resources Bureau organization/function page request was refused by the site edge; no response schema or map endpoint was available."},
+    {"url": "https://www.haimen.gov.cn/hmsgtj/zcwj/zcwj.html", "method": "GET; anonymous with TLS verification", "httpStatus": 403, "result": "Official Haimen Natural Resources Bureau policy-index request was refused by the site edge; search-index content identifies the bureau but exposes no parcel service."},
+    {"url": "https://www.haimen.gov.cn/hmsgtj/jhzj/content/62ae5074-5455-47ea-9542-891af7b0b86c.html", "method": "GET; anonymous with TLS verification", "httpStatus": 403, "result": "Official 2020 natural-resources work summary request was refused by the site edge. Search-index content states that six townships had cadastral-survey results databased and submitted to the provincial department, with other areas in progress; it exposes no public parcel API."},
+    {"url": "https://map.tianditu.gov.cn/", "method": "GET; anonymous with TLS verification", "httpStatus": 418, "result": "National Tianditu public map host returned an edge response in the bounded request; no parcel layer, schema, native ID, CRS, or geometry response was obtained."},
+    {"url": "https://jiangsu.tianditu.gov.cn/", "method": "GET; anonymous with TLS verification", "httpStatus": 200, "result": "Jiangsu Tianditu host returned an HTML shell; no Haimen parcel layer, feature service, schema, native ID, CRS, or geometry response was exposed in the bounded inspection."},
+    {"url": "https://jiangsu.tianditu.gov.cn/nantong/", "method": "GET; anonymous with TLS verification", "httpStatus": 200, "result": "Jiangsu Tianditu Nantong node returned an HTML shell; no Haimen parcel feature endpoint or safe anonymous parcel response was qualified."},
+    {"url": "https://www.webmap.cn/commres.do?method=tianMap&typeId=21", "method": "GET; anonymous with TLS verification", "httpStatus": 502, "result": "National geographic-information resource catalog request failed at the network edge; no Haimen parcel resource or feature response was obtained."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official Haimen local-government search results, official Natural Resources Bureau pages, official registration-service guide, official cadastral-survey work summary, and bounded anonymous requests to national/Jiangsu/Nantong Tianditu hosts were reviewed.",
+    "verifiedOpenScope": "Local registry/cadastral custodian and historical/current cadastral-survey/database activity are evidenced; open parcel geometry, native identity, CRS, and feature schema are unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_unverified",
+  "technicalBlocker": "The official local site refused direct HTML requests, while public Tianditu hosts returned only shells or edge errors in the bounded anonymous inspection. No safe anonymous parcel feature endpoint, schema, native ID, CRS, or geometry was exposed.",
+  "remainingUncertainty": "The exact unchanged WUP point may lie within cadastral coverage. A zero exact-point hit was not established, no exact-point parcel feature query completed, and site refusal, portal-shell responses, or missing public endpoint are not evidence of citywide absence.",
+  "nextStep": "Serial reviewer may independently inspect a genuinely public anonymous network flow and qualify safe native ID plus geometry only if actually returned; keep runtime readiness held.",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [31.8870442203471, 121.182814635024],
+  "publicParcelGeometryFound": false,
+  "sourceIds": ["HAIMEN-NATURAL-RESOURCES-AND-PLANNING-BUREAU", "HAIMEN-REAL-ESTATE-REGISTRATION-SERVICE"],
+  "registryEvidenceUrls": [
+    "https://www.haimen.gov.cn/hmsrmzf/dwzsk/content/58b1527b-2766-4159-95a1-fd83ec962511.html",
+    "https://www.haimen.gov.cn/hmsgtj/jgzn/jgzn.html",
+    "https://www.haimen.gov.cn/hmsgtj/jhzj/content/62ae5074-5455-47ea-9542-891af7b0b86c.html"
+  ],
+  "pointBasis": "Exact unchanged WUP 2025 settlement point (latitude, longitude); not shifted to force a parcel hit.",
+  "cohort": "overnight-next-1501-1600",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 11684,
+  "cityId": "wup2025:11684"
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "city:6362",
+  "decision": "held",
+  "checkedAt": "2026-10-11T19:08:09Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-6362-el-puente.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/el-puente-service-review.json",
+    "tmp/valhalla-parcel-research/6362/ircnl.html",
+    "tmp/valhalla-parcel-research/6362/sgc.headers"
+  ],
+  "review": "WUP archive SHA-256 and its 2025 source row match rank 2739, city code 6362, Mexico, point [25.901747291389,-100.17113655387], and 215544 persons in the immutable roster, queue, and packet. English and Spanish executed searches and official IRCNL evidence support state cadastral custody. The state SGC requires login and the visor returned an application error; there is no anonymous safe native ID plus full parcel polygon response. No sample is retained. These access limits do not establish citywide absence. Fresh native-ID reads, forced paging, 13 bounded cells, metric full-polygon checks, source binding, and headed Details verification are missing. Hold without admission."
+}

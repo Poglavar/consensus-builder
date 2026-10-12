@@ -1,0 +1,16 @@
+{
+  "taskId": "city:11352",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-11352-xinghua.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/xinghua-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:36:54Z",
+  "reason": "WUP code 11352, rank 1511, China, exact point and 375876 persons match immutable roster and queue. Separate English and native/local searches are recorded with queries and result URLs. Official Xinghua bureau custody is supported. The documented Tianditu city portal returned 404, and no current parcel endpoint, schema, stable native ID, or complete polygon was recorded. The portal failure does not establish citywide absence. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are unproved.",
+  "independentlyCheckedFirstPartyUrls": [
+    "https://www.xinghua.gov.cn/fdzdgknr/jggk/jgzyzn/art/2024/art_84a989c46abc492080301cd2cad34437.html"
+  ],
+  "sourceAdmission": "not_admitted"
+}

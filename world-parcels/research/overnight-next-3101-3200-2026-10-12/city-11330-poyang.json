@@ -1,0 +1,62 @@
+{
+  "purpose": "resumable WUP cadastral-source research packet",
+  "schemaVersion": 1,
+  "kind": "city-parcel-research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 11330,
+  "queueRank": 3155,
+  "name": "Poyang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [28.9927722565779, 116.684336800528],
+  "population2025": 190393,
+  "population2025k": 190.393,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Poyang Jiangxi cadastral map parcel public map service official",
+        "result": "Search did not identify a Poyang-specific first-party cadastral viewer or anonymous parcel geometry API. Results were general Chinese cadastral/registration guidance and unrelated local services.",
+        "actualResultUrls": ["https://rerc.com.cn/", "https://zrzyhghj.ezhou.gov.cn/bdcdjzx/yshj/zcwj/202501/t20250109_684494.html", "https://zygh.xa.gov.cn/ztzl/yhyshj/bsrk/bdcdj/djtcxbszn/1774698618606374913.html"]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "鄱阳县 自然资源局 官网 不动产登记中心",
+        "result": "Search did not expose a verified Poyang-specific public parcel viewer/API. The national Real Estate Registration Center site was found as a directory/context source; no Poyang service route, schema, CRS, or parcel geometry was observed.",
+        "actualResultUrls": ["https://rerc.com.cn/", "https://www.poyang.gov.cn/", "https://ganfutong.jiangxi.gov.cn/jmopenpub/jmopen_files/webapp/html5/gfrhs/index.html"]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "鄱阳 自然资源和规划局 不动产登记中心 官方网站",
+        "result": "No first-party Poyang cadastral map/API result was verified in the bounded search. General provincial and national registration material was not treated as local registry evidence.",
+        "actualResultUrls": ["https://rerc.com.cn/", "https://www.mnr.gov.cn/zt/td/bdcdj/"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": "Search identified the national Real Estate Registration Center and general Chinese registration guidance, but did not verify a Poyang local registry, cadastral map, or public parcel service. Local custodian identity and public geometry access remain unverified.",
+  "officialSources": [
+    {"url": "https://www.poyang.gov.cn/", "role": "candidate official Poyang County government homepage", "access": "HEAD returned HTTP 405 from CT2-WAAP; no GET or viewer/API follow-up was performed"},
+    {"url": "https://www.rerc.com.cn/", "role": "official national Real Estate Registration Center directory/context", "access": "HEAD returned HTTP 418 with anti-automation block; no bypass attempted"},
+    {"url": "https://www.mnr.gov.cn/zt/td/bdcdj/", "role": "official Ministry of Natural Resources registration context", "access": "public search result; national policy/context only, not local service evidence"}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "requestOutcomes": [
+    {"route": "https://www.poyang.gov.cn/", "method": "HEAD", "outcome": "HTTP 405 Not Allowed from CT2-WAAP; no viewer/API route could be inspected from this request"},
+    {"route": "https://zrzy.jiangxi.gov.cn/", "method": "HEAD", "outcome": "DNS resolution failed; no TLS exception or alternate certificate handling used"},
+    {"route": "https://www.rerc.com.cn/", "method": "HEAD", "outcome": "HTTP 418 anti-automation response with block event; no bypass attempted"},
+    {"route": "https://www.mnr.gov.cn/zt/td/bdcdj/", "method": "search/discovery", "outcome": "Official national registration context reached in search; no Poyang parcel endpoint or geometry"}
+  ],
+  "schemaAndCrs": null,
+  "resultCategory": "local_custodian_context_unverified_no_public_parcel_api",
+  "coverageAssessment": "No exact-point parcel query was attempted because no public Poyang parcel endpoint was identified. The exact WUP point was preserved and not shifted. This is not evidence of citywide absence.",
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The current Poyang local registry/viewer, service URL, JavaScript/configuration, native parcel identity field, safe schema, CRS, query semantics, and citywide coverage remain unknown. No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained. This packet is research evidence only, not source integration or admission."
+}

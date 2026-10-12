@@ -1,0 +1,20 @@
+{
+  "taskId": "city:1755",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-1755-li-ge.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/li-ge-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/liege-service.json",
+    "tmp/valhalla-parcel-research/liege-layer.json",
+    "tmp/valhalla-parcel-research/liege-query.geojson"
+  ],
+  "checkedAt": "2026-10-10T08:44:33.768216Z",
+  "reason": "Immutable WUP code 1755, rank 1517, Belgium, point [50.6390289102718,5.56841796604162], 375138 persons match queue and ranked roster. Packet records separate English and French searches with source URLs. Official Wallonia page supports regional parcel map custody; original first-party ArcGIS cache identifies layer 0 as EPSG:31370 polygons with CAPAKEY and a bounded response of 71 polygons, 71 nonempty unique native IDs, and only CAPAKEY properties. No more than three full polygons are durably retained in cohort artifacts. Fresh adapter exact-ID reads, forced paging, 13 bounded cells, independent metric GEOS validity/overlap and proposal-operation checks, source binding, and headed Details-panel verification are missing.",
+  "independentlyCheckedFirstPartyUrls": [
+    "https://geoportail.wallonie.be/home/ressources/georeferentiel-de-la-wallonie/parcellaire-cadastral.html",
+    "https://geoservices.wallonie.be/arcgis/rest/services/PLAN_REGLEMENT/CADMAP_PARCELLES/MapServer"
+  ],
+  "sourceAdmission": "not_admitted"
+}

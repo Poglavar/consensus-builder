@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-11737-bardhaman.json",
+  "cityCode": 11737,
+  "queueRank": 2761,
+  "name": "Bardhaman",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [23.2391331506577, 87.8624172398472],
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "summary": "Separate English and Bengali first-party discovery evidenced West Bengal's official Banglarbhumi land-record/cadastral-map service and Purba Bardhaman local land-office custody. The anonymous Banglarbhumi request timed out before the current viewer configuration or a parcel response could be inspected. No safe native parcel ID, schema, CRS or full polygon was obtained; runtime remains held.",
+  "queryAndRequestOutcome": "English and Bengali queries found official Banglarbhumi and official Purba Bardhaman district land-office/map pages. The direct Banglarbhumi GET timed out after 25 seconds with TLS verification enabled. Official indexed/service material documents Plot Info, Plot Map, Mouza Map and RS-LR services, but no city-specific public parcel payload was invented or retained.",
+  "officialPrimarySources": [
+    {"url": "https://banglarbhumi.gov.in/BanglarBhumi/", "operator": "Government of West Bengal Land and Land Reforms and Refugee Relief and Rehabilitation Department", "scope": "Public state land-record, plot-information and cadastral-map service."},
+    {"url": "https://purbabardhaman.nic.in/land-and-land-reforms-office/", "operator": "Purba Bardhaman District Administration", "scope": "Official local DL&LRO, sub-divisional and block L&LRO directory."},
+    {"url": "https://purbabardhaman.nic.in/map-of-district/", "operator": "Purba Bardhaman District Administration", "scope": "Official district map catalogue including a general land map, not parcel features."}
+  ],
+  "attempts": [
+    {"url": "https://banglarbhumi.gov.in/BanglarBhumi/", "method": "GET anonymous; TLS verified", "httpStatus": "timeout after 25s", "outcome": "No live viewer shell, JavaScript/configuration, schema, CRS, native ID or geometry."},
+    {"url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action", "method": "official indexed-page inspection", "httpStatus": "indexed official material", "outcome": "Documents Plot Map Request, Mouza Map Request, RS-LR Plot Information and the state Director of Land Records and Survey; no Bardhaman parcel response."},
+    {"url": "https://purbabardhaman.nic.in/land-and-land-reforms-office/", "method": "official page inspection", "httpStatus": 200, "outcome": "Local land-record office custody evidenced; no geometry."},
+    {"url": "https://purbabardhaman.nic.in/map-of-district/", "method": "official page inspection", "httpStatus": 200, "outcome": "General land-map catalogue evidenced; no parcel feature service."}
+  ],
+  "schemaAndCrs": {"viewerConfig": null, "geometryType": null, "geometryCrs": null, "nativeIdentity": null, "sourceFieldMapping": null, "compositeKeyProvenance": "District/block/mouza plus plot/dag is documented service terminology only; no concrete selection or response was obtained."},
+  "safeFieldAllowlist": ["stable native parcel ID if source-proven", "full parcel polygon geometry", "geometry type", "source CRS", "source service URL", "administrative codes", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not run; no exact-hit or absence inference."},
+  "scopeLimits": ["The timeout and any inaccessible UI do not establish citywide absence.", "State service custody is distinct from a verified open parcel geometry API.", "No raw source-specific attributes, personal data or unsafe fields were requested or retained.", "No sample GeoJSON was written because no safe native ID plus full polygon response was obtained.", "Runtime readiness remains held; this is research evidence only, not source integration or admission."],
+  "coverageAssessment": {"claimedScope": "West Bengal land-record/cadastral-map services and Purba Bardhaman local offices.", "verifiedOpenScope": "Official custody and service descriptions only.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "A future retry may expose a selected mouza/plot map or a public service route. Current anonymous endpoint availability, city coverage, CRS and stable native identity semantics are unresolved.",
+  "runtimeDecision": "held_not_enabled",
+  "integrationDecision": "not_integrated"
+}

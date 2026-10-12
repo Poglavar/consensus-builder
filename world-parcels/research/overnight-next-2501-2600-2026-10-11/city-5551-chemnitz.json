@@ -1,0 +1,97 @@
+{
+  "cityCode": 5551,
+  "queueRank": 2559,
+  "name": "Chemnitz",
+  "country": "Germany",
+  "countryCode": "DE",
+  "iso3": "DEU",
+  "point": [50.8270132341809, 12.9110519091696],
+  "population2025": 229476,
+  "population2025k": 229.476,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chemnitz official cadastral parcel map GIS land registry Germany",
+        "result": "First-party discovery found the City of Chemnitz official interactive Themenstadtplan and the city's GIS metadata for Flurstücke; the metadata identifies a parcel dataset derived from ALKIS and links the current map.",
+        "actualResultUrls": [
+          "https://www.chemnitz.de/de/unsere-stadt/stadtplan",
+          "https://www-11.stadt-chemnitz.de/wss/service/MetaDoku/guest/Internet/HTML/Flurstuecke.html",
+          "https://www-10.stadt-chemnitz.de/mapapps/resources/apps/Themenstadtplan/index.html?lang=de&l=Flurstuecke"
+        ]
+      },
+      {
+        "language": "German",
+        "query": "Chemnitz amtliche Liegenschaftskarte Flurstücke Geoportal Grundstücke",
+        "result": "First-party discovery found the City of Chemnitz Flurstücke metadata and the Saxon GeoSN ALKIS-WFS page. The city metadata identifies Amt 62 as fachlicher Ansprechpartner, states the layer is derived from ALKIS, and documents the public parcel fields and CRS.",
+        "actualResultUrls": [
+          "https://www-11.stadt-chemnitz.de/wss/service/MetaDoku/guest/Internet/HTML/Flurstuecke.html",
+          "https://www.geodaten.sachsen.de/alkis-wfs-4968.html",
+          "https://fs.egov.sachsen.de/formcycle/form/provide/11884/"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Stadt Chemnitz, Amt 62 is identified as the fachlicher Ansprechpartner and Herausgeber for the municipal Flurstücke dataset; Amt 18 is identified as technical provider.",
+    "nationalOrStateContext": "Landesamt für Geobasisinformation Sachsen (GeoSN) provides the state ALKIS-WFS and is the state geobasis-data context; the Chemnitz layer is described as a secondary GIS derivation from ALKIS.",
+    "registryBasis": "Official Chemnitz metadata and its current map route were fetched anonymously. The city-hosted ArcGIS REST MapServer exposed a polygon parcel layer and returned one bounded feature for the exact preserved WUP point.",
+    "registryFoundReason": "A local municipal cadastral/map service is evidenced, its parcel schema is public, and a bounded anonymous feature response was obtained. This is not source integration or runtime admission."
+  },
+  "schemaAndCrs": {
+    "serviceUrl": "https://www-11.stadt-chemnitz.de/wss/service/ags-relay/prod-ags/guest/arcgis/rest/services/Themenbaum/Flurstuecke/MapServer/0",
+    "endpoint": "ArcGIS REST MapServer layer 0, Flurstücke",
+    "responseType": "ArcGIS JSON query; response was transformed only from ArcGIS rings to GeoJSON coordinates with outSR=4326",
+    "geometryType": "Polygon",
+    "geometryCrs": "Native service CRS EPSG:25833, ETRS89 / UTM zone 33N; query response requested EPSG:4326 for retained GeoJSON.",
+    "nativeIdentity": "FLURST_ID is the documented native parcel identifier; returned value CZ-2225/20 was retained as the sole GeoJSON property id.",
+    "sourceFieldMapping": {
+      "FLURST_ID": "native parcel identity",
+      "FLURST_BEZ_LANG": "native descriptive parcel label, not retained",
+      "GEMARK_ID": "native cadastral district code, not retained",
+      "FSTNR": "native parcel numerator, not retained",
+      "NENNER": "native parcel denominator, not retained",
+      "GEMARK_BEZ": "native cadastral district name, not retained",
+      "UUID": "source UUID, not retained",
+      "OBJECTID": "ArcGIS object identifier, not used as canonical identity",
+      "SHAPE": "native parcel polygon geometry"
+    },
+    "compositeKeyProvenance": "No composite key used; the service returned the documented stable FLURST_ID value CZ-2225/20. Its constituent cadastral semantics were recorded in source mapping only.",
+    "schemaEvidence": "Layer metadata listed OBJECTID, FLURST_BEZ, FLURST_ID, FSTNR, NENNER, GEMARK_ID, SHAPE, FLURST_BEZ_LANG, GEMARK_INT, FSK, GEMARK_BEZ, UUID, BEGINNT, and ENDET."
+  },
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "CZ-2225/20",
+    "sampleCount": 1,
+    "sampleFile": "chemnitz-parcels-sample.geojson",
+    "exactWupPointTest": "The exact preserved WUP point [50.8270132341809, 12.9110519091696] was transformed for request purposes to EPSG:25833 as [352881.52767239755, 5632667.929563868] and returned one intersecting polygon. No coordinate shift was used.",
+    "nativeIdField": "FLURST_ID",
+    "safeFieldsRetained": ["FLURST_ID", "SHAPE"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Chemnitz municipal Flurstücke dataset; official metadata bounding box covers the city.",
+    "verifiedOpenScope": "Official layer metadata plus one bounded exact-point feature response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel polygon geometry", "source service URL", "declared CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "required; research evidence is not source integration or admission",
+  "sampleGeoJSON": "chemnitz-parcels-sample.geojson",
+  "scopeLimits": [
+    "The exact WUP point and latitude/longitude ordering were preserved; the projected coordinate was used only for the EPSG:25833 request.",
+    "One exact-point hit does not establish citywide completeness or coverage.",
+    "No raw source-specific attribute set, owner information, or unsafe field is retained.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification disablement was used."
+  ],
+  "uncertainty": "The official municipal source, native identity field, CRS, and one exact-point polygon are verified. Citywide completeness, long-term availability, and adapter/runtime qualification remain unverified; runtime remains held."
+}

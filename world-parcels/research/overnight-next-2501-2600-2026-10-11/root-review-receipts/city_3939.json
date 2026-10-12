@@ -1,0 +1,48 @@
+{
+  "taskId": "city:3939",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-3939-jega.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/jega-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T15:04:01Z",
+  "identityCheck": {
+    "rank": 2571,
+    "cityCode": 3939,
+    "country": "Nigeria",
+    "pointLatLon": [
+      12.2260741579243,
+      4.37548777841849
+    ],
+    "populationPersons": 228584,
+    "matchedRankedRosterAndPendingQueue": true
+  },
+  "searchCheck": {
+    "languages": [
+      "English",
+      "Hausa"
+    ],
+    "queriesRecordedWithResultUrls": true
+  },
+  "firstPartyCheck": {
+    "url": "https://kebgis.com/about.html",
+    "finding": "Kebbi land/GIS agency lists a Jega area office and land registry work; no anonymous parcel feature response is retained."
+  },
+  "geometryCheck": {
+    "retainedFullPolygonCount": 0,
+    "nativeParcelIdVerified": false,
+    "safeParcelAttributesVerified": false
+  },
+  "admissionCheck": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Kebbi land/GIS agency lists a Jega area office and land registry work; no anonymous parcel feature response is retained. No live adapter qualification evidence for fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, or headed Details-panel verification. The access limits do not establish citywide parcel absence."
+}

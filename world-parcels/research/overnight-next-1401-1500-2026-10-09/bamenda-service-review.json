@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1481-bamenda.json",
+  "purpose": "Document first-party local registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Bamenda City Council’s official urban-development page documents city cartographic and cadastre-coordination responsibilities. MINDCAF’s official materials document the national cadastral authority and its regional/departemental service structure. No safe anonymous first-party parcel ID plus full geometry response, schema, or CRS was obtained. The city page presented a Cloudflare challenge; the official MINMIDT mining-cadastre announcement timed out when fetched; neither is evidence of parcel absence.",
+  "registryAssessment": "A city-level urban-development/cadastre coordination role is evidenced, but a city-specific registry custodian or public ordinary-land parcel service is not independently established. MINDCAF is evidenced as the national cadastral authority.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.bamendacitycouncil.cm/urban-development/",
+      "observation": "Official Bamenda City Council page says the urban-development department develops and monitors city cartographic projects and cadastre operations in coordination with cadastre services. The ordinary request returned a Cloudflare interactive challenge."
+    },
+    {
+      "url": "https://www.mindcaf.gov.cm/en/docs/",
+      "observation": "Official MINDCAF material describes cadastral functions and regional/departemental services, including cadastral plans, cadastral registers, cadastral extracts, and map maintenance. No public Bamenda vector service was linked."
+    },
+    {
+      "url": "https://mindcaf.gov.cm/fr/docs/",
+      "observation": "French official MINDCAF document page reviewed for local-language first-party cadastral context; no Bamenda-specific public parcel API was exposed."
+    },
+    {
+      "url": "https://www.minmidt.cm/carte-cadastrale-du-cameroun/",
+      "observation": "Official MINMIDT announcement describes the online National Mining Cadastre Map. It is not treated as ordinary land-parcel geometry evidence; fetch timed out in this attempt."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bamenda Cameroon official cadastral map land registry parcel GIS cadastre",
+      "result": "Official Bamenda City Council and MINDCAF sources were found. They establish planning/cadastre remit but no anonymous parcel geometry endpoint.",
+      "resultUrls": [
+        "https://www.bamendacitycouncil.cm/urban-development/",
+        "https://www.mindcaf.gov.cm/en/docs/"
+      ],
+      "method": "Separate English-language discovery search followed by first-party source review.",
+      "scope": "Identify city/local registry custody and safe anonymous parcel geometry."
+    },
+    {
+      "language": "French",
+      "query": "Bamenda Cameroun cadastre carte parcelles registre foncier officiel",
+      "result": "Official MINDCAF cadastral remit and MINMIDT mining-cadastre announcement were found; no ordinary land-parcel geometry route for Bamenda was verified.",
+      "resultUrls": [
+        "https://mindcaf.gov.cm/fr/docs/",
+        "https://www.minmidt.cm/carte-cadastrale-du-cameroun/"
+      ],
+      "method": "Separate French-language discovery search followed by first-party source review.",
+      "scope": "Cross-check local-language registry custody and safe anonymous parcel geometry."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No public parcel feature service was reached, so the unchanged WUP point [5.96409086426512, 10.1574283794588] was not tested against a parcel layer. This is unresolved, not a zero-hit finding.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "MINDCAF national cadastral authority; Bamenda City Council urban-development coordination role.",
+    "verifiedOpenScope": "Institutional remit verified, but no public anonymous ordinary-land parcel geometry or Bamenda-specific cadastral map layer verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.bamendacitycouncil.cm/urban-development/",
+      "method": "GET",
+      "httpStatus": 403,
+      "result": "Cloudflare interactive challenge page; no challenge solving, bypass, login, or API discovery behind it."
+    },
+    {
+      "url": "https://www.minmidt.cm/carte-cadastrale-du-cameroun/",
+      "method": "GET",
+      "httpStatus": null,
+      "result": "Web fetch timed out; no map URL, JavaScript/configuration, schema, or geometry response captured."
+    },
+    {
+      "url": "https://www.bamendacitycouncil.cm/urban-development/",
+      "method": "GET via curl with normal TLS verification",
+      "httpStatus": null,
+      "result": "TLS certificate-chain verification failed (curl error 60); no certificate exception used."
+    },
+    {
+      "url": "https://www.mindcaf.gov.cm/en/docs/",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official MINDCAF page reviewed for cadastral scope and service structure; no public parcel feature endpoint or safe geometry schema found."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID", "full native parcel geometry", "native geometry CRS", "source URL", "request status", "schema field names needed to identify safe ID/geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "remainingUncertainty": "The reviewed public routes do not reveal whether Bamenda has a separate open parcel service, an offline cadastral plan, or a restricted viewer. No citywide absence conclusion is made.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; root may run full adapter qualification."
+}

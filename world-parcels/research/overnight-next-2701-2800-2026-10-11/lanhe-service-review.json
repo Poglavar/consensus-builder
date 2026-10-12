@@ -1,0 +1,20 @@
+{
+  "cityRecord": "city-11406-lanhe.json",
+  "cityCode": 11406,
+  "queueRank": 2705,
+  "city": "Lanhe",
+  "country": "China",
+  "countryCode": "CN",
+  "reviewStatus": "held",
+  "reviewOutcome": "Local Guangzhou/Nansha land and natural-resources custody is evidenced, but no qualifying public parcel-polygon service or safe retained geometry sample was verified.",
+  "queryAndRequestOutcomes": "Separate English and Chinese discovery was completed. The official Guangzhou Tianditu portal advertises a cadastral-query application. The linked Guangzhou cadastral URL was inaccessible to the web fetch and failed DNS in a direct GET attempt; official Nansha/Guangzhou procedural pages were readable but exposed no public schema, CRS, JavaScript configuration, or anonymous ID-plus-geometry response.",
+  "cityOrLocalCustodian": "Guangzhou Planning and Natural Resources Bureau, its Nansha branch, and the Nansha/Lanhe (榄核镇) government are evidenced as local procedural custodians. General national agency material was not used as local source evidence.",
+  "safeFieldAllowlist": ["stable native parcel ID when independently verified", "geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"],
+  "schemaAndCrs": null,
+  "sampleGeojson": null,
+  "scopeLimits": ["No citywide completeness claim.", "No exact-point absence inference.", "WUP point remains exactly [22.8134259483606,113.37641012487].", "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used."],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "An interactive or currently unindexed cadastral route may exist, but no safe anonymous parcel geometry was verified.",
+  "integrationDisposition": "Research packet only; no registry/catalog/runtime files changed."
+}

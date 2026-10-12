@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-501-san-cristobal.json",
+  "purpose": "Document first-party registry/map discovery, bounded request outcomes, scope limits, and safe-field policy for San Cristóbal, Táchira, Venezuela.",
+  "assessment": "A local municipal cadastral custodian and procedure are evidenced by official ordinances, but no public parcel geometry, safe native parcel identity, schema/CRS, or anonymous parcel API was verified.",
+  "registryAssessment": "registryFound=true is based on the official municipal site's published División de Catastro ordinance/procedure evidence. This is not evidence that the registry is openly downloadable or citywide geometrically accessible.",
+  "officialPrimarySources": [
+    {"url": "https://www.alcaldiasancristobal.gob.ve/", "operator": "Alcaldía del Municipio San Cristóbal", "observation": "Official municipal website; links to municipal ordinances and a San Cristóbal Vensat application."},
+    {"url": "https://www.alcaldiasancristobal.gob.ve/empresa/ordenanzas.php", "operator": "Alcaldía del Municipio San Cristóbal", "observation": "Official ordinance index listing the municipal-land ordinance and the 2023 cadastral ordinance."},
+    {"url": "https://www.alcaldiasancristobal.gob.ve/empresa/ordenanza/GACETAEXTRA.N083-REF.YORD.SOBRETERRENOSMUNICIPALES26-04-2021.pdf", "operator": "Alcaldía del Municipio San Cristóbal", "observation": "Official 2021 municipal-land ordinance; identifies the División de Catastro, technical/legal cadastral areas, parcel measurements and municipal parcel procedures."},
+    {"url": "https://www.alcaldiasancristobal.gob.ve/empresa/ordenanza/083.pdf", "operator": "Alcaldía del Municipio San Cristóbal", "observation": "Official-domain copy of the same municipal-land ordinance; used as corroborating first-party evidence."},
+    {"url": "https://sancristobal.vensat.io/", "operator": "Municipal-linked Vensat application", "observation": "Public application shell; current Vite/React source was inspectable, but no anonymous parcel layer or safe geometry route was exposed."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://sancristobal.vensat.io/",
+    "observedTechnology": "Vite/React public app shell with a login route and Socket.IO client configuration. Source disclosed API base https://sancristobal.vensat.io:8443 and /socket.io, but not a public cadastral layer endpoint.",
+    "observedControls": ["login route", "inmueble routes in client router", "municipal application shell"],
+    "schemaAndCrs": "No parcel schema or CRS was verified.",
+    "nativeFieldNames": [],
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata", "source layer/service identifier"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://www.alcaldiasancristobal.gob.ve/", "method": "GET", "normalTlsVerification": true, "httpStatus": 200, "result": "Official municipal home page loaded. It linked to the ordinance index and the municipal Vensat application."},
+    {"url": "https://www.alcaldiasancristobal.gob.ve/empresa/ordenanzas.php", "method": "GET", "normalTlsVerification": true, "httpStatus": 200, "result": "Official ordinance index loaded; cadastral and municipal-land ordinance entries were identified."},
+    {"url": "https://www.alcaldiasancristobal.gob.ve/empresa/ordenanza/GACETAEXTRA.N083-REF.YORD.SOBRETERRENOSMUNICIPALES26-04-2021.pdf", "method": "GET", "normalTlsVerification": true, "httpStatus": 200, "result": "Official PDF located and used for procedural evidence; no owner/address/titleholder fields were extracted or retained."},
+    {"url": "https://www.alcaldiasancristobal.gob.ve/empresa/ordenanza/083.pdf", "method": "GET", "normalTlsVerification": true, "httpStatus": 200, "result": "Official-domain ordinance copy loaded; corroborating evidence only."},
+    {"url": "https://sancristobal.vensat.io/", "method": "GET", "normalTlsVerification": true, "httpStatus": 200, "result": "Public HTML app shell loaded. Current JavaScript/configuration was inspected without login."},
+    {"url": "https://sancristobal.vensat.io/login", "method": "GET", "normalTlsVerification": true, "httpStatus": 200, "result": "Login-oriented public route loaded. No login, registration, credentials, or token request was attempted."},
+    {"url": "https://sancristobal.vensat.io:8443/", "method": "GET", "normalTlsVerification": true, "httpStatus": 200, "result": "API base returned plain text It works!; no parcel payload or schema."},
+    {"url": "https://sancristobal.vensat.io:8443/health", "method": "GET", "normalTlsVerification": true, "httpStatus": 404, "result": "Cannot GET /health; no health/parcel evidence."},
+    {"url": "https://sancristobal.vensat.io:8443/api", "method": "GET", "normalTlsVerification": true, "httpStatus": 404, "result": "Cannot GET /api; no public API root or parcel endpoint."},
+    {"url": "https://sancristobal.vensat.io/src/main.tsx", "method": "GET", "normalTlsVerification": true, "httpStatus": 200, "result": "Current public source disclosed Vite/React app structure and Socket.IO configuration; no parcel response was requested."},
+    {"url": "https://sancristobal.vensat.io/src/services/socketClient.ts", "method": "GET", "normalTlsVerification": true, "httpStatus": 200, "result": "Current public source confirmed Socket.IO path configuration; no socket connection or event emission was attempted."}
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {"claimedScope": "Official municipal San Cristóbal sources and the linked public application.", "verifiedOpenScope": "Municipal cadastral procedure/custodian evidenced; no open parcel layer or geometry verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "geometrySamples": [],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous parcel response was verified.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "citywideCompletenessAsserted": false},
+  "runtimeAssessment": {"status": "held", "reason": "A local registry/procedure is evidenced, but no independent anonymous ID-plus-geometry response or qualified adapter source was found."},
+  "uncertainty": "A restricted, offline, or authenticated municipal cadastral system may exist. Search non-result, login wall, 404 guesses, and absence of geometry do not prove citywide absence. Exact WUP point retained: [7.76727602889449, -72.2246713867036].",
+  "attempt": 1
+}

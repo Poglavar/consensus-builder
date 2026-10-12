@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "attempted": [
+    {
+      "rank": 1823,
+      "cityCode": 2962,
+      "name": "Wanlaweyn",
+      "country": "Somalia",
+      "iso2": "SO",
+      "pop2025k": 314.824,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-wanlaweyn.json",
+          "cityId": "wup2025:2962",
+          "cityName": "Wanlaweyn",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-city-wanlaweyn.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-followup-services.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1838,
+      "cityCode": 2198,
+      "name": "Antsiramandroso",
+      "country": "Madagascar",
+      "iso2": "MG",
+      "pop2025k": 312.434,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-antsiramandroso.json",
+          "cityId": "wup2025:2198",
+          "cityName": "Antsiramandroso",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/growth-top20-2026-10-07/city-2198.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-city-antsiramandroso.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-followup-services.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "identityReviewRequired": []
+}

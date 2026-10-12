@@ -1,0 +1,34 @@
+{
+  "taskId": "city:3697",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-3697-formosa.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/formosa-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/formosa-parcel-sample.geojson"
+  ],
+  "checkedAt": "2026-10-11T14:47:41Z",
+  "reason": "WUP rank 2557, code 3697, Argentina, point [-26.1750864911253,-58.1880825800333], and 229877 persons match the immutable queue and ranked roster. English and Spanish queries with result URLs and outcomes are recorded. The saved original first-party ArcGIS response has one EPSG:4326 polygon with native PAR_PARTIDA=23290; its ring exactly matches the retained sample, whose sole property is safe id=23290. Shapely found the polygon valid and covering the WUP point. This is one observed hit, not citywide completeness. No independently qualified live adapter, forced paging, 13 bounded cells, metric GEOS overlap checks, source binding, or headed details-panel verification is evidenced; the existing Formosa provincial registry entry is a separate regional discovery, not this city's runtime admission.",
+  "geometryReview": {
+    "fullPolygonsRetained": 1,
+    "safeNativeIdVerified": true
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "originalResponseReview": {
+    "repositoryRelativeCache": "tmp/valhalla-parcel-research/formosa/exact-query.json",
+    "sha256": "3c3e6ca8fb902780cc2d614c6c4549b069250a2f3b54f38bece377d03d1acecc",
+    "featureCount": 1,
+    "sampleRingMatchesOriginal": true,
+    "responseWkid": 4326,
+    "nativeIdField": "PAR_PARTIDA",
+    "nativeId": "23290"
+  }
+}

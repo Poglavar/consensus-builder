@@ -1,0 +1,36 @@
+{
+  "taskId": "city:8091",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-8091-sambrial.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/sambrial-service-review.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-8091-sambrial-sample.geojson"
+  ],
+  "checkedAt": "2026-10-11T17:04:51Z",
+  "identity": {
+    "cityCode": 8091,
+    "queueRank": 2652,
+    "country": "Pakistan",
+    "point": [
+      32.4779760261798,
+      74.3533646525647
+    ],
+    "populationPersons": 222828
+  },
+  "reviewReason": "Official Sialkot revenue page confirms Sambrial record custody. The retained three-polygon sample has safe IDs and passes a metric validity/overlap check, but the original ArcGIS response/cache is unavailable for independent source acceptance; the reported bounded response exceeded its transfer limit. No complete adapter qualification is evidenced.",
+  "firstPartyUrlsChecked": [
+    "https://sialkot.punjab.gov.pk/REVENUE_DEPARTMENT_SAMBRIAL",
+    "https://www.punjab-zameen.gov.pk/"
+  ],
+  "qualificationGaps": [
+    "fresh native-ID reads",
+    "forced paging and complete manifests",
+    "13 aligned bounded cells",
+    "independent source-wide metric geometry checks",
+    "full-parcel proposal source binding",
+    "headed Details-panel verification"
+  ],
+  "runtimeAdmission": false
+}

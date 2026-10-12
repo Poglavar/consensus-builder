@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 5807,
+  "cityRecord": "city-5807-toyohashi.json",
+  "city": "Toyohashi",
+  "country": "Japan",
+  "attempt": 2,
+  "checkedAt": "2026-10-09",
+  "reviewStatus": "complete_source_review_runtime_held",
+  "queryOutcomes": [
+    {"language": "English", "query": "Toyohashi official cadastral parcel map GIS land parcel map city Japan", "outcome": "Official city public GIS and Ministry/G-Space dataset found; no city-published anonymous parcel API identified."},
+    {"language": "Japanese", "query": "豊橋市 地籍図 公図 地番図 GIS 公式", "outcome": "Official city cadastral-map request procedure found; no downloadable city geometry service identified."}
+  ],
+  "requestOutcomes": [
+    {"service": "Toyohashi Chizumiru", "url": "https://www.city.toyohashi.lg.jp/16943.htm", "method": "GET", "outcome": "Official page reachable; themes and capabilities documented, parcel service not documented."},
+    {"service": "Toyohashi cadastral-map procedure", "url": "https://www.city.toyohashi.lg.jp/4311.htm", "method": "GET", "outcome": "Official page reachable; cadastral-map copies available by application at fixed-assets tax office."},
+    {"service": "G-Space catalog", "url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-23201", "method": "GET", "outcome": "HTTP 200; Toyohashi resources and field metadata returned."},
+    {"service": "2026 Toyohashi GeoJSON", "url": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/23/aigid-moj-23201/23201_%E8%B1%8A%E6%A9%8B%E5%B8%82_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%997%E7%B3%BB_%E7%AD%86R_2026.geojson", "method": "GET", "outcome": "HTTP 200; CRS84; native ID field; bounded bbox query yielded 3 full polygons, exact point not intersected."}
+  ],
+  "scopeLimits": [
+    "The exact WUP point is a locator and was not moved to force a hit.",
+    "A bounded nearby geometry extraction was kept only in ignored scratch evidence and does not establish citywide coverage.",
+    "The G-Space conversion is a public derivative of Ministry of Justice map XML; it is not the Toyohashi city viewer's own API.",
+    "No owner, address, titleholder, tax, contact, or other unsafe attributes were retained."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": {"ID": "properties.id", "geometry": "GeoJSON geometry"},
+  "compositeKeyProvenance": "Not used; source ID is present and stable within the downloaded feature collection.",
+  "uncertainty": "The city GIS's live configuration was not exposed by the static official page; exact-point source coverage and full municipality completeness remain uncertain.",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "reviewerNote": "Packet is complete as research evidence, not source integration or adapter admission."
+}

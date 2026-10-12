@@ -1,0 +1,13 @@
+{
+  "taskId": "city:984",
+  "decision": "held",
+  "checkedAt": "2026-10-11T19:53:39Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-984-shindand.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/shindand-service-review.json"
+  ],
+  "review": "Rank 2776, code 984, Afghanistan, WUP point and 213596 persons match immutable roster and queue. English and Dari/Pashto searches are recorded. First-party MUDL material establishes national cadastral responsibilities, not a Shindand-local registry; registryFound remains null. Independent first-party PRMIS geolocation check returned isAllowed=false. No parcel endpoint, safe native ID, or full polygon was verified or retained. Exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent; held without admission or citywide absence claim."
+}

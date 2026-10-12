@@ -1,0 +1,33 @@
+{
+  "taskId": "city:3218",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-3218-oshawa.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/oshawa-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/oshawa-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/oshawa/bounded-sample.geojson",
+    "tmp/valhalla-parcel-research/oshawa/parcels-addpts-layer.json",
+    "tmp/valhalla-parcel-research/oshawa/exact-point-addpts.geojson"
+  ],
+  "checkedAt": "2026-10-10T16:41:38.941841Z",
+  "reason": "City parcel layer metadata and original bounded response support public native PARCELID geometry. The three retained full polygons match the raw response exactly; its transfer limit was exceeded. An exact-point miss is non-diagnostic. Fresh exact-ID adapter reads, stable complete manifests and forced paging, 13 bounded cells, independent metric GEOS validity/duplicates/overlap/operation checks, source binding, and headed Details-panel verification are not evidenced. No runtime admission.",
+  "identity": {
+    "city": "Oshawa",
+    "cityCode": 3218,
+    "queueRank": 1842,
+    "country": "Canada",
+    "point": [
+      43.9038793922422,
+      -78.8826450091796
+    ],
+    "populationPersons": 311294,
+    "verifiedAgainst": "2025 WUP archive and pending queue"
+  },
+  "searchLanguagesRecorded": [
+    "English",
+    "French (Canada)"
+  ],
+  "retainedFullPolygons": 3
+}

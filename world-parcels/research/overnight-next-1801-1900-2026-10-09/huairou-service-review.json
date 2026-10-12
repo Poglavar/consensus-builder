@@ -1,0 +1,63 @@
+{
+  "cityRecord": "city-9062-huairou.json",
+  "schemaVersion": "1.0",
+  "cityCode": 9062,
+  "queueRank": 1858,
+  "city": "Huairou",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Huairou district evidence establishes a local real-estate registration custodian and Beijing first-party documentation establishes cadastral-map/registration query procedures. The current platform host timed out on a bounded request and no anonymous safe parcel ID-plus-geometry response was verified. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Simplified-Chinese discovery queries, outcomes, and actual URLs are recorded in city-9062-huairou.json.",
+  "requestOutcomes": "Official Huairou and Beijing pages loaded. The Beijing registration platform main-menu GET timed out after 20 seconds. No parcel schema, CRS, safe native identity, or geometry response was exposed.",
+  "attemptedRoutes": [
+    "Huairou district official unified service page and local real-estate registration center",
+    "Beijing Natural Resources Commission official registration/cadastral documentation",
+    "Beijing official visual cadastral/real-estate query notice",
+    "Beijing registration platform main-menu host"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [40.3141864459695, 116.638644918272] was preserved in latitude/longitude order and never shifted; no exact-point hit/miss inference was made.",
+    "No Huairou city/district boundary or complete citywide coverage was established for an open parcel geometry service.",
+    "No parcel geometry, stable native parcel identity, source schema or parcel CRS was retrieved or retained.",
+    "Local registry custody and official cadastral query procedures are not proof of an open vector parcel API.",
+    "A zero exact-point hit, map extent miss, timeout, login wall or unusable UI is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No parcel geometry query reached a usable public service. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Huairou district local real-estate registration administration and Beijing municipal cadastral/registration query procedures.",
+    "verifiedOpenScope": "Local custodial/procedure evidence only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current local cadastral viewer/API route, access controls, parcel schema, CRS, stable native parcel identity, update currency, legal access conditions and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership, tax records or completeness of any Chinese cadastral dataset.",
+  "retainedSample": null
+}

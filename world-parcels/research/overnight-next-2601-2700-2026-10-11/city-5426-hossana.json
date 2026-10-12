@@ -1,0 +1,75 @@
+{
+  "cityCode": 5426,
+  "queueRank": 2661,
+  "name": "Hossana",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "iso3": "ETH",
+  "locId": 231,
+  "capital": false,
+  "point": [7.56063002855833, 37.8607792486057],
+  "population2025": 221895,
+  "population2025k": 221.895,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "aliases": ["hossana"],
+  "status": "complete",
+  "attempt": 1,
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hossana Ethiopia official cadastral parcel map GIS land registry",
+        "result": "Found the official Hossana municipal portal and an official Central Ethiopia land-development/management agency regulation. The municipal portal exposes land-holding information registration services but no anonymous parcel map/API was identified.",
+        "actualResultUrls": [
+          "https://www.hosanamun.gov.et/",
+          "https://www.hosanamun.gov.et/weblink/services",
+          "https://cerspo.gov.et/file/Rule%20and%20regulation/%E1%8B%A8%E1%88%98%E1%88%AC%E1%89%B5%20%E1%88%8C%E1%88%9B%E1%89%B5%Eና%20%E1%88%9B%Eኔ%E1%8C%85%E1%88%98%E1%8A%95%E1%89%B5%20%E1%8A%A4%E1%8C%80%E1%8A%95%E1%88%B2.pdf"
+        ]
+      },
+      {
+        "language": "Amharic",
+        "query": "ሆሳዕና ኢትዮጵያ ካዳስተር የመሬት ምዝገባ ካርታ",
+        "result": "Found the official Hossana municipal portal (El-ሆሳዕና), which lists የመሬት ይዞታ መረጃ ምዝገባ (land-holding information registration) and የካዳስተር ጉዳይ (cadastral matter) service workflow. No public parcel geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://www.hosanamun.gov.et/",
+          "https://www.hosanamun.gov.et/weblink/services",
+          "https://www.hosanamun.gov.et/weblink/srvstandard/9592AFD7-8015-4CFF-9CA7-7A07E8E30F81",
+          "https://www.hosanamun.gov.et/weblink/srvstandard/9016E550-DF50-43AD-82A8-EFEAB85FE652"
+        ]
+      }
+    ]
+  },
+  "officialPrimarySources": [
+    {"url": "https://www.hosanamun.gov.et/", "operator": "Hossana City Administration", "scope": "Official municipal online service portal."},
+    {"url": "https://www.hosanamun.gov.et/weblink/services", "operator": "Hossana City Administration", "scope": "Official service-sector index listing land-holding information registration."},
+    {"url": "https://www.hosanamun.gov.et/weblink/srvstandard/9016E550-DF50-43AD-82A8-EFEAB85FE652", "operator": "Hossana City Administration", "scope": "Official service-sector page listing cadastral matter and land-related request workflows."},
+    {"url": "https://www.hosanamun.gov.et/weblink/srvstandard/9592AFD7-8015-4CFF-9CA7-7A07E8E30F81", "operator": "Hossana City Administration", "scope": "Official land-holding information registration sector page."}
+  ],
+  "attemptsRecorded": [
+    {"route": "English first-party discovery", "method": "Search", "outcome": "Official Hossana municipal portal and Central Ethiopia land-management agency source found."},
+    {"route": "Amharic first-party discovery", "method": "Search", "outcome": "Official Hossana municipal portal and cadastral/land-holding service terminology found."},
+    {"url": "https://www.hosanamun.gov.et/", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Municipal portal loaded; page identified Hossana City Administration online service delivery and land-related service sectors."},
+    {"url": "https://www.hosanamun.gov.et/weblink/services", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Service index loaded; exposed land development/management and land-holding information registration sectors."},
+    {"url": "https://www.hosanamun.gov.et/weblink/srvstandard/9016E550-DF50-43AD-82A8-EFEAB85FE652", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Service page listed የካዳስተር ጉዳይ (cadastral matter) and other land requests; it leads to a service-request workflow, not parcel features."},
+    {"url": "https://www.hosanamun.gov.et/weblink/srvstandard/9592AFD7-8015-4CFF-9CA7-7A07E8E30F81", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Land-holding information registration sector loaded with 17 services; no public map/API, parcel schema, CRS, native parcel ID, or geometry exposed."},
+    {"url": "https://eland.addiscadaster.gov.et/maps", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Official Addis Ababa e-Land map service found during source comparison; its Addis-specific scope does not evidence Hossana coverage and no Hossana feature was requested or retained."}
+  ],
+  "schemaAndCrs": {"viewerConfig": null, "geometryType": null, "geometryCrs": null, "nativeIdentity": null, "boundedAnonymousResponse": false},
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "full parcel polygon geometry", "source service URL", "source field names in metadata only", "source CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "scopeLimits": [
+    "The municipal portal evidences local service custody and cadastral/land-holding procedures, but not an open parcel-feature API.",
+    "No parcel geometry was retained because no safe native identity plus full polygon response was obtained.",
+    "No exact-point parcel test was run against a verified parcel endpoint; the exact WUP point was preserved and not shifted.",
+    "A missing public map/API, login or registration workflow, or unavailable geometry does not establish citywide parcel absence.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate/title, credentials, or private token data was requested."
+  ],
+  "coverageAssessment": {"claimedScope": "Hossana municipal online land/cadastral service workflow", "verifiedOpenScope": "Service-sector and procedure metadata only", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_serial_review",
+  "integrationDecision": "not_integrated",
+  "uncertainty": "Hossana municipal custody is evidenced, but public parcel geometry delivery, native identity schema, CRS, completeness, and reuse terms remain unresolved. This is research evidence only, not source integration or admission."
+}

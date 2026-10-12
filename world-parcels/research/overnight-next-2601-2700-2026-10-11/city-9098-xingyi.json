@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 9098,
+  "wupCityCode": 9098,
+  "queueRank": 2684,
+  "rank": 2684,
+  "cityId": "wup2025:9098",
+  "name": "Xingyi",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [25.0908649190814, 104.906478294774],
+  "centerLatLon": [25.0908649190814, 104.906478294774],
+  "population2025": 220441,
+  "population2025k": 220.441,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": null,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "No citywide public parcel source qualified. Official evidence identifies the Xingyi Natural Resources Bureau and Xingyi real-estate registration center as custodial authorities, while Guizhou Natural Resources documents describe provincial registration infrastructure and cadastral data standards.",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xingyi China official cadastral map parcel GIS land registry Xingyi Natural Resources Bureau",
+        "result": "Search did not expose a public Xingyi parcel viewer, cadastral API, downloadable parcel layer, or anonymous geometry endpoint. It surfaced official Guizhou Natural Resources cadastral/registration policy pages and an official Xingyi land-use announcement reference to the former Xingyi Natural Resources Bureau website.",
+        "actualResultUrls": [
+          "https://zrzy.guizhou.gov.cn/wzgb/zwgk/zfxxgk/fdzdgknr/qtfdxx/jyta/202507/t20250717_88298834.html",
+          "https://zrzy.guizhou.gov.cn/wzgb/ztzl/rdzt/wwbdcdjtjy_1/bdcdjzcfg/202410/P020241015550915516227.pdf",
+          "https://www.ldqxn.com/news/gonggao/20210713/507356.htm"
+        ]
+      },
+      {
+        "language": "Chinese (中文)",
+        "query": "兴义市 自然资源和规划局 不动产登记 地籍图 宗地 GIS 官方",
+        "result": "Search found the official Guizhou Natural Resources site describing a province-wide real-estate registration cloud platform and cadastral/registration rules, plus an indexed Xingyi Natural Resources Bureau profile and Xingyi registration-center report. No public Xingyi parcel map/API or safe bounded ID+geometry response was found. The search result naming the local bureau was a secondary directory, so it is not treated as first-party registry evidence.",
+        "actualResultUrls": [
+          "https://zrzy.guizhou.gov.cn/wzgb/zwgk/zfxxgk/fdzdgknr/qtfdxx/jyta/202507/t20250717_88298834.html",
+          "https://zrzy.guizhou.gov.cn/wzgb/xwzx/sxdt/202201/t20220121_72364784.html",
+          "https://gzxy.wenming.cn/wmcj/202109/t20210923_3309096.html",
+          "https://www.95ye.com/qianxinan/gov/93801.html"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://zrzy.guizhou.gov.cn/wzgb/zwgk/zfxxgk/fdzdgknr/qtfdxx/jyta/202507/t20250717_88298834.html",
+      "operator": "Guizhou Provincial Department of Natural Resources",
+      "scope": "Guizhou province; registration cloud-platform and cadastral/registration administration context",
+      "observation": "Official provincial response says a unified provincial real-estate registration cloud platform was built and shared by 9 prefectures and 88 counties. This is national/provincial agency evidence, not a public Xingyi parcel service."
+    },
+    {
+      "url": "https://gzxy.wenming.cn/wmcj/202109/t20210923_3309096.html",
+      "operator": "Xingyi Natural Resources Bureau Real Estate Registration Center (reported by Xingyi Civilization site)",
+      "scope": "Xingyi local registration center",
+      "observation": "The report identifies the local registration center and describes online registration service work, but exposes no parcel geometry service or safe public query endpoint."
+    },
+    {
+      "url": "https://www.ldqxn.com/news/gonggao/20210713/507356.htm",
+      "operator": "Xingyi Natural Resources Bureau (announcement reproduced by local news site)",
+      "scope": "Xingyi land-use administration",
+      "observation": "The announcement names the former Xingyi Natural Resources Bureau website, but it is not itself a parcel data service and the referenced URL is no longer usable."
+    },
+    {
+      "url": "https://zrzy.guizhou.gov.cn/wzgb/ztzl/rdzt/wwbdcdjtjy_1/bdcdjzcfg/202410/P020241015550915516227.pdf",
+      "operator": "Guizhou Provincial Department of Natural Resources",
+      "scope": "Guizhou/national cadastral and real-estate registration standards",
+      "observation": "Official standards document defines cadastre, cadastral survey, and real-estate units; it is policy/schema context only and does not provide Xingyi features."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://zwfw.guizhou.gov.cn/eptemp.aspx?t=Znzw.APage.page.bmqjdpage&istest=1&ocode=009605815&orgcode=37569&areacode=522301",
+      "method": "GET",
+      "status": "HTTP 558 with zero-byte body from shell",
+      "summary": "The indexed official Xingyi Natural Resources Bureau government-service page was unusable from this environment. No login, credentials, token, CAPTCHA bypass, or TLS exception was attempted."
+    },
+    {
+      "url": "http://www.gzxy.gov.cn/site/xygtj/index.html",
+      "method": "GET",
+      "status": "HTTP 404, 146-byte body",
+      "summary": "The legacy Xingyi land-bureau URL cited by an official land-use announcement no longer served the page."
+    },
+    {
+      "url": "https://www.gzxy.gov.cn/site/xygtj/index.html",
+      "method": "GET",
+      "status": "HTTP 404, 146-byte body",
+      "summary": "HTTPS retry of the legacy Xingyi land-bureau URL also returned 404."
+    },
+    {
+      "url": "https://www.rerc.com.cn/zcflk/bdcdj/index.html",
+      "method": "GET",
+      "status": "HTTP 418, 3222-byte body",
+      "summary": "The national Real Estate Registration Center policy page was not usable for an Xingyi parcel response; it was used only as discovery context."
+    },
+    {
+      "url": "https://www.gzxy.gov.cn/site/xygtj/index.html; bounded parcel query not constructed",
+      "method": "GET",
+      "status": "not attempted after 404",
+      "summary": "No public viewer JavaScript/configuration or service endpoint was available to follow, so no ID+geometry request was invented."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official provincial registration/cadastral framework and identified Xingyi local registration custodian.",
+    "verifiedOpenScope": "Custodian and policy context only; no anonymous parcel layer or feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "A Xingyi local registration center and Natural Resources Bureau are evidenced by official/officially hosted reports, but no public local cadastral map or parcel API is evidenced; registryFound remains null."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "Not assessed; no parcel geometry returned.",
+    "crs": "Not assessed; no parcel service metadata or geometry response returned.",
+    "identityReadiness": "Not assessed; no safe native parcel identity field was exposed.",
+    "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+    "attributesRequested": "No parcel attributes were requested. Owner, address, contact, titleholder, personal, tax, account, and document fields were not requested or retained."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "Serial review must independently qualify a live anonymous Xingyi parcel response, stable native identity semantics, CRS/axis handling, city coverage, and safe field behavior before runtime use.",
+  "scopeLimits": [
+    "Exact WUP point [25.0908649190814,104.906478294774] was preserved in latitude/longitude order and was not shifted.",
+    "A 558, 404, 418, timeout, map extent limitation, login wall, or unusable viewer is not evidence of citywide parcel absence.",
+    "No GeoJSON sample was retained because no safe native parcel feature with geometry and identity was obtained.",
+    "Packet completion is research evidence only and is not source integration/admission.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception used."
+  ],
+  "identityPolicy": "No GeoJSON was retained. If later obtained, retain exactly one stable native parcel identity in properties.id; keep native field mapping and any composite-key provenance in city/service-review metadata."
+}

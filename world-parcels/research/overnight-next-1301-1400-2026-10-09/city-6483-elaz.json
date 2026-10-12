@@ -1,0 +1,92 @@
+{
+  "cityCode": 6483,
+  "queueRank": 1369,
+  "name": "Elazığ",
+  "aliases": ["elaz g"],
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "iso3": "TUR",
+  "point": [38.6719567712365, 39.2095480589786],
+  "population2025": 411268,
+  "population2025k": 411.268,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "The official TKGM Elazığ regional page evidences the Elazığ Tapu Müdürlüğü under Tapu ve Kadastro XVI Bölge Müdürlüğü, establishing the local land-registry/cadastre custodian. The current public cadastral viewer is the national TKGM Parsel Sorgu service; no city-specific anonymous API, schema, CRS response, or parcel geometry was obtained in this attempt.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Elazığ Türkiye official cadastral parcel map land registry GIS TKGM Parsel Sorgu",
+        "result": "Found official TKGM Parsel Sorgu documentation and viewer, TKGM's official Elazığ regional page, and the official TKGM mobile listing. The public service is described as supporting province/district/neighborhood/parcel and coordinate/map queries, but no anonymous machine-readable parcel endpoint was exposed by the accessible result pages.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://parselsorguv2.tkgm.gov.tr/",
+          "https://www.tkgm.gov.tr/elazig-bm",
+          "https://apps.apple.com/tr/app/tkgm-parsel-sorgu/id1039822649"
+        ]
+      },
+      {
+        "language": "Turkish",
+        "query": "Elazığ resmi parsel sorgu kadastro harita TKGM",
+        "result": "Turkish-language discovery found the official TKGM Parsel Sorgulama page, current Parsel Sorgu v2 viewer, official Elazığ regional-office page, and TKGM mobile listing. The official material confirms public parcel searching and basic geographic/attribute display while excluding owner name and T.C. identity queries; no anonymous ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://parselsorguv2.tkgm.gov.tr/",
+          "https://www.tkgm.gov.tr/elazig-bm",
+          "https://apps.apple.com/tr/app/tkgm-parsel-sorgu/id1039822649"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+      "role": "TKGM official Parsel Sorgu documentation",
+      "observation": "Describes the official public service as supporting province, district, neighborhood, island/parcel, neighboring parcels, map location, area, coordinates in ITRF95 and ED50, and PDF/KML output. It states that owner name and T.C. identity-number searches are not allowed. The page links to the current viewer but does not publish an API schema."
+    },
+    {
+      "url": "https://parselsorguv2.tkgm.gov.tr/",
+      "role": "TKGM current public parcel viewer",
+      "observation": "Search result identifies the current Parsel Sorgu v2 application and its public landing page. The accessible text did not expose JavaScript configuration, service URLs, schema, CRS metadata, or an anonymous parcel response. No login or e-Devlet route was attempted."
+    },
+    {
+      "url": "https://www.tkgm.gov.tr/elazig-bm",
+      "role": "TKGM official Elazığ regional-office source",
+      "observation": "Official TKGM page evidences Tapu ve Kadastro XVI Bölge Müdürlüğü and an Elazığ Tapu Müdürlüğü, establishing the local registry/cadastre custodian. The route redirected to the general TKGM site in the accessible fetch, so no local parcel API was found."
+    },
+    {
+      "url": "https://apps.apple.com/tr/app/tkgm-parsel-sorgu/id1039822649",
+      "role": "Official TKGM Parsel Sorgu app listing",
+      "observation": "Describes administrative, address, coordinate, and map-based parcel queries and basic attributes/geographic coordinates through MEGSİS-aligned cadastral records. It warns that displayed locations may be approximate/test coordinates and are not for official or commercial use."
+    }
+  ],
+  "serviceReview": "elaz-service-review.json",
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe anonymous native parcel ID plus full polygon response was obtained from the public routes during attempt 1; no GeoJSON retained. The exact WUP point was not shifted and was not treated as an absence test."
+  },
+  "coverageAssessment": {
+    "claimedScope": "National TKGM Parsel Sorgu service and the official Elazığ regional registry/cadastre custodian.",
+    "verifiedOpenScope": "Official service documentation and viewer availability only; no open machine-readable parcel-vector coverage verified.",
+    "exactWupPointParcelSample": false,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "sourceFieldMapping": {
+    "nativeIdentity": null,
+    "nativeIdentityEvidence": "No parcel feature response obtained.",
+    "geometryField": null,
+    "sourceCrs": null,
+    "compositeKey": null
+  },
+  "safeFieldAllowlist": ["native parcel ID if publicly exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

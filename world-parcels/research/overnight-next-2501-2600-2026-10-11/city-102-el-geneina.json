@@ -1,0 +1,57 @@
+{
+  "cityCode": 102,
+  "queueRank": 2513,
+  "country": "Sudan",
+  "countryCode": "SD",
+  "name": "El Geneina",
+  "point": [13.4403833595914, 22.4459874342374],
+  "population2025": 233696,
+  "population2025k": 233.696,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "El Geneina Sudan official cadastral map parcel GIS land registry West Darfur",
+        "result": "Official Sudan National Information Centre material identified the Sudan Spatial Portal as a national interactive map browser advertising OGC WMS and WFS services. Official Judiciary-linked Aqari material describes national land-registration services. No El Geneina-specific public cadastral viewer, parcel layer, safe parcel identifier, schema/CRS response, or geometry was found in the bounded discovery.",
+        "actualResultUrls": [
+          "https://www.nic.gov.sd/public/projectDetails/3",
+          "https://aqari.nctr.sd/ar"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "السجل العقاري الجنينة السودان خريطة مساحية GIS الأراضي",
+        "result": "Arabic official results confirmed the Sudan Spatial Portal's advertised WMS/WFS capability and Aqari's land-registration and property-record remit. The results did not expose a public El Geneina parcel endpoint or safe parcel geometry. A non-official Sudan GIS result explicitly says parcel identification requires a survey-data layer that is not yet enabled and was not used as registry evidence.",
+        "actualResultUrls": [
+          "https://www.nic.gov.sd/public/projectDetails/3",
+          "https://aqari.nctr.sd/ar/about",
+          "https://ayah1122.github.io/Sudan_GIS/"
+        ]
+      }
+    ]
+  },
+  "source": {
+    "name": "Sudan Spatial Portal / National Information Centre and Aqari land-registration platform",
+    "operator": "Sudan National Information Centre; Sudan Judiciary-linked National Centre for Real Estate Technology (Aqari)",
+    "viewerUrl": "https://www.geoportal.gov.sd/",
+    "scope": "National/general spatial and land-registration documentation; no El Geneina-specific open parcel coverage verified.",
+    "crs": null,
+    "nativeIdentity": null
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "runtimeReadiness": "held",
+  "resultCategory": "official_national_spatial_and_land_registration_documentation_no_verified_open_el_geneina_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Sudan national spatial portal and national land-registration platform; no citywide parcel coverage claim.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "No public El Geneina parcel geometry, safe native parcel ID, service schema, CRS response, or cadastral extent was verified. The exact WUP point is preserved unchanged; no exact-point hit, map-extent miss, timeout, DNS failure, or unusable UI was treated as evidence of citywide absence.",
+  "safeFieldAllowlist": ["geometry", "CRS", "stable native parcel identity", "source scope/provenance"],
+  "notes": "Packet completion records executed research only; it is not source integration or admission. No GeoJSON sample was retained because no safe native parcel geometry was verified."
+}

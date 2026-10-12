@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-8870-gwoza.json",
+  "cohort": "overnight-next-2601-2700-2026-10-11",
+  "purpose": "Document first-party Borno/Nigeria cadastral-source discovery and bounded anonymous access review for Gwoza.",
+  "assessment": "BOGIS is an evidenced local/state land administration and cadastral custodian for Borno State. Its official regulations describe LAS, CAS, a digital land-use-cadastre repository, and UTM Zone 32N/Minna Datum. The current public shell and bounded route probes did not provide anonymous Gwoza parcel features, safe native IDs, or geometry. No sample GeoJSON is retained; runtime remains held.",
+  "registryAssessment": "registryFound=true is supported by official BOGIS pages and Borno State regulations that assign BOGIS responsibility for land administration, registration, searches, land databases, and cadastral mapping. This establishes custodianship, not open adapter qualification or Gwoza coverage.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointAbsenceInferred": false
+  },
+  "officialPrimarySources": [
+    {"url": "https://bogis.bornostate.gov.ng/", "operator": "Borno State Geographic Information Service", "scope": "Official BOGIS land/property administration site."},
+    {"url": "https://bogis.bornostate.gov.ng/help", "operator": "Borno State Geographic Information Service", "scope": "Official description of registered-property repository and public map/geospatial-data requests."},
+    {"url": "https://bogis.bornostate.gov.ng/assets/web/docx/2.%20Borno%20State%20Land%20Use%20Regulations%202022.pdf", "operator": "Borno State / BOGIS", "scope": "Official regulations defining LAS, CAS, digital repository, cadastre and coordinate convention."},
+    {"url": "https://birs.bo.gov.ng/home/nibss.php", "operator": "Borno State Internal Revenue Service", "scope": "Official fee/payment context for land, mapping and title transactions; not a parcel data service."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Gwoza Borno Nigeria official cadastral map parcel GIS land registry", "result": "Official BOGIS custodian found; no public anonymous parcel feature response verified.", "resultUrls": ["https://bogis.bornostate.gov.ng/", "https://bogis.bornostate.gov.ng/help", "https://bogis.bornostate.gov.ng/assets/web/docx/2.%20Borno%20State%20Land%20Use%20Regulations%202022.pdf"]},
+    {"language": "Hausa (local/regional discovery language)", "query": "Gwoza Borno Najeriya taswirar kadastro filaye rajistar ƙasa BOGIS", "result": "No Hausa-language first-party viewer/API surfaced; official English BOGIS pages were the relevant local-custodian results.", "resultUrls": ["https://bogis.bornostate.gov.ng/", "https://birs.bo.gov.ng/home/nibss.php"]}
+  ],
+  "attempts": [
+    {"url": "https://bogis.bornostate.gov.ng/", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Current official BOGIS HTML shell retrieved; informational/application content only; no parcel feature service exposed."},
+    {"url": "https://bogis.bornostate.gov.ng/help", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Official repository and public map/geospatial-data description retrieved; no anonymous geometry."},
+    {"url": "https://bogis.bornostate.gov.ng/about", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Official state land-administration description retrieved; no parcel schema or geometry."},
+    {"url": "https://bogis.bornostate.gov.ng/assets/web/docx/2.%20Borno%20State%20Land%20Use%20Regulations%202022.pdf", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Regulations inspected for CAS/LAS/repository/CRS evidence; no feature response."},
+    {"url": "https://bogis.bornostate.gov.ng/{map,maps,gis,viewer,api,parcels}", "method": "GET anonymous; TLS verified", "httpStatus": 404, "outcome": "Likely public route names returned 404; treated only as unavailable-route evidence, not absence."},
+    {"url": "https://bogis.bornostate.gov.ng/properties", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "HTML page retrieved; bounded inspection found no safe parcel ID-plus-geometry payload."},
+    {"url": "https://birs.bo.gov.ng/home/nibss.php", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Official fee page retrieved; no parcel data service."}
+  ],
+  "safeFieldAllowlist": ["native public parcel ID if later exposed", "native geometry", "geometry type", "source CRS", "layer/schema metadata", "administrative codes", "source URL", "retrieval date"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not run against a verified parcel endpoint; exact point [11.0843637172758, 13.6943416208767] remains unchanged and no absence inference is made."},
+  "coverageAssessment": {"claimedScope": "Official BOGIS state land administration/cadastral system and bounded anonymous public-site inspection.", "verifiedOpenScope": "Custodianship, system existence and CRS convention only; no open parcel feature scope.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "BOGIS may provide cadastral data by request, through a non-public application workflow, or through a future/current service not linked from the public shell. Gwoza coverage, schema, stable native identity semantics and geometry access remain unverified.",
+  "runtimeDecision": "held_not_enabled",
+  "integrationDecision": "not_integrated"
+}

@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-5260-al-qadarif.json",
+  "cityCode": 5260,
+  "queueRank": 1808,
+  "city": "Al-Qadarif",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "First-party Sudan Judiciary material evidences the land-registration custodian and a registered parcel in Al-Qadarif; the National Information Center describes a Sudan Spatial Portal with WMS/WFS. Anonymous parcel geometry and current service configuration were not verified, so no GeoJSON sample was retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Arabic discovery queries are recorded in city-5260-al-qadarif.json. They identified the Sudan Judiciary land-registration page, an Al-Qadarif-specific Judiciary court record, the NIC Spatial Portal project page, and the Aqari property-registration platform.",
+  "requestOutcomes": [
+    {"route":"https://www.nic.gov.sd/public/projectDetails/3","method":"GET via first-party indexed page","status":"200/indexed","outcome":"NIC page describes the Sudan Spatial Portal and says it provides OGC WMS and WFS services; it links to https://www.geoportal.gov.sd/. No endpoint URL or parcel layer schema was exposed in the page text."},
+    {"route":"https://www.geoportal.gov.sd/","method":"GET","status":"timeout","outcome":"Direct anonymous request from this environment timed out during DNS resolution after 20 seconds; this is an access failure only, not evidence of citywide absence."},
+    {"route":"https://aqari.nctr.sd/ar","method":"GET via first-party indexed page","status":"200/indexed","outcome":"Aqari describes a Judiciary-linked national land/property registration platform and services including land-record review, certificates and subdivision; public workflow displays login access and no anonymous parcel geometry response was obtained."},
+    {"route":"https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A","method":"GET via first-party indexed page","status":"200/indexed","outcome":"Judiciary explains the General Land Registrar, branch offices in Sudanese states, land settlement/registration procedures, and that registration records preserve real-property title documents; no public parcel API was provided."},
+    {"route":"https://sj.gov.sd/ar/content/book/%D8%A7%D9%84%D8%B4%D9%8A%D8%AE-%D8%A3%D8%AD%D9%85%D8%AF-%D8%B9%D8%A8%D8%AF-%D8%A7%D9%84%D9%85%D8%B7%D9%84%D8%A8-%D8%B6%D8%AF-%D8%AD%D8%A7%D9%85%D8%AF-%D9%82%D9%85%D8%B1-%D8%A7%D9%84%D8%A3%D9%86%D8%A8%D9%8A%D8%A7%D8%A1-%D9%88-%D8%A2%D8%AE%D8%B1","method":"GET via first-party indexed page","status":"200/indexed","outcome":"Judiciary case text names parcel 233, block 1, Hay Al-Asra, Al-Qadarif and cites a land-registration search certificate; this proves local registry evidence, not public geometry access."}
+  ],
+  "requestCoordinates": {
+    "wupPointLatLon": [14.0395560096589, 35.3847641921929],
+    "queryAttempted": false,
+    "coordinateOrderNote": "WUP point preserved exactly in latitude/longitude order; no projected query was made and no coordinate was shifted."
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if anonymously exposed", "parcel polygon geometry", "source layer metadata", "CRS metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": {"source":"not exposed by an accessible parcel endpoint","retainedSample":null},
+  "geometryQuality": "No parcel geometry obtained; no GeoJSON retained.",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "not performed because no usable anonymous parcel endpoint was reached", "requestEvidence": "tmp/valhalla-parcel-research/al-qadarif/"},
+  "coverageAssessment": {"claimedScope":"Official national land-registration and spatial-portal descriptions, with an Al-Qadarif-specific judicial record.","verifiedOpenScope":"Procedural/custodian evidence only; no citywide or countrywide parcel geometry access verified.","citywideVerified":false,"countrywideVerified":false},
+  "scopeLimits": [
+    "A source description or one court record is not a citywide parcel inventory.",
+    "The geoportal DNS timeout and Aqari login-gated workflow are not evidence of absence.",
+    "No owner, address, titleholder, contact, personal, tax/account, or other unsafe fields were requested, logged or retained.",
+    "The public materials do not establish current endpoint configuration, schema, CRS, stable parcel ID semantics, update currency, or legal boundary geometry.",
+    "No parcel sample is retained because no safe anonymous ID-plus-geometry response was verified.",
+    "Packet completion is research evidence only and does not admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "A current public WMS/WFS endpoint may exist behind the official portal, but it was not discoverable from the accessible page and direct host resolution timed out. The Judiciary evidence supports registry existence in Al-Qadarif while leaving parcel geometry availability and coverage unresolved."
+}

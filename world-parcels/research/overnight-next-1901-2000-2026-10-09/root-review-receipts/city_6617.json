@@ -1,0 +1,17 @@
+{
+  "taskId": "city:6617",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-6617-wenjiang.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/wenjiang-service-review.json",
+    "tmp/valhalla-parcel-research/6617/cdmap.html"
+  ],
+  "checkedAt": "2026-10-10T19:16:01.234251Z",
+  "reviewFinding": "Immutable WUP rank 1949, China point and 296976 persons match roster and queue. English and Chinese search records contain executed queries and result URLs. Cached first-party Chengdu map HTML names Wenjiang and the municipal planning/natural-resources operator, supporting service context; official district material supports registration custody. No parcel feature response, safe native ID, polygon sample, fresh exact-ID read, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification exists. Unavailable public routes do not establish absence.",
+  "firstPartyUrlsChecked": [
+    "https://cdmap.cd168.cn/",
+    "https://cdswjq.sczwfw.gov.cn/"
+  ]
+}

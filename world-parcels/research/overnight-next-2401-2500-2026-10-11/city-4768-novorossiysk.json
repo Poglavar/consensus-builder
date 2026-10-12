@@ -1,0 +1,37 @@
+{
+  "cityCode": 4768,
+  "queueRank": 2435,
+  "name": "Novorossiysk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "point": [44.722052530374, 37.7586750932388],
+  "population2025": 241011,
+  "population2025k": 241.011,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Novorossiysk official cadastral map public parcel map Rosreestr Novorossiysk",
+        "result": "Search identified the official national public cadastral destination as the National Spatial Data System (НСПД), and official municipal/regional zoning material naming Novorossiysk cadastral parcels. The official map page was then requested anonymously but timed out; no parcel geometry was retained.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map",
+          "https://krasnodar-gov.ru/doc/57647"
+        ]
+      },
+      {
+        "language": "Russian",
+        "query": "Новороссийск официальный кадастровая карта публичная кадастровая карта Росреестр геопортал земельные участки",
+        "result": "Russian-language discovery identified НСПД as the current public cadastral map destination and found a Novorossiysk open-data map portal. Official zoning material provides examples of native cadastral numbers, but neither source yielded a verified safe public parcel geometry response in this attempt.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map",
+          "https://xn----dtbsbdgikgdbazpac.xn--p1ai/spravochnik/map?categoryId=5",
+          "https://krasnodar-gov.ru/doc/57647"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "The national public cadastral service destination and official Novorossiysk zoning references were discovered, but anonymous map access timed out and no bounded parcel ID+geometry response was verified. An exact-point hit was not claimed and the WUP point was not shifted. This packet is not source integration or runtime admission."
+}

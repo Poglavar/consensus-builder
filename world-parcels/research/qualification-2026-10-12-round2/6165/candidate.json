@@ -1,0 +1,89 @@
+{
+  "descriptor": {
+    "id": "us-co-oit-statewide-parcels",
+    "name": "Colorado Public Parcels (OIT statewide composite)",
+    "operator": "Colorado Governor's Office of Information Technology (OIT) GIS, from county and municipal parcel data",
+    "endpoint": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+    "adapter": "arcgis",
+    "idFields": [
+      "countyName",
+      "parcel_id"
+    ],
+    "idFieldTypes": {
+      "countyName": "string",
+      "parcel_id": "string"
+    },
+    "objectIdField": "OBJECTID",
+    "outFields": [
+      "OBJECTID",
+      "countyName",
+      "parcel_id"
+    ],
+    "attributeNotNull": [
+      "parcel_id"
+    ],
+    "nativeGeometryMode": "parts",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "disjointParts": false,
+    "idPrefix": "US-COLORADO-STATEWIDE-",
+    "metricSrid": 32613,
+    "stateCode": "CO",
+    "countryCode": "US",
+    "pageSize": 500,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "maxConcurrentQueries": 2,
+    "scope": "OIT statewide composite of 44 of 64 Colorado counties (2,600,023 rows on 2026-10-12). Canonical identity is countyName plus the county parcel_id; same-key rows form one native parcel group. Rows without parcel_id (5,310) are excluded.",
+    "caveats": [
+      "Absent counties: Alamosa, Baca, Bent, Chaffee, Cheyenne, Conejos, Costilla, Crowley, Delta, Fremont, Jackson, Kiowa, Kit Carson, Las Animas, Lincoln, Mineral, Montrose, Otero, Phillips, Prowers.",
+      "parcel_id is county-scoped (the Denver entry fixes countyName for this reason), so identity is the composite countyName~parcel_id.",
+      "Larimer (1,133 IDs) and Boulder (834 IDs) publish one parcel_id on several polygons plus stacked byte-identical copies (up to 487 rows); all components are fetched and unioned. disjointParts is off because stacked copies fail the overlap check (Boulder 146329311017 failed with it on); sampled distinct components did not overlap.",
+      "Distinct parcel_ids can share one identical polygon (stacked condominium units; 25 shared polygons in one 0.01 degree Fort Collins box)."
+    ],
+    "attribution": "Colorado Governor's Office of Information Technology GIS and contributing counties. Adapted to WGS84.",
+    "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+    "catalogueUrl": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+    "evidenceFile": "research/statewide-us-2026-10-12/CO.json",
+    "cityIds": [
+      "6165"
+    ],
+    "discovery": {
+      "jurisdiction": {
+        "countryCode": "US",
+        "admin1": [
+          "US-CO"
+        ],
+        "excludeAdmin1": [],
+        "basis": "OIT aggregates county and municipal parcels into one statewide layer, but only 44 of 64 counties are present; cities in the 20 absent counties cannot qualify.",
+        "evidence": [
+          "research/statewide-us-2026-10-12/CO.json",
+          "research/subnational/US/CO.json"
+        ]
+      },
+      "paceMs": 1000
+    }
+  },
+  "city": {
+    "code": "6165",
+    "name": "Greeley",
+    "point": [
+      -104.71555057375,
+      40.4065900589356
+    ]
+  },
+  "sampleIds": [
+    "US-COLORADO-STATEWIDE-Weld~096118205001",
+    "US-COLORADO-STATEWIDE-Weld~096107319007"
+  ],
+  "absentId": "US-COLORADO-STATEWIDE-Zzzz~999999999999",
+  "metricEpsg": "EPSG:32613",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Colorado Public Parcels (OIT statewide composite)",
+      "OIT aggregates county and municipal parcels into one statewide layer, but only 44 of 64 counties are present; cities in the 20 absent counties cannot qualify."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

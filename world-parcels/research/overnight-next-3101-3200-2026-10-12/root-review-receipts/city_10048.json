@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10048",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-10048-jiaxiang.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/jiaxiang-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T04:53:32Z",
+  "finding": "Queue, ranked roster, and SHA-256-verified UN 2025 row agree: Jiaxiang, China, rank 3182, point [35.4169990069877,116.370079435903], 188977 persons. English and Simplified Chinese executed searches are recorded. Official Jining government service list independently confirms 嘉祥县不动产登记中心 and registration functions; this grounds registryFound=true only. No anonymous native-ID/full-polygon response, sample, source schema, or CRS was obtained. No fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification. Zero retained polygons; citywide absence is unresolved. Held without runtime admission.",
+  "samplePolygonCount": 0,
+  "runtimeAdmitted": false
+}

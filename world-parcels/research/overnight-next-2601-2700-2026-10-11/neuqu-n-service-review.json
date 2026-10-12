@@ -1,0 +1,22 @@
+{
+  "cityRecord": "city-2456-neuqu-n.json",
+  "cityCode": 2456,
+  "queueRank": 2640,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "conclusion": "First-party DPCeIT provincial cadastral parcel service was verified anonymously with a bounded GeoJSON response near Neuquén; exact WUP point query was empty. A three-polygon sample is retained, but citywide coverage and runtime qualification remain held.",
+  "attemptedRoutes": [
+    {"route": "English first-party discovery", "outcome": "Found DPCeIT, IDE/Catastro ArcGIS service, Parcelas layer, and ITC public WFS/WMS documentation."},
+    {"route": "Spanish first-party discovery", "outcome": "Found the same DPCeIT and official parcel service leads."},
+    {"route": "IDE/Catastro service root and Parcelas metadata", "outcome": "HTTP 200; layer 4 is polygon Parcelas, service output CRS 4326, source CRS POSGAR 1994 Argentina Zone 2; native OBJECTID available."},
+    {"route": "Exact WUP point query", "outcome": "HTTP 200 empty FeatureCollection; no absence inference."},
+    {"route": "Bounded Neuquén envelope query", "outcome": "HTTP 200, three geometry-plus-OBJECTID features, exceededTransferLimit=true; three safe polygons retained."},
+    {"route": "Alternative EditFeatures Parcelas endpoint", "outcome": "Timed out after 15 seconds; no response retained."}
+  ],
+  "scopeLimits": ["The provincial service scope is broader than the city; the query envelope is local evidence, not citywide completeness.", "Exact-point empty result, timeout, map extent miss, login wall, or unusable UI is not evidence of citywide parcel absence.", "WUP point remains exactly [-38.9516300686619,-68.0804705509146] in latitude/longitude order.", "Packet completion is not source integration or admission."],
+  "safeFieldPolicy": {"allowed": ["id", "geometry"], "candidateNativeIds": ["OBJECTID", "PAR_ID", "PAR_NOMENCLATURA"], "selectedNativeId": "OBJECTID", "nativeFieldMapping": {"OBJECTID": "properties.id"}, "excluded": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "document details"], "retainedNativeFields": false, "reason": "The live query requested only OBJECTID and geometry; retained properties contain only canonical id."},
+  "sourceAssessment": {"localRegistryCustodian": "Dirección Provincial de Catastro e Información Territorial de Neuquén (DPCeIT), with first-party service and Neuquén Capital office evidence.", "generalAgencyEvidence": ["Instituto Geográfico Nacional provincial office listing"], "verifiedForReno": false, "verifiedForNeuquen": true, "reason": "First-party provincial cadastral service returned local parcel geometry near the WUP point; municipal boundary completeness was not tested."},
+  "runtimeReadiness": "held",
+  "uncertainty": ["The exact point lies outside the returned parcel polygons or no parcel intersects that coordinate; this cannot distinguish point placement from service geometry coverage.", "Provincial service metadata lists many native fields, but only OBJECTID was requested and retained; stable cross-version identity semantics need serial review.", "The alternate EditFeatures endpoint timed out and does not invalidate the successful IDE/Catastro service."],
+  "completionSummary": {"parcelSourceVerified": true, "geometrySampleRetained": 3, "unsafeFieldsRequested": false, "tlsExceptions": 0, "runtimeReadiness": "held"}
+}

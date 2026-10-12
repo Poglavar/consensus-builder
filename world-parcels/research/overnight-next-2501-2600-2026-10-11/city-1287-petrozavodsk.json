@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 1287,
+  "queueRank": 2583,
+  "name": "Petrozavodsk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "point": [61.7820967154525, 34.3496012260753],
+  "population2025": 227487,
+  "population2025k": 227.487,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Petrozavodsk official cadastral map GIS parcel public map Rosreestr NSPD",
+        "result": "Found the current official federal NSPD public cadastral-map route and official Republic of Karelia cadastral-government material. Search results did not establish a separate open municipal parcel service. The NSPD viewer was not retrievable by bounded anonymous request.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map",
+          "https://gov.karelia.ru/news/31-01-2025-v-karelii-nachali-podgotovku-k-gosudarstvennoy-kadastrovoy-otsenke-zemelnykh-uchastkov-v-2026-godu/",
+          "https://kodeks.karelia.ru/api/show/919330320"
+        ]
+      },
+      {
+        "language": "Russian (native/local)",
+        "query": "Петрозаводск официальная публичная кадастровая карта Росреестр НСПД кадастровые участки",
+        "result": "Найдены официальный портал НСПД как текущий публичный кадастровый маршрут и официальный материал Правительства Республики Карелия о кадастровой оценке земель. Отдельный открытый муниципальный сервис участков не подтверждён. Прямой анонимный запрос НСПД завершился тайм-аутом.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map",
+          "https://gov.karelia.ru/news/31-01-2025-v-karelii-nachali-podgotovku-k-gosudarstvennoy-kadastrovoy-otsenke-zemelnykh-uchastkov-v-2026-godu/",
+          "https://kodeks.karelia.ru/api/show/919330320"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://nspd.gov.ru/map",
+      "operator": "Rosreestr / National Spatial Data System (NSPD)",
+      "evidence": "Current official federal public cadastral-map viewer route identified by official public-sector references; direct anonymous access from this workspace timed out before viewer configuration or features were returned."
+    },
+    {
+      "url": "https://gov.karelia.ru/news/31-01-2025-v-karelii-nachali-podgotovku-k-gosudarstvennoy-kadastrovoy-otsenke-zemelnykh-uchastkov-v-2026-godu/",
+      "operator": "Government of the Republic of Karelia",
+      "evidence": "Official regional government notice discusses state cadastral valuation of land in Karelia and the submission of land-parcel characteristics; it is regional cadastral context, not an open parcel-feature endpoint."
+    },
+    {
+      "url": "https://kodeks.karelia.ru/api/show/919330320",
+      "operator": "Officially published Petrozavodsk urban-planning rules",
+      "evidence": "Petrozavodsk urban-district land-use and development rules identify the city planning/cadastral context, but do not provide a verified public parcel API."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://nspd.gov.ru/map",
+      "method": "GET",
+      "status": "timeout",
+      "summary": "Anonymous HTTPS request with normal TLS and browser-like headers timed out after 20 seconds; no HTML, JavaScript/configuration, schema, CRS, parcel ID, or geometry was returned."
+    },
+    {
+      "url": "https://nspd.gov.ru/",
+      "method": "GET",
+      "status": "not executed",
+      "summary": "The root route was not separately retried after the map request timed out; no login, credentials, CAPTCHA bypass, private token, or TLS weakening was used."
+    },
+    {
+      "url": "https://nspd.gov.ru/api/geoportal/v2/search/geoportal?query=61.7820967154525%2C34.3496012260753&thematicSearchId=1",
+      "method": "GET",
+      "status": "not executed",
+      "summary": "A coordinate search would not be treated as a citywide absence test, and the viewer/API configuration was unavailable after the bounded map timeout; no speculative endpoint response was recorded."
+    },
+    {
+      "url": "https://rosreestr.gov.ru/",
+      "method": "GET via first-party web discovery",
+      "status": "not directly fetched",
+      "summary": "Rosreestr was identified as the federal cadastral authority behind NSPD; no separate direct feature response was obtained in this attempt."
+    },
+    {
+      "url": "https://gov.karelia.ru/news/31-01-2025-v-karelii-nachali-podgotovku-k-gosudarstvennoy-kadastrovoy-otsenke-zemelnykh-uchastkov-v-2026-godu/",
+      "method": "GET via web discovery/index",
+      "status": "200 in indexed first-party result",
+      "summary": "Official Karelia government cadastral notice was found and inspected for regional custodial/coverage context."
+    },
+    {
+      "url": "https://kodeks.karelia.ru/api/show/919330320",
+      "method": "GET via web discovery/index",
+      "status": "200 in indexed result",
+      "summary": "Published Petrozavodsk urban-planning rules were found and inspected; no parcel service schema was exposed."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "geometry": "Not available: no bounded anonymous parcel feature response returned.",
+      "native identity": "Not available: viewer/API schema was not retrieved."
+    },
+    "crs": "Not confirmed.",
+    "geometryType": "Not confirmed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "NSPD is the current federal public cadastral-map route; official Republic of Karelia material confirms cadastral land-data activity in the region.",
+    "verifiedOpenScope": "Federal viewer and regional cadastral context only; Petrozavodsk parcel geometry and native-ID coverage were not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No exact-point result was obtained because the official viewer timed out. This is an access limitation, not evidence of citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "rights/title details", "ownership/encumbrances", "personal data"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_current_viewer_geometry_unverified",
+  "remainingUncertainty": "The official NSPD route is plausible and current, but this workspace could not retrieve the viewer/API configuration, CRS, schema, native parcel identity, or geometry. No local Petrozavodsk open parcel service was independently evidenced.",
+  "nextStep": "Serial reviewer should retry NSPD from an eligible network, follow first-party JavaScript/configuration, and issue a tiny safe ID-plus-geometry request before considering adapter qualification."
+}

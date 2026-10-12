@@ -1,0 +1,16 @@
+{
+  "taskId": "city:8642",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-8642-timika.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/timika-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:36:54Z",
+  "reason": "WUP code 8642, rank 1510, Indonesia, exact point and 375910 persons match immutable roster and queue. Separate English and Indonesian searches are recorded with queries and result URLs. Official Mimika land-office custody is supported. BHUMI route probes returned 404 or required a token; no anonymous safe native-ID plus complete-polygon response was recorded. These access findings do not establish citywide absence. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are unproved.",
+  "independentlyCheckedFirstPartyUrls": [
+    "https://diskominfo.mimikakab.go.id/berita/bupati-mimika-hadiri-rapat-koordinasi-gugus-tugas-reforma-agraria-tahun-2026"
+  ],
+  "sourceAdmission": "not_admitted"
+}

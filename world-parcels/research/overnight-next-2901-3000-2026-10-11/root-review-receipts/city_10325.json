@@ -1,0 +1,31 @@
+{
+  "taskId": "city:10325",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-10325-vaniyambadi.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/vaniyambadi-service-review.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/provenance.json"
+  ],
+  "checkedAt": "2026-10-11T23:43:48.379097Z",
+  "city": "Vaniyambadi",
+  "queueRank": 2961,
+  "identityCheck": "Exact city code, rank, country, country code, WUP point and population persons match immutable pending queue; population converted from thousands.",
+  "searchCheck": "Packet records executed English and Tamil queries with result URLs; paired review agrees.",
+  "sampleCheck": "Zero retained polygons; therefore the three-polygon cap and safe-attribute constraint are met without claiming a verified native ID or geometry.",
+  "custodyDecision": "First-party institutional land/cadastral custody supported; public parcel geometry and citywide coverage remain unresolved.",
+  "firstPartyRoutesChecked": [
+    "https://www.tngis.tn.gov.in/apps.html",
+    "https://www.tnurbantree.tn.gov.in/vaniyambadi/revenue/"
+  ],
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGEOSValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Tamil Nadu land/FMB services are documented, but current public parcel payload and municipal ward map were unavailable in bounded requests. No original first-party parcel response/cache artifact exists for independent acceptance metrics. Keep held; do not infer citywide absence from an access wall, timeout, or missing viewer.",
+  "runtimeAction": "No registry, source catalog, city configuration, or coverage/report admission update."
+}

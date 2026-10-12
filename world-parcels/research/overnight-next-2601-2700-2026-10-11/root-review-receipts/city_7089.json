@@ -1,0 +1,26 @@
+{
+  "taskId": "city:7089",
+  "decision": "held",
+  "checkedAt": "2026-10-11T16:46:46Z",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-7089-habiganj.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/habiganj-service-review.json",
+    "tmp/valhalla-parcel-research/7089/divisions.json",
+    "tmp/valhalla-parcel-research/7089/districts.json",
+    "tmp/valhalla-parcel-research/7089/thanas.json",
+    "tmp/valhalla-parcel-research/7089/capabilities.xml",
+    "tmp/valhalla-parcel-research/7089/main.js",
+    "tmp/valhalla-parcel-research/7089/settlement.html"
+  ],
+  "identityFinding": "Official WUP 2025 archive SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, rank roster, queue, and packet agree: code 7089, rank 2639, Bangladesh, [24.381164778136,91.4133279376892] latitude/longitude, 223874 persons.",
+  "searchFinding": "Paired packet and review record English and Bengali query text, result URLs, and subsequent first-party viewer/portal requests; no separate query-execution transcript was retained.",
+  "custodyFinding": true,
+  "custodyReason": "Official Bangladesh land-record/map services and Habiganj district administrative listing support public institutional record-service custody; city/Sadar parcel geometry and citywide coverage remain unverified.",
+  "geometryFinding": "Zero retained full parcel polygons. Cached administrative cascade shows Sylhet and Habiganj district but only Bahubal at the bounded next level. Cached GIS capabilities response is HTTP 503; this and a city point cannot establish citywide absence.",
+  "qualificationFinding": "No native parcel-ID geometry read, forced paging, 13 bounded cells, independent metric GEOS operation checks, source binding, or headed Details-panel verification; runtime remains held.",
+  "runtimeAdmitted": false
+}

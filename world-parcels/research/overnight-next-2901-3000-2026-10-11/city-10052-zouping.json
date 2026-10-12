@@ -1,0 +1,108 @@
+{
+  "cityCode": 10052,
+  "queueRank": 2930,
+  "name": "Zouping",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [36.8848973742942, 117.762839376346],
+  "population2025": 203838,
+  "population2025k": 203.838,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zouping China official cadastral parcel map land registration natural resources GIS",
+        "result": "First-party discovery reached the Ministry of Natural Resources public services and the national real-estate-registration-center directory, but did not expose a Zouping-specific public cadastral viewer, current JavaScript/configuration, anonymous parcel API, schema, CRS, or safe native-ID-plus-geometry response. A Zouping-specific directory result describes the Zouping Natural Resources and Planning Bureau, but is not first-party evidence.",
+        "actualResultUrls": [
+          "https://www.rerc.com.cn/",
+          "https://z.mnr.gov.cn/",
+          "https://www.webmap.cn/main.do?method=index1"
+        ]
+      },
+      {
+        "language": "Chinese (native/local)",
+        "query": "邹平市 官方 不动产登记 地籍图 地图 查询 自然资源和规划局",
+        "result": "The bounded native-language search did not identify a directly accessible official Zouping parcel viewer or feature service. Search results included a non-first-party directory describing 邹平市自然资源和规划局 and 邹平市不动产登记中心, but that material was not used as proof of a public service or local registry endpoint.",
+        "actualResultUrls": [
+          "https://www.95ye.com/shop/mobile-do-detail-id-69149.html",
+          "https://www.95ye.com/article/60277.html",
+          "https://www.rerc.com.cn/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "separate first-party English and Chinese discovery, official national-service page inspection, and bounded TLS-verified direct retrieval/search-result inspection",
+  "sourceReview": "No local Zouping registry/cadastre/map service was directly evidenced. National natural-resources and registration portals provide general institutional context only; the Zouping-specific results located were secondary directory pages and exposed no qualified parcel geometry service.",
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.rerc.com.cn/",
+      "httpStatus": 418,
+      "outcome": "The official Natural Resources Ministry real-estate-registration-center site was identified, but automated retrieval returned HTTP 418 and no Zouping service or local viewer route was obtained. No bypass, login, or credential use was attempted."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://z.mnr.gov.cn/",
+      "httpStatus": 200,
+      "outcome": "Official national land-acquisition information portal was reachable, but it is not a Zouping cadastral parcel viewer and no safe parcel feature endpoint was exposed in bounded inspection."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.webmap.cn/main.do?method=index1",
+      "httpStatus": 200,
+      "outcome": "Official national geographic-information catalogue was identified; its public description provides general catalogue/base-map information, not Zouping parcel geometry or a native parcel identity response."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.95ye.com/shop/mobile-do-detail-id-69149.html",
+      "httpStatus": null,
+      "outcome": "Secondary directory result describes the Zouping Natural Resources and Planning Bureau and general registration responsibilities. It is not first-party evidence and exposes no public map/API route; it was not used to set registryFound true."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.95ye.com/article/60277.html",
+      "httpStatus": null,
+      "outcome": "Secondary directory result describes the Zouping Real Estate Registration Center and office duties. It is not first-party evidence and contains no public parcel geometry service."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "No public Zouping cadastral viewer or current JavaScript/configuration endpoint found.",
+    "geometryCrs": "Not observed.",
+    "nativeIdentity": "Not observed; no parcel feature response obtained.",
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [36.8848973742942, 117.762839376346] preserved; no coordinate shift or parcel-hit inference.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No public feature-query route was exposed; no exact-point hit or miss was inferred."
+    }
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "No local registry custodian was first-party evidenced and no public anonymous parcel geometry/native identity response was qualified."
+  },
+  "scopeLimits": [
+    "Exact WUP point preserved and not shifted.",
+    "No exact-point hit or miss, map-extent miss, timeout, HTTP 418, login wall, or unusable UI was used as evidence of citywide cadastral absence.",
+    "General national portals and secondary directory descriptions do not establish a local public parcel service.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, service CRS, viewer configuration, or stable parcel-identity semantics were verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained."
+  ],
+  "uncertainty": "Zouping-specific custodianship and any current public parcel API remain unverified. Runtime/admission remains held; this packet is not source integration/admission."
+}

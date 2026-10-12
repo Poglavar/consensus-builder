@@ -1,0 +1,141 @@
+{
+  "cityCode": 10110,
+  "queueRank": 2914,
+  "name": "Xiangcheng",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [33.4189013587646, 114.912081163728],
+  "population2025": 204799,
+  "population2025k": 204.799,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xiangcheng Zhoukou China official natural resources cadastral map parcel land registry GIS",
+        "result": "First-party discovery identified the official Xiangcheng Natural Resources and Planning Bureau, the Xiangcheng Real Estate Registration Center, Zhoukou municipal natural-resources custody, and the Henan Tianditu Zhoukou portal. No safe anonymous parcel-vector response, native parcel ID, schema, CRS, or geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/xxgk/jcxxgk/jgsz/jgxq/zfgzbm/article32e9be6492194a97b05d7bb85a411f8d.html",
+          "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/xwdt/gsgg/article5ECC7862E0CB4E88AF4E4CEB4472724D.html",
+          "https://zrzyhghj.zhoukou.gov.cn/sitesources/zrzyj/page_pc/index.html",
+          "https://henan.tianditu.gov.cn/zhoukou/"
+        ],
+        "scope": "Identify local registry custody and a public source-native parcel geometry service without requesting owner, address, titleholder, contact, tax, account, certificate, or other unsafe fields."
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "项城市 自然资源和规划局 不动产登记 地籍图 宗地 地图 官方",
+        "result": "中文一方检索确认项城市自然资源和规划局承担自然资源和不动产确权登记、权籍调查、不动产测绘及信息平台职责，并确认项城市不动产登记中心使用该局登记专用章。未验证匿名宗地要素响应、原生宗地标识、坐标系或公开宗地几何接口。",
+        "actualResultUrls": [
+          "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/xxgk/jcxxgk/jgsz/jgxq/zfgzbm/article32e9be6492194a97b05d7bb85a411f8d.html",
+          "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/xwdt/gsgg/article5ECC7862E0CB4E88AF4E4CEB4472724D.html",
+          "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/zfxxgkpt/bmzbptlj/zfbm/szrzyhghj/articlec32b14a0d1cb404fb93ad61e3e7359c7.html",
+          "https://henan.tianditu.gov.cn/zhoukou/contact.html?type=1"
+        ],
+        "method": "独立中文检索后查看项城市政府、周口市自然资源和规划局及河南天地图官方页面；未使用身份认证或个人不动产查询。",
+        "scope": "确认本地登记保管机构并寻找匿名安全宗地几何；不把页面缺失或访问失败解释为城市无宗地覆盖。"
+      }
+    ]
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Xiangcheng Natural Resources and Planning Bureau / Xiangcheng Real Estate Registration Center",
+    "url": "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/xxgk/jcxxgk/jgsz/jgxq/zfgzbm/article32e9be6492194a97b05d7bb85a411f8d.html",
+    "operator": "Xiangcheng Municipal Natural Resources and Planning Bureau; Xiangcheng Real Estate Registration Center; Zhoukou Municipal Natural Resources and Planning Bureau",
+    "serviceType": "Official local registry/cadastral custodian evidence plus official Henan Tianditu public map/resource portal; no safe anonymous parcel-vector response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "Official pages describe registration, cadastral survey, cadastral mapping, and information-platform duties but expose no parcel feature schema or stable native identity in the reviewed public material.",
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Local registry custody is evidenced. No owner, address, titleholder, tax, contact, certificate, account, or other unsafe field was requested. Runtime admission is not implied."
+  },
+  "requests": [
+    {
+      "url": "https://zrzyhghj.zhoukou.gov.cn/sitesources/zrzyj/page_pc/index.html",
+      "method": "GET; anonymous with TLS verification",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "result": "Official Zhoukou Natural Resources and Planning Bureau HTML loaded. It linked to the official Zhoukou Tianditu portal and an official real-estate registration site, but exposed no parcel feature endpoint or safe parcel payload."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/zhoukou/",
+      "method": "GET; anonymous with TLS verification",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "result": "Official Zhoukou city portal loaded. Current HTML/JavaScript exposed general map, thematic-layer, service-resource, and Tianditu API links; no cadastral/parcel layer, schema, native ID, CRS, or geometry response was exposed."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/zhoukou/contact.html?type=1",
+      "method": "GET; anonymous with TLS verification",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "result": "Official contact/service page loaded. It listed general public map/API and thematic resources, including administrative, transport, water-system, and settlement features; no cadastral parcel resource was identified."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/zhoukou/map/",
+      "method": "GET; anonymous with TLS verification",
+      "httpStatus": 404,
+      "contentType": "text/html; charset=UTF-8",
+      "result": "Bounded guessed map route returned 404; this is not evidence of citywide parcel absence. No payload was retained."
+    },
+    {
+      "url": "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/xxgk/jcxxgk/jgsz/jgxq/zfgzbm/article32e9be6492194a97b05d7bb85a411f8d.html",
+      "method": "GET; anonymous with TLS verification",
+      "httpStatus": 0,
+      "result": "TLS verification failed locally because the official host certificate chain was not trusted by the request environment. No certificate exception was used, and no conclusion about page or parcel availability was drawn. Search-indexed first-party content was recorded separately."
+    },
+    {
+      "url": "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/xwdt/gsgg/article5ECC7862E0CB4E88AF4E4CEB4472724D.html",
+      "method": "GET; anonymous with TLS verification",
+      "httpStatus": 0,
+      "result": "TLS verification failed locally because the official host certificate chain was not trusted by the request environment. No certificate exception was used, and no conclusion about page or parcel availability was drawn. Search-indexed first-party content was recorded separately."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official Xiangcheng and Zhoukou government pages, independent English and Simplified-Chinese discovery, current public Henan Tianditu Zhoukou HTML/JavaScript shell, and bounded anonymous requests.",
+    "verifiedOpenScope": "Local registry/cadastral custodian and general public map-resource portal are evidenced; anonymous parcel geometry, native identity, CRS, schema, exact-point hit, and citywide completeness remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_unverified",
+  "technicalBlocker": "No official anonymous parcel-vector endpoint was identified. The available public Tianditu surface exposed general map/thematic/API resources, while direct Xiangcheng government retrieval was blocked by local TLS-chain verification. No credentials, CAPTCHA bypass, private token, or identity-gated property query was used.",
+  "remainingUncertainty": "A separately published municipal, provincial, or internal map-service route may exist. The exact unchanged WUP point [33.4189013587646, 114.912081163728] was not tested against a verified cadastral endpoint; no zero-hit or citywide-absence inference is made.",
+  "nextStep": "Serial reviewer may independently inspect a genuinely public anonymous network flow or published metadata endpoint and qualify safe native parcel ID plus full geometry only if actually returned; keep runtime readiness held.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "wupCityCode": 10110,
+  "cityId": "wup2025:10110",
+  "runtimeReadiness": "held_pending_independent_public_geometry_qualification",
+  "adapterReady": false,
+  "centerLatLon": [33.4189013587646, 114.912081163728],
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged WUP 2025 settlement point (latitude, longitude); not shifted to force a parcel hit.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Xiangcheng Natural Resources and Planning Bureau page assigns the bureau responsibility for unified natural-resource and real-estate registration, cadastral survey, cadastral mapping, and the registration information platform. A separate official Xiangcheng notice identifies the Real Estate Registration Center and its bureau registration seal. This establishes local institutional custody, not public anonymous parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/xxgk/jcxxgk/jgsz/jgxq/zfgzbm/article32e9be6492194a97b05d7bb85a411f8d.html",
+    "https://www.xiangcheng.gov.cn/sitesources/xcs/page_pc/xwdt/gsgg/article5ECC7862E0CB4E88AF4E4CEB4472724D.html",
+    "https://zrzyhghj.zhoukou.gov.cn/sitesources/zrzyj/page_pc/index.html"
+  ],
+  "runtimeAssessment": {
+    "status": "held_unknown_no_verified_public_geometry",
+    "reason": "No anonymous parcel geometry endpoint was verified or queried at the exact WUP point. General public map resources and TLS-blocked government pages do not establish parcel coverage or absence."
+  },
+  "cohort": "overnight-next-2901-3000",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

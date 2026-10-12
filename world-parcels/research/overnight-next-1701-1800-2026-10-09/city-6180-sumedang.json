@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 6180,
+  "queueRank": 1767,
+  "name": "Sumedang",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "cityId": "wup2025:6180",
+  "point": [-6.82984799316414, 107.937736915745],
+  "centerLatLon": [-6.82984799316414, 107.937736915745],
+  "population2025": 324936,
+  "population2025k": 324.936,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted; official local portal was unavailable and national portal exposed no Sumedang parcel dataset in the anonymous resource listing",
+  "nativeIdReadiness": "not established; no safe ID-plus-geometry feature response was retrieved",
+  "sourceIds": [],
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sumedang Indonesia official GIS cadastral parcel map BPN Geoportal",
+        "result": "Found the official Kabupaten Sumedang SIGEOL portal and ATR/BPN BHUMI/ATLAS portal. Search results describe Sumedang's local geospatial portal and the national land-data portal, but did not expose a direct Sumedang parcel feature endpoint.",
+        "actualResultUrls": ["https://gis.sumedangkab.go.id/", "https://atlas.atrbpn.go.id/", "https://bhumi.atrbpn.go.id/bantuan/landing"]
+      },
+      {
+        "language": "native/local",
+        "query": "Sumedang peta bidang tanah resmi ATR BPN GIS",
+        "result": "Found the official SIGEOL portal, whose indexed page lists mapped villages and a 'Persil yang sudah dipetakan' column, plus ATR/BPN BHUMI documentation. No public Sumedang parcel feature response was identified.",
+        "actualResultUrls": ["https://gis.sumedangkab.go.id/", "https://atlas.atrbpn.go.id/", "https://bhumi.atrbpn.go.id/bantuan/katalog_data"]
+      }
+    ]
+  },
+  "officialLeads": [
+    {
+      "url": "https://gis.sumedangkab.go.id/",
+      "operator": "Pemerintah Kabupaten Sumedang / SIGEOL",
+      "observation": "Official local geospatial portal. Indexed content describes data sharing for Kabupaten Sumedang and a village table with a 'Persil yang sudah dipetakan' field. Direct fetch returned a Cloudflare 5xx error page, so no current map JavaScript, configuration, schema, CRS, ID, or geometry could be inspected."
+    },
+    {
+      "url": "https://atlas.atrbpn.go.id/",
+      "operator": "Kementerian ATR/BPN",
+      "observation": "Official national geospatial portal. Its public resource API exposed seven published datasets; none was a Sumedang parcel layer. BHUMI documentation states that land-parcel data may include area, kelurahan, NIB, object name, rights status, and land use; those fields were not requested or retained."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/landing",
+      "operator": "Kementerian ATR/BPN",
+      "observation": "Official documentation for the public interactive land/spatial portal. It warns that displayed data may not be complete or current and that official use requires an information request. This is provenance/documentation, not a Sumedang parcel response."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://gis.sumedangkab.go.id/",
+      "method": "GET",
+      "status": "Cloudflare 5xx error page",
+      "summary": "The official local portal was reachable only as an error page; no JavaScript/configuration or public parcel service could be followed. This is not evidence of local parcel absence."
+    },
+    {
+      "url": "https://atlas.atrbpn.go.id/",
+      "method": "GET",
+      "status": "official portal HTML observed",
+      "summary": "Current Next.js assets were inspected to identify the public resource route; no login or private token was used."
+    },
+    {
+      "url": "https://atlas.atrbpn.go.id/geonode/api/v2/resources?format=json&page_size=1000",
+      "method": "GET",
+      "status": "200 JSON",
+      "summary": "Anonymous public resource listing returned total=7. Published layers included land-office locations, hazard/health datasets, and non-Sumedang examples, but no Sumedang cadastral parcel layer. No unsafe attributes were requested or retained."
+    },
+    {
+      "url": "https://atlas.atrbpn.go.id/api/v2/resources?format=json&page_size=1000",
+      "method": "GET",
+      "status": "404 HTML",
+      "summary": "The frontend-followed route was /geonode/api/v2/resources; the root /api/v2 route was not a valid public route."
+    },
+    {
+      "url": "https://geosrv-app.atrbpn.go.id/geoserver/geonode/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "GET",
+      "status": "DNS resolution failure from this environment",
+      "summary": "The remote WMS/WFS host advertised in ATLAS resource metadata could not be resolved. No WFS schema or feature request was made successfully."
+    },
+    {
+      "url": "https://geosrv-app.atrbpn.go.id/geoserver/geonode/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=geonode:lbs_parsial",
+      "method": "GET",
+      "status": "DNS resolution failure from this environment",
+      "summary": "A metadata-only schema attempt against an advertised ATLAS layer failed before connection; no parcel attributes or geometry were obtained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "SIGEOL is presented as a Kabupaten Sumedang geospatial portal; the indexed village table reports mapped-persil progress. ATR/BPN ATLAS is national and not city-specific in the exposed listing.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "safeFieldAllowlist": ["native parcel ID if publicly exposed", "geometry"],
+  "sourceFieldMapping": {
+    "nativeIdentity": null,
+    "fallbackEsriIdentity": null,
+    "geometryField": null,
+    "nativeCrs": null,
+    "compositeKey": null
+  },
+  "resultCategory": "official_local_portal_unavailable_national_catalog_no_city_parcel_layer",
+  "blocker": "No bounded anonymous ID-plus-geometry response was available: the local SIGEOL portal returned a Cloudflare error page, while the national ATLAS catalog exposed no Sumedang parcel layer and its advertised GeoServer host failed DNS resolution.",
+  "remainingUncertainty": "The exact WUP point was preserved and not shifted. No exact-point hit or map extent test was treated as a citywide absence claim. Current local service routes, schema, CRS, native parcel identity, coverage, and geometry quality remain unverified.",
+  "runtimeReadiness": "held",
+  "nextStep": "Retry SIGEOL and the official ATLAS/GeoServer route from a network where the current portal and advertised host resolve, then request only a small bounded parcel ID-plus-geometry response before considering any sample or adapter qualification."
+}

@@ -1,0 +1,78 @@
+{
+  "cityCode": 7339,
+  "queueRank": 1715,
+  "name": "Jianyang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [30.3999547380672, 104.542687424704],
+  "population2025": 333938,
+  "population2025k": 333.938,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jianyang China official cadastral parcel map land registry GIS",
+        "result": "Search did not identify a Jianyang-specific anonymous public parcel feature service. Results identified the official municipal government domain and a first-party procurement record naming the local planning and natural-resources bureau, but not a safe parcel ID plus geometry endpoint.",
+        "actualResultUrls": ["https://www.scjy.gov.cn/", "https://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202307/t20230713_20259347.htm"]
+      },
+      {
+        "language": "native/local",
+        "query": "简阳市 不动产登记 地籍图 查询 官方",
+        "result": "Search identified the local planning and natural-resources bureau and procurement evidence for Jianyang natural-resource mapping/monitoring. No public anonymous cadastral viewer/API response with a stable parcel identity and full polygon was found.",
+        "actualResultUrls": ["https://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202307/t20230713_20259347.htm", "https://www.scjy.gov.cn/"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "Local custody is evidenced by the first-party national government procurement record naming 简阳市规划和自然资源局 (Jianyang Planning and Natural Resources Bureau), but no public local cadastral map/API response with safe parcel identity and geometry was verified.",
+  "officialSources": [
+    {
+      "url": "https://www.scjy.gov.cn/",
+      "observation": "Official Jianyang municipal government domain. Direct GET returned HTTP 412 and a challenge JavaScript page; no bypass was attempted and no viewer/API configuration could be safely inspected beyond that response."
+    },
+    {
+      "url": "https://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202307/t20230713_20259347.htm",
+      "observation": "Official China Government Procurement notice identifies 简阳市规划和自然资源局 as purchaser for Jianyang forest/grassland/wetland survey monitoring and a natural-resource management one-map project; it does not publish parcel geometry, parcel IDs or an anonymous cadastral API."
+    },
+    {
+      "url": "https://rerc.com.cn/",
+      "observation": "Official Ministry of Natural Resources Real Estate Registration Center site confirms the national registration institutional context, but does not provide Jianyang parcel geometry or a city-specific anonymous query."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.scjy.gov.cn/",
+      "method": "GET",
+      "outcome": "HTTP 412 Precondition Failed; response contained anti-automation challenge JavaScript and no usable page, map viewer, service URL, schema or CRS. No login, CAPTCHA/Cloudflare bypass or challenge defeat was attempted."
+    },
+    {
+      "url": "https://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202307/t20230713_20259347.htm",
+      "method": "GET via first-party public search/open",
+      "outcome": "Readable official procurement notice; local bureau and one-map project confirmed, but no public parcel feature response or safe parcel identity/geometry was present."
+    },
+    {
+      "url": "https://rerc.com.cn/",
+      "method": "GET via first-party public search/open",
+      "outcome": "Readable official national registration-center site; general institutional information only, with no Jianyang parcel endpoint."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Jianyang municipal planning and natural-resources custody, plus national real-estate registration context.",
+    "verifiedOpenScope": "Official local-domain challenge response, official procurement/service description, and general national institutional site; no open cadastral geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point retained in latitude/longitude order. No exact-point hit/miss inference was made. The HTTP 412 challenge, inaccessible viewer, absent parcel endpoint, or lack of an anonymous response is not evidence of citywide cadastral absence. No owner, address, titleholder, contact, tax/account or personal fields were requested or retained. Packet completion is not source integration or runtime admission; serial reviewer qualification remains required."
+}

@@ -1,0 +1,131 @@
+{
+  "cityCode": 6204,
+  "queueRank": 1900,
+  "name": "Owo",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "point": [7.20065846761155, 5.58657014209914],
+  "population2025": 301931,
+  "population2025k": 301.931,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Owo Ondo State Nigeria cadastral map land registry GIS official parcels",
+        "result": "First-party Ondo State sources identified the Ministry of Lands and Housing / Office of the Surveyor General, an Owo area land office, and a current LandsApp digital-services portal. No anonymous public parcel viewer, geometry API, or downloadable parcel layer was found.",
+        "actualResultUrls": [
+          "https://ondostate.gov.ng/wp-content/uploads/2022/12/Survey-Plan-Processess.pdf",
+          "https://www.odsglandministry.org/",
+          "https://odsglandministry.org/LandServices/Services",
+          "https://ondostate.gov.ng/services"
+        ]
+      },
+      {
+        "language": "Yoruba (local/native language)",
+        "query": "Owo Ondo ilẹ̀ ìforúkọsílẹ̀ ilẹ̀ map GIS cadastral official",
+        "result": "No first-party Yoruba-language cadastral result was surfaced. English-language Ondo State land and survey sources were the only official material located; this is a discovery limitation, not evidence of citywide absence.",
+        "actualResultUrls": [
+          "https://ondostate.gov.ng/wp-content/uploads/2022/12/Survey-Plan-Processess.pdf",
+          "https://www.odsglandministry.org/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "Ondo State Ministry of Lands and Housing / Office of the Surveyor General is the evidenced state land-survey custodian, and the official survey-plan procedure lists an Owo area lands office at Ministry of Works Yard, GRA along Iyere Road, Owo.",
+    "basis": "The official Ondo State survey-plan PDF names the relevant state MDAs, describes survey data capture and filing/verification by the Office of the Surveyor General, and lists the Owo area office. The current LandsApp provides public information and land/survey service workflows but requires account access for applications and does not expose parcel geometry.",
+    "urls": [
+      "https://ondostate.gov.ng/wp-content/uploads/2022/12/Survey-Plan-Processess.pdf",
+      "https://www.odsglandministry.org/",
+      "https://odsglandministry.org/LandServices/Services"
+    ]
+  },
+  "requests": [
+    {
+      "route": "https://ondostate.gov.ng/wp-content/uploads/2022/12/Survey-Plan-Processess.pdf",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Official PDF downloaded and read. It records the Ondo State land/survey workflow and explicitly lists the Owo area lands office; it contains no public parcel geometry endpoint."
+    },
+    {
+      "route": "https://www.odsglandministry.org/",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Official Ministry LandsApp landing page loaded. It exposes public information, documents, and service navigation; no parcel layer or geometry endpoint was present in the returned HTML."
+    },
+    {
+      "route": "https://www.odsglandministry.org/Home/Index",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Public portal home loaded. Returned scripts and markup exposed no anonymous parcel/map API; no login or account creation was attempted."
+    },
+    {
+      "route": "https://odsglandministry.org/LandServices/Services",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Public land and survey service catalogue loaded. It describes applications and verification workflows but did not provide safe anonymous parcel IDs, polygon geometry, CRS, or a public map service."
+    },
+    {
+      "route": "https://www.odsglandministry.org/Documents",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Public documents page loaded; no downloadable parcel dataset or map service was exposed."
+    },
+    {
+      "route": "https://ondostate.gov.ng/services",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Official Ondo State services page loaded and confirmed land-title search and land-survey services, but no anonymous parcel geometry service was identified."
+    },
+    {
+      "route": "https://www.arcgis.com/sharing/rest/search?q=Owo%20Ondo%20(parcel%20OR%20cadastral%20OR%20cadastre)&f=json&num=100",
+      "method": "GET",
+      "status": 200,
+      "outcome": "ArcGIS Online search returned no verified first-party Owo parcel layer; non-indexed or non-ArcGIS services are not excluded."
+    },
+    {
+      "route": "https://overpass-api.de/api/interpreter",
+      "method": "POST",
+      "status": 406,
+      "outcome": "A bounded exact-WUP-point OSM parcel-tag query was rejected before data; this is not evidence of parcel absence."
+    }
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel id if exposed",
+    "full native polygon or multipolygon geometry",
+    "service/layer metadata",
+    "CRS metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": null,
+  "verifiedSample": {
+    "count": 0,
+    "sampleFile": null,
+    "result": "No public parcel geometry was retrieved; no GeoJSON sample retained."
+  },
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Ondo State land and survey administration, including the Owo area lands office and state digital service portal.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; no public parcel adapter or geometry was independently established",
+  "scopeLimits": [
+    "Exact WUP point [7.20065846761155, 5.58657014209914] is preserved in latitude/longitude order; no coordinate shift applied.",
+    "Registry/procedure evidence establishes a local custodian but does not establish open citywide parcel geometry coverage.",
+    "No owner, address, contact, titleholder, tax/account, personal, or other unsafe fields were requested or retained.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS-verification bypass was used.",
+    "Negative discovery results and the HTTP 406 Overpass response do not establish citywide absence."
+  ],
+  "remainingUncertainty": "Ondo State has an evidenced Owo area land office and a current digital land-services portal, but an anonymous public parcel map/API, schema, CRS, stable native parcel IDs, and citywide geometry coverage remain unverified."
+}

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-2797-neiva.json",
+  "cityCode": 2797,
+  "queueRank": 1716,
+  "city": "Neiva",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Neiva’s municipal cadastral directorate and gestor-catastral status are first-party evidenced, and IGAC’s public Dato Fundamental Catastro service exposes U_TERRENO/R_TERRENO polygon schemas with CODIGO as a candidate native identity. Exact-point and municipality-filter geometry requests did not yield a safe usable parcel response, so no sample was retained.",
+  "queryOutcomes": "English and Spanish first-party discovery queries, exact text, outcomes and actual URLs are recorded in city-2797-neiva.json.",
+  "requestOutcomes": "Municipal pages and IGAC service/layer metadata returned successfully. The exact WUP point query timed out; a municipality-code filter was blocked by an upstream WAF; the viewer shell also timed out. No credentials, CAPTCHA bypass, private token, unsafe field request or TLS exception was used.",
+  "scopeLimits": [
+    "Local municipal custodianship is evidenced, but complete Neiva city coverage was not established.",
+    "The exact-point timeout was not treated as a hit or miss and does not support an absence claim.",
+    "No parcel geometry was returned in a verified Neiva context, so no GeoJSON sample was retained.",
+    "IGAC service metadata and general cadastral descriptions do not prove that every municipal feature is anonymously queryable or complete.",
+    "Packet completion does not qualify or admit a runtime adapter."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "CRS metadata", "public service/layer metadata"],
+  "excludedFields": ["owner/titleholder names", "addresses/contact data", "tax/account/registration details", "credentials/private tokens/personal data"],
+  "nativeIdentityPolicy": "CODIGO was documented as the official U_TERRENO/R_TERRENO schema’s candidate native cadastral identity; no feature-level identity was retained because no verified Neiva feature response was obtained.",
+  "crs": "IGAC service metadata declares EPSG:9377; no retained parcel geometry was available for independent coordinate validation.",
+  "geometryQuality": "not applicable; no verified Neiva geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": "CODIGO (schema candidate only)",
+    "exactWupPointTest": "attempted; timed out, no hit/miss inference",
+    "requestEvidence": ["exact spatial query timed out after 30 seconds", "municipality filter received WAF block"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Neiva municipal cadastral management and IGAC national cadastral service",
+    "verifiedOpenScope": "Custodian evidence and service metadata only",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Anonymous parcel selection by Neiva municipality, stable native identity in a returned feature, geometry CRS transformation, and citywide completeness remain unresolved."
+}

@@ -1,0 +1,20 @@
+{
+  "taskId": "city:3921",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-3921-vinh.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/vinh-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T10:50:57Z",
+  "reason": "Official Nghệ An procedure identifies a land-data custodian, but city-specific registry geometry remains unresolved; national viewer and login page provide no bounded native-ID parcel response or adapter qualification.",
+  "qualificationGaps": [
+    "fresh native-ID reads",
+    "forced paging",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed Details-panel verification"
+  ]
+}

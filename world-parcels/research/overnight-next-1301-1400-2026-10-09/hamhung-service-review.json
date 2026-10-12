@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4783-hamhung.json",
+  "cityCode": 4783,
+  "purpose": "Document first-party discovery, attempted public cadastral routes, request outcomes, scope limits, safe fields, and uncertainty for Hamhung.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "unsafeFieldsRequested": false, "citywideCompletenessAsserted": false},
+  "assessment": "Official South Korean national land-information sources were found, including a K-GeoP parcel map route and Ministry of Land material referencing North Korea cadastral-original-map/land-information work. No public Hamhung/local DPRK registry, parcel schema, CRS, safe native ID, or bounded geometry response was obtained.",
+  "registryAssessment": "registryFound remains null: no Hamhung local registry/cadastre/map custodian was evidenced. National South Korean agencies and general North Korea research references are not a city/local registry.",
+  "queries": [
+    {"language": "English", "query": "Hamhung North Korea cadastral parcel map official land registry GIS", "outcome": "K-GeoP, MOLIT cadastral-original-map notice, and public-data cadastral-index references found; no Hamhung parcel-vector service identified.", "actualResultUrls": ["https://kgeop.go.kr/", "https://www.kgeop.go.kr/info/infoMap.do?initMode=L", "https://www.molit.go.kr/USR/law/m_46/dtl.jsp?r_id=4978", "https://www.data.go.kr/data/15118500/fileData.do?recommendDataYn=Y"]},
+    {"language": "Korean", "query": "함흥 북한 지적도 지적공부 토지정보 지도 공식", "outcome": "K-GeoP and official North Korea cadastral/land-information references found; no public Hamhung parcel viewer, local registry, or anonymous geometry endpoint identified.", "actualResultUrls": ["https://kgeop.go.kr/", "https://www.kgeop.go.kr/info/infoMap.do?initMode=L", "https://www.molit.go.kr/USR/law/m_46/dtl.jsp?r_id=4978", "https://www.data.go.kr/data/15118500/fileData.do?recommendDataYn=Y"]}
+  ],
+  "attempts": [
+    {"url": "https://kgeop.go.kr/", "method": "GET", "httpStatus": 200, "result": "Official K-GeoP landing page loaded. It describes South Korean land/building information services; no DPRK/Hamhung parcel layer was exposed."},
+    {"url": "https://www.kgeop.go.kr/info/infoMap.do?initMode=L", "method": "GET", "httpStatus": "timeout", "result": "Direct request timed out after 20 seconds. No retry with TLS disabled, login, CAPTCHA bypass, credentials, or private token was attempted."},
+    {"url": "https://www.molit.go.kr/USR/law/m_46/dtl.jsp?r_id=4978", "method": "GET/search discovery", "httpStatus": "search-indexed/accessible", "result": "Official cadastral-original-map database standards notice; references North Korea land-information DB work but exposes no Hamhung parcel API or geometry."},
+    {"url": "https://www.data.go.kr/data/15118500/fileData.do?recommendDataYn=Y", "method": "GET/search discovery", "httpStatus": "search-indexed/accessible", "result": "Official cadastral-map index dataset states South Korea-wide scope; not used as DPRK/Hamhung evidence."}
+  ],
+  "geometryEvidence": {"sourceUrl": null, "sampleFile": null, "nativeIdField": null, "nativeFieldMapping": {}, "compositeKeyProvenance": null, "sampleCount": 0, "crs": null, "queryExtent": null},
+  "geometryDecision": {"verified": false, "sourceId": null, "nativeIdField": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not attempted because no public Hamhung parcel service was identified; exact WUP point [39.9161642846767, 127.539957279009] was not shifted.", "retentionNote": "No GeoJSON retained; no native identity or full geometry was evidenced."},
+  "safeFieldAllowlist": ["native parcel identity", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "remainingUncertainty": "The search and public-route checks cannot establish citywide cadastral absence. K-GeoP is a South Korean service with no identified DPRK coverage, and the direct map route timed out. Official references to North Korea land-information work do not prove public availability or Hamhung coverage. A later attempt should inspect any newly documented first-party DPRK or international public map/API route if one becomes available.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter",
+  "researchAttempt": 1
+}

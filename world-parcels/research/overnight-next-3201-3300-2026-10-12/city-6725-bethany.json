@@ -1,0 +1,136 @@
+{
+  "cityCode": 6725,
+  "queueRank": 3201,
+  "name": "Bethany",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso2": "US",
+  "iso3": "USA",
+  "locId": 840,
+  "capital": false,
+  "point": [35.5209240851647, -97.5965335936396],
+  "population2025": 188536,
+  "population2025k": 188.536,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bethany Oklahoma official cadastral parcel map GIS parcel viewer county assessor",
+        "result": "First-party discovery identified the official Oklahoma County Assessor GIS/map page and the official Oklahoma County Assessor property-record system. The county page describes an official countywide cadastral mapping system covering Bethany, but the live GIS route was not anonymously inspectable from this workspace.",
+        "actualResultUrls": [
+          "https://www.oklahomacounty.org/elected-offices/assessor/pageindex8072/8/map-",
+          "https://www.oklahomacounty.org/elected-offices/assessor/pageyear8068/2025/pagemonth8068/5",
+          "https://docs.oklahomacounty.org/assessorwp5/"
+        ]
+      },
+      {
+        "language": "Spanish (not a local language; US local language is English)",
+        "query": "Bethany Oklahoma mapa catastral parcelas oficial GIS assessor",
+        "result": "The requested separate non-English discovery query was run as a control, but Bethany, Oklahoma has no identified local/native language distinct from English. Results were not used as evidence of a local registry; the official English-language Oklahoma County Assessor route remains the relevant source.",
+        "actualResultUrls": [
+          "https://www.oklahomacounty.org/elected-offices/assessor/pageindex8072/8/map-"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Oklahoma County Assessor, Mapping/GIS Department",
+    "scope": "County cadastral/property mapping and assessment records, including the City of Bethany",
+    "evidenceUrls": [
+      "https://www.oklahomacounty.org/elected-offices/assessor/pageindex8072/8/map-",
+      "https://www.oklahomacounty.org/elected-offices/assessor/pageyear8068/2025/pagemonth8068/5",
+      "https://www.cityofbethany.org/"
+    ],
+    "scopeNote": "The official county page identifies the OK County Map (GIS) as the county assessor's GIS route. The Bethany municipal site was retrieved and establishes the city context, but no municipal parcel API was exposed there. This evidences a county custodian and public-map lead, not a verified citywide vector response."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Oklahoma County Assessor OK County Map (GIS) lead",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null,
+    "note": "No anonymous safe parcel ID-plus-geometry response was obtained. The exact WUP point was preserved and was not shifted. No exact-point miss or citywide absence inference was made."
+  },
+  "requestOutcomes": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.oklahomacounty.org/elected-offices/assessor/pageindex8072/8/map-",
+      "outcome": "Official county search result identified the OK County Map (GIS) route and described the assessor's countywide GIS/property mapping service. Direct retrieval from this workspace was blocked/returned no usable response."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.oklahomacounty.org/elected-offices/assessor/pageindex8072/8/map-",
+      "outcome": "HTTP 403 from the site's web access block; no viewer HTML, JavaScript, configuration, schema, CRS, or parcel response was inspected. No bypass was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.oklahomacounty.org/elected-offices/assessor/pageyear8068/2025/pagemonth8068/5",
+      "outcome": "Direct request returned no usable response from this workspace; no GIS configuration or parcel data was extracted."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.cityofbethany.org/",
+      "outcome": "HTTP 200; current official Bethany municipal site retrieved. Planning and zoning navigation was visible, but no public parcel-vector service or cadastral API was exposed in the inspected page."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {"featureCount": 0, "result": "No parcel response obtained; zero is not an absence finding."}
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public service/layer metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal data",
+    "tax/account",
+    "certificate/title"
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable parcel endpoint was reached; exact WUP point [35.5209240851647, -97.5965335936396] was preserved and not shifted. No hit/miss inference was made."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Oklahoma County Assessor county GIS/property mapping service",
+    "verifiedOpenScope": "Official county GIS service lead only; live anonymous schema and parcel geometry were not verified",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "Exact WUP point [35.5209240851647, -97.5965335936396] was preserved in latitude/longitude order; no coordinate shift was made.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, web access block, or unusable UI is not evidence of citywide cadastral absence.",
+    "No native parcel identity, schema, CRS, or full polygon geometry was verified, so no sample GeoJSON is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, title, or other unsafe fields were requested or retained.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "The county assessor is evidenced as the relevant cadastral custodian and the official county GIS route is identified, but the current viewer/API endpoint, native parcel identity semantics, CRS, anonymous geometry delivery, update behavior, and Bethany citywide completeness remain unresolved."
+}

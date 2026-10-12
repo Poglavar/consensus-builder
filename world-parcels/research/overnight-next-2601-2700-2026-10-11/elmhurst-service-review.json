@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-7720-elmhurst.json",
+  "cityCode": 7720,
+  "queueRank": 2637,
+  "attempt": 1,
+  "serviceReview": {
+    "discovery": [
+      {"route": "https://videos.dupagecounty.gov/GIS/HowToUseParcelViewer.pdf", "type": "official county parcel viewer documentation", "outcome": "Search result identified the DuPage County Parcel Viewer URL and documented parcel search/map-selection functionality."},
+      {"route": "https://gis.dupageco.org/arcgis/rest/services/DuPage_County_IL/ParcelsWithRealEstateCC/MapServer", "type": "official county ArcGIS map service", "outcome": "HTTP 200; service metadata exposed the ParcelsRealEstate layer and public query formats including GeoJSON."},
+      {"route": "https://propertylookup.dupagecounty.gov/", "type": "official county property lookup", "outcome": "Public tax/property lookup route found; used only as general agency context, with no owner, address, or unsafe fields requested."}
+    ],
+    "viewerAndApiInspection": {
+      "configurationSource": "https://videos.dupagecounty.gov/GIS/HowToUseParcelViewer.pdf",
+      "observedService": "https://gis.dupageco.org/arcgis/rest/services/DuPage_County_IL/ParcelsWithRealEstateCC/MapServer/0",
+      "layer": {"name": "ParcelsRealEstate", "geometryType": "esriGeometryPolygon", "serviceCrs": "EPSG:102671 / WKID 3435", "fieldsInspected": ["OBJECTID", "PIN", "PARCELSTAT", "MUNICIPALITY", "BILLNAME", "Street_Bridges"]},
+      "schemaRequest": {"url": "https://gis.dupageco.org/arcgis/rest/services/DuPage_County_IL/ParcelsWithRealEstateCC/MapServer/0?f=pjson", "outcome": "HTTP 200; polygon layer metadata showed native OBJECTID and PIN fields, StatePlane feet extent, and GeoJSON query support."},
+      "exactPointRequest": {"method": "GET", "url": "https://gis.dupageco.org/arcgis/rest/services/DuPage_County_IL/ParcelsWithRealEstateCC/MapServer/0/query", "parameters": {"where": "1=1", "geometry": "WGS84 point -87.9111634329814,41.8949290643161", "geometryType": "esriGeometryPoint", "inSR": "4326", "spatialRel": "esriSpatialRelIntersects", "distance": "1000 meters", "outFields": "OBJECTID,PARCEL_ID,PIN", "returnGeometry": true, "outSR": "4326", "f": "geojson"}, "outcome": "HTTP 400 Failed to execute query; no feature result. This is an unusable exact-point/distance request, not evidence of citywide absence."},
+      "boundedRequest": {"method": "GET", "url": "https://gis.dupageco.org/arcgis/rest/services/DuPage_County_IL/ParcelsWithRealEstateCC/MapServer/0/query", "parameters": {"where": "1=1", "geometry": "WGS84 envelope -87.9211634,41.8849291 to -87.9011634,41.9049291", "geometryType": "esriGeometryEnvelope", "inSR": "4326", "spatialRel": "esriSpatialRelIntersects", "outFields": "OBJECTID,PIN", "returnGeometry": true, "outSR": "4326", "resultRecordCount": 3, "f": "geojson"}, "outcome": "HTTP 200; three polygon features returned; response carried exceededTransferLimit=true, so this is a bounded sample rather than a complete count."}
+    },
+    "safeFieldAllowlist": ["OBJECTID", "geometry"],
+    "retainedSamples": 3,
+    "sampleIdentity": {"propertyKey": "id", "sourceField": "OBJECTID", "ids": ["27684", "32027", "35791"]},
+    "scopeLimits": ["No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or unsafe owner/address/contact/titleholder/tax-account fields were used.", "The exact-point request failed with HTTP 400 and the map envelope was used for bounded evidence; exact-point failure does not establish citywide absence.", "The envelope covers only a small area around the WUP point and the service response reports exceededTransferLimit=true; no citywide completeness or legal boundary accuracy is inferred.", "The source is county-level DuPage coverage; no separate Elmhurst municipal registry endpoint was evidenced.", "PIN was observed in the API response for source inspection but is not retained in GeoJSON properties; OBJECTID is the canonical native identity and no synthetic row number was used."],
+    "uncertainty": "The official layer metadata and bounded response evidence public parcel polygons near the WUP point, but service freshness, citywide coverage, and adapter suitability require independent serial qualification."
+  },
+  "runtimeReadiness": "held"
+}

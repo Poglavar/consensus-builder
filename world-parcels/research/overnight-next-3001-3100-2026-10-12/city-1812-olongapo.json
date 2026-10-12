@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "wupCityCode": 1812,
+  "cityCode": 1812,
+  "cityId": "wup2025:1812",
+  "name": "Olongapo",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "iso3": "PHL",
+  "centerLatLon": [14.8411590537445, 120.291028714876],
+  "point": [14.8411590537445, 120.291028714876],
+  "queueRank": 3086,
+  "population2025": 194872,
+  "population2025k": 194.872,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "no retained geometry; exact-point WMS query returned zero features outside published layer extent",
+  "nativeIdReadiness": "not_qualified_for_runtime",
+  "freshResearch": {
+    "checkedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Olongapo City Philippines official cadastral parcel map GIS lot map assessor site:gov.ph",
+        "result": "First-party results identified the Olongapo City Government Directory with a City Assessor's Office, the City Planning and Development Office GIS Map Acquisition procedure, and the DENR-LMB FOI record for Olongapo cadastral/map requests. A live Philippine Geoportal LMB Parcel data layer was then inspected through its public viewer configuration.",
+        "actualResultUrls": [
+          "https://olongapocity.gov.ph/government-directory/",
+          "https://olongapocity.gov.ph/wp-content/uploads/2025/02/Olongapo-City-Citizens-Charter-2024-4TH-Edition-Feb-19-2024-1-1.pdf",
+          "https://www.foi.gov.ph/requests/technical-description-cadastre-map/",
+          "https://geoportal.gov.ph/"
+        ]
+      },
+      {
+        "language": "Filipino/local",
+        "query": "mapa ng lupa Olongapo cadastral assessor GIS parcel site:gov.ph",
+        "result": "Filipino-oriented discovery returned the same official Olongapo City GIS/assessor and DENR-LMB cadastral leads; no Olongapo-specific public parcel download or city-scoped vector service was exposed. The Geoportal's public lot plotter is a survey-input visualization tool, not parcel coverage evidence.",
+        "actualResultUrls": [
+          "https://olongapocity.gov.ph/government-directory/",
+          "https://olongapocity.gov.ph/wp-content/uploads/2025/02/Olongapo-City-Citizens-Charter-2024-4TH-Edition-Feb-19-2024-1-1.pdf",
+          "https://geoportal.gov.ph/gpapps/lotplotter",
+          "https://www.foi.gov.ph/requests/cadastral-map-1226-d-lot-21883-part/"
+        ]
+      }
+    ],
+    "searchMethod": "first-party web discovery plus ordinary anonymous HTTPS GET and public WMS GetCapabilities/GetFeatureInfo inspection; no login, credentials, CAPTCHA bypass, private token, unsafe field, or TLS exception"
+  },
+  "registryBasis": "The official Olongapo City Government Directory lists a City Assessor's Office. The official City Citizens Charter documents GIS Map Acquisition by the City Planning and Development Office and a GIS/lot-map service procedure. DENR-LMB FOI records evidence Olongapo cadastral map requests, including TS-308 Cadastre and Cadastral Lot 1226 D. These establish local/national registry custodianship, not open citywide parcel integration.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://olongapocity.gov.ph/government-directory/",
+      "operator": "City Government of Olongapo, City Assessor's Office",
+      "scope": "Local city assessor custodian.",
+      "observation": "Lists the City Assessor's Office and official contact/location; no public parcel API was exposed in the fetched page."
+    },
+    {
+      "url": "https://olongapocity.gov.ph/wp-content/uploads/2025/02/Olongapo-City-Citizens-Charter-2024-4TH-Edition-Feb-19-2024-1-1.pdf",
+      "operator": "City Planning and Development Office, City of Olongapo",
+      "scope": "Local GIS map acquisition procedure.",
+      "observation": "Documents GIS Map Acquisition, including requested map type/format and paid soft-copy or plotted-map issuance; this is a request procedure, not a public parcel endpoint."
+    },
+    {
+      "url": "https://geoportal.gov.ph/",
+      "operator": "Philippine Geoportal / NAMRIA public viewer",
+      "scope": "National geospatial portal.",
+      "observation": "Current JavaScript/configuration exposes an LMB Parcel data layer named denr_parcel_data through GeoServer WMS."
+    },
+    {
+      "url": "https://www.foi.gov.ph/requests/technical-description-cadastre-map/",
+      "operator": "Land Management Bureau (DENR-LMB)",
+      "scope": "National cadastral custodian.",
+      "observation": "Official FOI record references an Autocad file for TS-308 Cadastre, Olongapo City; it is request-based evidence, not an anonymous parcel geometry service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://olongapocity.gov.ph/government-directory/",
+      "method": "GET",
+      "status": "HTTP 403 from this environment",
+      "summary": "First-party content was independently identified in search results; direct fetch was access-denied, so no page/API configuration was inferred from the failed request."
+    },
+    {
+      "url": "https://geoportal.gov.ph/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Current public viewer HTML fetched; JavaScript modules and public layer endpoints were inspected."
+    },
+    {
+      "url": "https://geoportal.gov.ph/layers/fetchlayers",
+      "method": "GET",
+      "status": "HTTP 200 JSON",
+      "summary": "Public layer catalog returned LMB Parcel data, layer_name denr_parcel_data, style ParcelData; no Olongapo scope was stated in the catalog entry."
+    },
+    {
+      "url": "https://geoportal.gov.ph/layers/fetchlayerconfig/denr_parcel_data/ParcelData",
+      "method": "GET",
+      "status": "HTTP 200 JSON",
+      "summary": "Layer config returned native fields ogc_fid, wkb_geometry, lotnumber, shape_length, shape_area and metadata naming selected Metro Manila areas. No feature attributes were retained."
+    },
+    {
+      "url": "https://geoportal.gov.ph/layers/metadata/denr_parcel_data",
+      "method": "GET",
+      "status": "HTTP 200 JSON",
+      "summary": "Metadata states vector parcel data for selected areas in Metro Manila; geographic bounds 120.93509325335022..121.10081445696459 longitude and 14.524359294990173..14.686954753799442 latitude."
+    },
+    {
+      "url": "https://geoportal.gov.ph/layerf/denr_parcel_data/extent",
+      "method": "GET",
+      "status": "HTTP 200 JSON",
+      "summary": "Published service extent in EPSG:3857 was returned; it is consistent with Metro Manila and does not cover the preserved Olongapo point."
+    },
+    {
+      "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms?service=WMS&request=GetCapabilities&version=1.1.1",
+      "method": "GET",
+      "status": "HTTP 200 WMS XML",
+      "summary": "Current capabilities identify denr_parcel_data as queryable, EPSG:3857, with LatLonBoundingBox 120.93509325335022..121.10081445696459 and 14.524359294990173..14.686954753799442."
+    },
+    {
+      "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms?service=WMS&version=1.1.1&request=GetFeatureInfo&layers=geoportal:denr_parcel_data&query_layers=geoportal:denr_parcel_data&srs=EPSG:4326&bbox=120.289,14.839,120.293,14.843&width=20&height=20&x=10&y=10&info_format=application/json&feature_count=3",
+      "method": "GET",
+      "status": "HTTP 200 JSON, zero features",
+      "summary": "Bounded anonymous query at the exact preserved WUP point's surrounding bbox returned an empty FeatureCollection. This is recorded as an extent miss for the published Metro Manila layer, not evidence of Olongapo-wide absence."
+    },
+    {
+      "url": "https://geoportal.gov.ph/lp/getlocations",
+      "method": "GET",
+      "status": "HTTP 401 JSON",
+      "summary": "Public lot-plotter location endpoint was authorization-gated; no login or bypass was attempted."
+    },
+    {
+      "url": "https://geoportal.gov.ph/gpapps/lotplotter",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Lot plotter page fetched; its current JS shows survey bearing/distance and CSV plotting workflows, not parcel lookup coverage."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "LMB parcel dataset for selected areas in Metro Manila.",
+    "verifiedOpenScope": "Published GeoServer WMS layer only; no Olongapo coverage.",
+    "countrywideVerified": false,
+    "exactPointHit": false,
+    "mapExtentCheck": "published extent excludes Olongapo; exact-point query was not treated as citywide absence"
+  },
+  "sourceFields": {
+    "nativeFieldsObserved": ["ogc_fid", "wkb_geometry", "lotnumber", "shape_length", "shape_area"],
+    "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+    "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "personal information", "tax/account and assessment details"],
+    "fieldMapping": "No parcel feature was retained. ogc_fid was observed as a source field but was not qualified as a stable native identity for Olongapo.",
+    "compositeKeyProvenance": null
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "The only live public parcel service found is an LMB GeoServer WMS layer explicitly scoped to selected Metro Manila areas; no Olongapo-scoped anonymous ID-plus-geometry response or citywide open coverage was qualified.",
+  "remainingUncertainty": "Olongapo's local assessor/planning offices and DENR-LMB hold cadastral/map workflows, and request-based Olongapo cadastral records exist, but the current public machine-readable parcel service and stable native identity semantics for Olongapo remain unresolved. The exact WUP point was preserved and not shifted.",
+  "nextStep": "A future attempt should inspect any newly published Olongapo/LMB service or documented downloadable geometry and request only safe native ID plus polygon geometry near the saved point."
+}

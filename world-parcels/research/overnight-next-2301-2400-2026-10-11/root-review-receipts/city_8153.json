@@ -1,0 +1,16 @@
+{
+  "taskId": "city:8153",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-8153-abak.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/abak-service-review.json",
+    "tmp/valhalla-parcel-research/8153-abak/land-search.html",
+    "tmp/valhalla-parcel-research/8153-abak/validate.out",
+    "tmp/valhalla-parcel-research/8153-abak/initiate.out"
+  ],
+  "checkedAt": "2026-10-11T10:10:11Z",
+  "reason": "WUP 2025 code 8153, rank 2352, Nigeria, point [4.98542874500456,7.78822366120289], and 248528 persons match the immutable roster. The first-party AkwaGIS land-search cache describes unique Land PINs, free record validation, a paid result, and a parcel polygon; this grounds state registry custody without proving Abak coverage. The packet records an English search and a second search labeled Ibibio, but the second query uses English words and does not independently evidence an Ibibio-language search. No safe anonymous native-ID-plus-geometry response or retained polygon exists. The paid detail flow is an access limit, not evidence of citywide absence.",
+  "admissionCheck": "Held: bilingual execution and public geometry are unverified, so no live adapter qualification, 13 bounded cells, full metric checks, source binding, or headed Details-panel verification exists. No runtime/catalog/report admission."
+}

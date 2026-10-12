@@ -1,0 +1,3008 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-09T13:00:15.837Z",
+  "scope": "UN WUP 2025 Degree of Urbanization city settlement population ranks 2101–2200, including source plausibility flags.",
+  "source": {
+    "organization": "United Nations, Department of Economic and Social Affairs, Population Division",
+    "publication": "World Urbanization Prospects: The 2025 Revision, Online Edition",
+    "downloadPage": "https://population.un.org/wup/downloads?tab=Cities",
+    "bulkFile": "WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "downloadUrl": "https://population.un.org/wup/assets/Download/Cities/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "localSourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "retrievedAt": "2026-10-09",
+    "populationField": "Pop for Year=2025; units are thousands; ranking does not remove low-plausibility rows.",
+    "identity": "City_Code is the WUP settlement identity; coordinates use the Year=2025 PWCent fields and are settlement points, not municipal boundaries or cadastral coverage claims. Some older normalized queue coordinates differ; e.g. Dighwara old point 25.969189,84.824243 vs this source point 25.9220863,84.8502742.",
+    "downloadRequest": {
+      "method": "GET",
+      "requestedUrl": "https://population.un.org/wup/assets/Download/Cities/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+      "responseStatus": 200,
+      "responseDate": "Fri, 09 Oct 2026 06:46:20 GMT",
+      "capturedMetadata": "source-download.json",
+      "localArchivePath": "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz (ignored repository temp)",
+      "localArchiveBytes": 58726569,
+      "sha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+    }
+  },
+  "counts": {
+    "full2025CityRows": 12138,
+    "rankedRows": 100,
+    "attempted": 6,
+    "identityReviewRequired": 2,
+    "pending": 92,
+    "reviewedAttemptCrosswalks": 35,
+    "reviewedDifferentSettlements": 4,
+    "capitalPriorChecksScanned": 156,
+    "capitalRosterRowsScanned": 225,
+    "runtimeCityConfigsScanned": 193
+  },
+  "method": {
+    "ranking": "Sort all unique 2025 City_Code rows by Pop descending; numeric City_Code breaks equal-population ties.",
+    "exactAttempt": "Skip when a registry row or non-queue research artifact carries the same WUP city code, or when an explicit reviewed decision in attempt-crosswalks.json confirms the prior city attempt.",
+    "identityReview": "Unresolved same-country name/alias and coordinate proximity or named artifacts remain review candidates. Decisions in attempt-crosswalks.json preserve resolved candidate evidence; rejected evidence paths are scoped to the listed artifacts so later evidence can still count.",
+    "queueOnly": "Largest-city and batch queue membership by itself does not count as an attempt. Explicit checked:false placeholders without attempt evidence are not skipped.",
+    "runtimeConfigs": "All runtime city configurations were parsed and recorded as identity-review candidates; configuration presence alone is not treated as a city research attempt.",
+    "priorCapitalChecks": "All 156 checked=true, previously_checked records in the 225-entry world-capitals roster are matched; exact WUP IDs count directly and same-country name/centroid aliases remain identity-review candidates.",
+    "scopeCaveat": "WUP DEGURBA settlements can differ from municipalities and metropolitan governance units; review crosswalks before treating a match as identical."
+  },
+  "roster": [
+    {
+      "rank": 2101,
+      "cityCode": 3834,
+      "name": "San Pablo",
+      "country": "Philippines",
+      "iso2": "PH",
+      "iso3": "PHL",
+      "locId": 608,
+      "capital": false,
+      "pop2025k": 276.25,
+      "plausibility": "High",
+      "point": [
+        14.0689198240463,
+        121.320059064841
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "san pablo"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2102,
+      "cityCode": 10610,
+      "name": "Pingdu",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 276.004,
+      "plausibility": "Low",
+      "point": [
+        36.777142001992,
+        119.95105682208
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "pingdu"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2103,
+      "cityCode": 7192,
+      "name": "جیرفت",
+      "country": "Iran (Islamic Republic of)",
+      "iso2": "IR",
+      "iso3": "IRN",
+      "locId": 364,
+      "capital": false,
+      "pop2025k": 276.001,
+      "plausibility": "High",
+      "point": [
+        28.6771649742164,
+        57.7446086306505
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2104,
+      "cityCode": 2553,
+      "name": "Iași",
+      "country": "Romania",
+      "iso2": "RO",
+      "iso3": "ROU",
+      "locId": 642,
+      "capital": false,
+      "pop2025k": 275.84,
+      "plausibility": "High",
+      "point": [
+        47.1562551602493,
+        27.5839625989799
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "iasi"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2105,
+      "cityCode": 1238,
+      "name": "Erin Woods",
+      "country": "Canada",
+      "iso2": "CA",
+      "iso3": "CAN",
+      "locId": 124,
+      "capital": false,
+      "pop2025k": 275.476,
+      "plausibility": "High",
+      "point": [
+        51.0777717901414,
+        -113.955430930889
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "erin woods"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2106,
+      "cityCode": 1232,
+      "name": "Glenfield",
+      "country": "New Zealand",
+      "iso2": "NZ",
+      "iso3": "NZL",
+      "locId": 554,
+      "capital": false,
+      "pop2025k": 275.322,
+      "plausibility": "High",
+      "point": [
+        -36.769531623771,
+        174.735780487087
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "34",
+      "aliases": [
+        "glenfield"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2107,
+      "cityCode": 3870,
+      "name": "Morbi",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 275.191,
+      "plausibility": "Moderate",
+      "point": [
+        22.8118169992892,
+        70.8475791252109
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "morbi"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2108,
+      "cityCode": 9206,
+      "name": "Pinggu",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 274.753,
+      "plausibility": "High",
+      "point": [
+        40.1437243089929,
+        117.111395391432
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "pinggu"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2109,
+      "cityCode": 3171,
+      "name": "Koléa",
+      "country": "Algeria",
+      "iso2": "DZ",
+      "iso3": "DZA",
+      "locId": 12,
+      "capital": false,
+      "pop2025k": 274.748,
+      "plausibility": "High",
+      "point": [
+        36.6461197299329,
+        2.73879748857359
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kolea"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2110,
+      "cityCode": 2374,
+      "name": "Ambato",
+      "country": "Ecuador",
+      "iso2": "EC",
+      "iso3": "ECU",
+      "locId": 218,
+      "capital": false,
+      "pop2025k": 274.672,
+      "plausibility": "Moderate",
+      "point": [
+        -1.25577265065284,
+        -78.6211311402413
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "ambato"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2111,
+      "cityCode": 2798,
+      "name": "Pucallpa",
+      "country": "Peru",
+      "iso2": "PE",
+      "iso3": "PER",
+      "locId": 604,
+      "capital": false,
+      "pop2025k": 274.639,
+      "plausibility": "Moderate",
+      "point": [
+        -8.38183296816653,
+        -74.5678176748697
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "pucallpa"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2112,
+      "cityCode": 5573,
+      "name": "Reading",
+      "country": "United Kingdom",
+      "iso2": "GB",
+      "iso3": "GBR",
+      "locId": 826,
+      "capital": false,
+      "pop2025k": 274.632,
+      "plausibility": "High",
+      "point": [
+        51.4499643731723,
+        -0.96867039514757
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "21",
+      "aliases": [
+        "reading"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2113,
+      "cityCode": 359,
+      "name": "San Salvador de Jujuy",
+      "country": "Argentina",
+      "iso2": "AR",
+      "iso3": "ARG",
+      "locId": 32,
+      "capital": false,
+      "pop2025k": 274.625,
+      "plausibility": "Moderate",
+      "point": [
+        -24.2030777447245,
+        -65.2888555186182
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "san salvador de jujuy"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2114,
+      "cityCode": 3685,
+      "name": "Khon Kaen",
+      "country": "Thailand",
+      "iso2": "TH",
+      "iso3": "THA",
+      "locId": 764,
+      "capital": false,
+      "pop2025k": 274.613,
+      "plausibility": "Moderate",
+      "point": [
+        16.4361177030166,
+        102.831174718135
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "khon kaen"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2115,
+      "cityCode": 7569,
+      "name": "RICCO Industrial Area",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 274.572,
+      "plausibility": "High",
+      "point": [
+        26.582825355041,
+        74.8571959243767
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "ricco industrial area"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2116,
+      "cityCode": 8151,
+      "name": "Gaithersburg",
+      "country": "United States of America",
+      "iso2": "US",
+      "iso3": "USA",
+      "locId": 840,
+      "capital": false,
+      "pop2025k": 274.439,
+      "plausibility": "High",
+      "point": [
+        39.1540081427406,
+        -77.2246960079017
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "32",
+      "aliases": [
+        "gaithersburg"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2117,
+      "cityCode": 10640,
+      "name": "Xianning",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 274.146,
+      "plausibility": "Moderate",
+      "point": [
+        29.8582655235444,
+        114.314350381779
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "xianning"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2118,
+      "cityCode": 6804,
+      "name": "Abu Kabir",
+      "country": "Egypt",
+      "iso2": "EG",
+      "iso3": "EGY",
+      "locId": 818,
+      "capital": false,
+      "pop2025k": 274.073,
+      "plausibility": "High",
+      "point": [
+        30.7271238942036,
+        31.6760236518254
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "abu kabir"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2119,
+      "cityCode": 4562,
+      "name": "Rạch Giá",
+      "country": "Viet Nam",
+      "iso2": "VN",
+      "iso3": "VNM",
+      "locId": 704,
+      "capital": false,
+      "pop2025k": 273.864,
+      "plausibility": "Moderate",
+      "point": [
+        9.98204357358876,
+        105.10268534047
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "rach gia"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2120,
+      "cityCode": 7742,
+      "name": "Vehari",
+      "country": "Pakistan",
+      "iso2": "PK",
+      "iso3": "PAK",
+      "locId": 586,
+      "capital": false,
+      "pop2025k": 273.823,
+      "plausibility": "High",
+      "point": [
+        30.0461292688875,
+        72.3537222073348
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "vehari"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2121,
+      "cityCode": 2086,
+      "name": "Magboro",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "iso3": "NGA",
+      "locId": 566,
+      "capital": false,
+      "pop2025k": 273.818,
+      "plausibility": "Low",
+      "point": [
+        6.77682244432016,
+        3.42387938365976
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "magboro"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2122,
+      "cityCode": 3862,
+      "name": "Nacala",
+      "country": "Mozambique",
+      "iso2": "MZ",
+      "iso3": "MOZ",
+      "locId": 508,
+      "capital": false,
+      "pop2025k": 273.732,
+      "plausibility": "Moderate",
+      "point": [
+        -14.5590143592164,
+        40.6916385246582
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "nacala"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2123,
+      "cityCode": 8177,
+      "name": "Yibin",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 273.66,
+      "plausibility": "High",
+      "point": [
+        28.7579007034079,
+        104.630174752774
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "yibin"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2124,
+      "cityCode": 4774,
+      "name": "Asaka",
+      "country": "Uzbekistan",
+      "iso2": "UZ",
+      "iso3": "UZB",
+      "locId": 860,
+      "capital": false,
+      "pop2025k": 273.582,
+      "plausibility": "Low",
+      "point": [
+        40.667172380046,
+        72.2323135809243
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "asaka"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2125,
+      "cityCode": 5977,
+      "name": "Luton",
+      "country": "United Kingdom",
+      "iso2": "GB",
+      "iso3": "GBR",
+      "locId": 826,
+      "capital": false,
+      "pop2025k": 273.544,
+      "plausibility": "High",
+      "point": [
+        51.8953504741231,
+        -0.449799472542919
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "21",
+      "aliases": [
+        "luton"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2126,
+      "cityCode": 10695,
+      "name": "Vadalur",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 273.523,
+      "plausibility": "Low",
+      "point": [
+        11.5658174591014,
+        79.5798416182261
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "vadalur"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2127,
+      "cityCode": 2972,
+      "name": "Tanjung Balai",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "iso3": "IDN",
+      "locId": 360,
+      "capital": false,
+      "pop2025k": 273.506,
+      "plausibility": "Moderate",
+      "point": [
+        2.96503024318831,
+        99.7966303783882
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "tanjung balai"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2128,
+      "cityCode": 1903,
+      "name": "Saskatoon",
+      "country": "Canada",
+      "iso2": "CA",
+      "iso3": "CAN",
+      "locId": 124,
+      "capital": false,
+      "pop2025k": 273.454,
+      "plausibility": "Moderate",
+      "point": [
+        52.1281789985704,
+        -106.643987071062
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "saskatoon"
+      ],
+      "attemptState": "attempted",
+      "attemptEvidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/subnational/CA/SK.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2129,
+      "cityCode": 2061,
+      "name": "Concord",
+      "country": "United States of America",
+      "iso2": "US",
+      "iso3": "USA",
+      "locId": 840,
+      "capital": false,
+      "pop2025k": 273.051,
+      "plausibility": "Moderate",
+      "point": [
+        37.9523383146985,
+        -122.042026648317
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "32",
+      "aliases": [
+        "concord"
+      ],
+      "attemptState": "identity_review_required",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [
+        {
+          "kind": "same-country-name-distance-review",
+          "evidenceFile": "research/us-capitals-2026-10-06/nh.json",
+          "cityId": "us-capital:NH",
+          "cityName": "Concord",
+          "parcelStatus": "verified_sample_capital_scope",
+          "checked": null,
+          "distanceKm": 4305.06,
+          "identityConfidence": "ambiguous",
+          "source": "registry"
+        },
+        {
+          "kind": "runtime-city-config-with-parcel-source",
+          "source": "frontend/js/city-config.js",
+          "cityId": "concord",
+          "label": "Concord, United States",
+          "identityConfidence": "review-required"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2130,
+      "cityCode": 9032,
+      "name": "Sanmenxia",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 272.97,
+      "plausibility": "High",
+      "point": [
+        34.7775325690734,
+        111.201663972772
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "sanmenxia"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2131,
+      "cityCode": 1146,
+      "name": "A Coruña",
+      "country": "Spain",
+      "iso2": "ES",
+      "iso3": "ESP",
+      "locId": 724,
+      "capital": false,
+      "pop2025k": 272.92,
+      "plausibility": "Moderate",
+      "point": [
+        43.3544183540172,
+        -8.40764880737736
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "25",
+      "aliases": [
+        "a coruna"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2132,
+      "cityCode": 2855,
+      "name": "Cabanatuan",
+      "country": "Philippines",
+      "iso2": "PH",
+      "iso3": "PHL",
+      "locId": 608,
+      "capital": false,
+      "pop2025k": 272.89,
+      "plausibility": "High",
+      "point": [
+        15.4675701896864,
+        120.958488105974
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "cabanatuan"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2133,
+      "cityCode": 2308,
+      "name": "Nzérékoré",
+      "country": "Guinea",
+      "iso2": "GN",
+      "iso3": "GIN",
+      "locId": 324,
+      "capital": false,
+      "pop2025k": 272.866,
+      "plausibility": "Moderate",
+      "point": [
+        7.75714501777164,
+        -8.8176190649573
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "nzerekore"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2134,
+      "cityCode": 10597,
+      "name": "Dalla",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 272.778,
+      "plausibility": "High",
+      "point": [
+        24.4580167199722,
+        83.0074737035664
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "dalla"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2135,
+      "cityCode": 2909,
+      "name": "Myitkyina",
+      "country": "Myanmar",
+      "iso2": "MM",
+      "iso3": "MMR",
+      "locId": 104,
+      "capital": false,
+      "pop2025k": 272.633,
+      "plausibility": "Moderate",
+      "point": [
+        25.3870777827219,
+        97.3912175243089
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "myitkyina"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2136,
+      "cityCode": 10528,
+      "name": "Laizhou",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 272.386,
+      "plausibility": "Moderate",
+      "point": [
+        37.1914620001621,
+        119.943051200759
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "laizhou"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2137,
+      "cityCode": 2734,
+      "name": "Acarigua",
+      "country": "Venezuela (Bolivarian Republic of)",
+      "iso2": "VE",
+      "iso3": "VEN",
+      "locId": 862,
+      "capital": false,
+      "pop2025k": 272.06,
+      "plausibility": "High",
+      "point": [
+        9.56851007016247,
+        -69.2110871659962
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "acarigua"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2138,
+      "cityCode": 9073,
+      "name": "Guna",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 271.913,
+      "plausibility": "Moderate",
+      "point": [
+        24.6471630850083,
+        77.3128148173307
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "guna"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2139,
+      "cityCode": 8220,
+      "name": "Gunung Lingkas",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "iso3": "IDN",
+      "locId": 360,
+      "capital": false,
+      "pop2025k": 271.868,
+      "plausibility": "High",
+      "point": [
+        3.31095570915297,
+        117.593763237794
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "gunung lingkas"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2140,
+      "cityCode": 4305,
+      "name": "Zacatecas",
+      "country": "Mexico",
+      "iso2": "MX",
+      "iso3": "MEX",
+      "locId": 484,
+      "capital": false,
+      "pop2025k": 271.829,
+      "plausibility": "Moderate",
+      "point": [
+        22.7595961377601,
+        -102.546898282411
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "zacatecas"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2141,
+      "cityCode": 6781,
+      "name": "Chengarchar",
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "iso3": "BGD",
+      "locId": 50,
+      "capital": false,
+      "pop2025k": 271.704,
+      "plausibility": "Moderate",
+      "point": [
+        23.4446369418735,
+        90.6560950226861
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "chengarchar"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2142,
+      "cityCode": 5910,
+      "name": "Hpa-An",
+      "country": "Myanmar",
+      "iso2": "MM",
+      "iso3": "MMR",
+      "locId": 104,
+      "capital": false,
+      "pop2025k": 271.474,
+      "plausibility": "Moderate",
+      "point": [
+        16.8771381453168,
+        97.6398520408478
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "hpa an"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2143,
+      "cityCode": 319,
+      "name": "Thakurgaon",
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "iso3": "BGD",
+      "locId": 50,
+      "capital": false,
+      "pop2025k": 271.454,
+      "plausibility": "Moderate",
+      "point": [
+        26.0322389869197,
+        88.4638066884087
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "thakurgaon"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2144,
+      "cityCode": 9104,
+      "name": "Dingzhou",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 271.206,
+      "plausibility": "Moderate",
+      "point": [
+        38.5260147050187,
+        114.972352996414
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "dingzhou"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2145,
+      "cityCode": 2973,
+      "name": "Thanh Hoá",
+      "country": "Viet Nam",
+      "iso2": "VN",
+      "iso3": "VNM",
+      "locId": 704,
+      "capital": false,
+      "pop2025k": 271.171,
+      "plausibility": "Low",
+      "point": [
+        19.8046833193468,
+        105.782879406299
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "thanh hoa"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2146,
+      "cityCode": 4828,
+      "name": "Derby",
+      "country": "United Kingdom",
+      "iso2": "GB",
+      "iso3": "GBR",
+      "locId": 826,
+      "capital": false,
+      "pop2025k": 271.17,
+      "plausibility": "High",
+      "point": [
+        52.911534635347,
+        -1.47278567567583
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "21",
+      "aliases": [
+        "derby"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2147,
+      "cityCode": 3208,
+      "name": "Hyesan",
+      "country": "Dem. People's Republic of Korea",
+      "iso2": "KP",
+      "iso3": "PRK",
+      "locId": 408,
+      "capital": false,
+      "pop2025k": 271.116,
+      "plausibility": "Low",
+      "point": [
+        41.4063739816558,
+        128.19280427884
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "hyesan"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2148,
+      "cityCode": 2254,
+      "name": "Kimberley",
+      "country": "South Africa",
+      "iso2": "ZA",
+      "iso3": "ZAF",
+      "locId": 710,
+      "capital": false,
+      "pop2025k": 271.078,
+      "plausibility": "Moderate",
+      "point": [
+        -28.7235329106847,
+        24.7342539937528
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kimberley"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2149,
+      "cityCode": 7797,
+      "name": "Jind",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 270.881,
+      "plausibility": "High",
+      "point": [
+        29.3176729893746,
+        76.3185369205235
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "jind"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2150,
+      "cityCode": 9601,
+      "name": "Hassan",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 270.626,
+      "plausibility": "High",
+      "point": [
+        13.0062489641327,
+        76.103165062204
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "hassan"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2151,
+      "cityCode": 8258,
+      "name": "Eket",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "iso3": "NGA",
+      "locId": 566,
+      "capital": false,
+      "pop2025k": 270.603,
+      "plausibility": "Moderate",
+      "point": [
+        4.65455809437907,
+        7.94145812376454
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "eket"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2152,
+      "cityCode": 5273,
+      "name": "Nagano",
+      "country": "Japan",
+      "iso2": "JP",
+      "iso3": "JPN",
+      "locId": 392,
+      "capital": false,
+      "pop2025k": 270.476,
+      "plausibility": "Moderate",
+      "point": [
+        36.635580876748,
+        138.195726872231
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "nagano"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2153,
+      "cityCode": 1025,
+      "name": "Saint-Louis",
+      "country": "Senegal",
+      "iso2": "SN",
+      "iso3": "SEN",
+      "locId": 686,
+      "capital": false,
+      "pop2025k": 270.413,
+      "plausibility": "High",
+      "point": [
+        16.0241271770192,
+        -16.4794380989353
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "saint louis"
+      ],
+      "attemptState": "attempted",
+      "attemptEvidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-1025.json",
+          "cityId": "wup2025:1025",
+          "cityName": "Saint-Louis",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-city-1025.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2154,
+      "cityCode": 1528,
+      "name": "Karamay",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 270.372,
+      "plausibility": "High",
+      "point": [
+        45.5873633335497,
+        84.8695466698106
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "karamay"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2155,
+      "cityCode": 1416,
+      "name": "Ambano",
+      "country": "Madagascar",
+      "iso2": "MG",
+      "iso3": "MDG",
+      "locId": 450,
+      "capital": false,
+      "pop2025k": 270.357,
+      "plausibility": "Low",
+      "point": [
+        -19.7756773892909,
+        47.0571663836759
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "ambano"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2156,
+      "cityCode": 2340,
+      "name": "Kapoeta",
+      "country": "South Sudan",
+      "iso2": "SS",
+      "iso3": "SSD",
+      "locId": 728,
+      "capital": false,
+      "pop2025k": 270.167,
+      "plausibility": "Moderate",
+      "point": [
+        4.76623384369787,
+        33.5936878546244
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kapoeta"
+      ],
+      "attemptState": "attempted",
+      "attemptEvidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-kapoeta.json",
+          "cityId": "wup2025:2340",
+          "cityName": "Kapoeta",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-city-kapoeta.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-followup-services.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2157,
+      "cityCode": 4216,
+      "name": "Saghatta",
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "iso3": "BGD",
+      "locId": 50,
+      "capital": false,
+      "pop2025k": 270.148,
+      "plausibility": "High",
+      "point": [
+        25.091277624001,
+        89.5441262603079
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "saghatta"
+      ],
+      "attemptState": "attempted",
+      "attemptEvidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/growth-top20-integration-2026-10-07/bangladesh.json",
+          "cityId": "wup2025:4216",
+          "cityName": "Saghatta",
+          "parcelStatus": "no_verified_sample_candidate_citywide",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/growth-top20-2026-10-07/city-4216.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2158,
+      "cityCode": 11891,
+      "name": "Minakhan",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 270.142,
+      "plausibility": "Moderate",
+      "point": [
+        22.5218801816699,
+        88.7748215254583
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "minakhan"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2159,
+      "cityCode": 11201,
+      "name": "Muriya",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 269.81,
+      "plausibility": "Moderate",
+      "point": [
+        26.2361528804739,
+        86.0871260295761
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "muriya"
+      ],
+      "attemptState": "attempted",
+      "attemptEvidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/india-city-11201.json",
+          "cityId": "wup2025:11201",
+          "cityName": "Muriya",
+          "parcelStatus": "no_verified_sample_candidate_citywide",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        }
+      ],
+      "possiblePriorMatches": [
+        {
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/india-city-11201.json",
+          "matchedName": "Muriya",
+          "field": "name",
+          "identityConfidence": "review-required",
+          "kind": "structured-city-name-candidate",
+          "source": "research-file"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2160,
+      "cityCode": 3445,
+      "name": "Ijebu-Igbo",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "iso3": "NGA",
+      "locId": 566,
+      "capital": false,
+      "pop2025k": 269.742,
+      "plausibility": "High",
+      "point": [
+        6.97085327995435,
+        4.0003903827364
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "ijebu igbo"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2161,
+      "cityCode": 3256,
+      "name": "Dadu",
+      "country": "Pakistan",
+      "iso2": "PK",
+      "iso3": "PAK",
+      "locId": 586,
+      "capital": false,
+      "pop2025k": 269.4,
+      "plausibility": "Moderate",
+      "point": [
+        26.7301874720075,
+        67.773619983009
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "dadu"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2162,
+      "cityCode": 9362,
+      "name": "Wuqing",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 269.223,
+      "plausibility": "Moderate",
+      "point": [
+        39.3795856351215,
+        117.064206016782
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "wuqing"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2163,
+      "cityCode": 6214,
+      "name": "Dali",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 269.213,
+      "plausibility": "High",
+      "point": [
+        25.599739515649,
+        100.228179504096
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "dali"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2164,
+      "cityCode": 5577,
+      "name": "Kabinda",
+      "country": "Democratic Republic of the Congo",
+      "iso2": "CD",
+      "iso3": "COD",
+      "locId": 180,
+      "capital": false,
+      "pop2025k": 269.115,
+      "plausibility": "Low",
+      "point": [
+        -6.1383507982268,
+        24.4842003324521
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kabinda"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2165,
+      "cityCode": 11747,
+      "name": "Beldanga",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 269.051,
+      "plausibility": "High",
+      "point": [
+        23.9333597435084,
+        88.249545291731
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "beldanga"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2166,
+      "cityCode": 2954,
+      "name": "Dodoma",
+      "country": "United Republic of Tanzania",
+      "iso2": "TZ",
+      "iso3": "TZA",
+      "locId": 834,
+      "capital": true,
+      "pop2025k": 269.047,
+      "plausibility": "Low",
+      "point": [
+        -6.16336934279916,
+        35.7436551366206
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "3",
+      "aliases": [
+        "dodoma"
+      ],
+      "attemptState": "attempted",
+      "attemptEvidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/africa-capitals-2026-10-08/city-dodoma.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "possiblePriorMatches": [
+        {
+          "kind": "same-country-name-coordinate-candidate",
+          "evidenceFile": "research/africa-capitals-2026-10-08/city-dodoma.json",
+          "cityId": "capital:TZ:dodoma",
+          "cityName": "Dodoma",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "distanceKm": 0.88,
+          "identityConfidence": "probable-review-required",
+          "source": "registry"
+        },
+        {
+          "kind": "previous-capital-city-name-coordinate-candidate",
+          "source": "world-capitals prior-check roster",
+          "evidenceFile": "research/africa-capitals-2026-10-08/city-dodoma.json",
+          "cityId": "capital:TZ:dodoma",
+          "cityName": "Dodoma",
+          "researchStatus": "previously_checked",
+          "manualCityEvidence": [],
+          "identityConfidence": "review-required",
+          "distanceKm": 0.88
+        },
+        {
+          "evidenceFile": "world-parcels/research/africa-capitals-2026-10-08/east-islands-index.json",
+          "matchedName": "Dodoma",
+          "field": "name",
+          "identityConfidence": "review-required",
+          "kind": "structured-city-name-candidate",
+          "source": "research-file"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2167,
+      "cityCode": 10951,
+      "name": "Patahi",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 268.862,
+      "plausibility": "Low",
+      "point": [
+        26.5381189062311,
+        85.1961558517323
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "patahi"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2168,
+      "cityCode": 2763,
+      "name": "Vologda",
+      "country": "Russian Federation",
+      "iso2": "RU",
+      "iso3": "RUS",
+      "locId": 643,
+      "capital": false,
+      "pop2025k": 268.759,
+      "plausibility": "High",
+      "point": [
+        59.2130858986738,
+        39.8830988270094
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "vologda"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2169,
+      "cityCode": 2822,
+      "name": "Constanța",
+      "country": "Romania",
+      "iso2": "RO",
+      "iso3": "ROU",
+      "locId": 642,
+      "capital": false,
+      "pop2025k": 268.757,
+      "plausibility": "High",
+      "point": [
+        44.1817344726653,
+        28.6269258938302
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "constanta"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2170,
+      "cityCode": 9613,
+      "name": "Chhatarpur",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 268.598,
+      "plausibility": "High",
+      "point": [
+        24.9070054895029,
+        79.5874445983489
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "chhatarpur"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2171,
+      "cityCode": 7154,
+      "name": "Muzaffarabad",
+      "country": "Pakistan",
+      "iso2": "PK",
+      "iso3": "PAK",
+      "locId": 586,
+      "capital": true,
+      "pop2025k": 268.448,
+      "plausibility": "Moderate",
+      "point": [
+        34.3645883375898,
+        73.4708139484832
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "muzaffarabad"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2172,
+      "cityCode": 8117,
+      "name": "Vitória da Conquista",
+      "country": "Brazil",
+      "iso2": "BR",
+      "iso3": "BRA",
+      "locId": 76,
+      "capital": false,
+      "pop2025k": 268.375,
+      "plausibility": "Moderate",
+      "point": [
+        -14.8594682444513,
+        -40.8494232857503
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "vitoria da conquista"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2173,
+      "cityCode": 2692,
+      "name": "Aydin",
+      "country": "Türkiye",
+      "iso2": "TR",
+      "iso3": "TUR",
+      "locId": 792,
+      "capital": false,
+      "pop2025k": 268.204,
+      "plausibility": "Moderate",
+      "point": [
+        37.8426220062579,
+        27.8386026651766
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "aydin"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2174,
+      "cityCode": 8582,
+      "name": "Ternate",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "iso3": "IDN",
+      "locId": 360,
+      "capital": false,
+      "pop2025k": 267.842,
+      "plausibility": "Moderate",
+      "point": [
+        0.789336549024661,
+        127.373762716998
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "ternate"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2175,
+      "cityCode": 9650,
+      "name": "Linqing",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 267.732,
+      "plausibility": "Moderate",
+      "point": [
+        36.8470453911166,
+        115.712400011323
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "linqing"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2176,
+      "cityCode": 5413,
+      "name": "Bellevue",
+      "country": "United States of America",
+      "iso2": "US",
+      "iso3": "USA",
+      "locId": 840,
+      "capital": false,
+      "pop2025k": 267.696,
+      "plausibility": "Moderate",
+      "point": [
+        47.6694577413674,
+        -122.166399898028
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "32",
+      "aliases": [
+        "bellevue"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2177,
+      "cityCode": 1945,
+      "name": "Kabwe",
+      "country": "Zambia",
+      "iso2": "ZM",
+      "iso3": "ZMB",
+      "locId": 894,
+      "capital": false,
+      "pop2025k": 267.618,
+      "plausibility": "Low",
+      "point": [
+        -14.4336039608812,
+        28.4446474227614
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kabwe"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2178,
+      "cityCode": 8513,
+      "name": "Lafia",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "iso3": "NGA",
+      "locId": 566,
+      "capital": false,
+      "pop2025k": 267.58,
+      "plausibility": "Moderate",
+      "point": [
+        8.50418075269339,
+        8.52098837145698
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "lafia"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2179,
+      "cityCode": 2181,
+      "name": "Kaluga",
+      "country": "Russian Federation",
+      "iso2": "RU",
+      "iso3": "RUS",
+      "locId": 643,
+      "capital": false,
+      "pop2025k": 267.542,
+      "plausibility": "High",
+      "point": [
+        54.5272064850054,
+        36.2745770924796
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kaluga"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2180,
+      "cityCode": 6727,
+      "name": "Agbor",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "iso3": "NGA",
+      "locId": 566,
+      "capital": false,
+      "pop2025k": 267.341,
+      "plausibility": "Moderate",
+      "point": [
+        6.24875754589369,
+        6.19484525731121
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "agbor"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2181,
+      "cityCode": 167,
+      "name": "Sinuiju",
+      "country": "Dem. People's Republic of Korea",
+      "iso2": "KP",
+      "iso3": "PRK",
+      "locId": 408,
+      "capital": false,
+      "pop2025k": 267.218,
+      "plausibility": "Moderate",
+      "point": [
+        40.10039684487,
+        124.397834585144
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "sinuiju"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2182,
+      "cityCode": 9961,
+      "name": "Pollachi",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 267.2,
+      "plausibility": "High",
+      "point": [
+        10.658330676877,
+        77.013629141109
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "pollachi"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2183,
+      "cityCode": 11360,
+      "name": "Taishan",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 267.107,
+      "plausibility": "High",
+      "point": [
+        22.2508392239325,
+        112.790546990734
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "taishan"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2184,
+      "cityCode": 11474,
+      "name": "Jincheng Town",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 267.066,
+      "plausibility": "Moderate",
+      "point": [
+        31.7480898304929,
+        119.582781989868
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "jincheng town"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2185,
+      "cityCode": 6002,
+      "name": "Bule Hora",
+      "country": "Ethiopia",
+      "iso2": "ET",
+      "iso3": "ETH",
+      "locId": 231,
+      "capital": false,
+      "pop2025k": 267.051,
+      "plausibility": "Low",
+      "point": [
+        5.63755617915242,
+        38.2376910811427
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "bule hora"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2186,
+      "cityCode": 1852,
+      "name": "Bydgoszcz",
+      "country": "Poland",
+      "iso2": "PL",
+      "iso3": "POL",
+      "locId": 616,
+      "capital": false,
+      "pop2025k": 266.908,
+      "plausibility": "High",
+      "point": [
+        53.1261021859871,
+        17.997811624784
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "bydgoszcz"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2187,
+      "cityCode": 11166,
+      "name": "Yaguang",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 266.899,
+      "plausibility": "High",
+      "point": [
+        31.6113460540737,
+        117.855148201685
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "yaguang"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2188,
+      "cityCode": 11425,
+      "name": "Bihpur",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 266.585,
+      "plausibility": "Moderate",
+      "point": [
+        25.3963840202146,
+        86.9194491982122
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "bihpur"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2189,
+      "cityCode": 8763,
+      "name": "Bijnor",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 266.24,
+      "plausibility": "Moderate",
+      "point": [
+        29.3774594999608,
+        78.1384036483459
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "bijnor"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2190,
+      "cityCode": 5184,
+      "name": "Haeju",
+      "country": "Dem. People's Republic of Korea",
+      "iso2": "KP",
+      "iso3": "PRK",
+      "locId": 408,
+      "capital": false,
+      "pop2025k": 266.2,
+      "plausibility": "High",
+      "point": [
+        38.0416899723817,
+        125.705191026247
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "haeju"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2191,
+      "cityCode": 7933,
+      "name": "Pamekasan",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "iso3": "IDN",
+      "locId": 360,
+      "capital": false,
+      "pop2025k": 266.004,
+      "plausibility": "High",
+      "point": [
+        -7.15087998140302,
+        113.488282644721
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "pamekasan"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2192,
+      "cityCode": 4345,
+      "name": "Porlamar",
+      "country": "Venezuela (Bolivarian Republic of)",
+      "iso2": "VE",
+      "iso3": "VEN",
+      "locId": 862,
+      "capital": false,
+      "pop2025k": 265.905,
+      "plausibility": "Moderate",
+      "point": [
+        10.9695843946551,
+        -63.8594882782306
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "porlamar"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2193,
+      "cityCode": 2455,
+      "name": "Talca",
+      "country": "Chile",
+      "iso2": "CL",
+      "iso3": "CHL",
+      "locId": 152,
+      "capital": false,
+      "pop2025k": 265.82,
+      "plausibility": "High",
+      "point": [
+        -35.4306484480997,
+        -71.6538051346513
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "talca"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2194,
+      "cityCode": 9680,
+      "name": "Yuzhou",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 265.782,
+      "plausibility": "Moderate",
+      "point": [
+        34.1642778393362,
+        113.472822554567
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "yuzhou"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2195,
+      "cityCode": 2413,
+      "name": "Nazareth",
+      "country": "Israel",
+      "iso2": "IL",
+      "iso3": "ISR",
+      "locId": 376,
+      "capital": false,
+      "pop2025k": 265.611,
+      "plausibility": "Moderate",
+      "point": [
+        32.7074004606184,
+        35.2985466322546
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "nazareth"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2196,
+      "cityCode": 7670,
+      "name": "Kaithal",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 265.502,
+      "plausibility": "High",
+      "point": [
+        29.7995897199337,
+        76.4055225188099
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kaithal"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2197,
+      "cityCode": 5550,
+      "name": "El Oued",
+      "country": "Algeria",
+      "iso2": "DZ",
+      "iso3": "DZA",
+      "locId": 12,
+      "capital": false,
+      "pop2025k": 265.408,
+      "plausibility": "High",
+      "point": [
+        33.3557054388029,
+        6.86819414136003
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "el oued"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2198,
+      "cityCode": 1373,
+      "name": "Dordrecht",
+      "country": "Netherlands",
+      "iso2": "NL",
+      "iso3": "NLD",
+      "locId": 528,
+      "capital": false,
+      "pop2025k": 265.349,
+      "plausibility": "High",
+      "point": [
+        51.8143926922208,
+        4.67469211847365
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "27",
+      "aliases": [
+        "dordrecht"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2199,
+      "cityCode": 10744,
+      "name": "Laiyang",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 265.318,
+      "plausibility": "Moderate",
+      "point": [
+        36.9702350418536,
+        120.712180641319
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "laiyang"
+      ],
+      "attemptState": "pending",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2200,
+      "cityCode": 7034,
+      "name": "Jining",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 265.293,
+      "plausibility": "High",
+      "point": [
+        41.0251329176748,
+        113.116647318686
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "jining"
+      ],
+      "attemptState": "identity_review_required",
+      "attemptEvidence": [],
+      "possiblePriorMatches": [
+        {
+          "kind": "same-country-name-distance-review",
+          "evidenceFile": "research/overnight-cities-2026-10-08/city-10092-jining.json",
+          "cityId": "wup2025:10092",
+          "cityName": "Jining",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": true,
+          "distanceKm": 694.08,
+          "identityConfidence": "ambiguous",
+          "source": "registry"
+        },
+        {
+          "evidenceFile": "world-parcels/research/overnight-cities-2026-10-08/city-10092-jining.json",
+          "matchedName": "Jining",
+          "field": "name",
+          "identityConfidence": "review-required",
+          "kind": "structured-city-name-candidate",
+          "source": "research-file"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ]
+}

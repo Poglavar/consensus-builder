@@ -1,0 +1,14 @@
+{
+  "taskId": "city:6206",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-6206-al-qusiya.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/al-qusiya-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T16:13:09Z",
+  "reason": "Queue identity and English/Arabic search records match. Official national survey pages establish general institutional context, but the paired evidence identifies no first-party Al Qusiya parcel endpoint, safe native ID, or full polygon. Registry custody remains unresolved (null); no citywide absence is inferred from unavailable public geometry. All adapter admission gates remain unevidenced.",
+  "custodyFinding": "null; local Al Qusiya record custody is not independently established",
+  "retainedFullPolygons": 0,
+  "runtimeAdmitted": false
+}

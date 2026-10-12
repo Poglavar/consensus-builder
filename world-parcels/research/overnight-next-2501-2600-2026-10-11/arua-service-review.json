@@ -1,0 +1,44 @@
+{
+  "cityRecord": "city-843-arua.json",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "purpose": "Document first-party Arua/Uganda land-registry discovery and bounded anonymous UgNLIS geometry-access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Arua City and MLHUD provide first-party evidence of local and national land-registration/cadastral responsibilities. The current public UgNLIS portal exposes parcel-related API routes, but bounded anonymous requests did not return parcel identity-plus-geometry data.",
+  "registryAssessment": "Arua City Physical Planning and Housing Department is a documented local custodian for land registration and cadastral mapping functions; MLHUD's UgNLIS identifies an Arua MZO. registryFound is true for source discovery only.",
+  "officialPrimarySources": [
+    {"url": "https://aruacity.go.ug/department/physical-planning-and-housing-department", "observation": "Official Arua City page lists land registration, cadastral-job quality checks, city surveying, mapping and land administration functions."},
+    {"url": "https://mlhud.go.ug/ugnlis/", "observation": "Official MLHUD page describes UgNLIS as a spatially referenced land-information system and lists Arua among its Ministry Zonal Offices."},
+    {"url": "https://ugnlis.mlhud.go.ug/", "observation": "Current public portal loaded successfully; its HTML references the current JavaScript bundle inspected for API/configuration routes."},
+    {"url": "https://mlhud.go.ug/lands-managment/department-of-surveys-and-mapping/", "observation": "Official MLHUD department page documents cadastral-job quality checks, survey/mapping responsibilities and survey-data services."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Arua Uganda official cadastral map parcel land registry GIS site:go.ug OR site:mlhud.go.ug", "result": "Official Arua City, MLHUD and UgNLIS sources found; no safe anonymous Arua parcel geometry result.", "actualResultUrls": ["https://aruacity.go.ug/department/physical-planning-and-housing-department", "https://mlhud.go.ug/ugnlis/", "https://ugnlis.mlhud.go.ug/"]},
+    {"language": "Lugbara", "query": "Arua Uganda Lugbara kadastri map parcel land registry official", "result": "No Lugbara-language first-party parcel viewer/API result; English official sources were the relevant results.", "actualResultUrls": ["https://mlhud.go.ug/ugnlis/", "https://ugnlis.mlhud.go.ug/", "https://aruacity.go.ug/department/physical-planning-and-housing-department"]}
+  ],
+  "attempts": [
+    {"url": "https://ugnlis.mlhud.go.ug/", "method": "GET", "result": "HTTP 200 HTML; current bundle main.8123d6213976b174.js inspected. Configuration exposed API bases https://api.mlhud.go.ug/ugnlis-data-api/v1 and https://api.mlhud.go.ug/ugnlis-api/v1, plus geoserver https://gis.mlhud.go.ug/geoserver."},
+    {"url": "https://api.mlhud.go.ug/ugnlis-data-api/v1/nalisep-api-data/query-parcelle/query-boudaries", "method": "GET", "result": "HTTP 500 JSON {statusCode:500,message:Internal server error}; no geometry or schema response."},
+    {"url": "https://api.mlhud.go.ug/ugnlis-data-api/v1/nalisep-api-data/query-parcelle/query-commune", "method": "GET", "result": "HTTP 200 JSON empty array; no commune metadata or parcel geometry."},
+    {"url": "https://api.mlhud.go.ug/ugnlis-data-api/v1/nalisep-api-data/query-parcelle/query-parcelle/localites", "method": "GET", "result": "HTTP 200 JSON empty array; no localities or parcel geometry."},
+    {"url": "https://aruacity.go.ug/department/physical-planning-and-housing-department", "method": "GET via first-party discovery", "result": "Official local custodian page reviewed; prose/functions only, no public parcel service URL."},
+    {"url": "https://mlhud.go.ug/lands-managment/department-of-surveys-and-mapping/", "method": "GET via first-party discovery", "result": "Official national survey/cadastre responsibility page reviewed; no public parcel feature response."}
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying safe point-level sample was available.",
+  "coverageAssessment": {
+    "claimedScope": "Arua City land/planning custodian and Uganda national UgNLIS/MLHUD sources.",
+    "verifiedOpenScope": "Public source identity and API route discovery only; no anonymous WUP-point response or citywide parcel coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry", "source service URL", "observed coordinate order", "retrieval timestamp"],
+  "uncertainty": "The public portal and API are current and reachable, but the safe metadata responses were empty and the boundary route failed server-side. A zero exact-point hit, absent geometry response or unavailable route is not evidence of citywide absence. Runtime remains held pending independent serial review."
+}

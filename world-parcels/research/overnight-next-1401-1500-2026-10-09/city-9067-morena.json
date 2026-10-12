@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9067,
+  "cityId": "wup2025:9067",
+  "name": "Morena",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [26.4946692514274, 77.9910060113662],
+  "population2025": 393553,
+  "population2025k": 393.553,
+  "populationUnit": "persons",
+  "queueRank": 1445,
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Morena Madhya Pradesh official cadastral map land parcels GIS",
+        "checkedAt": "2026-10-09",
+        "result": "Search identified the official District Morena land-records page, which links public spatial and non-spatial village land records to MP Bhulekh, and the official Morena GIS page, which links the district GIS portal. The search did not establish an anonymous parcel-feature endpoint or city-specific polygon response.",
+        "actualResultUrls": [
+          "https://morena.nic.in/en/service/land-records/",
+          "https://morena.nic.in/en/morena-gis/",
+          "https://morenagis.mp.gov.in/",
+          "https://mpbhulekh.gov.in/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "script": "Devanagari",
+        "query": "मुरैना मध्य प्रदेश भू नक्शा आधिकारिक नक्शा खसरा",
+        "checkedAt": "2026-10-09",
+        "result": "Search identified the official Hindi District Morena land-records page. It states that village spatial and non-spatial land-record data is available to the public through MP Bhulekh and names Tahsil Morena at the Collectorate. No anonymous parcel-feature schema or geometry response was established.",
+        "actualResultUrls": [
+          "https://morena.nic.in/service/%E0%A4%AD%E0%A5%82-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/",
+          "https://mpbhulekh.gov.in/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "MP Bhulekh",
+        "operator": "Revenue Department / Government of Madhya Pradesh (linked by District Morena)",
+        "homeUrl": "https://mpbhulekh.gov.in/",
+        "observation": "Official District Morena land-records pages identify this as the public destination for village spatial and non-spatial land-record data, including RoR, Khatauni/B1 and Naksha services. The bounded request from this environment timed out before current JavaScript/configuration or an anonymous parcel API could be inspected. No credentials or login was attempted."
+      },
+      {
+        "name": "Morena GIS",
+        "operator": "District Administration Morena / NIC, Government of India",
+        "homeUrl": "https://morenagis.mp.gov.in/",
+        "observation": "Official District Morena describes a district GIS containing land use and public-infrastructure layers and links the portal. The direct bounded request timed out; no cadastral layer, schema, CRS, native parcel identity or geometry response was verified."
+      }
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://morena.nic.in/en/service/land-records/",
+        "httpStatus": 200,
+        "assessment": "Official English District Morena page states that village spatial and non-spatial land-record data is publicly available through MP Bhulekh and identifies Tahsil Office Morena at the Collectorate. This establishes local administrative custody/context, not a vector API."
+      },
+      {
+        "method": "GET",
+        "url": "https://morena.nic.in/service/%E0%A4%AD%E0%A5%82-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/",
+        "httpStatus": 200,
+        "assessment": "Official Hindi District Morena page gives the same public MP Bhulekh route and names Tahsil Morena; no parcel geometry was returned."
+      },
+      {
+        "method": "GET",
+        "url": "https://morena.nic.in/en/morena-gis/",
+        "httpStatus": 200,
+        "assessment": "Official Morena GIS page describes district GIS layers and links the portal at morenagis.mp.gov.in; page content did not expose a parcel API."
+      },
+      {
+        "method": "GET",
+        "url": "https://morenagis.mp.gov.in/",
+        "httpStatus": null,
+        "outcome": "timeout",
+        "assessment": "Direct anonymous request timed out after 20 seconds from this environment. This is not evidence of citywide absence or map extent miss; no retry with credentials or TLS bypass was made."
+      },
+      {
+        "method": "GET",
+        "url": "https://mpbhulekh.gov.in/",
+        "httpStatus": null,
+        "outcome": "timeout",
+        "assessment": "Direct anonymous request timed out after 20 seconds from this environment before the current viewer JavaScript/configuration could be inspected. No login wall was bypassed and no TLS verification was disabled."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official District Morena land-record and GIS routes; no parcel-level coverage claim.",
+    "verifiedOpenScope": "District-level public land-record route and district GIS portal were identified. Anonymous parcel schema, CRS, native identity and geometry at the exact WUP point were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": true,
+  "verifiedSample": false,
+  "runtimeReadiness": "technical-hold",
+  "technicalBlocker": "The official MP Bhulekh and Morena GIS portal endpoints timed out during bounded anonymous GETs, so current JavaScript/configuration, public service URLs, schema/CRS, safe native parcel identity and geometry could not be inspected. Official district pages provide administrative context but do not themselves provide parcel polygons.",
+  "remainingUncertainty": "A public parcel-vector or map-query route may exist behind the current MP Bhulekh/Morena GIS viewer. Exact WUP-point inclusion, local village/tehsil identity, parcel coverage and citywide completeness remain unverified.",
+  "nextStep": "On a later attempt, inspect the public viewer configuration with ordinary anonymous requests and, if available, issue a bounded geometry-only exact-point or small-extent query requesting only a stable parcel identifier and polygon geometry.",
+  "sourceQuality": "Official District Morena / Government of Madhya Pradesh pages and linked government portals; no parcel geometry source was qualified.",
+  "assessment": {
+    "status": "no_verified_sample_candidate_citywide",
+    "runtimeReadiness": "technical-hold",
+    "registryFound": true,
+    "verifiedSample": false,
+    "geometryVerified": false,
+    "citywideVerified": false
+  },
+  "kind": "city_parcel_source_research"
+}

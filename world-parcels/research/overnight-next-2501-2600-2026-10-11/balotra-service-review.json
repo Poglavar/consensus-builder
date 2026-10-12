@@ -1,0 +1,28 @@
+{
+  "cityRecord": "city-4409-balotra.json",
+  "cityCode": 4409,
+  "queueRank": 2540,
+  "name": "Balotra",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [25.8337199057508, 72.2359005373214],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html", "httpStatus": "timeout", "outcome": "Official Rajasthan Bhu-Naksha viewer did not respond within the bounded request; no HTML, JavaScript/configuration, schema, CRS, or parcel response was obtained."},
+    {"method": "GET", "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/820", "httpStatus": "web-search result available; direct shell retrieval not completed", "outcome": "Official DILRMP result identifies Rajasthan and Balotra district cadastral-status context. No direct parcel request was made."},
+    {"method": "GET", "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index", "httpStatus": "web-search result available; direct shell retrieval not completed", "outcome": "Official Rajasthan Urban GIS page identifies Khasra Search and viewing-only settlement-department khasra/village boundaries; no Balotra feature response was obtained."},
+    {"method": "GET", "url": "https://lsg.rajasthan.gov.in/uitbalotra/", "httpStatus": "web-search result available", "outcome": "Official Urban Improvement Trust Balotra site confirms a Balotra-specific government urban custodian and land/map-related sections; no parcel geometry endpoint was qualified."},
+    {"method": "GET", "url": "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html", "httpStatus": "web-search result available", "outcome": "Official Rajasthan cadastral-map digitization/procedure page identified; it is general state procedure evidence, not a Balotra parcel response."},
+    {"method": "GET", "url": "https://apnakhata.rajasthan.gov.in/Owner_wise/DistrictMap.aspx", "httpStatus": "not requested", "outcome": "Mentioned only as a possible official land-record route during discovery; no owner or unsafe record fields were requested."}
+  ],
+  "schemaAndCrs": {"geometryType": null, "geometryCrs": null, "nativeFieldMapping": null, "compositeKeyProvenance": null, "rawAttributesRetained": false, "inspection": "No safe anonymous parcel feature response was obtained. The Bhu-Naksha viewer timed out and the Rajdharaa page exposed only the public UI in discovery results; no native identity, schema, CRS, or geometry was qualified."},
+  "sampleGeoJSON": null,
+  "safeFieldAllowlist": ["stable native parcel identity if independently evidenced", "full parcel polygon geometry if independently evidenced", "source URL", "observed coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Official source discovery is recorded, but no Balotra parcel feature response, native identity, schema, CRS, or geometry was qualified; research does not admit a runtime adapter."},
+  "scopeLimits": ["No exact-point parcel result was obtained; this is not evidence of absence.", "No citywide extent or completeness claim is made.", "No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception were used.", "Packet completion records research only; it is not source integration or runtime admission."],
+  "uncertainty": "The official Rajasthan and DILRMP sources evidence cadastral services and Balotra district context, while the official UIT site evidences a local urban custodian. The live parcel viewer was unreachable for bounded anonymous inspection. Balotra-specific parcel access and service schema remain unresolved."
+}

@@ -1,0 +1,48 @@
+{
+  "taskId": "city:8124",
+  "decision": "held",
+  "city": "Cabo Frio",
+  "identityCheck": {
+    "queueRank": 2991,
+    "country": "Brazil",
+    "pointLatLon": [
+      -22.8641191687602,
+      -42.0352507362762
+    ],
+    "populationPersons": 200079,
+    "queueRosterArchiveMatch": true
+  },
+  "searchLanguages": [
+    "English",
+    "Portuguese"
+  ],
+  "registryFound": true,
+  "durableSamplePolygonCount": 0,
+  "safeNativeParcelIdAndFullPolygonVerified": false,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "The first-party Cabo Frio municipal law identifies a municipal property cadastre and Fazenda role, and the cached municipal IPTU page supports municipal fiscal custody. The municipal home page returned a Wordfence wall and e-GOV timed out. No anonymous safe parcel geometry/native-ID response or independently qualified adapter is evidenced. Neither access limit establishes citywide absence.",
+  "sourceChecks": [
+    {
+      "url": "https://transparencia.cabofrio.rj.leg.br/leis/28404",
+      "observation": "Official law 4538/2025 describes the municipal cadastro imobiliario and Fazenda coordination; this is custody evidence, not an open parcel service."
+    }
+  ],
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-8124-cabo-frio.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/cabo-frio-service-review.json",
+    "tmp/valhalla-parcel-research/8124/https___fazenda_cabofrio_rj_gov_br_servicos_iptu_.html",
+    "tmp/valhalla-parcel-research/8124/prefeitura.html"
+  ],
+  "checkedAt": "2026-10-12T00:21:26Z"
+}

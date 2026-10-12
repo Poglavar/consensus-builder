@@ -88,12 +88,15 @@ export async function prepareCandidate(city, { repoRoot, sourceRoot } = {}) {
         const catalogSource = parcelSourceCatalog.sources.find(source => source.id === inputDescriptor.id);
         if (!catalogSource) return needs('Provider descriptor does not resolve to an existing production catalog source.');
 
-        let descriptor = { ...structuredClone(catalogSource), ...structuredClone(inputDescriptor) };
-        // Catalog identity remains authoritative; reuse packet adapter settings after safety checks.
+        // Qualification tests the descriptor production runs: the catalog wins for every field it
+        // defines (a packet holds a snapshot from discovery time, possibly before a catalog fix), and
+        // the packet only adds settings the catalog lacks. A packet naming another identity is refused.
         for (const [key, value] of Object.entries(inputDescriptor)) {
-            if (['id', 'adapter', 'idPrefix', 'endpoint'].includes(key)
-                && Object.hasOwn(catalogSource, key) && JSON.stringify(catalogSource[key]) !== JSON.stringify(value)) return needs(`Provider descriptor conflicts with catalog identity field ${key}.`);
+            if (!IDENTITY_FIELDS.includes(key) || !Object.hasOwn(catalogSource, key)) continue;
+            const same = key === 'endpoint' ? sameUrl(catalogSource[key], value) : JSON.stringify(catalogSource[key]) === JSON.stringify(value);
+            if (!same) return needs(`Provider descriptor conflicts with catalog identity field ${key}.`);
         }
+        let descriptor = { ...structuredClone(inputDescriptor), ...structuredClone(catalogSource) };
         if (descriptor.adapter === 'wfs' && !descriptor.geometryField && descriptor.id === 'fr-ign-parcellaire-express') {
             // The shared production WFS descriptor deliberately leaves propertyName unspecified.
             // Keep only the canonical native key in the candidate and drop the catalogue label field.
@@ -143,18 +146,28 @@ export async function prepareCandidate(city, { repoRoot, sourceRoot } = {}) {
             if (!sampleIds.includes(id)) sampleIds.push(id);
         }
         if (!sampleIds.length) return needs('No native parcel sample IDs were found.');
+        // Binding reads the first sample's footprint, which must fit the source's bounded area
+        // (maxBboxKm2): put the smallest sample first.
+        const bboxArea = geometry => {
+            const points = (geometry.type === 'Polygon' ? geometry.coordinates : geometry.coordinates.flat()).flat();
+            const xs = points.map(point => point[0]), ys = points.map(point => point[1]);
+            return (Math.max(...xs) - Math.min(...xs)) * (Math.max(...ys) - Math.min(...ys));
+        };
+        sampleIds.sort((a, b) => bboxArea(sampleGeometries.get(a)) - bboxArea(sampleGeometries.get(b)) || a.localeCompare(b));
 
         const idPrefix = descriptor.idPrefix;
         if (typeof idPrefix !== 'string' || !idPrefix || sampleIds.some(id => !id.startsWith(idPrefix))) return needs('Canonical sample IDs do not use the catalog source prefix.');
-        const codec = await absentId(descriptor, features[0], root);
-        if (typeof codec !== 'string' || !codec.startsWith(idPrefix) || sampleIds.includes(codec)) return needs('No existing identity codec can safely produce a format-valid absent ID for this adapter.');
-        const checkedSampleIds = sampleIds.slice(0, MAX_SAMPLES);
-
         // Ask the production adapter to parse every exact ID, with all fetches replaced by a
         // sentinel that cannot reach the network. Reaching that sentinel proves syntax validation passed.
         const adapter = createParcelSource(descriptor, { fetchImpl: async () => {
             throw Object.assign(new Error('qualification network disabled'), { code: 'qualification-network-disabled' });
         } });
+        const acceptsId = async id => {
+            try { await adapter.queryIds([id]); return true; } catch (error) { return Number(error?.status ?? error?.httpStatus) !== 400; }
+        };
+        const codec = await absentId(descriptor, features[0], root, acceptsId);
+        if (typeof codec !== 'string' || !codec.startsWith(idPrefix) || sampleIds.includes(codec)) return needs('No existing identity codec can safely produce a format-valid absent ID for this adapter.');
+        const checkedSampleIds = sampleIds.slice(0, MAX_SAMPLES);
         if (!['geojson-snapshot', 'shapefile-snapshot', 'shapefile-zip', 'nairobi-outlines'].includes(descriptor.adapter)) {
             try {
                 await adapter.queryIds([...checkedSampleIds, codec]);
@@ -210,7 +223,51 @@ export async function prepareCandidate(city, { repoRoot, sourceRoot } = {}) {
     }
 }
 
-async function absentId(descriptor, sampleFeature, root) {
+const IDENTITY_FIELDS = ['id', 'adapter', 'idPrefix', 'endpoint'];
+
+// URL hosts are case-insensitive (RFC 3986 §3.2.2): a packet written through a URL parser
+// carries the lower-cased host of the same catalog endpoint.
+function sameUrl(a, b) {
+    try { return new URL(a).href === new URL(b).href; } catch { return false; }
+}
+
+// Format-valid stand-ins for one native ID, simplest first: letters to z/Z (or hex letters to f/F),
+// digits to 9 with the last digit 8 (all nines is a common placeholder in published registers).
+// Later candidates keep more of the native's own leading and trailing characters, so the fixed
+// parts of an ID format survive (Baden-Württemberg 08…, Hessen DEHE…FL).
+function* absentNativeCandidates(native) {
+    const lastDigit = text => text.replace(/9(?=[^0-9]*$)/, '8');
+    const letters = char => /\d/.test(char) ? '9' : /[a-z]/.test(char) ? 'z' : /[A-Z]/.test(char) ? 'Z' : char;
+    const hexDigits = char => /\d/.test(char) ? '9' : /[a-f]/i.test(char) ? (char === char.toUpperCase() ? 'F' : 'f') : char;
+    const seen = new Set([native]);
+    // Hex mapping (GUIDs) only after every kept prefix/suffix failed with plain letters.
+    for (const map of [letters, hexDigits]) {
+        for (let kept = 0; kept <= 8; kept++) {
+            for (let keepStart = kept; keepStart >= 0; keepStart--) {
+                const keepEnd = kept - keepStart;
+                if (keepStart + keepEnd >= native.length) continue;
+                const candidate = native.slice(0, keepStart)
+                    + lastDigit([...native.slice(keepStart, native.length - keepEnd)].map(map).join('')) + native.slice(native.length - keepEnd);
+                if (!seen.has(candidate)) { seen.add(candidate); yield candidate; }
+            }
+        }
+    }
+    yield `${native}Z`;
+}
+
+// The first candidate that the descriptor's pattern (if any) and the adapter's own syntax check accept;
+// some formats live only in the adapter (Hessen's GML profile), so the adapter has the last word.
+async function absentNative(native, pattern, acceptsNative = async () => true) {
+    let regex = null;
+    if (pattern) { try { regex = new RegExp(pattern); } catch { return null; } }
+    for (const candidate of absentNativeCandidates(native)) {
+        if (regex && !regex.test(candidate)) continue;
+        if (await acceptsNative(candidate)) return candidate;
+    }
+    return null;
+}
+
+async function absentId(descriptor, sampleFeature, root, acceptsId = async () => true) {
     if (['geojson-snapshot', 'shapefile-snapshot', 'shapefile-zip'].includes(descriptor.adapter)) {
         const codec = await import(pathToFileURL(path.join(root, 'backend/parcels/geojson-snapshot-source.js')));
         const count = descriptor.idFields?.length;
@@ -236,23 +293,22 @@ async function absentId(descriptor, sampleFeature, root) {
         return `${descriptor.idPrefix}${candidate}`;
     }
     const native = sampleNative;
+    const pattern = descriptor.idPattern || descriptor.nativeIdPattern;
     let candidate;
-    if (descriptor.idType === 'integer' || descriptor.idType === 'number' || descriptor.idPattern === 'integer') {
-        candidate = /^0\d+$/.test(native) ? '9'.repeat(native.length) : '999999999';
+    if (descriptor.adapter === 'arcgis' && Array.isArray(descriptor.idFields) && descriptor.idFields.length) {
+        // Composite IDs are percent-encoded parts joined by "~": map the decoded parts, never the escapes.
+        const { encodeArcgisCompositeId, splitArcgisCompositeId } = await import(pathToFileURL(path.join(root, 'backend/parcels/arcgis-source.js')));
+        const parts = splitArcgisCompositeId(native);
+        if (parts.length !== descriptor.idFields.length) return null;
+        const mapped = await Promise.all(parts.map((part, index) => descriptor.idFieldTypes?.[descriptor.idFields[index]] === 'string'
+            ? absentNative(part, pattern) : '9'.repeat(Math.max(part.length - 1, 1)) + (part.length > 1 ? '8' : '')));
+        if (mapped.some(part => !part)) return null;
+        candidate = encodeArcgisCompositeId(mapped);
+    } else if (descriptor.idType === 'integer' || descriptor.idType === 'number' || descriptor.idPattern === 'integer') {
+        candidate = /^0\d+$/.test(native) ? `${'9'.repeat(native.length - 1)}8` : '999999998';
     } else {
-        candidate = [...native].map(char => /\d/.test(char) ? '9' : /[a-z]/.test(char) ? 'z' : /[A-Z]/.test(char) ? 'Z' : char).join('');
-        if (candidate === native) candidate = `${native}Z`;
-        const pattern = descriptor.idPattern || descriptor.nativeIdPattern;
-        if (pattern) {
-            try {
-                const regex = new RegExp(pattern);
-                if (!regex.test(candidate)) {
-                    const hex = [...native].map(char => /\d/.test(char) ? '9' : /[a-f]/i.test(char) ? (char === char.toUpperCase() ? 'F' : 'f') : char).join('');
-                    if (!regex.test(hex)) return null;
-                    candidate = hex;
-                }
-            } catch { return null; }
-        }
+        candidate = await absentNative(native, pattern, value => acceptsId(`${descriptor.idPrefix}${value}`));
+        if (!candidate) return null;
     }
     const id = `${descriptor.idPrefix}${candidate}`;
     return id === `${descriptor.idPrefix}${native}` ? null : id;

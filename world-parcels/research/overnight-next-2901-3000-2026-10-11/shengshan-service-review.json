@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-11920-shengshan.json",
+  "cityCode": 11920,
+  "queueRank": 2909,
+  "name": "Shengshan",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "reviewStatus": "complete_research_held",
+  "queryAndRequestSummary": "Separate English and Chinese discovery was performed. First-party Zhoushan and Shengsi sources evidence the local real-estate registration custodian, county cadastral database work, and a procedure applicable to Shengsi. No anonymous parcel viewer/API configuration, schema, CRS, native ID, or geometry response was verified.",
+  "attemptedRoutes": [
+    {"url": "https://www.zhoushan.gov.cn/art/2023/2/28/art_1229295579_1652421.html", "method": "GET/search-open", "outcome": "official procedure inspected; Shengsi applicability confirmed; no public parcel API exposed"},
+    {"url": "https://ssnews.zjol.com.cn/ssnews/system/2026/06/04/035224611.shtml", "method": "GET/search-open", "outcome": "official county-news evidence inspected; local registration center and cadastral database work confirmed"},
+    {"url": "https://www.shengsi.gov.cn/", "method": "GET", "outcome": "minimal response after shell DNS/network issue; no viewer/API configuration obtained"}
+  ],
+  "scopeLimits": [
+    "No exact-point parcel hit or miss was treated as citywide evidence.",
+    "No map extent was used to infer absence.",
+    "Institutional/procedure evidence does not prove open polygon coverage or adapter readiness.",
+    "No retained GeoJSON sample was created because no safe full native polygon was observed."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full native parcel geometry", "geometry CRS", "source service/layer metadata"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "registryFound": true,
+  "uncertainty": "A local custodian and applicable official procedure are evidenced, but the city-specific public parcel service remains unverified. No credentials, private tokens, CAPTCHA/Cloudflare bypass, TLS exception, or unsafe fields were used."
+}

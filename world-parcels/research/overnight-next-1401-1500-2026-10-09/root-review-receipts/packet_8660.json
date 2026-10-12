@@ -1,0 +1,21 @@
+{
+  "taskId": "packet:8660",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-8660-modinagar.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/modinagar-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T08:03:07Z",
+  "reason": "Official UP/Modinagar custody and viewer routes are recorded. Saved JavaScript names map extent, plot lookup, and full polygon routes, but the saved village response is 500 with upstream 403; successful bounded reads in the packet lack a retained original response here. The reported full polygon route requires Authorization. No independently verified city-scoped native-ID full polygon or runtime qualification exists; citywide geometry remains unresolved.",
+  "identityCheck": "Matched city code, rank, country, exact WUP point and 2025 population persons across the 2025.5 source archive row, immutable ranked roster, pending queue, and packet. Source gzip SHA-256 matches handoff e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114.",
+  "searchCheck": "Paired packet and review record executed English and local-language searches with result URLs.",
+  "sampleCheck": "Zero full polygons retained; no verified safe native parcel ID plus complete polygon.",
+  "originalArtifactChecks": [
+    "tmp/valhalla-parcel-research/modinagar/main-76RVRF3Z.js: named routes and EPSG:32644 present",
+    "tmp/valhalla-parcel-research/modinagar/villages.json: status 500, upstream 403"
+  ],
+  "admissionGates": "No independent proof of fresh full-polygon native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, or headed Details-panel verification. Runtime/catalog/report state is not advanced."
+}

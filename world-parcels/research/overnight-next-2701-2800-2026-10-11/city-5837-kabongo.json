@@ -1,0 +1,112 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel sources for Kabongo, Democratic Republic of the Congo; claims are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 5837,
+  "queueRank": 2736,
+  "name": "Kabongo",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso3": "COD",
+  "point": [-7.40588290777805, 25.6344124292261],
+  "population2025": 215612,
+  "population2025k": 215.612,
+  "populationUnit": "persons",
+  "aliases": ["kabongo"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kabongo Democratic Republic of the Congo official cadastral parcel GIS map land registry",
+        "result": "Search identified the official DRC Ministry of Land Affairs site, its land/cadastral jurisdiction directory, the official public-service register-consultation procedure, and the BIC cadastral viewer. No public Kabongo parcel geometry or city-specific service endpoint was identified.",
+        "actualResultUrls": ["https://www.affairesfoncieres.gouv.cd/", "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions", "https://servicepublic.gouv.cd/service/4671", "https://bic.cd/"]
+      },
+      {
+        "language": "French (official/local-language attempt)",
+        "query": "Kabongo RDC cadastre parcelles carte SIG circonscription foncière Haut-Lomami",
+        "result": "Search identified the same first-party Ministry directory and formal consultation procedure, plus an official CAID administrative map for the Kabongo territory. These are jurisdiction/administrative or procedure sources, not an open parcel ID-plus-geometry service. No Kabongo parcel geometry was established.",
+        "actualResultUrls": ["https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions", "https://servicepublic.gouv.cd/service/4671", "https://www.caid.cd/cartes/downloads/87.pdf", "https://bic.cd/"]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "observation": "Current official Ministry of Land Affairs jurisdiction directory was fetched anonymously. The rendered page identifies 143 land/cadastral jurisdictions across 26 provinces, but the observed HTML did not expose a Kabongo-specific parcel layer, schema, CRS, or geometry response. It is national custodian/jurisdiction evidence only."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "observation": "Official DRC public-service catalogue describes formal consultation of cadastral and land registers through the competent Conservateur des Titres Immobiliers or Chef de Division du Cadastre. It requires a formal request and is not an open parcel-geometry API."
+    },
+    {
+      "url": "https://bic.cd/",
+      "observation": "First-party Bureau d'Informations Cadastrales viewer was fetched and its current JavaScript/configuration inspected. The public page states parcel service availability for Nord-Kivu and Sud-Kivu; no Haut-Lomami/Kabongo coverage or safe anonymous parcel response was established."
+    },
+    {
+      "url": "https://www.caid.cd/cartes/downloads/87.pdf",
+      "observation": "Official CAID administrative map for the Kabongo territory, WGS 84, was found. It shows administrative geography and explicitly cites the Référentiel Géographique Commun; it is not cadastral parcel data."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "method": "GET official jurisdiction directory",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Anonymous HTML returned successfully. No parcel IDs, geometry, schema, CRS, or map/API endpoint was returned in the inspected response; no Kabongo-specific service was evidenced."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "method": "GET official Ministry homepage and current JavaScript/configuration",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Anonymous HTML returned successfully. The site advertises cadastral documents, jurisdictions, and formal services, but no public parcel ID-plus-geometry service was exposed."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "method": "GET official cadastral-register procedure page",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Procedure page returned successfully. It documents paid/formal register consultation through competent land-affairs offices; no open geometry response or service schema was exposed."
+    },
+    {
+      "url": "https://bic.cd/",
+      "method": "GET public cadastral viewer plus current JavaScript/configuration inspection",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Viewer shell returned successfully. The visible service statement limits currently available parcel service to Nord-Kivu and Sud-Kivu. No Kabongo/Haut-Lomami parcel response was requested or retained; no login, CAPTCHA/Cloudflare bypass, or private credential was used."
+    },
+    {
+      "url": "https://www.caid.cd/cartes/downloads/87.pdf",
+      "method": "GET official administrative map PDF",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "outcome": "Administrative territory map downloaded for qualification evidence. It contains administrative/place/road context, not parcel IDs or parcel polygons, so no GeoJSON sample was retained."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "No Kabongo-local registry/cadastre map, public parcel service, or local custodian was actually evidenced. National Ministry and formal public-service procedure pages are general custodial/procedural evidence only.",
+  "registryEvidenceUrls": ["https://www.affairesfoncieres.gouv.cd/", "https://servicepublic.gouv.cd/service/4671"],
+  "verifiedSample": false,
+  "sampleFile": null,
+  "sampleFiles": [],
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "nativeSchema": null,
+  "resultCategory": "national_custodian_procedure_found_parcel_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "DRC national land-affairs ministry and public-service procedure pages were identified; CAID provides administrative Kabongo map context.",
+    "verifiedOpenScope": "No Kabongo or Haut-Lomami open parcel ID-plus-geometry response, schema, CRS, or local registry map was verified.",
+    "countrywideVerified": false,
+    "citywideCompleteness": false
+  },
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "africa",
+  "remainingUncertainty": "A local Haut-Lomami/Kabongo office workflow, non-indexed viewer route, or future BIC expansion may provide parcel geometry. The exact WUP point was preserved and not shifted. No exact-point or map-extent miss was used as evidence of citywide absence. No credentials, private tokens, unsafe fields, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used.",
+  "safeFieldAllowlist": ["stable native parcel ID when independently verified", "geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"]
+}

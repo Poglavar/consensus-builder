@@ -1,0 +1,54 @@
+{
+  "cityCode": 3104,
+  "queueRank": 2622,
+  "country": "Chile",
+  "countryCode": "CL",
+  "iso3": "CHL",
+  "name": "Puerto Montt",
+  "point": [-41.4662574314677, -72.9516331610089],
+  "population2025": 224918,
+  "population2025k": 224.918,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Puerto Montt Chile official cadastral parcel map visor predial SII municipal geodata",
+        "result": "Found the official Municipalidad de Puerto Montt Geoportal and its public ArcGIS REST BASEPMONTT Predios polygon layer.",
+        "actualResultUrls": [
+          "https://gis.puertomontt.cl/server/rest/services/BASEPMONTT/MapServer/6",
+          "https://geoportal-gispmontt.hub.arcgis.com",
+          "https://www.puertomontt.cl/asociacion-de-municipalidades-reconocio-a-puerto-montt-por-su-aplicacion-geoportal/"
+        ]
+      },
+      {
+        "language": "Spanish (local)",
+        "query": "Chile Puerto Montt visor catastro predial oficial mapa parcelas",
+        "result": "Found the municipal Geoportal, the municipal Predios layer, and SII Puerto Montt cadastral valuation map material; the SII PDF is a reference map, not a query API.",
+        "actualResultUrls": [
+          "https://gis.puertomontt.cl/server/rest/services/BASEPMONTT/MapServer/6",
+          "https://www.sii.cl/destacados/reavaluo/2018/planosFinal/pdf_planos/10_PUERTO_MONTT.pdf",
+          "https://geoportal.cl/geoportal/map/4"
+        ]
+      }
+    ],
+    "sourceCheckedAt": "2026-10-11"
+  },
+  "source": {
+    "custodian": "Municipalidad de Puerto Montt, Geoportal / GIS municipal",
+    "serviceUrl": "https://gis.puertomontt.cl/server/rest/services/BASEPMONTT/MapServer/6",
+    "layerName": "Predios",
+    "serviceType": "ArcGIS REST Feature Layer",
+    "nativeCrs": "EPSG:32718",
+    "nativeIdentity": "objectid",
+    "geometryType": "esriGeometryPolygon",
+    "safeFields": ["objectid", "shape"],
+    "scope": "Municipal BASEPMONTT Predios layer; apparent comuna/municipal coverage, not independently proven citywide completeness."
+  },
+  "sampleGeoJSON": "city-3104-puerto-montt-sample.geojson",
+  "runtimeReadiness": "held",
+  "notes": "Exact WUP point query returned zero intersecting polygons; this is not evidence of absence. A bounded anonymous envelope query returned three polygons with stable native objectid values. Query response reported exceededTransferLimit=true, so the retained sample is illustrative only."
+}

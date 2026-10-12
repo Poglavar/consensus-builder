@@ -1,0 +1,78 @@
+{
+  "cityRecord": "city-7312-moulvibazar.json",
+  "cityCode": 7312,
+  "queueRank": 1948,
+  "city": "Moulvibazar",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Bangladesh Department of Land Records and Surveys (DLRS) / official online map services, with Moulvibazar district and upazila land-office portals",
+  "serviceUrl": "https://settlement.gov.bd/Map/MapSearch",
+  "discoveryUrls": [
+    "https://settlement.gov.bd/Map/MapSearch",
+    "https://map.land.gov.bd/",
+    "https://map.settlement.gov.bd/",
+    "https://moulvibazar.gov.bd/",
+    "https://acl.juri.moulvibazar.gov.bd/pages/office-process-maps",
+    "https://dlrs.portal.gov.bd/"
+  ],
+  "attemptedRoutes": [
+    {
+      "route": "English and Bengali first-party discovery queries",
+      "outcome": "succeeded; official DLRS/map services and Moulvibazar government land-service pages were identified; query text and actual URLs are recorded in the city record"
+    },
+    {
+      "route": "POST https://settlement.gov.bd/Map/GetDivisionList",
+      "outcome": "succeeded anonymously; returned the division hierarchy including Sylhet with unitcod 050000000"
+    },
+    {
+      "route": "POST https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise with divid=050000000",
+      "outcome": "succeeded anonymously; returned Moulvibazar district with unitcod 050200000 and comcod 4146"
+    },
+    {
+      "route": "POST https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise with districtid=050200000 and comcod=4146",
+      "outcome": "HTTP 200 with an empty JSON array; no survey, mouza, sheet, or parcel route could be selected from this response"
+    },
+    {
+      "route": "POST https://settlement.gov.bd/Map/GetallBoundaryJson with unitcode=050200000",
+      "outcome": "succeeded anonymously; returned a Moulvibazar district administrative MultiPolygon, not parcel geometry; not retained because it is not a parcel"
+    },
+    {
+      "route": "GET https://map.land.gov.bd/",
+      "outcome": "HTTP 200; current HTML and JavaScript were inspected. The viewer describes digitized/georeferenced mouza and plot maps and references EPSG:4326 plus GIS WMS layers"
+    },
+    {
+      "route": "GET https://gis.land.gov.bd/geoserver/{wms,wfs}?service=...&request=GetCapabilities",
+      "outcome": "all three public capabilities attempts returned HTTP 503 Service Unavailable; no current schema, CRS, feature type, or parcel response was obtained"
+    },
+    {
+      "route": "Exact WUP point [24.4854384976104, 91.7705588902146]",
+      "outcome": "not used to infer parcel absence; no bounded anonymous parcel endpoint was available after the empty survey-list response and GIS 503"
+    }
+  ],
+  "scope": "Evidence covers the official national DLRS map-search hierarchy, the official mauza/plot land-zoning viewer configuration, the Moulvibazar district administrative boundary endpoint, and official local land-office portals. Citywide parcel coverage and an anonymous parcel feature response were not verified.",
+  "schemaAndCrs": "The map.land.gov.bd JavaScript configures OpenLayers in EPSG:4326 and references GeoServer WMS layers including wsDMMS:mouza, but no parcel feature schema or safe native-ID-bearing response was obtained. The settlement district boundary response is GeoJSON administrative geometry only.",
+  "nativeIdentity": "Unavailable; no parcel feature response exposed a stable native parcel identifier.",
+  "fieldMapping": {},
+  "compositeKeyProvenance": null,
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON sample retained because no unchanged native parcel polygon and stable native identity were obtained.",
+  "safeFieldAllowlist": [
+    "geometry",
+    "stable native parcel identifier if later exposed"
+  ],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, personal, tax/account, legal-description, or ownership fields were requested or retained. No login, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used.",
+  "officialCustodyEvidence": "The Moulvibazar district and upazila government portals provide local land-service evidence, while DLRS provides the official national map-search hierarchy and map services. General agency prose was not treated as local registry evidence.",
+  "limits": [
+    "The Moulvibazar survey-list endpoint returned an empty array, so no downstream mouza/sheet/plot request was justified.",
+    "The configured GIS GeoServer returned HTTP 503 for WMS/WFS capabilities requests.",
+    "The available boundary response was an administrative district MultiPolygon, not a parcel polygon.",
+    "No exact-point hit or absence inference was made.",
+    "No parcel sample is retained and no source integration/admission is claimed.",
+    "Runtime readiness remains held pending independent serial qualification of a real adapter."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "The official viewers may expose parcel data for selected survey/mouza/sheet combinations when their data service is available, but this attempt did not obtain a Moulvibazar survey selection or anonymous feature response. Further research needs a working bounded response with safe native identity and geometry evidence."
+}

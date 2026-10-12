@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 9374,
+  "queueRank": 3298,
+  "name": "Yongnian",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [36.7827818018261, 114.5014812354],
+  "population2025": 182761,
+  "population2025k": 182.761,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yongnian China official cadastral parcel map land records survey map government",
+        "result": "Discovery identified the official Yongnian District government site and its Natural Resources and Planning Bureau service link, but no public parcel feature service or downloadable parcel polygons.",
+        "actualResultUrls": ["https://www.hdyn.gov.cn/", "http://www.hbzwfw.gov.cn/hbzw/sxcx/itemList/gr_index.do?webId=67&zt=&deptid=130429008"]
+      },
+      {
+        "language": "Chinese (local)",
+        "query": "永年区 不动产登记 地籍图 地图 自然资源和规划局 官方",
+        "result": "Chinese discovery confirmed the Yongnian District government portal and the local Natural Resources and Planning Bureau service entry; no anonymous safe parcel ID plus geometry endpoint was established.",
+        "actualResultUrls": ["https://www.hdyn.gov.cn/", "http://www.hbzwfw.gov.cn/hbzw/sxcx/itemList/gr_index.do?webId=67&zt=&deptid=130429008"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Yongnian District Natural Resources and Planning Bureau, under the Yongnian District government; local real-estate registration custody was not independently evidenced as a separate public endpoint.",
+    "locality": "Yongnian District, Handan, Hebei, China",
+    "evidenceUrls": ["https://www.hdyn.gov.cn/", "http://www.hbzwfw.gov.cn/hbzw/sxcx/itemList/gr_index.do?webId=67&zt=&deptid=130429008"],
+    "scopeNote": "The first-party Yongnian government HTML exposes a Natural Resources and Planning Bureau service link. This establishes a local government custodian/service entry, not open citywide parcel geometry or registry completeness."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Yongnian District government portal / Hebei government services Natural Resources and Planning Bureau entry",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "officialSources": [
+    {"url": "https://www.hdyn.gov.cn/", "observation": "Official Yongnian District government portal was retrieved over HTTPS. Its HTML includes a Natural Resources and Planning Bureau link with department id 130429008."},
+    {"url": "http://www.hbzwfw.gov.cn/hbzw/sxcx/itemList/gr_index.do?webId=67&zt=&deptid=130429008", "observation": "First-party Hebei government-services route linked by the Yongnian portal for the Natural Resources and Planning Bureau; anonymous retrieval timed out in this attempt."}
+  ],
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://www.hdyn.gov.cn/", "outcome": "HTTP 200; current HTML inspected. No cadastral map JavaScript/configuration or parcel API URL was exposed."},
+    {"method": "GET", "url": "http://hdyn.hbzwfw.gov.cn/", "outcome": "Timed out after 20 seconds; no response body or service schema obtained."},
+    {"method": "GET", "url": "http://www.hbzwfw.gov.cn/hbzw/sxcx/itemList/gr_index.do?webId=67&zt=&deptid=130429008", "outcome": "Route identified from the official Yongnian portal, but no bounded anonymous response was obtained during this attempt."},
+    {"method": "POST", "url": "Yongnian public parcel/API route", "body": "Not sent: no public route, schema, CRS, or bounded anonymous ID+geometry endpoint was established.", "outcome": "Not attempted; no parcel absence inference made."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Local Natural Resources and Planning Bureau government service entry for Yongnian District.",
+    "verifiedOpenScope": "Local custodian/service-link evidence only; anonymous parcel geometry, native identity, schema, CRS, coverage, and update cadence remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not run against a verified parcel endpoint; exact WUP point remains unchanged and no absence inference is made."},
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "remainingUncertainty": [
+    "The official portal may link to an interactive or session-scoped service not reachable anonymously in this attempt.",
+    "A zero exact-point hit, timeout, or unavailable UI would not establish citywide absence.",
+    "No stable native parcel identity, geometry, or CRS was observed, so no GeoJSON sample was retained.",
+    "Packet completion is not source integration or registry admission."
+  ],
+  "admissionDecision": "held",
+  "nextStep": "A later attempt may revisit the first-party Hebei service route and inspect any reachable public JavaScript/configuration for a bounded safe ID+geometry response."
+}

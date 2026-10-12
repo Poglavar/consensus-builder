@@ -1,0 +1,34 @@
+{
+  "cityRecord": "city-3989-k-tahya.json",
+  "cityCode": 3989,
+  "queueRank": 2954,
+  "city": "Kütahya",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "reviewedAt": "2026-10-11",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "First-party English and Turkish discovery found TKGM's public Parsel Sorgu viewer, the Kütahya Kadastro Müdürlüğü listing, and Kütahya Municipality's E-İmar page. Following the viewer's current JavaScript configuration, a bounded anonymous exact-point request returned one safe Polygon with native composite cadastral identity fields.",
+  "queryAndRequestOutcomes": "All executed discovery queries, viewer/config inspection, headers, endpoint, schema/CRS observations, and response status are recorded in city-3989-k-tahya.json. The unchanged response is retained only under ignored tmp/valhalla-parcel-research/3989/coord.json.",
+  "custodians": [
+    {"name": "Tapu ve Kadastro Genel Müdürlüğü (TKGM)", "scope": "national cadastral parcel viewer and public CBS coordinate endpoint", "evidence": "official viewer, current viewer configuration, official service page, and live HTTP 200 response"},
+    {"name": "Kütahya Kadastro Müdürlüğü", "scope": "local cadastral custodian listed by TKGM", "evidence": "official TKGM regional bağlı müdürlükler page"},
+    {"name": "T.C. Kütahya Belediyesi", "scope": "municipal E-İmar parcel/address zoning-information procedure", "evidence": "official municipal E-İmar page"}
+  ],
+  "schemaAndCrs": {"parcelSchema": "GeoJSON Feature", "nativeIdFields": ["ilId", "ilceId", "mahalleId", "adaNo", "parselNo"], "geometryCrs": "WGS84 / EPSG:4326", "fieldMapping": "Native source fields are documented here; no source-specific raw attribute set is retained in a cohort GeoJSON.", "compositeKeyProvenance": "65/669/144744/921/9 from native ilId/ilceId/mahalleId/adaNo/parselNo"},
+  "geometrySamples": [
+    {
+      "sampleFile": "k-tahya-sample.geojson",
+      "featureCount": 1,
+      "nativeIdentity": "65/669/144744/921/9"
+    }
+  ],
+  "sampleGeojson": "k-tahya-sample.geojson",
+  "safeFieldAllowlist": ["canonical native parcel identifier", "geometry", "source CRS", "public service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point [39.4172411721698, 29.9933893427155] was preserved and not shifted.", "One exact-point Polygon is not citywide coverage.", "No separate GeoJSON sample was retained because the live response has no standalone parcelId; raw unchanged evidence remains in ignored tmp storage.", "Municipal E-İmar discovery is a procedure/map lead, not a separately qualified vector endpoint.", "No unsafe fields were requested or retained.", "Packet completion is not source integration/admission."],
+  "uncertainty": ["No independent serial runtime qualification", "No citywide completeness proof", "Composite native identity semantics should be independently reviewed", "Current endpoint behavior outside the exact point and its terms/rate limits were not tested"],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "registryFound": true,
+  "doNotInfer": ["An exact-point hit does not define Kütahya's boundary", "Municipal E-İmar page does not prove an open parcel API", "A bounded response does not establish citywide completeness", "Packet completion does not mean source integration/admission"]
+}

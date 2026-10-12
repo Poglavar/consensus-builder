@@ -1,0 +1,71 @@
+{
+  "cityCode": 6957,
+  "queueRank": 3013,
+  "name": "Kaspiysk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "point": [42.8810451320123, 47.6325621368155],
+  "population2025": 198601,
+  "population2025k": 198.601,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kaspiysk Russia official cadastral map public parcel viewer Rosreestr NSPD API",
+        "result": "Search identified the current first-party NSМD/NSPD public cadastral map route and official material describing public access without authorization. Search also found Kaspiysk municipal planning documents containing EGRN cadastral parcel records. The official map host and API could not be fetched anonymously from this environment within the timeout.",
+        "actualResultUrls": ["https://nspd.gov.ru/map", "https://www.kaspiysk.org/storage/files/ПМ%20Каспийск%204%20га_Том_03.pdf", "https://volbti.ru/publichnaya-kadastrovaya-karta/"]
+      },
+      {
+        "language": "Russian",
+        "query": "Каспийск кадастровая карта публичная Росреестр НСПД земельные участки официальный",
+        "result": "Русскоязычный поиск подтвердил перенос публичной кадастровой карты на ФГИС ЕЦП НСПД, the public layer for land plots, and Kaspiysk municipal land-allocation/cadastral procedures. Third-party search results also identify a territorial Rosreestr office in Kaspiysk, but no first-party anonymous parcel response was obtained.",
+        "actualResultUrls": ["https://nspd.gov.ru/map", "https://www.kaspiysk.org/storage/files/Постановление%20№150.pdf", "https://www.kaspiysk.org/novosty/page/169", "https://www.kaspiysk.org/organy_vlasti/administraciya_gorodskogo_okruga/upravlenie_zags"]
+      }
+    ],
+    "sourceDiscoveryDate": "2026-10-12",
+    "sourceCitations": ["https://nspd.gov.ru/map", "https://www.kaspiysk.org/storage/files/ПМ%20Каспийск%204%20га_Том_03.pdf", "https://www.kaspiysk.org/storage/files/Постановление%20№150.pdf", "https://volbti.ru/publichnaya-kadastrovaya-karta/"]
+  },
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Federal Service for State Registration, Cadastre and Cartography (Rosreestr) / ФГИС ЕЦП НСПД, with Kaspiysk urban-okrug administration as local land-planning custodian",
+    "scope": "Rosreestr/NSPD is the national cadastral map and EGRN access route; the Kaspiysk administration publishes local land-allocation and planning documents containing cadastral parcel references.",
+    "evidence": "The official NSМD/NSPD public map is the current public cadastral-map route. Kaspiysk administration documents describe formation, surveying, cadastral registration, and publication of land-plot lists within the urban okrug and include EGRN parcel records. This does not prove an anonymous citywide vector download endpoint."
+  },
+  "service": {
+    "name": "Единая цифровая платформа НСПД / National Spatial Data System public cadastral map",
+    "viewerUrl": "https://nspd.gov.ru/map",
+    "baseUrl": "https://nspd.gov.ru",
+    "viewerConfiguration": "Official viewer/API configuration could not be retrieved because https://nspd.gov.ru/map timed out from this environment. No login, CAPTCHA bypass, credentialed retry, or TLS bypass was attempted.",
+    "schemaAndCrs": {
+      "parcelSchema": null,
+      "nativeIdFields": null,
+      "geometryCrs": null,
+      "fieldMapping": {},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {"method": "GET", "url": "https://nspd.gov.ru/map", "status": "timeout", "outcome": "Connection timed out after 25 seconds; no HTML, JavaScript, or configuration was retrieved."},
+    {"method": "GET", "url": "https://nspd.gov.ru/api/geoportal/v2/search/geoportal?query=05:48:000037&thematicSearchId=2", "status": "timeout/unavailable", "outcome": "The official API route was attempted through the available web fetcher but was not accessible; no parcel response was retained."},
+    {"method": "POST", "url": "https://nspd.gov.ru/api/geoportal/v1/intersects?typeIntersect=fullObject", "status": "timeout", "outcome": "A bounded 3 km square around the exact WUP point was submitted with category 36368 (land plots) in EPSG:3857 coordinates; connection timed out after 8 seconds before a response. This is not evidence of citywide absence."},
+    {"method": "GET", "url": "https://www.kaspiysk.org/storage/files/ПМ%20Каспийск%204%20га_Том_03.pdf", "status": "200/search-indexed", "outcome": "Official Kaspiysk municipal planning PDF search evidence was inspected for safe cadastral references; no owner/contact data was requested or retained."},
+    {"method": "GET", "url": "https://www.kaspiysk.org/storage/files/Постановление%20№150.pdf", "status": "200/search-indexed", "outcome": "Official municipal procedure evidence confirms local land-plot formation, surveying, cadastral registration, and publication steps."}
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/6957/ (bounded request JSON and timeout headers where available; no unsafe fields retained)",
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "Exact WUP point [42.8810451320123, 47.6325621368155] was preserved in latitude/longitude order and was not shifted.",
+    "The bounded query timed out before returning data; no exact-point hit or miss is inferred.",
+    "The official viewer JavaScript/configuration, parcel schema, native identity field, geometry CRS, and anonymous ID-plus-geometry response remain unqualified.",
+    "Local municipal procedure and planning evidence establish a local land-planning/cadastral workflow, not citywide public vector coverage.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": ["Official NSМD/NSPD availability may vary by network location or service load.", "Parcel coverage, positional accuracy, native identity, CRS, and citywide completeness remain unverified.", "No independent serial reviewer has qualified a runtime adapter."],
+  "runtimeReadiness": "held"
+}

@@ -1,0 +1,92 @@
+{
+  "cityCode": 8816,
+  "queueRank": 2677,
+  "name": "Biu",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [10.6138838266667, 12.1878908378812],
+  "population2025": 220703,
+  "population2025k": 220.703,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Biu Nigeria cadastral parcel map official land registry GIS; Nigeria official cadastral map parcel service Biu Borno land registry GIS",
+        "result": "Found the first-party Borno State Geographic Information Service (BOGIS) site and application portal, plus Borno land-use regulations. BOGIS is the state land-administration custodian and its regulations describe the official digital repository and Cadastral Administration System, but no public anonymous Biu parcel vector response was exposed.",
+        "actualResultUrls": [
+          "https://bogis.bornostate.gov.ng/",
+          "https://app.bogis.bornostate.gov.ng/",
+          "https://bogis.bornostate.gov.ng/assets/web/docx/2.%20Borno%20State%20Land%20Use%20Regulations%202022.pdf"
+        ]
+      },
+      {
+        "language": "Hausa",
+        "query": "Biu Nigeria taswirar filaye cadastral land registry official; Biu Borno rajistar filaye taswira GIS official",
+        "result": "Search results resolved to the same first-party BOGIS state land-administration sources; no separate Hausa-language Biu cadastral viewer or anonymous parcel endpoint was found.",
+        "actualResultUrls": [
+          "https://bogis.bornostate.gov.ng/",
+          "https://app.bogis.bornostate.gov.ng/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "sourceId": "borno-bogis",
+    "name": "Borno State Geographic Information Service (BOGIS)",
+    "url": "https://bogis.bornostate.gov.ng/",
+    "operator": "Borno State Geographic Information Service, Borno State Government",
+    "serviceType": "Official state land registry/cadastre custodian and public land-administration information site; current online self-service portal is for authenticated applications.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": "UTM Zone 32 North / Minna Datum (stated by Borno State Land Use Regulations 2022; no parcel response was obtained)",
+    "nativeIdField": null,
+    "nativeIdEvidence": "No parcel feature response or native parcel schema was returned by the anonymous routes tested.",
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "safeFieldAllowlist": ["stable native parcel ID if independently evidenced", "full parcel geometry only", "non-sensitive schema and CRS metadata"],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "operatorNote": "No owner, address, contact, titleholder, tax, account, applicant, or personal fields were requested or retained. Packet completion is not source integration/admission."
+  },
+  "coverageAssessment": {
+    "claimedScope": "BOGIS states that it administers land matters in Borno State, maintains a land-related digital repository, and operates a Cadastral Administration System; the regulations state that the repository includes land-use cadastre and that BOGIS maps/data are official.",
+    "verifiedOpenScope": "The BOGIS custodian and documented state-level cadastre scope are verified, but Biu-specific parcel coverage and anonymous parcel geometry access are not verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The public BOGIS information site exposed institutional/procedural material but no map API. The current app portal loaded anonymously as an application landing page; GET https://app.bogis.bornostate.gov.ng/api/properties and GET https://app.bogis.bornostate.gov.ng/api/map both returned HTTP 404. No public viewer JavaScript/configuration identified a safe parcel layer or feature route.",
+  "remainingUncertainty": "BOGIS may hold Biu cadastral records behind its authenticated or fee-based workflow, or in an unadvertised internal service. A zero exact-point result was not used and the immutable WUP point was not shifted; no citywide absence is inferred.",
+  "nextStep": "A serial reviewer should independently qualify any current anonymous BOGIS map/vector route and native parcel identity, if one becomes discoverable, using only safe ID+geometry fields and the unchanged WUP point for bounded checks.",
+  "runtimeReadiness": "held_pending_serial_review",
+  "adapterReady": false,
+  "centerLatLon": [10.6138838266667, 12.1878908378812],
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged WUP 2025 settlement point (latitude, longitude); not shifted to force a parcel hit.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "BOGIS is the evidenced Borno State local land-administration and cadastral custodian; its official site states responsibility for title, registration, searches, and a state land database, while the 2022 regulations define the official digital repository and CAS.",
+  "registryEvidenceUrls": [
+    "https://bogis.bornostate.gov.ng/",
+    "https://bogis.bornostate.gov.ng/assets/web/docx/2.%20Borno%20State%20Land%20Use%20Regulations%202022.pdf",
+    "https://app.bogis.bornostate.gov.ng/"
+  ],
+  "runtimeAssessment": {
+    "status": "held_pending_serial_review",
+    "reason": "No safe public source-native parcel polygon with stable native ID was verified."
+  },
+  "cohort": "overnight-next-2601-2700-2026-10-11",
+  "cohortState": "research_complete_pending_serial_review",
+  "integrationState": "not_integrated",
+  "checkedAt": "2026-10-11",
+  "wupCityCode": 8816,
+  "cityId": "wup2025:8816"
+}

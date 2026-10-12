@@ -1,0 +1,54 @@
+{
+  "cityCode": 6206,
+  "queueRank": 2615,
+  "country": "Egypt",
+  "countryCode": "EG",
+  "point": [27.4535681413654, 30.8249387799709],
+  "population2025": 225243,
+  "population2025k": 225.243,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Egypt official cadastral map parcel service Al Qusiya Assiut land registry GIS; Al Qusiya Egypt cadastral map parcels survey authority",
+        "result": "Found the official Egyptian Survey Authority (ESA) site and its map/service pages. ESA describes production of paper and digital maps showing land ownership/parcels, but no public Al Qusiya parcel viewer/API was found. Search also found an official environmental-planning PDF with a general land-use map of Al Qusiya, not cadastral parcel data.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/testmap.aspx",
+          "https://www.eeaa.gov.eg/Uploads/Reports/Files/Assuit%20Des.pdf"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "القوصية أسيوط خريطة مساحية قطع الأراضي الهيئة المصرية العامة للمساحة؛ القوصية أسيوط السجل العيني خرائط كادسترية",
+        "result": "Found the official ESA Arabic site and general Egyptian cadastral/topographic-map service descriptions, plus non-parcel planning/legal references for Al Qusiya. No first-party public Al Qusiya cadastral map/API or anonymous parcel response was found.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "https://www.esa.gov.eg/files/02_Topographic_Maps.pdf",
+          "https://www.eta.gov.eg/ar/node/1103"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "sourceAssessment": {
+    "localCustodian": {
+      "name": "Egyptian Survey Authority / Assiut local survey administration (local Al Qusiya custodian not independently evidenced)",
+      "url": "https://www.esa.gov.eg/",
+      "evidence": "ESA is the first-party national survey authority and states that it produces maps and databases showing private land ownership/parcels and supports land registration. The public pages inspected did not expose a city-specific Al Qusiya parcel endpoint or schema."
+    },
+    "generalAgency": {
+      "name": "Egyptian Survey Authority (national/general agency)",
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "scope": "General paper/digital/topographic map and survey services; not evidence of an anonymously queryable Al Qusiya cadastral service."
+    }
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "No independently qualified Al Qusiya adapter or citywide parcel source was evidenced."
+  }
+}

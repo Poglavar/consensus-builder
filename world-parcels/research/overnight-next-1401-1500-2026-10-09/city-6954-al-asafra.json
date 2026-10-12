@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 6954,
+  "cityId": "wup2025:6954",
+  "name": "Al-Asafra",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "centerLatLon": [31.1689243962149, 31.977345347601],
+  "point": [31.1689243962149, 31.977345347601],
+  "queueRank": 1497,
+  "population2025": 379559,
+  "population2025k": 379.559,
+  "populationUnit": "persons",
+  "cohorts": ["overnight-next-1401-1500-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Egypt official cadastral map parcel viewer Al-Asafra Alexandria Egyptian Survey Authority",
+        "result": "Official Egyptian Survey Authority pages were found and identify cadastral/property-map responsibilities and digital-map products. Alexandria municipal pages were also found, but no current anonymous Al-Asafra parcel viewer, feature service, schema, CRS, or geometry endpoint was identified.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.alexandria.gov.eg/Home.aspx"
+        ]
+      },
+      {
+        "language": "Arabic (local/native)",
+        "query": "خريطة كادسترية رسمية العصافرة الإسكندرية قطع الأراضي هيئة المساحة المصرية",
+        "result": "Arabic search found the official Egyptian Survey Authority pages, including digital and topographic map products, and official Alexandria references to Al-Asafra and the Alexandria Survey Directorate. These sources do not expose an anonymous parcel layer, native parcel identifier schema, CRS, or geometry API.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "https://www.alexandria.gov.eg/Government/districts/almontaza/Shared%20Documents/%D8%A7%D9%86%D8%AC%D8%A7%D8%B2%20%D9%81%D8%A8%D8%B1%D8%A7%D9%8A%D8%B1%20%D9%85%D8%B9%D8%AF%D9%84-%202017.docx.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "The Egyptian Survey Authority is evidenced as the national surveying and mapping custodian, and Alexandria municipal material references the local Survey Directorate. No Al-Asafra-specific local registry office, public cadastral viewer, or anonymous parcel service was independently evidenced.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "operator": "Egyptian General Authority for Survey",
+      "scope": "Official national survey authority; describes production of property/land maps, cadastral responsibilities, and an Alexandria digital-map project, but publishes no anonymous parcel API on the inspected page."
+    },
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "operator": "Egyptian General Authority for Survey",
+      "scope": "Official service catalogue listing digital maps, coordinate certificates, boundary separation, and land-allocation services; no public parcel feature endpoint was exposed."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "operator": "Egyptian General Authority for Survey",
+      "scope": "Official digital-map ordering page; inspected HTML exposed no FeatureServer, MapServer, WFS, WMS, parcel schema, or anonymous geometry route."
+    },
+    {
+      "url": "https://www.alexandria.gov.eg/Home.aspx",
+      "operator": "Alexandria Governorate",
+      "scope": "Official municipal portal; provides local administrative information and links, but no public cadastral parcel service was identified."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official ESA homepage loaded anonymously. It describes the authority's mapping and property-record role and an Alexandria digital-map project; no concrete parcel service endpoint was exposed."
+    },
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official ESA service catalogue loaded anonymously; services are procedural/product offerings and no anonymous parcel geometry API was exposed."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official ESA digital-map page loaded anonymously. Current HTML and linked configuration were inspected; no FeatureServer, MapServer, WFS, WMS, parcel schema, or CRS endpoint was found."
+    },
+    {
+      "url": "https://geoportal.capmas.gov.eg/",
+      "method": "GET",
+      "status": "Timed out after 12 seconds",
+      "summary": "Historical/official CAPMAS geospatial portal lead did not return an HTTP response in the bounded anonymous attempt. No login, credential, private token, CAPTCHA bypass, or TLS exception was used."
+    },
+    {
+      "url": "https://www.alexandria.gov.eg/Home.aspx",
+      "method": "GET",
+      "status": "Search result and official portal lead",
+      "summary": "Official Alexandria portal was identified; no anonymous parcel layer or geometry service was found in the inspected public route."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Egyptian national survey authority and Alexandria municipal cadastral/map leads relevant to Al-Asafra.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "geometryDecision": "No GeoJSON retained. No safe anonymous native parcel ID-plus-geometry response was available from an official Al-Asafra/Alexandria service; the exact WUP point was not used to infer absence.",
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "safeFieldAllowlist": ["stable native parcel or survey identity if publicly exposed", "geometry", "source CRS", "service layer name"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "private credentials or tokens"],
+  "remainingUncertainty": "ESA and Alexandria custodians are evidenced, but a current public parcel-service URL, parcel-layer schema, CRS, exact-point inclusion, and citywide coverage remain unverified. CAPMAS availability is also unresolved after timeout.",
+  "nextStep": "A serial reviewer should independently check whether the Egyptian Survey Authority, Alexandria Survey Directorate, or CAPMAS exposes a current anonymous parcel/map endpoint, then qualify a small geometry-only sample before any adapter consideration."
+}

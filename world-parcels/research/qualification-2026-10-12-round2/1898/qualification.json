@@ -1,0 +1,1282 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "1898",
+  "cityName": "Wollongong",
+  "sourceId": "au-nsw-six-cadastre-lot",
+  "candidateSha256": "b0b598b9868cc3134f5e112d37b17273e08a3bf7d8a8c65b4dcc2b6af09ddfc1",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 138,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 138,
+      "collectedUniqueCount": 138
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 420
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 10,
+      "distinctFeatureQueries": 10,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "9c10f149fe9e0891eccd731ceb54dafbd82c63f82bd0faed1ab3af5a68254fb6",
+      "featureCount": 138,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32756",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "9c10f149fe9e0891eccd731ceb54dafbd82c63f82bd0faed1ab3af5a68254fb6",
+  "featureCount": 138,
+  "sampleIds": [
+    "AU-NSW-101313893",
+    "AU-NSW-101313899",
+    "AU-NSW-101313901"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        150.889,
+        -34.397,
+        150.89,
+        -34.396
+      ],
+      "complete": true,
+      "featureCount": 22,
+      "ids": [
+        "AU-NSW-101315522",
+        "AU-NSW-101315523",
+        "AU-NSW-101315524",
+        "AU-NSW-101315525",
+        "AU-NSW-101315532",
+        "AU-NSW-101315534",
+        "AU-NSW-101315600",
+        "AU-NSW-101315601",
+        "AU-NSW-101315602",
+        "AU-NSW-101315603",
+        "AU-NSW-101315604",
+        "AU-NSW-101315605",
+        "AU-NSW-101315606",
+        "AU-NSW-101315607",
+        "AU-NSW-101315608",
+        "AU-NSW-101315611",
+        "AU-NSW-101315615",
+        "AU-NSW-101315616",
+        "AU-NSW-101315617",
+        "AU-NSW-101315618",
+        "AU-NSW-101315619",
+        "AU-NSW-187262735"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        150.89,
+        -34.397,
+        150.891,
+        -34.396
+      ],
+      "complete": true,
+      "featureCount": 24,
+      "ids": [
+        "AU-NSW-101313893",
+        "AU-NSW-101315607",
+        "AU-NSW-101315608",
+        "AU-NSW-101315609",
+        "AU-NSW-101315610",
+        "AU-NSW-101315611",
+        "AU-NSW-101315612",
+        "AU-NSW-101315614",
+        "AU-NSW-101315619",
+        "AU-NSW-101315620",
+        "AU-NSW-101315621",
+        "AU-NSW-101315656",
+        "AU-NSW-101315657",
+        "AU-NSW-101315658",
+        "AU-NSW-101315659",
+        "AU-NSW-101315660",
+        "AU-NSW-101315661",
+        "AU-NSW-101315662",
+        "AU-NSW-101315663",
+        "AU-NSW-101315664",
+        "AU-NSW-101315665",
+        "AU-NSW-101315671",
+        "AU-NSW-101315672",
+        "AU-NSW-103937442"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        150.891,
+        -34.397,
+        150.892,
+        -34.396
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "AU-NSW-101315654",
+        "AU-NSW-101315659",
+        "AU-NSW-101315661",
+        "AU-NSW-101315663",
+        "AU-NSW-101315664",
+        "AU-NSW-101315665",
+        "AU-NSW-101315666",
+        "AU-NSW-101315667",
+        "AU-NSW-101315669",
+        "AU-NSW-101315670",
+        "AU-NSW-101315712",
+        "AU-NSW-101315720",
+        "AU-NSW-103937442"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        150.889,
+        -34.396,
+        150.89,
+        -34.395
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "AU-NSW-101313843",
+        "AU-NSW-101313845",
+        "AU-NSW-101313846",
+        "AU-NSW-101313851",
+        "AU-NSW-101313852",
+        "AU-NSW-101313893",
+        "AU-NSW-101313894",
+        "AU-NSW-101315532",
+        "AU-NSW-101315533",
+        "AU-NSW-101315534",
+        "AU-NSW-101315615",
+        "AU-NSW-101315616",
+        "AU-NSW-101315617",
+        "AU-NSW-101315618",
+        "AU-NSW-101315619"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        150.89,
+        -34.396,
+        150.891,
+        -34.395
+      ],
+      "complete": true,
+      "featureCount": 18,
+      "ids": [
+        "AU-NSW-101313893",
+        "AU-NSW-101313897",
+        "AU-NSW-101313898",
+        "AU-NSW-101313899",
+        "AU-NSW-101313901",
+        "AU-NSW-101313912",
+        "AU-NSW-101313913",
+        "AU-NSW-101313914",
+        "AU-NSW-101313918",
+        "AU-NSW-101313919",
+        "AU-NSW-101313921",
+        "AU-NSW-101315619",
+        "AU-NSW-101315620",
+        "AU-NSW-101315621",
+        "AU-NSW-101315671",
+        "AU-NSW-101315672",
+        "AU-NSW-101315673",
+        "AU-NSW-103937442"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        150.891,
+        -34.396,
+        150.892,
+        -34.395
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "AU-NSW-101313914",
+        "AU-NSW-101313918",
+        "AU-NSW-101313919",
+        "AU-NSW-101313921",
+        "AU-NSW-101313950",
+        "AU-NSW-101313951",
+        "AU-NSW-101315670",
+        "AU-NSW-101315672",
+        "AU-NSW-101315673",
+        "AU-NSW-101315720",
+        "AU-NSW-103937442",
+        "AU-NSW-104720730",
+        "AU-NSW-104720734"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        150.889,
+        -34.395,
+        150.89,
+        -34.394
+      ],
+      "complete": true,
+      "featureCount": 16,
+      "ids": [
+        "AU-NSW-101313846",
+        "AU-NSW-101313847",
+        "AU-NSW-101313848",
+        "AU-NSW-101313850",
+        "AU-NSW-101313858",
+        "AU-NSW-101313861",
+        "AU-NSW-101313893",
+        "AU-NSW-101313894",
+        "AU-NSW-101313895",
+        "AU-NSW-101313896",
+        "AU-NSW-101313902",
+        "AU-NSW-103793728",
+        "AU-NSW-103793729",
+        "AU-NSW-103793727",
+        "AU-NSW-187528672",
+        "AU-NSW-187528673"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        150.89,
+        -34.395,
+        150.891,
+        -34.394
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "AU-NSW-101313893",
+        "AU-NSW-101313897",
+        "AU-NSW-101313898",
+        "AU-NSW-101313900",
+        "AU-NSW-101313903",
+        "AU-NSW-101313917",
+        "AU-NSW-101313919",
+        "AU-NSW-101313920",
+        "AU-NSW-101313923",
+        "AU-NSW-101313925",
+        "AU-NSW-101313926",
+        "AU-NSW-101313927",
+        "AU-NSW-101313928",
+        "AU-NSW-101313930",
+        "AU-NSW-103793727"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        150.891,
+        -34.395,
+        150.892,
+        -34.394
+      ],
+      "complete": true,
+      "featureCount": 21,
+      "ids": [
+        "AU-NSW-101313917",
+        "AU-NSW-101313919",
+        "AU-NSW-101313920",
+        "AU-NSW-101313922",
+        "AU-NSW-101313923",
+        "AU-NSW-101313924",
+        "AU-NSW-101313928",
+        "AU-NSW-101313930",
+        "AU-NSW-101313934",
+        "AU-NSW-101313949",
+        "AU-NSW-101313950",
+        "AU-NSW-101313951",
+        "AU-NSW-101313964",
+        "AU-NSW-101313965",
+        "AU-NSW-101313966",
+        "AU-NSW-101313967",
+        "AU-NSW-104720730",
+        "AU-NSW-104720734",
+        "AU-NSW-101313935",
+        "AU-NSW-182177414",
+        "AU-NSW-182177415"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        150.89,
+        -34.398,
+        150.891,
+        -34.397
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "AU-NSW-101315608",
+        "AU-NSW-101315609",
+        "AU-NSW-101315612",
+        "AU-NSW-101315656",
+        "AU-NSW-101315658",
+        "AU-NSW-101315662",
+        "AU-NSW-101315664",
+        "AU-NSW-179230893"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        150.89,
+        -34.394,
+        150.891,
+        -34.393
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "AU-NSW-101313903",
+        "AU-NSW-101313904",
+        "AU-NSW-101313925",
+        "AU-NSW-101313926",
+        "AU-NSW-101313927",
+        "AU-NSW-101313928",
+        "AU-NSW-101313931",
+        "AU-NSW-101313932",
+        "AU-NSW-101313938",
+        "AU-NSW-101313939",
+        "AU-NSW-108111763",
+        "AU-NSW-108142296",
+        "AU-NSW-181887176",
+        "AU-NSW-103793727"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        150.888,
+        -34.396,
+        150.889,
+        -34.395
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "AU-NSW-101313841",
+        "AU-NSW-101313842",
+        "AU-NSW-101313844",
+        "AU-NSW-101313845",
+        "AU-NSW-101313846",
+        "AU-NSW-101314579",
+        "AU-NSW-101315447",
+        "AU-NSW-101315527",
+        "AU-NSW-101315528",
+        "AU-NSW-101315529",
+        "AU-NSW-101315532",
+        "AU-NSW-101315533",
+        "AU-NSW-101313786",
+        "AU-NSW-187727887",
+        "AU-NSW-187727888"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        150.892,
+        -34.396,
+        150.893,
+        -34.395
+      ],
+      "complete": true,
+      "featureCount": 16,
+      "ids": [
+        "AU-NSW-101313948",
+        "AU-NSW-101313957",
+        "AU-NSW-101313995",
+        "AU-NSW-101313998",
+        "AU-NSW-101313999",
+        "AU-NSW-101315720",
+        "AU-NSW-101315765",
+        "AU-NSW-101315766",
+        "AU-NSW-103768760",
+        "AU-NSW-104720728",
+        "AU-NSW-104720730",
+        "AU-NSW-104720731",
+        "AU-NSW-104720732",
+        "AU-NSW-104720733",
+        "AU-NSW-104720734",
+        "AU-NSW-101315767"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 43,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:03.974Z",
+      "queryHash": "067d67971ee0b9727af8ce1d61c5d28fc29e82d9e0a6f89ca36aa7e0b547115a",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 2131
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:06.111Z",
+      "queryHash": "067d67971ee0b9727af8ce1d61c5d28fc29e82d9e0a6f89ca36aa7e0b547115a",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "elapsedMs": 15007,
+      "timeout": true,
+      "errorType": "TimeoutError"
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:21.119Z",
+      "queryHash": "37ba0ea8988f86d41a456e9b4648186a31ac282480b92e51a82fbd8058466578",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1835
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:22.956Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 387
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:23.346Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 376
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:23.724Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 380
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:24.106Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 373
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:24.481Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 379
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:24.862Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 379
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:25.244Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 372
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:25.619Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 377
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:26.000Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 372
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:26.375Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 368
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:26.744Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 384
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:27.130Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 379
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:27.512Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 373
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:27.887Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 465
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:28.354Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 446
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:28.802Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 369
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:29.173Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 370
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:29.544Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 374
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:29.919Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 374
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:30.296Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 372
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:30.669Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 373
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:31.044Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 375
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:31.421Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 374
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:31.796Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 372
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:32.170Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 372
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:32.543Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 371
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:32.919Z",
+      "queryHash": "1c016cab1855468026f64c7d15cab6e6c098081e9c8a3606db0a98fe44528033",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 340
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:33.260Z",
+      "queryHash": "70ae092632e9018d57fb1304a284022534bd1bb17a1986e2e97c6b674d216a06",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 338
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:33.599Z",
+      "queryHash": "11db88f75d0e59e04a173ac34360b30d0979fcfb32f3b24f8a09624394d0d94b",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 364
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:33.964Z",
+      "queryHash": "bd906847a57457538e68fc8d32702e69ae6a7bd4c80da29899687ad1075f3888",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 338
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:34.303Z",
+      "queryHash": "0cb3b3d5bbd7cb47bd638da8eb116c1ca332ac69e19d2f2c549cd815b29ef732",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 337
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:34.641Z",
+      "queryHash": "6b1daf39f79eb5bb679c2f916eb60c8e6827d8524140eb2efd873921e3e37be2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 336
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:34.979Z",
+      "queryHash": "32564055d962adadd84732370d295ce3a32a80f23e1b29d18c8550aad65612b5",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 340
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:35.320Z",
+      "queryHash": "e20c1baaa189faa5edeacddab399c33aedb821adee6ebbb32a36aec25d76f813",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 379
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:35.700Z",
+      "queryHash": "1bf56561141a1f15be4ed00951d234ad6b3c7f09d8d2d7ee69cdc5d630ab6bca",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 346
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:36.046Z",
+      "queryHash": "5346d3f8e3a6dfb2cae0fb4b38a12bf7ef1bd3dc86f958b2b1ea391ec9701857",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 338
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:36.386Z",
+      "queryHash": "067d67971ee0b9727af8ce1d61c5d28fc29e82d9e0a6f89ca36aa7e0b547115a",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 347
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:36.745Z",
+      "queryHash": "47aec1f50c6b8de3add1dbc8990a02c9ea9bc28f8bab55f1e44c158d42f39bee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 376
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:37.271Z",
+      "queryHash": "6b7b0845619953d3ad82792c5f921892d7737bdec039d4f794950b3fc43348fa",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 355
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "maps.six.nsw.gov.au",
+      "method": "GET",
+      "startedAt": "2026-10-12T08:44:37.631Z",
+      "queryHash": "f3ccc699da469cc06fd6741cf7c445759e6e81a3006984d15db3d8d6d69b6149",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 444
+    }
+  ],
+  "failures": {
+    "stableGeometry": {
+      "errorType": "Error",
+      "code": "parcel-source-unavailable",
+      "httpStatus": 504
+    }
+  },
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

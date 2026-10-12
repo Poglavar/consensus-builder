@@ -1,0 +1,60 @@
+{
+  "cityCode": 4000,
+  "queueRank": 1866,
+  "name": "Qoqand",
+  "country": "Uzbekistan",
+  "countryCode": "UZ",
+  "iso3": "UZB",
+  "point": [40.538210476618, 70.9366444504431],
+  "population2025": 308393,
+  "population2025k": 308.393,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Qoqand Uzbekistan official cadastral parcel map public viewer API cadastral map",
+        "result": "Found the official Uzbekistan National Geoinformation Portal (open.ngis.uz), Digital Government description of its cadastral purpose, and a catalog record documenting its ArcGIS REST service host. No anonymous parcel ID-plus-geometry response was verified.",
+        "actualResultUrls": ["https://open.ngis.uz/", "https://dgov.uz/en/solution/detail/52/", "https://db.ngis.uz/db/rest/services?f=pjson"]
+      },
+      {
+        "language": "Uzbek (local/native)",
+        "query": "Qo'qon kadastr xaritasi rasmiy geoportal O'zbekiston",
+        "result": "Found the official Kadastr Agency National Geoinformation Portal and Uzbek-language government description. The portal advertises cadastral-number and land-use information, but no anonymous parcel geometry response was obtained.",
+        "actualResultUrls": ["https://open.ngis.uz/", "https://dgov.uz/uz/solution/detail/52/", "https://kadastr.uz/index.php/uz"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "provider": "Uzbekistan Kadastr Agency National Geoinformation Portal",
+    "viewerUrl": "https://open.ngis.uz/",
+    "localCustodianEvidence": "The national Kadastr Agency is the evidenced registry/cadastre custodian. No Qoqand municipal cadastral office or local service endpoint was independently identified.",
+    "serviceRoutePublishedByViewer": "https://db.ngis.uz/db/rest/services?f=pjson",
+    "serviceType": "Official national public cadastral/geoinformation portal; anonymous parcel service unavailable during this attempt",
+    "parcelLayerConfirmed": false,
+    "nativeIdField": null,
+    "geometryField": null,
+    "safeFieldsRequested": ["stable native parcel ID if publicly exposed", "polygon geometry", "service/layer metadata", "CRS metadata"],
+    "crs": null
+  },
+  "verifiedSample": {
+    "count": 0,
+    "exactWupPointQuery": false,
+    "result": "No parcel feature response obtained. This is not evidence of citywide parcel absence.",
+    "requestEvidence": "tmp/valhalla-parcel-research/4000/"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Uzbekistan national public geoinformation portal backed by the Kadastr Agency registry and ArcGIS services.",
+    "verifiedOpenScope": "Official portal and service-host documentation were found; anonymous parcel schema, CRS, stable identity, geometry response, and Qoqand/countrywide completeness remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; no independently verified parcel adapter candidate",
+  "notes": "Research evidence only; not source integration or runtime admission. Exact WUP point preserved in latitude/longitude order; no coordinate shift applied. No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained."
+}

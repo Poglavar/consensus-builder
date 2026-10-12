@@ -1,0 +1,65 @@
+{
+  "cityRecord": "city-8966-qijiang.json",
+  "cityCode": 8966,
+  "queueRank": 3054,
+  "city": "Qijiang",
+  "country": "China",
+  "countryCode": "CN",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "重庆市綦江区规划和自然资源局 / Qijiang District Planning and Natural Resources Bureau",
+    "evidence": "District government service catalog lists the bureau as implementing authority and gives the Qijiang district real-estate registration integrated counter at Tonghui Avenue 69, with YuKuaiBan as the online channel.",
+    "url": "https://www.cqqj.gov.cn/zwxx/gggs/202403/P020231220582156526207.pdf"
+  },
+  "queries": [
+    {
+      "language": "English",
+      "query": "Qijiang China official cadastral parcel map GIS land registry Chongqing Qijiang",
+      "outcome": "Official Chongqing registration portal and cadastral-map guidance found; no parcel API or downloadable geometry found.",
+      "urls": ["https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/index.html", "https://ghzrzyj.cq.gov.cn/zwgk_186/zczxwdk_378544/wdzt/ywyd/202403/t20240314_13037880.html"]
+    },
+    {
+      "language": "Chinese",
+      "query": "綦江 地籍图 地块 GIS 不动产登记 官方",
+      "outcome": "Qijiang-specific registration procedure and local counter found; no anonymous parcel geometry found.",
+      "urls": ["https://www.cqqj.gov.cn/zwxx/gggs/202403/P020231220582156526207.pdf", "https://ghzrzyj.cq.gov.cn/zwgk_186/zczxwdk_378544/wdzt/ywyd/202403/t20240314_13037887.html"]
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/index.html",
+      "method": "web search/open discovery",
+      "outcome": "Official Chongqing real-estate registration landing page was surfaced in search; the page describes district service links including Qijiang, but no public vector endpoint was exposed in the retrieved result."
+    },
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/zwgk_186/zczxwdk_378544/wdzt/ywyd/202403/t20240314_13037887.html",
+      "method": "web open",
+      "outcome": "HTTP content retrieved. Official guidance says cadastral maps may be requested at a registration hall or through the YuKuaiBan integrated service area; it does not expose anonymous geometry."
+    },
+    {
+      "url": "https://www.cqqj.gov.cn/zwxx/gggs/202403/P020231220582156526207.pdf",
+      "method": "web open PDF",
+      "outcome": "HTTP content retrieved. Qijiang service catalog lists district registration procedures, implementing bureau, YuKuaiBan channel, and local registration counter; it contains no parcel feature layer."
+    },
+    {
+      "url": "http://ykb.cq315house.com/cqwwsq/",
+      "method": "GET",
+      "outcome": "Local curl attempt failed before HTTP with DNS resolution error (curl 6, could not resolve host). This is transport evidence only and not evidence of service absence. No retry, login, or bypass was attempted."
+    }
+  ],
+  "schemaCrs": "No parcel response obtained; no source schema or CRS could be inspected.",
+  "safeFieldAllowlist": ["stable native parcel ID only", "parcel polygon geometry", "source CRS if explicitly returned"],
+  "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "tax", "account", "mortgage", "restriction details"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleGeojson": null,
+  "geometryOutcome": "No retained sample. No bounded anonymous ID+geometry response was verified; exact-point or map-extent absence was not asserted.",
+  "scopeLimits": [
+    "Registry procedure evidence is local to Qijiang district, while online guidance is Chongqing-wide.",
+    "A citywide open cadastral layer, service URL, schema, CRS, and parcel coverage were not established.",
+    "Packet completion records research completion only; it is not source integration or runtime admission."
+  ],
+  "runtimeReadiness": "held",
+  "uncertainty": "Interactive or authorization-gated query may exist, but this attempt did not use credentials or request unsafe property data."
+}

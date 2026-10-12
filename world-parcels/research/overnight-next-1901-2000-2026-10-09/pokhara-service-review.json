@@ -1,0 +1,45 @@
+{
+  "cityRecord": "city-1323-pokhara.json",
+  "cityCode": 1323,
+  "queueRank": 1941,
+  "city": "Pokhara",
+  "country": "Nepal",
+  "countryCode": "NP",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Pokhara Metropolitan City official parcel-level land-use search; Department of Survey Kaski is the official cadastral custodian lead",
+  "serviceUrl": "https://landuse.pokharamun.gov.np/",
+  "discoveryUrls": [
+    "https://landuse.pokharamun.gov.np/",
+    "https://dos.gov.np/pages/napi-offices/",
+    "https://kaskidos6j0oyr.giwms-admin.gov.np/",
+    "https://play.google.com/store/apps/details?hl=en_US&id=np.gov.dos.merokitta"
+  ],
+  "attemptedRoutes": [
+    {"route":"GET municipal landing page and JavaScript","outcome":"succeeded; /api/options and /api/search routes identified"},
+    {"route":"GET /api/options?type=init","outcome":"HTTP 200; 449582 total records and 39 gavis options"},
+    {"route":"GET /api/search?kitta=1&page=1","outcome":"HTTP 200; safe parcel lookup rows returned, no geometry or stable native ID"},
+    {"route":"GET /api/search?kitta=१&page=1","outcome":"HTTP 400; invalid/unsupported Nepali-digit query"},
+    {"route":"GET filtered ward/sheet/search routes for gavis=पोखरा 11","outcome":"HTTP 200; ward 11 available, sheet empty for ward 1, search total 0; not an absence claim"},
+    {"route":"GET Department of Survey Kaski linked site","outcome":"TLS verification failed; no exception, login, or bypass attempted"}
+  ],
+  "scope": "Local municipal parcel-level land-use metadata was verified. No citywide geometry coverage, countrywide coverage, or point-to-parcel query was verified.",
+  "schemaAndCrs": "JSON search fields: sn, palika, gavis, ward, sheet, kitta, land_use; no CRS or geometry returned.",
+  "nativeIdentity": "Unavailable. sn was recognized as display serial only; no synthetic ID or retained sample was created. gavis+ward+sheet+kitta is recorded as a possible lookup composite only.",
+  "fieldMapping": {"gavis":"former VDC/area","ward":"ward number","sheet":"map sheet","kitta":"parcel number","land_use":"land-use classification","sn":"display serial; unsafe as native identity"},
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON sample retained because no full parcel geometry was returned.",
+  "safeFieldAllowlist": ["geometry", "stable native parcel id", "gavis", "ward", "sheet", "kitta", "land_use"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, personal, tax/account, legal-description, or ownership fields were requested or retained. No login, credentials, private token, CAPTCHA bypass, or certificate exception was used.",
+  "officialCustodyEvidence": "Pokhara Metropolitan City operates the parcel-level search, and the official Department of Survey directory lists the Kaski office. This is local service/custodian evidence; general Department of Survey or app descriptions were not treated as geometry integration evidence.",
+  "limits": [
+    "No public parcel geometry, CRS, or stable native parcel ID was exposed.",
+    "A zero result for one filter combination and the absent exact-point query are not evidence of citywide absence.",
+    "The Kaski linked host failed TLS verification and was not accessed with a certificate exception.",
+    "No GeoJSON was retained and no source-specific raw attribute set was retained.",
+    "RuntimeReadiness remains held pending independent serial qualification."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "An additional authorized or TLS-valid Kaski/NeLIS map service may exist; current evidence qualifies only a municipal parcel metadata search, not parcel geometry integration."
+}

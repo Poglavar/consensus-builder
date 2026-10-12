@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "cityId": "wup2025:6516",
+  "cityCode": 6516,
+  "wupCityCode": 6516,
+  "queueRank": 1596,
+  "rank": 1596,
+  "name": "Vladikavkaz",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso2": "RU",
+  "iso3": "RUS",
+  "locId": 643,
+  "capital": false,
+  "aliases": ["vladikavkaz"],
+  "point": [43.0450057070321, 44.6696157445886],
+  "centerLatLon": [43.0450057070321, 44.6696157445886],
+  "pointBasis": "Immutable WUP 2025 queue point copied unchanged in latitude/longitude order; no coordinate adjustment.",
+  "population2025": 356422,
+  "population2025k": 356.422,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "status": "complete",
+  "resultCategory": "official_national_custodian_and_regional_planning_references_no_verified_parcel_geometry",
+  "registryFound": null,
+  "registryBasis": "Rosreestr/NSPD are national cadastral references. The North Ossetia-Alania construction ministry publishes Vladikavkaz planning documents, but no city-local cadastral custodian with a usable anonymous parcel geometry route was verified.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_quality_review",
+  "runtimeEligible": false,
+  "blocker": "Official national map endpoints timed out from this environment; the bounded anonymous ID-plus-geometry response was not obtained.",
+  "source": {
+    "nationalCustodian": "Federal Service for State Registration, Cadastre and Cartography (Rosreestr)",
+    "nationalViewer": "National Spatial Data System / public cadastral map reference",
+    "regionalPlanningSource": "Ministry of Construction and Architecture of the Republic of North Ossetia-Alania",
+    "regionalPlanningUrl": "https://minstroy.alania.gov.ru/pages/3247",
+    "crs": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Vladikavkaz official cadastral parcel map public viewer Rosreestr cadastral map",
+        "result": "Discovery found official Rosreestr/NSPD references and the official North Ossetia-Alania construction ministry Vladikavkaz planning page. No official anonymous parcel feature response was verified.",
+        "actualResultUrls": [
+          "https://rosreestr.gov.ru/",
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://minstroy.alania.gov.ru/pages/3247"
+        ]
+      },
+      {
+        "language": "Russian",
+        "query": "Владикавказ официальная кадастровая карта земельные участки Росреестр публичная кадастровая карта",
+        "result": "Russian-language discovery found the national Rosreestr public-cadastre references and official Vladikavkaz planning documents. Third-party map pages were not used as geometry evidence; no anonymous ID-plus-geometry response was verified.",
+        "actualResultUrls": [
+          "https://rosreestr.gov.ru/",
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://minstroy.alania.gov.ru/pages/3247"
+        ]
+      }
+    ]
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://rosreestr.gov.ru/",
+      "method": "GET; anonymous; TLS verification enabled; bounded 15-second request",
+      "status": "timeout",
+      "summary": "National custodian site did not return from this environment; no bypass or credentialed request attempted."
+    },
+    {
+      "url": "https://nspd.gov.ru/",
+      "method": "GET; anonymous; TLS verification enabled; bounded 15-second request",
+      "status": "timeout",
+      "summary": "National spatial-data site did not return; timeout is not evidence of absence."
+    },
+    {
+      "url": "https://pkk.rosreestr.ru/",
+      "method": "GET; anonymous; TLS verification enabled; bounded request",
+      "status": "not completed after prior national endpoint timeouts",
+      "summary": "The legacy/public map host was attempted in the same bounded check sequence but no usable response was obtained."
+    },
+    {
+      "url": "https://minstroy.alania.gov.ru/pages/3247",
+      "method": "GET via first-party discovery inspection",
+      "status": "HTTP 200 via indexed page inspection",
+      "summary": "Official regional ministry page publishes Vladikavkaz general-plan, zoning and settlement-boundary documents; it does not expose a parcel feature service or cadastral schema."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "National Rosreestr/NSPD cadastral references plus official regional Vladikavkaz planning-document publication.",
+    "verifiedOpenScope": "No parcel feature response was obtained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly exposed", "geometry", "source CRS", "non-sensitive administrative scope"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "mortgage/lien details"],
+  "sourceFields": null,
+  "crs": null,
+  "nativeIdReadiness": "not_ready_no_verified_parcel_response",
+  "remainingUncertainty": "The official national viewer may be reachable from another network or may expose a current JavaScript/API route not retrieved here. The regional planning page does not establish cadastral coverage. A zero or unavailable exact-point result is not evidence of citywide absence.",
+  "nextStep": "Retry the official national viewer or a documented regional GIS endpoint when reachable, requesting only a small geometry-plus-safe-ID response around the unchanged WUP point; validate CRS and native identity before adapter qualification.",
+  "registryEvidenceUrls": [
+    "https://rosreestr.gov.ru/",
+    "https://nspd.gov.ru/map?thematic=PKK",
+    "https://minstroy.alania.gov.ru/pages/3247"
+  ],
+  "researchAttempt": 1,
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "identityPolicy": "Do not infer a parcel identity from a synthetic row number; retain only a stable native identifier with geometry if a safe public response becomes available."
+}

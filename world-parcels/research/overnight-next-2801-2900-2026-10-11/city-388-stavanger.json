@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 388,
+  "queueRank": 2885,
+  "name": "Stavanger",
+  "country": "Norway",
+  "countryCode": "NO",
+  "iso3": "NOR",
+  "point": [58.9305804865162, 5.72277380778637],
+  "population2025": 206726,
+  "population2025k": 206.726,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Stavanger official cadastral parcel map property map Norway matrikkel kart Stavanger kommune",
+        "result": "Found Stavanger municipality's official map/property-information page, which links kommunekart.com for property boundaries and farm/use numbers, and links Kartverket's national Eiendomskart/Eiendomsregisteret. Found Kartverket's public Eiendom API documentation.",
+        "actualResultUrls": [
+          "https://www.stavanger.kommune.no/bolig-og-bygg/kart-og-eiendomsinformasjon/kart/",
+          "https://www.kartverket.no/til-lands/kart/eiendomskart/",
+          "https://api.kartverket.no/eiendom/v1/"
+        ]
+      },
+      {
+        "language": "Norwegian (local/native)",
+        "query": "Stavanger kommune eiendomskart matrikkel kart offisiell",
+        "result": "The official Stavanger page states that kommunekart.com exposes eiendomskart (property boundaries) and gårds- og bruksnummer; Kartverket documents the national Matrikkelen property map and public localization API.",
+        "actualResultUrls": [
+          "https://www.stavanger.kommune.no/bolig-og-bygg/kart-og-eiendomsinformasjon/kart/",
+          "https://www.stavanger.kommune.no/naring-og-arbeidsliv/landbruk/kart-i-landbruket/kommunekart-for-stavanger/",
+          "https://api.kartverket.no/eiendom/v1/"
+        ]
+      }
+    ],
+    "sources": [
+      "https://www.stavanger.kommune.no/bolig-og-bygg/kart-og-eiendomsinformasjon/kart/",
+      "https://www.stavanger.kommune.no/naring-og-arbeidsliv/landbruk/kart-i-landbruket/kommunekart-for-stavanger/",
+      "https://www.kartverket.no/til-lands/kart/eiendomskart/",
+      "https://api.kartverket.no/eiendom/v1/",
+      "https://www.matrikkel.no/matrikkel/docs/wfs_detaljer.html"
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Stavanger municipality is the local map/property-information custodian and directs users to kommunekart.com; Kartverket is the national Matrikkelen custodian. The public Kartverket Eiendom API returned live parcel geometry and native cadastral identity components.",
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "endpoint": "https://api.kartverket.no/eiendom/v1/punkt/omrader",
+    "request": "nord=58.9305804865162&ost=5.72277380778637&koordsys=4258&radius=100&utkoordsys=4326&maksTreff=3",
+    "responseCrs": "EPSG:4326 / GeoJSON longitude-latitude coordinates",
+    "retainedSampleCount": 3,
+    "geometryTypes": ["Polygon"],
+    "exactPointHitCount": 1,
+    "responseEvidence": "tmp/valhalla-parcel-research/stavanger/punkt-omrader-100.json"
+  },
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "coverageAssessment": {
+    "claimedScope": "National Matrikkelen property localization service; Stavanger municipality map viewer is a local presentation route.",
+    "verifiedOpenScope": "Three nearest property areas were returned in a bounded 100 m query at the preserved WUP point; a 3000 m query with the same three-result cap returned the same nearest three. This does not qualify citywide completeness.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "sourceCandidate": {
+    "url": "https://api.kartverket.no/eiendom/v1/punkt/omrader",
+    "publisher": "Kartverket",
+    "safeSampleFile": "stavanger-parcel-sample.geojson"
+  },
+  "sourceFieldMapping": {
+    "nativeFieldsObserved": ["kommunenummer", "gardsnummer", "bruksnummer", "festenummer", "seksjonsnummer", "lokalid", "matrikkelnummertekst", "objekttype", "meterFraPunkt", "oppdateringsdato", "geometry"],
+    "retainedIdentity": "1103-{matrikkelnummertekst}",
+    "compositeKeyProvenance": "The API returned kommunenummer=1103 and matrikkelnummertekst values 17/145, 17/1972, and 18/4. The retained id is the source cadastral municipality number plus the source-generated matrikkelnummertekst; no internal row number was used.",
+    "geometryCrs": "EPSG:4326"
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.kommunekart.com/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Stavanger-linked viewer shell loaded. Current JavaScript bundle was inspected; it exposes Norkart map/WMS configuration but no anonymous parcel vector response was extracted from the shell alone.",
+      "evidence": "tmp/valhalla-parcel-research/stavanger/kommunekart.html and Kommunekart.min.js"
+    },
+    {
+      "url": "https://www.norgeskart.no/assets/index-FiXmGpAv.js",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Current Kartverket Norgeskart JavaScript was inspected. It identifies the public cadastral WMS route and the production API base; no credentials were used."
+    },
+    {
+      "url": "https://api.norgeskart.no/v1/matrikkel/wms?SERVICE=WMS&REQUEST=GetCapabilities",
+      "method": "GET",
+      "status": "HTTP 401",
+      "summary": "Returned JSON unauthorized/invalid username or password; no login or credential attempt was made and no geometry was inferred from this route.",
+      "tlsVerification": "enabled"
+    },
+    {
+      "url": "https://api.kartverket.no/eiendom/v1/openapi.json",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Public OpenAPI schema confirms anonymous /punkt and /punkt/omrader operations, input CRS parameters, maximum radius 3000 m, GeoJSON area response, and native cadastral fields.",
+      "tlsVerification": "enabled"
+    },
+    {
+      "url": "https://api.kartverket.no/eiendom/v1/punkt/omrader?nord=58.9305804865162&ost=5.72277380778637&koordsys=4258&radius=100&utkoordsys=4326&maksTreff=3",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Returned three Polygon features, including one exact-point hit. Raw source properties were retained only in ignored scratch evidence; the cohort sample contains geometry and one canonical id property per feature.",
+      "tlsVerification": "enabled"
+    },
+    {
+      "url": "https://api.kartverket.no/eiendom/v1/punkt/omrader?nord=58.9305804865162&ost=5.72277380778637&koordsys=4258&radius=3000&utkoordsys=4326&maksTreff=3",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Returned the same nearest three features under the larger bounded radius because maksTreff=3; this is not a citywide coverage test.",
+      "tlsVerification": "enabled"
+    }
+  ],
+  "safeFieldAllowlist": ["canonical native parcel identity", "full parcel polygon geometry", "source CRS", "public service metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner/titleholder", "address/contact", "personal data", "tax/account", "certificate/title information"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "remainingUncertainty": "The live public API is qualified for bounded anonymous parcel ID-plus-geometry retrieval, but no citywide completeness, adapter behavior, cache strategy, or independent serial runtime review has been established. Parcel accuracy is also source-qualified only as Kartverket's published warning allows; exact point preservation and a 0 m hit do not imply a city boundary.",
+  "nextStep": "Independent serial reviewer should validate the Kartverket adapter contract and bounded coverage behavior before any runtime admission."
+}

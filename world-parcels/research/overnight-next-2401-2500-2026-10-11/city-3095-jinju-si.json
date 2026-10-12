@@ -1,0 +1,38 @@
+{
+  "cityCode": 3095,
+  "queueRank": 2463,
+  "name": "Jinju-si",
+  "country": "Republic of Korea",
+  "countryCode": "KR",
+  "point": [35.1856844205804, 128.100758236721],
+  "population2025": 237707,
+  "population2025k": 237.707,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jinju-si cadastral parcel map official Korea K-GeoP LX land information",
+        "result": "First-party results identified K-GeoP as the Ministry of Land, Infrastructure and Transport public land-information/cadastral viewer and LX as the national cadastral spatial-information agency. No Jinju-specific anonymous parcel geometry endpoint was found in search results.",
+        "actualResultUrls": [
+          "https://www.kgeop.go.kr/",
+          "https://www.kgeop.go.kr/info/infoMap.do?initMode=L",
+          "https://www.lx.or.kr/eng/sub02_03_02.do"
+        ]
+      },
+      {
+        "language": "Korean/local",
+        "query": "진주시 지적도 필지정보 토지정보 공식 국토교통부",
+        "result": "First-party Korean results identified K-GeoP's 일필지정보 workflow and Jinju City's 토지정보과, including official Jinju land-price/cadastral administration references. Search did not expose a public Jinju parcel-geometry service.",
+        "actualResultUrls": [
+          "https://www.kgeop.go.kr/info/infoMap.do?initMode=L",
+          "https://www.jinju.go.kr/00133/00446/00560.web?amode=view&cpage=10&gubun=03&idx=295&num=55",
+          "https://www.jinju.go.kr/searchmultiple/searchmultipleresult.web?cpage=2&sstring=%EC%A0%95%EC%B4%8C&type=STAFF"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "The national K-GeoP viewer and Jinju's official land-information administrative custodian are evidenced. The current viewer JavaScript exposes a WFS route and PNU-based parcel lookup, but the configured map host was not resolvable from this environment; no parcel feature, native identity, geometry, or CRS is claimed. This packet is not source integration or runtime admission."
+}

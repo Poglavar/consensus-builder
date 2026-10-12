@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "cityCount": 0,
+  "cities": [],
+  "resolvedDecisions": [
+    {
+      "cityCode": 549,
+      "rank": 3158,
+      "decision": "confirmed_attempt",
+      "decisionFile": "root-identity-decision-overlay.json",
+      "reviewedAt": "2026-10-12T02:59:36.186Z"
+    }
+  ]
+}

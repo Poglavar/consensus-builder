@@ -1,0 +1,117 @@
+{
+  "cityCode": 4432,
+  "queueRank": 3036,
+  "name": "Dilolo",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso3": "COD",
+  "point": [-10.6870219647346, 22.3433046089057],
+  "population2025": 197075,
+  "population2025k": 197.075,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "sourceDiscoveryDate": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dilolo Democratic Republic of the Congo cadastral map parcel registry official",
+        "result": "First-party discovery found the Democratic Republic of the Congo Ministry of Land Affairs page listing Dilolo as one of five Lualaba land-registration districts. The ministry's public land-research workflow explains how to submit a formal search, but no anonymous public parcel map/API or ID-plus-geometry response was found.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+        ]
+      },
+      {
+        "language": "French (local/native)",
+        "query": "Dilolo RDC cadastre parcelles carte registre foncier officiel",
+        "result": "La recherche de première partie confirme que Dilolo est une circonscription foncière de la province du Lualaba. Le formulaire officiel de recherche foncière demande une province, une circonscription et des références de bien, mais ne publie pas de service anonyme de parcelles avec identifiant et géométrie; aucune demande nécessitant identité ou pièces n'a été soumise.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+        ]
+      }
+    ],
+    "sourceCitations": [
+      "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "https://bic.cd/",
+      "https://geocatalogue.africamuseum.be/geonetwork/srv/api/records/CD-CRSN-DOC1882"
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Ministère des Affaires Foncières de la République démocratique du Congo",
+    "scope": "National land-affairs authority; its official administrative list explicitly places Dilolo in the Lualaba land-registration districts.",
+    "evidence": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+  },
+  "localCustodianContext": {
+    "name": "Dilolo land-registration district (circonscription foncière), Lualaba",
+    "scope": "Officially listed local/territorial registration custodian context. No separate public Dilolo map, endpoint, contact workflow, or parcel dataset was exposed by the page.",
+    "evidence": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+  },
+  "service": {
+    "name": "Ministry of Land Affairs public land-research workflow",
+    "viewerUrl": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+    "baseUrl": "https://www.affairesfoncieres.gouv.cd/",
+    "viewerConfiguration": "The current Next.js HTML and referenced JavaScript were inspected. The public workflow contains province/circonscription selectors and a POST form for a formal land search; it requires applicant identity/contact data and supporting documents. No map viewer, public parcel layer, ArcGIS/GeoServer/WFS/WMS endpoint, or anonymous parcel response was exposed.",
+    "schemaAndCrs": {
+      "parcelSchema": null,
+      "nativeIdFields": null,
+      "geometryCrs": null,
+      "fieldMapping": {},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "status": 200,
+      "outcome": "Loaded the official administrative list. It reports 143 circonscriptions across 26 provinces and lists Dilolo under Lualaba. The HTML contained no parcel geometry, native parcel IDs, CRS, or public map-service configuration."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "status": 200,
+      "outcome": "Loaded the official formal-search workflow. The current JavaScript was inspected; its only data submission route is /api/demandes-foncieres and the form requires identity/contact and document fields. No POST was made because it would submit personal data and request a protected land-record search."
+    },
+    {
+      "method": "GET",
+      "url": "https://bic.cd/",
+      "status": 200,
+      "outcome": "Public Bureau d'Informations Cadastrales landing page loaded. It states the digital cadastral service is available for Nord-Kivu and Sud-Kivu; no Dilolo/Lualaba parcel service or anonymous parcel response was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://geocatalogue.africamuseum.be/geonetwork/srv/api/records/CD-CRSN-DOC1882",
+      "status": "TLS verification failure",
+      "outcome": "A catalogue record for a 1959 administrative map of the Dilolo territory was discovered, but the direct API request failed certificate verification. It is an administrative reference map, not a current parcel dataset; no TLS bypass was attempted."
+    }
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/4432/ (official HTML/JS and bounded request evidence; no unsafe fields retained)",
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native cadastral parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "The exact WUP point [-10.6870219647346, 22.3433046089057] was preserved in latitude/longitude order and was not shifted.",
+    "The official list establishes a Dilolo land-registration district, not public vector coverage or citywide parcel availability.",
+    "No exact-point parcel request was submitted because no usable anonymous parcel endpoint was available; this is not evidence of a point miss or citywide absence.",
+    "Parcel schema, native identity field, geometry CRS, and ID-plus-geometry response remain unqualified; no GeoJSON sample is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The ministry may operate non-public or separately hosted cadastral systems that are not exposed in the inspected public pages.",
+    "The BIC coverage statement is limited to its published Nord-Kivu/Sud-Kivu service scope and does not establish absence elsewhere.",
+    "The 1959 Dilolo territory map is historical administrative context, not evidence of current parcel geometry.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "runtimeReadiness": "held"
+}

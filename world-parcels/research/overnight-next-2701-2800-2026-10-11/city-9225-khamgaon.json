@@ -1,0 +1,112 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for Khamgaon, India; access failures and general state-service evidence are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 9225,
+  "queueRank": 2731,
+  "name": "Khamgaon",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [20.7114270292692, 76.5645365055452],
+  "population2025": 216271,
+  "population2025k": 216.271,
+  "populationUnit": "persons",
+  "aliases": ["khamgaon"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Khamgaon Maharashtra official cadastral parcel map GIS land records Buldhana",
+        "result": "Search found Maharashtra's official Mahabhumi land-record portal, the official Buldhana district e-revenue directory, and the official Mahabhunakasha/BhuNaksha map service link. No city-bounded Khamgaon parcel API or geometry was exposed in the search result.",
+        "actualResultUrls": [
+          "https://mahabhumi.gov.in/",
+          "https://buldhana.nic.in/e0-a4-88-e0-a4-ae-e0-a4-b9-e0-a4-b8-e0-a4-82-e0-a4b2-e0-a4aa-e0-a4cd-e0-a4b0-e0-a4a3-e0-a4be-e0-a4b2-e0-a5-80/",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+          "https://bhumiabhilekh.maharashtra.gov.in/"
+        ]
+      },
+      {
+        "language": "Marathi",
+        "query": "खामगाव महाराष्ट्र अधिकृत भू-नकाशा जमिनीचे नकाशे मालमत्ता GIS",
+        "result": "Search found the official Buldhana e-revenue page and Maharashtra Bhumi Abhilekh pages describing e-Nakasha/Mahabhunakasha, property cards, survey maps, and land-record services. The results did not provide a live Khamgaon polygon response or safe parcel identity.",
+        "actualResultUrls": [
+          "https://buldhana.nic.in/e0-a4-88-e0-a4-ae-e0-a4-b9-e0-a4-b8-e0-a4-82e0-a4b2-e0-a4aa-e0-a4cd-e0-a4b0-e0-a4a3-e0-a4be-e0-a4b2-e0-a5-80/",
+          "https://www.bhumiabhilekh.maharashtra.gov.in/Services/PropertyCardDownload",
+          "https://www.bhumiabhilekh.maharashtra.gov.in/Pages/AboutUsDetail?pageId=58",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+        ]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://buldhana.nic.in/e0-a4-88-e0-a4-ae-e0-a4-b9-e0-a4-b8-e0-a4-82e0-a4b2-e0-a4aa-e0-a4cd-e0-a4b0-e0-a4a3-e0-a4be-e0-a4b2-e0-a5-80/",
+      "observation": "Official Buldhana district administration page lists Maharashtra e-revenue services and links e-Nakasha (Mahabhunakasha) for viewing land maps, plus e-Bhulekh and property-card services. This is district/state service evidence, not a verified Khamgaon response."
+    },
+    {
+      "url": "https://mahabhumi.gov.in/",
+      "observation": "Official Maharashtra Bhumi Abhilekh portal describes government land-record services and Mahabhunakasha maps with land records."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "observation": "Official BhuNaksha viewer is indexed with State, Category, District, Taluka, Village, plot-number search, plot information, layers, and map controls; the live page did not return within the bounded request."
+    },
+    {
+      "url": "https://www.bhumiabhilekh.maharashtra.gov.in/Pages/AboutUsDetail?pageId=58",
+      "observation": "Official Marathi land-record page describes digitized survey maps and parcel information including survey/gat number, area, and coordinates; it does not itself expose a Khamgaon parcel response."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Bounded curl request timed out after 30 seconds before headers/body were returned; no JavaScript/configuration, schema, CRS, or geometry was obtained. No login or bypass was attempted."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/",
+      "method": "web.run open/search-index inspection",
+      "httpStatus": null,
+      "outcome": "Search-indexed official viewer description showed location selectors, plot-number search, plot info, layers, and map controls, but not a live anonymous response or endpoint configuration."
+    },
+    {
+      "url": "https://buldhana.nic.in/e0-a4-88-e0-a4-ae-e0-a4-b9-e0-a4-b8-e0-a4-82e0-a4b2-e0-a4aa-e0-a4cd-e0-a4b0-e0-a4a3-e0-a4be-e0-a4b2-e0-a5-80/",
+      "method": "web.run open",
+      "httpStatus": 200,
+      "outcome": "Official Buldhana page opened and its e-Nakasha link was observed; page inspection supplied service links only, not Khamgaon parcel geometry."
+    },
+    {
+      "url": "https://www.bhumiabhilekh.maharashtra.gov.in/Services/PropertyCardDownload",
+      "method": "web.run search/open inspection",
+      "httpStatus": null,
+      "outcome": "Official property-card service was identified and described district/taluka/property-card selectors, but no safe parcel polygon response was obtained or requested."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "State and district first-party portals document land-map and land-record services, but no Khamgaon-local registry/cadastre response or city-specific public map service was verified in this attempt.",
+  "registryEvidenceUrls": [
+    "https://buldhana.nic.in/e0-a4-88-e0-a4-ae-e0-a4-b9-e0-a4-b8-e0-a4-82e0-a4b2-e0-a4aa-e0-a4cd-e0-a4b0-e0-a4a3-e0-a4be-e0-a4b2-e0-a5-80/",
+    "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Maharashtra state land-record/map services and Buldhana district service directory.",
+    "verifiedOpenScope": "No anonymous Khamgaon-bounded parcel response, native ID, schema, CRS, or full polygon geometry was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel/object ID when independently verified", "full native parcel polygon geometry", "geometry CRS", "source layer/service metadata", "bounded query metadata"],
+  "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "tax/account", "registration details", "personal fields"],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "asia",
+  "remainingUncertainty": "The official BhuNaksha service may expose Khamgaon parcel maps interactively, but the current public JavaScript/configuration, request parameters, schema, CRS, and safe stable parcel identity could not be established because the viewer timed out. The exact WUP point was preserved without shifting it; no exact-point miss or timeout is treated as citywide absence."
+}

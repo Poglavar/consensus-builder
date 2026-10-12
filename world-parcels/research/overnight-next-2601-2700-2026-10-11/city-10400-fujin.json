@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 10400,
+  "wupCityCode": 10400,
+  "queueRank": 2638,
+  "cityId": "wup2025:10400",
+  "name": "Fujin",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [47.2499763575058, 132.028794949871],
+  "centerLatLon": [47.2499763575058, 132.028794949871],
+  "population2025": 223881,
+  "population2025k": 223.881,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": null,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "Fujin Municipal Natural Resources Bureau and Heilongjiang Tianditu public portal were evidenced as relevant custodians/platforms, but no public parcel feature service was verified.",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Fujin China official cadastral map parcel GIS Fujin City natural resources bureau",
+        "result": "Found Fujin Municipal Natural Resources Bureau official responsibilities page and Heilongjiang Tianditu portal documentation. No Fujin-specific public cadastral parcel viewer or downloadable parcel feature service was found.",
+        "actualResultUrls": [
+          "https://www.fujin.gov.cn/fjs/c101577/202507/c04_153868.shtml",
+          "https://heilongjiang.tianditu.gov.cn/iportal/help/html/zh/iP/iportal_usage/resources.htm"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "富锦市 自然资源局 地籍图 不动产登记 GIS 地图 服务",
+        "result": "确认富锦市自然资源局负责自然资源和不动产统一确权登记、权籍调查、不动产测绘及登记信息管理平台；确认黑龙江天地图门户公开地图/服务资源检索能力，但未发现可匿名访问的富锦市地籍宗地要素服务。",
+        "actualResultUrls": [
+          "https://www.fujin.gov.cn/fjs/c101577/202507/c04_153868.shtml",
+          "https://www.fujin.gov.cn/fjs/c101570/202405/c04_168716.shtml",
+          "https://heilongjiang.tianditu.gov.cn/iportal/"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.fujin.gov.cn/fjs/c101577/202507/c04_153868.shtml",
+      "operator": "Fujin Municipal Natural Resources Bureau / Fujin Municipal People's Government",
+      "scope": "Fujin City",
+      "observation": "Official page assigns the bureau responsibility for unified natural-resource and real-estate registration, cadastral investigation, real-estate surveying, registration information management, and public-service informationization. It does not publish a parcel API or parcel download."
+    },
+    {
+      "url": "https://www.fujin.gov.cn/fjs/c101570/202405/c04_168716.shtml",
+      "operator": "Fujin Municipal Natural Resources Bureau",
+      "scope": "Fujin City",
+      "observation": "Official information-disclosure guide identifies the municipal government website as the active public disclosure channel; no cadastral feature endpoint was identified there."
+    },
+    {
+      "url": "https://heilongjiang.tianditu.gov.cn/iportal/",
+      "operator": "Heilongjiang Tianditu / provincial natural-resources geospatial portal",
+      "scope": "Heilongjiang Province",
+      "observation": "Current portal is a SuperMap iPortal-style public GIS resource portal. Its inspected configuration exposes general imagery, vector basemap, city/county boundary and parking services; no Fujin cadastral parcel layer was identified."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.fujin.gov.cn/fjs/c101577/202507/c04_153868.shtml",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Natural Resources Bureau page fetched; responsibilities and local custodian recorded. No parcel geometry or public parcel endpoint present."
+    },
+    {
+      "url": "https://www.fujin.gov.cn/fjs/c101570/202405/c04_168716.shtml",
+      "method": "GET",
+      "status": "HTTP 200 via indexed official page",
+      "summary": "Official information-disclosure guide reviewed; it points to the government website for proactive disclosure and does not expose cadastral geometry."
+    },
+    {
+      "url": "https://heilongjiang.tianditu.gov.cn/iportal/",
+      "method": "GET",
+      "status": "HTTP 200; redirect to /iportal/web-ui/index.html",
+      "summary": "Current JavaScript/configuration inspected. Public portal resources and service URLs were followed without login or credentials; no Fujin parcel layer was listed."
+    },
+    {
+      "url": "https://heilongjiang.tianditu.gov.cn/iportal/web-ui/config.js",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official current portal configuration inspected. It lists public basemap/imagery and boundary/map services, but no cadastral or parcel service. Configuration was read only; no private token or authentication was used."
+    },
+    {
+      "url": "https://heilongjiang.tianditu.gov.cn/chaotu76/iserver/services/map-ugcv5-BIGHLJHeiLongJiangShengDiShiJie/rest/maps/BIGHLJ_%E9%BB%91%E9%BE%99%E6%B1%9F%E7%9C%81%E5%9C%B0%E5%B8%82%E7%95%8C?layerType=layer_sm_map",
+      "method": "GET",
+      "status": "HTTP 502 Bad Gateway",
+      "summary": "Bounded anonymous metadata request to the configured Heilongjiang city-boundary map service failed upstream; no parcel schema or geometry was returned."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Fujin municipal registration/cadastral responsibilities and Heilongjiang provincial public GIS portal discovery.",
+    "verifiedOpenScope": "Official custodian pages and current public portal configuration only; no parcel feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "Local registry/cadastral custodian is evidenced by official Fujin government material, but public registry parcel data access is not evidenced."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "No parcel geometry obtained.",
+    "crs": null,
+    "identityReadiness": "No native parcel identity observed.",
+    "safeFieldAllowlist": ["stable native ID if later exposed", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+    "attributesRequested": "No parcel attributes were requested or retained; no owner, address, titleholder, contact, tax, account, or other unsafe fields were accessed."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "No anonymous, public parcel ID-plus-geometry response or downloadable cadastral dataset was verified. Serial review must independently determine whether a later authorized public source exists and whether its coverage, identity, CRS and legal/source semantics are admissible.",
+  "scopeLimits": [
+    "Exact WUP point [47.2499763575058,132.028794949871] preserved in latitude/longitude order; it was not shifted and no exact-point hit or miss was treated as citywide evidence.",
+    "No sample GeoJSON retained because no safe parcel polygon and native parcel identity were obtained.",
+    "A map extent miss, service failure, or absent portal listing is not evidence of citywide cadastral absence.",
+    "No login, credentials, private token use, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception was used.",
+    "Packet completion is research evidence only and is not source integration or admission."
+  ],
+  "identityPolicy": "No GeoJSON was retained. If a future source is qualified, retain exactly one stable native parcel identity as properties.id and keep source field mapping in metadata.",
+  "nextStep": "Serial reviewer should independently inspect any authenticated-free official Fujin or Heilongjiang parcel service that becomes available, verify stable native IDs, CRS/axis handling and coverage, and keep runtime held until qualification."
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "city:4727",
+  "decision": "held",
+  "checkedAt": "2026-10-11T18:54:47Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-4727-bumba.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/bumba-service-review.json",
+    "tmp/valhalla-parcel-research/4727/circonscriptions.html",
+    "tmp/valhalla-parcel-research/4727/bic-map.html"
+  ],
+  "review": "Ministry first-party directory lists Bumba under Mongala, grounding registryFound=true as jurisdiction custody only. English and French executed search queries and result URLs are recorded in the paired packet/review. BIC viewer yielded no safe Bumba native-ID plus polygon response. No durable sample. No fresh native-ID adapter reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Hold; no cadastral absence inference."
+}

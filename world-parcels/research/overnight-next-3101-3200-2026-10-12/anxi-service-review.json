@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-11952-anxi.json",
+  "cityCode": 11952,
+  "queueRank": 3176,
+  "attempt": 1,
+  "reviewStatus": "complete_pending_serial_runtime_review",
+  "registryFound": true,
+  "summary": "English and Chinese first-party discovery evidenced Anxi County's local Natural Resources Bureau and real-estate registration procedures. No anonymous parcel-vector endpoint, schema/CRS, or safe native ID-plus-geometry response was obtained. No GeoJSON sample is retained.",
+  "custodian": "Anxi County Natural Resources Bureau (安溪县自然资源局) is the local registration/cadastral custodian evidenced by official county pages; the Quanzhou government-service portal is only a general linked service route.",
+  "requests": "All executed discovery and bounded request attempts, outcomes, scope limits, and uncertainty are recorded in city-11952-anxi.json. The exact point was not shifted; no exact-point absence conclusion was made.",
+  "schemaAndCrs": {"layer": null, "geometry": null, "crs": null, "nativeIdentity": null, "compositeKeyContext": null},
+  "safeFieldAllowlist": ["id", "objectid", "parcel_id", "native parcel identity", "geometry", "geometry CRS", "public service metadata"],
+  "scopeLimits": [
+    "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained.",
+    "No login, credentials, CAPTCHA/Cloudflare bypass, private token, or TLS exception was used.",
+    "No sample was retained because no safe native parcel feature with full geometry and identity was returned.",
+    "Raw scratch/request evidence, if any, belongs under ignored tmp/valhalla-parcel-research/11952/; no prior logs or artifacts were cleared.",
+    "Packet completion is not source integration or adapter admission."
+  ],
+  "runtimeReadiness": "held_independent_adapter_review",
+  "uncertainty": [
+    "Official local registration evidence does not prove a public parcel API or citywide parcel coverage.",
+    "The general service portal may expose additional routes only through a supported client or authorized workflow not used here.",
+    "CLI DNS timeout is an execution-environment limitation and not a cadastral-absence finding."
+  ],
+  "admissionDecision": "held"
+}

@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-11823-contai.json",
+  "cityCode": 11823,
+  "queueRank": 3259,
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "queryAndRequestOutcome": "English and Bengali discovery found official West Bengal land-record, geoportal, registration-search, and national directory leads. Anonymous portal requests timed out or exposed only general procedure information; no safe parcel ID-plus-geometry response was obtained.",
+  "attemptedRoutes": [
+    {"route": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action", "outcome": "Official West Bengal land-record entry point; anonymous GET timed out after 20 seconds."},
+    {"route": "https://basundhara.wb.gov.in/GeoPortalApp/home", "outcome": "Official West Bengal State Geoportal; anonymous GET timed out after 10 seconds before WMS/configuration inspection."},
+    {"route": "https://wbregistration.gov.in/index/Search_By_Property_new.aspx?SearchingFrom=WS", "outcome": "Official registration property-search form discovered; no form submission or parcel geometry request performed."},
+    {"route": "https://dolr.gov.in/en/citizen-centric-services/", "outcome": "HTTP 200 official national directory confirms West Bengal BanglarBhumi RoR link and cadastral/spatial-data service category; no Contai parcel response."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "geometrySamples": [],
+  "scopeLimits": [
+    "Exact WUP point [21.7750795010373, 87.7483708520383] was preserved and not shifted.",
+    "State-level service evidence is distinguished from Contai-specific local coverage; no local parcel API was verified.",
+    "Timeouts and inaccessible viewer/API state are not evidence of citywide absence.",
+    "No unsafe ownership, address, titleholder, contact, tax/account, personal, or protected fields were requested or retained.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+    "No registry/catalog/runtime city config or other city's file was changed."
+  ],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "Official state land-record leads were found, but no bounded anonymous parcel feature response or stable native parcel identity was obtained. Independent serial review remains required."},
+  "uncertainty": "The current BanglarBhumi/State Geoportal viewer configuration, parcel layer schema, CRS, stable native parcel identity, citywide coverage, and anonymous runtime accessibility remain unresolved.",
+  "runtimeEligible": false,
+  "recommendedDisposition": "Hold for serial reviewer retry with current official West Bengal viewer routes and independent parcel-layer qualification.",
+  "completionSummary": {"packetComplete": true, "registryFound": true, "cityPointParcelSample": false, "runtimeReadiness": "held", "nextAttemptNeeded": true}
+}

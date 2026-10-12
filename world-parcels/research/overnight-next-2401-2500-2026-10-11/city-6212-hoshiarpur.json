@@ -1,0 +1,40 @@
+{
+  "cityCode": 6212,
+  "queueRank": 2416,
+  "name": "Hoshiarpur",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [31.5263564171585, 75.9092613371255],
+  "population2025": 242396,
+  "population2025k": 242.396,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hoshiarpur Punjab official cadastral parcel map GIS land records service",
+        "result": "Official results identified the Government of Punjab Hoshiarpur land-records page, the Punjab BhuNaksha viewer, and the official district site. BhuNaksha was reachable and its public viewer routes were inspected. No safe anonymous parcel feature response was retained.",
+        "actualResultUrls": [
+          "https://hoshiarpur.nic.in/service/land-records/",
+          "https://gisbhunaksha.punjab.gov.in/",
+          "https://jamabandi.punjab.gov.in/default.aspx"
+        ]
+      },
+      {
+        "language": "Punjabi/native",
+        "query": "ਹੁਸ਼ਿਆਰਪੁਰ ਪੰਜਾਬ ਜ਼ਮੀਨ ਨਕਸ਼ਾ ਭੂ ਨਕਸ਼ਾ ਅਧਿਕਾਰਤ",
+        "result": "ਅਧਿਕਾਰਤ ਨਤੀਜਿਆਂ ਨੇ ਹੁਸ਼ਿਆਰਪੁਰ ਜ਼ਿਲ੍ਹਾ ਸਰਕਾਰ ਦਾ ਭੂਮੀ ਰਿਕਾਰਡ ਪੰਨਾ, ਪੰਜਾਬ ਭੂ-ਨਕਸ਼ਾ ਦਰਸ਼ਕ ਅਤੇ ਪੰਜਾਬ ਲੈਂਡ ਰਿਕਾਰਡਜ਼ ਸੇਵਾ ਦਿਖਾਈ। ਭੂ-ਨਕਸ਼ਾ ਵਿੱਚ ਹੁਸ਼ਿਆਰਪੁਰ ਲਈ ਜ਼ਿਲ੍ਹਾ/ਤਹਿਸੀਲ/ਕਾਨੂੰਗੋ/ਪਟਵਾਰ/ਪਿੰਡ ਚੋਣਾਂ ਅਤੇ ਨਕਸ਼ਾ-ਹੱਦ ਰੂਟ ਮਿਲੇ; ਸੁਰੱਖਿਅਤ ਅਗਿਆਤ ਪਾਰਸਲ ਜਿਓਮੈਟਰੀ ਜਵਾਬ ਨਹੀਂ ਮਿਲਿਆ।",
+        "actualResultUrls": [
+          "https://hoshiarpur.nic.in/pa/%E0%A9%9B%E0%A8%BF%E0%A8%B2%E0%A9%8D%E0%A8%B9%E0%A9%87-%E0%A8%A6%E0%A8%BE-%E0%A8%A8%E0%A8%95%E0%A8%B6%E0%A8%BE/",
+          "https://gisbhunaksha.punjab.gov.in/",
+          "https://jamabandi.punjab.gov.in/default.aspx"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "Punjab BhuNaksha is a first-party cadastral-map viewer with an evidenced Hoshiarpur hierarchy and bounded village-map extent route. The district land-records page identifies Punjab Land Records Society services in Hoshiarpur. No anonymous parcel feature schema, safe native parcel identity, or full parcel polygon was obtained. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held",
+  "serviceReview": "hoshiarpur-service-review.json"
+}

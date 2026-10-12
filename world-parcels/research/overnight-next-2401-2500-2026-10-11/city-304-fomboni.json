@@ -1,0 +1,48 @@
+{
+  "cityCode": 304,
+  "queueRank": 2478,
+  "name": "Fomboni",
+  "country": "Comoros",
+  "countryCode": "KM",
+  "iso3": "COM",
+  "point": [-12.2875705957458, 43.7459836687972],
+  "population2025": 236750,
+  "population2025k": 236.75,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Fomboni Comoros official cadastral parcel map land registry GIS",
+        "result": "First-party discovery found the official Union of Comoros government portal and its Ministry of Economy e-Archivage (foncier) service page. The page describes a digitization and centralization platform for land titles and links to e-archivage.gouv.km, but the linked host was not reachable and no public parcel map or API was exposed.",
+        "actualResultUrls": [
+          "https://www.egouv.km/fr/",
+          "https://minecon.egouv.km/fr/services/individuals-services/e-archivage-foncier/",
+          "https://e-archivage.gouv.km/"
+        ]
+      },
+      {
+        "language": "French (local/official)",
+        "query": "Fomboni Comores cadastre parcelles registre foncier carte officielle service cadastre Mohéli",
+        "result": "French-language discovery found the same official e-Archivage (foncier) service and a UN-Habitat Comoros country report. The report records interviews with the Service cadastre de Mohéli and Fomboni municipal/urban-planning officials and describes a planned national property-registration/cadastral base, but it does not provide a current anonymous parcel viewer or safe parcel geometry endpoint.",
+        "actualResultUrls": [
+          "https://minecon.egouv.km/fr/services/individuals-services/e-archivage-foncier/",
+          "https://www.urbanagendaplatform.org/sites/default/files/2020-09/Naitonal-Report-Comores-Fran%C3%A7ais.pdf"
+        ]
+      }
+    ]
+  },
+  "sourceAssessment": {
+    "officialCustodianEvidence": "The Ministry of Economy service page identifies e-Archivage (foncier) as a platform for digitizing and centralizing Comorian land titles. The country report names Service cadastre de Mohéli among Fomboni consultations, but no operational local registry procedure or public map was verified.",
+    "parcelData": "No parcel IDs, native field schema, CRS, or geometry retained.",
+    "sampleGeojson": null,
+    "scopeLimit": "A zero/failed exact-point lookup would not establish citywide absence; the linked platform was unavailable before any map/API inspection could be performed."
+  },
+  "runtimeReadiness": "held"
+}

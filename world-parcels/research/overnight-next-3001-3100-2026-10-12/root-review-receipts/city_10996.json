@@ -1,0 +1,42 @@
+{
+  "taskId": "city:10996",
+  "decision": "held",
+  "checkedAt": "2026-10-12T02:43:21.412567Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-10996-xuwen.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/xuwen-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/root-review-receipts/source-evidence/city_10996-custodian-live-check.json"
+  ],
+  "identityCheck": {
+    "cityCode": 10996,
+    "rank": 3091,
+    "country": "China",
+    "pointLatLon": [
+      20.3284011377117,
+      110.167792217387
+    ],
+    "population2025Persons": 194252,
+    "matchesImmutableRosterAndQueue": true
+  },
+  "researchCheck": {
+    "englishAndLocalLanguageQueriesRecorded": true,
+    "retainedFullPolygonCount": 0,
+    "safeNativeParcelIdAndGeometryVerified": false,
+    "registryFound": true,
+    "registryCustodyBasis": "Live first-party page response recorded in source-evidence file"
+  },
+  "admissionCheck": {
+    "independentLiveAdapterQualification": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGEOSValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "The local natural-resources bureau is evidenced, but the checked government-information pages do not supply a public parcel feature response; native parcel identity and full geometry remain unverified.",
+  "absenceClaim": false,
+  "runtimeAction": "remain excluded; no registry, catalog, city config, or report admission change"
+}

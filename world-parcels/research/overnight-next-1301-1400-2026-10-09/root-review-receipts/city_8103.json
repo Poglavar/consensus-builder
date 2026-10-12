@@ -1,0 +1,17 @@
+{
+  "taskId": "city:8103",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-8103-petrolina.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/petrolina-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-09T14:49:22.288645Z",
+  "reason": "First-party municipal tax-code PDF identifies Cadastro Imobiliário (CIMOB) and individual lot registration, supporting local custody. The municipal homepage returned HTTP 403 and no anonymous parcel geometry or native ID was verified; the access wall does not establish citywide absence.",
+  "firstPartyUrlsChecked": [
+    "https://petrolina.pe.gov.br/wp-content/uploads/2026/01/cd59a452-7240-4cc0-bd60-e3c078a788e2-DISPOSICAO-PRELIMINAR.pdf",
+    "https://petrolina.pe.gov.br/"
+  ],
+  "admissionGates": "No fresh native-ID read, forced paging, 13 bounded cells, metric full-polygon checks, source binding, or headed Details verification."
+}

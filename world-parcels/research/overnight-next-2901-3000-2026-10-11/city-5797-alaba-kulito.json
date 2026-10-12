@@ -1,0 +1,64 @@
+{
+  "cityCode": 5797,
+  "queueRank": 2920,
+  "name": "Alaba Kulito",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "iso3": "ETH",
+  "locId": 231,
+  "point": [7.31162532662417, 38.0911299760789],
+  "population2025": 204316,
+  "population2025k": 204.316,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Alaba Kulito Ethiopia cadastral parcel map land registry official",
+        "result": "Discovery found Ethiopia's official e-Land Addis cadastre viewer and Addis cadastral agency material, but no Alaba Kulito or Southern Ethiopia local cadastral viewer. The official service configuration and map code are Addis-specific.",
+        "actualResultUrls": ["https://eland.addiscadaster.gov.et/", "https://aalb.gov.et/", "https://data.moa.gov.et/dataset/ethiopian-administrative-boundary2"]
+      },
+      {
+        "language": "Amharic",
+        "query": "አላባ ቁሊቶ ካዳስተር የመሬት ምዝገባ ካርታ",
+        "result": "Amharic discovery found general Ethiopian legal-cadastre material and the Addis e-Land viewer, but no first-party Alaba Kulito local parcel map or public parcel service.",
+        "actualResultUrls": ["https://eland.addiscadaster.gov.et/", "https://www.ddacouncil.gov.et/public/uploads/proclamations/file-60.pdf", "https://www.hopr.gov.et/documents/portlet_file_entry/20181/%E1%8B%A8%E1%8A%A8%E1%89%B0%E1%88%9B%2B%E1%88%AC%E1%89%B5%2B%E1%8B%9E%E1%89%B3%2B%E1%8A%A5%E1%8D%A5%2B%E1%8A%95%E1%89%A5%E1%88%A8%E1%89%B5%2B%E1%88%9D%E1%8B%9D%E1%88%88%E1%89%A3%2B%E1%88%A8%E1%8A%E1%AD%82%E1%89%85%2B%E1%8B%8B%E1%8C%85%2.pdf"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://eland.addiscadaster.gov.et/", "observation": "Official public e-Land viewer; current HTML loads the map application."},
+    {"url": "https://eland.addiscadaster.gov.et/assets/api.config.json", "observation": "Current public configuration identifies cityCode AA-ADS, Addis branding, and the public GeoServer/WFS endpoints."},
+    {"url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetCapabilities", "observation": "Public WFS capabilities expose cadastral layers, including v_1_registered_parcel, with a registered-parcel LatLongBoundingBox around 38.7747-38.7749 E, 8.9795-8.9798 N, not Alaba Kulito."}
+  ],
+  "requests": [
+    {"url": "https://eland.addiscadaster.gov.et/", "method": "GET", "httpStatus": 200, "outcome": "Fetched public viewer HTML and identified current JS bundles."},
+    {"url": "https://eland.addiscadaster.gov.et/main.d3525dff4b9098d6.js", "method": "GET", "httpStatus": 200, "outcome": "Inspected current viewer code; map routes use GeoServer WMS/WFS and the registered layer is Addis-specific."},
+    {"url": "https://eland.addiscadaster.gov.et/assets/api.config.json", "method": "GET", "httpStatus": 200, "outcome": "Inspected current public configuration; it declares AA-ADS and public geos.addiscadaster.gov.et service URLs."},
+    {"url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetCapabilities", "method": "GET", "httpStatus": 200, "outcome": "Returned public WFS capabilities and layer extents; registered parcel coverage is bounded around Addis, not Alaba Kulito."},
+    {"url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=DescribeFeatureType&typeName=ncrprs_cadaster:v_1_registered_parcel", "method": "GET", "httpStatus": 200, "outcome": "Returned safe schema fields uniqueparcelid, documentedarea, measuredarea, parcel_type, geometry, and citycode."},
+    {"url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ncrprs_cadaster:v_1_registered_parcel&outputFormat=application/json&srsname=EPSG:4326&bbox=38.0909,7.3114,38.0913,7.3119,EPSG:4326&propertyName=uniqueparcelid,geometry", "method": "GET", "httpStatus": 200, "outcome": "Returned an empty FeatureCollection. This exact-point bounded result is not evidence of citywide absence because the service's published layer extent is Addis-specific."},
+    {"url": "https://geos.addiscadaster.gov.et/geoserver/ncrprs_cadaster/wms?service=WMS&version=1.3.0&request=GetCapabilities", "method": "GET", "httpStatus": 200, "outcome": "Returned public WMS capabilities; no Alaba-specific layer was evidenced."}
+  ],
+  "registryFound": null,
+  "registryBasis": "No local Alaba Kulito registry, cadastre, map, or procedure was evidenced. The only first-party parcel viewer found is the Addis-specific e-Land service.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {"name": "Ethiopia e-Land Addis viewer / GeoServer", "url": "https://eland.addiscadaster.gov.et/", "format": "public WFS/WMS viewer", "nativeIdentity": "uniqueparcelid is the published field, but no Alaba feature was returned", "coverage": "Addis-specific published extent; Alaba Kulito coverage not verified", "crs": "EPSG:4326 requested; capabilities advertise EPSG:20137"},
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "resultCategory": "official_national_or_other_cadastre_addis_only_no_local_alaba_coverage",
+  "coverageAssessment": {"claimedScope": "Ethiopia e-Land public cadastre viewer", "verifiedOpenScope": "Addis-specific WFS/WMS layer and schema only", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": {"uniqueparcelid": "published native parcel identifier", "geometry": "published parcel geometry", "citycode": "source city-code field; not retained"},
+  "compositeKeyProvenance": null,
+  "crs": "EPSG:4326 requested for bounded query; service capabilities list EPSG:20137",
+  "geometryQuality": "not evaluated; no Alaba geometry retained",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification required",
+  "scopeLimits": ["Exact WUP point [7.31162532662417, 38.0911299760789] was preserved in latitude/longitude order and was not shifted.", "The zero bounded response and Addis layer extent are service-scope evidence, not evidence of citywide absence.", "No owner, address, contact, titleholder, personal, tax/account, or other unsafe fields were requested or retained.", "No GeoJSON sample is included because no safe Alaba parcel polygon was retrieved.", "Packet completion is not source integration or admission; runtime remains held pending serial review."],
+  "remainingUncertainty": "A local Alaba/SNNPR cadastral custodian, public viewer, parcel geometry transport, stable native identity, and citywide coverage remain unresolved. Future attempts should use public first-party routes only."
+}

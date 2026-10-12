@@ -1,0 +1,34 @@
+{
+  "taskId": "city:7685",
+  "decision": "held",
+  "checkedAt": "2026-10-12T02:09:39Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-7685-divin-polis.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/divin-polis-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 7685,
+    "rank": 3065,
+    "country": "Brazil",
+    "point": [
+      -20.1459851966289,
+      -44.8878275844122
+    ],
+    "populationPersons": 195665
+  },
+  "checks": {
+    "bilingualExecutedSearchesRecorded": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Official municipal lot custody corroborated. Anonymous GeoWise map configuration redirected to login; no safe parcel ID or geometry response, and no runtime qualification."
+}

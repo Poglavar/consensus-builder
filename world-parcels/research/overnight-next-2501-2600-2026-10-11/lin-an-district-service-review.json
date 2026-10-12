@@ -1,0 +1,39 @@
+{
+  "cityRecord": "city-11668-lin-an-district.json",
+  "cityCode": 11668,
+  "queueRank": 2522,
+  "city": "Lin'an District",
+  "country": "China",
+  "countryCode": "CN",
+  "wupPoint": [30.2286070810882, 119.705576032851],
+  "researchDate": "2026-10-11",
+  "outcome": "official local registry custodian evidenced; no qualifying anonymous parcel geometry response",
+  "registryFound": true,
+  "custodian": {
+    "name": "Hangzhou Planning and Natural Resources Bureau Lin'an branch and Lin'an District real-estate registration service center",
+    "scope": "Lin'an District planning/natural-resources administration and cadastral, right-registration, and unified real-estate registration work",
+    "evidenceUrl": "https://www.linan.gov.cn/attach/0/c74d525117ee477da2c1fbd3272983bb.pdf"
+  },
+  "queryOutcomes": "Separate English and Chinese discovery queries were executed and recorded in the city record. Official results established the local planning/natural-resources and real-estate-registration custodians, but did not reveal a public parcel viewer/API endpoint returning safe ID plus geometry.",
+  "requestOutcomes": "Official Lin'an root returned HTTP 403. The official Hangzhou map portal timed out after 12 seconds, and the official Zhejiang geographic-information platform lead timed out during DNS resolution. No login, credentials, CAPTCHA bypass, unsafe fields, or TLS-verification exception was used. No parcel request was made because no qualifying endpoint was reachable.",
+  "attemptedRoutes": [
+    "https://www.linan.gov.cn/attach/0/c74d525117ee477da2c1fbd3272983bb.pdf",
+    "https://www.linan.gov.cn/art/2025/5/22/art_1229262640_4356917.html",
+    "https://www.linan.gov.cn/col/col1229665333/index.html",
+    "https://www.linan.gov.cn/",
+    "https://www.hangzhoumap.gov.cn/",
+    "https://ditu.zjzwfw.gov.cn/platform-main/index.html"
+  ],
+  "retainedSamples": [],
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel geometry", "geometry CRS", "source service URL", "retrieval timestamp"],
+  "scopeLimits": [
+    "No exact-point or bbox parcel query was performed; absence of a reachable endpoint is not citywide parcel absence.",
+    "Official government and yearbook material establishes local custody and registration activity, not open parcel geometry access.",
+    "No native parcel field schema, CRS, parcel identity, or composite-key mapping was observed.",
+    "The public map portal's current JavaScript/configuration could not be inspected because the portal timed out."
+  ],
+  "uncertainty": "The exact WUP coordinate was preserved and not shifted. Portal timeout, DNS timeout, and HTTP 403 are access conditions only and do not establish citywide absence.",
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "completion": "complete packet; held from runtime admission"
+}

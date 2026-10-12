@@ -1,0 +1,27 @@
+{
+  "taskId": "city:4900",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-4900-ilesa.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ilesa-service-review.json",
+    "tmp/valhalla-parcel-research/ilesa/cofo.html",
+    "tmp/valhalla-parcel-research/ilesa/519-a2e2c8402cad9c41.js",
+    "tmp/valhalla-parcel-research/ilesa/resp-ae58160e.txt",
+    "tmp/valhalla-parcel-research/ilesa/resp-d9da9d61.txt"
+  ],
+  "checkedAt": "2026-10-09T11:55:58.511911Z",
+  "reason": "First-party Osun document verification and federal survey information do not establish an Ilesa-local parcel registry or public geometry. Cached client code exposes a document-verification POST, and original API responses are welcome/GET route-not-found responses. No native-ID polygon or runtime qualification sequence is evidenced; registry custody remains unresolved.",
+  "identityCheck": "City code, rank, country, point and population persons match the immutable ranked roster, pending queue and integration ledger. English and native/local executed search query records and result URLs are present in the paired evidence.",
+  "retainedFullPolygonCount": 0,
+  "qualificationGates": "Fresh exact native-ID reads, complete forced paging, 13 bounded cells, metric GEOS validity/duplicate/overlap checks, source binding and headed Details-panel verification are not independently evidenced. No admission or runtime/catalog/report edit made.",
+  "originalCacheSha256": {
+    "tmp/valhalla-parcel-research/ilesa/cofo.html": "b993e777c2338f1f8a6827ce887f892502801292e957144610d906e83d2aa28a",
+    "tmp/valhalla-parcel-research/ilesa/519-a2e2c8402cad9c41.js": "73f3bfd09a7fb4927295263920e76cb6894350e1b29181d706ed14d6775384df",
+    "tmp/valhalla-parcel-research/ilesa/resp-ae58160e.txt": "d47d2d86d33cec5cdacc2db8fb33fc272cb5a2f1127095a76baf29e7581ca42a",
+    "tmp/valhalla-parcel-research/ilesa/resp-d9da9d61.txt": "259db65b2e89c3ac85156a89bac999af78a6ef775ab50c17737f5a8a100ace3b"
+  }
+}

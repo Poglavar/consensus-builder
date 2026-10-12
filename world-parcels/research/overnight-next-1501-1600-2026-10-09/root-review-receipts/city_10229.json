@@ -1,0 +1,17 @@
+{
+  "taskId": "city:10229",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-10229-tirunelveli.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/tirunelveli-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:32:47Z",
+  "reason": "WUP code 10229, rank 1509, India, point and 376005 persons match the immutable roster and queue. English and Tamil searches identify the official Tirunelveli Survey and Land Records service, while state map and land-management routes yielded no safe anonymous parcel response. No original native-ID complete-polygon response or retained sample exists. Timeout and login walls do not establish absence. Fresh ID reads, forced paging, 13 cells, metric GEOS checks, source binding and headed Details are unproved.",
+  "independentlyCheckedFirstPartyUrls": [
+    "https://tirunelveli.nic.in/service/e-services-land-records/",
+    "https://tirunelveli.nic.in/ta/service/%E0%AE%87%E0%AE%A3%E0%AF%88%E0%AE%AF%E0%AE%B5%E0%AE%B4%E0%AE%BF-%E0%AE%9A%E0%AF%87%E0%AE%B5%E0%AF%88%E0%AE%95%E0%AE%B3%E0%AF%8D-%E0%AE%8E%E0%AE%99%E0%AF%8D%E0%AE%95%E0%AF%87%E0%AE%AF%E0%AF%81/"
+  ],
+  "sourceAdmission": "not_admitted"
+}

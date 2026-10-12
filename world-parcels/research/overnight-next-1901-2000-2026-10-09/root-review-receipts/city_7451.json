@@ -1,0 +1,16 @@
+{
+  "taskId": "city:7451",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-7451-khanewal.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/khanewal-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/khanewal-parcels-sample.geojson",
+    "tmp/valhalla-parcel-research/7451/layer14.json",
+    "tmp/valhalla-parcel-research/7451/point-query.geojson",
+    "tmp/valhalla-parcel-research/7451/city-envelope-query.geojson"
+  ],
+  "checkedAt": "2026-10-10T18:19:12.976166Z",
+  "reviewFinding": "Queue identity and bilingual search records agree. Original official layer cache confirms Khanewal polygon layer and OBJECTID; three retained full geometries exactly match the cached source response and keep only safe normalized IDs. Exact-point zero is not absence. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are not independently evidenced."
+}

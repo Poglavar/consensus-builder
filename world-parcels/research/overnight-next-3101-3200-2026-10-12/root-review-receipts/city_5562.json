@@ -1,0 +1,38 @@
+{
+  "taskId": "city:5562",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-5562-magura.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/magura-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T05:04:22Z",
+  "queueIdentity": {
+    "rank": 3191,
+    "cityCode": 5562,
+    "country": "Bangladesh",
+    "point": [
+      23.489161857775,
+      89.4198176255085
+    ],
+    "populationPersons": 188694
+  },
+  "registryFound": null,
+  "finding": "Official DLRS hierarchy reached Magura district and RS survey, then returned an empty upazila list. The district boundary is not a parcel; the empty result is not citywide absence.",
+  "researchChecks": {
+    "englishAndLocalLanguageQueriesRecorded": true,
+    "fullParcelPolygonCount": 0,
+    "safeNativeParcelIdsVerified": false,
+    "citywideAbsenceEstablished": false
+  },
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

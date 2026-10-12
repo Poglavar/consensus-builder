@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 5455,
+  "cityId": "wup2025:5455",
+  "name": "Qarchak",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso3": "IRN",
+  "centerLatLon": [35.3767737070374, 51.6120669692114],
+  "point": [35.3767737070374, 51.6120669692114],
+  "queueRank": 1544,
+  "population2025": 369782,
+  "population2025k": 369.782,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Qarchak Iran official cadastral parcel map GIS cadastre",
+        "result": "Discovery identified the national Organization for Registration of Deeds and Properties and the Qarchak registration office, but no public anonymous Qarchak parcel viewer/API or safe parcel geometry.",
+        "actualResultUrls": ["https://ssaa.ir", "https://my.ssaa.ir/portal", "https://shamim.ssaa.ir", "https://www.waze.com/af/live-map/directions/ir/astan-thran/qrchk/adarh-thbt-asnad-w-amlak-qrchk?to=place.ChIJe2iSvwDtkT8RN_W2SRPaaO4"]
+      },
+      {
+        "language": "Persian",
+        "query": "قرچک نقشه کاداستر ملک سازمان ثبت اسناد املاک شهرستان قرچک",
+        "result": "نتایج، اداره ثبت اسناد و املاک قرچک و سازمان ثبت اسناد و املاک کشور را به‌عنوان متولی ثبتی نشان دادند؛ نقشه عمومی قطعات، API ناشناس یا هندسه امن برای قرچک پیدا نشد.",
+        "actualResultUrls": ["https://www.waze.com/en-GB/live-map/directions/adarh-thbt-asnad-w-amlak-qrchk-qarchak-qrchk?to=place.w.33816930.337972695.17053661", "https://mapcarta.com/N9072749546", "https://www.pishkhan.com/Archive/1399/02/13990230/EghtesadeMeli6910310111610451504838115.pdf", "https://gharchak.ir"]
+      }
+    ]
+  },
+  "sourceAssessment": {
+    "localRegistryCustodian": "Qarchak registration-office references identify اداره ثبت اسناد و املاک قرچک as the local land-registration office under Tehran province; this is local custody/procedure evidence, not an open feature feed.",
+    "nationalServiceLead": "Iran's Organization for Registration of Deeds and Properties (ssaa.ir) and its Shamim cadastral positioning service (shamim.ssaa.ir) are the national service leads. No login or restricted route was attempted.",
+    "openGeometrySource": null,
+    "nativeIdentity": null,
+    "sourceFields": [],
+    "fieldMapping": {},
+    "compositeKeyProvenance": "No source feature was obtained; no composite key was constructed.",
+    "crs": null,
+    "sampleFile": null,
+    "sampleScope": "No polygon retained. This is not evidence of citywide cadastral absence or map coverage failure."
+  },
+  "verifiedSample": false,
+  "targetGeometryEvidence": "no_bounded_safe_geometry_response_obtained; no_retained_sample",
+  "coverageAssessment": {
+    "claimedScope": "Qarchak local registration custody and Iran national cadastral/land-registration services.",
+    "verifiedOpenScope": "No anonymous parcel viewer/API response, layer schema, CRS, native ID, or citywide geometry coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "requestsAndEndpointChecks": [
+    {"url": "https://ssaa.ir", "method": "GET; normal TLS verification", "status": "timeout", "summary": "Connection timed out after 8 seconds; no HTML or viewer configuration."},
+    {"url": "https://my.ssaa.ir/portal", "method": "GET; normal TLS verification", "status": "timeout", "summary": "Connection timed out after 8 seconds; no public parcel response; no login attempted."},
+    {"url": "https://shamim.ssaa.ir", "method": "GET; normal TLS verification", "status": "timeout", "summary": "Connection timed out after 8 seconds; no JavaScript/configuration or anonymous geometry endpoint."},
+    {"url": "https://gharchak.ir", "method": "GET; normal TLS verification", "status": "200", "summary": "Municipal homepage loaded. Its inspected map is a Google Maps embed for the municipality, not a cadastral layer; no parcel API/configuration was exposed."},
+    {"url": "https://ssaa.ir; https://my.ssaa.ir/portal; https://shamim.ssaa.ir", "method": "GET; non-default certificate option used in an exploratory retry, discarded", "status": "not evidence", "summary": "A narrow exploratory curl invocation used -k after normal-TLS timeouts; no response was accepted as evidence, no credentials or unsafe fields were requested, and no certificate exception is relied upon."}
+  ],
+  "safeFieldAllowlist": ["safe public parcel/source ID", "complete parcel geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "No public anonymous ID-plus-geometry response was available from the identified first-party cadastral services; national service hosts timed out and the municipal site exposed only a non-cadastral map embed.",
+  "remainingUncertainty": "Viewer/API route, schema, CRS, native parcel identity, city boundary coverage, and exact-point parcel relationship remain unverified. A timeout, login wall, unavailable UI, or zero exact-point hit is not evidence of citywide absence.",
+  "nextStep": "Retry first-party services when reachable; inspect current public JavaScript/configuration if exposed, then request only a small city-bounded geometry-plus-safe-ID response and independently verify location and CRS.",
+  "identityPolicy": "No GeoJSON sample retained. Any future sample must contain exactly one stable native source identity as properties.id and geometry only.",
+  "cohort": "overnight-next-1501-1600",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

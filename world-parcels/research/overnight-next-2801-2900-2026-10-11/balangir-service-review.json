@@ -1,0 +1,66 @@
+{
+  "cityRecord": "city-11113-balangir.json",
+  "cityCode": 11113,
+  "queueRank": 2884,
+  "attempt": 1,
+  "cohort": "world-parcels/research/overnight-next-2801-2900-2026-10-11",
+  "reviewStatus": "complete",
+  "registry": {
+    "registryFound": true,
+    "custodian": "Odisha state geospatial service / ORSAC-linked public portal",
+    "localCustodian": false,
+    "evidence": "Official Odisha 4K GEO viewer page and its current JavaScript configuration identify the public cadastral route https://odisha4kgeo.in/index.php/mapview/viewCadistrialResult. The official Bhulekh page separately links Map View to Bhu Naksha Odisha and exposes Balangir in its district selector.",
+    "urls": [
+      "https://odisha4kgeo.in/index.php/mapview/LulcView",
+      "https://bhulekh.ori.nic.in/frmmapview.aspx",
+      "https://bhunakshaodisha.nic.in/"
+    ]
+  },
+  "attempts": [
+    {
+      "route": "English web discovery",
+      "outcome": "official Bhulekh, district, and Odisha 4K GEO pages found",
+      "urls": ["https://bhulekh.ori.nic.in/frmmapview.aspx", "https://odisha4kgeo.in/"]
+    },
+    {
+      "route": "Odia web discovery",
+      "outcome": "official Balangir district and state land-service pages found; no distinct local city registry service established",
+      "urls": ["https://balangir.odisha.gov.in/en", "https://bhulekh.ori.nic.in/frmmapview.aspx"]
+    },
+    {
+      "route": "Official 4K GEO JavaScript/config inspection",
+      "outcome": "viewer uses OpenLayers, EPSG:4326 map display, and POST cadastral result endpoint; dropdown value for Bolangir is district 162 and Bolangir block is 0201",
+      "request": "GET https://odisha4kgeo.in/index.php/mapview/LulcView"
+    },
+    {
+      "route": "Bounded anonymous cadastral request",
+      "outcome": "success: GeoJSON FeatureCollection with 139734 features; EPSG:3857; native property revenue_plot; Polygon and GeometryCollection geometries",
+      "request": {
+        "method": "POST",
+        "url": "https://odisha4kgeo.in/index.php/mapview/viewCadistrialResult",
+        "body": {"district": "Bolangir", "block": "Bolangir", "value": "0201", "field": "block_code"}
+      },
+      "limits": "Response was bounded to one named block and sampled only; no citywide completeness claim."
+    },
+    {
+      "route": "Exact WUP point check",
+      "outcome": "not used to force a hit; no point intersection query performed",
+      "point": [20.7017701724146, 83.4822544975625]
+    }
+  ],
+  "safeFieldAllowlist": ["revenue_plot", "geometry"],
+  "nativeFieldMapping": {"revenue_plot": "stable native plot identifier"},
+  "compositeKeyProvenance": "No composite key used; the source response exposed revenue_plot as the retained native identity.",
+  "retainedSample": {
+    "file": "balangir-sample.geojson",
+    "features": 3,
+    "propertiesPolicy": "exactly one canonical id property per feature; raw source attributes omitted",
+    "crs": "EPSG:3857"
+  },
+  "runtimeReadiness": "held_serial_review_no_adapter_qualification",
+  "uncertainty": [
+    "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI would not establish citywide absence; none was treated as absence evidence.",
+    "The public service appears state-level rather than a city-local registry custodian.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception was used."
+  ]
+}

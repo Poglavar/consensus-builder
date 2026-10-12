@@ -1,0 +1,54 @@
+{
+  "cityCode": 5765,
+  "queueRank": 2606,
+  "name": "Texcoco de Mora",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "iso2": "MX",
+  "iso3": "MEX",
+  "point": [19.518853774723, -98.8868254256016],
+  "population2025": 225981,
+  "population2025k": 225.981,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Texcoco de Mora Mexico official cadastral parcel map catastro municipality",
+        "result": "First-party discovery found the official Municipality of Texcoco Catastro page and its local cadastral service contact, including certification of cadastral key/value, block-plan certification, and cadastral-identification services. The page did not expose a parcel viewer or anonymous parcel feature endpoint.",
+        "actualResultUrls": [
+          "https://www.texcocoedomex.gob.mx/Catastro.html",
+          "https://texcoco.gob.mx/REMTYS.html",
+          "https://texcocoedomex.gob.mx/Documentos/LIBRO%20BANDO%20MUNICIPAL%202026%20WEB.pdf"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Texcoco de Mora México mapa catastral predios catastro sitio oficial",
+        "result": "First-party Spanish discovery confirmed the Ayuntamiento's Dirección de Suelo Sostenible y Catastro, its catastro contact, and an official page titled 'Localiza Aqui tu Predio'. The embedded map is a public Google My Maps map labelled San Bernardino and is not a qualified citywide cadastral parcel service; no safe parcel ID plus polygon response was obtained.",
+        "actualResultUrls": [
+          "https://www.texcocoedomex.gob.mx/Catastro.html",
+          "https://texcoco.gob.mx/SanBerna.html",
+          "https://www.google.com/maps/d/viewer?mid=1IfMb4YWmzdsmS3VgfGLfGjYmW9aJfpY"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "Municipio de Texcoco, Dirección de Suelo Sostenible y Catastro; the official municipal pages list cadastral certification, cadastral-identification, and block-plan services and provide catastro@texcoco.gob.mx and telephone extension 2060.",
+    "officialPublicMap": "The municipality hosts a page titled 'Localiza Aqui tu Predio', but its embedded Google My Maps resource is labelled San Bernardino and is not evidence of a Texcoco cadastral parcel API or citywide parcel coverage.",
+    "urls": [
+      "https://www.texcocoedomex.gob.mx/Catastro.html",
+      "https://texcoco.gob.mx/REMTYS.html",
+      "https://texcoco.gob.mx/SanBerna.html",
+      "https://www.texcoco.gob.mx/Directores2.html"
+    ]
+  },
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "sampleFiles": []
+}

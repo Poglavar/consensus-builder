@@ -1,0 +1,44 @@
+{
+  "cityRecord": "city-11928-xinchang.json",
+  "cityCode": 11928,
+  "queueRank": 2436,
+  "name": "Xinchang",
+  "country": "China",
+  "countryCode": "CN",
+  "pointLatLon": [29.504836785613, 120.892381225387],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://ditu.zjzwfw.gov.cn/platform-main/index.html","httpStatus":200,"outcome":"Official Zhejiang Geographic Information Public Service Platform loaded and exposed portal links for online maps, resources, geocoding, and development documentation."},
+    {"method":"GET","url":"https://ditu.zjzwfw.gov.cn/platform-main/js/areaSystem.js","httpStatus":200,"outcome":"Current portal JavaScript exposed the division-search route and the area-site listing routes; no parcel-specific route was present in this portal shell."},
+    {"method":"GET","url":"https://ditu.zjzwfw.gov.cn/ime-server/rest/xzqh_zj/division/search?withgeometry=false&withparents=true&fullname=%E6%B5%99%E6%B1%9F%E7%9C%81","httpStatus":401,"outcome":"Public division lookup returned 未授权 (unauthorized). No login, credentials, private token, or workaround was attempted."},
+    {"method":"GET","url":"https://ditu.zjzwfw.gov.cn/ime-server/rest/xzqh_zj/division/search?v=2&withgeometry=false&withparents=true&fullname=%E6%96%B0%E6%98%8C%E5%8E%BF","httpStatus":401,"outcome":"Direct native-name division lookup also returned unauthorized; this is a route authorization failure, not evidence of missing Xinchang coverage."},
+    {"method":"GET","url":"https://ditu.zjzwfw.gov.cn/RSComplat/rest/site/getSiteByAreaCode?areaCode=330624","httpStatus":200,"outcome":"Area-site listing responded, but returned only provincial/general platform entries and no Xinchang cadastral parcel service or anonymous feature endpoint."},
+    {"method":"SEARCH","url":"https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2761/site/attach/0/755497382ead4134bc19d213e83a34c6.pdf","httpStatus":200,"outcome":"Official Xinchang Natural Resources and Planning Bureau organizational document was retrieved. It describes natural-resources/property-rights investigation, cadastral surveying, registration information management, and the Xinchang real-estate registration service center; it is custodian/procedure evidence, not parcel geometry."},
+    {"method":"GET","url":"https://ditu.zjzwfw.gov.cn/press-viewer/","httpStatus":"not separately fetched","outcome":"The official portal linked this public online-map entry point, but no parcel-specific public API or safe identity/geometry response was obtained in the bounded route inspection."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "https://ditu.zjzwfw.gov.cn/platform-main/index.html and current https://ditu.zjzwfw.gov.cn/platform-main/js/areaSystem.js",
+    "apiBase": "https://ditu.zjzwfw.gov.cn/ime-server/rest and https://ditu.zjzwfw.gov.cn/RSComplat/rest",
+    "geometryCrs": "Not exposed by the tested anonymous routes; WUP point was preserved in latitude/longitude and was not shifted or used to force a parcel hit.",
+    "nativeIdentity": "No safe native parcel identity was returned. No synthetic identity was created and no GeoJSON sample was retained.",
+    "sourceFieldMapping": {"division":"area lookup route, unauthorized","areaSites":"SITE_AREACODE/SITE_FULLNAME/SITE_DOMAIN from general site listing","parcelId":"not obtained","geometry":"not obtained"},
+    "boundedAnonymousResponse": {"requestScope":"portal shell, current JS/config route inspection, two division lookups, and one area-site listing","featureCount":0,"geometryRetained":false}
+  },
+  "localCustodianAssessment": "The official Xinchang Natural Resources and Planning Bureau document is local-custodian evidence for natural-resources and real-estate-registration work and identifies the Xinchang real-estate registration service center. The reachable map infrastructure is the Zhejiang provincial public platform; no separate Xinchang municipal parcel API was evidenced. General provincial platform prose was not treated as a parcel data release.",
+  "safeFieldAllowlist": ["stable native parcel identifier only if independently returned by a public route","bounded public response metadata","source service URL","source CRS/coordinate order when declared","retrieval date"],
+  "unsafeFieldsNotRequested": ["owner","address","contact","titleholder","tax/account","certificate/title","personal data"],
+  "qualification": {"serialReviewerRequired": true,"runtimeReadiness":"held","reason":"Local registration custodian and official provincial map infrastructure were evidenced, but anonymous division access returned 401 and no parcel schema, stable identity, CRS, or geometry was obtained. Adapter qualification remains a separate serial review."},
+  "scopeLimits": [
+    "The exact WUP point and latitude/longitude order were preserved.",
+    "No coordinate was shifted to force a parcel hit; no exact-point parcel query was available on the tested public routes.",
+    "A 401/unauthorized response is a service-access limitation, not evidence of citywide parcel absence.",
+    "No full parcel polygon is retained and no sample GeoJSON is created.",
+    "The official local document establishes custodian/procedure context but not public parcel coverage or geometry.",
+    "No owner, address, contact, titleholder, tax/account, certificate/title, or personal fields were requested or retained.",
+    "Raw HTML, JavaScript, PDF, and request captures remain under ignored tmp/valhalla-parcel-research/11928/."
+  ],
+  "uncertainty": "The official provincial portal is reachable and its current JavaScript/configuration was inspected, but the division service is unauthorized anonymously and the area-site listing exposes no Xinchang parcel service. Parcel coverage, update cadence, licensing, native schema/CRS, anonymous geometry access, and runtime adapter behavior remain unverified."
+}

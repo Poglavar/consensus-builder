@@ -1,0 +1,74 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 2893,
+  "queueRank": 2959,
+  "name": "Iringa",
+  "country": "United Republic of Tanzania",
+  "countryCode": "TZ",
+  "iso3": "TZA",
+  "locId": 834,
+  "capital": false,
+  "point": [-7.77095062710707, 35.6943653370387],
+  "population2025": 201525,
+  "population2025k": 201.525,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Iringa Tanzania official cadastral parcel map GIS land registry",
+        "result": "First-party results identified the Iringa Municipal Council master plan, the Iringa regional government site, and the Ministry of Lands e-Ardhi portal. Official material evidences land surveying, mapped plots and land offices, but no anonymous public parcel viewer or feature API was exposed.",
+        "actualResultUrls": ["https://iringamc.go.tz/storage/app/uploads/public/598/193/4ec/5981934ec647f223854425.pdf", "https://iringa.go.tz/index.php", "https://eardhi.lands.go.tz/", "https://www.lands.go.tz/"]
+      },
+      {
+        "language": "Swahili (local/native)",
+        "query": "Iringa Tanzania ramani viwanja kadastri ardhi rasmi",
+        "result": "First-party Swahili results identified the Iringa municipal and regional government sites and Ministry of Lands services. The official evidence describes viwanja, upimaji, ramani and e-Ardhi, but did not expose an anonymous parcel ID+geometry endpoint.",
+        "actualResultUrls": ["https://iringamc.go.tz/uchaguzi", "https://www.iringa.go.tz/storage/app/media/uploaded-files/Mafaniko%20ya%20serikali%20ya%20awamu%20ya%20tano%20mkoa%20wa%20Iringa.pdf", "https://www.lands.go.tz/uploads/press_releases/sw1758881398-26%209%202025%20TAARIFA%20KWA%20UMMA%20MFUMO%20WA%20e-Ardhi-2.pdf", "https://eardhi.lands.go.tz/register"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Iringa Municipal Council land/planning administration, with the Ministry of Lands, Housing and Human Settlements Development as the national land-registration and e-Ardhi custodian.",
+    "locality": "Iringa city is within Iringa Municipal Council; the municipal master plan and municipal government pages are first-party local evidence.",
+    "evidenceUrls": ["https://iringamc.go.tz/storage/app/uploads/public/598/193/4ec/5981934ec647f223854425.pdf", "https://www.iringamc.go.tz/uchaguzi", "https://iringa.go.tz/index.php", "https://www.lands.go.tz/"],
+    "scopeNote": "This establishes a local government land/planning custodian and national land-service custodian, not public parcel-data availability, citywide coverage, or legal title coverage."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "https://eardhi.lands.go.tz/",
+    "nativeIdField": null,
+    "nativeIdentityObserved": null,
+    "crs": null,
+    "boundedResponse": null,
+    "note": "The public e-Ardhi portal and official municipal/regional pages were inspected for the current viewer, JavaScript/configuration, map/API links, schema and CRS. e-Ardhi presents services and account registration/login; the public route requires identity/phone or account authentication. No anonymous parcel ID+geometry response was available, so no GeoJSON was retained."
+  },
+  "requestOutcomes": [
+    {"method": "GET/search", "url": "https://iringamc.go.tz/storage/app/uploads/public/598/193/4ec/5981934ec647f223854425.pdf", "outcome": "Official Iringa Municipal Council master-plan document found; it contains land/planning material and references land notices, but no public parcel API or downloadable parcel layer was exposed."},
+    {"method": "GET/search", "url": "https://www.iringamc.go.tz/uchaguzi", "outcome": "Official Iringa Municipal Council page found; map/site links were visible in indexed material, but no anonymous cadastral feature service or parcel schema was exposed."},
+    {"method": "GET/search", "url": "https://iringa.go.tz/index.php", "outcome": "Official Iringa regional government site retrieved in indexed search; it provides government information and map/navigation links, but no public parcel feature service was exposed."},
+    {"method": "GET", "url": "https://eardhi.lands.go.tz/", "outcome": "Official Ministry e-Ardhi public portal identified; it describes land planning, surveying/mapping, ownership, registration and valuation services, with account-based access."},
+    {"method": "GET", "url": "https://eardhi.lands.go.tz/register", "outcome": "Official registration route exposes NIN, phone and OTP/security-question fields; this is an authentication/identity wall. No credentials, OTP, private token or unsafe owner/title fields were requested."},
+    {"method": "GET", "url": "https://eardhi.lands.go.tz/login", "outcome": "Official login route lists phone, NIN and email login; no anonymous map/API or parcel geometry response was exposed."},
+    {"method": "GET/search", "url": "https://www.lands.go.tz/uploads/press_releases/sw1758881398-26%209%202025%20TAARIFA%20KWA%20UMMA%20MFUMO%20WA%20e-Ardhi-2.pdf", "outcome": "Official Ministry notice confirms e-Ardhi supports planning, surveying, land allocation, registration and valuation, and lists initial rollout areas; it does not publish a public anonymous parcel layer for Iringa."},
+    {"method": "GET/search", "url": "https://www.iringa.go.tz/storage/app/media/uploaded-files/Mafaniko%20ya%20serikali%20ya%20awamu%20ya%20tano%20mkoa%20wa%20Iringa.pdf", "outcome": "Official Iringa regional report records surveyed plots, farms and issued land documents and the establishment of the Iringa regional land office; it contains no public parcel geometry endpoint."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel geometry", "geometry CRS", "source layer/service metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The exact WUP point was preserved and never shifted; no anonymous exact-point parcel query was available to execute.",
+    "The e-Ardhi portal may contain additional land records behind authentication, but this research did not log in or test private/authenticated routes.",
+    "Registry presence is based on first-party local and national land-administration evidence; it does not establish public parcel-data access or complete citywide coverage.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate or other unsafe fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or admission."
+  ]
+}

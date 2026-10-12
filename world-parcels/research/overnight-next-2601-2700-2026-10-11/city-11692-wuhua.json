@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 11692,
+  "wupCityCode": 11692,
+  "queueRank": 2665,
+  "cityId": "wup2025:11692",
+  "name": "Wuhua",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [23.9251762074487, 115.767018134493],
+  "centerLatLon": [23.9251762074487, 115.767018134493],
+  "population2025": 221702,
+  "population2025k": 221.702,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "Wuhua County Natural Resources Bureau is the evidenced local custodian for natural resources and real-estate registration information; no public anonymous parcel feature service was qualified.",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Wuhua County Meizhou China official natural resources bureau cadastral map parcel GIS",
+        "result": "Search found the official Wuhua County Natural Resources Bureau page and the official Guangdong Tianditu public geospatial portal. The county bureau page establishes the local custodian, but no Wuhua-specific public cadastral parcel viewer or downloadable parcel feature service was found in the indexed official results.",
+        "actualResultUrls": [
+          "https://www.wuhua.gov.cn/xxgk/zfjg/xzrzyj/",
+          "https://guangdong.tianditu.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "五华县 自然资源局 地籍图 宗地 GIS 不动产登记 地图",
+        "result": "搜索确认五华县自然资源局为本地自然资源和不动产登记主管机构，公开指南提到地籍发证等统计信息并说明不动产登记资料依特别规定获取；未发现可匿名访问的五华县宗地要素服务或公开地籍图查询接口。",
+        "actualResultUrls": [
+          "https://www.wuhua.gov.cn/xxgk/zfjg/xzrzyj/",
+          "https://www.wuhua.gov.cn/mzwhzrj/gkmlpt/guide",
+          "https://guangdong.tianditu.gov.cn/djzt/index-pro.html"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.wuhua.gov.cn/xxgk/zfjg/xzrzyj/",
+      "operator": "Wuhua County Natural Resources Bureau / Wuhua County People's Government",
+      "scope": "Wuhua County",
+      "observation": "Official county department portal with natural-resources and real-estate-registration notices, including cadastral-related public work. It is a custodian/information page, not a parcel geometry API."
+    },
+    {
+      "url": "https://www.wuhua.gov.cn/mzwhzrj/gkmlpt/guide",
+      "operator": "Wuhua County Natural Resources Bureau",
+      "scope": "Wuhua County",
+      "observation": "Official information-disclosure guide identifies the bureau and says cadastral certificate statistics are among proactively disclosed information; it also says real-estate-registration materials are subject to special access rules. No parcel geometry endpoint is published."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/",
+      "operator": "Guangdong Provincial Natural Resources geospatial public-service platform",
+      "scope": "Guangdong Province",
+      "observation": "Current public portal exposes general map, imagery, thematic and catalog resources. It does not, from the inspected public configuration, identify a Wuhua cadastral parcel layer."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/djzt/index-pro.html",
+      "operator": "Guangdong Tianditu thematic map application",
+      "scope": "Guangdong Province",
+      "observation": "Current thematic application JavaScript was inspected. Its public WFS configuration returned an XZPOI geocoding service, not a cadastral parcel service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.wuhua.gov.cn/xxgk/zfjg/xzrzyj/",
+      "method": "GET",
+      "status": "timeout after 20 seconds in research environment",
+      "summary": "Direct official county department page request timed out; indexed official search result was used only for custodian discovery. No retry with credentials or alternate private access was attempted."
+    },
+    {
+      "url": "https://www.wuhua.gov.cn/mzwhzrj/gkmlpt/guide",
+      "method": "GET",
+      "status": "timeout in direct/open inspection",
+      "summary": "Official information-disclosure guide was identified by search and its indexed text reviewed; direct fetch was unavailable in this environment. It provides procedure/custodian evidence, not parcel geometry."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Current Guangdong Tianditu portal HTML fetched. Public links include the thematic application and resource/catalog pages; no Wuhua parcel service was listed in the inspected portal HTML."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/djzt/index-pro.html",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Current thematic application HTML and referenced JavaScript/configuration were fetched anonymously. WFS support is present, but no Wuhua cadastral layer was exposed in the page/configuration inspected."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/wfsConfig/queryEntityByType.do?wfsconfig.serviceType=1",
+      "method": "GET",
+      "status": "HTTP 200 JSON",
+      "summary": "Bounded anonymous configuration request returned one XZPOI geocoding service with safe point/name fields. It was not a parcel service; no parcel schema, native parcel ID, or parcel geometry was returned."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/djzt/wfsConfig/queryEntityByType.do?wfsconfig.serviceType=1",
+      "method": "GET",
+      "status": "HTTP 404",
+      "summary": "Application-relative endpoint guess failed; this route failure is not evidence of cadastral absence."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Wuhua County local natural-resources and real-estate-registration custodian plus Guangdong provincial public geospatial portal discovery.",
+    "verifiedOpenScope": "Official custodian/procedure pages and current provincial portal/thematic configuration only; no parcel feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "Local natural-resources and real-estate-registration custodian is evidenced by official Wuhua County material; public cadastral parcel data access is not evidenced."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "No parcel geometry obtained.",
+    "crs": null,
+    "identityReadiness": "No native parcel identity observed.",
+    "safeFieldAllowlist": ["stable native parcel identifier if later exposed", "parcel polygon geometry", "source layer/year", "source CRS if explicitly declared", "retrieval timestamp"],
+    "attributesRequested": "No parcel attributes were requested or retained; no owner, address, titleholder, contact, tax, account, personal, or other unsafe fields were accessed."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "No anonymous, public parcel ID-plus-geometry response or downloadable cadastral dataset was verified. Serial review must independently qualify any later official Wuhua/Guangdong source for coverage, stable identity, CRS and source semantics.",
+  "scopeLimits": [
+    "Exact WUP point [23.9251762074487,115.767018134493] was preserved in latitude/longitude order; it was not shifted and no exact-point hit or miss was treated as citywide evidence.",
+    "No sample GeoJSON retained because no safe native parcel ID plus full polygon was obtained.",
+    "A map extent miss, timeout, failed route, or absent portal listing is not evidence of citywide cadastral absence.",
+    "No login, credentials, private token use, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception was used.",
+    "Packet completion is research evidence only and is not source integration or admission."
+  ],
+  "identityPolicy": "No GeoJSON was retained. If a future source is qualified, retain exactly one stable native parcel identity as properties.id and keep source field mapping in metadata.",
+  "nextStep": "Serial reviewer should independently inspect any authenticated-free official Wuhua or Guangdong parcel service, verify stable native IDs, CRS/axis handling and coverage, and keep runtime held until qualification."
+}

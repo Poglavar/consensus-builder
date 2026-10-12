@@ -1,0 +1,45 @@
+{
+  "cityCode": 7312,
+  "queueRank": 1948,
+  "city": "Moulvibazar",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "iso3": "BGD",
+  "point": [24.4854384976104, 91.7705588902146],
+  "population2025": 297098,
+  "population2025k": 297.098,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Moulvibazar Bangladesh official cadastral parcel map land records GIS viewer",
+        "result": "Found the official Department of Land Records and Surveys online map search, the official Mauza and Plot Based National Digital Land Zoning viewer, the official DLRS map-purchase portal, and the Moulvibazar district government land-services portal. The current map viewer JavaScript exposes public hierarchy and sheet GeoJSON routes, but the Moulvibazar survey-list route returned an empty array and the configured GIS server returned 503 to public capabilities requests.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.land.gov.bd/",
+          "https://map.settlement.gov.bd/",
+          "https://moulvibazar.gov.bd/"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "মৌলভীবাজার বাংলাদেশ সরকারি ভূমি নকশা খতিয়ান মৌজা প্লট মানচিত্র ভূমি রেকর্ড",
+        "result": "Found the first-party Bangladesh map-search service, the Bengali Mauza/Plot land-zoning viewer, the Moulvibazar district portal, and the Moulvibazar Sadar/upazila land-office service pages. The official hierarchy identifies Sylhet division and Moulvibazar district, but no bounded anonymous parcel feature response with a stable native parcel identity was obtained.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.land.gov.bd/",
+          "https://www.moulvibazar.gov.bd/",
+          "https://acl.juri.moulvibazar.gov.bd/pages/office-process-maps"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Moulvibazar district government portal exposes land services, and an official Moulvibazar upazila land-office portal exposes land-record service procedures. The national DLRS public map-search service lists Moulvibazar in the Sylhet division/district hierarchy. This evidences local and national custody, not an open citywide parcel API.",
+  "serviceReview": "moulvibazar-service-review.json",
+  "runtimeReadiness": "held_no_verified_public_geometry"
+}

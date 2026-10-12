@@ -1,0 +1,12 @@
+{
+  "taskId": "city:11268",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-11268-enping.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/enping-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T19:36:52Z",
+  "reason": "Official local registry and cadastral-survey procedure are evidenced, but direct-host TLS failure and indexed pages yielded no anonymous native-ID/full-polygon response; adapter gates are unevidenced."
+}

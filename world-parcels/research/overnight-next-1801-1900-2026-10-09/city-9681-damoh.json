@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 9681,
+  "queueRank": 1873,
+  "cityId": "queue:1873",
+  "name": "Damoh",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [23.8313048693427, 79.4398232960335],
+  "centerLatLon": [23.8313048693427, 79.4398232960335],
+  "population2025": 307218,
+  "population2025k": 307.218,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Damoh Madhya Pradesh official cadastral parcel map land records GIS site:gov.in",
+        "result": "First-party discovery found the official District Damoh Government of Madhya Pradesh government-links page, which identifies MP Bhu-Abhilekh and MP Bhu-Naksha, the district Revenue Administration page, the district revenue/land-records directory, DILRMP Damoh map-digitization status, and the national NAKSHA viewer. No anonymous Damoh parcel feature response was returned by discovery.",
+        "actualResultUrls": [
+          "https://damoh.nic.in/en/govt-website/",
+          "https://damoh.nic.in/en/email-directory/",
+          "https://damoh.nic.in/en/revenue-administration/",
+          "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/430",
+          "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/3507",
+          "https://dilrmp.gov.in/physicalProgressReports/map/district-level/23",
+          "https://naksha.dolr.gov.in/NakshaPortal/"
+        ]
+      },
+      {
+        "language": "native/local (Hindi)",
+        "query": "दमोह मध्य प्रदेश आधिकारिक भू अभिलेख कैडस्ट्रल पार्सल मानचित्र GIS",
+        "result": "First-party Hindi discovery found the official Hindi District Damoh site and Hindi email directory, identifying the Superintendent of Land Records, Damoh tehsil/revenue contacts, and the same MP Bhu-Abhilekh/Bhu-Naksha links. It also found the official DILRMP Damoh status pages; no public Damoh parcel polygon response was found.",
+        "actualResultUrls": [
+          "https://damoh.nic.in/",
+          "https://damoh.nic.in/%E0%A4%88%E0%A4%AE%E0%A5%87%E0%A4%B2-%E0%A4%A1%E0%A4%BE%E0%A4%AF%E0%A4%B0%E0%A5%87%E0%A4%95%E0%A5%8D%E0%A4%9F%E0%A4%B0%E0%A5%80/",
+          "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/430",
+          "https://naksha.dolr.gov.in/NakshaPortal/"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Hindi first-party discovery followed by bounded anonymous TLS-verified GET requests. No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS disablement were used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://damoh.nic.in/en/govt-website/",
+      "observation": "Official District Damoh page links MP Bhu-Abhilekh and MP Bhu-Naksha as government land-record/map services."
+    },
+    {
+      "url": "https://damoh.nic.in/en/email-directory/",
+      "observation": "Official district directory identifies the Superintendent of Land Records (SLR), Land Records, Damoh, and Damoh tehsil revenue office contacts; this is local registry-custodian evidence, not parcel geometry."
+    },
+    {
+      "url": "https://damoh.nic.in/en/revenue-administration/",
+      "observation": "Official district administration page lists Damoh revenue division/tehsil and 1,229 revenue villages."
+    },
+    {
+      "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/430",
+      "observation": "Official DILRMP Damoh district status route reports cadastral-map, georeferencing, RoR-linkage and parcel-status columns; programme status is not an open feature service."
+    },
+    {
+      "url": "https://naksha.dolr.gov.in/NakshaPortal/",
+      "observation": "Official national NAKSHA viewer landing page loaded and describes GIS-integrated urban/peri-urban land records, but anonymous Damoh parcel layer/schema access was not exposed."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://damoh.nic.in/en/govt-website/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Loaded. Page links to http://www.landrecords.mp.gov.in/ and http://www.mpbhuabhilekh.nic.in/bhunakshaweb/; links alone did not expose a parcel API."
+    },
+    {
+      "url": "https://landrecords.mp.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Anonymous TLS-verified request timed out after 15 seconds. No viewer configuration, schema, CRS, native ID or geometry obtained; not evidence of cadastral absence."
+    },
+    {
+      "url": "http://www.mpbhuabhilekh.nic.in/bhunakshaweb/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Request failed at DNS resolution for www.mpbhuabhilekh.nic.in. No redirect, schema, CRS, native ID or geometry obtained; not evidence of cadastral absence."
+    },
+    {
+      "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/430",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Loaded official Damoh map-digitization/geo-referenced/ULPIN status. It exposes aggregate/status tables, not an anonymous parcel feature response."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/3507",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Loaded official Damoh tehsil village-level digitization status. It reports cadastral map progress for villages, not parcel geometry or a safe native parcel ID API."
+    },
+    {
+      "url": "https://dilrmp.gov.in/physicalProgressReports/map/district-level/23",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Loaded official Madhya Pradesh district-level map-progress report containing Damoh aggregate rows. No parcel feature service was exposed."
+    },
+    {
+      "url": "https://naksha.dolr.gov.in/NakshaPortal/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Viewer HTML and current main.js loaded anonymously. No authenticated state selection, MP service URL, public schema, CRS, native ID or geometry response was obtained without login or private tokens."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Damoh district local land-record custody, MP Bhu-Abhilekh/Bhu-Naksha links, DILRMP Damoh cadastral-status routes and public NAKSHA viewer discovery.",
+    "verifiedOpenScope": "Local registry custodian and cadastral-programme status were verified; no anonymous Damoh parcel geometry coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The MP Bhu-Abhilekh/Bhu-Naksha current route, API schema, CRS, authorization, native parcel identity, city/tehsil coverage and update currency remain unresolved. The exact WUP point [23.8313048693427, 79.4398232960335] was preserved in latitude/longitude order and never shifted. No exact-point hit/miss inference was made. Runtime readiness remains held pending independent serial qualification."
+}

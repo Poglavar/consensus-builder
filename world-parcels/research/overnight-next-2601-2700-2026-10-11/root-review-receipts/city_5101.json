@@ -1,0 +1,15 @@
+{
+  "taskId": "city:5101",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-5101-ile-oluji.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ile-oluji-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T16:24:44.973045Z",
+  "reason": "Official Ondo land/survey services support registry custody, but the property map returned HTTP 500 and discovered public API routes returned HTTP 404; no native parcel ID or full polygon response was obtained. This is unresolved public access, not citywide absence.",
+  "sourceConfirmationUrl": "https://www.odsglandministry.org/",
+  "admissionGates": "Not evidenced: fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification.",
+  "coverageInference": "No citywide absence inferred from timeout, HTTP error, inaccessible viewer, or absent endpoint in a bounded attempt."
+}

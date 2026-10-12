@@ -1,0 +1,104 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 7460,
+  "queueRank": 3129,
+  "name": "Qift",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "locId": 818,
+  "capital": false,
+  "point": [26.0077790093701, 32.7889048704923],
+  "population2025": 191964,
+  "population2025k": 191.964,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:gov.eg Qift cadastral map land registry Egypt official; Egyptian Survey Authority Qena Qift digital maps",
+        "result": "First-party discovery identified the Egyptian Survey Authority (ESA) service catalogue, its digital-map purchase/request page, the ESA directorate map locating Qena, and an official Egyptian government gazette record naming Qift local administration/state-property management. The ESA pages describe digital maps and survey certificates but do not expose an anonymous parcel feature service.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/testmap.aspx",
+          "https://mediadr.sis.gov.eg/bitstream/handle/123456789/32611/OG26_20230704_1123.pdf?isAllowed=y&sequence=1"
+        ]
+      },
+      {
+        "language": "Arabic (local)",
+        "query": "قفط قنا خرائط مساحية رقمية السجل العقاري الهيئة المصرية العامة للمساحة الموقع الرسمي",
+        "result": "Arabic first-party discovery confirmed ESA services for paper, digital and historical maps, coordinate certificates, boundary separation and land-allocation changes. The official ESA material identifies the Qena Survey Directorate and an official gazette scan identifies Qift city administration/state-property management, but no public parcel polygon or safe native parcel identifier was exposed.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/testmap.aspx",
+          "https://mediadr.sis.gov.eg/bitstream/handle/123456789/32611/OG26_20230704_1123.pdf?isAllowed=y&sequence=1"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Egyptian Survey Authority (national cadastral/survey map custodian), with Qena Survey Directorate evidence; Qift local administration/state-property management is separately evidenced in an official gazette record.",
+    "locality": "Qift (قفط), Qena Governorate, Egypt",
+    "evidenceUrls": [
+      "https://www.esa.gov.eg/testmap.aspx",
+      "https://www.esa.gov.eg/services.aspx",
+      "https://mediadr.sis.gov.eg/bitstream/handle/123456789/32611/OG26_20230704_1123.pdf?isAllowed=y&sequence=1"
+    ],
+    "scopeNote": "This establishes relevant government custodians and a local Qift administrative land/property function, not an open citywide cadastral endpoint or municipal-boundary parcel coverage."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Egyptian Survey Authority (ESA) / Qena Survey Directorate; Qift local administration evidence",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": {
+      "geometryReturned": false,
+      "responseType": "No public parcel feature response exposed by the inspected first-party pages",
+      "mapExtent": null
+    },
+    "fieldMapping": {
+      "nativeIdentity": null,
+      "safeGeometry": "parcel geometry only if returned by a public first-party map/API route",
+      "otherDocumentedFields": []
+    },
+    "note": "The exact WUP point was preserved and not queried as an absence test or shifted to force a hit. No parcel polygon, native parcel ID, CRS, or schema response was retained."
+  },
+  "officialSources": [
+    {"url": "https://www.esa.gov.eg/services.aspx", "observation": "Current ESA service catalogue lists paper and digital maps, coordinate certificates, topographic maps, land-allocation changes and boundary-separation services."},
+    {"url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "observation": "Current ESA digital-map page says customers request a location, scale and layers, choose formats such as GIS/CAD/PDF/JPG/orthophoto, and receive a quotation and delivery; listed scales include 1:50000, 1:2500 and 1:5000. This is a request/purchase workflow, not an anonymous parcel API."},
+    {"url": "https://www.esa.gov.eg/testmap.aspx", "observation": "Current ESA directorate map includes Qena Governorate and links to a Qena map image; it does not expose parcel vectors."},
+    {"url": "https://mediadr.sis.gov.eg/bitstream/handle/123456789/32611/OG26_20230704_1123.pdf?isAllowed=y&sequence=1", "observation": "Official State Information Service gazette scan names Qena Governorate, Qift City/Centre Presidency and Qift state-property administration in a land sketch notice; the scan is documentary evidence, not machine-readable parcel geometry."}
+  ],
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://www.esa.gov.eg/services.aspx", "outcome": "200; current first-party ESA service catalogue retrieved."},
+    {"method": "GET", "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "outcome": "200; current ASP.NET page retrieved and inspected. It exposes explanatory text and scale selectors, but no public parcel layer/API URL or downloadable parcel feature response."},
+    {"method": "GET", "url": "https://www.esa.gov.eg/testmap.aspx", "outcome": "200; current ESA directorate image-map HTML retrieved. Qena link observed; no parcel service route exposed."},
+    {"method": "GET", "url": "https://www.esa.gov.eg/districts/%D9%82%D9%86%D8%A7.jpeg", "outcome": "200; Qena directorate/map image downloaded to scratch for inspection only; it is a map image, not parcel vector data."},
+    {"method": "GET", "url": "https://mediadr.sis.gov.eg/bitstream/handle/123456789/32611/OG26_20230704_1123.pdf?isAllowed=y&sequence=1", "outcome": "200 via first-party SIS repository; official gazette PDF/scan inspected for Qift local administrative evidence. No machine-readable parcel geometry or safe parcel identity extracted."},
+    {"method": "POST", "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "outcome": "Not executed; page requires an ASP.NET form workflow for a commercial/requested map order and no anonymous parcel query contract was documented."},
+    {"method": "GET", "url": "https://www.esa.gov.eg/egy_his_maps.aspx", "outcome": "200; historical-map viewer page retrieved. Results observed were historical Cairo cadastral-map entries, not Qift parcel data; no sample retained."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity if independently returned", "full parcel geometry", "geometry CRS", "source service and administrative codes needed to reproduce the safe request"],
+  "coverageAssessment": {
+    "claimedScope": "ESA national survey and mapping services, including digital map production/sale and Qena directorate operations; Qift local administration/state-property function evidenced separately.",
+    "verifiedOpenScope": "Custodian/service discovery only; no open city parcel geometry, schema, CRS or anonymous feature endpoint verified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "ESA map products may contain cadastral or topographic layers available through a paid/request workflow, but the public page does not provide an anonymous machine-readable parcel endpoint.",
+    "Qift local-administration evidence concerns a state-property land sketch and does not prove complete cadastral coverage or correspondence to the WUP city boundary.",
+    "No exact-point hit, map extent test, login attempt, CAPTCHA bypass, credential use, or coordinate shift was used; absence of returned geometry is therefore not evidence of citywide absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained. This packet is research evidence only and requires independent serial adapter review before runtime use."
+  ]
+}

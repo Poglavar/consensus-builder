@@ -1,0 +1,45 @@
+{
+  "taskId": "city:8265",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-8265-afikpo.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/afikpo-service-review.json",
+    "tmp/valhalla-parcel-research/8265/eblands.html",
+    "tmp/valhalla-parcel-research/8265/eblands.headers",
+    "tmp/valhalla-parcel-research/8265/property.php.html",
+    "tmp/valhalla-parcel-research/8265/beacon.php.html",
+    "tmp/valhalla-parcel-research/8265/data_list.php.html"
+  ],
+  "checkedAt": "2026-10-11T23:53:56Z",
+  "city": "Afikpo",
+  "identityCheck": {
+    "queueRank": 2971,
+    "country": "Nigeria",
+    "pointLatLon": [
+      5.88241950419596,
+      7.94495489106671
+    ],
+    "populationPersons": 201084,
+    "queueRosterArchivePacketMatch": true
+  },
+  "searchLanguages": [
+    "English",
+    "Igbo (local)"
+  ],
+  "registryFound": true,
+  "durableSamplePolygonCount": 0,
+  "safeNativeParcelIdAndFullPolygonVerified": false,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Saved Ebonyi State Ministry of Lands and Survey portal supports state land-record custody. Property and beacon searches require payment/account or login; the public C-of-O page has no Afikpo polygon response. No safe anonymous native-ID polygon or adapter qualification is evidenced.",
+  "absenceInference": false
+}

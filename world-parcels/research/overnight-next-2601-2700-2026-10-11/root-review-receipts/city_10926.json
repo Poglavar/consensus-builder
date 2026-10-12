@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10926",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-10926-sihong-county.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/sihong-county-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T174007-bccd74bd/stdout.jsonl",
+    "tmp/valhalla-parcel-research/sihong-10926/sqsh-home.html"
+  ],
+  "reason": "WUP queue and packet agree on code 10926, rank 2681, China, exact point and 220620 persons. English and Chinese searches are visible as executed web_search results in the worker trace. The cached official Sihong service portal is administrative context; the official land-auction notice is not a cadastral parcel service. Local cadastral custody remains unresolved (null), with no public polygon API or sample. DNS failures are access failures, not citywide absence. Source, adapter, paging, 13 cells, metric GEOS checks, binding, and headed Details verification are absent.",
+  "retainedFullPolygons": 0,
+  "runtimeAdmitted": false,
+  "checkedAt": "2026-10-11T17:44:11Z"
+}

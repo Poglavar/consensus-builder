@@ -1,0 +1,22 @@
+{
+  "taskId": "city:11742",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-11742-lili.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/lili-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T11:03:13Z",
+  "reviewNote": "Lili: immutable WUP identity matches roster and queue; English and local-language searches checked. Official custodian evidence: https://czju.suzhou.gov.cn/zfcg/html/project/00c71885736144278be494acc380caea.shtml. No anonymous native-ID polygon response or retained sample; public availability remains unresolved.",
+  "qualificationGaps": [
+    "fresh native-ID reads",
+    "forced pagination",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed Details-panel verification"
+  ],
+  "runtimeAdmission": false
+}

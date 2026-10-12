@@ -1,0 +1,54 @@
+{
+  "cityCode": 5767,
+  "queueRank": 1481,
+  "country": "Brazil",
+  "countryCode": "BR",
+  "point": [-29.1674971448072, -51.184877368516],
+  "population2025": 383774,
+  "population2025k": 383.774,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Caxias do Sul Brazil official cadastral parcel map land registry GIS",
+        "result": "Found the official Prefeitura DIGEO portal and the public ArcGIS Cadastro_Territorial service. The service documents a Lotes polygon layer (ID 3), safe public GeoJSON query support, native spatial reference EPSG:31982, and municipal extent. Direct anonymous API retrieval from this environment timed out before a parcel response was obtained.",
+        "actualResultUrls": [
+          "https://caxias.rs.gov.br/servicos/planejamento/diretoria-de-informacoes-geoespaciais",
+          "https://gis.caxias.rs.gov.br/server/rest/services/Cadastro_Territorial/MapServer",
+          "https://gis.caxias.rs.gov.br/server/rest/services/Cadastro_Territorial/MapServer/3"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Caxias do Sul mapa cadastral oficial cadastro imobiliário geoprocessamento lotes prefeitura",
+        "result": "Official municipal sources identify GeoCaxias/DIGEO, the Gerência de Cadastro Técnico Multifinalitário, and a public Cadastro_Territorial ArcGIS service with Lotes polygons. The cadastral procedure confirms that the municipality maintains the relation between tax data and the cadastral map. No parcel geometry or ID was retained because the bounded API request timed out.",
+        "actualResultUrls": [
+          "https://caxias.rs.gov.br/servicos/planejamento/gerencia-de-cadastro-multifinalitario",
+          "https://caxias.rs.gov.br/noticias/2018/03/sistema-geocaxias-fornece-informacoes-urbanisticas-para-a-comunidade",
+          "https://gis.caxias.rs.gov.br/server/rest/services/Cadastro_Territorial/MapServer/layers"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Prefeitura Municipal de Caxias do Sul, Secretaria de Planejamento Municipal / Diretoria de Informações Geoespaciais (DIGEO), including the Gerência de Cadastro Técnico Multifinalitário.",
+    "sourceScope": "Official municipal GeoCaxias/Cadastro_Territorial ArcGIS map service; the public service metadata exposes Lotes polygons and related territorial layers.",
+    "geometryAccess": "Anonymous public service metadata was available. A bounded exact-point query using the unchanged WUP point was attempted but timed out; no parcel ID, attribute response, or geometry was retained.",
+    "sourceIntegration": "Not implied; runtime readiness remains held pending independent adapter qualification."
+  },
+  "geometry": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Attempted without shifting the exact WUP point [-29.1674971448072, -51.184877368516]. The request was prepared as an ArcGIS point query in EPSG:4326 with output requested in EPSG:4326; the service did not respond within the bounded timeout.",
+    "crs": "EPSG:31982 (SIRGAS 2000 / UTM zone 22S) as published by the Cadastro_Territorial service metadata."
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "A real official municipal cadastral map service is evidenced, but no bounded anonymous parcel ID-plus-geometry response was obtained and no adapter has been independently qualified. This packet records source discovery, not source admission.",
+    "adapterAdmission": false
+  }
+}

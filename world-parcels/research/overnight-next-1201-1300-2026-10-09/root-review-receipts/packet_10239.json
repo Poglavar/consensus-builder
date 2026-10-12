@@ -1,0 +1,17 @@
+{
+  "taskId": "packet:10239",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-10239-basti.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/basti-service-review.json",
+    "tmp/valhalla-parcel-research/basti-10239/mapinfo.json",
+    "tmp/valhalla-parcel-research/basti-10239/plot1.json",
+    "tmp/valhalla-parcel-research/basti-10239/main.js"
+  ],
+  "checkedAt": "2026-10-09T13:17:04Z",
+  "review": "Basti/India, WUP rank 1236, point [26.8009241721327,82.7436691752189], 450449 persons match the immutable roster and queue. English and Hindi executed searches are recorded. The first-party mapinfo cache identifies Basti village 181394 and EPSG:32644; the plot1 cache contains an Authorization-header error, so the packet claim of safe plot metadata is not independently confirmed by that cache. Registry custody is supported, but anonymous full geometry and citywide coverage remain unresolved. No full sample polygon is retained; native-ID geometry reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent."
+}

@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 4280,
+  "queueRank": 1914,
+  "name": "Lublin",
+  "country": "Poland",
+  "countryCode": "PL",
+  "iso3": "POL",
+  "point": [51.2411675205158, 22.5517979898529],
+  "population2025": 300013,
+  "population2025k": 300.013,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lublin Poland official cadastral map parcels geoportal API",
+        "result": "Found the official City of Lublin Geoportal, the national GUGiK EGiB service documentation, and the official ULDK API documentation. The ULDK point request returned one anonymous parcel ID and polygon geometry.",
+        "actualResultUrls": ["https://geoportal.lublin.eu/link/?mapa=1", "https://www.geoportal.gov.pl/en/data/land-and-building-register-egib/", "https://uldk.gugik.gov.pl/opis.html"]
+      },
+      {
+        "language": "Polish",
+        "query": "Lublin oficjalna mapa ewidencja gruntów działki geoportal API",
+        "result": "Found the official municipal Geoportal layer list showing Ewidencja gruntów i budynków and Działki, plus the official municipal SIP information page and GUGiK ULDK documentation. The municipal WFS advertised ms:dzialki but its database failed during the feature request; national ULDK returned a parcel.",
+        "actualResultUrls": ["https://geoportal.lublin.eu/link/?mapa=1", "https://lublin.eu/lublin/sipl/uslugi-przestrzenne/repozytorium-wiedzy/", "https://uldk.gugik.gov.pl/opis.html"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://geoportal.lublin.eu/link/?mapa=1",
+      "operator": "City of Lublin Geoportal / SIPL",
+      "evidence": "Official municipal map lists Ewidencja gruntów i budynków and the Dzialki parcel layer."
+    },
+    {
+      "url": "https://gis.lublin.eu/opendata/wfs?service=WFS&request=GetCapabilities",
+      "operator": "City of Lublin, Referat ds. Systemów Geoprzestrzennych",
+      "evidence": "GetCapabilities identifies the municipal EGiB WFS, layer ms:dzialki, default CRS EPSG:2179, alternate EPSG:4326, and city-area WGS84 extent."
+    },
+    {
+      "url": "https://uldk.gugik.gov.pl/",
+      "operator": "GUGiK ULDK",
+      "evidence": "Anonymous GetParcelByXY request returned native identity 066301_1.0029.AR_3.12/10 and full polygon geometry in EPSG:4326; datasource reported powiat Lublin (wfs)."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://gis.lublin.eu/opendata/wfs?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "status": "success",
+      "summary": "Capabilities retrieved over verified TLS; advertised ms:dzialki and ms:budynki, with parcel CRS EPSG:2179/2180/4326/3857 and city bounding box."
+    },
+    {
+      "url": "https://gis.lublin.eu/opendata/wfs?service=WFS&request=DescribeFeatureType&version=2.0.0&typeNames=ms:dzialki",
+      "method": "GET",
+      "status": "error",
+      "summary": "Server returned an error schema stating Failed opening layer dzialki; no municipal field schema was obtained."
+    },
+    {
+      "url": "https://gis.lublin.eu/opendata/wfs",
+      "method": "GET",
+      "status": "error",
+      "summary": "WFS 1.1.0 GetFeature ms:dzialki with bounded EPSG:4326 bbox failed with a PostGIS database connection error. This is a service failure, not evidence of parcel absence."
+    },
+    {
+      "url": "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza",
+      "method": "GET",
+      "status": "success_empty",
+      "summary": "Bounded WFS 2.0.0 request for ms:dzialki around the WUP point returned numberReturned=0; no citywide absence inferred."
+    },
+    {
+      "url": "https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=747825.3480776814,380933.8233450847&result=id,geom_wkt,teryt,parcel,region,commune,datasource&srid=4326",
+      "method": "GET",
+      "status": "success",
+      "summary": "Returned status 0 and one native parcel ID plus full polygon WKT. Input was WUP point transformed from EPSG:4326 to EPSG:2180 using pyproj; no coordinate shift or snap was used. Unchanged response retained in ignored tmp/valhalla-parcel-research/lublin/uldk-point.txt."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": "id / TERYT parcel identifier",
+    "fallbackOidField": null,
+    "compositeKey": "066301_1.0029.AR_3.12/10 (returned as one canonical native identifier; components are municipal unit, cadastral district, archive/area marker, and parcel number)",
+    "fieldMapping": {
+      "id": "ULDK native parcel identity, also returned as teryt",
+      "geometry": "ULDK geom_wkt polygon",
+      "parcel": "Source parcel number; not retained in GeoJSON",
+      "region": "Source cadastral district/name; not retained in GeoJSON",
+      "commune": "Source municipality/county label; not retained in GeoJSON",
+      "datasource": "Source provenance label; retained only in this metadata"
+    },
+    "crs": "EPSG:4326 for the returned WKT; source lookup point supplied in EPSG:2180",
+    "geometryType": "POLYGON"
+  },
+  "coverageAssessment": {
+    "claimedScope": "City of Lublin municipal EGiB parcel layer and GUGiK national ULDK aggregation.",
+    "verifiedOpenScope": "One parcel was returned by ULDK at the WUP point; municipal service advertised city extent but its feature backend failed during this attempt.",
+    "countrywideVerified": false,
+    "targetPointHit": true,
+    "targetPointHitInterpretation": "The exact WUP point was used after CRS transformation and returned a parcel; this validates local point coverage only, not complete citywide coverage."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "ownership or rights details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_cadastral_service_verified_with_point_geometry",
+  "remainingUncertainty": "Municipal WFS schema and live feature access failed, and only one point sample was tested. The ULDK response identifies a real native parcel and geometry but does not establish complete citywide freshness or adapter compatibility.",
+  "nextStep": "Serial reviewer should independently verify the municipal WFS recovery, schema/native identity stability, and broader Lublin coverage before adapter admission."
+}

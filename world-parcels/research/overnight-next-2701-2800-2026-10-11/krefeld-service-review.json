@@ -1,0 +1,19 @@
+{
+  "cityRecord": "city-389-krefeld.json",
+  "cityCode": 389,
+  "queueRank": 2772,
+  "city": "Krefeld",
+  "country": "Germany",
+  "countryCode": "DE",
+  "reviewStatus": "held",
+  "reviewOutcome": "Official Stadt Krefeld ALKIS WFS/WMS services were verified anonymously, including a bounded full parcel GML response and an exact-point WMS identity response. Runtime qualification remains held pending serial review and safe GML geometry handling.",
+  "queryAndRequestOutcomes": "Separate English and German discovery queries were executed and recorded in the city record. WMS capabilities, WFS capabilities, a bounded GML parcel request, exact-point WMS GetFeatureInfo, a failed direct GeoJSON request, and an unavailable official ZIP link were attempted and recorded with statuses and outcomes.",
+  "cityOrLocalCustodian": "Stadt Krefeld, Fachbereich Vermessung, Kataster und Liegenschaften is evidenced as local publisher/custodian in official city/catalog records. KRZN is the public service host. This is local cadastral-service evidence, not merely national agency prose.",
+  "safeFieldAllowlist": ["stable native parcel/object ID", "geometry", "geometry CRS", "source layer/type name", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "registration details", "personal fields"],
+  "schemaAndCrs": "WFS 2.0.0 feature type gis:skre_alkis_adv_flurstueck; native/default CRS EPSG:25832; EPSG:4326 is advertised as an alternate. Native observed fields include OID, IDFLURST, FLSTKENNZ, and FLAECHE. WMS capabilities exposed Liegenschaftskarte and AngabenZumFlurstueck layers.",
+  "sampleGeojson": null,
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "The WFS returned one full polygon in GML 3.2.1, but the direct application/geo+json request failed with a service geometry conversion exception. The ZIP link returned 503. These are route/output limitations, not evidence of citywide absence. Exact coordinates were preserved and no point-shifting inference was made.",
+  "integrationDisposition": "Research packet only; not source integration or admission. Only city-389-krefeld.json and krefeld-service-review.json were written in the cohort directory; no registry/catalog/runtime files were changed."
+}

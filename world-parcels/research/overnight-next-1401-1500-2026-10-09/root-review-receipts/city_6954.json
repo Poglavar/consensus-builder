@@ -1,0 +1,12 @@
+{
+  "taskId": "city:6954",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-6954-al-asafra.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/al-asafra-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T18:10:31Z",
+  "reason": "Official ESA cadastral/map custody and Alexandria context were checked, but no anonymous Al-Asafra native parcel ID plus full geometry response or qualified adapter exists. CAPMAS timeout is unresolved, not citywide absence. Fresh ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification are absent."
+}

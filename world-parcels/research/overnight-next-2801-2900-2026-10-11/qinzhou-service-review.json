@@ -1,0 +1,42 @@
+{
+  "cityRecord": "city-10396-qinzhou.json",
+  "cityCode": 10396,
+  "queueRank": 2830,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": null,
+  "registryCustodian": "Qinzhou Natural Resources authority and the Guangxi provincial real-estate-registration service context are evidenced by official Guangxi/Qinzhou reporting; no public anonymous cadastral endpoint was evidenced.",
+  "publicMapLead": "Guangxi real-estate-registration ‘map inquiry’ service, https://bdc.dnr.gxzf.gov.cn/index, using Tianditu Guangxi; official guidance says authentication is required.",
+  "queryOutcomes": "Separate English and Chinese discovery queries were performed. Official sources established the provincial map-inquiry service and Qinzhou land-space platform, but no anonymous Qinzhou parcel-vector service was exposed.",
+  "requestOutcomes": "The two official Guangxi source pages were available as search results with HTTP 200. Anonymous GET attempts to the viewer, Guangxi Natural Resources portal, Qinzhou government homepage, and likely Qinzhou natural-resources host timed out or produced no response within the request window. No credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used.",
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [21.9581462914771, 108.627671762759] was preserved; it was not moved to force a parcel hit.",
+    "No exact-point hit or miss was inferred.",
+    "Official service descriptions and platform governance do not establish open Qinzhou cadastral geometry coverage.",
+    "No parcel polygon or source-specific raw attribute set is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "No anonymous public parcel ID-plus-geometry response, schema, CRS, native identity semantics, or citywide open coverage was qualified."
+  },
+  "uncertainty": "The public record supports a real Qinzhou/Guangxi cadastral-information service context, but the current anonymous viewer was unreachable and no safe parcel-vector route or sample was identified."
+}

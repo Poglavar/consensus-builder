@@ -1,0 +1,73 @@
+{
+  "cityCode": 4564,
+  "queueRank": 2963,
+  "name": "Fukui",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso2": "JP",
+  "iso3": "JPN",
+  "locId": 392,
+  "capital": false,
+  "point": [36.071549070244, 136.221575259139],
+  "population2025": 201467,
+  "population2025k": 201.467,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Fukui City official cadastral map parcel map GIS land parcel map",
+        "result": "The official Fukui City result identifies ふくいマップ (public GIS) for municipal road information and land-readjustment conversion maps. No official open parcel-vector result was identified in this query.",
+        "actualResultUrls": [
+          "https://www.city.fukui.lg.jp/kurasi/koutu/douro/p071062.html",
+          "https://webgis.alandis.jp/fukui18/portal/main/index.html"
+        ]
+      },
+      {
+        "language": "Japanese",
+        "query": "福井市 公式 地番図 公開 GIS 筆界 地籍図",
+        "result": "The official Fukui City result confirms the public ふくいマップ GIS; its available categories include roads, urban-planning information and 換地図 (land-readjustment/conversion maps), not a citywide public cadastral parcel-vector layer. Fukui Prefecture's official cadastral-survey page provides general survey context and lists Fukui City among municipalities with population-concentration-area surveys.",
+        "actualResultUrls": [
+          "https://www.city.fukui.lg.jp/kurasi/koutu/douro/p071062.html",
+          "https://webgis.alandis.jp/fukui18/portal/main/kanchizu.html",
+          "https://www.pref.fukui.lg.jp/doc/021605/tisekityousa/tiseki.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "Fukui City officially links its ふくいマップ public GIS and identifies the municipal construction/management department as the contact. The linked viewer is a local public map service, but the evidenced public categories are roads and land-readjustment/conversion maps rather than an open citywide parcel-vector registry.",
+  "researchAttempt": 1,
+  "sourceUrls": [
+    "https://www.city.fukui.lg.jp/kurasi/koutu/douro/p071062.html",
+    "https://webgis.alandis.jp/fukui18/portal/main/index.html",
+    "https://webgis.alandis.jp/fukui18/portal/main/kanchizu.html",
+    "https://webgis.alandis.jp/fukui18/webgis/index.php/autologin_jswebgis?u=guest03&ap=jsWebGIS&m=2",
+    "https://www.pref.fukui.lg.jp/doc/021605/tisekityousa/tiseki.html"
+  ],
+  "evidence": {
+    "officialPage": "HTTP 200; Fukui City states the public GIS provides municipal-road width/snow-removal routes and land-readjustment conversion maps, and links the viewer.",
+    "viewerPortal": "HTTP 200; current portal HTML exposes roads, certified routes, snow-removal routes, 換地図, and urban-planning information.",
+    "viewerTerms": "HTTP 200; official usage page says conversion-map contents such as town name, lot number, land position and shape are from the land-readjustment disposition time, are reference material, may not match current conditions, and are not guaranteed complete or accurate.",
+    "currentJavascript": "HTTP 200; the viewer HTML loads OpenLayers, proj4js, Turf, and current JS modules including generic OneStop search, layer display and layer-style responders. No parcel schema or stable native parcel identity was established from the inspected code.",
+    "boundedAnonymousRequests": [
+      {
+        "route": "/core/search/OneStop_search_init_responder",
+        "method": "GET",
+        "outcome": "HTTP 404 text/html when requested directly without the viewer's runtime request payload/session context; no data returned."
+      },
+      {
+        "route": "/core/api/Layer_display_responder",
+        "method": "GET",
+        "outcome": "HTTP 404 text/html when requested directly without the viewer's runtime request payload/session context; no data returned."
+      },
+      {
+        "route": "/core/search/Select_layer_style_responder",
+        "method": "GET",
+        "outcome": "HTTP 404 text/html when requested directly without the viewer's runtime request payload/session context; no data returned."
+      }
+    ],
+    "exactPointTest": "The exact WUP point [36.071549070244, 136.221575259139] was preserved and was not shifted. No usable parcel query route was reached, so no exact-point hit/miss inference was made."
+  }
+}

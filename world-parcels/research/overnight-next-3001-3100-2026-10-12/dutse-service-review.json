@@ -1,0 +1,29 @@
+{
+  "cityRecord": "city-8627-dutse.json",
+  "cityCode": 8627,
+  "queueRank": 3032,
+  "name": "Dutse",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "pointLatLon": [11.7082408201164, 9.34708469333023],
+  "population2025": 197314,
+  "population2025k": 197.314,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "reviewDecision": "held_no_verified_public_geometry",
+  "summary": "First-party English and Hausa discovery identified the Jigawa State Ministry of Lands, Housing, Urban Development and Regional Planning in Dutse and its public land-registry search page. The live search route returned JSON, but no safe anonymous parcel ID-plus-full-polygon response, schema, or CRS was qualified.",
+  "queryAndRequestOutcome": "All executed discovery queries and HTTP routes are recorded in city-8627-dutse.json. No credentials, private tokens, CAPTCHA/Cloudflare bypass, TLS verification disablement, or unsafe parcel-record fields were intentionally requested or retained. The no-criteria route response was not used as evidence because its record-search schema includes unsafe fields.",
+  "custodians": [
+    {"name":"Jigawa State Ministry of Lands, Housing, Urban Development and Regional Planning","scope":"Local/state land administration, registry, deeds, survey, and land-parcel plan custodian serving Dutse","evidence":"https://land.jg.gov.ng/"},
+    {"name":"Jigawa Land public search service","scope":"Public record-search interface for certificate/property records; not qualified as open parcel-vector coverage","evidence":"https://land.jg.gov.ng/search"}
+  ],
+  "schemaAndCrs": {"parcelSchema":null,"nativeIdField":null,"geometryCrs":null,"fieldMapping":{},"compositeKeyProvenance":null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if independently source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "geometrySamples": [],
+  "scopeLimits": ["The exact WUP point was preserved in latitude/longitude order and not shifted.","No exact-point hit or miss was tested or inferred.","A public registry-record search response is not citywide parcel-vector coverage.","HTTP 404 map/API probes and absence of viewer configuration are not evidence of parcel absence.","No GeoJSON sample is retained because no unchanged safe parcel polygon with qualified native identity was retrieved.","Packet completion is not source integration/admission; serial reviewer qualification is still required."],
+  "qualification": {"verifiedSample":false,"parcelGeometryVerified":false,"runtimeReadiness":"held","reason":"No qualified anonymous parcel geometry response was available for independent serial review."},
+  "uncertainty": "Current public anonymous parcel-vector reachability, citywide coverage, schema, CRS, native identity semantics, and update cadence remain unresolved."
+}

@@ -1,0 +1,133 @@
+{
+  "cityCode": 5823,
+  "queueRank": 2467,
+  "name": "Palanpur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [24.1733539009712, 72.4305474520064],
+  "population2025": 237198,
+  "population2025k": 237.198,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Palanpur Gujarat official cadastral parcel map land records GIS AnyROR Bhunaksha Gujarat government",
+        "result": "First-party discovery identified the official Banaskantha district Land Department page, the Gujarat Revenue Department/AnyRoR land-record route, and the Government of India DILRMP state-status page. The bounded anonymous AnyRoR request timed out; no public parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://banaskantha.nic.in/land-department/",
+          "https://anyror.gujarat.gov.in/",
+          "https://dilrmp.gov.in/dilrmpold/State-RoR-Web"
+        ]
+      },
+      {
+        "language": "Gujarati (native/local)",
+        "query": "પાલનપુર ગુજરાત સત્તાવાર જમીન નકશો કેડાસ્ટ્રલ પાર્સલ રેકોર્ડ ભૂનકશા",
+        "result": "Gujarati-language discovery located the official Banaskantha district Land Department page and its Gujarati counterpart. The official district material establishes land-administration scope, but no anonymous Palanpur parcel-vector endpoint or safe ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://banaskantha.nic.in/gu/%e0%aa%9c%e0%aa%ae%e0%ab%80%e0%aa%a8-%e0%aa%b6%e0%aa%be%e0%aa%96%e0%aa%be/",
+          "https://banaskantha.nic.in/land-department/",
+          "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Banaskantha District Collectorate Land Department, Government of Gujarat (https://banaskantha.nic.in/land-department/); the page states that the Land Department handles district land matters.",
+    "stateService": "Gujarat Revenue Department land-record infrastructure is linked through AnyRoR; the Government of India DILRMP page lists Gujarat's E-Dhara and Bhunaksha entries.",
+    "registryEvidence": "Local district land-administration evidence is present, so registryFound is true. This does not establish public parcel-vector access or citywide geometry coverage."
+  },
+  "requestOutcomes": "TLS-verified GET retrieved the official Banaskantha district Land Department page (HTTP 200), its page HTML/metadata, the official BhuNaksha implementation-status page (HTTP 200), and the official Government of India DILRMP result in search evidence. A TLS-verified bounded GET of https://anyror.gujarat.gov.in/ timed out after 20 seconds. https://palanpur.nic.in/ failed DNS resolution in the bounded request. No login, credentials, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception was used.",
+  "attemptedRoutes": [
+    {
+      "route": "Official Banaskantha district Land Department page",
+      "url": "https://banaskantha.nic.in/land-department/",
+      "httpStatus": 200,
+      "outcome": "Official district page loaded. It identifies the Land Department as the district branch handling land matters and lists land-administration functions. No parcel geometry or public vector schema was embedded."
+    },
+    {
+      "route": "Official Banaskantha district Land Department Gujarati page",
+      "url": "https://banaskantha.nic.in/gu/%e0%aa%9c%e0%aa%ae%e0%ab%80%e0%aa%a8-%e0%aa%b6%e0%aa%be%e0%aa%96%e0%aa%be/",
+      "httpStatus": "search result URL; page not separately fetched",
+      "outcome": "Gujarati first-party counterpart identified during native-language discovery. No parcel feature response was obtained."
+    },
+    {
+      "route": "Gujarat AnyRoR land-record portal",
+      "url": "https://anyror.gujarat.gov.in/",
+      "httpStatus": "timeout after 20 seconds",
+      "outcome": "Bounded anonymous request did not return. This is an unavailable-route observation only and was not treated as evidence of cadastral absence. No retry bypass, login, CAPTCHA, credential, or TLS bypass was attempted."
+    },
+    {
+      "route": "Government of India DILRMP state RoR/Bhunaksha status",
+      "url": "https://dilrmp.gov.in/dilrmpold/State-RoR-Web",
+      "httpStatus": "search result; direct curl certificate chain could not be verified",
+      "outcome": "Official search evidence lists Gujarat E-Dhara and Bhunaksha services. Direct retrieval was not retained because TLS verification failed; no certificate exception was used. This is national program metadata, not Palanpur parcel geometry evidence."
+    },
+    {
+      "route": "BhuNaksha implementation status",
+      "url": "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+      "httpStatus": 200,
+      "outcome": "Official BhuNaksha implementation page loaded. It provides national implementation context; no Gujarat/Palanpur parcel feature endpoint or schema was exposed in the bounded inspection."
+    },
+    {
+      "route": "Candidate local Palanpur government hostname",
+      "url": "https://palanpur.nic.in/",
+      "httpStatus": "DNS failure",
+      "outcome": "Hostname did not resolve in the bounded request. This is not evidence of absence."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "No inspectable Palanpur/Gujarat parcel viewer configuration was returned by the bounded AnyRoR request.",
+    "geometryTransport": "Not observed; no parcel feature response returned.",
+    "geometryCrs": "Not observed.",
+    "nativeIdentity": "Not observed; no parcel feature response returned.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [24.1733539009712, 72.4305474520064] was preserved; no coordinate shift or exact-point query was used.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No safe parcel ID-plus-unchanged-geometry response qualified; no exact-point hit or miss was inferred."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public Palanpur parcel-vector response; no hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Banaskantha district land administration plus Gujarat state land-record infrastructure.",
+    "verifiedOpenScope": "Official district land custodian page was reachable; no anonymous Palanpur parcel-vector coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "not qualified; independent serial review required",
+  "scopeLimits": [
+    "Exact WUP point [24.1733539009712, 72.4305474520064] was preserved in latitude/longitude order and not shifted.",
+    "A zero exact-point hit, map extent miss, timeout, DNS failure, or unusable UI was not treated as citywide cadastral absence.",
+    "No safe native parcel identifier plus full unchanged polygon was obtained; no GeoJSON sample is retained.",
+    "No citywide coverage, public parcel schema, service CRS, stable parcel-identity semantics, or update cadence was verified.",
+    "This packet is research evidence only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "Banaskantha district land-administration custodianship and Gujarat land-record infrastructure are evidenced by first-party sources. Current anonymous parcel feature access, schema, CRS, stable native identity semantics, and Palanpur citywide coverage remain unverified. Runtime readiness remains held."
+}

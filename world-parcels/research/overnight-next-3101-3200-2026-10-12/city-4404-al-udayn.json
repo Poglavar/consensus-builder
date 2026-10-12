@@ -1,0 +1,78 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 4404,
+  "queueRank": 3150,
+  "name": "Al `Udayn",
+  "country": "Yemen",
+  "countryCode": "YE",
+  "iso3": "YEM",
+  "locId": 887,
+  "capital": false,
+  "point": [13.9670403999154, 43.9971348717393],
+  "population2025": 190661,
+  "population2025k": 190.661,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Al Udayn Yemen cadastral parcel map official land registry GIS",
+        "result": "Discovery found official Yemen legal/justice sources describing the national cadastral and land-registry framework, but no first-party Al Udayn parcel viewer, public parcel API, or Al Udayn-specific cadastral map.",
+        "actualResultUrls": ["https://agoye.gov.ye/page.php?id=374", "https://moj.gov.ye/NewsD/17288", "https://moj.gov.ye/NewsD/17330"]
+      },
+      {
+        "language": "Arabic (local/official)",
+        "query": "اليُدين اليمن خريطة عقارية أراضي سجل عقاري",
+        "result": "أظهرت النتائج الرسمية قانون السجل العقاري وإعلانات وزارة العدل عن مصلحة السجل العقاري والتوثيق، دون العثور على عارض قطع أراضٍ أو واجهة API عامة خاصة بالعدين أو مكتب سجل عقاري محلي موثق على الويب.",
+        "actualResultUrls": ["https://agoye.gov.ye/page.php?id=374", "https://moj.gov.ye/NewsD/17330", "https://www.moj.gov.ye/CircularsMD/1"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": "Yemen Ministry of Justice and Human Rights / Real Estate Registry and Documentation Authority; national custody only was evidenced.",
+    "locality": "Al `Udayn, Ibb Governorate; no Al `Udayn-specific local registry office, map, or public service endpoint was evidenced.",
+    "evidenceUrls": ["https://moj.gov.ye/NewsD/17288", "https://moj.gov.ye/NewsD/17330", "https://agoye.gov.ye/page.php?id=374"],
+    "scopeNote": "The official sources document national legal and institutional arrangements. The 2026 Ministry notices describe a newly formed/being organized registry authority and do not establish open Al `Udayn parcel coverage; registryFound therefore remains null."
+  },
+  "officialSources": [
+    {"url": "https://agoye.gov.ye/page.php?id=374", "observation": "Official Public Prosecution publication of Yemen Real Estate Registry Law No. 39 of 1991; it describes registry books, cadastral maps, and registration procedures, not an open parcel API or Al `Udayn coverage."},
+    {"url": "https://moj.gov.ye/NewsD/17288", "observation": "Official Ministry of Justice notice dated 2026-06-15 reports appointment of the head of the newly formed Real Estate Registry and Documentation Authority."},
+    {"url": "https://moj.gov.ye/NewsD/17330", "observation": "Official Ministry notice dated 2026-07-01 discusses initial organizational arrangements and system-building for the new authority; no public map/API is provided."},
+    {"url": "https://www.moj.gov.ye/CircularsMD/1", "observation": "Official ministry circular references the national real-estate registry law and registry offices in general; it does not establish an Al `Udayn endpoint or parcel dataset."},
+    {"url": "https://cso-ye.org/%D9%85%D8%B1%D9%83%D8%B2-%D9%86%D8%B8%D9%85-%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A%D8%A9/", "observation": "Official Central Statistical Organization GIS-center page was discovered but returned a bot-verification page; no parcel service was exposed or used."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://agoye.gov.ye/page.php?id=374", "outcome": "HTTP 200; official Real Estate Registry Law page retrieved and reviewed. No map/API endpoint or city-specific parcel response."},
+    {"method": "GET", "url": "https://moj.gov.ye/NewsD/17288", "outcome": "HTTP 200; official notice retrieved. It evidences national institutional custody and a newly formed authority, not open parcel geometry."},
+    {"method": "GET", "url": "https://moj.gov.ye/NewsD/17330", "outcome": "HTTP 200; official organizational notice retrieved. No public viewer, service configuration, schema, CRS, or anonymous parcel response."},
+    {"method": "GET", "url": "https://www.moj.gov.ye/CircularsMD/1", "outcome": "HTTP 200; official circular retrieved. General registry-office/legal references only; no Al `Udayn geometry."},
+    {"method": "GET", "url": "https://cso-ye.org/%D9%85%D8%B1%D9%83%D8%B2-%D9%86%D8%B8%D9%85-%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A%D8%A9/", "outcome": "Bot-verification page returned; no bypass attempted and no service/API request made."},
+    {"method": "SEARCH", "url": "https://www.google.com/", "outcome": "Separate English and Arabic first-party discovery searches executed; results recorded in freshResearch. Search results were not treated as parcel evidence."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "National Yemen real-estate registry law and Ministry of Justice institutional arrangements.",
+    "verifiedOpenScope": "No open parcel-vector coverage was verified for Al `Udayn or Ibb Governorate.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel ID", "full parcel polygon", "CRS", "public service metadata", "retrieval date"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The exact WUP point [13.9670403999154, 43.9971348717393] was preserved in latitude/longitude order and not shifted; no exact-point hit or miss was used as an absence claim.",
+    "National law and ministry announcements are not evidence of an open local map/API, citywide coverage, or current parcel availability.",
+    "The CSO GIS page was blocked by bot verification; no CAPTCHA or access-control bypass was attempted.",
+    "No parcel ID, native schema, CRS, geometry, local Al `Udayn custodian endpoint, or anonymous bounded parcel response was verified.",
+    "No unsafe owner, address, contact, titleholder, personal, tax, account, credential, or private-token data was requested or retained. This packet is research evidence only and is not source integration or admission."
+  ]
+}

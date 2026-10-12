@@ -1,0 +1,24 @@
+{
+  "taskId": "city:4564",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-4564-fukui.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/fukui-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T23:48:19Z",
+  "review": {
+    "queueIdentity": "Compared city code, rank, country, point, and persons population against pending-queue.json and the original WUP 2025 CSV.gz rows; all match.",
+    "sampleSafety": "No city-specific GeoJSON sample is present; zero retained polygons, within the three-polygon cap, and no unsafe parcel attributes or unqualified native IDs were retained.",
+    "admissionGates": "No independently evidenced native-ID polygon read, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details-panel check. Runtime admission remains held.",
+    "bilingualAndSourceReview": "English and Japanese executed queries and results are recorded. Official Fukui GIS and cadastral-survey pages confirm local record custody; conversion maps are reference material. Inspected cached first-party viewer HTML/JS and three responder bodies: the bounded direct requests returned 404, with no native-ID polygon response.",
+    "firstPartyUrlsChecked": [
+      "https://www.city.fukui.lg.jp/kurasi/koutu/douro/p071062.html",
+      "https://www.city.fukui.lg.jp/sigoto/nourin/nuoson/tiseki.html",
+      "https://webgis.alandis.jp/fukui18/portal/main/kanchizu.html"
+    ]
+  },
+  "registryCustody": true,
+  "runtimeAdmitted": false,
+  "publicParcelGeometryStatus": "unverified"
+}

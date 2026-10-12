@@ -1,0 +1,135 @@
+{
+  "purpose": "City-specific cadastral and parcel-source research for the WUP queue record; registry evidence and publicly retrievable parcel geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09T00:00:00Z",
+  "cityCode": 8337,
+  "queueRank": 1438,
+  "cityId": "wup:IN:8337:sonipat",
+  "name": "Sonipat",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [28.9927143736227, 77.0244073466669],
+  "centerLatLon": [28.9927143736227, 77.0244073466669],
+  "population2025": 394583,
+  "population2025k": 394.583,
+  "populationUnit": "persons",
+  "capital": false,
+  "pointBasis": "Exact WUP queue point; not shifted to force a parcel hit.",
+  "aliases": ["sonipat"],
+  "priorEvidence": [],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sonipat Haryana official cadastral parcel map GIS land records portal plot map",
+        "result": "Located official Sonipat district Jamabandi/revenue pages, Haryana Web-HALRIS description, HARSAC EODB GIS cadastral application, and an ArcGIS boundary layer for Sonipat MC.",
+        "actualResultUrls": [
+          "https://sonipat.gov.in/service/online-jamabandhis/",
+          "https://sonipat.gov.in/revenue/",
+          "https://haryanait.gov.in/web-halris/",
+          "https://hsac.org.in/?sub=762",
+          "https://onemapdepts.gmda.gov.in/server/rest/services/onemap/Boundary_GMDA/MapServer/55"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "हरियाणा सोनीपत आधिकारिक भू नक्शा खसरा नक्शा कैडस्ट्रल मानचित्र",
+        "result": "Located the official Hindi Sonipat online Jamabandi page and the Hindi district portal; the search did not expose an anonymous parcel-geometry endpoint.",
+        "actualResultUrls": [
+          "https://sonipat.gov.in/hi/service/%E0%A4%91%E0%A4%A8%E0%A4%B2%E0%A4%BE%E0%A4%87%E0%A4%A8-%E0%A4%9C%E0%A4%AE%E0%A4%BE%E0%A4%AC%E0%A4%A8%E0%A5%8D%E0%A4%A6%E0%A5%80/",
+          "https://sonipat.gov.in/hi/"
+        ]
+      }
+    ]
+  },
+  "executedQueries": [],
+  "officialSources": [
+    {
+      "url": "https://sonipat.gov.in/service/online-jamabandhis/",
+      "observation": "Official district page states that Haryana registration, mutation and Jamabandi records can be viewed using owner name, khewat number and khasra numbers, and links to jamabandi.nic.in. This is textual land-record access, not verified parcel geometry."
+    },
+    {
+      "url": "https://sonipat.gov.in/revenue/",
+      "observation": "Official district revenue page states that Sonipat maintains district land records/jamabandies and describes the Sadar Kanungo and record-room functions."
+    },
+    {
+      "url": "https://haryanait.gov.in/web-halris/",
+      "observation": "Haryana DITECH says Web-HALRIS is implemented in all 143 tehsils and includes Jamabandi, mutation, Khasra Girdawari and registration modules."
+    },
+    {
+      "url": "https://hsac.org.in/?sub=762",
+      "observation": "HARSAC, a Haryana Government GIS agency, identifies its EODB (Land GIS) application as having land-owner, land-location and cadastral layers. The linked current frontend is https://hsac.org.in/eodb/."
+    },
+    {
+      "url": "https://onemapdepts.gmda.gov.in/server/rest/services/onemap/Boundary_GMDA/MapServer/55",
+      "observation": "Official ArcGIS REST metadata exposes a Sonipat MC polygon administrative boundary in EPSG:3857 with OBJECTID_12 and administrative name/code fields. It is not a parcel layer and is not retained as a parcel sample."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://hsac.org.in/eodb/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current HARSAC EODB frontend loaded. Its JavaScript configuration points to https://hsac.in/eodb_backend and exposes anonymous-looking land-query routes, but does not itself prove anonymous data access."
+    },
+    {
+      "url": "https://hsac.in/eodb_backend/land-query/districts",
+      "method": "GET",
+      "httpStatus": 401,
+      "outcome": "Returned {\"message\":\"Authentication required\"}; no district schema or geometry returned. No login or credential attempt made."
+    },
+    {
+      "url": "https://hsac.in/eodb_backend/land-query/search?term=Sonipat&limit=3",
+      "method": "GET",
+      "params": {"term": "Sonipat", "limit": 3},
+      "httpStatus": 401,
+      "outcome": "Returned authentication-required response; no search result or native parcel identity returned."
+    },
+    {
+      "url": "https://hsac.in/eodb_backend/land-query/boundary-at-point",
+      "method": "POST",
+      "params": {"x": 77.0244073466669, "y": 28.9927143736227, "wkid": 4326},
+      "httpStatus": 401,
+      "outcome": "Returned authentication-required response for the exact WUP point; this is an access limitation, not evidence of an empty map or citywide absence."
+    },
+    {
+      "url": "https://onemapdepts.gmda.gov.in/server/rest/services/onemap/Boundary_GMDA/MapServer/55",
+      "method": "GET metadata",
+      "httpStatus": 200,
+      "outcome": "ArcGIS metadata returned successfully; layer is an administrative Sonipat MC polygon, not cadastral parcels. CRS is EPSG:3857; supported formats include JSON, GeoJSON and PBF."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A city/district revenue custodian and state land-record system are directly evidenced by official Sonipat and Haryana government pages. The HARSAC EODB application is an official cadastral GIS candidate, but anonymous parcel access was not verified.",
+  "registryEvidenceUrls": [
+    "https://sonipat.gov.in/service/online-jamabandhis/",
+    "https://sonipat.gov.in/revenue/",
+    "https://haryanait.gov.in/web-halris/",
+    "https://hsac.org.in/?sub=762"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "name": "HARSAC EODB / Digital Land Record, Haryana",
+    "url": "https://hsac.org.in/eodb/",
+    "backendBase": "https://hsac.in/eodb_backend",
+    "discoveredRoutes": ["GET /land-query/districts", "GET /land-query/search", "GET /land-query/villages", "GET /land-query/murrabas", "GET /land-query/khasras", "GET /land-query/boundary", "POST /land-query/boundary-at-point", "POST /land-query/identify-parcel", "POST /land-query/select-features"],
+    "nativeFieldNamesObservedInFrontend": ["dCode", "tCode", "vCode", "murabbaNo", "khasraNo"],
+    "safeFieldAllowlist": ["stable parcel/khasra identity", "administrative codes", "geometry", "CRS", "non-personal schema metadata"]
+  },
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_candidate_anonymous_geometry_access_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Sonipat district revenue records and Haryana-wide Web-HALRIS; HARSAC EODB presents village/cadastral functionality.",
+    "verifiedOpenScope": "No anonymous parcel response was verified. The exact-point request returned HTTP 401, and the municipal ArcGIS layer inspected is boundary-only.",
+    "countrywideVerified": false,
+    "citywideParcelCoverageVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review_and_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "The official HARSAC backend may require a public session or other access state; its current cadastral schema and parcel geometry could not be observed anonymously. No claim is made about citywide parcel absence.",
+  "researchGroup": "asia",
+  "sourceIds": []
+}

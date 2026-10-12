@@ -1,0 +1,110 @@
+{
+  "cityCode": 6547,
+  "queueRank": 3250,
+  "name": "Siverek",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "iso3": "TUR",
+  "point": [37.7526327445751, 39.3211098848551],
+  "population2025": 185837,
+  "population2025k": 185.837,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Siverek Turkey official cadastral parcel map TKGM parcel query",
+        "result": "The official TKGM Parsel Sorgulama service was identified. Its public viewer documents parcel lookup and map display; a bounded anonymous API response was then obtained for the unchanged WUP point.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://parselsorgu.tkgm.gov.tr/"
+        ]
+      },
+      {
+        "language": "Turkish (native/local discovery language)",
+        "query": "Siverek Türkiye resmi kadastro parsel sorgu TKGM",
+        "result": "TKGM'nin resmi Parsel Sorgulama hizmeti doğrulandı; kamuya açık görüntüleyici ve MEGSİS API'si üzerinden Siverek koordinatına bağlı güvenli parsel özelliği alındı.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://parselsorgu.tkgm.gov.tr/"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "A separate Siverek district-office page or local open service was not independently evidenced; the returned record is from the national TKGM service.",
+    "regionalOrNationalSources": ["Tapu ve Kadastro Genel Müdürlüğü (TKGM) Parsel Sorgu", "TKGM MEGSİS public API"],
+    "registryEvidence": "The official national viewer and its current JavaScript configuration identify cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api as the public parcel service. The API returned a Siverek parcel feature for the exact WUP point."
+  },
+  "requestOutcomes": "TLS-verified anonymous GETs with the official viewer Origin/Referer headers returned HTTP 200 for the province list, Siverek district neighborhood list, exact-point parcel lookup, and administrative parcel lookup. The exact-point response and administrative lookup agreed on the same geometry and parcel identity. No login, credentials, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception was used.",
+  "attemptedRoutes": [
+    {
+      "route": "Official TKGM viewer landing page",
+      "url": "https://parselsorgu.tkgm.gov.tr/",
+      "outcome": "HTTP 200; current HTML loads RequireJS and main.js."
+    },
+    {
+      "route": "Official viewer JavaScript/config inspection",
+      "url": "https://parselsorgu.tkgm.gov.tr/main.js?v=76.3",
+      "outcome": "Current constants configuration identified the public base API https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/."
+    },
+    {
+      "route": "TKGM MEGSİS province list",
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/idariYapi/ilListe",
+      "outcome": "HTTP 200; public administrative feature list returned."
+    },
+    {
+      "route": "TKGM MEGSİS Siverek district neighborhood list",
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/idariYapi/mahalleListe/902",
+      "outcome": "HTTP 200; public neighborhood feature list returned, including the Siverek administrative context."
+    },
+    {
+      "route": "TKGM MEGSİS exact-point parcel lookup",
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.7526327445751/39.3211098848551/",
+      "outcome": "HTTP 200; GeoJSON Feature returned for Camikebir-236/3 with polygon geometry and safe parcel identity fields."
+    },
+    {
+      "route": "TKGM MEGSİS administrative parcel lookup",
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/165285/236/3",
+      "outcome": "HTTP 200; same parcel identity and equivalent polygon geometry returned; area formatting differed only as 33.00 versus 33,00."
+    }
+  ],
+  "scopeLimits": [
+    "Exact WUP point [37.7526327445751, 39.3211098848551] was preserved and not shifted.",
+    "The successful exact-point hit establishes one public parcel feature, not citywide or countrywide cadastral completeness.",
+    "Only one full polygon is retained; no raw source-specific attribute set is retained.",
+    "Packet completion records research status only; it is not source integration or admission."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "nativeFieldMapping": {
+    "nativeIdentity": "ozet (Camikebir-236/3), supported by mahalleAd + adaNo + parselNo",
+    "safeNativeFieldsObserved": ["ozet", "mahalleAd", "adaNo", "parselNo", "ilceAd", "mahalleId", "pafta"],
+    "excludedFields": ["gittigiParselListe", "gittigiParselSebep", "durum", "zeminKmdurum", "nitelik", "alan", "mevkii"]
+  },
+  "compositeKeyProvenance": "The retained native identity is the official ozet value Camikebir-236/3, corroborated by the official response fields mahalleAd=Camikebir, adaNo=236, parselNo=3, and mahalleId=165285. No synthetic row number was used.",
+  "crs": "EPSG:4326 inferred from the official GeoJSON coordinate order and the viewer API's longitude/latitude geometry; no explicit CRS member was returned.",
+  "geometryQuality": "One closed Polygon was returned twice by official anonymous routes with matching coordinates; retained unchanged.",
+  "geometryDecision": {
+    "verified": true,
+    "sampleCount": 1,
+    "sampleFile": "city-6547-siverek-sample.geojson",
+    "nativeId": "Camikebir-236/3",
+    "exactWupPointTest": "The official exact-point response contains the WUP point within the returned parcel polygon vicinity; no coordinate adjustment was made."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bounded anonymous discovery through the current official TKGM Parsel Sorgu viewer/API.",
+    "verifiedOpenScope": "One Siverek parcel feature at the exact WUP point, plus public administrative lists.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "runtimeReadiness": "held_independent_adapter_review",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The national public service returned a safe parcel feature, but local custodian service ownership and citywide feature completeness were not independently established. CRS is inferred from GeoJSON convention and observed coordinates because the response omitted an explicit CRS member."
+}

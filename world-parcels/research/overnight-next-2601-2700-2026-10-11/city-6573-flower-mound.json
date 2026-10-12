@@ -1,0 +1,53 @@
+{
+  "cityCode": 6573,
+  "queueRank": 2604,
+  "name": "Flower Mound",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso2": "US",
+  "iso3": "USA",
+  "point": [33.0242104850204, -97.0246110353803],
+  "population2025": 226153,
+  "population2025k": 226.153,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Flower Mound Texas official GIS parcel map cadastral property map",
+        "result": "First-party discovery located the Town of Flower Mound GIS page and its public ArcGIS parcel map service. The service documents parcel boundaries, safe PID identifiers, and a public anonymous query endpoint.",
+        "actualResultUrls": [
+          "https://www.flowermound.gov/131/GIS-Maps",
+          "https://gismaps.flower-mound.com/wafmp/rest/services/Basemap/Parcels_MS/MapServer",
+          "https://gismaps.flower-mound.com/wafmp/rest/services/Basemap/Parcels_MS/MapServer/0"
+        ]
+      },
+      {
+        "language": "English (local/native language; United States)",
+        "query": "Town of Flower Mound official public map viewer parcel boundaries PID GIS",
+        "result": "A separate local-language discovery query is English because the United States has no separate legally designated local/native language for this municipal source. It returned the same first-party GIS viewer/service evidence; no alternate-language source was expected.",
+        "actualResultUrls": [
+          "https://www.flowermound.gov/2458/MapsGIS",
+          "https://gismaps.flower-mound.com/wafmp/rest/services/Basemap/CW_Basemap/MapServer/2"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "Town of Flower Mound Geographic Information Systems department; the official GIS page identifies the municipal GIS function and public map products.",
+    "officialPublicMap": "Town public map viewer backed by the official gismaps.flower-mound.com ArcGIS REST service.",
+    "parcelLayer": "Basemap/Parcels_MS/MapServer/0 (Parcels), geometryType esriGeometryPolygon.",
+    "urls": [
+      "https://www.flowermound.gov/131/GIS-Maps",
+      "https://gismaps.flower-mound.com/wafmp/rest/services/Basemap/Parcels_MS/MapServer",
+      "https://gismaps.flower-mound.com/wafmp/rest/services/Basemap/Parcels_MS/MapServer/0"
+    ]
+  },
+  "parcelGeometryVerified": true,
+  "verifiedSample": true,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "sampleFiles": ["city-6573-flower-mound-sample.geojson"]
+}

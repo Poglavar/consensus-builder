@@ -1,0 +1,41 @@
+{
+  "cityRecord": "city-7128-khanpur.json",
+  "cityCode": 7128,
+  "queueRank": 1970,
+  "city": "Khanpur",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Punjab Urban Land Systems Enhancement (PULSE), Punjab Land Records Authority / Government of Punjab",
+  "serviceUrl": "https://lis.pulse.gop.pk/",
+  "serviceEndpoint": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/27",
+  "scope": "Official Punjab cadastral map service, Rahim Yar Khan district layer. This is local/provincial cadastral-map custody relevant to Khanpur, not merely general national agency prose.",
+  "attempts": [
+    { "route": "Official PULSE homepage", "request": "GET https://lis.pulse.gop.pk/", "outcome": "200; current JavaScript/configuration inspected." },
+    { "route": "Official PULSE token route", "request": "GET https://lis.pulse.gop.pk/api/gis/token", "outcome": "200; transient public app token used to access the viewer's configured ArcGIS service; token not retained." },
+    { "route": "ArcGIS service root", "request": "GET https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson", "outcome": "200; district layers listed, including Rahim Yar Khan (layer 27)." },
+    { "route": "Rahim Yar Khan layer metadata", "request": "GET https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/27?f=pjson", "outcome": "200; polygon layer, native OBJECTID field, source CRS 102100/3857." },
+    { "route": "Exact WUP point query", "request": "POST/GET-equivalent ArcGIS query on layer 27 with point [70.6559557664644,28.6478778686212], inSR=4326, intersects, outFields=OBJECTID, returnGeometry=true", "outcome": "Successful response with zero features. This is an exact-point miss only and is not evidence of citywide absence." },
+    { "route": "Bounded extent query", "request": "ArcGIS query on layer 27 with envelope [70.6359557664644,28.6278778686212,70.6759557664644,28.6678778686212], inSR=4326, intersects, outFields=OBJECTID, returnGeometry=true, outSR=4326, resultRecordCount=3", "outcome": "Successful GeoJSON response with three polygon features (OBJECTID 4624001, 4624002, 4624003); response indicated exceededTransferLimit, so only the bounded sample is retained." },
+    { "route": "Official Urdu/English PLRA registry portal", "request": "GET https://eregistration.punjab-zameen.gov.pk/Security/Authentication/UserLogin?ReturnUrl=%2F", "outcome": "Login/CAPTCHA wall; no login, CAPTCHA bypass, or unsafe record request attempted." }
+  ],
+  "schemaAndCrs": "Rahim Yar Khan layer is esriGeometryPolygon. Native identity field is OBJECTID (OID). Source spatial reference is wkid 102100/latestWkid 3857; retained sample was requested as GeoJSON/outSR 4326.",
+  "nativeIdentity": "OBJECTID; no synthetic identity used.",
+  "fieldMapping": { "OBJECTID": "canonical native parcel identity retained as properties.id in the sample" },
+  "compositeKeyProvenance": null,
+  "retainedSample": "khanpur-parcels-sample.geojson",
+  "retainedProperties": { "id": "<OBJECTID>" },
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, tax/account, legal-description, application, personal, or other unsafe property-record fields were requested or retained. The service metadata exposed many native fields, but the query requested only OBJECTID and geometry.",
+  "limits": [
+    "The exact WUP point returned zero features; this does not establish citywide absence.",
+    "The bounded extent returned sample polygons south of the exact point; they are evidence of a functioning official parcel layer, not proof that the exact point lies in a parcel.",
+    "The result exceeded the transfer limit, so no completeness claim is made for the extent.",
+    "No owner or title records were accessed; the Urdu/English registry route is login/CAPTCHA gated.",
+    "No adapter integration or admission was performed. Runtime readiness remains held pending independent serial qualification."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "The official provincial cadastral map is evidenced and returned safe parcel geometry, but exact city-point coverage was not demonstrated and the service's full transfer-limited extent was not enumerated."
+}

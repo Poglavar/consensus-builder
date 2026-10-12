@@ -1,0 +1,18 @@
+{
+  "taskId": "city:351",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-351-pasto.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pasto-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pasto-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/pasto-layer29.json",
+    "tmp/valhalla-parcel-research/pasto-exact-point.json",
+    "tmp/valhalla-parcel-research/pasto-urban-sample.geojson"
+  ],
+  "checkedAt": "2026-10-10T09:13:02.972980Z",
+  "reason": "Immutable WUP identity and separate English/Spanish queries checked. Cached first-party layer metadata and exact-point response support public native-ID parcel discovery; retained three safe-ID polygons exactly match original response and pass sample metric validity/overlap checks. Fresh exact-ID reads, forced paging, 13 bounded cells, full qualification, source binding, and headed Details verification remain unproved; no admission.",
+  "sourceAdmission": "not_admitted"
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10091-rewa.json",
+  "purpose": "Document first-party English/Hindi discovery and bounded anonymous review of official Madhya Pradesh cadastral/map services for Rewa, India.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official MP Bhulekh and state service pages document public land-record and map-copy services, while the Government of India DILRMP page is explicitly scoped to Madhya Pradesh, district REWA. Direct portal requests timed out or failed local certificate verification, so no parcel ID or geometry was retained.",
+  "registryAssessment": "registryFound=true because an official state land-record/map custodian and a Rewa-specific district cadastral-status page were evidenced. This is not source integration, adapter admission, or proof of citywide coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://mpbhulekh.gov.in/mpbhulekh.do",
+      "observation": "Official Madhya Pradesh land-record portal identified by discovery; the portal route is documented as providing land records and map services. Direct request timed out."
+    },
+    {
+      "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/432",
+      "observation": "Government of India DILRMP page is scoped to State/UT MADHYA PRADESH and District Name REWA and reports cadastral-map digitization/geo-referencing status fields. No parcel feature response was obtained."
+    },
+    {
+      "url": "https://rewadivisionmp.nic.in/",
+      "observation": "Official Rewa divisional administration site identifies Rewa as the administrative headquarters and links official district administration routes; it is administrative context, not a parcel layer."
+    },
+    {
+      "url": "https://www.services.mp.gov.in/eservice/eServices?srvs=19",
+      "observation": "Official Madhya Pradesh services catalog documents certified Khasra, B-1/Khatauni, and current land/property map-copy services."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Rewa Madhya Pradesh official cadastral parcel map land records Bhu Naksha",
+      "result": "Official MP Bhulekh, DILRMP Rewa, Rewa administration, and India Government Services sources found; no safe city parcel feature response.",
+      "actualResultUrls": ["https://mpbhulekh.gov.in/mpbhulekh.do", "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/432", "https://rewadivisionmp.nic.in/", "https://services.india.gov.in/service/detail/check-dissemination-of-naksha-parcel-map-of-madhya-pradesh-online-1"]
+    },
+    {
+      "language": "Hindi",
+      "query": "रीवा मध्य प्रदेश भू नक्शा खसरा नक्शा सरकारी पोर्टल",
+      "result": "Official MP Bhulekh and MP services catalog identified; no safe parcel ID/geometry response.",
+      "actualResultUrls": ["https://mpbhulekh.gov.in/mpbhulekh.do", "https://www.services.mp.gov.in/eservice/eServices?srvs=19", "https://rewadivisionmp.nic.in/", "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/432"]
+    }
+  ],
+  "attempts": [
+    {"method": "GET", "url": "https://mpbhulekh.gov.in/mpbhulekh.do", "httpStatus": null, "result": "Timed out after 20 seconds; no response body or map configuration retrieved."},
+    {"method": "GET", "url": "https://webgis2.mpbhulekh.gov.in/", "httpStatus": null, "result": "Timed out after 20 seconds; no response body or map configuration retrieved."},
+    {"method": "GET", "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/432", "httpStatus": null, "result": "Local curl TLS trust verification failed; no certificate exception was used and no response was treated as evidence of absence."},
+    {"method": "GET", "url": "https://www.services.mp.gov.in/eservice/eServices?srvs=19", "httpStatus": 200, "result": "Official service catalog was readable through first-party indexed content and documents certified map/Khasra/B-1 services; it is procedural evidence, not parcel geometry."}
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": {"nativeIdentityField": null, "nativeIdentityObserved": null, "geometryEvidence": "No feature-level response obtained."},
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified": false, "sourceId": "MP-BHULEKH-REWA", "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not completed at feature level; portal timeouts prevent a hit/zero-hit conclusion.", "requestEvidence": [{"serviceCrs": null, "wupPointLatLon": [24.5408180036904, 81.3027561052089], "returnedSafeId": null, "returnedGeometry": false}]},
+  "coverageAssessment": {"claimedScope": "Official Madhya Pradesh land-record/map services and DILRMP Rewa district status.", "verifiedOpenScope": "Custodian and procedural/map-status evidence only; no feature schema, native ID, CRS, or citywide parcel completeness.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "The current viewer may require interactive administrative selection or a different public endpoint. No exact-point hit, map extent miss, or absence claim is made.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

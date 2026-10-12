@@ -1,0 +1,18 @@
+{
+  "taskId": "city:10813",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-10813-nagapattinam.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/nagapattinam-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T20:30:38Z",
+  "identityCheck": "Rank 2805, India, WUP point [10.7824577630385,79.8372653046759], and 211625 persons match both immutable cohort rosters. English and Tamil executed queries have source URLs.",
+  "custodyDecision": "registryFound true is supported by the Nagapattinam District Administration land e-services and Survey and Settlement pages, which identify the district Survey and Land Records office and its record duties; this does not establish open geometry.",
+  "reason": "No retained polygon, native parcel ID, or anonymous vector response. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced. The state e-services timeout is not citywide absence.",
+  "firstPartyUrlsChecked": [
+    "https://nagapattinam.nic.in/service/e-services-anytime-anywhere-land/",
+    "https://nagapattinam.nic.in/survey-settlement/"
+  ]
+}

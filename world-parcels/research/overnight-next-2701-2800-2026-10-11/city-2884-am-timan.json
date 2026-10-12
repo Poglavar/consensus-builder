@@ -1,0 +1,127 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel sources for Am Timan, Chad; claims are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 2884,
+  "queueRank": 2795,
+  "name": "Am Timan",
+  "country": "Chad",
+  "countryCode": "TD",
+  "iso3": "TCD",
+  "point": [11.0422091140526, 20.2801739289138],
+  "population2025": 212167,
+  "population2025k": 212.167,
+  "populationUnit": "persons",
+  "aliases": ["am timan"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Am Timan Chad official cadastral parcel GIS map land registry",
+        "result": "Search found official Chad government material describing the national cadastre, land administration, and Ministry of Territorial Planning/Urbanism/Habitat. No public Am Timan parcel viewer or parcel feature service was identified.",
+        "actualResultUrls": [
+          "https://amenagement.gouv.td/",
+          "https://finances.gouv.td/index.php/component/k2/item/170-le-directeur-general-des-impots-a-procede-au-lancement-officiel-du-recensement-de-la-cartographie-de-l-impot-foncier-dans-la-commune-du-3eme-arrondissement",
+          "https://connect.gouv.td/"
+        ]
+      },
+      {
+        "language": "French (official/local-language attempt)",
+        "query": "Am Timan Tchad cadastre parcelles carte SIG registre foncier",
+        "result": "Search found first-party Ministry of Territorial Planning material naming the Directorate General of Cadastre and Topography and first-party Ministry of Finance documents describing cadastral subdivision, parcel plans, domains, and land registration. No Am Timan-specific public parcel geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://amenagement.gouv.td/index.php/2015/05/25/curabitur-blandit-tempus-porttitor/",
+          "https://finances.gouv.td/index.php/component/k2/item/download/79_989f971d56d74c1b358591598b2aa41c",
+          "https://finances.gouv.td/index.php/le-ministere/le-ministre/item/download/237_96e775322cf246b1ffa96f3284ccfc00"
+        ]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://amenagement.gouv.td/",
+      "observation": "Official Ministry of Territorial Planning, Habitat and Urbanism site identifies the ministry and its responsibility for territorial planning, urbanism, habitat, and land management; no parcel viewer or downloadable parcel layer was exposed on the landing page."
+    },
+    {
+      "url": "https://amenagement.gouv.td/index.php/2015/05/25/curabitur-blandit-tempus-porttitor/",
+      "observation": "Official ministry article identifies the Directorate General of Cadastre and Topography and discusses modernization/digitalization of land-information administration. It does not provide an Am Timan parcel service or geometry."
+    },
+    {
+      "url": "https://finances.gouv.td/index.php/component/k2/item/download/79_989f971d56d74c1b358591598b2aa41c",
+      "observation": "Official Ministry of Finance document describes the Directorate of Domains and Land Conservation, including land registration and conservation functions. This is national institutional/procedure evidence, not city parcel coverage."
+    },
+    {
+      "url": "https://finances.gouv.td/index.php/le-ministere/le-ministre/item/download/237_96e775322cf246b1ffa96f3284ccfc00",
+      "observation": "Official Ministry of Finance document describes cadastral technical work including subdivision, demarcation, and parcel plans, followed by domains, municipality, and land-conservation steps. No public geometry or Am Timan layer was returned."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://amenagement.gouv.td/",
+      "method": "GET official ministry landing page",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Reachable anonymously over verified TLS. Ministry identity and land-management remit observed; no map/API configuration, parcel schema, CRS, or parcel geometry observed."
+    },
+    {
+      "url": "https://amenagement.gouv.td/index.php/2015/05/25/curabitur-blandit-tempus-porttitor/",
+      "method": "GET official ministry article",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Reachable anonymously over verified TLS. Article names the national cadastre/topography directorate and discusses land-information modernization; no public Am Timan service or parcel response observed."
+    },
+    {
+      "url": "https://finances.gouv.td/index.php/component/k2/item/download/79_989f971d56d74c1b358591598b2aa41c",
+      "method": "GET official Ministry of Finance document",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "outcome": "First-party search result and document text describe Domains and Land Conservation responsibilities. No parcel IDs, geometry, API endpoint, or CRS returned."
+    },
+    {
+      "url": "https://finances.gouv.td/index.php/le-ministere/le-ministre/item/download/237_96e775322cf246b1ffa96f3284ccfc00",
+      "method": "GET official Ministry of Finance document",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "outcome": "First-party search result and document text describe cadastral subdivision, demarcation, and parcel-plan procedure. No public Am Timan parcel geometry returned."
+    },
+    {
+      "url": "https://finances.gouv.td/index.php/component/k2/item/170-le-directeur-general-des-impots-a-procede-au-lancement-officiel-du-recensement-de-la-cartographie-de-l-impot-foncier-dans-la-commune-du-3eme-arrondissement",
+      "method": "GET official Ministry of Finance article",
+      "httpStatus": 0,
+      "contentType": null,
+      "outcome": "TLS certificate hostname verification failed for this host; request was not retried with verification disabled or a certificate exception. This is an attempted route only, not evidence of service absence."
+    },
+    {
+      "url": "https://connect.gouv.td/",
+      "method": "GET official government portal",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Reachable anonymously, but no public cadastral map/API route or Am Timan parcel layer was exposed in the landing page. No login was attempted."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "National first-party institutional and procedure evidence was found, but no Am Timan-local registry, cadastral map, public parcel service, or city-specific custodian was evidenced.",
+  "registryEvidenceUrls": [],
+  "verifiedSample": false,
+  "sampleFile": null,
+  "sampleFiles": [],
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "nativeSchema": null,
+  "resultCategory": "national_cadastre_procedure_found_city_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Chad has official national cadastre, land-conservation, and parcel-plan procedures administered through national ministries.",
+    "verifiedOpenScope": "Only national institutional/procedure pages were verified; no open Am Timan parcel geometry or citywide layer was returned.",
+    "countrywideVerified": false,
+    "citywideCompleteness": false
+  },
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "africa",
+  "remainingUncertainty": "A non-indexed ministry endpoint, offline cadastral office workflow, or future digitization may provide Am Timan parcel data. The exact WUP point was preserved and not shifted. A zero exact-point hit, map extent miss, timeout, TLS hostname failure, or absent viewer is not evidence of citywide cadastral absence.",
+  "safeFieldAllowlist": ["stable native parcel ID when independently verified", "geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"]
+}

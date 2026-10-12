@@ -1,0 +1,16 @@
+{
+  "taskId": "city:4280",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-4280-lublin.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/lublin-service-review.json",
+    "tmp/valhalla-parcel-research/lublin/uldk-point.txt",
+    "tmp/valhalla-parcel-research/lublin/parcel-response-v11.json",
+    "tmp/valhalla-parcel-research/lublin/dzialki-schema2.xml",
+    "tmp/valhalla-parcel-research/lublin/aggregate-response.xml"
+  ],
+  "checkedAt": "2026-10-10T18:30:33.709436Z",
+  "reason": "WUP roster and queue match code 4280, rank 1914, Poland, point, and 300013 persons; English and Polish searches were executed. Live first-party municipal capabilities advertise ms:dzialki. Original ULDK response contains one native ID and full polygon, but municipal GetFeature has a database error, DescribeFeatureType fails, and aggregate WFS returned zero in one bounded extent. Fresh exact-ID reads, forced paging, 13 bounded cells, metric validity/overlap checks, source binding, and headed Details proof are missing. One point hit is not citywide coverage; custody true and runtime admission held."
+}

@@ -1,0 +1,36 @@
+{
+  "taskId": "city:1897",
+  "decision": "held",
+  "checkedAt": "2026-10-12T00:43:00Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-1897-tarlac-city.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/tarlac-city-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 1897,
+    "rank": 3010,
+    "country": "Philippines",
+    "point": [
+      15.4860506562332,
+      120.600498162356
+    ],
+    "populationPersons": 198673
+  },
+  "checks": {
+    "bilingualExecutedSearchesRecorded": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "firstPartyCustodyCorroboration": [
+    "https://www.foi.gov.ph/requests/cadastral-map-of-tarlac-city/"
+  ],
+  "reason": "Official LMB FOI record names a successful Tarlac cadastral-map request, corroborating custody. Packet reports a national parcel-data catalog lead, but no original parcel feature response or independent live adapter qualification is present; WMS/WFS checks timed out. Unavailable access is not citywide absence; no runtime, catalog, or report admission was made."
+}

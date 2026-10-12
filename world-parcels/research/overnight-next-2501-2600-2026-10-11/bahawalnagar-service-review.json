@@ -1,0 +1,29 @@
+{
+  "cityRecord": "city-8161-bahawalnagar.json",
+  "cityCode": 8161,
+  "queueRank": 2598,
+  "name": "Bahawalnagar",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "requestOutcomes": [
+    {"method":"GET","url":"https://lis.pulse.gop.pk/","httpStatus":200,"outcome":"Official PULSE viewer HTML retrieved. Current JavaScript listed Bahawalnagar in Punjab_Cdastral_Maps sublayers and exposed the public GIS token endpoint."},
+    {"method":"GET","url":"https://lis.pulse.gop.pk/api/gis/token","httpStatus":200,"outcome":"Viewer-issued public application token retrieved for the configured ArcGIS service; token value was used transiently and not retained."},
+    {"method":"GET","url":"https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson","httpStatus":499,"outcome":"Direct service metadata without the viewer token returned Token Required; this is an access requirement, not evidence of service absence."},
+    {"method":"GET","url":"https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson&token=<transient-viewer-token>","httpStatus":200,"outcome":"Service metadata retrieved. Layer 1 is Bahawalnagar, a polygon Feature Layer."},
+    {"method":"GET","url":"https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/1?f=pjson&token=<transient-viewer-token>","httpStatus":200,"outcome":"Bahawalnagar layer schema retrieved: native source CRS EPSG:3857, safe OID OBJECTID, polygon geometry, maxRecordCount 2000, GeoJSON query support."},
+    {"method":"GET","url":"https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/1/query","httpStatus":200,"outcome":"Bounded WGS84 envelope around exact WUP point, where=1=1, outFields=OBJECTID, returnGeometry=true, outSR=4326, resultRecordCount=3 returned three full polygons with OBJECTIDs 2387022, 2387040, and 2387059; response flagged exceededTransferLimit because more features exist in the envelope."},
+    {"method":"GET","url":"https://mcbahawalnagar.lgpunjab.org.pk/map/","httpStatus":200,"outcome":"Official Municipal Corporation Bahawalnagar services-map page found; it provides municipal cartographic maps and local custodian context, not the queried parcel feature service."},
+    {"method":"GET","url":"https://mcbahawalnagar.lgpunjab.org.pk/wp-content/uploads/2023/02/Base-Map_Bahawalnagar_10.02.23.pdf","httpStatus":"web result available","outcome":"Official city base-map publication describes parcel boundaries and municipal context; no raw parcel identity or safe API geometry was extracted from the PDF."}
+  ],
+  "schemaAndCrs": {"geometryType":"esriGeometryPolygon","geometryCrs":"native EPSG:3857/Web Mercator; query/retained GeoJSON EPSG:4326","nativeFieldMapping":{"OBJECTID":"id"},"compositeKeyProvenance":null,"rawAttributesRetained":false},
+  "sampleGeoJSON": {"file":"bahawalnagar-parcels-sample.geojson","featureCount":3,"propertiesPolicy":"Exactly one canonical native identity property, id; no raw source attributes retained."},
+  "safeFieldAllowlist": ["OBJECTID mapped to id", "full parcel polygon geometry", "source URL", "CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title", "Khewat_ID", "Khasra_ID"],
+  "scopeLimits": ["Bounded local query only; no citywide extract or completeness claim.","Exact-point success does not establish all parcels or service stability.","No login, CAPTCHA/Cloudflare bypass, private credentials, or TLS exception was used.","Research completion is not source integration/admission."],
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"A real first-party parcel response and safe native identity/geometry were obtained, but independent serial review is required before any adapter qualification."},
+  "uncertainty": "The layer is authoritative enough for research evidence and sample retention, but coverage semantics, update cadence, and citywide completeness are not established by this bounded request."
+}

@@ -1,0 +1,113 @@
+{
+  "cityCode": 1879,
+  "queueRank": 2632,
+  "name": "Navoiy",
+  "country": "Uzbekistan",
+  "countryCode": "UZ",
+  "iso3": "UZB",
+  "point": [40.1162582313182, 65.3570800918237],
+  "population2025": 224363,
+  "population2025k": 224.363,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Navoiy Uzbekistan official cadastral map GIS parcels cadastre",
+        "result": "Found the official Cadastre Agency regional contact page, the official public geoportal item, and a government announcement describing open.ngis.uz as a public geoportal for land parcels and real-estate objects. No bounded Navoiy parcel response was obtained.",
+        "actualResultUrls": [
+          "https://uzdkp.uz/",
+          "https://www.arcgis.com/home/item.html?id=639e417ede6e430b8d3f91fbc503e2c4",
+          "https://gov.uz/en/kadastr/pages/about",
+          "https://gov.uz/oz/kadastr/news/view/143473",
+          "https://open.ngis.uz/"
+        ]
+      },
+      {
+        "language": "Uzbek (Latin)",
+        "query": "Navoiy O'zbekiston kadastr xaritasi GIS yer uchastkalari rasmiy",
+        "result": "Found the official Davlat Kadastrlari Palatasi site identifying the Navoiy city cadastral office and the Navoiy regional office, plus the government announcement of the public geoportal. No public parcel feature service or city-bounded geometry was verified.",
+        "actualResultUrls": [
+          "https://uzdkp.uz/",
+          "https://gov.uz/oz/kadastr/news/view/143473",
+          "https://open.ngis.uz/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "A first-party Cadastre Agency directory explicitly lists Navoiy shahar cadastral office at Amir Temur ko'chasi 4-uy and the Navoiy regional office at Ma'rifat ko'chasi 8; this establishes a local cadastral custodian. The government announcement also identifies open.ngis.uz as the public geoportal for land parcels and real-estate objects. It does not establish that an anonymous city-bounded vector endpoint is currently retrievable.",
+  "registryEvidenceUrls": [
+    "https://uzdkp.uz/",
+    "https://gov.uz/oz/kadastr/news/view/143473"
+  ],
+  "officialSources": [
+    {
+      "url": "https://uzdkp.uz/",
+      "observation": "Official Davlat Kadastrlari Palatasi directory lists Navoiy shahar and Navoiy viloyati cadastral offices and contact details."
+    },
+    {
+      "url": "https://gov.uz/oz/kadastr/news/view/143473",
+      "observation": "Official government announcement states that the Cadastre Agency launched open.ngis.uz as a public geoportal providing open information about land parcels and real-estate objects."
+    },
+    {
+      "url": "https://www.arcgis.com/home/item.html?id=639e417ede6e430b8d3f91fbc503e2c4",
+      "observation": "ArcGIS item search result identifies an official Public Geoportal of the Cadastre Agency; the item page was discoverable but its service URL/schema was not exposed in the accessible response."
+    },
+    {
+      "url": "https://open.ngis.uz/",
+      "observation": "Official public geoportal host discovered, but direct inspection timed out."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://open.ngis.uz/",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Timed out after 25 seconds from the local anonymous request environment (curl HTTP 000); no conclusion about remote service availability or city coverage."
+    },
+    {
+      "url": "https://open.ngis.uz/",
+      "method": "web open",
+      "httpStatus": null,
+      "outcome": "Web fetch also reported timeout; JavaScript/configuration and public API route could not be inspected."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/639e417ede6e430b8d3f91fbc503e2c4?f=json",
+      "method": "GET",
+      "httpStatus": 403,
+      "outcome": "Anonymous item-data request returned ArcGIS 403 permissions error; no service schema or endpoint was inferred."
+    },
+    {
+      "url": "https://uzdkp.uz/",
+      "method": "web open",
+      "httpStatus": null,
+      "outcome": "Search result content exposed the official directory and Navoiy office entries; direct web open timed out, so no additional portal behavior was inferred."
+    },
+    {
+      "url": "https://gov.uz/oz/kadastr/news/view/143473",
+      "method": "web open",
+      "httpStatus": 200,
+      "outcome": "Fetched official announcement. It describes UZKAD integration and open.ngis.uz public access to land-parcel and real-estate information; it does not provide a parcel feature response or safe schema."
+    }
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_verified_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "The Cadastre Agency's public geoportal is described as providing open land-parcel and real-estate information; local office evidence covers Navoiy city and region.",
+    "verifiedOpenScope": "No anonymous city-bounded parcel geometry, schema, CRS, or stable native parcel identity was retrieved.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["id", "stable native parcel identifier", "geometry"],
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "runtimeReadiness": "held_pending_serial_review_and_verified_public_geometry",
+  "remainingUncertainty": "The official open.ngis.uz portal may expose parcel geometry after its current timeout or through a JavaScript-discovered service route. No login, credentials, CAPTCHA bypass, unsafe owner/address/titleholder fields, or TLS exception was used. The exact-point outcome is unknown; no point miss is treated as citywide absence.",
+  "pointBasis": "Exact WUP queue point; not shifted to force a parcel hit.",
+  "sourceIds": []
+}

@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-4663-ar-rijad.json",
+  "cityCode": 4663,
+  "queueRank": 3190,
+  "attempt": 1,
+  "reviewStatus": "complete_pending_serial_runtime_review",
+  "registryFound": null,
+  "registryCustodian": "Yemen Ministry of Justice and Human Rights / Real Estate Registry and Documentation Authority; local Ar Rijad custody was not evidenced.",
+  "serviceReview": "Yemen national registry law and Ministry electronic-documentation reporting were evidenced, but no local Ar Rijad custodian, public map, parcel API, safe native identity, CRS, or geometry was qualified.",
+  "sourceLead": "https://agoye.gov.ye/page.php?id=374",
+  "discovery": {
+    "english": "First-party Yemen Public Prosecution registry-law page, Ministry documentation-system report, and Parliament result were found; no Ar Rijad parcel service was found.",
+    "arabic": "نتائج رسمية باللغة العربية أكدت قانون السجل العقاري وتقارير وزارة العدل عن الأتمتة، دون خدمة مساحية عامة خاصة بالرياد."
+  },
+  "requests": [
+    {"method": "GET", "url": "https://agoye.gov.ye/page.php?id=374", "outcome": "Retrieved and reviewed; national law only, no public parcel service."},
+    {"method": "GET", "url": "https://www.moj.gov.ye/NewsD/17384", "outcome": "Retrieved and reviewed; staged electronic documentation deployment, no parcel geometry/API."},
+    {"method": "GET", "url": "https://www.moj.gov.ye/NewsD/17330", "outcome": "Official Arabic organizational report; no anonymous map/API."},
+    {"method": "GET", "url": "https://yemenparliament.gov.ye/Details?Post=6875", "outcome": "Timed out; no bypass or absence inference."}
+  ],
+  "schemaAndCrs": null,
+  "scopeAndLimits": [
+    "Exact WUP point [14.0947458327621, 44.1776365341582] was preserved and not shifted.",
+    "No exact-point request was made because no public Ar Rijad parcel service was identified; this is not evidence of citywide absence.",
+    "No local registry/map/API, schema, CRS, stable native ID, or polygon was verified.",
+    "National legal and institutional evidence does not prove local service coverage or data completeness.",
+    "No unsafe fields, credentials, private tokens, CAPTCHA bypass, Cloudflare defeat, or login were used."
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID", "full parcel polygon", "CRS", "public service metadata", "retrieval date"],
+  "geometry": {"verified": false, "sampleCount": 0, "sampleFile": null, "retainedFeatureProperties": null},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "uncertainty": "First-party national evidence does not establish an open Ar Rijad cadastral map/API or citywide parcel completeness."
+}

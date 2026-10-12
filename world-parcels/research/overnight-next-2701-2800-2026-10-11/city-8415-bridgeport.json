@@ -1,0 +1,73 @@
+{
+  "cityCode": 8415,
+  "queueRank": 2748,
+  "country": "United States of America",
+  "countryCode": "US",
+  "point": [41.1909714422495, -73.1931304859171],
+  "population2025": 214775,
+  "population2025k": 214.775,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "official City of Bridgeport Connecticut GIS parcel map ArcGIS REST parcels",
+        "result": "The City of Bridgeport GIS page links its GIS Hub and interactive mapping; the linked public MetroCOG ArcGIS service identifies a City of Bridgeport parcel geometry layer.",
+        "actualResultUrls": [
+          "https://www.bridgeportct.gov/government/departments/planning-economic-development/geographic-information-system-gis",
+          "https://maps.ctmetro.org/server/rest/services/Bridgeport/Bridgeport_Parcels_NAD83/MapServer"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Bridgeport Connecticut official GIS parcel map (English is the applicable local language in the United States)",
+        "result": "The local-language query is English because Bridgeport is in the United States; it returned the same official City GIS Hub and MetroCOG parcel-service sources.",
+        "actualResultUrls": [
+          "https://www.bridgeportct.gov/government/departments/planning-economic-development/geographic-information-system-gis",
+          "https://metrocogct.gov/gis-shared-services/municipal-viewers/"
+        ]
+      }
+    ],
+    "service": {
+      "name": "Bridgeport_Parcels_NAD83 / Parcels layer 7",
+      "url": "https://maps.ctmetro.org/server/rest/services/Bridgeport/Bridgeport_Parcels_NAD83/MapServer/7",
+      "discoveryContext": "City of Bridgeport GIS Hub; Greater Bridgeport Regional Council / MetroCOG municipal viewer service",
+      "geometryType": "esriGeometryPolygon",
+      "nativeSpatialReference": "NAD83 Connecticut State Plane feet, WKID 102656 (latestWkid 2234); query response requested as EPSG:4326 GeoJSON",
+      "nativeIdentity": "Parcel_ID string, corroborated by GIS_ID; OBJECTID_12 is the ArcGIS OID",
+      "safeFieldsRequested": ["Parcel_ID", "GIS_ID", "OBJECTID_12", "geometry"],
+      "unsafeFieldsNotRequested": ["owner", "owner address", "property address", "contact", "titleholder", "tax", "account", "sale", "value", "building", "photo/field-card links"]
+    },
+    "requests": [
+      {
+        "kind": "viewer/service discovery",
+        "url": "https://www.bridgeportct.gov/government/departments/planning-economic-development/geographic-information-system-gis",
+        "outcome": "HTTP/search success; official City page identifies the GIS Hub and interactive maps."
+      },
+      {
+        "kind": "layer metadata",
+        "url": "https://maps.ctmetro.org/server/rest/services/Bridgeport/Bridgeport_Parcels_NAD83/MapServer/7?f=pjson",
+        "outcome": "HTTP success; polygon layer metadata, fields, capabilities, and native spatial reference available anonymously. Metadata exposed many unsafe fields, which were not retained in the packet."
+      },
+      {
+        "kind": "exact WUP point query",
+        "url": "https://maps.ctmetro.org/server/rest/services/Bridgeport/Bridgeport_Parcels_NAD83/MapServer/7/query?f=geojson&where=1%3D1&geometry=-73.1931304859171%2C41.1909714422495&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326",
+        "outcome": "HTTP success; zero features. This is only an exact-point miss and is not evidence of citywide absence. The initial exploratory response requested all fields; it was kept only under ignored tmp evidence and no unsafe attributes were copied into retained artifacts."
+      },
+      {
+        "kind": "bounded nearby extent query",
+        "url": "https://maps.ctmetro.org/server/rest/services/Bridgeport/Bridgeport_Parcels_NAD83/MapServer/7/query?f=geojson&where=1%3D1&geometry=-73.2031304859171%2C41.1809714422495%2C-73.1831304859171%2C41.2009714422495&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=Parcel_ID%2CGIS_ID%2COBJECTID_12&returnGeometry=true&outSR=4326&resultRecordCount=3",
+        "outcome": "HTTP success; three polygon features returned with Parcel_ID/GIS_ID 1031-28, 1055-8D, and 1030-9; exceededTransferLimit=true indicates the extent contains more records than the bounded sample. No sample GeoJSON retained."
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "City of Bridgeport GIS / Planning and Economic Development, using the public Greater Bridgeport Regional Council / MetroCOG parcel service",
+    "evidence": "The City GIS page links the public GIS Hub, and the linked ArcGIS service is explicitly named Bridgeport_Parcels_NAD83 with service description City of Bridgeport Parcel Geometry Service.",
+    "scope": "Public parcel geometry and safe parcel identity fields only; no ownership, address, tax, assessment, or titleholder integration performed."
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "First-party discovery and bounded anonymous geometry evidence are complete; serial adapter qualification and runtime admission remain held."
+}

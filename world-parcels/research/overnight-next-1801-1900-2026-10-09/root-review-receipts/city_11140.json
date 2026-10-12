@@ -1,0 +1,15 @@
+{
+  "taskId": "city:11140",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-11140-gao-an.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/gao-an-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T17:50:47Z",
+  "reviewNotes": "WUP source archive, queue and packet agree on code 11140, rank 1889, China, exact point and 304111 persons. English and Simplified Chinese executed searches are recorded. Official Gao'an municipal page directly links the Natural Resources Bureau, supporting local institutional custody. No anonymous native-ID polygon response or bounded geometry was obtained; lack of an exposed endpoint is unresolved access rather than citywide absence.",
+  "admissionGate": "No independent fresh native-ID read, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding or headed Details-panel verification. No runtime or catalog admission."
+}

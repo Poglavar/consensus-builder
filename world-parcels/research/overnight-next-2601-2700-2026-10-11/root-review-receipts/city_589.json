@@ -1,0 +1,16 @@
+{
+  "taskId": "city:589",
+  "decision": "held",
+  "evidenceFiles": [
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-589-mzuzu.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/mzuzu-service-review.json",
+    "tmp/valhalla-parcel-research/mzuzu-589/lims.html"
+  ],
+  "reason": "WUP 2025 source, immutable queue and packet agree on code 589, rank 2663, Malawi, point [-11.4457154014701,34.0104054946906] and 221840 persons. English and Chichewa executed searches are recorded. The first-party Ministry of Lands Department of Surveys and Department of Lands pages identify Mzuzu regional offices and cadastral/registration functions; the cached first-party LIMS shell directs users to account login/registration. RegistryFound true is grounded as institutional custody, not public geometry. MASDAP certificate failure and the login wall do not establish parcel absence. There is no retained polygon or safe native parcel ID. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding and headed Details verification are absent. Keep held without runtime admission.",
+  "retainedFullPolygons": 0,
+  "runtimeAdmitted": false,
+  "checkedAt": "2026-10-11T17:16:39Z"
+}

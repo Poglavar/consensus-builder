@@ -1,0 +1,14 @@
+{
+  "taskId": "city:2858",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-2858-tepic.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/tepic-service-review.json",
+    "tmp/valhalla-parcel-research/2858/implan-map.html"
+  ],
+  "checkedAt": "2026-10-09T16:11:46+00:00",
+  "basis": "Official Nayarit cadastral-cartography procedure establishes custody and requires an application/payment workflow. Original IMPLAN cache serves traffic maps. No anonymous native-ID parcel geometry or independent adapter qualification is evidenced; no citywide absence inference.",
+  "admissionGates": "No verified native parcel geometry; fresh exact-ID read, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced."
+}

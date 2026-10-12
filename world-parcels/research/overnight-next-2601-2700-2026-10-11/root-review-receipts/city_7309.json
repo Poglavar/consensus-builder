@@ -1,0 +1,21 @@
+{
+  "taskId": "city:7309",
+  "decision": "held",
+  "checkedAt": "2026-10-11T16:03:41Z",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-7309-mohammadabad-e-rigan.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/mohammadabad-e-rigan-service-review.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz"
+  ],
+  "identityFinding": "Original WUP 2025 archive SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114 confirms city 7309, rank 2609, Iran (Islamic Republic of), point [28.6516437369793,59.0165828311271], and 225871 persons; queue, roster, and packet agree.",
+  "searchFinding": "English and Persian executed queries and result URLs are recorded in the city packet; the paired review describes direct endpoint probes.",
+  "custodyFinding": null,
+  "custodyReason": "The packet's registryFound true relies on a secondary map-directory listing of a nearby office plus national context. The cited first-party sites yielded no usable response in the paired review, so local record custody is not independently established. This is unresolved, not false absence.",
+  "geometryFinding": "No native parcel ID or full polygon was retained; sample count is zero. Site timeouts do not establish citywide absence.",
+  "qualificationFinding": "No public parcel endpoint, fresh native-ID read, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details-panel verification is evidenced.",
+  "runtimeAdmitted": false
+}

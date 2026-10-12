@@ -1,0 +1,152 @@
+{
+  "cityCode": 863,
+  "queueRank": 2807,
+  "name": "Dashoguz",
+  "country": "Turkmenistan",
+  "countryCode": "TM",
+  "iso2": "TM",
+  "iso3": "TKM",
+  "point": [41.8381620899803, 59.9646768990666],
+  "population2025": 211569,
+  "population2025k": 211.569,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dashoguz Turkmenistan cadastral map parcel registry official",
+        "result": "Search found official Turkmenistan government material on the national land cadastre and a 2024 report on digital-cadastre development, but no Dashoguz public cadastral viewer, anonymous parcel API, local registry procedure, or parcel geometry endpoint.",
+        "actualResultUrls": [
+          "https://www.turkmenistan.gov.tm/en/post/82910/cadastre-accounting-land-resources",
+          "https://www.turkmenistan.gov.tm/en/post/61866/electronic-maps-travel-and-monitoring",
+          "https://www.turkmenistan.gov.tm/ru/post/58708/zakon-turkmenistana-o-gosudarstvennom-zemelnom-kadastre"
+        ]
+      },
+      {
+        "language": "Turkmen (local/native)",
+        "query": "Daşoguz Türkmenistan kadastr kartasy ýer registry resmi",
+        "result": "Search found the official Turkmen land-cadastre law in Turkmen and official Dashoguz government-domain pages, but no public Dashoguz parcel map/API or safe ID-plus-geometry response. The official law identifies national, regional and local land-resources/register responsibilities; it does not expose a public parcel service.",
+        "actualResultUrls": [
+          "https://turkmenistan.gov.tm/tk/habar/58709/dowlet-yer-kadastry-hakynda",
+          "https://court.gov.tm/media/laws/pdf/tm/416_-_D%C3%B6wlet_%C3%BDer_kadastry_hakynda.pdf",
+          "https://dashoguzkitaphana.gov.tm/contact/"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "No Dashoguz local registry or cadastral map/procedure page was established during this bounded attempt.",
+    "nationalCustodian": "Official Turkmenistan sources identify the Ministry of Agriculture's Land Resources Service and the Ministry of Justice state registration service as having cadastral/register responsibilities; this is general national agency evidence, not a Dashoguz public service.",
+    "registryEvidence": null,
+    "registryEvidenceUrls": []
+  },
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.turkmenistan.gov.tm/en/post/82910/cadastre-accounting-land-resources",
+      "httpStatus": 200,
+      "outcome": "Official government report loaded. It describes digital land-cadastre work, geolocation stations in all velayats, and cooperation with regional state-register services, but exposes no public parcel endpoint or schema."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://turkmenistan.gov.tm/tk/habar/58709/dowlet-yer-kadastry-hakynda",
+      "httpStatus": 200,
+      "outcome": "Official Turkmen-language land-cadastre law found. It describes cadastral maps, cadastral identifiers and local administration of land records; it does not provide an anonymous public map/API route."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.turkmenistan.gov.tm/ru/post/58708/zakon-turkmenistana-o-gosudarstvennom-zemelnom-kadastre",
+      "httpStatus": 200,
+      "outcome": "Official Russian-language duplicate/translation of the cadastral-law material found; no Dashoguz-specific public parcel service was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.turkmenistan.gov.tm/en/post/82910/cadastre-accounting-land-resources",
+      "httpStatus": 200,
+      "outcome": "Current HTML was retrieved and inspected for map, GIS, API, cadastral and script/configuration references. It is an informational article, not a parcel viewer; no public parcel request route was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://minagri.gov.tm/",
+      "httpStatus": null,
+      "outcome": "TLS/connection attempt failed before an HTTP response (curl could not connect to port 443). No content or absence inference was made."
+    },
+    {
+      "method": "GET",
+      "url": "https://court.gov.tm/media/laws/pdf/tm/416_-_D%C3%B6wlet_%C3%BDer_kadastry_hakynda.pdf",
+      "httpStatus": null,
+      "outcome": "Direct official PDF request failed before an HTTP response (curl could not connect to port 443). The same law was independently available through official HTML search results; no geometry or service evidence was inferred from the failed PDF request."
+    },
+    {
+      "method": "GET",
+      "url": "https://dashoguzkitaphana.gov.tm/contact/",
+      "httpStatus": 200,
+      "outcome": "Official Dashoguz-domain contact page loaded, but it only provided institutional contact and an embedded third-party street map; no cadastral layer, parcel schema, or anonymous parcel endpoint was exposed."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "parcelSchema": null,
+    "nativeIdentity": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "The exact WUP point [41.8381620899803, 59.9646768990666] was preserved in latitude/longitude order. No coordinate shift or parcel query was used because no public parcel route was identified.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No public Dashoguz parcel-vector response was identified; this is not evidence of citywide absence."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal data",
+    "tax/account",
+    "certificate/title"
+  ],
+  "sampleGeoJSON": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel-vector response; no hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Turkmenistan national cadastral sources and Dashoguz-domain public pages.",
+    "verifiedOpenScope": "National cadastral responsibilities and digital-cadastre reporting were evidenced; no anonymous Dashoguz parcel-vector coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "The exact WUP point was preserved and was not shifted to force a parcel hit.",
+    "A zero exact-point hit, unavailable host, map extent miss, or absent public route was not treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, public parcel schema, CRS, or stable parcel-identity semantics were verified.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS-verification disablement was used.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "Turkmenistan has an official land-cadastre system and reports digital-cadastre development, but the current anonymous public URL, local Dashoguz registry custodian, parcel geometry endpoint, schema, CRS, native identity semantics, and citywide open coverage remain unverified. Runtime readiness remains held."
+}

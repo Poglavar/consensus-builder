@@ -1,0 +1,14 @@
+{
+  "taskId": "city:1860",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-queue-extension-1301-2300-verification-2026-10-09.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-1860-kas.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/kas-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T18:00:56.811198Z",
+  "reason": "Official NIC and Judiciary pages substantiate national spatial and land-registration context, but no Kas-local registry custody or parcel layer. The geoportal timeout yielded no feature response. Native IDs, geometry, forced paging, 13-cell proof, metric GEOS checks, source binding, and headed details-panel proof are missing. Keep registryFound unresolved and hold runtime admission; timeout is not absence."
+}

@@ -1,0 +1,64 @@
+{
+  "purpose": "resumable WUP cadastral-source research packet",
+  "schemaVersion": 1,
+  "kind": "city-parcel-research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 10618,
+  "queueRank": 3170,
+  "name": "Juxian",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [35.5899819411797, 118.830477278756],
+  "population2025": 189691,
+  "population2025k": 189.691,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Juxian China cadastral map parcel public map service official",
+        "result": "Search did not identify a Juxian-specific first-party public cadastral viewer or anonymous parcel geometry API. Results were general Chinese cadastral guidance and contextual sources.",
+        "actualResultUrls": ["https://www.juxian.gov.cn/", "https://zygh.xa.gov.cn/ztzl/yhyshj/bsrk/bdcdj/bszn/djtcxbszn/1774698618606374913.html"]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "莒县 自然资源和规划局 不动产登记 地籍图 宗地 官方",
+        "result": "The official Juxian government site was found. Its department directory identifies the Natural Resources and Planning Bureau, and an official 2025 work-plan interpretation was retrieved; no public parcel viewer/API, schema, CRS, or anonymous ID-plus-geometry response was exposed.",
+        "actualResultUrls": ["http://www.juxian.gov.cn/", "http://www.juxian.gov.cn/col/col299076/index.html", "http://www.juxian.gov.cn/art/2025/2/28/art_309196_10397905.html"]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "莒县不动产登记中心 一网通办 官方",
+        "result": "A local-government news report describes the Juxian Real Estate Registration Center using the provincial natural-resources real-estate registration platform. This evidences a local registry service, but not a public parcel geometry endpoint.",
+        "actualResultUrls": ["https://news.iqilu.com/shandong/shandonggedi/20210918/4957341.shtml"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "Juxian County Government's official department directory identifies the Natural Resources and Planning Bureau, and a local-government news report identifies the Juxian Real Estate Registration Center and its online registration service. No public parcel geometry service was verified.",
+  "officialSources": [
+    {"url": "http://www.juxian.gov.cn/", "role": "official Juxian County Government homepage and department navigation", "access": "HTTP GET returned 200 HTML; HTTPS GET failed certificate verification and was not bypassed"},
+    {"url": "http://www.juxian.gov.cn/col/col299076/index.html", "role": "official Juxian government department directory identifying Natural Resources and Planning Bureau", "access": "HTTP GET returned 200 HTML"},
+    {"url": "http://www.juxian.gov.cn/art/2025/2/28/art_309196_10397905.html", "role": "official 2025 Juxian natural-resources and planning work-plan interpretation", "access": "HTTP GET returned 200 HTML"},
+    {"url": "https://news.iqilu.com/shandong/shandonggedi/20210918/4957341.shtml", "role": "local-government news report describing Juxian Real Estate Registration Center and provincial online registration platform", "access": "discovery result; contextual service evidence only"}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "requestOutcomes": [
+    {"route": "https://www.juxian.gov.cn/", "method": "GET", "outcome": "TLS certificate verification failed; no certificate exception or bypass used"},
+    {"route": "http://www.juxian.gov.cn/", "method": "GET", "outcome": "HTTP 200 HTML; homepage and links inspected, but no parcel viewer/API route was exposed"},
+    {"route": "http://www.juxian.gov.cn/col/col299076/index.html", "method": "GET", "outcome": "HTTP 200 HTML; Natural Resources and Planning Bureau identified, no parcel schema or geometry"},
+    {"route": "http://www.juxian.gov.cn/art/2025/2/28/art_309196_10397905.html", "method": "GET", "outcome": "HTTP 200 HTML; official work-plan interpretation, no parcel endpoint"},
+    {"route": "https://news.iqilu.com/shandong/shandonggedi/20210918/4957341.shtml", "method": "discovery/open", "outcome": "Local registry service description found; no anonymous parcel ID or geometry response"}
+  ],
+  "schemaAndCrs": null,
+  "resultCategory": "local_registry_evidenced_no_public_parcel_api",
+  "coverageAssessment": "The exact WUP point was preserved in latitude/longitude order and was not shifted. No exact-point parcel query was possible because no safe public Juxian parcel endpoint was identified. This is not evidence of citywide absence.",
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The current provincial platform route, anonymous access policy, native parcel identity field, schema, CRS, query semantics, and citywide coverage remain unverified. No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained. This packet is research evidence only, not source integration or admission."
+}

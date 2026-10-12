@@ -1,0 +1,22 @@
+{
+  "taskId": "packet:5041",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5041-polokwane.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/polokwane-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/polokwane-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/polokwane/local-envelope.geojson",
+    "tmp/valhalla-parcel-research/polokwane/local-query.geojson",
+    "tmp/valhalla-parcel-research/polokwane/national-envelope.geojson",
+    "tmp/valhalla-parcel-research/polokwane/national-query.geojson",
+    "tmp/valhalla-parcel-research/polokwane/sdf-properties-layer.json",
+    "tmp/valhalla-parcel-research/polokwane/national-cadastre-layer.json"
+  ],
+  "checkedAt": "2026-10-09T13:13:29Z",
+  "reason": "Polokwane code 5041, rank 1233, South Africa/ZA, unchanged WUP point and 451786 persons match the immutable queue. English and Afrikaans searches are recorded. Original first-party municipal bounded response has 999 polygons and exceededTransferLimit=true; all three retained safe SG21-ID Polygon geometries match it exactly. Original national bounded response has 2000 polygons and exceededTransferLimit=true. Both exact-point caches contain zero features, which cannot establish absence. Municipal GIS custody and bounded public geometry are supported, but complete city coverage and legal-title authority are not.",
+  "qualificationCheck": "No independent complete fresh native-ID read, forced pagination, 13 bounded cells, metric GEOS validity/duplicate/overlap and operation checks, source binding, or headed Details-panel verification. Keep held and unenabled."
+}

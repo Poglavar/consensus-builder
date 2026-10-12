@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "cityCode": 9526,
+  "wupCityCode": 9526,
+  "queueRank": 1386,
+  "rank": 1386,
+  "cityId": "wup2025:9526",
+  "name": "Zhaodong",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [46.0642595927575, 125.987077593533],
+  "centerLatLon": [46.0642595927575, 125.987077593533],
+  "pointBasis": "Exact unchanged WUP 2025 settlement point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 407507,
+  "population2025k": 407.507,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "capital": false,
+  "aliases": ["zhaodong"],
+  "status": "complete",
+  "metadataReviewFile": "zhaodong-service-review.json",
+  "registryFound": true,
+  "registryAssessment": "The official Zhaodong municipal government identifies the Zhaodong Natural Resources Bureau as the local department responsible for unified natural-resource and real-estate registration, cadastral investigation, real-estate surveying, registration information management, and public geographic-information services. The official Suihua government page separately lists the Zhaodong Real Estate Registration Center. This evidences a local registry/cadastral custodian, but no open anonymous parcel-vector service was verified.",
+  "resultCategory": "official_local_registry_evidenced_geometry_unverified",
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "source": null,
+  "sourceIds": [],
+  "sampleFile": null,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zhaodong China official cadastral map parcel natural resources bureau",
+        "result": "First-party Zhaodong government results identified the local Natural Resources Bureau and its registration/cadastral responsibilities. A separate first-party Suihua government page identified the local real-estate registration center. No safe anonymous parcel polygon, public parcel-vector endpoint, or viewer configuration was found.",
+        "actualResultUrls": [
+          "https://www.hljzhaodong.gov.cn/zd/c100144/202308/c12_a181f98dc7884971b60a9958617b7233.shtml",
+          "https://www.suihua.gov.cn/sh/zfbz/202406/c12_185978.shtml"
+        ]
+      },
+      {
+        "language": "native/local",
+        "script": "Simplified Chinese",
+        "query": "肇东市 自然资源局 不动产登记 地籍图 官方",
+        "result": "官方结果确认肇东市自然资源局负责自然资源和不动产统一确权登记、权籍调查、不动产测绘、确权登记信息管理和地理信息公共服务；绥化市政府官方页面列出肇东市不动产登记中心。未取得匿名安全宗地编号、图层模式、CRS或完整几何。",
+        "actualResultUrls": [
+          "https://www.hljzhaodong.gov.cn/zd/c100144/202308/c12_a181f98dc7884971b60a9958617b7233.shtml",
+          "https://www.suihua.gov.cn/sh/zfbz/202406/c12_185978.shtml",
+          "https://www.hljzhaodong.gov.cn/zd/c41/202112/c12_3e549877589f46209c083f65cf8a06ce.shtml"
+        ]
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Zhaodong municipal Natural Resources Bureau pages, official Zhaodong information-disclosure guidance, and the official Suihua listing of county/city real-estate registration centers.",
+    "verifiedOpenScope": "Local registry/cadastral custodian and registration-center existence verified; no anonymous parcel feature schema, native ID, CRS, exact-point response, or polygon verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly returned", "geometry", "source CRS", "public service metadata", "HTTP status/content type"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "runtimeEligible": false,
+  "adapterReady": false,
+  "integrationState": "not_integrated",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "researchAttempt": 1,
+  "remainingUncertainty": "The official local custodian's current public map/API configuration, parcel layer, schema, CRS, native identity, exact-point containment, and citywide open coverage remain unverified. Zero exact-point results, missing viewer links, HTTP 403/404 responses, or absence of an anonymous feature response are not evidence of citywide cadastral absence.",
+  "nextStep": "Serial reviewer may inspect only a genuinely public anonymous map/API response and retain at most three full parcel polygons if a safe native identity and geometry are actually returned; keep runtime readiness held."
+}

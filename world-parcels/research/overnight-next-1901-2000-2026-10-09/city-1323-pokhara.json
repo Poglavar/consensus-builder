@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 1323,
+  "wupCityCode": 1323,
+  "queueRank": 1941,
+  "name": "Pokhara",
+  "country": "Nepal",
+  "countryCode": "NP",
+  "iso3": "NPL",
+  "point": [28.2148084707255, 83.9865395392074],
+  "centerLatLon": [28.2148084707255, 83.9865395392074],
+  "population2025": 297320,
+  "population2025k": 297.32,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "No parcel geometry was returned by the official Pokhara municipal service. The unchanged WUP point was not shifted and no point-hit or citywide-absence inference was made.",
+  "nativeIdReadiness": "partial_non_geometry",
+  "registryFound": true,
+  "registryBasis": "Pokhara Metropolitan City publishes an official parcel-level land-use search system with administrative filters and parcel number results. It is a local municipal service, but it is not an open geometry service and does not expose a stable native parcel identifier in the observed response.",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pokhara Nepal official cadastral parcel map land records GIS Survey Department Nepal",
+        "result": "Found the official Pokhara Metropolitan City parcel-level land-use search system, the Department of Survey office directory, and the official MeroKitta description. The municipal service exposes parcel-number search data but no public geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://landuse.pokharamun.gov.np/",
+          "https://dos.gov.np/pages/napi-offices/",
+          "https://play.google.com/store/apps/details?hl=en_US&id=np.gov.dos.merokitta"
+        ]
+      },
+      {
+        "language": "Nepali",
+        "query": "पोखरा नेपाल आधिकारिक नापी कित्ता नक्सा जग्गा अभिलेख GIS",
+        "result": "Found the same official Pokhara Metropolitan City कित्तागत भू-उपयोग विवरण खोजी प्रणाली and Department of Survey Nepali pages. The municipal system returns parcel number, map sheet, ward, former VDC/area, and land-use classification, without geometry or owner fields.",
+        "actualResultUrls": [
+          "https://landuse.pokharamun.gov.np/",
+          "https://dos.gov.np/?lang=ne&medias=%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B8%E0%A4%AE%E0%A5%8D%E0%A4%AC%E0%A4%A8%E0%A5%8D%E4%A4%A7%E0%A5%80-%E0%A4%86%E0%A4%87%E0%A4%A8-%E0%A5%A8%E0%A5%A6%E0%A5%A8%E0%A5%A7-2"
+        ]
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Pokhara Metropolitan City parcel-level land-use records and Nepal Department of Survey custodianship were checked through official public pages and the municipal JSON service.",
+    "verifiedOpenScope": "Municipal land-use records: 449582 total records reported by the anonymous init endpoint. Search responses are paginated and contain safe administrative/parcel-number fields only.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attemptedRoutes": [
+    {
+      "route": "GET https://landuse.pokharamun.gov.np/",
+      "outcome": "succeeded; current HTML/JavaScript inspected and official municipal parcel-level search workflow identified"
+    },
+    {
+      "route": "GET https://landuse.pokharamun.gov.np/api/options?type=init",
+      "outcome": "succeeded HTTP 200; returned total=449582 and 39 former-VDC/area filter values"
+    },
+    {
+      "route": "GET https://landuse.pokharamun.gov.np/api/search?kitta=1&page=1",
+      "outcome": "succeeded HTTP 200; returned paginated records with sn, palika, gavis, ward, sheet, kitta, and land_use; no geometry or stable native parcel ID"
+    },
+    {
+      "route": "GET https://landuse.pokharamun.gov.np/api/search?kitta=%E0%A5%A7&page=1",
+      "outcome": "HTTP 400; Nepali-digit parcel query rejected by endpoint; no inference drawn"
+    },
+    {
+      "route": "GET https://landuse.pokharamun.gov.np/api/options?type=wards&gavis=%E0%A4%AA%E0%A5%8B%E0%A4%96%E0%A4%B0%E0%A4%BE%2011",
+      "outcome": "succeeded HTTP 200; returned ward option 11"
+    },
+    {
+      "route": "GET https://landuse.pokharamun.gov.np/api/options?type=sheets&gavis=%E0%A4%AA%E0%A5%8B%E0%A4%96%E0%A4%B0%E0%A4%BE%2011&ward=1",
+      "outcome": "succeeded HTTP 200; returned no sheet options for this filter combination"
+    },
+    {
+      "route": "GET https://landuse.pokharamun.gov.np/api/search?gavis=%E0%A4%AA%E0%A5%8B%E0%A4%96%E0%A4%B0%E0%A4%BE%2011&ward=1&page=1",
+      "outcome": "succeeded HTTP 200; returned total=0; this filter result is not evidence of citywide absence"
+    },
+    {
+      "route": "GET https://dos.gov.np/pages/napi-offices/",
+      "outcome": "succeeded; official Department of Survey directory identified Kaski office and linked https://kaskidos6j0oyr.giwms-admin.gov.np/"
+    },
+    {
+      "route": "GET https://kaskidos6j0oyr.giwms-admin.gov.np/",
+      "outcome": "TLS certificate verification failed in the public client; no certificate exception was used and no login or further request was attempted"
+    }
+  ],
+  "schemaAndCrs": "Municipal JSON schema observed: total/gavisList for init; search data fields sn, palika, gavis, ward, sheet, kitta, land_use plus total/page/limit/totalPages. No CRS or geometry was exposed.",
+  "nativeIdentity": "No stable native identity was exposed. The response field sn is a display serial number and was not retained or treated as a native parcel key. The combination gavis+ward+sheet+kitta is a source-record lookup composite, not asserted as a globally stable identity.",
+  "fieldMapping": {
+    "gavis": "former VDC/area filter",
+    "ward": "ward number",
+    "sheet": "map sheet number",
+    "kitta": "parcel number",
+    "land_use": "land-use classification",
+    "sn": "display serial only; not retained"
+  },
+  "safeFieldAllowlist": ["geometry", "stable native parcel id", "administrative parcel lookup fields: gavis, ward, sheet, kitta, land_use"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, personal, tax/account, legal-description, or ownership fields were requested or retained. No login, credentials, private token, CAPTCHA bypass, or certificate exception was used.",
+  "sourceIds": [
+    "https://landuse.pokharamun.gov.np/",
+    "https://dos.gov.np/pages/napi-offices/",
+    "https://kaskidos6j0oyr.giwms-admin.gov.np/",
+    "https://play.google.com/store/apps/details?hl=en_US&id=np.gov.dos.merokitta"
+  ],
+  "runtimeReadiness": "held",
+  "resultCategory": "local_parcel_registry_metadata_without_public_geometry",
+  "blocker": "The evidenced local service is a parcel-level land-use lookup but exposes no anonymous parcel geometry, CRS, or stable native parcel ID suitable for a geometry adapter.",
+  "remainingUncertainty": "The Department of Survey Kaski site may expose additional services, but its linked host failed TLS verification and was not accessed with an exception. The municipal records may be derived from cadastral data, but the public endpoint does not establish geometry coverage or a stable native identity.",
+  "nextStep": "Independent serial reviewer should qualify whether an authorized, TLS-valid public Kaski/NeLIS map or geometry endpoint exists before any adapter consideration."
+}

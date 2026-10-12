@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:10229",
+  "cityCode": 10229,
+  "wupCityCode": 10229,
+  "name": "Tirunelveli",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "rank": 1509,
+  "queueRank": 1509,
+  "point": [8.72181540695111, 77.6797647402921],
+  "centerLatLon": [8.72181540695111, 77.6797647402921],
+  "pointBasis": "Exact WUP2025 settlement point; not shifted and not a municipal boundary or parcel-coverage claim.",
+  "population2025": 376005,
+  "population2025k": 376.005,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Tirunelveli District Administration land-record page identifies the Assistant Director of Survey and Land Records at the Collector office in Kokkirakulam, Tirunelveli, and links the official Tamil Nadu land-record e-Services. This is local custodian/service evidence only, not evidence of anonymous parcel geometry or ownership.",
+  "registryEvidenceUrls": [
+    "https://tirunelveli.nic.in/service/e-services-land-records/",
+    "https://tirunelveli.nic.in/services-2/",
+    "https://eservices.tn.gov.in/eservicesnew/home.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official public routes reviewed either expose service descriptions/login-gated land-management functionality or did not return a usable public map/API response. No safe anonymous native parcel ID plus complete polygon was verified. No login, credential, token, CAPTCHA bypass, or unsafe field request was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Tirunelveli District Administration and Tamil Nadu Survey and Settlement land-record services; TNGIS/TNGLMS public web entry points were also inspected.",
+    "verifiedOpenScope": "No anonymous complete parcel polygon response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tirunelveli Tamil Nadu official cadastral parcel map land records GIS viewer API",
+        "scope": "Identify local registry custody and a safe public parcel geometry route.",
+        "result": "Search located the official Tirunelveli District land-record page, official district maps/services, Tamil Nadu e-Services, TNGIS, TNGLMS, and the official NIC Tamil Nadu announcement for Integrated Land Record. Local survey-and-land-record custody was verified; no safe anonymous parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://tirunelveli.nic.in/service/e-services-land-records/",
+          "https://tirunelveli.nic.in/maps/",
+          "https://eservices.tn.gov.in/eservicesnew/home.html",
+          "https://www.tngis.tn.gov.in/apps.html",
+          "https://tnglms.in/",
+          "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Tamil",
+        "query": "திருநெல்வேலி தமிழ்நாடு அதிகாரப்பூர்வ நில அளவை வரைபடம் நிலப்பதிவு இணையதளம்",
+        "scope": "Independent local-language search for local registry custody and public cadastral geometry.",
+        "result": "Search located the official Tamil Tirunelveli district pages and the Tamil Nadu land-record service context. The results support the same district/state service custody, but did not provide a verified anonymous complete-polygon response.",
+        "actualResultUrls": [
+          "https://tirunelveli.nic.in/ta/",
+          "https://tirunelveli.nic.in/ta/%E0%AE%AA%E0%AE%B1%E0%AF%8D%E0%AE%B1%E0%AE%BF/",
+          "https://eservices.tn.gov.in/eservicesnew/home.html",
+          "https://www.tngis.tn.gov.in/apps.html"
+        ],
+        "executionMethod": "Separate Tamil-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The exact WUP point was not shifted. Public parcel-layer coverage, request shape, schema, CRS, native identity, and citywide completeness remain unverified. A timeout, login wall, or map extent miss is not treated as evidence of parcel absence.",
+  "nextStep": "Serial reviewer should independently validate a first-party anonymous native parcel endpoint before any adapter qualification; keep runtime held."
+}

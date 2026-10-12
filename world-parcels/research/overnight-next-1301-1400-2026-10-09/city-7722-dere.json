@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "attempt": 1,
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "rank": 1315,
+  "cityCode": 7722,
+  "queueRank": 1315,
+  "name": "Dere",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso2": "NG",
+  "iso3": "NGA",
+  "locId": 566,
+  "point": [4.66044329966891, 7.29427515774573],
+  "centerLatLon": [4.66044329966891, 7.29427515774573],
+  "pointBasis": "Exact WUP 2025 population-weighted settlement point (latitude, longitude); not shifted to seek a parcel hit.",
+  "population2025": 425674,
+  "population2025k": 425.674,
+  "populationUnit": "persons",
+  "populationPlausibility": "Moderate",
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "registryFound": null,
+  "source": {
+    "name": "Rivers State Ministry of Lands and Survey / Office of the Surveyor General, via official Rivers State portal references",
+    "operator": "Rivers State Ministry of Lands and Survey",
+    "serviceType": "official land-administration and e-filing process evidence; anonymous parcel vector access not verified",
+    "jurisdiction": "Rivers State, including Gokana LGA; citywide Dere parcel coverage not established",
+    "layer": null,
+    "geometryType": null,
+    "nativeIdField": null
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dere Nigeria official cadastral survey land registry GIS Rivers State parcel map",
+        "result": "Search identified Dere as a town in Gokana, Rivers State and found official Rivers State land-administration process pages. No public anonymous parcel feature service or safe bounded geometry response was found.",
+        "actualResultUrls": [
+          "https://rsipa.riversstateapps.ng/lands-and-survey/",
+          "https://rsipa.riversstateapps.ng/rivers-state-ministry-of-lands-and-survey/",
+          "https://www.sgriv.com/",
+          "https://osgof.gov.ng/cadastral-legal-surveys/"
+        ]
+      },
+      {
+        "language": "Igbo/local-context",
+        "query": "Dere Nigeria Igbo ala ndebanye GIS map parcels Rivers State",
+        "result": "No first-party local-language result establishing a public Dere/Gokana parcel map or anonymous geometry endpoint. Official Rivers State land-administration pages remained the relevant source leads.",
+        "actualResultUrls": [
+          "https://rsipa.riversstateapps.ng/lands-and-survey/",
+          "https://www.sgriv.com/"
+        ]
+      }
+    ],
+    "identityEvidence": [
+      {
+        "url": "https://mapcarta.com/26455504",
+        "observation": "Independent place index identifies Dere as a town in Gokana, Rivers State; used only for locality context, not registry evidence."
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://rsipa.riversstateapps.ng/lands-and-survey/",
+      "operator": "Rivers State Ministry of Lands and Survey (described by Rivers State Investment Promotion Agency portal)",
+      "observation": "Describes state land administration, surveying, land-use management, RIVLANDS e-filing, charting/site inspection, and survey uploads; no anonymous map or parcel download is exposed on the reviewed page."
+    },
+    {
+      "url": "https://www.sgriv.com/",
+      "operator": "Office of the Surveyor General, Rivers State",
+      "observation": "Public landing page offers land-management application workflow and an access-account route; no public parcel map/API or safe anonymous geometry was exposed in the reviewed HTML/configuration."
+    },
+    {
+      "url": "https://osgof.gov.ng/cadastral-legal-surveys/",
+      "operator": "Office of the Surveyor-General of the Federation",
+      "observation": "Federal informational page describes cadastral/legal survey and cadastral GIS responsibilities nationwide, but is not a Dere/Rivers parcel registry endpoint."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://rsipa.riversstateapps.ng/lands-and-survey/",
+      "method": "Anonymous read-only GET with redirect following; no cookies, credentials, owner/address/titleholder fields, or property-specific parameters",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Official portal page loaded. It links/describes RIVLANDS process and survey upload workflow, but no public parcel feature endpoint or map configuration was present."
+    },
+    {
+      "url": "https://app.rsipa.riversstateapps.ng/",
+      "method": "Anonymous read-only GET; no login submitted",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Returned a Sign In page. Login wall; no attempt to authenticate or bypass it, and no parcel response retained."
+    },
+    {
+      "url": "https://www.sgriv.com/",
+      "method": "Anonymous read-only GET; inspected public Next.js HTML and referenced JavaScript/configuration",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "Returned public marketing/application page. Reviewed client assets exposed no usable anonymous parcel geometry endpoint; application access/payment workflow is outside the safe research scope."
+    },
+    {
+      "url": "https://osgof.gov.ng/cadastral-legal-surveys/",
+      "method": "Anonymous read-only GET via first-party search/open review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "text/html",
+      "assessment": "Federal cadastral-services prose only; not a local Dere/Gokana registry or parcel API."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Rivers State land administration and survey/e-filing processes are evidenced.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "targetGeometryEvidence": "none",
+  "verifiedSample": false,
+  "nativeIdReadiness": "not_verified",
+  "publicParcelGeometryFound": false,
+  "blocker": "No safe anonymous public parcel feature layer or bounded ID+geometry response was exposed by the reviewed Rivers State routes; the application route returned a login page.",
+  "remainingUncertainty": "Rivers State may hold cadastral records internally or behind authenticated workflows. The reviewed outcomes do not establish citywide absence, map extent absence, or countrywide coverage.",
+  "runtimeReadiness": "held",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independently qualified public parcel geometry and stable native parcel identity were verified."
+  },
+  "adapterReady": false,
+  "sourceIds": [],
+  "researchNotes": "No GeoJSON retained. A zero exact-point hit was not used as evidence of absence; no exact-point parcel query was available from a public service.",
+  "schemaVersionNote": "Research evidence only; no source integration or runtime admission performed."
+}

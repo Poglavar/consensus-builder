@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "cityCount": 0,
+  "cities": [],
+  "resolvedDecisions": [
+    {
+      "cityCode": 78,
+      "rank": 1526,
+      "decision": "confirmed_attempt",
+      "decisionFile": "root-identity-decision-overlay.json",
+      "reviewedAt": "2026-10-10T08:15:38.981767Z"
+    },
+    {
+      "cityCode": 1122,
+      "rank": 1529,
+      "decision": "different_settlement",
+      "decisionFile": "root-identity-decision-overlay.json",
+      "reviewedAt": "2026-10-10T08:15:38.981767Z"
+    },
+    {
+      "cityCode": 11424,
+      "rank": 1538,
+      "decision": "different_settlement",
+      "decisionFile": "root-identity-decision-overlay.json",
+      "reviewedAt": "2026-10-10T08:15:38.981767Z"
+    },
+    {
+      "cityCode": 2303,
+      "rank": 1579,
+      "decision": "different_settlement",
+      "decisionFile": "root-identity-decision-overlay.json",
+      "reviewedAt": "2026-10-10T08:18:20.056343Z"
+    }
+  ]
+}

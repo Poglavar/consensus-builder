@@ -1,0 +1,54 @@
+{
+  "taskId": "city:1287",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-1287-petrozavodsk.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/petrozavodsk-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "tmp/valhalla-parcel-research/runs/20261011T152058-d55bf88c/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-11T15:24:52Z",
+  "reason": "Official NSPD public viewer timed out in the bounded worker attempt; no first-party parcel feature response, native ID, geometry, or independently qualified adapter is available. Timeout is not citywide absence.",
+  "identityCheck": {
+    "rank": 2583,
+    "cityCode": 1287,
+    "country": "Russian Federation",
+    "pointLatLon": [
+      61.7820967154525,
+      34.3496012260753
+    ],
+    "populationPersons": 227487,
+    "matchedOfficial2025WupAndQueue": true
+  },
+  "searchLanguagesChecked": [
+    "English",
+    "Russian"
+  ],
+  "registryFound": null,
+  "sampleCheck": {
+    "retainedFullPolygons": 0,
+    "nativeIdVerified": false
+  },
+  "admissionGates": {
+    "freshNativeIdRead": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "absenceConclusion": null,
+  "runtimeAdmission": false,
+  "searchExecutionEvidence": {
+    "workerLog": "tmp/valhalla-parcel-research/runs/20261011T152058-d55bf88c/stdout.jsonl",
+    "executedQueries": [
+      "Petrozavodsk official cadastral map GIS parcel public map кадастровая карта Петрозаводск официальный сайт",
+      "site:gov10.ru Петрозаводск геоинформационная система кадастровая карта",
+      "Петрозаводск публичная кадастровая карта официальный геопортал земельные участки"
+    ]
+  },
+  "admissionGateScope": "independent live adapter qualification; bounded worker discovery alone does not satisfy these gates"
+}

@@ -1,0 +1,12 @@
+{
+  "taskId": "packet:2945",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-2945-ab-ch.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ab-ch-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T13:34:12Z",
+  "rootFinding": "Abéché: immutable rank 1254, country, point and 443793 persons match queue; English and French searches are recorded. ANATS map is a service-center locator and e-Tchad DNS failed. Registry custody remains null; no safe public parcel polygon response or adapter qualification is evidenced. DNS failure and untested exact point do not establish absence; hold admission."
+}

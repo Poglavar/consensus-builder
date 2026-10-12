@@ -1,0 +1,13 @@
+{
+  "taskId": "city:6799",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-6799-coatzacoalcos.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/coatzacoalcos-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T19:08:30Z",
+  "reason": "No verified public parcel geometry or stable native parcel ID; municipal predial lookup is key based.",
+  "admissionGates": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed details-panel verification."
+}

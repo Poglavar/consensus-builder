@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10191",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-10191-rajapalayam.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/rajapalayam-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-11T12:11:40Z",
+  "reason": "Immutable WUP rank 2443, India, unchanged point, and 240280 persons match roster and queue. English and Tamil queries and results are recorded. Tamil Nadu land-record custody and Rajapalayam planning maps are supported by first-party pages, but no original anonymous parcel response, safe native ID, CRS, or full polygon was retained; service timeouts do not imply absence. Fresh ID reads, forced paging, 13 cells, metric GEOS checks, source binding, and headed Details verification are missing. Held; no runtime admission.",
+  "sourcePagesChecked": [
+    "https://tnglms.in/",
+    "https://rajapalayamlpa.com/"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-4188-marab.json",
+  "cohort": "overnight-next-2701-2800-2026-10-11",
+  "purpose": "Document first-party Marabá municipal cadastral-source discovery and bounded anonymous access review.",
+  "assessment": "A local municipal cadastral custodian and property-registry procedure were evidenced. The official public IPTU/Cadastro Imobiliário portal was reachable in indexed results but is a lookup workflow requiring an inscription and visual code; no anonymous safe parcel ID-plus-geometry response, schema, CRS, viewer configuration, or public map API was verified. No polygon is retained. Runtime remains held.",
+  "registryAssessment": "registryFound=true is supported by official Marabá SDU and municipal-law descriptions of the georeferenced Cadastro Multifinalitário and cadastral city plan, together with the official municipal Cadastro Imobiliário/IPTU lookup. This does not qualify source integration.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointAbsenceInferred": false,
+    "wupPointShifted": false
+  },
+  "officialPrimarySources": [
+    {"url": "https://semma.maraba.pa.gov.br/wp-content/blogs.dir/34/files/2024/05/cartacidadao.pdf", "operator": "Prefeitura Municipal de Marabá / SDU", "scope": "Georeferenced Cadastro Multifinalitário, cadastral plan, and urban parceling procedures."},
+    {"url": "https://nfse.maraba.pa.gov.br/IPTU_Index.aspx?Origem=Menu", "operator": "Prefeitura Municipal de Marabá", "scope": "Cadastro Imobiliário/IPTU lookup."},
+    {"url": "https://sapl.maraba.pa.leg.br/media/sapl/public/normajuridica/2003/1844/1844_texto_integral.pdf", "operator": "Câmara Municipal de Marabá", "scope": "Municipal law defining SDU cadastral responsibilities."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Marabá Brazil official cadastral parcel map cadastro imobiliário GIS Prefeitura", "result": "Official municipal cadastral-procedure, municipal site, and IPTU portal found; no open parcel geometry endpoint found.", "resultUrls": ["https://maraba.pa.gov.br/mapa-do-site/", "https://nfse.maraba.pa.gov.br/IPTU_Index.aspx?Origem=Menu", "https://semma.maraba.pa.gov.br/wp-content/blogs.dir/34/files/2024/05/cartacidadao.pdf"]},
+    {"language": "Portuguese (local/native)", "query": "Marabá cadastro imobiliário mapa lotes planta cadastral Prefeitura SDU geoprocessamento", "result": "Official SDU/Cadastro Multifinalitário and Cadastro Imobiliário references found; public lookup did not yield safe parcel geometry or service configuration.", "resultUrls": ["https://semma.maraba.pa.gov.br/wp-content/blogs.dir/34/files/2024/05/cartacidadao.pdf", "https://nfse.maraba.pa.gov.br/Consulta_Unica_Index.aspx?Origem=Menu", "https://sapl.maraba.pa.leg.br/media/sapl/public/normajuridica/2003/1844/1844_texto_integral.pdf"]}
+  ],
+  "attempts": [
+    {"url": "https://maraba.pa.gov.br/mapa-do-site/", "method": "GET via indexed first-party page; no credentials; TLS verified by search provider", "outcome": "Municipal site map listed IPTU Online and service links but no cadastral map/API link was exposed."},
+    {"url": "https://semma.maraba.pa.gov.br/wp-content/blogs.dir/34/files/2024/05/cartacidadao.pdf", "method": "GET indexed official PDF; no credentials", "outcome": "Official SDU description confirms georeferenced Cadastro Multifinalitário, updated cadastral plan, and subdivision/remembramento functions. No downloadable parcel layer or API documented."},
+    {"url": "https://sapl.maraba.pa.leg.br/media/sapl/public/normajuridica/2003/1844/1844_texto_integral.pdf", "method": "GET indexed official municipal-law PDF; no credentials", "outcome": "Confirms local SDU cadastral mandate; legal/procedural evidence only."},
+    {"url": "https://nfse.maraba.pa.gov.br/IPTU_Index.aspx?Origem=Menu", "method": "GET anonymous; TLS verified; bounded timeout 20s", "outcome": "Search-indexed page exposes Cadastro Imobiliário/IPTU lookup. Direct request timed out before a response; no retry with credentials, no CAPTCHA bypass, and no unsafe field request."},
+    {"url": "https://nfse.maraba.pa.gov.br/Consulta_Unica_Index.aspx?Origem=Menu", "method": "GET anonymous via indexed first-party page; no credentials", "outcome": "Page exposes Cadastro Imobiliário ou Inscrição lookup and visual-code workflow; no safe parcel geometry or public service metadata."},
+    {"url": "https://www.tcmpa.tc.br/mural-de-licitacoes/licitacoes/arquivo-s3/gZkBnLwETNxUTMfRjM5AjNy81chNXa1F3clB1L5ATM0UDM08CNwQjM08CNyAjM/wUPd4wFJFUgUERgE0UJVVUTVEU", "method": "GET indexed official procurement document; no credentials", "outcome": "2024 material describes planned GIS/cadastral update, orthophotos, and lot database work; not treated as evidence of a currently public parcel service."}
+  ],
+  "safeFieldAllowlist": ["native public parcel ID if available", "native geometry", "geometry type", "source CRS", "layer/schema metadata", "administrative codes"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not run against a verified parcel endpoint; exact point [-5.35905844846975,-49.1124990020739] remains unchanged and no absence inference is made."},
+  "coverageAssessment": {"claimedScope": "Official Marabá municipal cadastral custody and anonymous public-service discovery.", "verifiedOpenScope": "Municipal procedural and lookup-service evidence only; no parcel geometry.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "The municipal Cadastro Multifinalitário may exist behind an authenticated/internal GIS or may be exposed through a future/current route not indexed publicly. The IPTU lookup may return property data for a supplied inscription, but that workflow was not used to request or retain unsafe data and is not evidence of parcel geometry.",
+  "runtimeDecision": "held_not_enabled",
+  "integrationDecision": "not_integrated"
+}

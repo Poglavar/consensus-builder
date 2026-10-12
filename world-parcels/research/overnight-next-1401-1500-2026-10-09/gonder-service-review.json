@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3767-gonder.json",
+  "purpose": "Document separate English/Amharic discovery, local custodial evidence, advertised viewer configuration, bounded anonymous request outcomes, and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Gonder City Administration is first-party evidenced within the Amhara urban/infrastructure bureau context, but no public Gonder parcel vector service or safe native identifier-plus-geometry response was verified. Ethiopia's e-Land viewer was inspected through its public HTML and JavaScript/configuration; its exposed configuration is not evidence of Gonder coverage.",
+  "registryAssessment": "registryFound:null: local city administration context is evidenced, but a Gonder-local registry/cadastre map or API was not established. This is not a negative finding.",
+  "officialPrimarySources": [
+    {
+      "url": "https://amhara.mui.gov.et/en/gonder-city-administration-2/",
+      "operator": "Amhara National Regional State Bureau of Urban and Infrastructure / Gonder City Administration",
+      "scope": "Gonder city administration, service office, sub-city and kebelle structure, and structural-plan context; no parcel vector endpoint."
+    },
+    {
+      "url": "https://eland.addiscadaster.gov.et/maps",
+      "operator": "Land Holding Registration and Information Agency",
+      "scope": "Official e-Land public viewer. Public bundle inspection exposed Addis-oriented configuration and generic service paths; Gonder geometry was not verified."
+    },
+    {
+      "url": "https://ethionsdi.gov.et/",
+      "operator": "Ethiopia National Spatial Data Infrastructure",
+      "scope": "National spatial-data portal; timed out in anonymous review, with no schema or parcel response retained."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Gondar Ethiopia official cadastral parcel map GIS land registry cadastre",
+      "result": "First-party Amhara Gonder city page and national e-Land/NSDI portals identified; no Gonder-specific public parcel geometry service surfaced.",
+      "actualResultUrls": ["https://amhara.mui.gov.et/en/gonder-city-administration-2/", "https://eland.addiscadaster.gov.et/maps", "https://ethionsdi.gov.et/"]
+    },
+    {
+      "language": "Amharic",
+      "query": "ጎንደር ካዳስተር የመሬት ምዝገባ ካርታ ኦፊሴላዊ",
+      "result": "First-party Ethiopian land-registration terminology and national e-Land reference identified; no Gonder-local public parcel layer/API verified.",
+      "actualResultUrls": ["https://eland.addiscadaster.gov.et/maps", "https://amhara.mui.gov.et/en/gonder-city-administration-2/", "https://www.hopr.gov.et/"]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No public source-native polygon was returned at [12.5917580498017,37.4535254078689]; zero/unavailable geometry is not evidence of citywide absence.",
+    "requestEvidence": [
+      {
+        "url": "https://amhara.mui.gov.et/en/gonder-city-administration-2/",
+        "method": "anonymous first-party page review",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Custodial city context only; no parcel schema, service URL, or vector geometry."
+      },
+      {
+        "url": "https://ethionsdi.gov.et/",
+        "method": "anonymous GET",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "Timeout; no absence inference."
+      },
+      {
+        "url": "https://eland.addiscadaster.gov.et/maps",
+        "method": "anonymous HTML and public JavaScript/configuration inspection",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Viewer loaded, but public configuration did not expose a Gonder parcel layer or safe anonymous geometry query."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "First-party city administration context plus national land/spatial-data portals.",
+    "verifiedOpenScope": "No Gonder-specific public vector parcel geometry or stable native parcel identity was verified; no citywide or countrywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry", "CRS", "source layer metadata"],
+  "attempts": [
+    "English and Amharic first-party discovery searches completed.",
+    "Official Amhara Gonder city page read successfully; no parcel endpoint advertised.",
+    "Official e-Land viewer HTML and current JavaScript bundle inspected; no Gonder public parcel layer or safe anonymous geometry route verified.",
+    "Official Ethio-NSDI home request timed out; transport failure does not prove absence."
+  ],
+  "remainingUncertainty": "Current Gonder parcel-service availability, local registry custody details, exact WUP-point coverage, schema/CRS, and source currentness remain unverified.",
+  "nextStep": "Continue only through first-party advertised service/configuration routes and request bounded safe ID-plus-geometry data; keep runtime held until a serial reviewer independently qualifies the adapter.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1401-1500",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

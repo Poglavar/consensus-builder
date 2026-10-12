@@ -1,0 +1,24 @@
+{
+  "taskId": "city:10167",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-10167-domariaganj.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/domariaganj-service-review.json",
+    "tmp/valhalla-parcel-research/10167/level1.json",
+    "tmp/valhalla-parcel-research/10167/level2-184.json",
+    "tmp/valhalla-parcel-research/10167/level3-domariaganj.json",
+    "tmp/valhalla-parcel-research/10167/map.json"
+  ],
+  "checkedAt": "2026-10-12T05:46:45Z",
+  "findings": {
+    "identity": "WUP 2025 source SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, code 10167, rank 3217, India, point [27.1909456873267,82.6626361660407], and 187658 persons agree with roster, queue, and packet.",
+    "searches": "Packet records English and Hindi queries; cached first-party UP BhuNaksha responses substantiate the administrative service lead. No separate original search-result trace is retained.",
+    "custody": "registryFound true is supported by the first-party BhuNaksha district/tehsil/village selector and official UP revenue source references; it does not establish public citywide parcel geometry.",
+    "firstParty": "Cached selectors return district 184 सिद्धार्थनगर, tehsil 00936 डुमरियागंज, and village 221349 डुमरियागंज with hasData=false. Cached MapInfo extent is all zero and gisCode is 18400936221349.",
+    "geometry": "Zero sample polygons and no returned parcel record or native ID. The selected village map result is unavailable; it does not establish citywide absence.",
+    "admission": "Held. No independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS operation checks, source binding, or headed Details-panel verification."
+  }
+}

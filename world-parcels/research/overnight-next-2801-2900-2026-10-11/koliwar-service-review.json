@@ -1,0 +1,32 @@
+{
+  "cityRecord": "city-10965-koliwar.json",
+  "cityCode": 10965,
+  "queueRank": 2801,
+  "name": "Koliwar",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [25.5634606509822, 84.7563718848356],
+  "population2025": 211825,
+  "population2025k": 211.825,
+  "populationUnit": "persons",
+  "status": "complete",
+  "runtimeReadiness": "held",
+  "registryFound": true,
+  "reviewOutcome": "Official Bihar cadastral custodian and public viewer are evidenced, but anonymous parcel-vector integration is unqualified.",
+  "custodianAssessment": "Bihar Government’s Revenue and Land Reforms Department and its Directorate of Land Records & Survey are the evidenced custodians. BhuNaksha Bihar is a public cadastral map viewer, while national/general mapping references were not used as local registry evidence.",
+  "queryOutcomes": "Separate English and Hindi discovery queries found the official Bihar Bhumi gateway and BhuNaksha viewer. The viewer exposed Bhojpur–Ara Sadar–Koilwar–कोईलवर and survey choices RS/CS.",
+  "requestOutcomes": "The current landing/viewer HTML, ScalarDatahandler hierarchy, and extent REST route were retrieved. The extent response reported EPSG:32645 and gisCode RS29010201651320701. The exact WUP point transformed to [274603.1649538847, 2829246.275738771], outside the returned extent; point lookup was empty. A bounded plot lookup and WMS GetCapabilities attempt did not yield a usable vector parcel record.",
+  "endpointInspection": "Viewer JavaScript showed REST routes getVVVVExtentGeoref, getPlotAtXY, ScalarDatahandler, and WMS. The map layer is WMS-rendered; no public vector schema or geometry-bearing anonymous response was verified.",
+  "geometryEvidence": {"retainedSampleFile": null, "fullPolygonsRetained": 0, "nativeIds": [], "reason": "No unchanged native parcel geometry response was received."},
+  "safeFieldAllowlist": ["id", "kide", "geometry"],
+  "excludedFields": ["owner", "address", "contact", "titleholder", "tax", "account", "personal", "unsafe record details"],
+  "scopeLimits": [
+    "The exact-point miss and sheet extent miss are not evidence of citywide cadastral absence.",
+    "One selected sheet does not establish citywide polygon completeness, administrative boundary alignment, or coverage across other sheets/mauzas.",
+    "WMS display evidence is not retained parcel-vector geometry and does not establish a stable native parcel identity for runtime use.",
+    "No source integration, adapter qualification, or admission is claimed."
+  ],
+  "uncertainty": "Moderate for existence of an official Bihar/Koilwar cadastral map service; high for anonymous vector geometry availability, citywide coverage, and parcel identity behavior.",
+  "runtimeEligible": false,
+  "recommendedDisposition": "Hold for serial reviewer retry with independent sheet discovery and adapter qualification."
+}

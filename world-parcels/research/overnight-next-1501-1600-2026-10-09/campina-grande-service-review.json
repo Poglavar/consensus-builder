@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-8488-campina-grande.json",
+  "purpose": "Document first-party discovery, current viewer/configuration inspection, bounded anonymous requests, safe-field limits, and uncertainty.",
+  "assessment": "The official municipal citizen portal is live and its current configuration points to Campina Grande public-service APIs. Its map is for public equipment/locations, not cadastral parcels. The municipal property-debt page is an owner/tax workflow requiring matrícula and CPF/CNPJ, so no request was made. No qualifying parcel geometry was obtained.",
+  "registryAssessment": "Municipal property-service pages evidence a municipal property-tax/property-certificate function, but not a public cadastral map or a specifically identified local registry custodian. registryFound remains null.",
+  "officialPrimarySources": [
+    {"url": "https://servicos.campinagrande.pb.gov.br/", "observation": "Official Campina Grande citizen portal; landing page advertises a map of public equipment and services."},
+    {"url": "https://ecidadeonline.campinagrande.pb.gov.br/", "observation": "Official municipal online-services portal; lists IPTU/imóveis debt and property-certificate workflows."},
+    {"url": "https://ecidadeonline.campinagrande.pb.gov.br/digitamatricula.php", "observation": "Official property-debt page requires matrícula and CPF/CNPJ; not used because those are unsafe owner/tax inputs."},
+    {"url": "https://www.gov.br/pt-br/servicos/consultar-imoveis-no-sinter?id=12870&origem=servico", "observation": "Federal SINTER service description; general national service prose, not local Campina Grande custody or verified coverage."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://servicos.campinagrande.pb.gov.br/",
+    "observedTechnology": "Next.js public citizen portal; current configuration endpoint and JavaScript bundle inspected.",
+    "observedControls": ["public-service map", "equipment/location categories", "citizen services"],
+    "configurationEvidence": "https://www.cubotecnologiabr.com.br/api/config/servicos.campinagrande.pb.gov.br returned city_id 2, city name PB / Campina Grande, and public API URLs. No cadastral layer URL, parcel schema, CRS, or parcel native field was exposed.",
+    "nativeFieldNames": [],
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "CPF/CNPJ", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://www.google.com/search?q=Campina+Grande+cadastral+parcel+map+viewer+land+registry+Brazil+official+municipal+GIS", "method": "SEARCH", "normalTlsVerification": true, "result": "English discovery found official municipal property-service pages and federal SINTER prose; no verified local parcel viewer."},
+    {"url": "https://www.google.com/search?q=Campina+Grande+cadastro+imobili%C3%A1rio+mapa+parcelas+prefeitura+geoserver", "method": "SEARCH", "normalTlsVerification": true, "result": "Portuguese discovery found the official municipal portal and excluded a same-name Campina Grande do Sul viewer as the wrong municipality."},
+    {"url": "https://servicos.campinagrande.pb.gov.br/", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; public portal HTML retrieved and current Next.js scripts inspected."},
+    {"url": "https://www.cubotecnologiabr.com.br/api/config/servicos.campinagrande.pb.gov.br", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; public configuration identified the municipal portal/API and public-service products; no parcel layer or CRS."},
+    {"url": "https://servicos.campinagrande.pb.gov.br/api/cidadao/web/locais", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; returned public locations/equipment categories. This is POI-style data, not parcel geometry; no parcel fields retained."},
+    {"url": "https://servicos.campinagrande.pb.gov.br/api/cidadao/web/categorias", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; returned public-service categories only, with no cadastral schema or parcel route."},
+    {"url": "https://ecidadeonline.campinagrande.pb.gov.br/digitamatricula.php", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; property-debt form requires matrícula and CPF/CNPJ. No form submission made."},
+    {"url": "https://www.gov.br/pt-br/servicos/consultar-imoveis-no-sinter?id=12870&origem=servico", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; general SINTER description reviewed. No Campina Grande parcel response or local integration evidence obtained."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous parcel response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No cadastral parcel query was submitted because the official municipal portal exposed public-service locations only and the tax/property workflow required unsafe owner-linked inputs."},
+  "coverageAssessment": {"claimedScope": "Official municipal citizen/property-service portals and general federal SINTER documentation.", "verifiedOpenScope": "Public-service locations/categories only; no parcel geometry.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "uncertainty": "HTTP success for the citizen portal and municipal tax form does not establish cadastral parcel availability. A map extent miss, zero exact-point hit, timeout, login wall, or unusable UI would not prove citywide absence; no such inference is made.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-complete-geometry response; packet does not qualify an adapter or enable runtime."}
+}

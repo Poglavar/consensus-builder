@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-12",
+  "wupCityCode": 10284,
+  "cityCode": 10284,
+  "queueRank": 3058,
+  "name": "Gaizhou",
+  "country": "China",
+  "countryCode": "CN",
+  "cityId": "wup2025:10284",
+  "point": [40.4003528156843, 122.353690009064],
+  "population2025": 195836,
+  "population2025k": 195.836,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gaizhou China cadastral parcels GIS official map land registry Liaoning Natural Resources Bureau",
+        "result": "First-party discovery located the official Gaizhou municipal portal and the Gaizhou Real Estate Registration Center site. The municipal portal links the Yingkou Natural Resources Bureau, but no public anonymous parcel feature service was identified.",
+        "actualResultUrls": [
+          "http://www.gaizhou.gov.cn/",
+          "https://bdc.gaizhou.gov.cn/",
+          "http://zrzyj.yingkou.gov.cn"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "盖州市 不动产登记 地籍图 GIS 官方 自然资源局",
+        "result": "First-party discovery confirmed 盖州市不动产登记中心 as the local registration custodian and found its official registration-knowledge and notice pages. The inspected pages exposed procedures and registration notices, but no safe anonymous parcel ID plus geometry response or public cadastral API.",
+        "actualResultUrls": [
+          "https://bdc.gaizhou.gov.cn/",
+          "https://bdc.gaizhou.gov.cn/ddc/",
+          "http://www.gaizhou.gov.cn/"
+        ]
+      }
+    ],
+    "officialLeads": [
+      {
+        "url": "https://bdc.gaizhou.gov.cn/",
+        "operator": "Gaizhou Real Estate Registration Center",
+        "evidence": "Official local registration-center site; title and navigation identify 盖州市不动产登记中心 and publish registration notices, procedures, forms, and registration knowledge. No open parcel layer was exposed in the inspected HTML."
+      },
+      {
+        "url": "http://www.gaizhou.gov.cn/",
+        "operator": "Gaizhou Municipal People's Government",
+        "evidence": "Official city portal; its department selector links 自然资源局 to the Yingkou Natural Resources Bureau."
+      },
+      {
+        "url": "http://zrzyj.yingkou.gov.cn",
+        "operator": "Yingkou Natural Resources Bureau",
+        "evidence": "Municipal-level natural-resources lead linked from the Gaizhou government portal; the host did not resolve during the bounded request check, so no parcel service was qualified."
+      }
+    ]
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://bdc.gaizhou.gov.cn/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "contentType": "text/html",
+      "summary": "Official registration-center home loaded. HTML exposed registration notices, procedures, forms, and knowledge navigation; no parcel viewer JavaScript, service URL, layer schema, CRS, or anonymous geometry endpoint was found."
+    },
+    {
+      "url": "https://bdc.gaizhou.gov.cn/ddc/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "contentType": "text/html",
+      "summary": "Official registration-knowledge page loaded. It contains general registration procedures and legal information only; no safe parcel geometry response was obtained and no form was submitted."
+    },
+    {
+      "url": "http://www.gaizhou.gov.cn/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "Official city portal loaded. The page links 自然资源局 to http://zrzyj.yingkou.gov.cn and exposes a site map, but no parcel viewer or API route was present in the inspected page."
+    },
+    {
+      "url": "https://www.gaizhou.gov.cn/",
+      "method": "GET",
+      "status": "TLS verification failed: certificate hostname mismatch",
+      "summary": "Not used further; no certificate exception was authorized. This failure is not evidence of cadastral absence."
+    },
+    {
+      "url": "http://zrzyj.yingkou.gov.cn",
+      "method": "GET",
+      "status": "DNS resolution timeout",
+      "summary": "Bounded request did not resolve. This is not evidence that the natural-resources custodian lacks a parcel service."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Gaizhou local registration custody and Yingkou/Liaoning natural-resources administration as linked by official government pages.",
+    "verifiedOpenScope": "Local institutional custody and registration/procedure pages only; no open parcel geometry coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "resultCategory": "official_local_registry_custodian_no_verified_open_parcel_geometry",
+  "sourceFields": null,
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "verifiedSample": false,
+  "sourceIds": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [40.4003528156843, 122.353690009064] was preserved in latitude/longitude order; no exact-point hit or miss was tested or inferred.",
+    "Local registration-custodian evidence is distinct from general provincial/national policy prose and does not establish an anonymous parcel API or citywide open coverage.",
+    "No parcel polygon, stable native parcel identity, source schema, CRS, or public map/API response was retrieved or retained; no GeoJSON sample is created.",
+    "A TLS failure, DNS timeout, inaccessible viewer, map extent miss, timeout, login wall, or absent public endpoint is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current public parcel viewer/API route, if any, layer schema, CRS, stable native parcel identity, citywide coverage, and anonymous runtime accessibility remain unresolved. No claim is made about parcel absence, legal title, ownership, or completeness of any Chinese cadastral dataset.",
+  "retainedSample": null
+}

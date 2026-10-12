@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:11529",
+  "cityCode": 11529,
+  "wupCityCode": 11529,
+  "queueRank": 1300,
+  "rank": 1300,
+  "name": "Katihar",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "capital": false,
+  "point": [25.5448308206641, 87.5669238686115],
+  "centerLatLon": [25.5448308206641, 87.5669238686115],
+  "pointBasis": "Exact immutable WUP 2025 queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 430470,
+  "population2025k": 430.47,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "aliases": ["katihar"],
+  "status": "complete",
+  "resultCategory": "official_local_registry_and_public_cadastral_service_verified_geometry_unavailable",
+  "registryFound": true,
+  "registryBasis": "The official Katihar district land-record service page identifies the local district administration's land-record service, and the official Bihar Revenue and Land Reforms / Directorate of Land Records and Survey pages identify Bhu-Naksha as the state cadastral-map service. The live BhuNaksha hierarchy returned Katihar district (code 10), Katihar subdivision/circle, and Katihar mauza (code 0062). This establishes official custodian/service evidence, not citywide completeness or title/ownership information.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "The current public BhuNaksha viewer exposed safe native plot identity through ScalarDatahandler and map metadata, but no full parcel polygon or GeoJSON response was obtained. The exact WUP point was outside the tested Katihar(81) cadastral sheet extent; that extent miss is not evidence of citywide absence.",
+  "source": {
+    "sourceId": null,
+    "name": "BhuNaksha Bihar",
+    "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+    "operator": "Directorate of Land Records & Survey, Government of Bihar; NIC-developed BhuNaksha",
+    "serviceType": "Official state cadastral mapping and digitized cadastral-map viewer",
+    "layer": "PLOT_LIST / village map WMS; Katihar cadastral map hierarchy",
+    "geometryType": "Not verified; viewer returned raster WMS and point-selection metadata only",
+    "nativeIdField": "id (JSON response field; value loP830khRR6MfrOSJRDTEg)",
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": true,
+    "geometryStatus": "not_verified",
+    "nativeCrs": "EPSG:32645",
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": {
+    "safeNativeIdObserved": "loP830khRR6MfrOSJRDTEg",
+    "nativePlotNumberObserved": "184",
+    "gisCode": "CS10010100620810601",
+    "scope": "Katihar district 10 / subdivision 01 / circle 01 / Katihar mauza 0062 / Cadastral Survey / CS Map sheet 01",
+    "geometry": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Katihar district land-record service plus Bihar BhuNaksha state cadastral-map service.",
+    "verifiedOpenScope": "Katihar administrative hierarchy, Katihar mauza map metadata, EPSG:32645, a safe native plot ID from a bounded point-selection response, and the viewer's WMS route; no full parcel polygon.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Katihar Bihar official land records cadastral parcel map GIS Bhunaksha survey land records",
+        "result": "Found the official Katihar district land-record service page, Bihar Revenue and Land Reforms portal, Directorate of Land Records and Survey portal, and BhuNaksha Bihar. First-party discovery described Bihar's cadastral mapping service but did not itself provide parcel geometry.",
+        "actualResultUrls": [
+          "https://katihar.nic.in/service/land-records/",
+          "https://land.bihar.gov.in/landbihar/Default.aspx",
+          "https://dlrs.bihar.gov.in/services.html",
+          "https://bhunaksha.bihar.gov.in/index.jsp"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "कटिहार बिहार आधिकारिक भू नक्शा भू अभिलेख cadastral parcel map",
+        "result": "Found the official Hindi Katihar land-record page and official Bihar land-record portal. The Hindi/official service material identifies Bhu-Naksha / भू-मानचित्र and land-record services; no parcel polygon was returned by discovery alone.",
+        "actualResultUrls": [
+          "https://katihar.nic.in/hi/service/%e0%a4%ad%e0%a5%82%e0%a4%ae%e0%a4%bf-%e0%a4%b0%e0%a4%bf%e0%a4%95%e0%a5%89%e0%a4%b0%e0%a5%8d%e0%a4%a1%e0%a5%8d%e0%a4%b8/",
+          "https://land.bihar.gov.in/landbihar/Default.aspx",
+          "https://bhunaksha.bihar.gov.in/index.jsp"
+        ]
+      }
+    ],
+    "portals": [
+      {"url": "https://katihar.nic.in/service/land-records/", "operator": "Katihar District Administration, Government of Bihar", "scope": "Local district land-record service page."},
+      {"url": "https://land.bihar.gov.in/landbihar/Default.aspx", "operator": "Department of Revenue and Land Reforms, Government of Bihar", "scope": "State revenue and land-record portal linking Bhu-Naksha and related services."},
+      {"url": "https://bhunaksha.bihar.gov.in/index.jsp", "operator": "Directorate of Land Records & Survey, Government of Bihar", "scope": "Live public BhuNaksha cadastral-map viewer."}
+    ],
+    "requests": [
+      {"url": "https://katihar.nic.in/service/land-records/", "method": "GET; anonymous public page", "httpStatus": 200, "contentType": "text/html", "assessment": "Loaded; local district land-record service page."},
+      {"url": "https://katihar.nic.in/hi/service/%e0%a4%ad%e0%a5%82%e0%a4%ae%e0%a4%bf-%e0%a4%b0%e0%a4%bf%e0%a4%95%e0%a5%89%e0%a4%b0%e0%a5%8d%e0%a4%a1%e0%a5%8d%e0%a4%b8/", "method": "GET; anonymous public page", "httpStatus": 200, "contentType": "text/html", "assessment": "Loaded Hindi local district land-record page."},
+      {"url": "https://land.bihar.gov.in/landbihar/Default.aspx", "method": "GET; anonymous public page", "httpStatus": 200, "contentType": "text/html", "assessment": "Loaded official Bihar Revenue and Land Reforms portal; Bhu-Naksha and land-record links visible."},
+      {"url": "https://bhunaksha.bihar.gov.in/index.jsp", "method": "GET; anonymous public viewer", "httpStatus": 200, "contentType": "text/html", "assessment": "Loaded current viewer; JavaScript/configuration inspected."},
+      {"url": "https://bhunaksha.bihar.gov.in/rest/Levels/count", "method": "POST state=10", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned 7 hierarchy levels."},
+      {"url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "method": "POST state=10; bounded hierarchy requests", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned Katihar district/subdivision/circle/mauza choices; Katihar mauza code 0062 and cadastral/revisional map choices were observed."},
+      {"url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref", "method": "POST state=10; gisLevels=10,01,01,0062,CS,06,01; srs=0", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned gisCode CS10010100620810601, EPSG:32645, and sheet extent xmin 558051.0091967493, ymin 2826197.6390434466, xmax 560456.3298365771, ymax 2828562.1642771102."},
+      {"url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY", "method": "POST state=10; giscode=CS10010100620810601; x=559000; y=2827400", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned safe native id loP830khRR6MfrOSJRDTEg and plot number 184; no owner/address/title fields requested or retained."},
+      {"url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY", "method": "POST exact WUP point transformed to EPSG:32645; x=556953.86; y=2825399.82", "httpStatus": 200, "contentType": "empty response", "assessment": "No exact-point plot hit for the tested sheet extent; treated only as an extent miss, not citywide absence."},
+      {"url": "https://bhunaksha.bihar.gov.in/WMS", "method": "GET bounded WMS map request for PLOT_LIST / GetFeatureInfo", "httpStatus": 200, "contentType": "image/png", "assessment": "Raster WMS response only; no full polygon or JSON feature geometry retained."}
+    ],
+    "schemaCrs": {"nativeCrs": "EPSG:32645", "geometryResponseSchema": "ScalarDatahandler/map-point JSON exposes id, kide, and no geometry; WMS exposes raster map only", "viewerLayers": ["VILLAGE_MAP", "PLOT_LIST", "FMB_LAYERS"]}
+  },
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "official service URLs", "HTTP status/content type", "public service metadata", "native CRS/ID only if returned safely", "geometry only if independently verified"],
+  "remainingUncertainty": "Whether BhuNaksha exposes a public vector/polygon export for Katihar, how all cadastral sheets and urban coverage relate to the WUP city boundary, and whether additional map instances contain the exact WUP point remain unknown. The observed ID is retained as metadata only because no full polygon was verified.",
+  "registryEvidenceUrls": ["https://katihar.nic.in/service/land-records/", "https://land.bihar.gov.in/landbihar/Default.aspx", "https://bhunaksha.bihar.gov.in/index.jsp"],
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "adapterReady": false,
+  "adapterQualification": "held_pending_serial_review",
+  "nextStep": "Serial reviewer should independently qualify the current Bihar BhuNaksha service, map coverage, and any public vector geometry route; keep runtime held until safe native IDs and real polygon geometry are independently verified.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

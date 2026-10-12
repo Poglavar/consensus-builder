@@ -1,0 +1,129 @@
+{
+  "cityCode": 12109,
+  "queueRank": 1458,
+  "name": "Wenling",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [28.3954222203197, 121.362527509704],
+  "population2025": 390282,
+  "population2025k": 390.282,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Wenling official cadastral map parcel GIS land registry Zhejiang",
+        "result": "Search found official Wenling government material identifying the municipal Natural Resources and Planning Bureau, an official Wenling real-estate registration service-center record, and the official Zhejiang geospatial public-service platform. No anonymous Wenling parcel feature service, schema, CRS, or safe parcel geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://www.wl.gov.cn/art/2025/5/30/art_1423973_59104537.html",
+          "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2760/site/attach/-1/2404121603498685341.pdf",
+          "https://ditu.zjzwfw.gov.cn/platform-main/index.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "温岭 不动产登记 地籍图 GIS 官方",
+        "result": "官方结果确认温岭市不动产登记服务中心及温岭市自然资源和规划局，且官方基础测绘规划说明温岭拥有数字地理空间框架、天地图·温岭和基础地理信息数据库。结果未公开匿名地籍宗地要素服务、字段模式、CRS或可保留的安全宗地几何。",
+        "actualResultUrls": [
+          "https://www.wl.gov.cn/art/2021/11/29/art_1229599807_3757799.html",
+          "https://www.wl.gov.cn/art/2017/9/22/art_1598685_2699368.html",
+          "https://www.wl.gov.cn/art/2025/5/30/art_1423973_59104537.html"
+        ]
+      }
+    ],
+    "officialLeads": [
+      {
+        "name": "Wenling Municipal Natural Resources and Planning Bureau",
+        "url": "https://www.wl.gov.cn/",
+        "observation": "Official Wenling government domain; current direct curl returned HTTP 403, while indexed official pages identify the bureau and its land-use publications."
+      },
+      {
+        "name": "Wenling basic surveying and mapping plan",
+        "url": "https://www.wl.gov.cn/art/2021/11/29/art_1229599807_3757799.html",
+        "observation": "Official plan states that Wenling built a digital geospatial framework, basic geographic-information databases, and a public-facing Tianditu·Wenling node; this is general geospatial infrastructure, not proof of an open parcel layer."
+      },
+      {
+        "name": "Wenling real-estate registration service-center procurement record",
+        "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2760/site/attach/-1/2404121603498685341.pdf",
+        "observation": "Official Wenling service-center record refers to cadastral maps, parcel-map/archive processing, and registration records. No public anonymous geometry API is provided."
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://www.wl.gov.cn/art/2017/9/22/art_1598685_2699368.html",
+    "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2760/site/attach/-1/2404121603498685341.pdf",
+    "https://www.wl.gov.cn/art/2025/5/30/art_1423973_59104537.html"
+  ],
+  "registryBasis": "Local official Wenling sources evidence a municipal real-estate registration service center and the Natural Resources and Planning Bureau's cadastral/land-registration responsibilities. This establishes a local registry custodian, not an open parcel geometry service.",
+  "source": {
+    "sourceId": "CN-12109-WENLING-OFFICIAL-GEOSPATIAL-REVIEW",
+    "name": "Wenling official geospatial and real-estate registration source review",
+    "url": "https://www.wl.gov.cn/art/2021/11/29/art_1229599807_3757799.html",
+    "operator": "Wenling Municipal Natural Resources and Planning Bureau / Wenling municipal government",
+    "serviceType": "Official municipal registry and public geospatial infrastructure reviewed; no safe anonymous parcel geometry verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official planning material describes citywide basic geographic-information databases and the Tianditu·Wenling public geospatial node; official registration material describes municipal cadastral-map records.",
+    "verifiedOpenScope": "No anonymous public parcel layer, feature-service schema, CRS, native parcel identity, or bounded parcel geometry response was verified. Exact-point and citywide parcel coverage remain unknown.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_local_registry_public_geospatial_infrastructure_geometry_unverified",
+  "technicalBlocker": "The official Zhejiang geospatial platform was reachable through indexed web inspection, but its public page did not expose a parcel endpoint in the bounded review. Direct curl to www.wl.gov.cn returned HTTP 403 and DNS resolution for the Zhejiang platform timed out in the shell environment. No TLS verification bypass, login, credentials, CAPTCHA bypass, or unsafe field request was attempted.",
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.wl.gov.cn/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "httpStatus": 403,
+      "result": "Official domain reachable but denied the direct shell request; no bypass attempted."
+    },
+    {
+      "url": "https://www.wl.gov.cn/art/2021/11/29/art_1229599807_3757799.html",
+      "method": "GET via public web index/open",
+      "normalTlsVerification": true,
+      "httpStatus": "200 (indexed/open content)",
+      "result": "Official basic-surveying plan inspected; it documents digital geospatial infrastructure and Tianditu·Wenling, not a public cadastral feature API."
+    },
+    {
+      "url": "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+      "method": "GET via public web index/open; direct curl retry",
+      "normalTlsVerification": true,
+      "httpStatus": "200 via web index/open; shell DNS timeout on retry",
+      "result": "Official Zhejiang public geospatial platform identified, but no parcel schema or safe geometry endpoint was exposed in the bounded inspection."
+    },
+    {
+      "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2760/site/attach/-1/2404121603498685341.pdf",
+      "method": "GET via public web index/open",
+      "normalTlsVerification": true,
+      "httpStatus": "200 (indexed/open content)",
+      "result": "Official Wenling registration-service-center record inspected; it mentions cadastral-map/archive processing but contains no anonymous machine-readable parcel response."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "A separate local or authenticated cadastral viewer may exist; exact-point and citywide parcel coverage were not tested because no public parcel endpoint was identified. The immutable WUP point is retained exactly and is not treated as a parcel hit or absence claim.",
+  "nextStep": "Hold runtime integration. A later researcher may inspect a documented first-party anonymous parcel service if publicly discoverable, confirming schema, CRS, native identity, and geometry-only access before any sample is retained.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [28.3954222203197, 121.362527509704],
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not a municipal boundary or parcel-coverage claim.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

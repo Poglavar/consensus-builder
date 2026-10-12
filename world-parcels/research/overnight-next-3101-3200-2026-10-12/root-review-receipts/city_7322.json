@@ -1,0 +1,17 @@
+{
+  "taskId": "city:7322",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-7322-golmorti.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/golmorti-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T05:08:01Z",
+  "finding": "Original 2025 UN row, ranked roster, queue and packet agree on code 7322, rank 3193, Iran, point [27.4792821285704,59.4532730100599], and 188615 persons. English and Persian executed searches and official-domain request outcomes are recorded. National registration references and timeouts establish neither a Golmorti-local public parcel source nor citywide absence; registryFound remains null. No safe native-ID full polygon was observed. No independent runtime qualification or headed Details check is evidenced.",
+  "samplePolygonCount": 0,
+  "runtimeAdmitted": false,
+  "missingAdmissionGates": ["fresh native-ID reads", "forced paging", "13 bounded cells", "metric GEOS validity and overlap checks", "source binding", "headed details-panel verification"]
+}

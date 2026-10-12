@@ -1,0 +1,25 @@
+{
+  "taskId": "city:8316",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-8316-rewari.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/rewari-service-review.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-11T17:48:42Z",
+  "reason": "No anonymous Rewari native parcel ID plus full polygon was evidenced. The official district land-record page identifies a local service, while the packet records Jamabandi timeouts and HARSAC/Bhu-Naksha login walls. These access outcomes do not establish parcel absence.",
+  "identity": "Official 2025 WUP source archive, ranked roster, pending queue and packet agree on code, rank, country, point and population persons.",
+  "bilingualResearch": "English and local-language executed searches with URLs are recorded in the packet and paired review.",
+  "qualification": {
+    "fullPolygonsRetained": 0,
+    "freshAdapterNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeAdmitted": false
+}

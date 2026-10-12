@@ -1,0 +1,11 @@
+{
+  "taskId": "city:3132",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-3132-jimma.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/jimma-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T13:07:08.054503Z",
+  "reviewNotes": "Held: official Jimma municipality and national land/cadastre context are evidenced, but no Jimma-specific public parcel geometry or native-ID response. DNS/viewer limitations do not establish absence."
+}

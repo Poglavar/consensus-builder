@@ -1,0 +1,13 @@
+{
+  "taskId": "city:11714",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-11714-haifeng.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/haifeng-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T11:11:10Z",
+  "reason": "Haifeng immutable WUP identity and English/Chinese searches match the cohort. First-party Shanwei material supports local registration/cadastral custody, but no anonymous native parcel ID plus full-polygon response or adapter qualification is evidenced. Public geometry remains unresolved, not citywide absent.",
+  "runtimeAdmission": false
+}

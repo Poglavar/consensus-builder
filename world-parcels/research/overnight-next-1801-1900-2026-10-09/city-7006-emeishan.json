@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 7006,
+  "queueRank": 1853,
+  "cityId": "queue:1853",
+  "name": "Emeishan",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [29.6021934252249, 103.501209615595],
+  "centerLatLon": [29.6021934252249, 103.501209615595],
+  "population2025": 310503,
+  "population2025k": 310.503,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Emeishan Sichuan cadastral parcel map official GIS service",
+        "result": "First-party results identified the official Emeishan government site, an official notice describing the city electronic government map, and Sichuan natural-resources/Tianditu material. No anonymous public parcel ID-plus-geometry endpoint was exposed in indexed results.",
+        "actualResultUrls": [
+          "https://www.emeishan.gov.cn/emss/gsgg/202312/ffe35b11a1ae4b8fb3ef78c77f9dc5fa.shtml",
+          "https://dnr.sc.gov.cn/scdnr/scywbb/2024/4/23/3b604c8a53d645a6b79c9df236a269c6.shtml",
+          "https://sichuan.tianditu.gov.cn/"
+        ]
+      },
+      {
+        "language": "native/local (Simplified Chinese)",
+        "query": "峨眉山市 不动产 登记 地图 地籍 官方",
+        "result": "Official Chinese-language results identified the Emeishan Natural Resources Bureau real-estate registration center, its registration/cadastral survey and information-query duties, the city electronic government map notice, and the official Sichuan Tianditu platform. No open parcel feature response was found.",
+        "actualResultUrls": [
+          "https://www.emeishan.gov.cn/emss/czyjs/2024030411292161666200000.html",
+          "https://www.emeishan.gov.cn/emss/gsgg/202312/ffe35b11a1ae4b8fb3ef78c77f9dc5fa.shtml",
+          "https://sichuan.tianditu.gov.cn/"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Web discovery followed by TLS-verified bounded GETs and inspection of the official viewer HTML/JavaScript/configuration; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.emeishan.gov.cn/emss/czyjs/2024030411292161666200000.html",
+      "observation": "Official Emeishan Natural Resources Bureau budget page states that the local real-estate registration center handles citywide real-estate registration, cadastral-survey result review, registration archives, and registration-information queries. This establishes local custodial responsibility, not an open parcel API."
+    },
+    {
+      "url": "https://www.emeishan.gov.cn/emss/gsgg/202312/ffe35b11a1ae4b8fb3ef78c77f9dc5fa.shtml",
+      "observation": "Official city notice describes an electronic government map covering Emeishan government/service points and administrative communities; it is a public-service locator, not a cadastral parcel viewer."
+    },
+    {
+      "url": "https://sichuan.tianditu.gov.cn/",
+      "observation": "Official Sichuan Tianditu viewer loaded anonymously. Current HTML and JavaScript/configuration exposed vector, imagery and terrain basemap WMTS routes at t4.tianditu.gov.cn, but no parcel/cadastral layer, feature schema, CRS metadata for parcels, or anonymous ID-plus-geometry route."
+    },
+    {
+      "url": "https://www.scgis.net.cn/",
+      "observation": "Official Sichuan map-open-platform host was attempted but timed out within the bounded request; no inference about cadastral absence was made."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://sichuan.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Viewer HTML loaded; configuration and current JavaScript inspected. Only public basemap WMTS routes were found."
+    },
+    {
+      "url": "https://sichuan.tianditu.gov.cn/js/DataStructConfig.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "assessment": "Current configuration defines only map/imagery/terrain layer items; no parcel feature service or parcel schema was exposed."
+    },
+    {
+      "url": "https://sichuan.tianditu.gov.cn/map/js/map/constants.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "assessment": "Current viewer constants inspected for service routes; no cadastral endpoint identified."
+    },
+    {
+      "url": "https://www.scgis.net.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "Connection timed out after 20 seconds; access failure only, not evidence of citywide cadastral absence."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Emeishan City local natural-resources and real-estate-registration administration, plus Sichuan public geospatial basemap services.",
+    "verifiedOpenScope": "Local custodial/procedure evidence and public basemap viewer only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The current local cadastral viewer/API route, access controls, parcel schema, CRS, stable native parcel identity, update currency, legal access conditions and citywide coverage remain unresolved. The exact WUP point was preserved in latitude/longitude order and never shifted; no exact-point hit or miss was inferred. No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained.",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "nextStep": "A later attempt may inspect an officially exposed Emeishan/Sichuan natural-resources viewer or approved public API route and issue only a bounded anonymous safe-ID-plus-geometry request if one is revealed."
+}

@@ -125,3 +125,11 @@ deterministic qualifier and leaves cities that need troubleshooting at `needs-ll
 worker fixes a city in a new `attempt-NN` directory and submits it with `--record-answer`; the
 runner re-verifies it (including the independent metric recomputation) before recording it.
 Qualification needs `scripts/requirements-parcel-qualification.txt` (pyproj, shapely) on `python3`.
+The preparer tests the descriptor production runs: catalog fields win over the packet's
+discovery-time snapshot, so a catalog fix applies to the next qualification without rediscovery.
+
+Outcomes reach the globe through `scripts/export-qualification-outcomes.py --state <dir> ...`, which
+writes one record per city to `world-parcels/research/qualification-outcomes/`. A hold whose summary
+says "not a source verdict" (throttling, a blocked host) is exported as `unchecked` and never counts.
+`scripts/build-world-coverage.mjs` paints a reviewed full country or region `mostly` (lighter green)
+when its live and qualified cities outnumber its held ones, and `partial` when they do not.

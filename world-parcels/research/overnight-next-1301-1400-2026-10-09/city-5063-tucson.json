@@ -1,0 +1,80 @@
+{
+  "cityCode": 5063,
+  "queueRank": 1329,
+  "name": "Tucson",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso3": "USA",
+  "point": [32.2341331710701, -110.899238325088],
+  "population2025": 422107,
+  "population2025k": 422.107,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "Pima County GIS is the evidenced local cadastral/parcel-map custodian for Tucson and publishes a public parcel map and ArcGIS parcel service. The service is county/regional in scope; citywide Tucson completeness and exact WUP-point inclusion were not verified in this attempt.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:pima.gov GIS parcel map ArcGIS REST Pima County parcel Tucson",
+        "result": "Found Pima County GIS/PimaMaps public parcel map documentation, the county parcel-search page, and the official GISOpenData LandRecords ArcGIS MapServer with a regional polygon parcel layer.",
+        "actualResultUrls": [
+          "https://gis.pima.gov/",
+          "https://gis.pima.gov/parcels/",
+          "https://gisdata.pima.gov/arcgis1/rest/services/GISOpenData/LandRecords/MapServer/12"
+        ]
+      },
+      {
+        "language": "English (United States local language)",
+        "query": "Tucson official parcel GIS map Pima County assessor parcel data",
+        "result": "Found the City of Tucson parcel-search route and Pima County's public PimaMaps/parcel service references. The official service metadata identifies polygon geometry, native CRS WKID 2868, and the safe parcel field PARCEL.",
+        "actualResultUrls": [
+          "https://pro.tucsonaz.gov/parcel_search/10926004D",
+          "https://pima.gov/gis-resources",
+          "https://pimamaps.pima.gov/Geocortex/Essentials/PublicPM/REST/sites/pchydrosite/map/mapservices/primarysource-10"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://gisdata.pima.gov/arcgis1/rest/services/GISOpenData/LandRecords/MapServer/12",
+      "role": "Pima County GISOpenData regional parcel polygon layer",
+      "observation": "HTTP 200 metadata was readable through the public service. It declares esriGeometryPolygon, native WKID 2868, supported JSON/geoJSON query formats, anonymous querying, maxRecordCount 2000, and PARCEL as the Parcel Tax Code field."
+    },
+    {
+      "url": "https://pimamaps.pima.gov/Geocortex/Essentials/PublicPM/REST/sites/pchydrosite/map/mapservices/primarysource-10",
+      "role": "Pima County public map configuration",
+      "observation": "Public map configuration points to the county LandRecords/ParcelsGroup MapServer and lists Parcels, Parcel IDs, Parcel Lot Numbers, and related parcel layers."
+    },
+    {
+      "url": "https://gis.pima.gov/parcels/",
+      "role": "Pima County parcel information search",
+      "observation": "County page says parcel information is derived from Pima County Assessor records and other sources and provides parcel-code/address search. It is a search UI, not evidence of a citywide downloadable geometry export."
+    },
+    {
+      "url": "https://pro.tucsonaz.gov/parcel_search/10926004D",
+      "role": "City of Tucson parcel-search route",
+      "observation": "City route confirms parcel search is backed by Pima County data and links to parcel map functionality; it was not used to request unsafe owner/address fields."
+    }
+  ],
+  "serviceReview": "tucson-service-review.json",
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "The official layer schema and CRS were verified, but the bounded anonymous point query did not yield a usable response in this environment: the direct gisdata request returned HTTP 403 and the public pimamaps host presented a Cloudflare JavaScript challenge. No exact-point hit, miss, or parcel polygon was inferred or retained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Pima County regional parcel layer and public parcel-map services, including Tucson-area parcels.",
+    "verifiedOpenScope": "Official public service metadata and local parcel-map configuration; no bounded parcel feature response was retrieved in this attempt.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

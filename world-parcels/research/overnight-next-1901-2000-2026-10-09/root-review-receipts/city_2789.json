@@ -1,0 +1,15 @@
+{
+  "taskId": "city:2789",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-2789-gumi-si.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/gumi-si-service-review.json",
+    "tmp/valhalla-parcel-research/gumi-2789/address-point.json",
+    "tmp/valhalla-parcel-research/gumi-2789/parcel-info.json",
+    "tmp/valhalla-parcel-research/gumi-2789/geopassApi.js"
+  ],
+  "checkedAt": "2026-10-10T19:27:18Z",
+  "reason": "Queue identity matches rank 1955, Republic of Korea, point [36.1089634843612,128.367049228517], and 296323 persons. English and Korean searches are recorded. First-party K-GeoP address cache has one result with native addrPnu 4719011300102120000 and a full WGS84 MultiPolygon that covers the exact WUP point; packet mapping calls the address field pnu, which is inaccurate. The full parcel-info cache contains unsafe owner/valuation/address-related fields and must not become a retained sample. No forced paging, 13 cells, metric overlap/operation checks, source binding, or headed Details check is evidenced; point success alone does not admit a city."
+}

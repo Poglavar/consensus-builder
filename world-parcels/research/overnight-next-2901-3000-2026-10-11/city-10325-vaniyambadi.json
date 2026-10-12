@@ -1,0 +1,86 @@
+{
+  "cityCode": 10325,
+  "queueRank": 2961,
+  "name": "Vaniyambadi",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "capital": false,
+  "point": [12.6819626789653, 78.6196020428714],
+  "population2025": 201496,
+  "population2025k": 201.496,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Vaniyambadi official cadastral parcel map Tamil Nadu land records GIS",
+        "result": "First-party discovery identified Tamil Nadu Government land-record e-Services, the TamilNilam Geo-Info service of the Department of Survey and Settlement, TNGIS, and the official Vaniyambadi Municipality ward-map/revenue pages. No anonymous safe parcel-ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+          "https://eservices.tn.gov.in/eservicesnew/",
+          "https://www.tngis.tn.gov.in/apps.html",
+          "https://www.tnurbantree.tn.gov.in/vaniyambadi/ward-map/"
+        ]
+      },
+      {
+        "language": "Tamil (local/native)",
+        "query": "வாணியம்பாடி நில அளவை வரைபடம் அரசு நில பதிவுகள்",
+        "result": "Tamil-language first-party discovery identified the TamilNilam Geo-Info land-map service and Tamil Nadu government land-record/FMB services. The official descriptions indicate survey/subdivision and FMB visualization, but no public bounded parcel vector response was obtained.",
+        "actualResultUrls": [
+          "https://play.google.com/store/apps/details?id=org.tnega.tamil.nilam",
+          "https://tamilnilam.tn.gov.in/citizen",
+          "https://eservices.tn.gov.in/eservicesnew/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Government of Tamil Nadu Department of Survey and Settlement / TNeGA land-record services; Vaniyambadi Municipality is the local municipal revenue custodian.",
+    "locality": "Vaniyambadi Municipality, Tirupathur district, Tamil Nadu; official municipal pages document ward maps and a revenue branch.",
+    "evidenceUrls": [
+      "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+      "https://play.google.com/store/apps/details?id=org.tnega.tamil.nilam",
+      "https://www.tnurbantree.tn.gov.in/vaniyambadi/ward-map/",
+      "https://www.tnurbantree.tn.gov.in/vaniyambadi/revenue/"
+    ],
+    "scopeNote": "A state cadastral/FMB service and a local municipal map/revenue custodian are evidenced. This establishes a local registry/procedure, but not a public anonymous parcel API response or citywide geometry coverage."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Tamil Nadu e-Services / TamilNilam Geo-Info / TNGIS and Vaniyambadi Municipality",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {"nativeIdentity": null, "safeGeometry": null, "otherDocumentedFields": []},
+    "note": "No safe native parcel identity plus full polygon was observed, so no GeoJSON sample was retained."
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://eservices.tn.gov.in/eservicesnew/", "outcome": "Direct TLS-verified shell request timed out after 20 seconds. No login, retry bypass, or absence inference."},
+    {"method": "GET", "url": "https://www.tnurbantree.tn.gov.in/vaniyambadi/ward-map/", "outcome": "Direct shell request timed out after 20 seconds. Search inspection exposed an official ward-map page, but no parcel schema or geometry response was obtained."},
+    {"method": "GET", "url": "https://www.tnurbantree.tn.gov.in/vaniyambadi/revenue/", "outcome": "First-party discovery exposed the municipal Revenue Branch and property-tax record role; this is custodial/procedural evidence, not cadastral parcel geometry."},
+    {"method": "GET", "url": "https://www.tngis.tn.gov.in/apps.html", "outcome": "Official TNGIS application catalog inspected; it describes GIS/land-information integration and warns that data are informational and dynamic, but no bounded anonymous parcel response was exposed."},
+    {"method": "GET", "url": "https://tnglms.in/", "outcome": "Official Tamil Nadu Government Land Management System page retrieved over TLS; it describes links among RoR, cadastral FMB, and other land systems, but no public anonymous parcel vector endpoint was exposed."},
+    {"method": "GET", "url": "https://play.google.com/store/apps/details?id=org.tnega.tamil.nilam", "outcome": "Official TamilNilam Geo-Info listing states that map/FMB and survey-subdivision land records can be visualized; app listing is documentation only and yielded no safe parcel geometry response."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full native parcel geometry", "geometry CRS", "source service/layer metadata"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "scopeLimits": [
+    "The exact supplied WUP point [12.6819626789653, 78.6196020428714] was preserved in latitude/longitude order and was not shifted.",
+    "A zero exact-point hit, map extent miss, timeout, or unusable UI was not treated as evidence of citywide parcel absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, registration detail, private token, credential, CAPTCHA/Cloudflare bypass, or unsafe field was requested or retained.",
+    "No TLS verification was disabled and no source-specific certificate exception was used.",
+    "This packet is research evidence only and is not source integration or runtime admission."
+  ],
+  "uncertainty": [
+    "The municipal ward-map page is a local map/procedure route, but its current map payload was not reachable in the bounded shell request.",
+    "TamilNilam and e-Services documentation establishes FMB/cadastral capability, but current JavaScript/API configuration and a safe anonymous parcel response were not exposed.",
+    "Citywide availability, exact-point coverage, native identity field, CRS, and parcel geometry remain unverified."
+  ]
+}

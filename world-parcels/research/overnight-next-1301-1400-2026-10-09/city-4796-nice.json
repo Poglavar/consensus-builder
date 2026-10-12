@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "cityId": "wup2025:4796",
+  "cityCode": 4796,
+  "wupCityCode": 4796,
+  "queueRank": 1345,
+  "rank": 1345,
+  "name": "Nice",
+  "country": "France",
+  "countryCode": "FR",
+  "iso2": "FR",
+  "iso3": "FRA",
+  "point": [43.6987107905202, 7.23303214314509],
+  "centerLatLon": [43.6987107905202, 7.23303214314509],
+  "pointBasis": "Exact immutable WUP 2025 queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 418294,
+  "population2025k": 418.294,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "aliases": ["nice"],
+  "status": "complete",
+  "resultCategory": "official_municipal_gis_verified_parcel_geometry",
+  "registryFound": true,
+  "registryBasis": "The Métropole Nice Côte d’Azur official GIS and open-data catalog identify a public cadastral parcel service; this evidences a local cadastral map/data custodian, not ownership or title records.",
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "Parcel geometry and a stable public parcel identity were verified from an anonymous public service, but runtime adapter admission remains held pending independent serial qualification.",
+  "source": {
+    "sourceId": "nice-cotedazur-cadastre-arcgis",
+    "name": "Métropole Nice Côte d’Azur Cadastre ArcGIS MapServer",
+    "url": "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer",
+    "operator": "Métropole Nice Côte d’Azur / Direction de l’Information Géographique; source attribution states DGFIP 2025",
+    "serviceType": "Public municipal/metropolitan ArcGIS REST map service with parcel query endpoint",
+    "viewerConfiguration": "Current public viewer JavaScript config points coucheParcelles to /heberge2/rest/services/Cadastre/Cadastre/MapServer/8.",
+    "nativeCrs": "EPSG:2154 (RGF93 / Lambert-93); query accepted inSR=4326 and returned GeoJSON outSR=4326.",
+    "geometryStatus": "verified",
+    "sampleCount": 1,
+    "fieldMapping": {"nativeIdentity": "CODEIDENT", "nativeIdentityComponents": ["CODCOMM", "IDENT"], "geometry": "Esri polygon geometry returned as GeoJSON"},
+    "compositeKeyProvenance": "Native CODEIDENT value `060088   MT0022` is the published parcel identity composed from municipality code CODCOMM `060088` and cadastral identifier IDENT `   MT0022`; OBJECTID was not used as the canonical identity.",
+    "layer": {"id": 8, "name": "Parcelles (Contours)", "displayField": "ident"}
+  },
+  "sampleFile": "nice-parcel-sample.geojson",
+  "verifiedSample": true,
+  "coverageAssessment": {
+    "claimedScope": "Cadastre of the Métropole Nice Côte d’Azur; official layer extent covers the metropolitan service area.",
+    "verifiedOpenScope": "Anonymous current viewer configuration, ArcGIS service/layer metadata, and one exact immutable WUP-point parcel query.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nice France official cadastral map parcel GIS",
+        "result": "Found the official Métropole Nice Côte d’Azur open-data parcel dataset and the official metropolitan cadastral map service. The official catalog describes DGFiP cadastral parcels updated July 2025 and provides GeoJSON/Shapefile resources.",
+        "actualResultUrls": ["https://opendata.nicecotedazur.org/data/dataset/parcelles-cadastrales-de-la-metropole-nice-cote-d-azur", "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer"]
+      },
+      {
+        "language": "French",
+        "query": "Nice cadastre officiel carte parcellaire géoservice parcelles",
+        "result": "Found the official Métropole Nice Côte d’Azur public GIS, whose description says the cadastre graphique and parcel layers can be queried, plus the official parcel open-data record.",
+        "actualResultUrls": ["https://cartes.nicecotedazur.org/apps/er/", "https://www.nice.fr/fr/donnees-geographiques-publiques", "https://opendata.nicecotedazur.org/data/dataset/parcelles-cadastrales-de-la-metropole-nice-cote-d-azur"]
+      }
+    ],
+    "portals": [
+      {"url": "https://cartes.nicecotedazur.org/apps/er/", "operator": "Métropole Nice Côte d’Azur", "scope": "Official public ArcGIS viewer; current JavaScript configuration exposes the cadastral parcel layer."},
+      {"url": "https://opendata.nicecotedazur.org/data/dataset/parcelles-cadastrales-de-la-metropole-nice-cote-d-azur", "operator": "Métropole Nice Côte d’Azur", "scope": "Official open-data catalog for metropolitan cadastral parcels."}
+    ],
+    "requests": [
+      {"url": "https://cartes.nicecotedazur.org/apps/er/", "method": "GET; anonymous", "httpStatus": 200, "contentType": "text/html", "assessment": "Returned current public viewer shell."},
+      {"url": "https://cartes.nicecotedazur.org/apps/er/main-EGOWRFPI.js", "method": "GET; anonymous", "httpStatus": 200, "contentType": "application/javascript", "assessment": "Current viewer configuration references the cadastral layer at /heberge2/rest/services/Cadastre/Cadastre/MapServer/8."},
+      {"url": "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer?f=pjson", "method": "GET; anonymous", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned service metadata, EPSG:2154 extent, parcel layer listing, and query capability."},
+      {"url": "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer/8?f=pjson", "method": "GET; anonymous", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned `Parcelles (Contours)` schema and fields including CODEIDENT, CODCOMM, IDENT, PARCELLE and geometry."},
+      {"url": "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer/8/query?where=1%3D1&geometry=7.23303214314509%2C43.6987107905202&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&f=geojson&resultRecordCount=3", "method": "GET; anonymous exact immutable WUP point", "httpStatus": 200, "contentType": "application/geo+json", "assessment": "Returned one intersecting full parcel polygon with native CODEIDENT `060088   MT0022`; raw response is in ignored scratch only and retained sample properties contain only canonical id."},
+      {"url": "https://opendata.nicecotedazur.org/data/dataset/parcelles-cadastrales-de-la-metropole-nice-cote-d-azur", "method": "GET; anonymous", "httpStatus": 200, "contentType": "text/html", "assessment": "Returned official catalog metadata and GeoJSON/Shapefile resource links; no owner or personal fields were requested or retained."}
+    ],
+    "schemaCrs": {"service": "EPSG:2154 / RGF93 Lambert-93", "queryInput": "EPSG:4326 longitude,latitude point", "sampleOutput": "GeoJSON coordinates in EPSG:4326 longitude,latitude order", "parcelGeometrySchema": "Esri polygon geometry; layer supports JSON and geoJSON query formats"}
+  },
+  "safeFieldAllowlist": ["canonical native parcel identity", "public layer/service URL", "geometry", "CRS/layer metadata", "HTTP status/content type"],
+  "remainingUncertainty": "One exact-point hit verifies an available parcel feature and identity, but does not establish citywide completeness, update behavior beyond the published service metadata, or runtime adapter readiness. No owner, address, contact, titleholder, tax/account, or personal fields were retained.",
+  "registryEvidenceUrls": ["https://cartes.nicecotedazur.org/apps/er/", "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer", "https://opendata.nicecotedazur.org/data/dataset/parcelles-cadastrales-de-la-metropole-nice-cote-d-azur"],
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": ["nice-cotedazur-cadastre-arcgis"],
+  "adapterReady": false,
+  "nextStep": "Serial reviewer should independently re-run the official service, verify native identity and CRS, assess coverage, and qualify any adapter before runtime admission.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

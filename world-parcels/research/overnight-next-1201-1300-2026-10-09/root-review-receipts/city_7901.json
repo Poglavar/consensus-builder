@@ -1,0 +1,15 @@
+{
+  "taskId": "city:7901",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-7901-hafizabad.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/hafizabad-service-review.json",
+    "tmp/valhalla-parcel-research/7901/pulse.html"
+  ],
+  "checkedAt": "2026-10-09T10:53:35Z",
+  "identity": "Queue code 7901, rank 1223, Pakistan/PK, point [32.0705864531695,73.6889825364113], and 454903 persons exactly match the packet.",
+  "searchReview": "English and Urdu searches, queries, and first-party result URLs are recorded. No full parcel polygons or unsafe attributes were retained.",
+  "sourceReview": "The official municipal Hafizabad base-map PDF was fetched directly (SHA-256 bb92cb931bbc7571e1df3f1b49cc946c3b1842a925e714264361f6be2eae10a6); its text has a Parcel Boundary legend and April 2024 date. The cached PULSE viewer names Hafizabad cadastral sublayer 10. Independent anonymous layer metadata and bounded one-feature requests returned HTTP 200 bodies with ArcGIS error code 499 Token Required. Registry/map custody supports registryFound=true, but anonymous polygon access and citywide completeness remain unresolved.",
+  "admissionReview": "Zero full sample polygons; no fresh safe native-ID polygon read, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. No runtime admission or shared-state change."
+}

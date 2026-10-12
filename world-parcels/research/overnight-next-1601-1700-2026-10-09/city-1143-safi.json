@@ -1,0 +1,102 @@
+{
+  "cityCode": 1143,
+  "queueRank": 1655,
+  "name": "Safi",
+  "country": "Morocco",
+  "countryCode": "MA",
+  "point": [32.2888126761957, -9.23489688167225],
+  "population2025": 345865,
+  "population2025k": 345.865,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Safi Morocco official cadastral parcel map GIS land registry cadastre",
+        "result": "First-party discovery found ANCFCC's national cadastre/conservation mandate, a Safi external cadastral office contact page, ANCFCC's online cadastral-plan service, and the Safi-Youssoufia Urban Agency atlas page. No public anonymous parcel layer, parcel API, or safe parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/cadastre/",
+          "https://ancfcc.gov.ma/pr%C3%A9sentation/r%C3%A9seau-des-blocs-fonciers/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage",
+          "https://ausy.ma/atlas-cartographique/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "آسفي المغرب الرسم العقاري خريطة عقارية مسح عقاري موقع رسمي",
+        "result": "Arabic discovery found the official ANCFCC Arabic cadastre/conservation mandate and public-service pages. The official Safi-Youssoufia atlas PDF was also inspected; it is a 2024 province planning/territorial atlas and does not publish parcel identities or parcel polygons. No anonymous parcel endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/cadastreAr/",
+          "https://ausy.ma/wp-content/uploads/2025/10/Atlas-Province-SAFI.pdf",
+          "https://www.ancfcc.gov.ma/Plancadastralpage"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "ANCFCC is the evidenced national cadastral and land-conservation custodian and its official external-office directory lists a Safi Conservation Foncière and Cadastre office. This establishes custodian/procedure evidence, not a public citywide parcel registry or anonymous parcel API.",
+  "officialSources": [
+    {
+      "url": "https://www.ancfcc.gov.ma/cadastre/",
+      "observation": "Official ANCFCC page describes national land registration, cadastre, cadastral plans, archives, and making current cadastral data available to users; it does not expose an anonymous city parcel query in the inspected page."
+    },
+    {
+      "url": "https://ancfcc.gov.ma/pr%C3%A9sentation/r%C3%A9seau-des-blocs-fonciers/",
+      "observation": "Official ANCFCC external-office directory lists Safi Conservation Foncière and Safi Cadastre at Quartier Administratif, Avenue Mohamed V, ville nouvelle, BP 15."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "observation": "Official online cadastral-plan service requires user/request information and a title/cadastre number; it is not an open parcel-browse or citywide geometry service."
+    },
+    {
+      "url": "https://ausy.ma/atlas-cartographique/",
+      "observation": "Official Safi-Youssoufia Urban Agency page links the 2024 Atlas-Province-SAFI.pdf. The atlas is planning/territorial context, not a parcel API or parcel dataset."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.ancfcc.gov.ma/",
+      "method": "GET",
+      "outcome": "Returned HTTP 403 from the public request path. No login, credential, token, CAPTCHA bypass, or TLS exception was attempted. Official page content was inspected through first-party web discovery."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/cadastre/",
+      "method": "GET",
+      "outcome": "Returned HTTP 403 from the public request path; official first-party discovery exposed the page's mandate text. No parcel response or schema was claimed."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "method": "GET",
+      "outcome": "Returned HTTP 403 from the public request path. First-party discovery showed the service is a cadastral-plan request flow requiring a title/cadastre number and requester details; no anonymous geometry query was attempted."
+    },
+    {
+      "url": "https://ancfcc.gov.ma/pr%C3%A9sentation/r%C3%A9seau-des-blocs-fonciers/",
+      "method": "GET/search retrieval",
+      "outcome": "Official first-party directory was found through web discovery and inspected for Safi office evidence; no parcel geometry or API endpoint was published there."
+    },
+    {
+      "url": "https://ausy.ma/atlas-cartographique/",
+      "method": "GET",
+      "outcome": "Returned HTTP 200. The page linked the official 2024 Safi province atlas PDF."
+    },
+    {
+      "url": "https://ausy.ma/wp-content/uploads/2025/10/Atlas-Province-SAFI.pdf",
+      "method": "GET and bounded text inspection",
+      "outcome": "Downloaded successfully and inspected. It describes an urban-planning/territorial atlas with administrative, demographic, economic, and development maps; no safe parcel IDs, parcel schema, or full parcel polygons were found."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "legal description", "value"],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "ANCFCC national cadastral pages and Safi office directory, ANCFCC cadastral-plan service, and the official Safi-Youssoufia Urban Agency atlas page/PDF were investigated.",
+    "verifiedOpenScope": "National/local custodian and procedure evidence plus planning/territorial atlas context only; no anonymous parcel identity-plus-geometry response was verified.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_public_parcel_geometry",
+  "runtimeReadiness": "held_serial_review",
+  "remainingUncertainty": "The Safi cadastral office and ANCFCC mandate are evidenced, but public parcel publication, citywide coverage, and API access remain unresolved. HTTP 403 and the absence of a parcel layer in the planning atlas are access/content findings, not evidence of citywide parcel absence. No claim is made about ownership, title, address, tax records, legal descriptions, or completeness of internal ANCFCC or local datasets. Packet completion is not source integration or admission."
+}

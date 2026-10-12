@@ -1,0 +1,124 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 7867,
+  "queueRank": 3213,
+  "name": "Kebri Dehar",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "iso3": "ETH",
+  "locId": 231,
+  "capital": false,
+  "point": [6.73689146767948, 44.2760801410244],
+  "population2025": 188065,
+  "population2025k": 188.065,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kebri Dehar Ethiopia official cadastral parcel map land registry GIS",
+        "result": "First-party discovery found the Ethiopian e-Land viewer, the Somali Regional State geospatial information directorate, the Somali Regional State rural land administration bureau, and the Ethio-NSDI geoportal. No Kebri Dehar-specific public parcel layer or local cadastral procedure was evidenced.",
+        "actualResultUrls": [
+          "https://eland.addiscadaster.gov.et/",
+          "https://srbofed.gov.et/regional-developmental-information-population-directorate/",
+          "https://srseprlab.gov.et/rural-land-admin-and-use/",
+          "https://ethionsdi.gov.et/"
+        ]
+      },
+      {
+        "language": "Somali (local/regional)",
+        "query": "Kebri Dehar Somali Region khariidadda dhulka diiwaanka cadastral adeeg rasmi ah",
+        "result": "No direct first-party Somali-language Kebri Dehar parcel viewer or local registry route was returned. Official Somali Regional State pages identified regional land administration and geospatial mapping responsibilities, but not an anonymous city parcel endpoint.",
+        "actualResultUrls": [
+          "https://srseprlab.gov.et/rural-land-admin-and-use/",
+          "https://srbofed.gov.et/regional-developmental-information-population-directorate/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": "Somali Regional State Environmental Protection and Rural Land Administration Bureau; Somali Regional State geospatial information directorate",
+    "locality": "Somali Regional State; Kebri Dehar locality was not individually evidenced",
+    "evidenceUrls": [
+      "https://srseprlab.gov.et/rural-land-admin-and-use/",
+      "https://srbofed.gov.et/regional-developmental-information-population-directorate/"
+    ],
+    "scopeNote": "The official regional pages describe land-administration and geospatial responsibilities, including boundary mapping, but do not establish a Kebri Dehar local registry, public parcel map, or citywide coverage. registryFound therefore remains null."
+  },
+  "officialSources": [
+    {
+      "url": "https://eland.addiscadaster.gov.et/",
+      "observation": "Public e-Land Angular viewer loaded successfully. Its current api.config.json identifies a GeoServer WFS layer named ncrprs_cadaster:v_1_registered_parcel and an Addis city code AA-ADS."
+    },
+    {
+      "url": "https://eland.addiscadaster.gov.et/assets/api.config.json",
+      "observation": "Current viewer configuration exposed the public service host, WFS request pattern, layer name, and EPSG:4326 output request; the configured city is Addis, not Kebri Dehar."
+    },
+    {
+      "url": "https://srbofed.gov.et/regional-developmental-information-population-directorate/",
+      "observation": "Official regional page describes geospatial and demographic information responsibilities and preparation of kebele, wereda, zonal, and regional maps."
+    },
+    {
+      "url": "https://srseprlab.gov.et/rural-land-admin-and-use/",
+      "observation": "Official Somali Regional State page describes the Rural Land Administration and Use Directorate and its regional land-governance role."
+    },
+    {
+      "url": "https://ethionsdi.gov.et/",
+      "observation": "Official Ethio-NSDI geoportal was identified, but its TLS certificate was not trusted by the request environment; no certificate exception was authorized or used."
+    }
+  ],
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "e-Land public configuration / GeoServer ncrprs_cadaster:v_1_registered_parcel",
+    "nativeIdField": "uniqueparcelid",
+    "crs": "EPSG:4326 requested; service DescribeFeatureType also exposes geometry, citycode, documentedarea, measuredarea, and parcel_type",
+    "boundedResponse": {
+      "request": "GET WFS GetFeature with bbox=44.2760801410244,6.73689146767948,44.2761801410244,6.73699146767948,EPSG:4326 and maxFeatures=3",
+      "httpStatus": 200,
+      "totalFeatures": 0,
+      "numberReturned": 0,
+      "interpretation": "Scoped zero response from the configured Addis layer; not evidence of citywide absence and not retained as a sample."
+    },
+    "fieldMapping": {
+      "canonicalId": "uniqueparcelid",
+      "safeGeometry": "geometry",
+      "observedFields": ["uniqueparcelid", "documentedarea", "measuredarea", "parcel_type", "geometry", "citycode"],
+      "compositeKeyProvenance": null
+    },
+    "note": "No parcel polygon was retained. The exact WUP point was preserved and not shifted. The configured service is Addis-specific and does not demonstrate Kebri Dehar coverage."
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://eland.addiscadaster.gov.et/", "outcome": "200; public viewer HTML retrieved and current JavaScript assets identified."},
+    {"method": "GET", "url": "https://eland.addiscadaster.gov.et/main.d3525dff4b9098d6.js", "outcome": "200; current viewer JavaScript inspected and api.config.json route identified."},
+    {"method": "GET", "url": "https://eland.addiscadaster.gov.et/assets/api.config.json", "outcome": "200; public configuration identified Addis city code AA-ADS, GeoServer host, WFS layer, and EPSG:4326 output request."},
+    {"method": "GET", "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetCapabilities", "outcome": "200; GeoServer WFS capabilities retrieved."},
+    {"method": "GET", "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=DescribeFeatureType&typeName=ncrprs_cadaster:v_1_registered_parcel", "outcome": "200; schema retrieved; safe parcel identity field uniqueparcelid and geometry field observed."},
+    {"method": "GET", "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ncrprs_cadaster:v_1_registered_parcel&outputFormat=application/json&srsname=EPSG:4326&bbox=44.2760801410244,6.73689146767948,44.2761801410244,6.73699146767948,EPSG:4326&maxFeatures=3", "outcome": "200; empty FeatureCollection, totalFeatures=0. This was a bounded request against an Addis-configured layer, not a citywide absence test."},
+    {"method": "GET", "url": "https://srbofed.gov.et/regional-developmental-information-population-directorate/", "outcome": "200 via first-party page; regional geospatial responsibilities observed."},
+    {"method": "GET", "url": "https://srseprlab.gov.et/rural-land-admin-and-use/", "outcome": "200 via first-party page; regional rural land-administration responsibilities observed."},
+    {"method": "GET", "url": "https://ethionsdi.gov.et/", "outcome": "TLS verification failed with self-signed certificate; no retry with verification disabled and no certificate exception used."}
+  ],
+  "safeFieldAllowlist": ["uniqueparcelid", "geometry", "geometry CRS", "documentedarea", "measuredarea", "parcel_type", "citycode"],
+  "coverageAssessment": {
+    "claimedScope": "Public Addis e-Land viewer and its configured registered-parcel WFS layer; Somali Regional State pages provide regional administrative context only.",
+    "verifiedOpenScope": "The e-Land layer schema and one bounded anonymous response were verified. No Kebri Dehar-specific parcel coverage, local registry endpoint, city boundary, or citywide completeness was verified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_adapter_review",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The configured WFS is explicitly associated with Addis (AA-ADS), so its empty exact-point response cannot qualify Kebri Dehar as absent or covered.",
+    "No local Kebri Dehar registry/map/procedure was evidenced by first-party discovery; registryFound remains null rather than false.",
+    "Ethio-NSDI was not inspected further because TLS verification failed and no narrow certificate exception was authorized.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or admission."
+  ]
+}

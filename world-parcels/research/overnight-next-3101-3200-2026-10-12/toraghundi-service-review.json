@@ -1,0 +1,15 @@
+{
+  "cityRecord": "city-608-toraghundi.json",
+  "cityCode": 608,
+  "queueRank": 3153,
+  "attempt": 1,
+  "reviewStatus": "complete_research_held_runtime",
+  "service": "MUDL/MUDH land and GIS administration; Ministry of Justice PRMIS/PMS",
+  "queryAndRequestOutcome": "English and Dari/Pashto first-party discovery completed. Official MUDL notices evidence Toraghundi survey and ownership-verification activity. The current PRMIS/PMS application shell and JavaScript were inspected; anonymous API requests were country-IP-gated from this environment. No parcel geometry, native parcel ID, CRS, or safe cadastral schema was obtained.",
+  "scopeLimits": ["Official notices cover described project/survey areas, not a verified citywide parcel layer", "PRMIS/PMS country-IP denial is not evidence of cadastral absence", "No exact-point hit or coordinate shift was used", "No citywide completeness or adapter readiness was established"],
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel geometry", "geometry CRS", "safe reproduction metadata for the public service"],
+  "retainedSamples": [],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": ["No GeoJSON sample is retained because no full parcel polygon was observed", "registryFound remains null because a public local registry/cadastre viewer or procedure with parcel-level access was not independently verified", "No unsafe landholder or title-related fields were requested", "The packet records research evidence only and requires independent serial adapter review before any runtime use"]
+}

@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-10878-cenxi.json",
+  "cityCode": 10878,
+  "queueRank": 1879,
+  "name": "Cenxi",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewOutcome": "held_no_verified_open_parcel_service",
+  "point": [22.9179831122898, 110.982805978858],
+  "scopeLimits": [
+    "Administrative registry evidence is not citywide geometry coverage.",
+    "National Tianditu documentation is not a cadastral parcel endpoint.",
+    "TLS failures, timeout, and HTTP 418 were recorded as access failures only; none was interpreted as citywide absence.",
+    "No parcel sample GeoJSON is retained because no safe native-ID geometry response was verified."
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID if publicly returned", "geometry", "source URL", "CRS", "bounded retrieval metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "rights-holder", "personal data"],
+  "queryAndRequestOutcome": "Two separate first-party discovery queries were executed in English and Chinese and recorded in the city record. Direct requests to local/provincial hosts were bounded and logged. No login, credentials, private token, CAPTCHA/Cloudflare bypass, or global TLS disable was used.",
+  "uncertainty": "RegistryFound is true only for evidenced local/county registration administration in official Guangxi material. It does not imply public parcel geometry availability. Runtime readiness remains held pending independent serial qualification.",
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "completionSummary": {
+    "packetComplete": true,
+    "geometryVerified": false,
+    "nativeIdentityVerified": false,
+    "runtimeQualified": false,
+    "followUpRequired": true
+  }
+}

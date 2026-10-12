@@ -1,0 +1,37 @@
+{
+  "taskId": "city:4251",
+  "decision": "held",
+  "checkedAt": "2026-10-12T01:52:36Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-4251-bayt-sa-dan.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/bayt-sa-dan-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "tmp/valhalla-parcel-research/4251/galsup.html",
+    "tmp/valhalla-parcel-research/4251/services.html",
+    "tmp/valhalla-parcel-research/4251/galsup-headers.txt"
+  ],
+  "queueIdentity": {
+    "cityCode": 4251,
+    "rank": 3053,
+    "country": "Yemen",
+    "point": [
+      14.4832152476207,
+      44.0143540814421
+    ],
+    "populationPersons": 196086
+  },
+  "checks": {
+    "bilingualExecutedSearchesRecorded": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "registryFound": null,
+  "reason": "Official national land and survey procedures are documented, but no Bayt Sa`dan local parcel service, native ID, or full polygon was verified. The retained first-party GALSUP pages and unavailable service route do not establish citywide absence. Local registry custody remains unresolved."
+}

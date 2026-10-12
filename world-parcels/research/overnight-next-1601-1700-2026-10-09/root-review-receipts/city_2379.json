@@ -1,0 +1,14 @@
+{
+  "taskId": "city:2379",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-2379-kitchener.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/kitchener-service-review.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T11:48:56Z",
+  "reason": "Official regional layer metadata documents polygon geometry and OBJECTID, but both original bounded response caches contain zero features. A point/radius miss is not citywide absence; fresh native-ID polygon reads, forced paging, 13-cell metric checks, source binding, and headed Details verification are absent.",
+  "runtimeAdmission": false
+}

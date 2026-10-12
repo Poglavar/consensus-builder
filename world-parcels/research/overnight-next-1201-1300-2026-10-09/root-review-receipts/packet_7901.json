@@ -1,0 +1,15 @@
+{
+  "taskId": "packet:7901",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-7901-hafizabad.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/hafizabad-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-review-receipts/city_7901.json",
+    "tmp/valhalla-parcel-research/7901/pulse.html"
+  ],
+  "checkedAt": "2026-10-09T12:10:12.703874Z",
+  "reason": "Queue identity matches code 7901/rank 1223/Pakistan/PK/point [32.0705864531695,73.6889825364113]/454903 persons. English and Urdu searches are recorded. First-party municipal base map has a parcel-boundary legend and PULSE viewer lists Hafizabad cadastral layer 10; earlier independent anonymous metadata/one-feature requests received ArcGIS 499 Token Required. No safe polygon or native ID response, paging, 13 cells, metric GEOS checks, source binding, or headed Details check. Registry/map custody is supported, while open geometry and citywide availability remain unresolved; held without an absence inference."
+}

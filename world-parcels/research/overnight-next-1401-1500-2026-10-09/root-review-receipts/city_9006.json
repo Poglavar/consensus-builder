@@ -1,0 +1,21 @@
+{
+  "taskId": "city:9006",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-9006-changping.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/changping-service-review.json",
+    "tmp/valhalla-parcel-research/changping/tianditu.html",
+    "tmp/valhalla-parcel-research/changping/bdc.headers",
+    "tmp/valhalla-parcel-research/changping/bdc-https.headers"
+  ],
+  "checkedAt": "2026-10-09T17:34:25.904390+00:00",
+  "reviewFindings": {
+    "identity": "Immutable queue, ranked roster, and original WUP 2025 CSV agree on Changping, China, rank 1472, point [40.2122378376686,116.225196461282], 386664 persons.",
+    "searches": "Paired packet and review record executed English and Chinese searches with first-party URLs.",
+    "sourceEvidence": "The official Beijing planning and natural-resources notice documents cadastral district and parcel-map query procedures. Cached Tianditu HTML is a service portal; the registry-route header caches are empty after bounded timeouts. No anonymous safe parcel feature response, native ID, or retained polygon was verified.",
+    "holdReason": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, or headed Details check. Timeout does not establish citywide absence."
+  }
+}

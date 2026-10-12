@@ -1,0 +1,68 @@
+{
+  "cityCode": 11563,
+  "queueRank": 2934,
+  "name": "Dumka",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [24.2716418466786, 87.2478089454765],
+  "population2025": 203306,
+  "population2025k": 203.306,
+  "populationUnit": "persons",
+  "status": "complete",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "purpose": "City-specific cadastral and public parcel geometry investigation; registry evidence, retrieved geometry and runtime qualification are assessed separately.",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dumka Jharkhand official cadastral parcel map GIS land records Jharkhand",
+        "result": "First-party results identified the official Dumka district land-records page, the Jharkhand JharBhoomi land-record portal, the Jharkhand Bhu-Naksha cadastral map portal, and Government of India DILRMP Dumka map-digitization statistics. No anonymous city-bounded parcel vector response was returned.",
+        "actualResultUrls": ["https://dumka.nic.in/service/land-records/", "https://jharbhoomi.jharkhand.gov.in/", "https://jharbhunaksha.jharkhand.gov.in/", "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/362"]
+      },
+      {
+        "language": "Hindi",
+        "query": "Dumka Jharkhand official land records cadastral map GIS भू नक्शा दुमका झारखंड",
+        "result": "Official-domain results identified Jharkhand Bhu-Naksha as the digitized cadastral plot-map service and Dumka district land-record references; no anonymous parcel geometry, native ID, or public feature schema was obtained.",
+        "actualResultUrls": ["https://jharbhunaksha.jharkhand.gov.in/", "https://jharbhoomi.jharkhand.gov.in/", "https://dumka.nic.in/service/land-records/", "https://jharkhand.gov.in/revenue"]
+      }
+    ]
+  },
+  "executedQueries": [
+    {"language": "English", "query": "Dumka Jharkhand official cadastral parcel map GIS land records Jharkhand", "result": "Official Dumka/Jharkhand land-record and DILRMP sources found; no anonymous public parcel vector response.", "actualResultUrls": ["https://dumka.nic.in/service/land-records/", "https://jharbhoomi.jharkhand.gov.in/", "https://jharbhunaksha.jharkhand.gov.in/", "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/362"]},
+    {"language": "Hindi", "query": "Dumka Jharkhand official land records cadastral map GIS भू नक्शा दुमका झारखंड", "result": "Official-domain Bhu-Naksha and land-record references found; no anonymous public parcel vector response.", "actualResultUrls": ["https://jharbhunaksha.jharkhand.gov.in/", "https://jharbhoomi.jharkhand.gov.in/", "https://dumka.nic.in/service/land-records/", "https://jharkhand.gov.in/revenue"]}
+  ],
+  "officialSources": [
+    {"url": "https://dumka.nic.in/service/land-records/", "publisher": "District Administration Dumka, Government of Jharkhand", "observation": "Official district page identifies the Revenue Section, Dumka, and links the state JharBhoomi land-record system."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/362", "publisher": "Department of Land Resources, Government of India", "observation": "DILRMP page reports Dumka district cadastral-map digitization status, including a Dumka tehsil row; this is program/status evidence, not a parcel feature endpoint."},
+    {"url": "https://jharbhunaksha.jharkhand.gov.in/", "publisher": "Department of Revenue, Registration and Land Reforms, Government of Jharkhand", "observation": "Official Jharkhand Bhu-Naksha portal identified as the cadastral map viewer; current viewer/API configuration and anonymous parcel response were not retrievable."},
+    {"url": "https://jharkhand.gov.in/revenue", "publisher": "Department of Revenue, Registration and Land Reforms, Government of Jharkhand", "observation": "Official department page identifies land-record, registry, mutation, and JharBhoomi facilities; it does not itself expose a safe anonymous parcel geometry response."}
+  ],
+  "requests": [
+    {"url": "https://dumka.nic.in/service/land-records/", "method": "GET via official web fetch", "httpStatus": 200, "contentType": "text/html", "outcome": "Readable official page; Dumka Revenue Section and JharBhoomi link captured."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/362", "method": "GET via official web fetch", "httpStatus": 200, "contentType": "text/html", "outcome": "Readable official DILRMP page; Dumka district and Dumka tehsil digitization rows captured. No parcel geometry was requested from this reporting page."},
+    {"url": "https://jharbhunaksha.jharkhand.gov.in/", "method": "GET via direct public curl and official web fetch", "httpStatus": null, "outcome": "Direct request timed out after 20 seconds and the web inspection returned an internal error. No login, CAPTCHA/Cloudflare bypass, or TLS exception was attempted; no absence inference."},
+    {"url": "https://jharbhoomi.jharkhand.gov.in/", "method": "GET via direct public curl", "httpStatus": null, "outcome": "Request did not produce a usable response within the bounded request window. No record or unsafe ownership query was made; no absence inference."},
+    {"url": "https://jharkhand.gov.in/revenue", "method": "GET via official web search result", "httpStatus": null, "outcome": "Official department route identified with links to JharBhoomi and related land services; no anonymous parcel vector endpoint exposed in the fetched result."}
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Dumka district administration identifies its Revenue Section and links the state land-record service; official Jharkhand and DILRMP sources identify the Bhu-Naksha cadastral-map program and Dumka district digitization status. This is local registry/cadastral-service evidence only; no city-bounded public parcel geometry was verified.",
+  "registryEvidenceUrls": ["https://dumka.nic.in/service/land-records/", "https://jharbhunaksha.jharkhand.gov.in/", "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/362"],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "sourceCandidate": {"url": "https://jharbhunaksha.jharkhand.gov.in/", "publisher": "Government of Jharkhand Department of Revenue, Registration and Land Reforms", "kind": "Bhu-Naksha cadastral map viewer", "scope": "Dumka coverage and anonymous geometry access unverified", "safeSampleFile": null, "nativeFields": [], "safeFieldAllowlist": ["stable native parcel identity if source-proven", "geometry"]},
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_evidenced_no_public_geometry_verified",
+  "coverageAssessment": {"claimedScope": "Jharkhand state cadastral-map and land-record services with Dumka district status reported by DILRMP", "verifiedOpenScope": "Dumka Revenue Section, state Bhu-Naksha service, and district digitization-status evidence only; citywide parcel coverage, CRS, schema, native identity, and anonymous API access remain unverified.", "countrywideVerified": false},
+  "runtimeReadiness": "held_not_serially_qualified",
+  "remainingUncertainty": "The official Bhu-Naksha/JharBhoomi services may contain Dumka parcel records, but the current JavaScript/configuration, public API route, CRS, native parcel identity, city coverage, and safe geometry retrieval were not verified. Timeout and unusable viewer responses are access limitations, not evidence of citywide absence.",
+  "safeFieldPolicy": {"allowed": ["stable native parcel identity", "full parcel polygon or multipolygon geometry", "public source/service URL", "source CRS and query metadata"], "excluded": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration detail"]},
+  "pointBasis": "Exact immutable WUP queue point; not shifted to force a parcel hit.",
+  "populationBasis": "WUP queue record; preserved as 203306 persons and 203.306 thousands-equivalent value.",
+  "packetNote": "Research packet completion is not source integration, runtime admission, or proof of citywide parcel absence."
+}

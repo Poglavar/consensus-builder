@@ -1,0 +1,49 @@
+{
+  "cityCode": 9110,
+  "queueRank": 2633,
+  "name": "Zhuozhou",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [39.4994615201978, 115.981555702499],
+  "population2025": 224356,
+  "population2025k": 224.356,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zhuozhou China official cadastral parcel map GIS land registry Natural Resources Bureau",
+        "result": "Discovery identified the official Zhuozhou municipal government portal and the official municipal Natural Resources and Planning Bureau page. No public Zhuozhou parcel viewer or anonymous parcel ID-plus-geometry endpoint was identified.",
+        "actualResultUrls": [
+          "https://zhuozhou.gov.cn/",
+          "https://www.zhuozhou.gov.cn/published/1612773776635.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "涿州市 自然资源和规划局 地籍图 不动产登记 电子地图 官方",
+        "result": "官方检索结果确认涿州市人民政府门户及涿州市自然资源和规划局机构页面；未发现可匿名访问的涿州地籍图、宗地图或返回安全地块标识与几何的公开接口。",
+        "actualResultUrls": [
+          "https://zhuozhou.gov.cn/",
+          "https://www.zhuozhou.gov.cn/published/1612773776635.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "The official Zhuozhou municipal government portal identifies the Zhuozhou Natural Resources and Planning Bureau as a municipal government institution. This is local custodial evidence, not evidence of a public parcel integration endpoint.",
+    "urls": [
+      "https://zhuozhou.gov.cn/",
+      "https://www.zhuozhou.gov.cn/published/1612773776635.html"
+    ]
+  },
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "sampleFiles": []
+}

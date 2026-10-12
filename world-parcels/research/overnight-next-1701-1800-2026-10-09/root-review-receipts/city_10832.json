@@ -1,0 +1,22 @@
+{
+  "taskId": "city:10832",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-10832-city.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-service-review.json",
+    "tmp/valhalla-parcel-research/10832/app.955f11a383d1832822f6.js",
+    "tmp/valhalla-parcel-research/10832/wfs-test.json"
+  ],
+  "checkedAt": "2026-10-10T15:23:10Z",
+  "reason": "WUP 2025 rank 1765, China, exact point and 325383 persons match both rosters and the original source. English and Chinese searches are recorded. The saved first-party WFS response is a browser-key 403 error, with no safe native ID or full polygon. Fresh ID reads, paging, 13 cells, metric GEOS checks, source binding and headed Details proof are absent. Hold without inferring citywide absence.",
+  "checks": {
+    "immutableQueueIdentity": "matched WUP 2025 and both cohort rosters",
+    "bilingualExecutedSearches": true,
+    "retainedFullPolygons": 0,
+    "independentLiveAdapterQualified": false,
+    "runtimeAdmission": false
+  }
+}

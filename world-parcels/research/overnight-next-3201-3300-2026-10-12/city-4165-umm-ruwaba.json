@@ -1,0 +1,144 @@
+{
+  "cityCode": 4165,
+  "queueRank": 3260,
+  "name": "Umm Ruwaba",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "iso3": "SDN",
+  "locId": 729,
+  "capital": false,
+  "point": [12.9073589794408, 31.2157543565926],
+  "population2025": 184761,
+  "population2025k": 184.761,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Umm Ruwaba Sudan official cadastral parcel map GIS land registry; Sudan official cadastre parcel map GIS Umm Ruwaba",
+        "result": "First-party discovery identified Aqari, the official Sudan national real-estate registration platform under the Judicial Authority, and the National Information Center's Sudan Spatial Portal. No Umm Ruwaba-local public parcel viewer or openly documented anonymous parcel geometry service was found.",
+        "actualResultUrls": [
+          "https://aqari.nctr.sd/ar/about",
+          "https://aqari.nctr.sd/ar",
+          "https://nic.gov.sd/public/projectDetails/3"
+        ]
+      },
+      {
+        "language": "Arabic (Sudan, local)",
+        "query": "أم روابة السودان السجل العقاري خريطة قطع الأراضي رسمي؛ السودان أم روابة المساحة الأراضي سجل عقاري خريطة مكانية",
+        "result": "البحث الرسمي بالعربية وجد منصة عقاري التابعة للسلطة القضائية ومشروع بوابة السودان المكانية التابع للمركز القومي للمعلومات. لم يُعثر على عارض قطع أراضٍ عام خاص بأم روابة أو خدمة مجهولة موثقة تعيد هوية القطعة وهندستها.",
+        "actualResultUrls": [
+          "https://aqari.nctr.sd/ar/about",
+          "https://aqari.nctr.sd/ar",
+          "https://nic.gov.sd/public/projectDetails/3",
+          "https://sj.gov.sd/ar/node/5429"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": "The Judicial Authority's Aqari platform is evidenced as a national Sudan real-estate registration service; no Umm Ruwaba-local registry/cadastre office or public local parcel service was evidenced in this attempt.",
+    "scopeNote": "NIC's Sudan Spatial Portal is described as a national WMS/WFS map portal. National agency/platform descriptions were not treated as proof of a city-local registry service or parcel coverage."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": null,
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {
+      "nativeIdentity": null,
+      "safeGeometry": null,
+      "otherDocumentedFields": [],
+      "compositeKeyProvenance": null
+    },
+    "note": "No safe anonymous parcel ID-plus-geometry response was obtained. The exact WUP point was preserved and was not shifted or used as a citywide absence test."
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://aqari.nctr.sd/ar",
+      "outcome": "HTTP 200. The current Next.js viewer shell identifies Aqari and public registration services."
+    },
+    {
+      "method": "GET",
+      "url": "https://aqari.nctr.sd/ar/about",
+      "outcome": "HTTP 200 by direct request. Official Arabic page describes Aqari as a national judicial-authority platform for land/property registration, but exposes no city-local parcel layer, schema, CRS, or public parcel geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://aqari.nctr.sd/_next/static/chunks/1utq9kai72eiu.js",
+      "outcome": "HTTP 200. Current JavaScript configuration exposed public route patterns `/api/slr/api/states`, `/api/slr/api/cities`, `/api/slr/api/neighborhoods`, `/api/slr/api/blocks`, `/api/slr/api/offices`, and `/api/slr/api/land/plots?partner_id=...`; no parcel schema or CRS was embedded."
+    },
+    {
+      "method": "GET",
+      "url": "https://aqari.nctr.sd/api/slr/api/states",
+      "outcome": "HTTP 500 with `{'error':'Internal Server Error'}`. No response schema or geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://aqari.nctr.sd/api/slr/api/cities",
+      "outcome": "HTTP 500 with `{'error':'Internal Server Error'}`. No response schema or geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://aqari.nctr.sd/api/slr/api/neighborhoods",
+      "outcome": "HTTP 500 with `{'error':'Internal Server Error'}`. No response schema or geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://aqari.nctr.sd/api/slr/api/blocks",
+      "outcome": "HTTP 500 with `{'error':'Internal Server Error'}`. No response schema or geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://aqari.nctr.sd/api/slr/api/offices",
+      "outcome": "HTTP 500 with `{'error':'Internal Server Error'}`. No response schema or geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://aqari.nctr.sd/api/slr/api/land/plots?partner_id=0",
+      "outcome": "HTTP 500 with `{'error':'Internal Server Error'}`. Bounded anonymous test only; no credentials or alternate partner identity was requested. No response schema, native ID, CRS, or geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://nic.gov.sd/public/projectDetails/3",
+      "outcome": "HTTP 200. Official NIC page describes the Sudan Spatial Portal and says it provides WMS/WFS map services, but the linked geoportal host `https://www.geoportal.gov.sd/` did not resolve from this environment (DNS failure), so no current configuration, layer list, schema, CRS, or parcel response could be inspected."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.geoportal.gov.sd/",
+      "outcome": "DNS resolution failure from this environment; TLS was not bypassed and no retry through credentials or private infrastructure was attempted."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if publicly exposed and source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "Aqari may contain authenticated or non-indexed cadastral data; no login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe fields were used.",
+    "The NIC portal description establishes a national WMS/WFS project, but the current geoportal host was unreachable and no parcel layer was evidenced.",
+    "HTTP 500, DNS failure, and lack of an exact-point response are transport/availability evidence only and do not establish citywide cadastral absence.",
+    "No parcel polygon is retained because no safe source geometry and stable native identity were verified.",
+    "Independent serial review is required before any adapter or runtime qualification."
+  ],
+  "admissionDecision": "held",
+  "geometrySamples": []
+}

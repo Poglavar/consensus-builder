@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11529-katihar.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Document Katihar's official local land-record custodian, Bihar BhuNaksha discovery, current viewer routes, bounded anonymous requests, and the separation between registry evidence, safe parcel identity, geometry, and runtime qualification.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Official Katihar district and Bihar Revenue/Land Records sources establish a local land-record custodian and official state cadastral-map service. The current BhuNaksha viewer was inspected successfully: its hierarchy identifies Katihar and its map endpoint returns EPSG:32645 metadata plus a safe native plot id from a bounded map-point request. No full polygon/vector feature was returned, so no GeoJSON sample is retained and runtime remains held.",
+  "registryAssessment": "registryFound=true is supported by the official Katihar district land-record service page and the official Bihar Directorate of Land Records & Survey BhuNaksha service. This establishes service/custodian evidence, not citywide geometry completeness or ownership/title evidence.",
+  "coverageAssessment": {"claimedScope": "Official Katihar district land-record service and Bihar BhuNaksha cadastral-map service.", "verifiedOpenScope": "Katihar hierarchy, Katihar mauza 0062 map metadata, EPSG:32645, one safe native plot identity, and raster WMS behavior.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "official service URLs", "HTTP status/content type", "public service metadata", "native CRS/ID only if returned safely", "geometry only if independently verified"],
+  "searchQueries": [
+    {"language": "English", "query": "Katihar Bihar official land records cadastral parcel map GIS Bhunaksha survey land records", "actualResultUrls": ["https://katihar.nic.in/service/land-records/", "https://land.bihar.gov.in/landbihar/Default.aspx", "https://dlrs.bihar.gov.in/services.html", "https://bhunaksha.bihar.gov.in/index.jsp"]},
+    {"language": "Hindi", "query": "कटिहार बिहार आधिकारिक भू नक्शा भू अभिलेख cadastral parcel map", "actualResultUrls": ["https://katihar.nic.in/hi/service/%e0%a4%ad%e0%a5%82%e0%a4%ae%e0%a4%bf-%e0%a4%b0%e0%a4%bf%e0%a4%95%e0%a5%89%e0%a4%b0%e0%a5%8d%e0%a4%a1%e0%a5%8d%e0%a4%b8/", "https://land.bihar.gov.in/landbihar/Default.aspx", "https://bhunaksha.bihar.gov.in/index.jsp"]}
+  ],
+  "attempts": [
+    "Loaded official Katihar English and Hindi land-record pages over TLS (HTTP 200).",
+    "Loaded official Bihar Revenue and Land Reforms portal over TLS (HTTP 200); confirmed links to Bhu-Naksha and land-record services.",
+    "Loaded https://bhunaksha.bihar.gov.in/index.jsp anonymously (HTTP 200), inspected current JavaScript/configuration, and identified REST hierarchy, map-extent, point-selection, and WMS routes.",
+    "POSTed /rest/Levels/count with state=10; received 7 levels.",
+    "POSTed /rest/Levels/ListsAfterLevel for state=10 and Katihar selections; observed Katihar district code 10, subdivision 01, circle 01, Katihar mauza code 0062, and Cadastral/Revisional map choices.",
+    "POSTed /rest/MapInfo/getVVVVExtentGeoref for gisLevels=10,01,01,0062,CS,06,01; received gisCode CS10010100620810601, EPSG:32645, and a bounded sheet extent.",
+    "POSTed /rest/MapInfo/getPlotAtXY at a point inside the tested sheet; received JSON id loP830khRR6MfrOSJRDTEg and plot number 184. Only safe native identity metadata was recorded; no owner, address, titleholder, contact, tax, account, or personal fields were requested.",
+    "POSTed /rest/MapInfo/getPlotAtXY at the exact immutable WUP point after coordinate transformation to EPSG:32645; response was empty because the point was outside the tested sheet extent. This was not treated as citywide absence and the point was not shifted.",
+    "Requested bounded WMS PLOT_LIST/GetFeatureInfo output; service returned image/png raster output, not a full vector polygon or JSON feature geometry.",
+    "Did not log in, use credentials/private tokens, defeat CAPTCHA/Cloudflare, disable TLS verification, or request unsafe personal/ownership fields.",
+    "No sample GeoJSON was created because no full parcel polygon was independently verified."
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": "loP830khRR6MfrOSJRDTEg", "nativeIdField": "id", "nativeCrs": "EPSG:32645", "exactWupPointTest": "Run unchanged; transformed point [556953.86, 2825399.82] was outside the tested CS sheet extent and returned no plot.", "polygonResponse": "None; viewer returned raster WMS and point-selection metadata only."},
+  "nextStep": "Independent serial review of Bihar BhuNaksha vector/geometry export capability and citywide sheet coverage; keep adapter/runtime held until a real safe native ID plus full parcel polygon is independently qualified.",
+  "remainingUncertainty": "Current vector export behavior, all Katihar cadastral-sheet coverage, urban boundary correspondence, and whether other map instances contain the WUP point remain unverified.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

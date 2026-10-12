@@ -1,0 +1,16 @@
+{
+  "taskId": "packet:499",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-499-buenaventura.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/buenaventura-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/buenaventura-parcels-sample.geojson",
+    "tmp/valhalla-parcel-research/499/city-envelope-ids.json",
+    "tmp/valhalla-parcel-research/499/exact-point.json",
+    "tmp/valhalla-parcel-research/499/sample3.geojson"
+  ],
+  "checkedAt": "2026-10-09T13:45:22Z",
+  "reason": "Immutable WUP code 499, rank 1272, Colombia, point and 438063 persons match the queue. English and Spanish research is recorded. Original IGAC responses show 16338 IDs in one broad envelope, a zero-feature exact-point query, and three polygons with FID/CODIGO; the durable sample rounds source coordinates by up to about 1e-9 degrees, so it is not unchanged source geometry. The point miss is not citywide absence. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS/overlap checks, source binding and headed Details verification are not independently evidenced."
+}

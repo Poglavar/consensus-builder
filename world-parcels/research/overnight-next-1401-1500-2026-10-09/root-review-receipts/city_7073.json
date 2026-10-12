@@ -1,0 +1,16 @@
+{
+  "taskId": "city:7073",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-7073-muzaffargarh.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/muzaffargarh-service-review.json",
+    "tmp/valhalla-parcel-research/7073/cadastral-service.json",
+    "tmp/valhalla-parcel-research/7073/muzaffargarh-layer.json",
+    "tmp/valhalla-parcel-research/7073/exact-query.geojson",
+    "tmp/valhalla-parcel-research/7073/extent-query.geojson"
+  ],
+  "checkedAt": "2026-10-09T17:43:39.925243Z",
+  "reason": "Queue identity and English/Urdu searches match. Raw exact-point response is empty; bounded response has 2,000 safe-ID polygons, equals the service cap, and flags exceededTransferLimit=true. Source metadata reports native EPSG:3857, while the packet calls it EPSG:4326; GeoJSON output can be WGS84. Full paging, thirteen bounded cells, metric GEOS checks, stable exact-ID reads, adapter/source binding, and headed Details verification are not evidenced. Hold runtime admission; point zero is not citywide absence."
+}

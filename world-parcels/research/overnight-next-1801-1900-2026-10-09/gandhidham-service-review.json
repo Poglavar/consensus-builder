@@ -1,0 +1,43 @@
+{
+  "cityRecord": "city-2281-gandhidham.json",
+  "schemaVersion": "1.0",
+  "cityCode": 2281,
+  "queueRank": 1830,
+  "city": "Gandhidham",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Gujarat Revenue/land-record custody and a Gandhidham Development Authority survey-number route were verified. Bounded anonymous access did not produce parcel geometry, native IDs, schema or CRS; no sample GeoJSON is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Gujarati discovery query text, outcomes and actual URLs are recorded in city-2281-gandhidham.json.",
+  "requestOutcomes": "The official Gujarat maps route timed out. The GDA host failed TLS certificate validation and was not retried insecurely. Official Revenue Department and DILRMP directory pages were retrievable but contained no parcel feature response.",
+  "attemptedRoutes": [
+    {"route": "Gujarat Revenue Department land-record custodian/services", "url": "https://revenuedepartment.gujarat.gov.in/branch/h-branch", "outcome": "HTTP 200 via public retrieval; survey/city-survey and land-record custodian plus AnyRoR/e-Milkat links confirmed; no geometry."},
+    {"route": "Gujarat official maps route", "url": "https://revenuedepartment.gujarat.gov.in/maps", "outcome": "TLS-verified GET timed out after 20 seconds before HTML or JavaScript configuration."},
+    {"route": "Gandhidham Development Authority survey-number service", "url": "https://gda.net.in/?page_id=2875", "outcome": "Public page discovered, but TLS certificate validation failed on bounded curl; no insecure retry and no result/geometry."},
+    {"route": "DILRMP Gujarat service directory", "url": "https://dilrmp.gov.in/dilrmpold/State-RoR-Web", "outcome": "HTTP 200 via public retrieval; Gujarat E-Dhara/Bhunaksha Gujarat/E-Milkat categories confirmed; no city parcel response."},
+    {"route": "Kutch district official map context", "url": "https://gsawb.gujarat.gov.in/writereaddata/Portal/Images/pdf/kachchh_district.pdf", "outcome": "Official PDF search result names Gandhidham and land-record context; no parcel geometry."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [23.0686534967028, 70.114622935814] was preserved; no exact-point hit/miss inference was made.",
+    "Service existence and a survey-number form do not establish complete Gandhidham city coverage or an open vector endpoint.",
+    "No stable native parcel identity plus full polygon geometry was retrieved or retained; CRS and parcel schema remain unverified.",
+    "A timeout, expired certificate or unusable UI is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable city-bounded public geometry response reached; no hit/miss inference.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Gujarat Revenue/land-record services, Gandhidham Development Authority survey-number route and Kutch district context.", "verifiedOpenScope": "Official custodian/service routes only; no citywide geometry response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Current map application route, public API, urban unit identifiers, parcel identity semantics, geometry delivery, CRS and citywide completeness remain unresolved. No claim is made about parcel absence, legal title, ownership or completeness.",
+  "retainedSample": null
+}

@@ -1,0 +1,43 @@
+{
+  "taskId": "city:8207",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-8207-buffalo.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/buffalo-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/buffalo-parcels-sample.geojson"
+  ],
+  "checkedAt": "2026-10-10T15:01:23.242623Z",
+  "reason": "Official city/county custody and two full safe-ID sample polygons are evidenced. Original ArcGIS responses show OBJECTID 56840 and 56842 in the bounded sample, OBJECTID 335243 at the exact WUP point, and exceededTransferLimit=true on the bounded sample. The sample matches the original polygons, but complete paging and all runtime admission gates remain unproved.",
+  "firstPartyUrlsChecked": [
+    "https://www.buffalony.gov/543/GIS-Maps",
+    "https://www3.erie.gov/gis/internet-mapping"
+  ],
+  "originalCacheInspection": [
+    {
+      "path": "tmp/valhalla-parcel-research/buffalo/layer.json",
+      "sha256": "9002e24554b3e33ae1df46ffc2ebdc388a1d7a5d6e25c892b7c7e3d5a9e89bc8"
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/buffalo/ids.json",
+      "sha256": "516bb3403d1a3cd575da9559a9892e0ab9867b9eb67c9b1145c93bce91b648c7"
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/buffalo/sample.geojson",
+      "sha256": "1a275b48f025efbc38cdd2bb5035c8aed7dca01a37facb744b33041d0989facb"
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/buffalo/exact-point.geojson",
+      "sha256": "f57306f8ca879b0d5c873a970ec93f27206db9e7564042c5a8dec5a40b4e3897"
+    }
+  ],
+  "admissionGatesIndependentlyVerified": {
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "freshExactNativeIdReads": false
+  }
+}

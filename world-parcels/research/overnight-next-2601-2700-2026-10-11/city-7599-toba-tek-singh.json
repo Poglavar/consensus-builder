@@ -1,0 +1,130 @@
+{
+  "cityCode": 7599,
+  "queueRank": 2657,
+  "name": "Toba Tek Singh",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "point": [30.9720903317045, 72.4849594272615],
+  "population2025": 222349,
+  "population2025k": 222.349,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Toba Tek Singh Pakistan official cadastral parcel map land records GIS",
+        "result": "First-party discovery found the official Punjab PULSE map-quality-control viewer, the Punjab Land Records Authority, and the official Toba Tek Singh district portal. The current PULSE HTML/JavaScript names Toba Tek Singh as a mapped district and contains a commented Toba-specific UrbanSurvey MapServer URL, but the host does not resolve during this attempt. No accessible city-specific parcel response was obtained.",
+        "actualResultUrls": [
+          "https://d2d.pulse.gop.pk/map-qc.html",
+          "https://www.punjab-zameen.gov.pk/",
+          "https://tobateksingh.punjab.gov.pk/district_profile"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "ٹوبہ ٹیک سنگھ سرکاری اراضی ریکارڈ نقشہ پارسل پنجاب",
+        "result": "Urdu-language discovery found the official Punjab Land Records Authority and Punjab PULSE land-map routes, plus the official Toba Tek Singh district portal. The public viewer exposes map controls but its hierarchy and parcel calls require a bearer token; no safe anonymous Toba parcel geometry was available.",
+        "actualResultUrls": [
+          "https://d2d.pulse.gop.pk/map-qc.html",
+          "https://www.punjab-zameen.gov.pk/",
+          "https://tobateksingh.punjab.gov.pk/services"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Punjab PULSE viewer is a first-party cadastral/parcel mapping route and explicitly includes Toba Tek Singh in its district layer controls. The official Punjab Land Records Authority provides the provincial land-record custodian and service procedures. A separately accessible city-specific public parcel API or local municipal registry endpoint was not established.",
+  "officialSources": [
+    {
+      "url": "https://d2d.pulse.gop.pk/map-qc.html",
+      "observation": "Current HTML and JavaScript were fetched. The viewer includes Toba Tek Singh with code 29D and references a commented UrbanSurvey service named urbanSurvay_TobaTekSingh_3Mouza_04_10_2024. The active parcel endpoint is GetParcelsByMauzaIdNewNew/{mauzaId}; the page requires accessToken for hierarchy and parcel requests."
+    },
+    {
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "observation": "Official Punjab Land Records Authority site describes land-record services, Arazi Record Centres, digital records, and the provincial custodian context."
+    },
+    {
+      "url": "https://tobateksingh.punjab.gov.pk/district_profile",
+      "observation": "Official district portal confirms Toba Tek Singh district and its administrative setting; it does not expose a safe parcel API in the inspected page."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://d2d.pulse.gop.pk/map-qc.html",
+      "method": "GET",
+      "outcome": "HTTP 200 page fetched. Current JavaScript/configuration was inspected without login, credentials, CAPTCHA/Cloudflare bypass, or private tokens."
+    },
+    {
+      "url": "https://d2d.pulse.gop.pk/api/LandHierarchy/GetDistrictsList/1",
+      "method": "GET",
+      "outcome": "HTTP 401 Unauthorized with WWW-Authenticate: Bearer. This is an access-control result, not evidence of source absence."
+    },
+    {
+      "url": "https://d2d.pulse.gop.pk/api/LandHierarchy/GetMauzasListPDMA/29D",
+      "method": "GET",
+      "outcome": "HTTP 401 Unauthorized with WWW-Authenticate: Bearer. Toba-specific mauza enumeration was therefore not attempted further."
+    },
+    {
+      "url": "https://d2d.pulse.gop.pk/api/Parcel/GetParcelsByMauzaIdNewNew/1",
+      "method": "GET",
+      "outcome": "HTTP 200 returned parcel JSON for mauzaId=1, but the response centroid is near 31.1196, 73.6173 and is unrelated to the Toba Tek Singh WUP point. It was not retained or used as city evidence."
+    },
+    {
+      "url": "https://d2d.pulse.gop.pk/api/reporting/GetLHStatisticsDetailed",
+      "method": "GET",
+      "outcome": "HTTP 401 Unauthorized with WWW-Authenticate: Bearer."
+    },
+    {
+      "url": "https://arcsrv.pulse.gop.pk:6443/arcgis/rest/services/UrbanSurvey/urbanSurvay_TobaTekSingh_3Mouza_04_10_2024/MapServer?f=pjson",
+      "method": "GET",
+      "outcome": "DNS resolution failed for arcsrv.pulse.gop.pk. No TLS exception was used and no geometry or schema was obtained."
+    },
+    {
+      "url": "https://gismaps.pulse.gop.pk/arcgis/rest/services/Door_To_Door_Survey/DoorToDoor_V_25_07_2025/MapServer?f=pjson",
+      "method": "GET",
+      "outcome": "DNS resolution failed for gismaps.pulse.gop.pk. This active viewer configuration route was not usable from the research environment."
+    }
+  ],
+  "source": {
+    "provider": "Punjab Land Records Authority / Punjab PULSE",
+    "serviceUrl": "https://d2d.pulse.gop.pk/map-qc.html",
+    "layerId": null,
+    "layerName": "Toba Tek Singh district control (29D); city-specific UrbanSurvey route not reachable",
+    "serviceType": "First-party web viewer with protected parcel API and referenced ArcGIS route",
+    "publicAccess": "viewer HTML public; hierarchy and parcel API bearer-token protected",
+    "nativeIdentityField": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "sourceCrs": null,
+    "sampleCrs": null
+  },
+  "sourceIds": [],
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Punjab PULSE viewer and its Toba Tek Singh district mapping route.",
+    "verifiedOpenScope": "Viewer configuration and access-control behavior only; no Toba parcel schema or geometry response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "exactPointHit": false,
+    "nearbyBoundedSample": false
+  },
+  "runtimeReadiness": "held_pending_serial_adapter_qualification",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "scopeLimits": [
+    "The exact WUP point [30.9720903317045, 72.4849594272615] was preserved in latitude/longitude order; no coordinate shifting or exact-point absence inference was used.",
+    "No citywide absence is claimed. The only anonymous parcel response was for an unrelated mauza and was excluded.",
+    "No owner, address, contact, titleholder, personal, tax/account, CNIC, or ownership fields were requested or retained.",
+    "No parcel sample GeoJSON is retained because no Toba Tek Singh native parcel identity plus full geometry was verified.",
+    "Packet completion is not source integration or runtime admission."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeIdentityPolicy": "No native identity was obtained; no synthetic identity was invented.",
+  "geometryQuality": "No city-specific parcel geometry obtained. The unrelated mauza response was excluded from evidence.",
+  "uncertainty": "The official viewer may expose Toba Tek Singh parcels after authenticated or otherwise session-bound hierarchy access, and the referenced Toba UrbanSurvey service may have moved. The precise city boundary, layer schema, CRS, parcel completeness, and update cadence remain unresolved."
+}

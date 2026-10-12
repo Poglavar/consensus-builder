@@ -1,0 +1,12 @@
+{
+  "taskId": "city:11148",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-11148-chuzhou.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/chuzhou-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T15:20:45Z",
+  "reason": "Queue identity matches rank 1790, China, point and 321424 persons; English and Chinese searches are recorded. Official Chuzhou material identifies a local real-estate registration centre and registration procedures, but the cited homepage returned 403 and no safe native-ID parcel polygon response was obtained. The access limit does not prove absence. Fresh ID reads, paging, 13 cells, metric GEOS checks, source binding and headed Details verification are unevidenced; hold without admission."
+}

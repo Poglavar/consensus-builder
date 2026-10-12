@@ -1,0 +1,47 @@
+{
+  "cityRecord": "city-5965-dolatabad.json",
+  "cityCode": 5965,
+  "queueRank": 3285,
+  "name": "Dolatabad",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "point": [32.7961320120571, 51.6734527280289],
+  "population2025": 183478,
+  "population2025k": 183.478,
+  "populationUnit": "persons",
+  "status": "complete",
+  "runtimeReadiness": "held",
+  "registryFound": null,
+  "reviewOutcome": "Iran's national cadastral/registration custodian and a locality-relevant Isfahan registration-office directory reference were identified, but no locally evidenced public parcel geometry service or anonymous safe vector response was qualified.",
+  "custodianAssessment": "SSAA is the candidate national custodian, with cadastre.ssaa.ir and shamim.ssaa.ir associated with cadastral/positioning workflows. The Isfahan listing references اداره ثبت اسناد و املاک برخوار (دولت آباد), but it is a directory result and not sufficient first-party local registry evidence.",
+  "queryOutcomes": "Separate English and Persian discovery queries were run. They found SSAA, Cadastre, Shamim, the Isfahan provincial registration listing, and the Dolatabad/Borjwar office reference, but no public Dolatabad parcel layer or documented anonymous vector API.",
+  "requestOutcomes": [
+    "GET https://ssaa.ir: connection timeout after the bounded 5-second connect window.",
+    "GET https://cadastre.ssaa.ir: connection timeout after the bounded 5-second connect window.",
+    "GET https://shamim.ssaa.ir: connection timeout after the bounded 5-second connect window.",
+    "GET https://my.ssaa.ir: connection timeout after the bounded 5-second connect window.",
+    "GET https://sabt-es.ir: DNS resolution failure.",
+    "GET https://dolatabad.ir: DNS resolution failure.",
+    "Search-result opens provided no usable official viewer JavaScript/configuration, schema/CRS, bounded ID+geometry response, WMS feature response, or safe parcel endpoint.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, certificate exception, or unsafe property fields were used or requested."
+  ],
+  "geometryEvidence": {
+    "retainedSampleFile": null,
+    "fullPolygonsRetained": 0,
+    "nativeIds": [],
+    "reason": "No unchanged native parcel geometry response was received."
+  },
+  "safeFieldAllowlist": ["id", "geometry"],
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "excludedFields": ["owner", "address", "contact", "titleholder", "tax", "account", "personal", "unsafe record details"],
+  "scopeLimits": [
+    "A zero exact-point hit, map extent miss, DNS failure, or timeout is not evidence of citywide absence.",
+    "National service existence does not establish Dolatabad coverage, administrative-boundary alignment, or public anonymous access.",
+    "The local-office directory result is not treated as first-party cadastral geometry or procedure evidence.",
+    "No source integration, adapter qualification, or runtime admission is claimed."
+  ],
+  "uncertainty": "Moderate for existence of Iran's national cadastral custodian and the locality-relevant office reference; high for anonymous public parcel geometry, stable native identity behavior, Dolatabad citywide coverage, and runtime integration readiness.",
+  "runtimeEligible": false,
+  "recommendedDisposition": "Hold for serial reviewer retry with first-party access and independent confirmation of a public, safe ID+geometry route."
+}

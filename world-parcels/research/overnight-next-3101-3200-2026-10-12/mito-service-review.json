@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-6271-mito.json",
+  "cityCode": 6271,
+  "queueRank": 3181,
+  "attempt": 1,
+  "reviewStatus": "complete_pending_serial_runtime_review",
+  "registryFound": true,
+  "summary": "Mito City's official open-data publication evidences a local cadastral-map custodian and a downloadable parcel-number map package, but the ZIP could not be inspected in this environment. No geometry sample is retained and runtime readiness remains held.",
+  "custodian": "Mito City Taxation Division, fixed-assets tax section (水戸市資産税課資産税係). Ibaraki Digital Map is a secondary shared GIS lead.",
+  "requests": "English and Japanese first-party discovery, official page GETs, official ZIP-link resolution, and a bounded archive retrieval attempt are recorded in the city record. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe-field request, or TLS exception was used.",
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdFields": [], "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "geometry": {"verified": false, "sampleCount": 0, "sampleFile": null, "retainedFeatureProperties": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "The exact WUP point [36.3661416094041, 140.450204762994] and population 189060 persons are preserved.",
+    "The city warns the published map is approximate and cannot be used for boundaries, area calculation, registration, or rights confirmation.",
+    "Download failure and lack of an exposed API were not treated as citywide absence.",
+    "No unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "runtimeReadiness": "held_independent_adapter_review",
+  "admissionDecision": "held",
+  "uncertainty": [
+    "Native IDs, CRS, actual geometry, and coverage remain unverified because the advertised ZIP was not retrievable for inspection.",
+    "No sample GeoJSON was written."
+  ]
+}

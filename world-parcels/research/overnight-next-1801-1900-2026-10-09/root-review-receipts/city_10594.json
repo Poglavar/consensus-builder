@@ -1,0 +1,17 @@
+{
+  "taskId": "city:10594",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-10594-guiping.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/guiping-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/runs/20261010T155512-99067265/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T16:00:36Z",
+  "reviewNotes": "Official Guangxi and Guigang registration pages surfaced in the executed English and Simplified Chinese searches and support regional custody, but the direct first-party Guigang page request timed out. No viewer configuration, anonymous parcel response, native ID, or polygon was verified; timeout is not absence.",
+  "admissionGate": "Held: no independently qualified live adapter with fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification. No registry, catalog, city config, or generated coverage/report admission update."
+}

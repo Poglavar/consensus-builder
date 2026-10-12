@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-10402-wafangdian.json",
+  "purpose": "Document first-party local registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Wafangdian local registry/institutional context is evidenced by first-party government pages. The linked Dalian public-service host timed out anonymously, and no parcel-vector response was verified.",
+  "registryAssessment": "Local registry/procedure context evidenced through the Wafangdian Natural Resources Bureau department page and official government navigation. This is not source admission or runtime integration.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "officialPrimarySources": [
+    {"url": "https://www.dlwfd.gov.cn/", "observation": "Official Wafangdian government homepage returned HTTP 200 and links the local Natural Resources Bureau plus a Dalian government-service route."},
+    {"url": "https://www.dlwfd.gov.cn/errand/depinfo.php?depid=23&contenttype=jbxx", "observation": "Official Wafangdian department page returned HTTP 200 and identifies the Natural Resources Bureau; no parcel geometry payload or current cadastral viewer configuration was exposed."},
+    {"url": "https://www.dlwfd.gov.cn/uploadfile/2025/0918/20250918035404979.pdf", "observation": "Official Wafangdian-hosted 2025 project document includes a non-sensitive real-estate registration reference in project context; it does not provide a parcel-vector service or retained parcel polygon."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Wafangdian China official cadastral parcel map land registration natural resources bureau", "result": "Found first-party Wafangdian government and Natural Resources Bureau context; no verified anonymous parcel geometry route.", "resultUrls": ["https://www.dlwfd.gov.cn/", "https://www.dlwfd.gov.cn/errand/depinfo.php?depid=23&contenttype=jbxx"]},
+    {"language": "Chinese", "query": "瓦房店市 官方 不动产登记 地籍图 宗地图 自然资源局", "result": "Found first-party local institutional context and an official project document; no verified anonymous parcel geometry route.", "resultUrls": ["https://www.dlwfd.gov.cn/", "https://www.dlwfd.gov.cn/errand/depinfo.php?depid=23&contenttype=jbxx", "https://www.dlwfd.gov.cn/uploadfile/2025/0918/20250918035404979.pdf"]}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact point [39.617497163299, 121.99615020975] remains unchanged and no absence inference is made.", "requestEvidence": []},
+  "attempts": [
+    {"url": "https://www.dlwfd.gov.cn/", "method": "GET", "httpStatus": 200, "result": "Official homepage loaded; local Natural Resources Bureau and Dalian government-service link identified; no parcel payload."},
+    {"url": "https://www.dlwfd.gov.cn/errand/depinfo.php?depid=23&contenttype=jbxx", "method": "GET", "httpStatus": 200, "result": "Official department page loaded; Natural Resources Bureau context identified; no viewer/API or parcel payload."},
+    {"url": "http://zwfw.dl.gov.cn/dlPortal/grIndex?areaCode=210281000000", "method": "GET", "httpStatus": "timeout", "result": "Linked Dalian government-service host did not resolve/respond within 20 seconds in the anonymous environment; no service payload."},
+    {"url": "https://www.dlwfd.gov.cn/map.php", "method": "GET", "httpStatus": 200, "result": "Official site map page loaded; it exposed navigation only and no cadastral parcel service."}
+  ],
+  "coverageAssessment": {"claimedScope": "Official local government pages and attempted linked Dalian government-service route.", "verifiedOpenScope": "Local government/registry context only; parcel geometry access unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "An authenticated or separately published cadastral service may exist but was not accessed. Exact-point hit testing, CRS/schema, safe native identity, and citywide parcel completeness are unknown."
+}

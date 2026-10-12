@@ -1,0 +1,18 @@
+{
+  "taskId": "city:11357",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-11357-simri-bakhtiarpur.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/simri-bakhtiarpur-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/11357/index.html",
+    "tmp/valhalla-parcel-research/11357/index.js",
+    "tmp/valhalla-parcel-research/11357/config.js",
+    "tmp/valhalla-parcel-research/11357/levels-circle.json",
+    "tmp/valhalla-parcel-research/simri/extent.json"
+  ],
+  "checkedAt": "2026-10-10T16:38:23Z",
+  "reason": "Official Bihar viewer hierarchy supports Saharsa/Simri Bakhtiarpur custody, but the bounded probe yielded no native ID plus full polygon. The separate positive Simri cache is labeled Darbhanga/Singhwara and does not qualify this WUP settlement. Adapter qualification and headed Details check are absent."
+}

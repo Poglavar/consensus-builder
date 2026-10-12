@@ -1,0 +1,17 @@
+{
+  "taskId": "city:3342",
+  "decision": "held",
+  "reason": "Bologna code 3342, rank 1253, Italy, immutable point [44.4942527646909,11.3383469340327] and 443849 persons match the roster and queue. English and Italian executed searches are recorded. Original municipal CATASTO layer metadata and point-query cache show one public polygon with PARTKEY A944_ 187  296; the retained id-only polygon exactly matches cached source coordinates, intersects the WUP point, and is metric GEOS valid. This supports local registry custody and bounded public geometry, not citywide completeness. Layer metadata says supportsPagination=false; fresh exact-ID reads, forced paging, 13 aligned cells, full metric overlap/operation checks, source binding, and headed Details verification are absent. Runtime admission remains held.",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-3342-bologna.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/bologna-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/bologna-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/3342/catasto-layer.json",
+    "tmp/valhalla-parcel-research/3342/point.geojson",
+    "tmp/valhalla-parcel-research/3342/sample.geojson"
+  ],
+  "checkedAt": "2026-10-09T12:18:10.831304Z"
+}

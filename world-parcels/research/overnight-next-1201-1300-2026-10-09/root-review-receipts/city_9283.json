@@ -1,0 +1,16 @@
+{
+  "taskId": "city:9283",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-9283-vijayapura.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/vijayapura-service-review.json",
+    "tmp/valhalla-parcel-research/9283/vijayapura-land-records.html"
+  ],
+  "checkedAt": "2026-10-09T11:59:38Z",
+  "identity": "Queue and roster agree on code 9283, rank 1237, India/IN, point [16.8304984756639,75.7162603665653], and 450192 persons.",
+  "searchReview": "English and Kannada executed searches and result URLs are recorded in the paired packet and review.",
+  "sourceReview": "The cached first-party Vijayapura district page links to Karnataka Bhoomi and supports local/state land-record custody. Bounded Bhoomi/map-route timeouts yielded no parcel response; they do not establish citywide absence.",
+  "admissionReview": "Zero full polygons retained. No safe native-ID polygon read, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification. No admission."
+}

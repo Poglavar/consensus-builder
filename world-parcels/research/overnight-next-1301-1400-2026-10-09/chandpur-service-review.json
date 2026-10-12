@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6886-chandpur.json",
+  "cityCode": 6886,
+  "purpose": "Document first-party discovery, current viewer configuration, and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Ministry of Land viewer is a real public first-party service relevant to Chandpur. Its current JavaScript was inspected: it uses OpenLayers, a GeoServer WMS/WMTS backend at gis.land.gov.bd, and public POST routes for administrative cascades and plot geometry. A session-backed anonymous point cascade identified the exact WUP point as Chandpur district, Chandpur Sadar, Ward No-12. No owner, address, contact, titleholder, tax, account or personal fields were requested. The GIS backend returned HTTP 503 for capabilities, so no parcel polygon was retained.",
+  "registryAssessment": "Local/public-service evidence is present through the official Ministry of Land/DLRS viewer and the point-specific Chandpur Sadar Ward No-12 cascade. This is stronger than general agency prose but does not establish a city-maintained cadastral registry or complete public cadastral dataset.",
+  "safeFieldAllowlist": ["safe parcel/plot identifier if exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {"language":"English","query":"Chandpur Bangladesh official cadastral map parcel land records map API","outcome":"Official Ministry of Land viewer, DLRS/Settlement map search, Ministry of Land citizen services, Chandpur district portal and official LGED Chandpur map directory found.","actualResultUrls":["https://map.land.gov.bd/","https://settlement.gov.bd/Map/MapSearch","https://www.land.gov.bd/nagorik-subidha?lang=bn","https://chandpur.gov.bd/en","https://oldweb.lged.gov.bd/UploadedDocument/Map/CHITTAGONG/chandpur/"]},
+    {"language":"Bengali (Bangla)","query":"চাঁদপুর সরকারি ভূমি নকশা মৌজা মানচিত্র খতিয়ান অনলাইন","outcome":"Official Bengali Ministry of Land viewer and DLRS sources found; the viewer describes mouza/plot mapping and the point cascade identified Chandpur Sadar Ward No-12.","actualResultUrls":["https://map.land.gov.bd/","https://settlement.gov.bd/Map/MapSearch","https://dlrs.gov.bd/pages/internal-eservices/%E0%A6%96%E0%A6%A4%E0%A6%BF%E0%A7%9F%E0%A6%BE%E0%A6%A8-%E0%A6%93-%E0%A6%AE%E0%A7%8D%E0%A6%AF%E0%A6%BE%E0%A6%AA-%E0%A6%96%E0%A7%81%E0%A6%9C%E0%A7%81%E0%A6%A8-e893ce-6922d960dbfbab28ce04bfc6","https://dlrs.portal.gov.bd/"]}
+  ],
+  "attempts": [
+    {"url":"https://map.land.gov.bd/","method":"GET","httpStatus":200,"result":"Official viewer loaded; current HTML and JavaScript/configuration inspected."},
+    {"url":"https://map.land.gov.bd/GetCascadeGeom","method":"POST","httpStatus":419,"result":"Initial anonymous request without the viewer session was rejected as expired/page-token mismatch; no credentials or private token used."},
+    {"url":"https://map.land.gov.bd/GetCascadeGeom","method":"POST","httpStatus":200,"result":"Session-backed anonymous level=forDiv/forDist/forThana requests returned WKT administrative boundaries. Point-in-polygon checks identified geocode 201322 Chandpur Sadar and geocode 20132212 Ward No-12 for the exact WUP point."},
+    {"url":"http://gis.land.gov.bd/geoserver/wms?service=WMS&request=GetCapabilities","method":"GET","httpStatus":503,"result":"Official GIS host returned Service Unavailable; no capabilities/schema or parcel-vector response."},
+    {"url":"https://map.land.gov.bd/getAdminByCode","method":"POST","httpStatus":200,"result":"Anonymous session-backed official lookup returned Chandpur Sadar thana code 201322 and its 143 public mouza choices. No owner or unsafe record fields requested."},
+    {"url":"https://map.land.gov.bd/getGeomByCode","method":"POST","httpStatus":"timeout/partial","result":"A bounded attempt against the first Chandpur Sadar mouza returned plot WKT and non-personal plot fields into ignored scratch only; the request series was stopped before finding an exact-point parcel. No polygon or source-specific attributes retained."},
+    {"url":"https://settlement.gov.bd/Map/MapSearch","method":"GET","httpStatus":200,"result":"Official DLRS/Settlement map-search page reviewed; it exposes administrative, mouza, sheet and dag selectors, but no anonymous exact-point parcel geometry was obtained."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"Administrative boundary containment only: exact point falls in Chandpur Sadar Ward No-12. Exact parcel containment was not completed because the GIS capabilities host returned 503 and the parcel route requires UI-derived mouza/table/plot context; this is not evidence of citywide absence."},
+  "remainingUncertainty": "The WUP point's exact parcel, stable native parcel identifier, parcel CRS response, and citywide coverage remain unverified. The official service may be temporarily unavailable or may require a selected mouza/table context.",
+  "runtimeAssessment": "not enabled; serial reviewer must independently qualify any adapter"
+}

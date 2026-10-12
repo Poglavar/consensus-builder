@@ -1,0 +1,123 @@
+{
+  "cityCode": 1936,
+  "queueRank": 3244,
+  "name": "Sumbe",
+  "country": "Angola",
+  "countryCode": "AO",
+  "iso3": "AGO",
+  "locId": 24,
+  "capital": false,
+  "point": [-11.2178706676586, 13.8457791803372],
+  "population2025": 186184,
+  "population2025k": 186.184,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sumbe Angola official cadastral parcel map GIS land registry IGCA",
+        "result": "First-party discovery identified the Instituto Geográfico e Cadastral de Angola (IGCA) as the national cartography/cadastre authority and official Angola property-registration systems. It did not identify a Sumbe municipal parcel viewer or anonymous parcel ID-plus-geometry service.",
+        "actualResultUrls": [
+          "https://igca.gov.ao/index.php",
+          "https://inscrevaja.minfin.gov.ao/",
+          "https://frontoffice.minfin.gov.ao/frontoffice/cadastrar-patrimonio?operation=01&patrimonyTypeV3=03",
+          "https://portaldocontribuinte.minfin.gov.ao/guia-rapido-imposto-predial",
+          "https://minjusdh.gov.ao/web/noticias/lancamento-da-janela-unica-de-concessao-de-direitos-fundiarios"
+        ]
+      },
+      {
+        "language": "Portuguese (Angola, local)",
+        "query": "Sumbe Angola cadastro predial mapa parcelas registo predial IGCA",
+        "result": "A pesquisa em português found the national IGCA authority, official property-registration/pre-cadastro systems, and general legal/procedural material. A document search result references the municipal Sumbe property matrix and Comarca registry procedurally, but no public Sumbe parcel map, service configuration, schema/CRS, or anonymous bounded geometry response was found.",
+        "actualResultUrls": [
+          "https://igca.gov.ao/index.php",
+          "https://inscrevaja.minfin.gov.ao/",
+          "https://lex.ao/docs/presidente-da-republica/2024/decreto-presidencial-n-o-188-24-de-22-de-agosto/",
+          "https://www.angolex.com/paginas/decreto-presidencial/estatuto-organico-do-instituto-geografico-e-cadastral-de-angola-115a-21a.html",
+          "https://www.ucm.minfin.gov.ao/cs/groups/public/documents/document/aw40/nda2/~edisp/minfin4406406.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": "IGCA is evidenced as Angola's national cartography and cadastral authority. The public tax/pre-cadastro front office and national registration campaign are national services; no Sumbe-local public registry/cadastre custodian or open parcel service was evidenced.",
+    "scopeNote": "National agency prose, authenticated/pre-registration workflows, and a general document reference to Sumbe were not treated as local registry proof. No municipal Sumbe map/API was found."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": null,
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {
+      "nativeIdentity": null,
+      "safeGeometry": null,
+      "otherDocumentedFields": [],
+      "compositeKeyProvenance": null
+    },
+    "note": "No safe anonymous parcel ID-plus-geometry response was obtained. The exact WUP point was preserved and was not shifted or used as a citywide absence test."
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://igca.gov.ao/index.php",
+      "outcome": "HTTP 200. Current HTML identifies IGCA, lists national cadastral/cartographic services and news, and gives a Luanda contact. No public map viewer, JavaScript map configuration, parcel layer, schema, CRS, native parcel ID, or geometry endpoint was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://inscrevaja.minfin.gov.ao/",
+      "outcome": "HTTP 200. Public national property-registration campaign landing page. Current HTML references a Google Maps JavaScript map and application bundles, but no anonymous parcel layer or public ID-plus-geometry endpoint was exposed. No login, credentials, token, or private fields were requested."
+    },
+    {
+      "method": "GET",
+      "url": "https://frontoffice.minfin.gov.ao/frontoffice/cadastrar-patrimonio?operation=01&patrimonyTypeV3=03",
+      "outcome": "HTTP 200. Public pre-cadastro form exposes PrimeFaces/JSF controls, province/municipality selection, latitude/longitude fields, and a Google basemap widget. The page is an input/registration workflow, not an anonymous cadastral parcel layer; no parcel polygon, native parcel identity, schema, CRS, or bounded parcel response was obtained. No form submission or owner/titleholder/unsafe-field request was made."
+    },
+    {
+      "method": "GET",
+      "url": "https://portaldocontribuinte.minfin.gov.ao/guia-rapido-imposto-predial",
+      "outcome": "Official guide search result describes property registration/pre-cadastro through the taxpayer portal and login-backed workflows. It did not expose an anonymous parcel geometry service; no credentials were used."
+    },
+    {
+      "method": "GET",
+      "url": "https://minjusdh.gov.ao/web/noticias/lancamento-da-janela-unica-de-concessao-de-direitos-fundiarios",
+      "outcome": "Official ministry news describes JUCDF integrating municipal administration, AGT, IGCA, and property registries. It exposes no anonymous parcel geometry or public map service and is not local Sumbe service evidence."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.ucm.minfin.gov.ao/cs/groups/public/documents/document/aw40/nda2/~edisp/minfin4406406.pdf",
+      "outcome": "Officially hosted 2024 cadastral/NIP form instructions describe technician-entered cadastral registration fields and map/orthophoto options. It is procedural documentation, not a public parcel API; no geometry or parcel identity was extracted."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if publicly exposed and source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "National registration and tax portals may contain authenticated, non-public, or non-indexed cadastral data; no login or private access was attempted.",
+    "The IGCA site and official registration/pre-cadastro pages did not expose a current public parcel viewer, service configuration, or anonymous parcel API from this workspace.",
+    "A public Google basemap and coordinate-entry form are not evidence of parcel coverage or parcel polygons.",
+    "No parcel polygon is retained because no safe source geometry and stable native identity were verified.",
+    "An exact-point miss or absence of a public endpoint is not evidence of citywide cadastral absence.",
+    "Independent serial review is required before any adapter or runtime qualification."
+  ],
+  "admissionDecision": "held",
+  "geometrySamples": []
+}

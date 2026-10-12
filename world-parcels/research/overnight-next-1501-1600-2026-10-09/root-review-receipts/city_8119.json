@@ -1,0 +1,15 @@
+{
+  "taskId": "city:8119",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-8119-pakpattan.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pakpattan-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pakpattan-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/8119/point-query.geojson"
+  ],
+  "checkedAt": "2026-10-10T08:53:58.140687Z",
+  "reason": "Original ArcGIS response contains one full Polygon with native OBJECTID 13944240; retained geometry matches exactly and only canonical id remains. The exact-point hit does not establish citywide completeness. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are not independently evidenced; admission remains held.",
+  "sourceAdmission": "not_admitted"
+}

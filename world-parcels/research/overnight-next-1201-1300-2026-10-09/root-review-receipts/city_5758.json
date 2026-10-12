@@ -1,0 +1,14 @@
+{
+  "taskId": "city:5758",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5758-tangail.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/tangail-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T12:15:28.182078Z",
+  "reason": "Official Tangail settlement office confirms mouza record and map custody. Bounded admin lookup omission and GIS HTTP 503 do not establish absence; no native-ID polygon response or adapter qualification is evidenced.",
+  "primarySourceUrl": "https://zso.tangail.gov.bd/pages/static-pages/6995e30835ce18e1c07b27e2",
+  "admissionGate": "Held: no fresh exact native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed details-panel verification."
+}

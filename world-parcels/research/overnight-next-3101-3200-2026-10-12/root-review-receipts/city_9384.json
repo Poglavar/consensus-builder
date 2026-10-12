@@ -1,0 +1,18 @@
+{
+  "taskId": "city:9384",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-9384-fengfeng.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/fengfeng-service-review.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-12T03:24:37Z",
+  "finding": "Queue identity matches Fengfeng, China, rank 3118, point [36.422411428038, 114.201224323474], population 192643 persons. English and Simplified Chinese executed queries and result URLs are recorded. The official district homepage was inspected, but no public parcel endpoint, safe native ID, or full polygon response was established; an HTTPS certificate failure was not bypassed.",
+  "custodyAssessment": "registryFound null remains unresolved: bureau responsibility and the government homepage do not establish an inspectable public parcel registry or API.",
+  "geometrySamplesRetained": 0,
+  "admissionGates": "No independently evidenced fresh native-ID read, forced paging, thirteen bounded cells, metric GEOS validity and overlap checks, source binding, or headed details-panel verification. Runtime admission remains held.",
+  "absenceInference": "None; a timeout, certificate failure, unavailable viewer, or missing bounded response is not citywide absence."
+}

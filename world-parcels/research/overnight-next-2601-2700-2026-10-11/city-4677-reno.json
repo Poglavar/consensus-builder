@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 4677,
+  "wupCityCode": 4677,
+  "queueRank": 2636,
+  "cityId": "wup2025:4677",
+  "name": "Reno",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso2": "US",
+  "iso3": "USA",
+  "point": [39.5301389649096, -119.79566677593],
+  "centerLatLon": [39.5301389649096, -119.79566677593],
+  "population2025": 223960,
+  "population2025k": 223.96,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "Washoe County GIS and Washoe County Assessor's Office; City of Reno public parcel map consumes Washoe County parcel data",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Reno Nevada official parcel GIS map API Washoe County assessor parcel boundaries ArcGIS REST",
+        "result": "Found official Washoe County GIS, Washoe Regional Mapping System, Washoe County Open Data parcel layers, and an official City of Reno parcel MapServer. Search results expose public REST metadata and identify the local county GIS/Assessor custodians.",
+        "actualResultUrls": [
+          "https://www.washoecounty.gov/gis/",
+          "https://gis.washoecounty.us/wrms/",
+          "https://gisenterprise.washoecounty.gov/server/rest/services/WashoeGIS/Parcels/FeatureServer",
+          "https://citymaps.reno.gov/server/rest/services/Parcels/MapServer"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Reno Nevada mapa parcelas catastro oficial Washoe County GIS",
+        "result": "The local-language discovery query returned the same first-party Washoe County GIS/Assessor and City of Reno map leads; no separate Spanish-language cadastral custodian or alternate parcel service was identified. The United States local/native service language is English.",
+        "actualResultUrls": [
+          "https://www.washoecounty.gov/gis/",
+          "https://gis.washoecounty.us/wrms/",
+          "https://citymaps.reno.gov/server/rest/services/Parcels/MapServer"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.washoecounty.gov/gis/",
+      "operator": "Washoe County Geographic Information Systems",
+      "scope": "Washoe County, including Reno",
+      "observation": "Official county GIS page advertises the Regional Mapping System and Washoe Open Data downloads. This is local county GIS custodian evidence."
+    },
+    {
+      "url": "https://gisenterprise.washoecounty.gov/server/rest/services/WashoeGIS/Parcels/FeatureServer",
+      "operator": "Washoe County GIS / Washoe County Assessor's Office",
+      "scope": "Washoe County parcel boundaries",
+      "observation": "Official REST metadata describes a Parcels layer with polygon geometry, max record count 2000, JSON query support, and spatial reference 102709 / 3423 (Nevada West State Plane feet)."
+    },
+    {
+      "url": "https://citymaps.reno.gov/server/rest/services/Parcels/MapServer",
+      "operator": "City of Reno GIS",
+      "scope": "Reno-facing map showing Washoe County parcels and subdivisions",
+      "observation": "Official City of Reno MapServer describes parcel and subdivision layers and says the data comes from the Washoe County Assessor's Office."
+    },
+    {
+      "url": "https://washoecounty.gov/assessor/online_data/index.php",
+      "operator": "Washoe County Assessor",
+      "scope": "Washoe County assessment and parcel-map procedures",
+      "observation": "Official Assessor page links GIS parcel-map and online assessment resources. It is procedural/source evidence, not a retained parcel response."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://gisenterprise.washoecounty.gov/server/rest/services/WashoeGIS/Parcels/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "status": "HTTP 403 Forbidden from shell and web fetch",
+      "summary": "The official search-indexed layer metadata was available, but direct anonymous retrieval from this environment was denied. No credentials, token, login, CAPTCHA bypass, or TLS exception was attempted."
+    },
+    {
+      "url": "https://gisenterprise.washoecounty.gov/server/rest/services/WashoeGIS/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-119.82,39.51,-119.77,39.55&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PIN&returnGeometry=true&outSR=4326&f=geojson&resultRecordCount=3",
+      "method": "GET",
+      "status": "not completed because the service root/layer GET returned 403",
+      "summary": "A bounded Reno-area envelope was prepared with only the safe native identity candidate PIN and geometry requested, but no response was retained. Exact WUP point was not shifted."
+    },
+    {
+      "url": "https://gisweb.washoecounty.gov/arcgis/rest/services/OpenData/WashoeDataShare/MapServer/0?f=pjson",
+      "method": "GET",
+      "status": "connection timeout after 30 seconds",
+      "summary": "The official Open Data parcel endpoint did not return within the bounded request; no geometry or attributes were retained."
+    },
+    {
+      "url": "https://wcgisweb.washoecounty.us/arcgis/rest/services/OpenData/OpenData/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "status": "connection timeout after 15 seconds",
+      "summary": "The alternate official Open Data parcel endpoint did not return within the bounded request; no geometry or attributes were retained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Washoe County parcel service and City of Reno parcel-map publication, with Reno included by service descriptions and map scope.",
+    "verifiedOpenScope": "Official service metadata and local custodianship only; no successful bounded parcel feature response from this environment.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "Washoe County GIS/Assessor and City of Reno GIS parcel-map custodians are evidenced."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "Not assessed from a returned feature; official metadata declares polygon geometry and true curves.",
+    "crs": "Official layer metadata declares ESRI 102709 / 3423, Nevada West State Plane Coordinate System, feet. A successful feature response and output transformation were not verified.",
+    "identityReadiness": "Candidate native identifiers are PIN, APN, or OBJECTID according to official layer metadata; stable identity semantics were not independently confirmed from a feature response.",
+    "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+    "attributesRequested": "No successful parcel request returned attributes. No owner, address, contact, titleholder, personal, tax, account, or document fields were requested or retained."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "Serial review must independently qualify a live anonymous parcel response, native identity semantics, CRS/axis handling, Reno coverage, and safe field behavior before runtime use.",
+  "scopeLimits": [
+    "Exact WUP point [39.5301389649096,-119.79566677593] was preserved in latitude/longitude order and was not shifted.",
+    "A 403, timeout, map extent limitation, or unusable viewer is not evidence of citywide parcel absence.",
+    "No retained GeoJSON sample because no safe native parcel feature with geometry and identity was obtained.",
+    "Packet completion is research evidence only and is not source integration/admission.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception used."
+  ],
+  "identityPolicy": "No GeoJSON was retained. If later obtained, retain exactly one stable native parcel identity in properties.id; keep native field mapping and any composite-key provenance in city/service-review metadata."
+}

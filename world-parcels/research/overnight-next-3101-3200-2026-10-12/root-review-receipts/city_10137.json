@@ -1,0 +1,28 @@
+{
+  "taskId": "city:10137",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-10137-phaphamau.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/phaphamau-service-review.json",
+    "tmp/valhalla-parcel-research/phaphamau/villages-00888.json",
+    "tmp/valhalla-parcel-research/phaphamau/giscode.json",
+    "tmp/valhalla-parcel-research/phaphamau/mapinfo.json"
+  ],
+  "checkedAt": "2026-10-12T04:20:30Z",
+  "finding": "Phaphamau: original WUP 2025 row, rank 3156, queue, and packet agree on code 10137, India, point [25.5330358267187,81.8535950796536], and 190377 persons. English and Hindi executed searches are recorded. Official Prayagraj district land-record page supports state/district custody (registryFound true). Saved first-party Bhu-Naksha response identifies village 218785 with hasData=false; map-level GIS code 0917500888 returns a zero extent. These do not establish citywide parcel absence. No safe native-ID full polygon or sample exists, and independent live adapter qualification gates are not evidenced.",
+  "samplePolygonCount": 0,
+  "runtimeAdmitted": false,
+  "missingAdmissionGates": [
+    "fresh native-ID reads",
+    "forced paging and stable manifest",
+    "13 bounded cells",
+    "independent metric GEOS validity and overlap checks",
+    "source binding",
+    "headed Details-panel verification"
+  ]
+}

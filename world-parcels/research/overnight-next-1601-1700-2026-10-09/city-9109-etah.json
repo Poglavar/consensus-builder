@@ -1,0 +1,148 @@
+{
+  "cityCode": 9109,
+  "queueRank": 1664,
+  "name": "Etah",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [27.5586728433935, 78.6571573849774],
+  "population2025": 344002,
+  "population2025k": 344.002,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Etah Uttar Pradesh official cadastral parcel map land records GIS Bhu Naksha",
+        "result": "First-party results identified Uttar Pradesh Bhu-Naksha, the Uttar Pradesh Revenue Board land-record portal, the Etah district administration site, and the official cadastral digitization dashboard. The current Bhu-Naksha application exposed anonymous level lookup and map-extent endpoints; no non-zero parcel extent or parcel geometry was retrieved for the Etah city route.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/",
+          "https://upbhulekh.gov.in/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=201",
+          "https://etah.nic.in/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "एटा उत्तर प्रदेश आधिकारिक भू नक्शा भू अभिलेख खसरा नक्शा",
+        "result": "First-party Hindi results identified the Uttar Pradesh Revenue Board portal and the same official Bhu-Naksha service. Anonymous level lookup returned Etah district (code 201), Etah tehsil (code 01008), and Etah urban/revenue-village entries; the map-extent response remained zero and no parcel geometry was retained.",
+        "actualResultUrls": [
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhunaksha.gov.in/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=201"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "observation": "Current official Uttar Pradesh Bhu-Naksha public viewer. Its JavaScript configuration identifies the first-party API base https://upbhunaksha.gov.in/bhunakshaserver, with public level lookup, GIS-code, and map-extent routes. The site describes cadastral map access by district, tehsil, and village."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=201",
+      "observation": "Official Uttar Pradesh cadastral-map digitization dashboard for Etah district. It reports Aliganj, Eta, and Jlesar tehsils and district totals; the rows show linked/verified village and mapsheet counts, with some remaining georeferencing counts. This is coverage evidence, not a parcel geometry response."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "observation": "Official Uttar Pradesh Bhulekh portal operated by the Revenue Board; its public description links land-record and Bhu-Naksha services."
+    },
+    {
+      "url": "https://etah.nic.in/",
+      "observation": "Official Etah district administration website; it establishes the local district administration context but did not expose a public parcel API in the bounded request."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://etah.nic.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official district site loaded; no parcel service configuration was exposed in the bounded HTML inspection."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official state land-record portal loaded."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current JavaScript viewer shell loaded. Its unchanged public JavaScript/configuration was inspected to identify the first-party API routes; no credentials, private token, login, CAPTCHA/Cloudflare bypass, or unsafe lookup was used."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=201",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Etah district digitization report loaded. It named Aliganj, Eta, and Jlesar tehsils and supplied village/mapsheet coverage counts."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned state code 09."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/getStateName and /Levels/levelLabels",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned Uttar Pradesh and the public hierarchy District, Tehsil, Village."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue?level=1&codes=09; level=2&codes=201; level=3&codes=201,01008",
+      "method": "POST",
+      "httpStatus": 200,
+      "outcome": "Returned public district, tehsil, and village lookup rows. Etah district code 201 and Etah tehsil code 01008 were confirmed; entries included Etah urban/revenue-village names with hasData false. No owner, address, contact, titleholder, tax, or account fields were requested."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/getGisCodeFromLevels?gisLevels=09,201,01008,221383",
+      "method": "POST",
+      "httpStatus": 200,
+      "outcome": "Returned GIS code 0920101008 for the selected Etah route."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "httpStatus": 200,
+      "outcome": "For gisLevels 09,201,01008,221383 and 09,201,01008, the public response returned xmin/ymin/xmax/ymax all 0.0 and GIS code 0920101008. This is an unavailable/zero extent response for the selected route, not evidence of citywide parcel absence. No geometry or native parcel identity was retrieved."
+    },
+    {
+      "url": "https://bor.up.nic.in/?search_key=HOMECENTER",
+      "method": "GET",
+      "httpStatus": "timeout",
+      "outcome": "Bounded request did not connect within 10 seconds; no retry with disabled TLS or authentication was made."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Uttar Pradesh Revenue Board/Bhu-Naksha service and Etah district administration evidence a local/state cadastral custodian and public map procedure. The bounded attempt did not establish an open city-bounded parcel geometry feed.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel feature response retrieved",
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "uttar-pradesh-bhunaksha-upbhunaksha",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Uttar Pradesh Bhu-Naksha/Bhulekh cadastral map service and the official Etah district digitization dashboard.",
+    "cityCoverage": "Etah district, Eta tehsil, and Etah urban/revenue-village lookup entries were identified, but the selected public map route returned zero extent and exact city polygon coverage was not verified.",
+    "exactPointChecked": false,
+    "note": "The exact WUP point [27.5586728433935, 78.6571573849774] was preserved in latitude/longitude order and was not shifted. No exact-point presence/absence inference was made."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "retainedSample": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The public viewer's level hierarchy and Etah route were confirmed, but the selected extent was zero and no parcel feature response exposed a stable native identity, CRS, or geometry. Dashboard coverage counts do not prove citywide parcel availability. No raw source-specific attributes, unsafe personal fields, or synthetic identity were retained. This packet is not source integration/admission."
+}

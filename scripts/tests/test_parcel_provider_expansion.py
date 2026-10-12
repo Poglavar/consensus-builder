@@ -78,6 +78,9 @@ class ProviderControllerTests(unittest.TestCase):
   try:
    with self.assertRaises(InterruptedError): ctl.run_probe(self.repo,{},self.base/'probe-out',lambda:None)
   finally: ctl._STOP_REQUESTED=False
+ def test_safe_descriptor_keeps_catalog_host_spelling_and_strips_credentials(self):
+  d=ctl._safe_descriptor({'id':'x','endpoint':'https://user:pw@bz1uwWPKUInZBK94.svcs5.arcgis.com:8443/a/FeatureServer/0?token=s&f=json'})
+  self.assertEqual(d['endpoint'],'https://bz1uwWPKUInZBK94.svcs5.arcgis.com:8443/a/FeatureServer/0?f=json')
  def test_controller_rejects_unsafe_sample_id_key(self):
   unsafe={'type':'FeatureCollection','features':[{'type':'Feature','geometry':{'type':'Polygon','coordinates':[[[23,12],[23.1,12],[23.1,12.1],[23,12]]]},'properties':{'owner_id':'private'}}]}
   with self.assertRaises(ValueError): ctl.coord._validate_sample(unsafe)

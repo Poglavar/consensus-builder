@@ -1,0 +1,77 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 10273,
+  "queueRank": 2874,
+  "name": "Kovilpatti",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [9.17274483300848, 77.8728653571237],
+  "population2025": 207239,
+  "population2025k": 207.239,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kovilpatti Tamil Nadu cadastral parcel map official land records GIS",
+        "result": "First-party discovery found Tamil Nadu Government land-record e-services, TNGLMS, TNGIS, and Kovilpatti Municipality land/planning pages. The official material documents FMB/TSLR and survey-number workflows, but no anonymous parcel geometry response was verified.",
+        "actualResultUrls": ["https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu", "https://tnglms.in/", "https://tngis.tn.gov.in/apps.html", "https://www.tnurbantree.tn.gov.in/kovilpatti/asset-mapping/", "https://www.tnurbantree.tn.gov.in/kovilpatti/town-planning/"]
+      },
+      {
+        "language": "Tamil",
+        "query": "கோவில்பட்டி நில அளவை வரைபடம் அதிகாரப்பூர்வம் பட்டா",
+        "result": "Tamil-language first-party discovery located the Tamil Kovilpatti Municipality ward-map page and the official Tamil Nadu land-record ecosystem; it did not expose a bounded anonymous parcel ID plus geometry response.",
+        "actualResultUrls": ["https://www.tnurbantree.tn.gov.in/kovilpatti/ta/%E0%AE%B5%E0%AE%BE%E0%AE%B0%E0%AF%8D%E0%AE%9F%E0%AF%81-%E0%AE%B5%E0%AE%B0%E0%AF%88%E0%AE%AA%E0%AE%9F%E0%AE%AE%E0%AF%8D/", "https://tngis.tn.gov.in/apps.html"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "Tamil Nadu Government land-record e-services explicitly provide urban TSLR/FMB lookup by district, town, block, ward, survey and subdivision; Kovilpatti Municipality publishes local survey-number land/asset schedules and identifies its town-planning land administration functions.",
+    "localCustodianScope": "Kovilpatti Municipality is evidenced as the local municipal custodian for its published municipal land and planning records; the cadastral-record service is a Tamil Nadu state land-record service. This does not prove complete citywide vector coverage.",
+    "urls": ["https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu", "https://tnglms.in/", "https://www.tnurbantree.tn.gov.in/kovilpatti/asset-mapping/", "https://www.tnurbantree.tn.gov.in/kovilpatti/town-planning/"]
+  },
+  "officialSources": [
+    {"url": "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu", "observation": "Government Services Portal describes Tamil Nadu Patta/Chitta/FMB rural and TSLR urban lookup using town, block, ward, survey and subdivision inputs."},
+    {"url": "https://tnglms.in/", "observation": "Tamil Nadu Government Land Management System describes integration of RoR, cadastral maps/FMB and land information; the landing page also exposes a land-parcels module, but its route was not publicly resolved anonymously."},
+    {"url": "https://www.tnurbantree.tn.gov.in/kovilpatti/asset-mapping/", "observation": "Official Kovilpatti Municipality asset table publishes survey/TS ward/block references and municipal land extents; this is tabular municipal asset evidence, not a parcel geometry service."},
+    {"url": "https://www.tnurbantree.tn.gov.in/kovilpatti/town-planning/", "observation": "Official municipality page assigns town planning responsibility for master plans, land-use areas, plan approvals, land acquisition/alienation and encroachment control."},
+    {"url": "https://tngis.tn.gov.in/apps/cumta/", "observation": "Official TNGIS map application was discovered with public map UI and administrative/layer controls; direct retrieval timed out in this attempt and no cadastral parcel response was retained."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": {
+    "name": "Tamil Nadu Government land-record e-services / TNGLMS / TNGIS, with Kovilpatti Municipality records",
+    "viewerUrl": "https://tnglms.in/",
+    "serviceBase": null,
+    "administrativeSelection": {"state": "Tamil Nadu", "district": "Thoothukudi", "town": "Kovilpatti"},
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": "No parcel response was observed; no native parcel identity or synthetic identity was created.",
+    "crs": null,
+    "geometryType": null
+  },
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://tnglms.in/", "outcome": "200; official TNGLMS landing page retrieved. It describes cadastral/FMB integration and shows a land-parcels module; no public parcel API route was exposed in the retrieved page."},
+    {"method": "GET", "url": "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu", "outcome": "200 via first-party government service portal; urban TSLR/FMB lookup procedure documented, with town/block/ward/survey/subdivision inputs. No geometry response requested."},
+    {"method": "GET", "url": "https://www.tnurbantree.tn.gov.in/kovilpatti/asset-mapping/", "outcome": "200; Kovilpatti Municipality asset table retrieved with survey/TS references and municipal land fields. No parcel geometry endpoint."},
+    {"method": "GET", "url": "https://www.tnurbantree.tn.gov.in/kovilpatti/town-planning/", "outcome": "200; local town-planning responsibilities retrieved."},
+    {"method": "GET", "url": "https://www.tnurbantree.tn.gov.in/kovilpatti/ta/%E0%AE%B5%E0%AE%BE%E0%AE%B0%E0%AF%8D%E0%AE%9F%E0%AF%81-%E0%AE%B5%E0%AE%B0%E0%AF%88%E0%AE%AA%E0%AE%9F%E0%AE%AE%E0%AF%8D/", "outcome": "200 via discovery; Tamil ward-map page found, but no parcel vector/API response was observed."},
+    {"method": "GET", "url": "https://tngis.tn.gov.in/apps/cumta/", "outcome": "Timed out after 30 seconds with curl; public map route was discovered by first-party search, but current JavaScript/configuration and parcel schema could not be inspected."}
+  ],
+  "resultCategory": "city_registry_procedure_found_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Tamil Nadu state land-record services and Kovilpatti Municipality's published municipal land/planning records.",
+    "verifiedOpenScope": "Official procedural and municipal tabular evidence only. No bounded anonymous parcel ID+geometry response was verified, so citywide polygon completeness and map extent are unknown.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_adapter_review",
+  "remainingUncertainty": "The exact WUP point [9.17274483300848, 77.8728653571237] was preserved and not shifted. A zero exact-point geometry result was not obtained and must not be interpreted as absence. Native parcel identity fields, CRS, geometry type, public API routes, coverage boundary, update cadence, and anonymous access remain unverified. No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained. This packet is research evidence only and is not source integration or admission."
+}

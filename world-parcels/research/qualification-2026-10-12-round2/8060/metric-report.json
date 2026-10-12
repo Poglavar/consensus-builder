@@ -1,0 +1,2285 @@
+{
+  "schemaVersion": 1,
+  "inputSha256": "5a5d6d5d36d0da879da384f8d03c264c018d2185b172dee1ace1842e22d8df0c",
+  "sourceCrs": "EPSG:4326",
+  "metricCrs": "EPSG:32617",
+  "method": "Shapely/GEOS validity, equality and STRtree candidate-pair intersections after pyproj transform; source geometry is never repaired, clipped or unioned.",
+  "featureCount": 145,
+  "validFeatureCount": 145,
+  "perFeature": [
+    {
+      "id": "Cuyahoga~68404031",
+      "geometrySha256": "71106f34dcfd3eae51f026dab46b450ceefe7ec19cb0b654f2c7e1e656eec8dd",
+      "boundsMetric": {
+        "minX": 451732.84918793826,
+        "minY": 4595629.670386716,
+        "maxX": 451786.2564348413,
+        "maxY": 4595662.826653794,
+        "widthM": 53.40724690305069,
+        "heightM": 33.15626707859337,
+        "aspectRatio": 1.61077381770555
+      },
+      "areaM2": 999.9424495371733,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68404032",
+      "geometrySha256": "adbbdfb542e403396b75209ba6762a99fa9802fc97935750e747403651de12c7",
+      "boundsMetric": {
+        "minX": 451732.9296579485,
+        "minY": 4595614.436097851,
+        "maxX": 451786.2896536317,
+        "maxY": 4595629.697671105,
+        "widthM": 53.35999568318948,
+        "heightM": 15.26157325413078,
+        "aspectRatio": 3.496362714030598
+      },
+      "areaM2": 812.404675191162,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68404033",
+      "geometrySha256": "3964454a62b39ae291a5433c7a76733e57112c37b51a3396d90737aba9c8a500",
+      "boundsMetric": {
+        "minX": 451732.96296507557,
+        "minY": 4595599.201408057,
+        "maxX": 451786.3228659645,
+        "maxY": 4595614.462979984,
+        "widthM": 53.35990088892868,
+        "heightM": 15.261571926996112,
+        "aspectRatio": 3.496356806767764
+      },
+      "areaM2": 812.4088460629813,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68404034",
+      "geometrySha256": "223055432a33cca008e48d00e0668193d7d865508d9898f816441e28991d9667",
+      "boundsMetric": {
+        "minX": 451732.9958780195,
+        "minY": 4595583.967118122,
+        "maxX": 451786.3559854616,
+        "maxY": 4595599.228593923,
+        "widthM": 53.360107442131266,
+        "heightM": 15.261475801467896,
+        "aspectRatio": 3.496392363115953
+      },
+      "areaM2": 812.3992020346832,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68404035",
+      "geometrySha256": "49517722cc1593f45b67d756c457e436b68883daa9d1a71af224862c5410c475",
+      "boundsMetric": {
+        "minX": 451733.02919080324,
+        "minY": 4595568.73242391,
+        "maxX": 451786.3892982576,
+        "maxY": 4595583.9941997295,
+        "widthM": 53.360107454354875,
+        "heightM": 15.261775819584727,
+        "aspectRatio": 3.4963236313483472
+      },
+      "areaM2": 812.5558167049262,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68404036",
+      "geometrySha256": "02f077ee48360aa3de25007977d9e306f8aab76b62d71ec29c0b47a9839c77fd",
+      "boundsMetric": {
+        "minX": 451733.0625021797,
+        "minY": 4595523.029336977,
+        "maxX": 451786.4889556278,
+        "maxY": 4595568.759704271,
+        "widthM": 53.426453448075335,
+        "heightM": 45.73036729451269,
+        "aspectRatio": 1.1682926818408939
+      },
+      "areaM2": 2438.943995104661,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405003",
+      "geometrySha256": "4a4d3f35d3d382f2be8ef3ed9aaad964e2fc5763d94aa3d8a8479cd712ffc65b",
+      "boundsMetric": {
+        "minX": 451847.21419983363,
+        "minY": 4595656.5216471115,
+        "maxX": 451862.5487745802,
+        "maxY": 4595705.973109597,
+        "widthM": 15.33457474655006,
+        "heightM": 49.451462485827506,
+        "aspectRatio": 3.224834291342379
+      },
+      "areaM2": 688.9782250331785,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405004",
+      "geometrySha256": "e4aa54aa96b8a72f5b2631883b1cbd15dd0b8011d3372d277ada68ea8b28aed7",
+      "boundsMetric": {
+        "minX": 451862.4293157343,
+        "minY": 4595656.288479612,
+        "maxX": 451877.7843523618,
+        "maxY": 4595709.54885051,
+        "widthM": 15.35503662750125,
+        "heightM": 53.2603708980605,
+        "aspectRatio": 3.4685928917075888
+      },
+      "areaM2": 797.6996812223341,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405005",
+      "geometrySha256": "aa52f730e1d554f370ff555eb11db13bc148378727071512f5a1807b731d0030",
+      "boundsMetric": {
+        "minX": 451877.6684857154,
+        "minY": 4595656.055110341,
+        "maxX": 451893.02012629533,
+        "maxY": 4595709.447296694,
+        "widthM": 15.351640579930972,
+        "heightM": 53.39218635298312,
+        "aspectRatio": 3.4779466126103893
+      },
+      "areaM2": 810.3009422934954,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405006",
+      "geometrySha256": "73166e62ba1ef5385c458411370afd9e85b29f5f784a28d1e0b5e7a5a2c040d6",
+      "boundsMetric": {
+        "minX": 451892.9043671898,
+        "minY": 4595671.022714139,
+        "maxX": 451905.17547629506,
+        "maxY": 4595709.267878268,
+        "widthM": 12.27110910526244,
+        "heightM": 38.24516412895173,
+        "aspectRatio": 3.1166835695846244
+      },
+      "areaM2": 465.1073207198745,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405007",
+      "geometrySha256": "4773187dbc28b42c05ad0532c094e2d9cd9ac1e53c0eb84fd3e6a71d889151b7",
+      "boundsMetric": {
+        "minX": 451905.09317409847,
+        "minY": 4595671.04946521,
+        "maxX": 451923.45236839337,
+        "maxY": 4595709.124462688,
+        "widthM": 18.35919429489877,
+        "heightM": 38.07499747816473,
+        "aspectRatio": 2.073892615687614
+      },
+      "areaM2": 693.5451743216009,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405008",
+      "geometrySha256": "82b2f76ba474006bcde4bd647907e16e63728335746200a8489b07d5b2ae1866",
+      "boundsMetric": {
+        "minX": 451938.6054176625,
+        "minY": 4595655.389125163,
+        "maxX": 451953.9568485964,
+        "maxY": 4595708.7297426425,
+        "widthM": 15.35143093392253,
+        "heightM": 53.340617479756474,
+        "aspectRatio": 3.4746348864383756
+      },
+      "areaM2": 809.5129067962008,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405009",
+      "geometrySha256": "3191ee5378b309edd928e2686ae97a158f3491b5c5971386719a098d75f4283f",
+      "boundsMetric": {
+        "minX": 451953.84100016276,
+        "minY": 4595655.156067509,
+        "maxX": 451972.23952649673,
+        "maxY": 4595708.550434677,
+        "widthM": 18.39852633397095,
+        "heightM": 53.39436716772616,
+        "aspectRatio": 2.9021002116424435
+      },
+      "areaM2": 972.4013838761239,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405010",
+      "geometrySha256": "c9c19282b8318aec02097331d0655b1b245bb6260c9e2733c2aede34a738c0da",
+      "boundsMetric": {
+        "minX": 451972.1232569761,
+        "minY": 4595654.922704824,
+        "maxX": 451984.4281990397,
+        "maxY": 4595708.335134521,
+        "widthM": 12.30494206363801,
+        "heightM": 53.41242969688028,
+        "aspectRatio": 4.34072988077838
+      },
+      "areaM2": 648.6692222460025,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405011",
+      "geometrySha256": "7d2b5f3f45d1a372446a5bb0219aad2c1fb7d63f55ea1994c9869cfbeca2cd16",
+      "boundsMetric": {
+        "minX": 451984.31206115335,
+        "minY": 4595654.683736159,
+        "maxX": 452000.06423955417,
+        "maxY": 4595708.191624786,
+        "widthM": 15.752178400813136,
+        "heightM": 53.50788862723857,
+        "aspectRatio": 3.396856438883175
+      },
+      "areaM2": 834.3419335329281,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405012",
+      "geometrySha256": "8259de383c9518811258ac28d5ba7c12367c81bbbeb07fd59893959ad29ad7ae",
+      "boundsMetric": {
+        "minX": 451999.97915679886,
+        "minY": 4595674.170417511,
+        "maxX": 452027.9960084291,
+        "maxY": 4595714.393466332,
+        "widthM": 28.016851630236488,
+        "heightM": 40.22304882109165,
+        "aspectRatio": 1.4356734065608547
+      },
+      "areaM2": 778.5977774606675,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405013",
+      "geometrySha256": "c506762a9fa54bcd4dacc4049e88ec42f00f34127699c57f2a574a871475ab8b",
+      "boundsMetric": {
+        "minX": 452019.07718270837,
+        "minY": 4595684.255146663,
+        "maxX": 452050.076113803,
+        "maxY": 4595722.198273714,
+        "widthM": 30.998931094654836,
+        "heightM": 37.94312705099583,
+        "aspectRatio": 1.2240140453597248
+      },
+      "areaM2": 679.5709520711541,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405014",
+      "geometrySha256": "39584aa0b4a858abc76b50633fd38dc8462e2d9a510dfc65dadb7fdd0109c4a2",
+      "boundsMetric": {
+        "minX": 452000.03650515614,
+        "minY": 4595657.812194774,
+        "maxX": 452055.6506625317,
+        "maxY": 4595693.842585166,
+        "widthM": 55.61415737558855,
+        "heightM": 36.0303903920576,
+        "aspectRatio": 1.5435346875355511
+      },
+      "areaM2": 864.5115100651274,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405015",
+      "geometrySha256": "d2ebd005f75d0f9c74e6dc26a8bccee45cf5be7859e160ae0f40b08b08ef53fc",
+      "boundsMetric": {
+        "minX": 452000.04914568516,
+        "minY": 4595647.186223661,
+        "maxX": 452061.0341662889,
+        "maxY": 4595679.664789604,
+        "widthM": 60.985020603751764,
+        "heightM": 32.478565943427384,
+        "aspectRatio": 1.8777005336374208
+      },
+      "areaM2": 1008.7987612053839,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405016",
+      "geometrySha256": "2af8cba29a5f5e8f8b7848a64a156fe11883ab25a0cdf4533a55595e04a00d52",
+      "boundsMetric": {
+        "minX": 452000.0691932629,
+        "minY": 4595637.768209914,
+        "maxX": 452061.055835229,
+        "maxY": 4595657.923319158,
+        "widthM": 60.98664196609752,
+        "heightM": 20.155109244398773,
+        "aspectRatio": 3.0258651157173
+      },
+      "areaM2": 899.1058897327936,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405017",
+      "geometrySha256": "be38dce1e0dc9ede47ecde5b415dd07b5b3992ebc1a646f2597b596c330753bc",
+      "boundsMetric": {
+        "minX": 452000.08904641826,
+        "minY": 4595622.533969062,
+        "maxX": 452061.07248911686,
+        "maxY": 4595637.84109616,
+        "widthM": 60.98344269860536,
+        "heightM": 15.30712709762156,
+        "aspectRatio": 3.983990092306808
+      },
+      "areaM2": 928.8695327783421,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405018",
+      "geometrySha256": "d1ae93cb828a4bbec1074edf80a92975ac6ee74926b8102cda154d7a4f1a12fc",
+      "boundsMetric": {
+        "minX": 452000.10909287597,
+        "minY": 4595592.064883931,
+        "maxX": 452061.10579776234,
+        "maxY": 4595622.6065939255,
+        "widthM": 60.99670488637639,
+        "heightM": 30.541709994897246,
+        "aspectRatio": 1.9971607646254061
+      },
+      "areaM2": 1857.681709889828,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405020",
+      "geometrySha256": "084be152a6ef98090e4223cc02a973f7271a7e092713b7de835b5dc83aac5a5c",
+      "boundsMetric": {
+        "minX": 452000.1489953389,
+        "minY": 4595576.830139539,
+        "maxX": 452061.1224542008,
+        "maxY": 4595592.137585349,
+        "widthM": 60.97345886193216,
+        "heightM": 15.307445810176432,
+        "aspectRatio": 3.9832549216928688
+      },
+      "areaM2": 928.7557870834518,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405021",
+      "geometrySha256": "62c2e345f390d14a64f0178589701e45a5398a8890988c21b7f7a0abeb7149cb",
+      "boundsMetric": {
+        "minX": 452000.1688284702,
+        "minY": 4595561.595793317,
+        "maxX": 452061.13910586346,
+        "maxY": 4595576.903178886,
+        "widthM": 60.970277393236756,
+        "heightM": 15.307385568507016,
+        "aspectRatio": 3.9830627588472907
+      },
+      "areaM2": 928.7102519794333,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405022",
+      "geometrySha256": "f43d9a22b2149cb7dfc4d63a7e51c5e8d8e034009133c7abb368d04bcc3a9360",
+      "boundsMetric": {
+        "minX": 452000.18767888634,
+        "minY": 4595546.361545619,
+        "maxX": 452061.15576455917,
+        "maxY": 4595561.668471401,
+        "widthM": 60.96808567282278,
+        "heightM": 15.306925782002509,
+        "aspectRatio": 3.983039216438058
+      },
+      "areaM2": 928.6533090950802,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405023",
+      "geometrySha256": "1585c749641ebdf2392306b214019ae9ed19da4acd477d9fe9cd6921a5af8559",
+      "boundsMetric": {
+        "minX": 452000.2065312814,
+        "minY": 4595513.956966977,
+        "maxX": 452061.1724235407,
+        "maxY": 4595546.434162098,
+        "widthM": 60.965892259264365,
+        "heightM": 32.477195121347904,
+        "aspectRatio": 1.877190811320719
+      },
+      "areaM2": 1452.0873461670435,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405025",
+      "geometrySha256": "cd4cef2d107a730f77b0db32c627d949e10af7324f129d3486f98d8f426c7691",
+      "boundsMetric": {
+        "minX": 452016.2045716358,
+        "minY": 4595470.465063235,
+        "maxX": 452044.31182528386,
+        "maxY": 4595522.6210553,
+        "widthM": 28.107253648049664,
+        "heightM": 52.15599206555635,
+        "aspectRatio": 1.8556061263984573
+      },
+      "areaM2": 759.8118753589285,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405026",
+      "geometrySha256": "15b168e83f2271c3ce05beef5861ff1b9d1fe425d43fa14ae6a94afd64fe5dd1",
+      "boundsMetric": {
+        "minX": 452000.2465933197,
+        "minY": 4595465.531695569,
+        "maxX": 452029.6416834459,
+        "maxY": 4595518.472724244,
+        "widthM": 29.395090126199648,
+        "heightM": 52.941028675064445,
+        "aspectRatio": 1.8010160352554407
+      },
+      "areaM2": 906.3173026177058,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405027",
+      "geometrySha256": "520cd4aba162b2d8fb1c25724e147e8250a22e934c1b6c2d0987f732a7493e1c",
+      "boundsMetric": {
+        "minX": 451984.7581475514,
+        "minY": 4595457.681997758,
+        "maxX": 452012.03775068955,
+        "maxY": 4595507.573721094,
+        "widthM": 27.279603138158564,
+        "heightM": 49.8917233357206,
+        "aspectRatio": 1.8289020952043222
+      },
+      "areaM2": 923.723121279704,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405028",
+      "geometrySha256": "66c7e442a0a959d857a53197140f0ab9a0320eca9d954231d7bae5a2b7ec31d1",
+      "boundsMetric": {
+        "minX": 451939.1216873697,
+        "minY": 4595444.195078514,
+        "maxX": 451984.85630980216,
+        "maxY": 4595471.895049322,
+        "widthM": 45.73462243244285,
+        "heightM": 27.699970808811486,
+        "aspectRatio": 1.6510711418473574
+      },
+      "areaM2": 941.7945668924175,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405029",
+      "geometrySha256": "2e1da69f2216c8332d1982fd4a1d166671591a669945188b79be944068b91c4d",
+      "boundsMetric": {
+        "minX": 451939.0864102756,
+        "minY": 4595471.1951088235,
+        "maxX": 451984.82685939706,
+        "maxY": 4595488.043298927,
+        "widthM": 45.74044912145473,
+        "heightM": 16.848190103657544,
+        "aspectRatio": 2.714858322469012
+      },
+      "areaM2": 738.0445403207423,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405030",
+      "geometrySha256": "9072224ed5d0754e5c1e5ddc4b87353127a83e0b341e595ead04584ac2813d8a",
+      "boundsMetric": {
+        "minX": 451939.05318210914,
+        "minY": 4595487.343858697,
+        "maxX": 451984.7914864761,
+        "maxY": 4595503.277995821,
+        "widthM": 45.7383043669397,
+        "heightM": 15.934137123636901,
+        "aspectRatio": 2.870460070228147
+      },
+      "areaM2": 696.2697423237536,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405031",
+      "geometrySha256": "a535d4a55ab8d642d4dd9049ed3faf6ee9eaeec1a7f14c37ef42c28dcb521f68",
+      "boundsMetric": {
+        "minX": 451938.99274378794,
+        "minY": 4595502.3412902495,
+        "maxX": 452000.24895543064,
+        "maxY": 4595531.005036154,
+        "widthM": 61.25621164269978,
+        "heightM": 28.66374590434134,
+        "aspectRatio": 2.1370623311805894
+      },
+      "areaM2": 1697.1295413709315,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405033",
+      "geometrySha256": "c6665baf55daa5c1b6a3476e7818d6f7fe8cbe8d0451929b308ad7569e5c7e9e",
+      "boundsMetric": {
+        "minX": 451938.95368561865,
+        "minY": 4595530.067022919,
+        "maxX": 452000.21256434516,
+        "maxY": 4595548.981275859,
+        "widthM": 61.258878726512194,
+        "heightM": 18.914252940565348,
+        "aspectRatio": 3.2387680824089244
+      },
+      "areaM2": 1100.7659329420405,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405034",
+      "geometrySha256": "de34843220e517b1e32dd5f2bd0493ed33e4cdb81af67185d0c67d7097f4b4c5",
+      "boundsMetric": {
+        "minX": 451938.9204535527,
+        "minY": 4595548.043798857,
+        "maxX": 452000.1889954509,
+        "maxY": 4595564.215667631,
+        "widthM": 61.26854189822916,
+        "heightM": 16.171868773177266,
+        "aspectRatio": 3.7885876244463126
+      },
+      "areaM2": 933.0863694869186,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405035",
+      "geometrySha256": "a9ff43780e80fdf096d5629b1cb80e03bdc6c366dba6039cff86337a2738d43e",
+      "boundsMetric": {
+        "minX": 451938.8871252551,
+        "minY": 4595563.278264732,
+        "maxX": 452000.16904772574,
+        "maxY": 4595579.450259495,
+        "widthM": 61.28192247066181,
+        "heightM": 16.17199476249516,
+        "aspectRatio": 3.7893855007164676
+      },
+      "areaM2": 933.2946133656499,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405036",
+      "geometrySha256": "c490c0d28be9977cdfda9937c0c3f297236c72d640ae02792b0e38055820f33b",
+      "boundsMetric": {
+        "minX": 451938.8539936478,
+        "minY": 4595578.512431294,
+        "maxX": 452000.14998509205,
+        "maxY": 4595594.684646831,
+        "widthM": 61.295991444261745,
+        "heightM": 16.172215537168086,
+        "aspectRatio": 3.790203717195528
+      },
+      "areaM2": 934.6375065977868,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405037",
+      "geometrySha256": "e42bc5ee514e5b47ff0a1c3a0237859c96f116a980e4d2de9d1d8ad0471d808d",
+      "boundsMetric": {
+        "minX": 451938.8207624492,
+        "minY": 4595593.783764086,
+        "maxX": 452000.1289717662,
+        "maxY": 4595609.9190345025,
+        "widthM": 61.308209317037836,
+        "heightM": 16.135270416736603,
+        "aspectRatio": 3.79963940693828
+      },
+      "areaM2": 932.5212083491679,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405038",
+      "geometrySha256": "5373e2d50a92d87e6f983b4d2746fff2d2f861ca0b66d1572292a7db03ecedb1",
+      "boundsMetric": {
+        "minX": 451938.7875332261,
+        "minY": 4595608.9808567865,
+        "maxX": 452000.11229244515,
+        "maxY": 4595625.153520676,
+        "widthM": 61.32475921907462,
+        "heightM": 16.172663889825344,
+        "aspectRatio": 3.7918774319953354
+      },
+      "areaM2": 933.9311271743146,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405039",
+      "geometrySha256": "8e306fb288380b728076c5605bab4dc69f5c570d50d83857879dc9d2963dfee4",
+      "boundsMetric": {
+        "minX": 451938.7543026038,
+        "minY": 4595624.215318876,
+        "maxX": 452000.09344148514,
+        "maxY": 4595640.387905598,
+        "widthM": 61.33913888136158,
+        "heightM": 16.172586721368134,
+        "aspectRatio": 3.7927846632175943
+      },
+      "areaM2": 934.1258248322608,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405040",
+      "geometrySha256": "1abc7c9b86d810a9d9c9e2958f3a6a7cdbc8812cc3a4967a9e2cde4f5d8e2b8c",
+      "boundsMetric": {
+        "minX": 451938.7210756482,
+        "minY": 4595639.449376686,
+        "maxX": 452000.105303577,
+        "maxY": 4595655.6224889215,
+        "widthM": 61.38422792876372,
+        "heightM": 16.173112235963345,
+        "aspectRatio": 3.795449325595272
+      },
+      "areaM2": 934.9313652195901,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405041",
+      "geometrySha256": "1722308a763f21c9a35e96868fc12e36ea06a96cfabe4ee70bff9661425738f0",
+      "boundsMetric": {
+        "minX": 451892.9873881468,
+        "minY": 4595655.5886702305,
+        "maxX": 451923.4860832049,
+        "maxY": 4595671.0899317805,
+        "widthM": 30.49869505810784,
+        "heightM": 15.5012615500018,
+        "aspectRatio": 1.9674976104189597
+      },
+      "areaM2": 464.115842264914,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405042",
+      "geometrySha256": "72fe89754f24a08956ff8c036d25d567ae0d9cf2ad3f0629989a3f2fb0469809",
+      "boundsMetric": {
+        "minX": 451862.5487745802,
+        "minY": 4595640.354286392,
+        "maxX": 451923.5193121722,
+        "maxY": 4595656.5216471115,
+        "widthM": 60.970537592016626,
+        "heightM": 16.167360719293356,
+        "aspectRatio": 3.77121155707606
+      },
+      "areaM2": 928.1209965010878,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405043",
+      "geometrySha256": "c4ea4b060d0bfecd7a69d6b7c1c74d4c2060178f16810815320e44c6140b11d9",
+      "boundsMetric": {
+        "minX": 451862.58199129684,
+        "minY": 4595625.120102635,
+        "maxX": 451923.55244490807,
+        "maxY": 4595641.286862658,
+        "widthM": 60.97045361122582,
+        "heightM": 16.16676002368331,
+        "aspectRatio": 3.7713464863651005
+      },
+      "areaM2": 927.8939395270266,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405044",
+      "geometrySha256": "b83aef698ae2425d6330746e5f55a6b2321c547e0ac7cbf6e964781cf278d94e",
+      "boundsMetric": {
+        "minX": 451862.61531662033,
+        "minY": 4595609.885414704,
+        "maxX": 451923.5857692728,
+        "maxY": 4595626.052574576,
+        "widthM": 60.97045265248744,
+        "heightM": 16.16715987212956,
+        "aspectRatio": 3.77125315359774
+      },
+      "areaM2": 927.9080902563268,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405045",
+      "geometrySha256": "ff47575817dd4e66e833b5b66e0e8775bb82523d1fcd97375fc3fb1718df631d",
+      "boundsMetric": {
+        "minX": 451862.64894189266,
+        "minY": 4595594.65102845,
+        "maxX": 451923.6188992185,
+        "maxY": 4595610.818280066,
+        "widthM": 60.96995732584037,
+        "heightM": 16.167251616716385,
+        "aspectRatio": 3.7712011151480764
+      },
+      "areaM2": 927.9048722262961,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405046",
+      "geometrySha256": "f660ab54e82781435caa34fbf0e36295b213f13f8dc2344023f679f92afd3de5",
+      "boundsMetric": {
+        "minX": 451862.6822610479,
+        "minY": 4595579.416339468,
+        "maxX": 451923.65212427714,
+        "maxY": 4595595.58358971,
+        "widthM": 60.96986322925659,
+        "heightM": 16.167250242084265,
+        "aspectRatio": 3.771195615600023
+      },
+      "areaM2": 927.8971710858322,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405047",
+      "geometrySha256": "e4c6689667b150597de891d712bcaf9015706c63f5b1a26209b845ed05caebbc",
+      "boundsMetric": {
+        "minX": 451862.719880643,
+        "minY": 4595561.1323532425,
+        "maxX": 451923.6919748733,
+        "maxY": 4595580.349125056,
+        "widthM": 60.972094230295625,
+        "heightM": 19.216771813109517,
+        "aspectRatio": 3.172858314771734
+      },
+      "areaM2": 1114.0770947366095,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405048",
+      "geometrySha256": "eccdfe80614ba6fa252ad7b378baa4e992d907864280bcd09ada844774cc47bb",
+      "boundsMetric": {
+        "minX": 451862.7659175696,
+        "minY": 4595527.619268394,
+        "maxX": 451923.76494668104,
+        "maxY": 4595562.065032908,
+        "widthM": 60.99902911146637,
+        "heightM": 34.4457645136863,
+        "aspectRatio": 1.7708716869160994
+      },
+      "areaM2": 2041.9313195047057,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405049",
+      "geometrySha256": "139aaae98cda1a262130e2198b63c7f779f753e0ae9f35ef439c8c7cc16e59db",
+      "boundsMetric": {
+        "minX": 451862.8488814374,
+        "minY": 4595506.290676042,
+        "maxX": 451923.81140335294,
+        "maxY": 4595528.552222662,
+        "widthM": 60.96252191555686,
+        "heightM": 22.26154661923647,
+        "aspectRatio": 2.7384674999570073
+      },
+      "areaM2": 1299.1658801482338,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405050",
+      "geometrySha256": "15c6ec7c9942d6b85c02e3cb39d3061cec0512fad651aeb4cd9ad775e2e2be3f",
+      "boundsMetric": {
+        "minX": 451862.86864967516,
+        "minY": 4595484.963179752,
+        "maxX": 451923.8578791719,
+        "maxY": 4595507.22361485,
+        "widthM": 60.989229496743064,
+        "heightM": 22.26043509785086,
+        "aspectRatio": 2.739804016797106
+      },
+      "areaM2": 1299.6228610811593,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405051",
+      "geometrySha256": "23a5134bf99d0430eeadcea6231f02d898d9914444f397024f5137d217955b05",
+      "boundsMetric": {
+        "minX": 451862.86864967516,
+        "minY": 4595465.156831906,
+        "maxX": 451923.90108354995,
+        "maxY": 4595485.895921943,
+        "widthM": 61.032433874788694,
+        "heightM": 20.739090036600828,
+        "aspectRatio": 2.9428694203591976
+      },
+      "areaM2": 1207.3193749407535,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405052",
+      "geometrySha256": "28eb7a01017596325bc5a90b580f89162c889f4425255f772698fdd746674ef2",
+      "boundsMetric": {
+        "minX": 451878.2897400265,
+        "minY": 4595375.342105681,
+        "maxX": 451924.0967047452,
+        "maxY": 4595439.958702869,
+        "widthM": 45.8069647186785,
+        "heightM": 64.61659718770534,
+        "aspectRatio": 1.4106282218118005
+      },
+      "areaM2": 2914.6521375595416,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405053",
+      "geometrySha256": "33c78b51718612b108ad8202c353654e2e85e1ee6499816a277c8d2ccedf1c7a",
+      "boundsMetric": {
+        "minX": 451832.4699011526,
+        "minY": 4595375.749567477,
+        "maxX": 451878.76643586345,
+        "maxY": 4595439.821926804,
+        "widthM": 46.29653471085476,
+        "heightM": 64.07235932722688,
+        "aspectRatio": 1.383955834435366
+      },
+      "areaM2": 2887.232693679027,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405055",
+      "geometrySha256": "f330a99a4d653a6898fc926ac38c52a974c0cde970957c6a7a58030fc767f971",
+      "boundsMetric": {
+        "minX": 451801.9682591264,
+        "minY": 4595439.353536394,
+        "maxX": 451863.0688522923,
+        "maxY": 4595455.296714729,
+        "widthM": 61.100593165901955,
+        "heightM": 15.943178334273398,
+        "aspectRatio": 3.832397272666309
+      },
+      "areaM2": 916.2255885734623,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405056",
+      "geometrySha256": "758cdbc2745e64f5edbb557a22dab4bfbf12aa1190ba5cfe59e497d8f0f0a22c",
+      "boundsMetric": {
+        "minX": 451801.93281781976,
+        "minY": 4595454.362324532,
+        "maxX": 451863.0006393695,
+        "maxY": 4595471.594143748,
+        "widthM": 61.06782154971734,
+        "heightM": 17.231819216161966,
+        "aspectRatio": 3.5438986901882634
+      },
+      "areaM2": 994.5398657374035,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405057",
+      "geometrySha256": "2e3b3c3298b663dc5ea380fa4898be141d23d634b0ed263830f0b9f59f9c602a",
+      "boundsMetric": {
+        "minX": 451801.892924324,
+        "minY": 4595470.661420128,
+        "maxX": 451862.94875861815,
+        "maxY": 4595489.874946044,
+        "widthM": 61.05583429412218,
+        "heightM": 19.213525915518403,
+        "aspectRatio": 3.1777527228778206
+      },
+      "areaM2": 1115.0527041456305,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405058",
+      "geometrySha256": "8b8ae628af287d356ea5c65baf6cd320ad756c74d6c1ac238f7a98628bde6d04",
+      "boundsMetric": {
+        "minX": 451801.85971021873,
+        "minY": 4595488.942618358,
+        "maxX": 451862.9154354555,
+        "maxY": 4595505.109745257,
+        "widthM": 61.05572523677256,
+        "heightM": 16.167126898653805,
+        "aspectRatio": 3.776535287903042
+      },
+      "areaM2": 929.6185902324457,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405059",
+      "geometrySha256": "03e66b613175d42b2281bb1ada5618399d0ce86566b941934fcf7dc3b8e6d280",
+      "boundsMetric": {
+        "minX": 451801.82648795523,
+        "minY": 4595504.176918758,
+        "maxX": 451862.92889335414,
+        "maxY": 4595520.344043668,
+        "widthM": 61.10240539890947,
+        "heightM": 16.16712491028011,
+        "aspectRatio": 3.77942310324185
+      },
+      "areaM2": 930.0123975770553,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405060",
+      "geometrySha256": "c4851aa8741368f0bcd81139ad1b186820583a1c8713dc4d46303251774a9d6c",
+      "boundsMetric": {
+        "minX": 451801.7599511755,
+        "minY": 4595519.411315994,
+        "maxX": 451862.85796559294,
+        "maxY": 4595550.813037617,
+        "widthM": 61.09801441745367,
+        "heightM": 31.401721622794867,
+        "aspectRatio": 1.9456899577474736
+      },
+      "areaM2": 1859.444001596655,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405061",
+      "geometrySha256": "2df8f5df03196756144ae281d1c2f01930fe8c96f198637311615529a0de72e8",
+      "boundsMetric": {
+        "minX": 451801.7268296678,
+        "minY": 4595549.880314551,
+        "maxX": 451862.78193410323,
+        "maxY": 4595566.04733024,
+        "widthM": 61.055104435421526,
+        "heightM": 16.167015688493848,
+        "aspectRatio": 3.7765228667944433
+      },
+      "areaM2": 929.6847510290154,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405062",
+      "geometrySha256": "292314dc07bda60a73a53a27b7c653c41992a1acf0b44ecce4369656cc7202b6",
+      "boundsMetric": {
+        "minX": 451801.6869788495,
+        "minY": 4595565.114905766,
+        "maxX": 451862.7622717797,
+        "maxY": 4595584.330519599,
+        "widthM": 61.075292930181604,
+        "heightM": 19.215613832697272,
+        "aspectRatio": 3.1784200838932315
+      },
+      "areaM2": 1115.7183314762237,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405063",
+      "geometrySha256": "2a7fd23f7e53f59244c606f3a35173061a5e1a028d446501af675e7c7a6d6f74",
+      "boundsMetric": {
+        "minX": 451801.6537665336,
+        "minY": 4595583.395894033,
+        "maxX": 451862.7622717797,
+        "maxY": 4595599.565310325,
+        "widthM": 61.108505246113054,
+        "heightM": 16.16941629163921,
+        "aspectRatio": 3.7792647640416495
+      },
+      "areaM2": 930.0160265672995,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405064",
+      "geometrySha256": "b9cad9f5811f744bb4ebbc1667a45ca6d133ce095c2030d2b5afd630b372e1f1",
+      "boundsMetric": {
+        "minX": 451801.62054438965,
+        "minY": 4595598.6301842565,
+        "maxX": 451862.7290455194,
+        "maxY": 4595614.799500353,
+        "widthM": 61.10850112972548,
+        "heightM": 16.16931609623134,
+        "aspectRatio": 3.779287928199284
+      },
+      "areaM2": 930.0082630676916,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405065",
+      "geometrySha256": "46ef7057d7453e952c4129ece7d9b11b28250b244d6735a64b956f8e1d4cea15",
+      "boundsMetric": {
+        "minX": 451801.5872327787,
+        "minY": 4595613.86488109,
+        "maxX": 451862.6953268739,
+        "maxY": 4595630.034290029,
+        "widthM": 61.10809409519425,
+        "heightM": 16.169408938847482,
+        "aspectRatio": 3.779241054902152
+      },
+      "areaM2": 930.0082554669923,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405066",
+      "geometrySha256": "6c35151587a3da130e1eb84ee1db8782968daecbb61add67aa69b54088285803",
+      "boundsMetric": {
+        "minX": 451801.5574393404,
+        "minY": 4595629.099168576,
+        "maxX": 451862.66210119217,
+        "maxY": 4595643.744827062,
+        "widthM": 61.10466185177211,
+        "heightM": 14.645658485591412,
+        "aspectRatio": 4.172203107964566
+      },
+      "areaM2": 836.9578324206389,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405067",
+      "geometrySha256": "a936cb42e7e8a2af60bb4b6ac92040d9c25791c9e9b1ef54b95e61cdfc1ca7a8",
+      "boundsMetric": {
+        "minX": 451801.5275276982,
+        "minY": 4595642.810255196,
+        "maxX": 451862.60563500994,
+        "maxY": 4595657.454265939,
+        "widthM": 61.078107311739586,
+        "heightM": 14.644010743126273,
+        "aspectRatio": 4.170859225872183
+      },
+      "areaM2": 836.798367814753,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405069",
+      "geometrySha256": "a205136484ff5290b320ae58b1ce2bc3a5128ebc203055f29677660fd9556adc",
+      "boundsMetric": {
+        "minX": 451862.98198555945,
+        "minY": 4595436.911533488,
+        "maxX": 451923.9573752034,
+        "maxY": 4595466.089376908,
+        "widthM": 60.97538964392152,
+        "heightM": 29.17784341983497,
+        "aspectRatio": 2.089783976374029
+      },
+      "areaM2": 1623.9661657343108,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68405070",
+      "geometrySha256": "36ed2c0170440c0005cc5276aac7dffdc9f0c6f09a0ad37ae952bd370b24d1d9",
+      "boundsMetric": {
+        "minX": 452030.8641490786,
+        "minY": 4595474.57615077,
+        "maxX": 452061.22919198056,
+        "maxY": 4595531.199851407,
+        "widthM": 30.365042901947163,
+        "heightM": 56.623700636439025,
+        "aspectRatio": 1.864766034393056
+      },
+      "areaM2": 1224.7550329024002,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406004",
+      "geometrySha256": "0a5b7f23fc0832056ee687995d0c248095a888dbd0ec6e52ca1c2d3bffc04090",
+      "boundsMetric": {
+        "minX": 451999.5236635388,
+        "minY": 4595789.4940110855,
+        "maxX": 452061.9774605369,
+        "maxY": 4595922.968080667,
+        "widthM": 62.45379699807381,
+        "heightM": 133.47406958136708,
+        "aspectRatio": 2.1371650083258134
+      },
+      "areaM2": 4822.322900362696,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406005",
+      "geometrySha256": "c52a79fe9b2f14842249e7e45da3430d4cc8046c4eb6b1b2c7b02b8cdf3023a9",
+      "boundsMetric": {
+        "minX": 451949.6890812736,
+        "minY": 4595851.446418565,
+        "maxX": 451986.296726521,
+        "maxY": 4595899.527110807,
+        "widthM": 36.60764524736442,
+        "heightM": 48.08069224189967,
+        "aspectRatio": 1.3134057631134104
+      },
+      "areaM2": 1143.8428115735542,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406007",
+      "geometrySha256": "e94ac90bf70f91e0ad5f30fd48667463f8c0c5dfbe1a53677be37ca342f0e7d2",
+      "boundsMetric": {
+        "minX": 451931.7234638129,
+        "minY": 4595843.126052795,
+        "maxX": 451964.6338647375,
+        "maxY": 4595886.673875922,
+        "widthM": 32.91040092462208,
+        "heightM": 43.54782312735915,
+        "aspectRatio": 1.3232237196715106
+      },
+      "areaM2": 776.712504387146,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406008",
+      "geometrySha256": "e8614eb19c99dd04405e16ab3d47492518038ff9f5db9000914846d4f330c538",
+      "boundsMetric": {
+        "minX": 451912.59695195354,
+        "minY": 4595805.001211804,
+        "maxX": 451948.3115009717,
+        "maxY": 4595877.806537262,
+        "widthM": 35.71454901812831,
+        "heightM": 72.80532545782626,
+        "aspectRatio": 2.038534083711125
+      },
+      "areaM2": 1248.8658011796695,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406009",
+      "geometrySha256": "298e30349d19f70378d1e0215fae5ab90af5c764cff299857af0ff957d3057c9",
+      "boundsMetric": {
+        "minX": 451889.42665687494,
+        "minY": 4595793.402945698,
+        "maxX": 451935.0471169947,
+        "maxY": 4595868.36622559,
+        "widthM": 45.62046011973871,
+        "heightM": 74.96327989175916,
+        "aspectRatio": 1.6431942969230295
+      },
+      "areaM2": 1738.4657481546708,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406017",
+      "geometrySha256": "d1f8102e8720dcbedfa89188b821f7280bafb6819266bee7601f23945f28cfdb",
+      "boundsMetric": {
+        "minX": 451822.70296149125,
+        "minY": 4595712.804222729,
+        "maxX": 451853.7587040869,
+        "maxY": 4595755.164221703,
+        "widthM": 31.05574259563582,
+        "heightM": 42.3599989740178,
+        "aspectRatio": 1.3639989075634127
+      },
+      "areaM2": 524.881434371944,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406018",
+      "geometrySha256": "ab294a9d24107a46889a6da7b063672a189c9e5350040337210a76cfc4e7cdcc",
+      "boundsMetric": {
+        "minX": 451835.69991483906,
+        "minY": 4595718.599507309,
+        "maxX": 451865.64463389036,
+        "maxY": 4595762.137891593,
+        "widthM": 29.944719051301945,
+        "heightM": 43.53838428482413,
+        "aspectRatio": 1.4539586833402318
+      },
+      "areaM2": 839.8334360889945,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406019",
+      "geometrySha256": "d687b512d7f95786d1777ea928b5270e1810f849971d13168579b8ac4b92d31f",
+      "boundsMetric": {
+        "minX": 451865.6296856789,
+        "minY": 4595723.980092997,
+        "maxX": 451879.03800189035,
+        "maxY": 4595775.310161644,
+        "widthM": 13.4083162114257,
+        "heightM": 51.33006864693016,
+        "aspectRatio": 3.8282262916196736
+      },
+      "areaM2": 678.2476127659147,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406020",
+      "geometrySha256": "996f0b5c128ab298714ec0450e5378a8a5582d47f546b6c5aa8c86ca2187551f",
+      "boundsMetric": {
+        "minX": 451878.7341530408,
+        "minY": 4595723.797047081,
+        "maxX": 451896.10198416625,
+        "maxY": 4595775.365922722,
+        "widthM": 17.367831125447992,
+        "heightM": 51.56887564063072,
+        "aspectRatio": 2.969217933324449
+      },
+      "areaM2": 877.9131903456902,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406021",
+      "geometrySha256": "c427ded8ca7b8a13b21881220842d5a48bb445237fc3798538f0b72c87d77303",
+      "boundsMetric": {
+        "minX": 451895.79660371505,
+        "minY": 4595723.662994075,
+        "maxX": 451908.593243752,
+        "maxY": 4595775.406832864,
+        "widthM": 12.796640036976896,
+        "heightM": 51.7438387889415,
+        "aspectRatio": 4.043548825271604
+      },
+      "areaM2": 645.288967410254,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406022",
+      "geometrySha256": "1e1f666c9aa72fdd883409d93171d6035bc33411bb3644427f804593100bd0e1",
+      "boundsMetric": {
+        "minX": 451908.2887073819,
+        "minY": 4595723.509374346,
+        "maxX": 451922.916530704,
+        "maxY": 4595775.453755356,
+        "widthM": 14.627823322138283,
+        "heightM": 51.944381010718644,
+        "aspectRatio": 3.551067022535343
+      },
+      "areaM2": 742.5244016366696,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406023",
+      "geometrySha256": "5a0b91544b6eb858fa4a6615b3d77e940fab05d1f4e1aefd33ae88b0dbe91058",
+      "boundsMetric": {
+        "minX": 451922.6093087828,
+        "minY": 4595723.296920685,
+        "maxX": 451942.7229081029,
+        "maxY": 4595775.518533785,
+        "widthM": 20.11359932011692,
+        "heightM": 52.22161309979856,
+        "aspectRatio": 2.5963335685805538
+      },
+      "areaM2": 1031.5542587866073,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406024",
+      "geometrySha256": "2e684527f77ea430ffd285dae56986183217f33b9a99b8199e3164605677c7c9",
+      "boundsMetric": {
+        "minX": 451942.41400516656,
+        "minY": 4595723.153075364,
+        "maxX": 451956.1303305239,
+        "maxY": 4595775.562450727,
+        "widthM": 13.716325357323512,
+        "heightM": 52.40937536302954,
+        "aspectRatio": 3.8209486868906017
+      },
+      "areaM2": 701.401031780218,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406025",
+      "geometrySha256": "6218fecc524e2e712220d7aa383b97512d20a19e838f287dd348fef174536237",
+      "boundsMetric": {
+        "minX": 451955.8202580635,
+        "minY": 4595722.995739776,
+        "maxX": 451970.49139463174,
+        "maxY": 4595775.598625711,
+        "widthM": 14.671136568242218,
+        "heightM": 52.60288593545556,
+        "aspectRatio": 3.585467675989198
+      },
+      "areaM2": 675.6631122086882,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406026",
+      "geometrySha256": "91ec3cc0748c1908168813da9ce2defc4ddf0fce281f2a2b6cb9c46acf9c8821",
+      "boundsMetric": {
+        "minX": 451967.19913129124,
+        "minY": 4595722.8383002225,
+        "maxX": 451985.1602318882,
+        "maxY": 4595775.634882739,
+        "widthM": 17.961100596934557,
+        "heightM": 52.7965825162828,
+        "aspectRatio": 2.9394959530093416
+      },
+      "areaM2": 677.9017386789835,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406027",
+      "geometrySha256": "dde57a865dacc469881ba66332553f69da90c4f2d9bffabac4efaf1ce28b30d8",
+      "boundsMetric": {
+        "minX": 451978.26903232705,
+        "minY": 4595722.691980194,
+        "maxX": 451998.79854217847,
+        "maxY": 4595775.670991818,
+        "widthM": 20.52950985141797,
+        "heightM": 52.979011624120176,
+        "aspectRatio": 2.5806272048166274
+      },
+      "areaM2": 652.2246731009784,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406028",
+      "geometrySha256": "d538cc4c0c2cea398814a86b08e2f63d83dfad6239f96b17830dd3d4227d5575",
+      "boundsMetric": {
+        "minX": 451989.31225361815,
+        "minY": 4595722.691980194,
+        "maxX": 452014.050417423,
+        "maxY": 4595775.704265562,
+        "widthM": 24.738163804868236,
+        "heightM": 53.01228536758572,
+        "aspectRatio": 2.142935336096101
+      },
+      "areaM2": 671.5316669381223,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406029",
+      "geometrySha256": "67b3263b8690bea49924bfed83e209566c76bb9f2ad9450a9a844aca94d45534",
+      "boundsMetric": {
+        "minX": 451999.4707870226,
+        "minY": 4595728.6096643,
+        "maxX": 452026.3352730457,
+        "maxY": 4595778.29368691,
+        "widthM": 26.864486023085192,
+        "heightM": 49.68402260914445,
+        "aspectRatio": 1.8494313483775557
+      },
+      "areaM2": 559.3534081600135,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406033",
+      "geometrySha256": "8357e6087bf6f90f6092e5715584c51abea21646395d470bcb10d02ae88c4dfd",
+      "boundsMetric": {
+        "minX": 451938.2746985683,
+        "minY": 4595819.719274304,
+        "maxX": 451990.75041804527,
+        "maxY": 4595860.675823849,
+        "widthM": 52.4757194769918,
+        "heightM": 40.9565495448187,
+        "aspectRatio": 1.2812534273564156
+      },
+      "areaM2": 1140.6800366277025,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406035",
+      "geometrySha256": "20d3c56bf5484208220e79da714c11ecda4c087c17d654be6bbb3e3071dd76a4",
+      "boundsMetric": {
+        "minX": 452026.5638547107,
+        "minY": 4595739.175023462,
+        "maxX": 452055.6762282814,
+        "maxY": 4595780.907412055,
+        "widthM": 29.112373570678756,
+        "heightM": 41.73238859325647,
+        "aspectRatio": 1.4334931671558473
+      },
+      "areaM2": 625.3164586487327,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406036",
+      "geometrySha256": "f28f5e1323fa0657ced6bf41a6e4aef5fb168a9edcb537fd2eb1a5c1554f4f35",
+      "boundsMetric": {
+        "minX": 452041.62445499847,
+        "minY": 4595745.170886525,
+        "maxX": 452069.8549226561,
+        "maxY": 4595786.482339942,
+        "widthM": 28.230467657616828,
+        "heightM": 41.31145341694355,
+        "aspectRatio": 1.4633641184402186
+      },
+      "areaM2": 585.0348967438695,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406037",
+      "geometrySha256": "5146d1a3aa2151de4f188b85a0ac4cd76caa67cc5fdace23bbfba8b39f4ea3a6",
+      "boundsMetric": {
+        "minX": 452050.59345895785,
+        "minY": 4595750.745717403,
+        "maxX": 452084.03341947636,
+        "maxY": 4595804.734994124,
+        "widthM": 33.43996051850263,
+        "heightM": 53.98927672114223,
+        "aspectRatio": 1.6145137698733072
+      },
+      "areaM2": 797.685329385488,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68406053",
+      "geometrySha256": "1d3b21f93052cce409929d8ad2b09e41c81c32328126ba55d70a3e42116f9522",
+      "boundsMetric": {
+        "minX": 451911.4979012299,
+        "minY": 4595775.436953794,
+        "maxX": 452008.94673533726,
+        "maxY": 4595836.841594967,
+        "widthM": 97.44883410737384,
+        "heightM": 61.40464117284864,
+        "aspectRatio": 1.5869946024611394
+      },
+      "areaM2": 3721.8543540779037,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407007",
+      "geometrySha256": "d7ecfd75a7cb287872fd4e5b792e2c9f6e4eb837bba7d390bdd860891bf6ec5c",
+      "boundsMetric": {
+        "minX": 452182.6729748487,
+        "minY": 4595578.490769959,
+        "maxX": 452356.9886829342,
+        "maxY": 4595636.499638056,
+        "widthM": 174.31570808548713,
+        "heightM": 58.00886809732765,
+        "aspectRatio": 3.004983786151785
+      },
+      "areaM2": 2914.9501833128006,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407020",
+      "geometrySha256": "fc5f6ff057a932177656c0b07c95e1b5caa31fecfa880d2a941c1fc9585d236d",
+      "boundsMetric": {
+        "minX": 452182.69494641805,
+        "minY": 4595513.316326871,
+        "maxX": 452208.2167599023,
+        "maxY": 4595568.910896214,
+        "widthM": 25.52181348425802,
+        "heightM": 55.59456934314221,
+        "aspectRatio": 2.1783157916044336
+      },
+      "areaM2": 978.1799936966675,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407021",
+      "geometrySha256": "90092058cef3d183b4eadc211d66881d83f818bd78dcd5ac691f4c4bcbc7009d",
+      "boundsMetric": {
+        "minX": 452148.6093276418,
+        "minY": 4595505.90838877,
+        "maxX": 452167.48891017993,
+        "maxY": 4595538.095806737,
+        "widthM": 18.879582538153045,
+        "heightM": 32.18741796724498,
+        "aspectRatio": 1.7048797505028848
+      },
+      "areaM2": 439.45935516317087,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407022",
+      "geometrySha256": "bf9dbea03f6861e00755b6999b246c8a01f157793d64fa03c21ddf9b211eff7c",
+      "boundsMetric": {
+        "minX": 452137.38194449985,
+        "minY": 4595502.783804477,
+        "maxX": 452156.28772493097,
+        "maxY": 4595533.312520531,
+        "widthM": 18.905780431116,
+        "heightM": 30.528716053813696,
+        "aspectRatio": 1.614782112013114
+      },
+      "areaM2": 331.2023005348543,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407023",
+      "geometrySha256": "1f41f7e930b9f0ce00a1df5754e6f7bc93b0b5d7f7b26d85f86b643875365653",
+      "boundsMetric": {
+        "minX": 452117.92519158113,
+        "minY": 4595498.919315178,
+        "maxX": 452145.1386519925,
+        "maxY": 4595550.605262853,
+        "widthM": 27.21346041135257,
+        "heightM": 51.68594767525792,
+        "aspectRatio": 1.899278772121763
+      },
+      "areaM2": 711.8809177215638,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407024",
+      "geometrySha256": "6494291d3a50746bedb161bdd149f5cbb583b52140eb855f925024c43a06f48f",
+      "boundsMetric": {
+        "minX": 452102.3223701665,
+        "minY": 4595494.561414909,
+        "maxX": 452131.3486319073,
+        "maxY": 4595546.8268089155,
+        "widthM": 29.026261740829796,
+        "heightM": 52.265394006855786,
+        "aspectRatio": 1.8006243612602948
+      },
+      "areaM2": 805.0022787143316,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407025",
+      "geometrySha256": "c439fcc738380959511fbfe967ef9cef2305d6df4bf4ad1c2ef3260f1b634bb6",
+      "boundsMetric": {
+        "minX": 452091.31428370654,
+        "minY": 4595490.450319016,
+        "maxX": 452115.7984769683,
+        "maxY": 4595529.554599818,
+        "widthM": 24.484193261770997,
+        "heightM": 39.10428080148995,
+        "aspectRatio": 1.5971235148901715
+      },
+      "areaM2": 553.9208627314893,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407026",
+      "geometrySha256": "298b621cc8375c755efa5a0151a0bbffc449336da1e90de3deb3e5e30c0a319f",
+      "boundsMetric": {
+        "minX": 452076.17435341014,
+        "minY": 4595483.46860087,
+        "maxX": 452101.12853954086,
+        "maxY": 4595525.47693692,
+        "widthM": 24.95418613072252,
+        "heightM": 42.00833604950458,
+        "aspectRatio": 1.6834183983979234
+      },
+      "areaM2": 756.8195668890339,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407027",
+      "geometrySha256": "c65af3ae10d84c3fad5120036f8ac081c39b2ce10677e6cd25f0776bb58c0116",
+      "boundsMetric": {
+        "minX": 452076.1589412578,
+        "minY": 4595521.271373382,
+        "maxX": 452105.99364526774,
+        "maxY": 4595542.657241029,
+        "widthM": 29.834704009932466,
+        "heightM": 21.38586764689535,
+        "aspectRatio": 1.395066335513568
+      },
+      "areaM2": 394.92146367054596,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407028",
+      "geometrySha256": "4d00899f012d934362936443e71e51c161989401e606efee39a511f3d8b90ce1",
+      "boundsMetric": {
+        "minX": 452076.12960874214,
+        "minY": 4595535.402809832,
+        "maxX": 452121.96170032513,
+        "maxY": 4595562.187155484,
+        "widthM": 45.832091582997236,
+        "heightM": 26.784345651976764,
+        "aspectRatio": 1.7111521848813467
+      },
+      "areaM2": 936.8961150429261,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407029",
+      "geometrySha256": "72055ec0845dc3eb745f25fd2b3c4eaa5ad4731f2fcedd5cdff43b1a142a1b1f",
+      "boundsMetric": {
+        "minX": 452076.1130556257,
+        "minY": 4595562.133668696,
+        "maxX": 452121.8618663615,
+        "maxY": 4595577.421773722,
+        "widthM": 45.74881073582219,
+        "heightM": 15.288105026818812,
+        "aspectRatio": 2.9924448226623492
+      },
+      "areaM2": 696.5788386282527,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407030",
+      "geometrySha256": "40d9dba5f504f711cf7a6cb1ca19567cc8c4e2ec95cf530b5211243f5a5fd7ae",
+      "boundsMetric": {
+        "minX": 452076.09629627026,
+        "minY": 4595577.368374181,
+        "maxX": 452121.8445083577,
+        "maxY": 4595592.656094297,
+        "widthM": 45.748212087433785,
+        "heightM": 15.287720115855336,
+        "aspectRatio": 2.9924810070264822
+      },
+      "areaM2": 696.5590014947978,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407031",
+      "geometrySha256": "62e297c025e6a65765f0f8653459eeffe6f67651545e816a62e13c15d0f88816",
+      "boundsMetric": {
+        "minX": 452076.07973866264,
+        "minY": 4595592.6026821155,
+        "maxX": 452121.82694581733,
+        "maxY": 4595607.890804607,
+        "widthM": 45.74720715469448,
+        "heightM": 15.288122491911054,
+        "aspectRatio": 2.9923365134534556
+      },
+      "areaM2": 696.5664489765629,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407032",
+      "geometrySha256": "2932f3e18d5d4accf9fa3de24c581ee36033c3fcc41b626f280c11a50745ef9f",
+      "boundsMetric": {
+        "minX": 452076.06298664125,
+        "minY": 4595607.837085193,
+        "maxX": 452121.8098897256,
+        "maxY": 4595623.125120768,
+        "widthM": 45.74690308433492,
+        "heightM": 15.288035575300455,
+        "aspectRatio": 2.992333636261561
+      },
+      "areaM2": 696.5626097316772,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407033",
+      "geometrySha256": "01938a5fb1dedc8643d8bba3be0d093112653337fe9a7dc70a177cc4d6c72931",
+      "boundsMetric": {
+        "minX": 452076.0463280288,
+        "minY": 4595623.07178993,
+        "maxX": 452121.79242763855,
+        "maxY": 4595638.359532062,
+        "widthM": 45.746099609765224,
+        "heightM": 15.287742132321,
+        "aspectRatio": 2.9923385162973055
+      },
+      "areaM2": 696.5532703333603,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407034",
+      "geometrySha256": "d29e62f8b579d2f77f42cc3da76538f8ae83dd79dfcb0a10f769873562413939",
+      "boundsMetric": {
+        "minX": 452076.02977128123,
+        "minY": 4595638.306092072,
+        "maxX": 452121.7751672927,
+        "maxY": 4595653.594241636,
+        "widthM": 45.745396011450794,
+        "heightM": 15.288149563595653,
+        "aspectRatio": 2.992212747602911
+      },
+      "areaM2": 696.5599570196459,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407035",
+      "geometrySha256": "c67764e2ba479c1398b1b4832455fbcf3a9a286c4400438890340420539bc863",
+      "boundsMetric": {
+        "minX": 452075.4560327091,
+        "minY": 4595653.5404910445,
+        "maxX": 452121.75791229686,
+        "maxY": 4595681.773969407,
+        "widthM": 46.30187958775787,
+        "heightM": 28.23347836267203,
+        "aspectRatio": 1.639963698166726
+      },
+      "areaM2": 1027.1848747818917,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407036",
+      "geometrySha256": "9dc7f89f6108901316ad7a2f1293db0000fc1d6096475b3ef9aef90d7c7a16dd",
+      "boundsMetric": {
+        "minX": 452069.58509198215,
+        "minY": 4595670.1904954575,
+        "maxX": 452120.1774560364,
+        "maxY": 4595701.847555249,
+        "widthM": 50.59236405423144,
+        "heightM": 31.657059791497886,
+        "aspectRatio": 1.5981384369694054
+      },
+      "areaM2": 870.2026944852066,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407037",
+      "geometrySha256": "6ee0c48c4a892282e608ed0d86ba08856dcd1d53a5c58e3a0d58016700928a1c",
+      "boundsMetric": {
+        "minX": 452065.0140287123,
+        "minY": 4595685.122555208,
+        "maxX": 452100.06980451604,
+        "maxY": 4595708.734648442,
+        "widthM": 35.055775803746656,
+        "heightM": 23.6120932335034,
+        "aspectRatio": 1.4846534552051367
+      },
+      "areaM2": 409.20068732106995,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407038",
+      "geometrySha256": "a76cae545ecb37f2085eed993f2afb8853161b82a6a4d59ae2043baa20e23235",
+      "boundsMetric": {
+        "minX": 452052.8617532316,
+        "minY": 4595696.7486712765,
+        "maxX": 452083.446549747,
+        "maxY": 4595734.903494897,
+        "widthM": 30.584796515409835,
+        "heightM": 38.154823620803654,
+        "aspectRatio": 1.2475094807833604
+      },
+      "areaM2": 657.7711746569873,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407039",
+      "geometrySha256": "b755c173909f37f68dce781e69a3edacc9ce4c4efec6018d57a740be2132067e",
+      "boundsMetric": {
+        "minX": 452071.29387580015,
+        "minY": 4595703.995632342,
+        "maxX": 452095.49863824825,
+        "maxY": 4595739.642315863,
+        "widthM": 24.20476244809106,
+        "heightM": 35.64668352063745,
+        "aspectRatio": 1.4727136280343365
+      },
+      "areaM2": 430.08536974687405,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407040",
+      "geometrySha256": "2e316a9138d5db27545b9718ba5bc90d9f1a63242b018a95e94a465120b7f9cc",
+      "boundsMetric": {
+        "minX": 452083.3455598748,
+        "minY": 4595697.108632592,
+        "maxX": 452112.1215914014,
+        "maxY": 4595744.380734493,
+        "widthM": 28.7760315266205,
+        "heightM": 47.272101901471615,
+        "aspectRatio": 1.6427595951769978
+      },
+      "areaM2": 591.870268612442,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407041",
+      "geometrySha256": "10a79924a39d43bbd1a510c34773f2ce6011da9ed5b949b6d233926e3710634f",
+      "boundsMetric": {
+        "minX": 452095.39743614057,
+        "minY": 4595716.876064092,
+        "maxX": 452152.18187098793,
+        "maxY": 4595762.455510475,
+        "widthM": 56.78443484735908,
+        "heightM": 45.579446382820606,
+        "aspectRatio": 1.2458342378805582
+      },
+      "areaM2": 1459.8588552676244,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407047",
+      "geometrySha256": "e5fbc8c97455e744ceb1c0f6615d62e1dd97ea575f592a4045351eb28859a3ac",
+      "boundsMetric": {
+        "minX": 452121.74667222856,
+        "minY": 4595637.375383965,
+        "maxX": 452167.42307805043,
+        "maxY": 4595652.660350754,
+        "widthM": 45.676405821868684,
+        "heightM": 15.284966789186,
+        "aspectRatio": 2.9883222156677762
+      },
+      "areaM2": 695.5715301065899,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407048",
+      "geometrySha256": "021cdd660b89ee379635a31d6487e65e48cb665de5a8a154b77c5c8839efdc3f",
+      "boundsMetric": {
+        "minX": 452121.7629351363,
+        "minY": 4595622.141089349,
+        "maxX": 452167.430853381,
+        "maxY": 4595637.425700696,
+        "widthM": 45.66791824466782,
+        "heightM": 15.284611347131431,
+        "aspectRatio": 2.987836406663924
+      },
+      "areaM2": 695.4262359297511,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407049",
+      "geometrySha256": "7878dca1817c745257ac80cd720dfb4e5c2117ec4269bd28d6de037306ef18c4",
+      "boundsMetric": {
+        "minX": 452121.7791983286,
+        "minY": 4595606.906390443,
+        "maxX": 452167.4387204382,
+        "maxY": 4595622.191450492,
+        "widthM": 45.65952210960677,
+        "heightM": 15.285060048103333,
+        "aspectRatio": 2.9871993937814127
+      },
+      "areaM2": 695.3090977749545,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407050",
+      "geometrySha256": "a45e06f607248b854c24af9b8a65d0780d6bbc0592df38c62eb24634859bacf2",
+      "boundsMetric": {
+        "minX": 452121.79565483006,
+        "minY": 4595591.671993198,
+        "maxX": 452167.44639476825,
+        "maxY": 4595606.956697811,
+        "widthM": 45.65073993819533,
+        "heightM": 15.284704613499343,
+        "aspectRatio": 2.9866942863833246
+      },
+      "areaM2": 695.156248719866,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407051",
+      "geometrySha256": "931d167ad20d560d4bd0fa690facfe8044ac0270937fcd6716791940a2531f36",
+      "boundsMetric": {
+        "minX": 452121.81191691075,
+        "minY": 4595576.437491318,
+        "maxX": 452167.4543639687,
+        "maxY": 4595591.722346671,
+        "widthM": 45.642447057936806,
+        "heightM": 15.284855352714658,
+        "aspectRatio": 2.9861222762458466
+      },
+      "areaM2": 695.02704234209,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407052",
+      "geometrySha256": "eb6b6e9c9a008c72baf8ab9261ac7e749f3d2e47d140deb8cb40702160b2dd4e",
+      "boundsMetric": {
+        "minX": 452121.82837735215,
+        "minY": 4595547.931001512,
+        "maxX": 452167.4624986995,
+        "maxY": 4595576.487689446,
+        "widthM": 45.63412134733517,
+        "heightM": 28.556687933392823,
+        "aspectRatio": 1.598018700690174
+      },
+      "areaM2": 1017.3929906190299,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407053",
+      "geometrySha256": "8ce950062ce086e1bf2820a38d42221ba18b06173cfb7fa88132db78b5383cfc",
+      "boundsMetric": {
+        "minX": 452131.7392330483,
+        "minY": 4595541.196555021,
+        "maxX": 452167.4680877947,
+        "maxY": 4595560.375780979,
+        "widthM": 35.72885474644136,
+        "heightM": 19.17922595795244,
+        "aspectRatio": 1.8628934673782707
+      },
+      "areaM2": 359.3969852616879,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407054",
+      "geometrySha256": "21f39664a3d9d7eef834c9b3ff34410c09f007dbb8d2f1bf33527476fed446a2",
+      "boundsMetric": {
+        "minX": 452134.37556439644,
+        "minY": 4595530.467122321,
+        "maxX": 452167.4740268324,
+        "maxY": 4595549.5950388685,
+        "widthM": 33.098462435940746,
+        "heightM": 19.127916547469795,
+        "aspectRatio": 1.7303746779634999
+      },
+      "areaM2": 363.15929344234814,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407055",
+      "geometrySha256": "320f33f304286128f52c9be46527d9f727fc444f0d41dbc442211d6cd7839a73",
+      "boundsMetric": {
+        "minX": 452182.6810903487,
+        "minY": 4595565.563243126,
+        "maxX": 452228.45896956517,
+        "maxY": 4595592.570341445,
+        "widthM": 45.77787921647541,
+        "heightM": 27.007098319008946,
+        "aspectRatio": 1.6950313830736363
+      },
+      "areaM2": 940.9282210756334,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407056",
+      "geometrySha256": "facdf3dd686254c2b3b8ba4d44e61ba5c54b8caffb5a129bcbba4da520c39792",
+      "boundsMetric": {
+        "minX": 452182.6734146645,
+        "minY": 4595592.519138573,
+        "maxX": 452228.4436686763,
+        "maxY": 4595607.802965038,
+        "widthM": 45.7702540117898,
+        "heightM": 15.283826465718448,
+        "aspectRatio": 2.9946855333938966
+      },
+      "areaM2": 696.9322121843929,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407057",
+      "geometrySha256": "d4ad5f17d54e4dd5f2ff7046e4b2c4c102a6d17b8bf4f63aa501f24e953ad616",
+      "boundsMetric": {
+        "minX": 452182.6657426478,
+        "minY": 4595608.667711867,
+        "maxX": 452228.42605968,
+        "maxY": 4595623.039445282,
+        "widthM": 45.76031703222543,
+        "heightM": 14.371733414940536,
+        "aspectRatio": 3.1840499479801103
+      },
+      "areaM2": 655.1417388862267,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407058",
+      "geometrySha256": "1b5a5f6dbc76b432701134ae539d1c5fb259daf11a26afb5b7273b4d15608964",
+      "boundsMetric": {
+        "minX": 452182.65777125815,
+        "minY": 4595622.988038546,
+        "maxX": 452228.41023175145,
+        "maxY": 4595638.273742892,
+        "widthM": 45.75246049329871,
+        "heightM": 15.285704345442355,
+        "aspectRatio": 2.993153567499194
+      },
+      "areaM2": 696.826112714551,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68407059",
+      "geometrySha256": "86fb6e20bd4d867c0cc12620bee83c59c25ee2cbb106acd670348b08be72c3a5",
+      "boundsMetric": {
+        "minX": 452182.65009473736,
+        "minY": 4595638.222591415,
+        "maxX": 452228.3936593237,
+        "maxY": 4595653.508442056,
+        "widthM": 45.74356458632974,
+        "heightM": 15.285850641317666,
+        "aspectRatio": 2.992542950974861
+      },
+      "areaM2": 696.6931035816806,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68412016",
+      "geometrySha256": "8ad1422043ac1154b0e38614afe173e80519227ebea03e63303aa8fc553f1eae",
+      "boundsMetric": {
+        "minX": 451938.2806449321,
+        "minY": 4595374.686044117,
+        "maxX": 451968.81938763894,
+        "maxY": 4595413.490608316,
+        "widthM": 30.538742706819903,
+        "heightM": 38.804564198479056,
+        "aspectRatio": 1.2706667255758775
+      },
+      "areaM2": 1172.9232416134705,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68412017",
+      "geometrySha256": "3568fe77857c9fe0edde8c500f0f58e3942c2dea2cdbc5c16c2aba0f310a85d8",
+      "boundsMetric": {
+        "minX": 451968.6762461973,
+        "minY": 4595374.510493067,
+        "maxX": 452003.926434401,
+        "maxY": 4595413.8613699805,
+        "widthM": 35.250188203703146,
+        "heightM": 39.350876913405955,
+        "aspectRatio": 1.1163309734973845
+      },
+      "areaM2": 1365.019669154501,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68412018",
+      "geometrySha256": "73afed4068b6031330b00ce1e58c02e8aadfe39bde6aa9d9ec177e75966e725b",
+      "boundsMetric": {
+        "minX": 452003.8878680005,
+        "minY": 4595374.402492859,
+        "maxX": 452029.82631247415,
+        "maxY": 4595410.9705077475,
+        "widthM": 25.938444473664276,
+        "heightM": 36.568014888092875,
+        "aspectRatio": 1.4097998407429935
+      },
+      "areaM2": 944.4962872183947,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68412022",
+      "geometrySha256": "6f7f06ad706226a612efc47c135114ac9c707b7b42d75440f7ff9f8f7f3c02ba",
+      "boundsMetric": {
+        "minX": 452089.5012595799,
+        "minY": 4595374.128026577,
+        "maxX": 452108.98239366664,
+        "maxY": 4595422.125927866,
+        "widthM": 19.48113408673089,
+        "heightM": 47.99790128972381,
+        "aspectRatio": 2.4638145333857353
+      },
+      "areaM2": 673.6040085621569,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68412044",
+      "geometrySha256": "d311460ce853c9e98378507082a7b839bd4e0bcc40c47d48a538f40eb8317394",
+      "boundsMetric": {
+        "minX": 452088.4620023038,
+        "minY": 4595422.94068225,
+        "maxX": 452116.62111641705,
+        "maxY": 4595475.147663942,
+        "widthM": 28.159114113252144,
+        "heightM": 52.20698169153184,
+        "aspectRatio": 1.8539994362593377
+      },
+      "areaM2": 761.2781097178397,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68412045",
+      "geometrySha256": "ddbf8ef032175a7f1025e9bee2065fe32bffb8e73ee1638492f0b70155520e2f",
+      "boundsMetric": {
+        "minX": 452070.8578694324,
+        "minY": 4595418.007206908,
+        "maxX": 452101.9405142355,
+        "maxY": 4595471.036470066,
+        "widthM": 31.082644803100266,
+        "heightM": 53.02926315739751,
+        "aspectRatio": 1.7060730672477469
+      },
+      "areaM2": 912.9324889314432,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68412046",
+      "geometrySha256": "f4842daaec8c8fbd3f25b67a267795af5fe1a0cb75c1668e9550aa430775531c",
+      "boundsMetric": {
+        "minX": 452055.8945864184,
+        "minY": 4595413.813843158,
+        "maxX": 452084.3364789142,
+        "maxY": 4595466.10290028,
+        "widthM": 28.441892495786306,
+        "heightM": 52.28905712161213,
+        "aspectRatio": 1.8384521047380658
+      },
+      "areaM2": 775.74896159123,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68412047",
+      "geometrySha256": "4d47bf489bfa66262fee56d4a03a4b840f85fb0508212ea71f0e7b9e849abef1",
+      "boundsMetric": {
+        "minX": 452042.39809914015,
+        "minY": 4595410.951540051,
+        "maxX": 452069.3730942764,
+        "maxY": 4595461.909438148,
+        "widthM": 26.974995136260986,
+        "heightM": 50.957898097112775,
+        "aspectRatio": 1.8890790467136325
+      },
+      "areaM2": 697.6304820909925,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68412048",
+      "geometrySha256": "09459a8ce62123b84d513cdc38300fc5525fcd9ef1d70e3ea8a62c8e62e2ed30",
+      "boundsMetric": {
+        "minX": 452029.19484750484,
+        "minY": 4595411.01243809,
+        "maxX": 452055.587304001,
+        "maxY": 4595458.127219497,
+        "widthM": 26.3924564961344,
+        "heightM": 47.114781407639384,
+        "aspectRatio": 1.7851609005982487
+      },
+      "areaM2": 644.2054468490558,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68412049",
+      "geometrySha256": "ef765ccbc51458d26c7838394c83363f4e37facb40a3c9b14aafbcee5857772d",
+      "boundsMetric": {
+        "minX": 452014.23166330106,
+        "minY": 4595410.95443391,
+        "maxX": 452041.3618328337,
+        "maxY": 4595454.427072409,
+        "widthM": 27.130169532611035,
+        "heightM": 43.47263849899173,
+        "aspectRatio": 1.6023725338957688
+      },
+      "areaM2": 667.2817423237691,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68412050",
+      "geometrySha256": "8b03cde7107acfd17fa519aee46c1fe2a83e8c0faea1218340dac50150940d61",
+      "boundsMetric": {
+        "minX": 452000.59432319074,
+        "minY": 4595410.865686754,
+        "maxX": 452025.2393722889,
+        "maxY": 4595450.233711447,
+        "widthM": 24.645049098180607,
+        "heightM": 39.36802469287068,
+        "aspectRatio": 1.597400943939567
+      },
+      "areaM2": 725.0013682600186,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68412051",
+      "geometrySha256": "9dadd44159516c2fc00a7c6fe1a3165c743631f36dcf17047f8dfaa7c8dfa297",
+      "boundsMetric": {
+        "minX": 451995.13499456306,
+        "minY": 4595413.7983279945,
+        "maxX": 452000.69167379424,
+        "maxY": 4595446.41181144,
+        "widthM": 5.556679231172893,
+        "heightM": 32.613483445718884,
+        "aspectRatio": 5.869239898311513
+      },
+      "areaM2": 173.50649028371856,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68412052",
+      "geometrySha256": "299ce99ea59547db68fc05b88cb34bd61ad4ef739aef5cb3b7868f210b893de8",
+      "boundsMetric": {
+        "minX": 451977.691544659,
+        "minY": 4595413.595842161,
+        "maxX": 451995.2275913912,
+        "maxY": 4595444.755555274,
+        "widthM": 17.536046732158866,
+        "heightM": 31.15971311274916,
+        "aspectRatio": 1.7768949631963646
+      },
+      "areaM2": 497.28283231413235,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68412053",
+      "geometrySha256": "32cba3d2497bcd554f19a5d140a0cad9a0d1a6c1f02dacef17c5956365db1c6e",
+      "boundsMetric": {
+        "minX": 451938.24839358655,
+        "minY": 4595413.138542915,
+        "maxX": 451977.7693317287,
+        "maxY": 4595439.60486196,
+        "widthM": 39.52093814214459,
+        "heightM": 26.466319045051932,
+        "aspectRatio": 1.4932540514935457
+      },
+      "areaM2": 806.0030168623537,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68415001",
+      "geometrySha256": "c6dd8f9b36390abfc5709631f529f77fb454920aa0df3201f29b5d7e59c1ca2c",
+      "boundsMetric": {
+        "minX": 451876.43891360215,
+        "minY": 4595257.948820459,
+        "maxX": 451946.629163076,
+        "maxY": 4595350.6734777205,
+        "widthM": 70.19024947384605,
+        "heightM": 92.72465726174414,
+        "aspectRatio": 1.3210475522856597
+      },
+      "areaM2": 5827.369209445244,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68415002",
+      "geometrySha256": "04afd30019dcb0237fb6b7a065ed8d6f761d9a1d881f86cbdc0a6f4db55b434c",
+      "boundsMetric": {
+        "minX": 451946.5398733055,
+        "minY": 4595274.403921077,
+        "maxX": 451990.81105484924,
+        "maxY": 4595350.593453483,
+        "widthM": 44.271181543765124,
+        "heightM": 76.18953240569681,
+        "aspectRatio": 1.7209735486815094
+      },
+      "areaM2": 3297.736979244,
+      "invalidReasons": []
+    },
+    {
+      "id": "Cuyahoga~68415003",
+      "geometrySha256": "37c92f3d65ffd51f4868029843d1a6d04d099b17f3374667f725b8150184ce5f",
+      "boundsMetric": {
+        "minX": 451990.7255511619,
+        "minY": 4595277.5211210605,
+        "maxX": 452021.22307151643,
+        "maxY": 4595350.542925796,
+        "widthM": 30.4975203545182,
+        "heightM": 73.0218047350645,
+        "aspectRatio": 2.394352192775776
+      },
+      "areaM2": 2191.1889474019094,
+      "invalidReasons": []
+    }
+  ],
+  "invalidCount": 0,
+  "invalid": [],
+  "duplicateIdCount": 0,
+  "duplicateIds": [],
+  "conflictingSameIdGeometryCount": 0,
+  "conflictingSameIdGeometry": [],
+  "exactGeometryDuplicateCount": 0,
+  "exactGeometryDuplicates": [],
+  "overlapThresholdM2": 0.01,
+  "overlapPairCount": 0,
+  "totalMaterialOverlapM2": 0,
+  "maxMaterialOverlapM2": 0,
+  "maxOverlapFractionOfSmaller": 0,
+  "overlaps": [],
+  "subthresholdPositiveIntersectionPairCount": 7,
+  "subthresholdPositiveIntersectionTotalM2": 0.0023340978420314097,
+  "subthresholdPositiveIntersections": [
+    {
+      "ids": [
+        "Cuyahoga~68406008",
+        "Cuyahoga~68406009"
+      ],
+      "featureIndexes": [
+        72,
+        73
+      ],
+      "areaM2": 0.0011744448696617837
+    },
+    {
+      "ids": [
+        "Cuyahoga~68406005",
+        "Cuyahoga~68406033"
+      ],
+      "featureIndexes": [
+        70,
+        87
+      ],
+      "areaM2": 0.0006701425873245626
+    },
+    {
+      "ids": [
+        "Cuyahoga~68406008",
+        "Cuyahoga~68406053"
+      ],
+      "featureIndexes": [
+        72,
+        91
+      ],
+      "areaM2": 0.00038727610601081556
+    },
+    {
+      "ids": [
+        "Cuyahoga~68406024",
+        "Cuyahoga~68406053"
+      ],
+      "featureIndexes": [
+        81,
+        91
+      ],
+      "areaM2": 0.000032543690515846464
+    },
+    {
+      "ids": [
+        "Cuyahoga~68406025",
+        "Cuyahoga~68406053"
+      ],
+      "featureIndexes": [
+        82,
+        91
+      ],
+      "areaM2": 0.000023964751938929162
+    },
+    {
+      "ids": [
+        "Cuyahoga~68406022",
+        "Cuyahoga~68406053"
+      ],
+      "featureIndexes": [
+        79,
+        91
+      ],
+      "areaM2": 0.000023376312514870808
+    },
+    {
+      "ids": [
+        "Cuyahoga~68406023",
+        "Cuyahoga~68406053"
+      ],
+      "featureIndexes": [
+        80,
+        91
+      ],
+      "areaM2": 0.000022349524064601406
+    }
+  ],
+  "operationErrorCount": 0,
+  "operationErrors": [],
+  "geometryChangedOrRepaired": false,
+  "geometryPass": true
+}

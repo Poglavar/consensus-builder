@@ -1,0 +1,12 @@
+{
+  "taskId": "city:1023",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-1023-boa-vista.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/boa-vista-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T10:25:24.917884Z",
+  "reason": "Boa Vista municipal cadastral custody is supported by the first-party DCI page. The reviewed municipal map offers base-cartography PDFs, with no verified anonymous native-ID/full-polygon response. Adapter and admission checks remain unverified."
+}

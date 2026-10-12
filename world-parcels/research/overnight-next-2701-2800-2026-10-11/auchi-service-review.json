@@ -1,0 +1,28 @@
+{
+  "cityRecord": "city-6847-auchi.json",
+  "cityCode": 6847,
+  "queueRank": 2789,
+  "city": "Auchi",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "reviewStatus": "held",
+  "reviewOutcome": "The official EdoGIS state land/cadastral custodian and Auchi land-service context were evidenced, but no public anonymous parcel ID-plus-geometry response was verified. The packet is complete as discovery evidence and held from runtime qualification.",
+  "queryAndRequestOutcomes": "Separate English and local-language-context discovery queries were recorded. Official Edo State and EdoGIS pages/documents were identified; direct official-site requests included a TLS internal error for edogis.org and Cloudflare HTTP 403 for an edostate.gov.ng page. No login, private token, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS verification disablement was used.",
+  "cityOrLocalCustodian": "EdoGIS (Edo State Geographic Information Service) is the evidenced state-level cadastral/land-registration custodian. Official Edo State material specifically references land administration in Auchi; no Auchi municipal public parcel-vector custodian or service endpoint was established.",
+  "safeFieldAllowlist": ["stable native parcel ID when independently verified", "full parcel geometry", "geometry CRS", "source layer/service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"],
+  "schemaAndCrs": null,
+  "sampleGeojson": null,
+  "attemptsRecordedInCityRecord": "See city-6847-auchi.json attemptsRecorded for every executed search/request and outcome.",
+  "scopeLimits": [
+    "No citywide completeness claim.",
+    "No exact-point or map-extent absence inference.",
+    "WUP point remains exactly [7.07120004321117, 6.27664577839439] in latitude/longitude order.",
+    "No parcel sample GeoJSON was retained because no safe native ID-plus-unchanged full polygon was verified.",
+    "No owner, address, titleholder, personal, tax/account, certificate, or contact fields were requested or retained.",
+    "No registry, catalog, runtime city config, queue, identity ledger, or global report was changed."
+  ],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "A public EdoGIS viewer or a separate Auchi/Etsako West service may exist behind a later-discovered route. The observed TLS and 403 outcomes are transport/access observations, not evidence of cadastral absence.",
+  "integrationDisposition": "Research packet only; no source integration or admission."
+}

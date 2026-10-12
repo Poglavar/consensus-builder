@@ -1,0 +1,42 @@
+{
+  "cityCode": 7507,
+  "queueRank": 2908,
+  "name": "Mongbwalu",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso3": "COD",
+  "point": [1.9351266224974, 30.0437972712505],
+  "population2025": 205051,
+  "population2025k": 205.051,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mongbwalu Democratic Republic of the Congo official cadastral map parcel land registry GIS",
+        "result": "First-party discovery identified the official DRC Ministry of Land Affairs site, its national cadastral/land-registry service workflow, and an official list of land-registration districts. No city-specific anonymous parcel viewer, vector service, or public parcel geometry endpoint for Mongbwalu was identified.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/",
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "RDC Mongbwalu cadastre carte parcellaire registre foncier officiel",
+        "result": "French-language discovery found the official Ministry of Land Affairs and its French land-research procedure. The procedure requires a formal request and identity/property information; it does not expose an anonymous parcel map or safe ID-plus-geometry response. The official district list shows Ituri offices for Bunia, Aru, Mahagi, Djugu, Mambasa, and Irumu, but not a Mongbwalu-specific public service.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": "The Ministry of Land Affairs is evidenced as the national custodian and publishes Ituri land-registration districts and a formal land-research procedure. This is national/provincial custody evidence, not evidence of a public Mongbwalu local registry or anonymous parcel geometry service.",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "sampleGeojson": null,
+  "uncertainty": "Mongbwalu may have operational cadastral records under an Ituri/Djugu or other competent land-registration office that are not anonymously exposed online. No absence inference is made from the lack of a public viewer, from search misses, or from the fact that the formal workflow requests identity and property-reference data. The city point was not shifted and no exact-point parcel query was treated as a citywide test."
+}

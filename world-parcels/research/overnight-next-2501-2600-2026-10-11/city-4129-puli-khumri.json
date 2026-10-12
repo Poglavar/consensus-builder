@@ -1,0 +1,50 @@
+{
+  "cityCode": 4129,
+  "queueRank": 2574,
+  "country": "Afghanistan",
+  "countryCode": "AF",
+  "name": "Puli Khumri",
+  "point": [35.9542599717416, 68.7067244197448],
+  "population2025": 228271,
+  "population2025k": 228.271,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Puli Khumri Afghanistan cadastral parcel map official land registry",
+        "result": "Official Ministry of Justice PRMIS/PMS, the Afghanistan national portal, and official land/cadastre references were found. No public Puli Khumri parcel layer, safe native parcel identity, or downloadable parcel geometry was verified.",
+        "actualResultUrls": ["https://pms.moj.gov.af/", "https://afg.gov.af/", "https://www.mail.gov.af/dr/%D9%85%D8%AF%DB%8C%D8%B1%DB%8C%D8%AA-%D8%AA%D8%AE%D9%86%DB%8C%DA%A9%DB%8C-%D8%B3%D9%88%DB%8C-%DA%A9%D8%AF%D8%B3%D8%AA%D8%B1"]
+      },
+      {
+        "language": "Dari/Pashto",
+        "query": "پولی خمری کادستر زمین نقشه اداره اراضی افغانستان / پل خمری کادستر زمین اداره اراضی افغانستان",
+        "result": "Official Dari/Pashto results identified the Ministry of Justice property-registration system and Afghanistan land/cadastre administration references. Results did not expose a public Puli Khumri parcel map/API, safe parcel ID, schema/CRS, or geometry response.",
+        "actualResultUrls": ["https://pms.moj.gov.af/", "https://www.mudh.gov.af/sites/default/files/2019-10/%D8%B3%D8%AA%D8%B1%D8%A7%D8%AA%DB%8C%DA%98%DB%8C%20%D8%AA%D8%B7%D8%A8%DB%8C%D9%82%DB%8C%20%D8%A7%D8%B1%D8%AA%D9%82%D8%A7%DB%8C%20%D8%A7%D8%AF%D8%A7%D8%B1%DB%80%20%D9%85%D8%B3%D8%AA%D9%82%D9%84%20%D8%A7%D8%B1%D8%A7%D8%B6%DB%8C%20%D8%A7%D9%81%D8%BA%D8%A7%D9%86%D8%B3%D8%AA%D8%A7%D9%86%20%D8%A8%D9%87%20%DB%8C%DA%A9%20%D9%86%D9%87%D8%A7%D8%AF%20%D9%85%D8%B9%D8%A7%D8%B5%D8%B1.pdf", "https://www.pulekhumri-m.gov.af/index.php/"]
+      }
+    ]
+  },
+  "source": {
+    "name": "Afghanistan Ministry of Justice PRMIS/PMS and Afghanistan land/cadastre administration references",
+    "operator": "Ministry of Justice; Ministry of Agriculture, Irrigation and Livestock land/cadastre administration; Puli Khumri municipality",
+    "viewerUrl": "https://pms.moj.gov.af/",
+    "scope": "National/general registration and cadastre documentation plus municipal site; no city-specific open parcel layer was verified.",
+    "crs": null,
+    "nativeIdentity": null
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "runtimeReadiness": "held",
+  "resultCategory": "official_registration_and_cadastre_references_no_verified_open_puli_khumri_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Afghanistan national/general property-registration and cadastre references; no citywide parcel coverage claim.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "No public Puli Khumri parcel geometry, safe native parcel ID, service schema, CRS response, or cadastral extent was verified. The exact WUP point is preserved unchanged; no exact-point hit, map extent miss, timeout, login wall, or unusable UI was treated as evidence of citywide absence.",
+  "safeFieldAllowlist": ["geometry", "CRS", "stable native parcel identity", "source scope/provenance"],
+  "notes": "Packet completion records executed research only; it is not source integration or admission. No GeoJSON sample was retained because no safe native parcel identity and geometry were verified."
+}

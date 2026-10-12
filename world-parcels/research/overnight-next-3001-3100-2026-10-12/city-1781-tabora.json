@@ -1,0 +1,80 @@
+{
+  "cityCode": 1781,
+  "queueRank": 3014,
+  "name": "Tabora",
+  "country": "United Republic of Tanzania",
+  "countryCode": "TZ",
+  "iso3": "TZA",
+  "locId": 834,
+  "capital": false,
+  "point": [-5.02184443320171, 32.8110587839918],
+  "population2025": 198557,
+  "population2025k": 198.557,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tabora Tanzania official cadastral parcel map property map land registry GIS",
+        "result": "Official results identified the Ministry of Lands, Housing and Human Settlements Development, its e-Ardhi land-information portal, the public land-rent assessment portal, and the official Tabora Municipal Council site. No public anonymous parcel-vector endpoint or safe ID-plus-polygon response was exposed.",
+        "actualResultUrls": [
+          "https://eardhi.lands.go.tz/",
+          "https://landrent.lands.go.tz/",
+          "https://www.taboramc.go.tz/",
+          "https://lands.go.tz/"
+        ]
+      },
+      {
+        "language": "Swahili (native/local)",
+        "query": "Ramani ya viwanja Tabora upimaji miliki ardhi cadastral Wizara ya Ardhi rasmi",
+        "result": "Matokeo rasmi yalithibitisha Wizara ya Ardhi kama mratibu wa upimaji, ramani na kumbukumbu za ardhi, na Halmashauri ya Manispaa ya Tabora kama mamlaka ya eneo yenye taarifa za viwanja. Mfumo wa e-Ardhi una huduma za ardhi lakini haukuonyesha huduma ya wazi isiyohitaji akaunti ya kurudisha kitambulisho cha kiwanja na poligoni salama.",
+        "actualResultUrls": [
+          "https://www.lands.go.tz/uploads/documents/sw-1682065961-HUDUMA%20YA%20UPIMAJI%20NA%20RAMANI.pdf",
+          "https://www.taboramc.go.tz/",
+          "https://eardhi.lands.go.tz/",
+          "https://www.ltip.lands.go.tz/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Tabora Municipal Council land/urban-planning function, under the national Ministry of Lands, Housing and Human Settlements Development",
+    "scope": "The municipal site is the local government source for Tabora municipal land and plot administration notices; the Ministry is the national cadastral, surveying, mapping and land-registration custodian.",
+    "evidenceUrls": [
+      "https://www.taboramc.go.tz/",
+      "https://www.lands.go.tz/uploads/documents/sw-1682065961-HUDUMA%20YA%20UPIMAJI%20NA%20RAMANI.pdf",
+      "https://eardhi.lands.go.tz/"
+    ],
+    "scopeNote": "This evidences custodians and land-service responsibility, not public citywide parcel-vector access or an admitted runtime source. General national agency material is kept distinct from the local municipal custodian."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": null,
+    "attemptedRoutes": [
+      {"method":"GET","url":"https://eardhi.lands.go.tz/","httpStatus":200,"outcome":"Official e-Ardhi landing page reachable. It describes surveying/mapping and land-registration services, but the public page exposes account registration/login and no anonymous parcel schema, CRS, native ID, or polygon response."},
+      {"method":"GET","url":"https://landrent.lands.go.tz/","httpStatus":0,"outcome":"Official public land-rent portal was identified in first-party search, but direct request from the research host failed DNS resolution. Its public form advertises lookup by title number, plot ID, name, area, block and plot number; no request was made because owner/title/address-related fields are unsafe for this task and it is not a parcel-geometry service."},
+      {"method":"GET","url":"https://www.taboramc.go.tz/","httpStatus":0,"outcome":"Official Tabora Municipal Council site was identified in first-party search, but direct request from the research host failed DNS resolution. Search evidence shows municipal land/plot notices, not an anonymous parcel map/API."},
+      {"method":"GET","url":"https://www.lands.go.tz/uploads/documents/sw-1682065961-HUDUMA%20YA%20UPIMAJI%20NA%20RAMANI.pdf","httpStatus":200,"outcome":"Official Ministry PDF documents cadastral surveying, urban parcel plans and electronic map records, but provides no current anonymous machine-readable parcel route for Tabora."},
+      {"method":"GET","url":"https://www.ltip.lands.go.tz/","httpStatus":200,"outcome":"Official LTIP site identifies Tabora in the Ministry's land-tenure-improvement context and describes land-parcel identification work, but provides no current anonymous parcel ID-plus-polygon response."},
+      {"method":"GET","url":"https://ccro.lands.go.tz/","httpStatus":"login wall observed in first-party search","outcome":"Official Tanzania ILMIS/CCRO route was identified but is credential-gated. No login, credentials, private token, CAPTCHA/Cloudflare bypass, or protected query was attempted."}
+    ],
+    "note": "The exact WUP point [-5.02184443320171, 32.8110587839918] was preserved in latitude/longitude order and was not shifted or used as an absence test. No exact-point hit or miss was inferred."
+  },
+  "schemaAndCrs": {"viewerConfig":"Not exposed","geometryCrs":"Not observed","nativeIdentity":"Not observed","sourceFieldMapping":{},"compositeKeyProvenance":null},
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed anonymously", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Local and national land-cadastre custodians are evidenced, but no current safe anonymous parcel response with stable native identity, schema, CRS and unchanged polygon was qualified."},
+  "scopeLimits": ["Exact WUP point preserved; no coordinate shift.","A zero exact-point hit, map extent miss, timeout, DNS failure, login wall or unusable UI is not evidence of citywide parcel absence.","No exact-point parcel query was made and no citywide absence was inferred.","No raw source-specific attribute set or GeoJSON sample retained.","Packet completion is research completion only and does not admit or integrate a runtime source."],
+  "uncertainty": "Current public anonymous parcel-vector reachability, Tabora citywide coverage, schema, CRS, stable native identity and update cadence remain unresolved."
+}

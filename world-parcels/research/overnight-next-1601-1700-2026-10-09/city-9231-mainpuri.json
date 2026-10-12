@@ -1,0 +1,138 @@
+{
+  "cityCode": 9231,
+  "queueRank": 1648,
+  "name": "Mainpuri",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [27.2274083734834, 79.0312806442284],
+  "population2025": 347106,
+  "population2025k": 347.106,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mainpuri Uttar Pradesh official cadastral parcel map land records GIS Bhunaksha",
+        "result": "First-party discovery found the official Mainpuri district Land Records page, the Uttar Pradesh Bhulekh portal, and the official Uttar Pradesh BhuNaksha public viewer. The official digitization dashboard reports Mainpuri tehsil as 94/98 revenue-village records, 86 linked villages, and 168/168 geo-referenced mapsheets; this establishes a public cadastral-map route and reported coverage, not a verified city-bound parcel response.",
+        "actualResultUrls": [
+          "https://mainpuri.nic.in/service/land-records/",
+          "https://upbhulekh.gov.in/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=148",
+          "https://upbhunaksha.gov.in/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "मैनपुरी उत्तर प्रदेश सरकारी भू नक्शा भूलेख भूमि अभिलेख आधिकारिक",
+        "result": "Hindi first-party discovery found the Uttar Pradesh Revenue Council/Bhulekh pages describing the public भू-नक्शा / शजरा route and the official Mainpuri district land-record page. The accessible public route did not provide a safe anonymous parcel ID plus full geometry response for the WUP point.",
+        "actualResultUrls": [
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhulekh.gov.in/?trk=public_post-text",
+          "https://mainpuri.nic.in/service/land-records/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://mainpuri.nic.in/service/land-records/",
+      "observation": "Official District Mainpuri page says UP BHULEKH computerizes land records and that the system is implemented in all state tehsils; it directs users to the Uttar Pradesh land-record portal and the concerned tehsil office. This evidences the local district/tehsil revenue custodian and procedure, not an open parcel geometry API by itself."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=148",
+      "observation": "Official Government of Uttar Pradesh digitization dashboard lists Mainpuri district and Mainpuri tehsil, including linked Bhunaksha villages and geo-referenced mapsheets. It reports Mainpuri tehsil with 94 revenue villages, 86 linked villages, and 168 geo-referenced mapsheets. The dashboard does not itself expose retained parcel features."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "observation": "Official Uttar Pradesh BhuNaksha public viewer loaded and its current JavaScript configuration points to https://upbhunaksha.gov.in/bhunakshaserver, with map/plot and WMS routes. The viewer is the relevant public cadastral map service route."
+    },
+    {
+      "url": "https://bor.up.nic.in/?search_key=HOMECENTER",
+      "observation": "Official Uttar Pradesh Revenue Council page exposes the public भूलेख (भू-नक्शा / शजरा) route and राजस्व परिषद custody terminology in Hindi."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mainpuri.nic.in/service/land-records/",
+      "method": "GET via first-party discovery",
+      "httpStatus": 200,
+      "outcome": "Official district land-record page loaded; it provided the UP Bhulekh route and concerned tehsil office context, but no parcel feature endpoint, schema, CRS, or geometry."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current public viewer HTML loaded. The referenced main JavaScript was downloaded and inspected; it configured the anonymous/public base https://upbhunaksha.gov.in/bhunakshaserver and exposed level-value, map extent, plot lookup, GeoJSON layer, and WMS routes."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned state code 09. https://upbhunaksha.gov.in/bhunakshaserver/Levels/getStateName returned Uttar Pradesh and /Levels/levelLabels returned District, Tehsil, Village."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST form: level=1&codes=09; then bounded Mainpuri hierarchy attempts",
+      "httpStatus": 200,
+      "outcome": "The level-1 response included Mainpuri district code 148; the current anonymous level-2 attempts for Mainpuri returned an empty list. No village GIS code, parcel identity, source field schema, or geometry was obtained."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+      "method": "POST form: gisLevels=09,148,00775 and bounded variant",
+      "httpStatus": 200,
+      "outcome": "Returned xmin=ymin=xmax=ymax=0 and gisCode 0914800775. This unusable extent is not treated as evidence of citywide parcel absence and no coordinate was shifted."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/WMS?SERVICE=WMS&REQUEST=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned a PNG image rather than WMS capabilities XML, so layer schema, CRS, and feature geometry could not be verified. No WMS feature-info or parcel geometry was retained."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY and /MapInfo/getPlotByPlotNo",
+      "method": "POST not executed",
+      "httpStatus": null,
+      "outcome": "Not attempted because no usable village extent/GIS code or safe parcel number was available; no synthetic ID or guessed coordinate query was made."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Mainpuri district administration identifies the tehsil revenue land-record process, and official Uttar Pradesh Revenue Council/Bhulekh/BhuNaksha pages identify the state cadastral-map and land-record custodians and public routes. This establishes local/state registry custody and procedure, but not a verified open city parcel geometry response.",
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no usable parcel geometry response",
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "uttar-pradesh-bhunaksha-upbhulekh",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Uttar Pradesh Bhulekh/BhuNaksha services and official Mainpuri district/tehsil land-record process; dashboard-reported Mainpuri tehsil digitization coverage.",
+    "verifiedOpenScope": "Official registry custody, public viewer route, current JavaScript endpoints, and dashboard statistics only; city parcel schema, stable native ID, CRS, and full geometry were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "Exact WUP point [27.2274083734834, 79.0312806442284] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit or miss conclusion was drawn because no usable public parcel query was available.",
+    "The zero extent, empty hierarchy response, and non-XML WMS response are not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, personal, tax/account or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set, synthetic parcel identity, or sample GeoJSON was retained.",
+    "Packet completion is not source integration/admission; runtime remains held pending independent serial review."
+  ],
+  "uncertainty": "The current anonymous Mainpuri tehsil/village selection path, public access/session requirements, parcel layer schema, stable native identity, CRS transformation, and citywide coverage remain unresolved."
+}

@@ -1,0 +1,17 @@
+{
+  "taskId": "city:7682",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-7682-shuozhou.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/shuozhou-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T13:11:08Z",
+  "reason": "The immutable queue and original WUP 2025 archive agree on China, rank 1699, point [39.319574216236,112.426133144563], and 336303 persons. English and Chinese executed searches and inspected URLs are recorded. The municipal civilization site identifies the Shuozhou Real Estate Registration Center and its service channels; the bureau homepage timed out. No anonymous native parcel ID, full polygon, schema, or CRS was obtained. The timeout is not citywide absence.",
+  "firstPartyChecks": [
+    "https://sxsz.wenming.cn/cxjs/202508/t20250825_9006509.shtml",
+    "https://gtj.shuozhou.gov.cn/"
+  ],
+  "admissionGates": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Runtime admission remains held."
+}

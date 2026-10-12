@@ -1,0 +1,13 @@
+{
+  "taskId": "city:860",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-860-kismayo.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/kismayo-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:29:18.511997Z",
+  "reason": "Official Nagaad RAP confirms Kismayo municipal Jubaland title-deed processing; independently read ArcGIS layer metadata identifies only District Boundary, not parcels. No safe parcel geometry or adapter qualification. Public geometry remains unresolved, not absent.",
+  "primarySourceUrl": "https://nagaad.mpwr.gov.so/wp-content/uploads/2025/05/Kismayo-UPDATED-Package-3-RAP.pdf"
+}

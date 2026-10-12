@@ -1,0 +1,113 @@
+{
+  "cityCode": 9882,
+  "queueRank": 1429,
+  "name": "Heze",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [35.2494478626632, 115.444470990405],
+  "population2025": 397886,
+  "population2025k": 397.886,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Heze China official cadastral parcel map real estate registration GIS site:heze.gov.cn OR site:zygh.heze.gov.cn",
+        "result": "Search located the official Heze Natural Resources and Planning Bureau site and its official Real Estate Registration section, but no public cadastral feature service or anonymous parcel geometry endpoint.",
+        "actualResultUrls": ["https://zygh.heze.gov.cn/", "http://zygh.heze.gov.cn/zglby/?catas=1585109696539398144"]
+      },
+      {
+        "language": "Chinese",
+        "query": "菏泽市 不动产登记 地籍图 地块地图 官方 自然资源局",
+        "result": "Search located the official Heze bureau site and official 不动产登记专栏. The reviewed page is an administrative/news portal; it does not expose anonymous parcel geometry, layer metadata, CRS, or a cadastral query service.",
+        "actualResultUrls": ["https://zygh.heze.gov.cn/", "http://zygh.heze.gov.cn/zglby/?catas=1585109696539398144", "https://www.heze.gov.cn/"]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Heze Municipal Natural Resources and Planning Bureau",
+        "operator": "菏泽市自然资源和规划局",
+        "homeUrl": "https://zygh.heze.gov.cn/",
+        "observation": "First-party municipal bureau site. Its current homepage links an official 不动产登记专栏 and links to 天地图山东, but no parcel feature service was published in the reviewed HTML/configuration."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-09T16:35:35Z",
+        "url": "https://zygh.heze.gov.cn/",
+        "normalTlsVerification": true,
+        "httpStatus": null,
+        "errorType": "TLS certificate validation failure",
+        "error": "Certificate expired; request was not retried with verification disabled."
+      },
+      {
+        "checkedAt": "2026-10-09T16:35:35Z",
+        "url": "http://zygh.heze.gov.cn/",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "result": "Fetched official homepage. No cadastral feature endpoint found; homepage links official registration section and external Shandong base-map site."
+      },
+      {
+        "checkedAt": "2026-10-09T16:35:36Z",
+        "url": "http://zygh.heze.gov.cn/zglby/?catas=1585109696539398144",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "result": "Fetched official 不动产登记专栏. Current JavaScript calls /els-service/article/{page}/{size} and /sys-service/webdwcata/dwcataByShow/{id}; these are article/category APIs, not parcel geometry services."
+      },
+      {
+        "checkedAt": "2026-10-09T16:35:37Z",
+        "url": "http://zygh.heze.gov.cn/2c908088819842f701819a2a3401002b/js/url.js",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "result": "Reviewed current public configuration. url_service is empty and no cadastral/GIS API base URL is configured."
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://zygh.heze.gov.cn/",
+    "http://zygh.heze.gov.cn/zglby/?catas=1585109696539398144",
+    "https://heze.dzwww.com/yw/202211/t20221122_11090068.htm"
+  ],
+  "registryBasis": "The first-party municipal bureau site publishes an official 不动产登记专栏. A city-specific report also describes the Heze Real Estate Registration and Transaction Center and its one-certificate-one-code service, including cadastral map viewing, but does not provide an anonymous public parcel API.",
+  "source": {
+    "sourceId": "CN-9882-HEZE-LOCAL-REGISTRY-REVIEW",
+    "name": "Heze Municipal Natural Resources and Planning Bureau official registration portal",
+    "url": "https://zygh.heze.gov.cn/",
+    "operator": "菏泽市自然资源和规划局",
+    "serviceType": "Official local registry/procedure portal reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official municipal bureau and city registration-center materials evidence Heze local registration custody and cadastral-map use in registration workflows.",
+    "verifiedOpenScope": "No anonymous public parcel layer, feature-service schema, CRS, native parcel identity, or bounded geometry response was verified. Exact-point and citywide parcel coverage remain unknown.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The official portal is a news/procedure site whose current JavaScript exposes only article/category services. The HTTPS host failed normal certificate validation, and no TLS exception was authorized; the HTTP copy was used only to inspect public HTML/configuration.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "Whether Heze has a separate authenticated or non-indexed public cadastral viewer, and whether any city or county parcel service is exposed through Shandong’s mapping platform, remains unresolved.",
+  "nextStep": "Hold runtime integration. A later researcher may inspect a documented first-party feature service if one is publicly exposed, first confirming schema, CRS, native identity, and safe fields.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [35.2494478626632, 115.444470990405],
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not a municipal boundary or parcel-coverage claim.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-09",
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

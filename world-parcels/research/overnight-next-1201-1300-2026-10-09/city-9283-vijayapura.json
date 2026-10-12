@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:9283",
+  "wupCityCode": 9283,
+  "queueRank": 1237,
+  "rank": 1237,
+  "name": "Vijayapura",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [16.8304984756639, 75.7162603665653],
+  "centerLatLon": [16.8304984756639, 75.7162603665653],
+  "pointBasis": "Exact immutable WUP 2025 queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 450192,
+  "population2025k": 450.192,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "aliases": ["vijayapura"],
+  "status": "complete",
+  "resultCategory": "official_local_registry_entry_verified_but_geometry_unavailable",
+  "registryFound": true,
+  "registryBasis": "The official Vijayapura district land-records page identifies Karnataka Bhoomi as the state land-records management system and links the public service. This is evidence of an official local/state cadastral custodian, not citywide parcel completeness.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "The linked Karnataka Bhoomi and revenue-map HTTPS routes timed out during bounded anonymous GET/HEAD attempts. No safe native parcel ID, schema/CRS response, or polygon geometry was verified; the timeout is not evidence of citywide absence.",
+  "source": {
+    "sourceId": null,
+    "name": "Bhoomi / Karnataka Land Records",
+    "url": "https://landrecords.karnataka.gov.in/",
+    "operator": "Revenue Department, Government of Karnataka; Bhoomi Monitoring Cell",
+    "serviceType": "Official land-records and revenue-map portal referenced by the Vijayapura district administration",
+    "layer": null,
+    "geometryType": null,
+    "nativeIdField": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Vijayapura district land-record entry point and Karnataka Bhoomi/revenue-map service routes.",
+    "verifiedOpenScope": "Official service identity and district linkage only; no anonymous parcel response or geometry was available in the executed requests.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Vijayapura Karnataka official cadastral map parcel land records GIS Bhoomi Karnataka",
+        "result": "Found the official Vijayapura district land-records page, which describes Bhoomi as Karnataka's land-records management system and links landrecords.karnataka.gov.in. Search also identified the official Karnataka revenue-map route, but no parcel geometry was established by discovery alone.",
+        "actualResultUrls": [
+          "https://vijayapura.nic.in/en/service/land-records/",
+          "https://landrecords.karnataka.gov.in/"
+        ]
+      },
+      {
+        "language": "Kannada",
+        "query": "ವಿಜಯಪುರ ಕರ್ನಾಟಕ ಅಧಿಕೃತ ಭೂ ನಕ್ಷೆ ಜಮೀನು ಪಾರ್ಸೆಲ್ ನಕ್ಷೆ",
+        "result": "The local-language discovery returned the official Vijayapura district site and Karnataka Bhoomi-related results. No safe parcel identifier or polygon endpoint was verified.",
+        "actualResultUrls": [
+          "https://vijayapura.nic.in/en/service/land-records/",
+          "https://landrecords.karnataka.gov.in/",
+          "https://rdservices.karnataka.gov.in/BhoomiMaps"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://vijayapura.nic.in/en/service/land-records/",
+        "operator": "District Administration, Vijayapura, Government of Karnataka",
+        "scope": "Official district land-records page; describes Bhoomi and links Karnataka's land-records portal."
+      },
+      {
+        "url": "https://landrecords.karnataka.gov.in/",
+        "operator": "Revenue Department, Government of Karnataka",
+        "scope": "State Bhoomi land-records portal linked by the district page."
+      },
+      {
+        "url": "https://rdservices.karnataka.gov.in/BhoomiMaps",
+        "operator": "Government of Karnataka revenue services",
+        "scope": "Candidate official Bhoomi urban-map route identified during discovery; no response schema was obtained."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://vijayapura.nic.in/en/service/land-records/",
+        "method": "GET; anonymous public page",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Loaded over TLS. The page describes Bhoomi and links https://landrecords.karnataka.gov.in/."
+      },
+      {
+        "url": "https://landrecords.karnataka.gov.in/",
+        "method": "GET/HEAD; anonymous public route",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "Connection timed out after 20 seconds; no HTML, JavaScript, schema, CRS, ID, or geometry response retained."
+      },
+      {
+        "url": "https://landrecords.karnataka.gov.in/revenuemaps/",
+        "method": "HEAD; anonymous public route",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "Attempt began after the linked portal timeout and did not yield a response within the bounded request window."
+      },
+      {
+        "url": "https://rdservices.karnataka.gov.in/BhoomiMaps",
+        "method": "GET; anonymous public route",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "Bounded request did not yield a response before the request window ended; no route was treated as a successful service or geometry query."
+      }
+    ],
+    "schemaCrs": {
+      "nativeCrs": null,
+      "geometryResponseSchema": "Not verified",
+      "viewerLayers": []
+    }
+  },
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "official service URLs", "HTTP status/content type", "public service metadata", "parcel geometry only if independently verified"],
+  "remainingUncertainty": "Whether Karnataka Bhoomi or a linked revenue/urban-map service exposes anonymous parcel polygons, which native identity field it uses, the service CRS, and the extent of Vijayapura urban coverage remain unknown. The exact WUP point was preserved and not used as evidence of absence.",
+  "registryEvidenceUrls": ["https://vijayapura.nic.in/en/service/land-records/", "https://landrecords.karnataka.gov.in/"],
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "adapterReady": false,
+  "nextStep": "Serial reviewer should independently qualify the live Karnataka service and any public parcel geometry route; keep runtime held until safe native IDs and real polygon geometry are independently verified.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

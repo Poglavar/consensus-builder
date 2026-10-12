@@ -1,0 +1,19 @@
+{
+  "cityRecord": "city-2120-turkestan.json",
+  "cityCode": 2120,
+  "queueRank": 2712,
+  "city": "Turkestan",
+  "country": "Kazakhstan",
+  "countryCode": "KZ",
+  "reviewStatus": "held",
+  "reviewOutcome": "Official regional and national cadastral/map custodians were found, but no qualifying public parcel-polygon response or safe retained geometry sample was verified.",
+  "queryAndRequestOutcomes": "Separate English and Kazakh/Russian discovery was performed and recorded in the city record. The official Turkestan geoportal could not return a response; AIS GZK viewer HTML/config was retrieved and exposed a parcel proxy candidate, but anonymous metadata requests returned 404. The EGKN reference had a TLS verification failure and the digital-land portal timed out. No login, credentials, CAPTCHA bypass, private token, or unsafe field request was used.",
+  "cityOrLocalCustodian": "The Turkestan Region geoportal and Turkestan Region land-relations authority are local/regional custodians. AIS GZK is the national state land-cadastre viewer; the city notice documents transition to the national EGKN automated workplace. These are not conflated with a verified open parcel API.",
+  "safeFieldAllowlist": ["stable native parcel/object ID when independently verified", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "registration details", "personal fields"],
+  "schemaAndCrs": "The viewer is ArcGIS-based and its configuration names a parcel MapServer route, but the route returned 404; schema, CRS, native ID field, and bounded feature response remain unverified.",
+  "sampleGeojson": null,
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "A zero/failed exact-point or service request is not evidence of citywide absence. The exact WUP point [43.2983623732194, 68.2609637891536] was not moved to seek a hit.",
+  "integrationDisposition": "Research packet only; not source integration or admission. No registry/catalog/runtime files were changed."
+}

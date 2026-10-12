@@ -1,0 +1,92 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 11806,
+  "queueRank": 2848,
+  "name": "Jieshi",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [22.8173670508325, 115.82548774583],
+  "population2025": 208964,
+  "population2025k": 208.964,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jieshi Guangdong China cadastral parcel map official GIS land registry",
+        "result": "No Jieshi-specific anonymous first-party cadastral registry, parcel viewer, or public parcel API was found. Results identified Guangdong's official public Tianditu map platform and general official Guangdong cadastral/real-estate-registration information, but not a Jieshi parcel service.",
+        "actualResultUrls": [
+          "https://guangdong.tianditu.gov.cn/wxQuery/index.html",
+          "https://www.gdwc.gov.cn/zfxxgk/zjswcszrzyj/content/post_1912330.html",
+          "https://rerc.com.cn/"
+        ]
+      },
+      {
+        "language": "Chinese (local/native-language discovery)",
+        "query": "揭西县 河婆街道（揭西县城） 地籍图 不动产登记 地图 官方",
+        "result": "Results established a Guangdong-wide authenticated 以图查房 service and a county natural-resources/real-estate-registration service contact reference, but no anonymous Jieshi parcel layer, endpoint, schema, native parcel identity, or geometry was exposed. General map and registration prose was not treated as a local parcel integration source.",
+        "actualResultUrls": [
+          "https://www.gdwc.gov.cn/zfxxgk/zjswcszrzyj/content/post_1912330.html",
+          "https://www.95ye.com/quanguo/article/62439.html",
+          "https://guangdong.tianditu.gov.cn/wxQuery/index.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": null,
+  "officialSources": [
+    {
+      "url": "https://guangdong.tianditu.gov.cn/wxQuery/index.html",
+      "observation": "First-party Guangdong geographic-information public-service page loaded over TLS. Its current JavaScript initializes Tianditu EPSG:4326 basemap tiles and geocoding/search; no cadastral parcel layer or parcel API was exposed in the inspected HTML/JS."
+    },
+    {
+      "url": "https://www.gdwc.gov.cn/zfxxgk/zjswcszrzyj/content/post_1912330.html",
+      "observation": "Official Guangdong Natural Resources article says the province-wide 以图查房 service requires Guangdong government-service identity authentication and shows registered building/real-estate information; it does not provide an anonymous parcel geometry API."
+    },
+    {
+      "url": "https://www.95ye.com/quanguo/article/62439.html",
+      "observation": "Non-first-party directory result lists a Jiexian county natural-resources and real-estate-registration service window/contact reference. It is custodian/contact evidence only, not a public parcel data service, and was not used as registry integration evidence."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/wxQuery/index.html",
+      "outcome": "200 HTML over TLS; inspected linked https://guangdong.tianditu.gov.cn/wxQuery/js/index.js. The page exposes EPSG:4326 public basemap/search functionality only; no parcel request route was observed."
+    },
+    {
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/wxQuery/js/index.js",
+      "outcome": "200 JavaScript over TLS; current code uses public Tianditu vector/imagery WMTS tiles and T.LocalSearch/T.AdministrativeDivision. No cadastral parcel schema, CRS-specific parcel endpoint, or bounded parcel response was available."
+    },
+    {
+      "method": "GET",
+      "url": "http://www.gdzwfw.gov.cn/hlwbdcdj_gkcx/proxyWebService/nature",
+      "outcome": "Connection returned an empty reply before an HTTP response; no retry with credentials, private token, TLS exception, or browser authentication was attempted. The official article documents this route as an authenticated 以图查房 entry point."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.gdwc.gov.cn/zfxxgk/zjswcszrzyj/content/post_1912330.html",
+      "outcome": "Official article loaded through web discovery; it documents province-wide authenticated map-based real-estate lookup, not a public parcel geometry service."
+    }
+  ],
+  "resultCategory": "no_city_registry_or_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "No anonymous Jieshi-specific cadastral service was identified; Guangdong-wide public basemap coverage is not cadastral coverage.",
+    "verifiedOpenScope": "No Jieshi parcel response, native parcel identity, schema, CRS, or geometry was verified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "A zero exact-point hit, map extent limitation, authenticated service, or empty HTTP reply does not prove citywide cadastral absence. Jieshi's local custodian may expose data only through authenticated or non-indexed workflows. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS-disabling exception was used. No GeoJSON sample is retained because no safe native parcel identity and full polygon were observed. This packet is research evidence only and is not source integration or admission."
+}

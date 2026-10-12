@@ -1,0 +1,12 @@
+{
+  "taskId": "city:11857",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-11857-dhubri.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/dhubri-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T10:54:07Z",
+  "reason": "Dhubri: official Assam land-record custody and Dhubri selection were confirmed in a fresh viewer response; no anonymous native parcel ID plus polygon response was evidenced. The HTTP 500 village request and CAPTCHA workflow do not establish absence.",
+  "runtimeAdmission": false
+}

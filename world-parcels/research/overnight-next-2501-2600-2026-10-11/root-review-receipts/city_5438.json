@@ -1,0 +1,26 @@
+{
+  "taskId": "city:5438",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-5438-cotabato-city.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/cotabato-city-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T14:19:05Z",
+  "reason": "Original Geoportal layer-details cache labels denr_parcel_data as LMB Parcel data, but no Cotabato polygon response, CRS, or native ID was obtained; timed-out WFS/WMS requests do not show absence. The exact WUP 2025 city/rank/country/point/population and paired English/native-language searches were checked; absence was not inferred.",
+  "firstPartySourceUrl": "https://geoportal.gov.ph/webapi/api/getlayerdetails/denr_parcel_data",
+  "geometryReview": {
+    "fullPolygonsRetained": 0,
+    "safeNativeIdVerified": false
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

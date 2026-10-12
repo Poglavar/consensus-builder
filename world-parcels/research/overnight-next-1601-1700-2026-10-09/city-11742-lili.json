@@ -1,0 +1,90 @@
+{
+  "cityCode": 11742,
+  "queueRank": 1613,
+  "name": "Lili",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "point": [31.0378231786842, 120.820775691257],
+  "population2025": 354151,
+  "population2025k": 354.151,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lili Wujiang Jiangsu China cadastral parcel map official GIS",
+        "result": "First-party discovery identified Lili Town (黎里镇) in Wujiang District, Suzhou, and the official Suzhou/Wujiang natural-resources planning context. The results describe planning and mapping programs, but no public parcel polygon download or anonymous parcel query was exposed.",
+        "actualResultUrls": [
+          "https://english.suzhou.gov.cn/szsenglish/atav/202501/bd44b1cc644b4217b09e9497f1d39f18.shtml",
+          "https://czju.suzhou.gov.cn/zfcg/html/project/00c71885736144278be494acc380caea.shtml",
+          "https://www.wujiang.gov.cn/zgwj/ggkjgh/202605/d5ac934d0fd84b1da55ab666467bf0a2.shtml"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "黎里镇 自然资源和规划局 一张图 地籍 地图 苏州 吴江",
+        "result": "First-party Chinese discovery confirmed that Wujiang Natural Resources and Planning Bureau has a natural-resources/planning 一张图 database and that Lili is covered by official detailed-planning publications. The Jiangsu public land-registration portal exposes registration procedures and city selection, not an open parcel geometry service.",
+        "actualResultUrls": [
+          "https://czju.suzhou.gov.cn/zfcg/html/project/00c71885736144278be494acc380caea.shtml",
+          "https://www.jszwfw.gov.cn/bdczt/bdcindex.html",
+          "https://www.jszwfw.gov.cn/col/col172885/",
+          "https://www.wujiang.gov.cn/zgwj/ggkjgh/202605/d5ac934d0fd84b1da55ab666467bf0a2.shtml"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://czju.suzhou.gov.cn/zfcg/html/project/00c71885736144278be494acc380caea.shtml",
+      "observation": "Official Suzhou procurement notice says Wujiang's natural-resources/planning 一张图 database covers current, planning, management, and socioeconomic data for internal management and map services. It does not publish a parcel layer or anonymous query endpoint."
+    },
+    {
+      "url": "https://www.wujiang.gov.cn/zgwj/ggkjgh/202605/d5ac934d0fd84b1da55ab666467bf0a2.shtml",
+      "observation": "Official Wujiang government publication identifies Lili Town detailed-planning units and planning extent; it is planning evidence, not cadastral parcel geometry."
+    },
+    {
+      "url": "https://www.jszwfw.gov.cn/bdczt/bdcindex.html",
+      "observation": "Official Jiangsu one-window land-registration portal provides public registration service navigation and city selection; no parcel geometry or safe parcel-ID API was observed."
+    },
+    {
+      "url": "https://english.suzhou.gov.cn/szsenglish/atav/202501/bd44b1cc644b4217b09e9497f1d39f18.shtml",
+      "observation": "Official Suzhou English page confirms the place identity and administrative context for Lili Town of Wujiang District."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.wujiang.gov.cn/robots.txt",
+      "method": "GET",
+      "outcome": "Timed out after approximately 20 seconds with no response bytes; this is an access failure, not evidence of source absence."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "outcome": "Not executed after the preceding public-host request timed out in the same bounded curl attempt; no credentials or certificate bypass was used."
+    },
+    {
+      "url": "https://www.jszwfw.gov.cn/bdczt/bdcindex.html",
+      "method": "GET via first-party discovery/open",
+      "outcome": "Public page was discoverable and readable; it presented registration service navigation, not an anonymous parcel ID+geometry response."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A local Wujiang/Suzhou natural-resources and planning custodian and an official Jiangsu land-registration service are evidenced. No public local cadastral parcel geometry/API was evidenced, so this is not source integration or admission.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "sourceIds": [],
+  "resultCategory": "official_local_custodian_found_no_public_parcel_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Official Wujiang/Suzhou natural-resources and planning services cover Lili Town; the public registration portal covers Jiangsu registration services.",
+    "verifiedOpenScope": "No bounded anonymous parcel ID+geometry response or downloadable safe parcel geometry was obtained.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "remainingUncertainty": "The official local database may contain cadastral or land-management layers behind internal or restricted systems, but the public pages and bounded requests did not expose one. Exact-point non-hit was not used. No owner, address, titleholder, tax, contact, or other unsafe fields were requested or retained."
+}

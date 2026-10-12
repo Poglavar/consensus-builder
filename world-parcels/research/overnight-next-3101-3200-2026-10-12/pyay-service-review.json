@@ -1,0 +1,68 @@
+{
+  "cityRecord": "city-3633-pyay.json",
+  "cityCode": 3633,
+  "queueRank": 3165,
+  "attempt": 1,
+  "reviewStatus": "complete_pending_serial_runtime_review",
+  "registryFound": true,
+  "custodian": "Myanmar Settlement and Land Records Department (SLRD) for national cadastral and land records; a Pyay Department of Agriculture Land Use Division page was also found, but no local urban parcel service was evidenced.",
+  "discovery": {
+    "english": "Official SLRD English pages and the first-party Department of Agriculture Land Use Division Pyay page were found; no open parcel-vector endpoint was found.",
+    "burmese": "Official Burmese SLRD Form 105/106 material and the first-party Pyay page were found; no open parcel-vector endpoint was found."
+  },
+  "requests": [
+    {
+      "route": "SLRD English landing page",
+      "url": "https://slrd.gov.mm/en",
+      "outcome": "Anonymous HTTPS GET returned HTTP 403 Cloudflare managed challenge. No login, credentials, CAPTCHA solving, or challenge bypass used."
+    },
+    {
+      "route": "SLRD Burmese Form 105/106 page",
+      "url": "https://slrd.gov.mm/my/node/154",
+      "outcome": "Anonymous HTTPS GET returned HTTP 403 Cloudflare managed challenge. Search-result content was recorded; no protected page extraction attempted."
+    },
+    {
+      "route": "SLRD government-websites directory",
+      "url": "https://slrd.gov.mm/en/gov-websites",
+      "outcome": "Anonymous HTTPS GET returned HTTP 403 Cloudflare managed challenge."
+    },
+    {
+      "route": "Department of Agriculture Land Use Division Pyay page",
+      "url": "https://landusedivision.doa.gov.mm/pyay/",
+      "outcome": "Anonymous HTTPS GET succeeded with HTTP 200. Current HTML inspected for public map/API configuration; no cadastral layer, schema, CRS, or geometry response found."
+    },
+    {
+      "route": "Land Use Division Pyay WordPress JSON",
+      "url": "https://landusedivision.doa.gov.mm/wp-json/wp/v2/posts/1896",
+      "outcome": "Anonymous HTTPS GET succeeded with HTTP 200 application/json. Page content only; no safe parcel identity or geometry."
+    }
+  ],
+  "schemaAndCrs": {
+    "layers": [],
+    "geometry": "No geometry service or response identified.",
+    "requestedCrs": null,
+    "responseCrs": null,
+    "nativeIdentity": "Not confirmed; no parcel feature returned.",
+    "compositeKeyContext": "No composite key inferred or retained."
+  },
+  "scopeLimits": [
+    "No owner, address, contact, titleholder, personal, tax, account, or unsafe administrative fields requested or retained.",
+    "No login, credentials, CAPTCHA bypass, Cloudflare defeat, private token, or TLS exception used.",
+    "No sample GeoJSON written because no safe native parcel feature with usable geometry and identity was returned.",
+    "Exact WUP point [18.8191525989087,95.236771752403] was not shifted and was not treated as a parcel hit/miss test.",
+    "Raw HTML, response bodies, and request evidence remain under ignored tmp/valhalla-parcel-research/3633/.",
+    "Packet completion is not source integration or adapter admission."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "uncertainty": [
+    "The national SLRD custodian and official Form 105/106 record types are evidenced, but current anonymous Pyay parcel-vector access remains unresolved because direct SLRD access was Cloudflare-challenged.",
+    "The first-party Pyay Land Use Division page is not evidence of an urban cadastral geometry service or citywide parcel coverage."
+  ]
+}

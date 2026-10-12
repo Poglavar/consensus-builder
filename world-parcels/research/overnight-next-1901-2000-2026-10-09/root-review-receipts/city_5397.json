@@ -1,0 +1,13 @@
+{
+  "taskId": "city:5397",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-5397-saransk.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/saransk-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:39:03.206555Z",
+  "reviewFinding": "UN 2025 source and immutable rank 1920 agree (Saransk, RUS, 299262 persons, exact point). English and Russian search records have queries and result URLs. First-party Mordovia government search result and Saransk municipal portal support registry/cadastral custody; the NSPD viewer and bounded API timed out. Zero polygon responses and no fresh native-ID read, forced paging, 13 cells, metric GEOS checks, source binding, or headed Details proof. Timeout is unresolved access, not citywide absence."
+}

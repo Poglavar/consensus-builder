@@ -1,0 +1,78 @@
+{
+  "cityCode": 11018,
+  "queueRank": 3040,
+  "name": "Bailutang",
+  "nativeName": "白露塘镇",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [25.8230687589361, 113.103615568253],
+  "population2025": 196846,
+  "population2025k": 196.846,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bailutang Chenzhou China official natural resources bureau cadastral map parcel GIS real estate registration",
+        "result": "First-party Hunan government-service results identified Chenzhou Natural Resources and Planning Bureau and Chenzhou Real Estate Registration Center as the relevant municipal land-registration custodian. No current public anonymous parcel viewer/API with safe native ID plus polygon response was exposed.",
+        "actualResultUrls": [
+          "https://www.hunan.gov.cn/topic/2023wznb/sz2023/czs2023/czsbm/202401/t20240130_32639059.html",
+          "https://zwfw-new.hunan.gov.cn/onething/service/hnservicepowerinfo.jsp?areacode=431001000000&business_activity_classificati=&charName=&dghy=&life_event=&main=1&make_transaction=&minSeq=&orgId=S3oQhTLcRfebE7tTQymOwQ&pager.desc=true&pager.offset=50&themesType=&transact_level=&type=xndtbm&typeIds=&typeid=&word=",
+          "https://www.hunan.gov.cn/hnyw/szdt/201908/t20190806_5411256.html"
+        ]
+      },
+      {
+        "language": "Chinese (native/local)",
+        "query": "郴州市苏仙区白露塘镇 不动产登记 地籍图 宗地 自然资源和规划局 官方",
+        "result": "官方中文结果确认白露塘镇属于郴州市苏仙区，并确认郴州市自然资源和规划局及郴州市不动产登记中心承担不动产登记职责；官方报道还明确白露塘镇农村宅基地确权登记由郴州市不动产登记中心城东分中心推进。未发现可匿名返回安全宗地ID加完整面几何的现行公开接口。",
+        "actualResultUrls": [
+          "https://zwfw-new.hunan.gov.cn/hnvirtualhall/hntownpage/jsp/xz_index.jsp?areacode=431003999000&xzorgid=PArRI7uuQ2ib8nWwFiaIyt9w",
+          "https://cz.rednet.cn/content/646042/61/16213855.html",
+          "https://www.hunan.gov.cn/hnyw/szdt/202503/t20250304_33600784.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "郴州市自然资源和规划局 / Chenzhou Natural Resources and Planning Bureau; 郴州市不动产登记中心 / Chenzhou Real Estate Registration Center",
+    "scope": "Official Hunan government-service listings identify the municipal bureau as the implementing body for land and real-estate registration services. Official local reporting identifies the Chenzhou registration center's Chengdong branch as handling integrated homestead confirmation and registration in Bailutang Town, Suxian District.",
+    "evidenceUrls": [
+      "https://www.hunan.gov.cn/topic/2023wznb/sz2023/czs2023/czsbm/202401/t20240130_32639059.html",
+      "https://zwfw-new.hunan.gov.cn/onething/service/hnservicepowerinfo.jsp?areacode=431001000000&business_activity_classificati=&charName=&dghy=&life_event=&main=1&make_transaction=&minSeq=&orgId=S3oQhTLcRfebE7tTQymOwQ&pager.desc=true&pager.offset=50&themesType=&transact_level=&type=xndtbm&typeIds=&typeid=&word=",
+      "https://cz.rednet.cn/content/646042/61/16213855.html"
+    ],
+    "scopeNote": "This is evidence of a local/municipal registry custodian and service responsibility, not evidence of public citywide parcel-vector access. General national or provincial policy was not treated as local custody."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": null,
+    "attemptedRoutes": [
+      {"method":"GET","url":"https://www.hunan.gov.cn/topic/2023wznb/sz2023/czs2023/czsbm/202401/t20240130_32639059.html","httpStatus":200,"outcome":"Official Chenzhou bureau profile reachable; it identifies the municipal natural-resources and planning authority but exposes no parcel viewer/API or geometry response."},
+      {"method":"GET","url":"https://zwfw-new.hunan.gov.cn/onething/service/hnservicepowerinfo.jsp?areacode=431001000000&business_activity_classificati=&charName=&dghy=&life_event=&main=1&make_transaction=&minSeq=&orgId=S3oQhTLcRfebE7tTQymOwQ&pager.desc=true&pager.offset=50&themesType=&transact_level=&type=xndtbm&typeIds=&typeid=&word=","httpStatus":200,"outcome":"Official Hunan service listing reachable; it lists Chenzhou natural-resources registration services, but no public machine-readable parcel schema, CRS, native ID, or polygon route was exposed."},
+      {"method":"GET","url":"https://zwfw-new.hunan.gov.cn/hnvirtualhall/hntownpage/jsp/xz_index.jsp?areacode=431003999000&xzorgid=PArRI7uuQ2ib8nWwFiaIyt9w","httpStatus":200,"outcome":"Official Bailutang Town service shell reachable; it confirms the town administrative scope but provides no cadastral map/API or anonymous geometry."},
+      {"method":"GET","url":"https://cz.rednet.cn/content/646042/61/16213855.html","httpStatus":200,"outcome":"Officially hosted local-government news report reachable; it confirms the registration-center branch's Bailutang homestead-registration work, but is prose only and contains no safe parcel-vector response."},
+      {"method":"GET","url":"https://www.hunan.gov.cn/hnyw/szdt/202503/t20250304_33600784.html","httpStatus":200,"outcome":"Official Hunan government report reachable; it confirms a Bailutang land-registration transaction and Chenzhou bureau/registration-center roles, but contains no public parcel geometry or query service."}
+    ],
+    "note": "The exact WUP point [25.8230687589361, 113.103615568253] was preserved in latitude/longitude order and was not shifted or used as an absence test. No exact-point hit/miss or citywide absence inference was made."
+  },
+  "schemaAndCrs": {"viewerConfig":"Not exposed","geometryCrs":"Not observed","nativeIdentity":"Not observed","sourceFieldMapping":{},"compositeKeyProvenance":null},
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed anonymously", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Local registry custody is evidenced, but no current safe anonymous parcel response with stable native identity, schema, CRS, and unchanged polygon was qualified."},
+  "scopeLimits": ["Exact WUP point preserved; no coordinate shift.","A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide parcel absence.","No raw source-specific attribute set or GeoJSON sample retained.","Packet completion is research completion only and does not admit or integrate a runtime source."],
+  "uncertainty": "The local custodian and service responsibility are verified, but current public anonymous parcel-vector reachability, citywide coverage, schema, CRS, stable native identity, and update cadence remain unresolved."
+}

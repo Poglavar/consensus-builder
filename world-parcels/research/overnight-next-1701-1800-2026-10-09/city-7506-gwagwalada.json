@@ -1,0 +1,66 @@
+{
+  "cityCode": 7506,
+  "queueRank": 1721,
+  "city": "Gwagwalada",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [8.9420012833157, 7.07221040895844],
+  "population2025": 333464,
+  "population2025k": 333.464,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gwagwalada Nigeria official cadastral parcel map land registry GIS Abuja Geographic Information Systems",
+        "result": "First-party discovery identified Abuja Geographic Information Systems (AGIS), the FCT geospatial and computerized cadastral/land-registry custodian. Its current FCT Lands pages document a Gwagwalada Unit, map production, cadastral plans and survey-data services, but no public parcel layer or anonymous geometry API was exposed.",
+        "actualResultUrls": ["https://agis.fcta.gov.ng/fctlands/index.html", "https://agis.fcta.gov.ng/fctlands/management-lands.html", "https://agis.fcta.gov.ng/fctlands/services.html", "https://www.agis.fcta.gov.ng/agis-at-a-glance/"]
+      },
+      {
+        "language": "native/local",
+        "query": "Gwagwalada cadastral map land registry parcel map Abuja FCT; Gwagwalada land map registry Nigeria",
+        "result": "A second independent discovery query using Gwagwalada/FCT land-registry and cadastral terminology converged on AGIS/FCT Lands and the FCT Survey and Mapping department. No Gwagwalada-specific public parcel viewer or safe parcel geometry was found.",
+        "actualResultUrls": ["https://www.fcta.gov.ng/ova_dep/survey-and-mapping/", "https://agis.fcta.gov.ng/fctlands/documents.html", "https://osgof.gov.ng/cadastral-legal-surveys/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Abuja Geographic Information Systems (AGIS), FCT Administration / Department of Land Administration; the AGIS management page explicitly lists a Gwagwalada Unit. FCT Survey and Mapping is the related statutory survey/mapping department.",
+  "registryEvidence": {
+    "viewerUrl": "https://agis.fcta.gov.ng/fctlands/index.html",
+    "managementUrl": "https://agis.fcta.gov.ng/fctlands/management-lands.html",
+    "viewerText": "AGIS presents itself as the FCT geospatial data infrastructure and describes cadastral plans, district maps, map production and a computerized cadastral/land registry covering FCT area councils and satellite towns.",
+    "localUnitText": "The first-party Land Administration management page lists Gwagwalada Unit under AREA COUNCIL.",
+    "procedureUrl": "https://agis.fcta.gov.ng/fctlands/documents.html",
+    "procedureOutcome": "Public page lists a Map and Geospatial Data Request Form for certified cadastral plans, topographic sheets, orthophotos and GIS datasets; no anonymous parcel download or parcel query was exposed."
+  },
+  "sourceReview": {
+    "service": "AGIS FCT Lands / Abuja Geographic Information Systems",
+    "baseUrl": "https://agis.fcta.gov.ng/fctlands/",
+    "officialAssetsInspected": ["https://agis.fcta.gov.ng/fctlands/index.html", "https://agis.fcta.gov.ng/fctlands/management-lands.html", "https://agis.fcta.gov.ng/fctlands/services.html", "https://agis.fcta.gov.ng/fctlands/portal.html", "https://agis.fcta.gov.ng/fctlands/assets/js/portal.js", "https://agis.fcta.gov.ng/fctlands/documents.html"],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": "unverified; no parcel geometry response",
+    "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "public service and layer metadata"]
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://agis.fcta.gov.ng/fctlands/index.html", "outcome": "200; current public AGIS landing page readable; describes FCT cadastral/map services and public portal links; no parcel layer endpoint."},
+    {"method": "GET", "url": "https://agis.fcta.gov.ng/fctlands/management-lands.html", "outcome": "200; first-party Department of Land Administration page readable; explicitly lists Gwagwalada Unit; no parcel geometry."},
+    {"method": "GET", "url": "https://agis.fcta.gov.ng/fctlands/services.html", "outcome": "200; documents Map Production and Survey Data/Site Plan services; links to portal/documents rather than an open parcel API."},
+    {"method": "GET", "url": "https://agis.fcta.gov.ng/fctlands/portal.html", "outcome": "200; public portal exposes Map Download UI, but no anonymous map/parcel data response."},
+    {"method": "GET", "url": "https://agis.fcta.gov.ng/fctlands/assets/js/portal.js", "outcome": "200; current JavaScript inspected. It states map download and related functions remain client-side demonstrations until backend endpoints are wired; authentication routes use file number/mobile and were not invoked."},
+    {"method": "GET", "url": "https://agis.fcta.gov.ng/fctlands/documents.html", "outcome": "200; lists Map and Geospatial Data Request Form, a request workflow for certified cadastral plans/GIS datasets; no public parcel geometry."},
+    {"method": "GET", "url": "https://www.fcta.gov.ng/ova_dep/survey-and-mapping/", "outcome": "200; FCT first-party page documents parcel surveys, cadastral zones, charting/documentation and six Area Council regional survey scope; general department evidence, not an open Gwagwalada parcel service."},
+    {"method": "GET", "url": "https://osgof.gov.ng/cadastral-legal-surveys/", "outcome": "200; federal cadastral/legal-survey mandate and national cadastral GIS prose; general national-agency evidence, not local Gwagwalada geometry."}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not performed against parcel geometry; no hit/miss inference", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "FCT cadastral and land-administration services, with a listed Gwagwalada Area Council unit", "verifiedOpenScope": "Public agency, unit and procedure pages only; anonymous parcel vector response not verified", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": ["Exact WUP point [8.9420012833157, 7.07221040895844] was preserved and not shifted.", "A zero exact-point hit, map extent miss, timeout, login wall or unusable UI is not evidence of citywide cadastral absence.", "No owner, address, contact, titleholder, personal, tax/account or other unsafe fields were requested or retained.", "No raw source-specific attribute set, parcel ID or GeoJSON sample was retained because no safe anonymous parcel response was available.", "Packet completion records executed attempts only; this is not source integration/admission. Serial reviewer qualification remains required."],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "AGIS and the FCT survey/mapping department are evidenced as the relevant local/FCT custodians, and a Gwagwalada Unit is explicitly listed. Anonymous parcel-layer availability, native identity, schema, CRS, geometry endpoint and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

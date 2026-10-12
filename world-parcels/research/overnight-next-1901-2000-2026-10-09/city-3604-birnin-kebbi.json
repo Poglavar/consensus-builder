@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "cityCode": 3604,
+  "queueRank": 1954,
+  "name": "Birnin Kebbi",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso2": "NG",
+  "iso3": "NGA",
+  "point": [12.4522438477914, 4.20568589599672],
+  "population2025": 296331,
+  "population2025k": 296.331,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Birnin Kebbi Nigeria official cadastral parcel map GIS land registry Kebbi surveyor general",
+        "result": "Found the first-party Kebbi Geographic Information Services (KEBGIS) agency site, the Kebbi State government e-services page linking KEBGIS, and the federal Office of the Surveyor-General cadastral-services page. KEBGIS evidences state land registration and geospatial administration, but no anonymous parcel-vector endpoint was exposed.",
+        "actualResultUrls": [
+          "https://kebgis.com/",
+          "https://kebgis.com/about.html",
+          "https://kebbistate.gov.ng/kebbi-state-e-services",
+          "https://osgof.gov.ng/cadastral-legal-surveys/"
+        ]
+      },
+      {
+        "language": "Hausa (local-language search)",
+        "query": "Birnin Kebbi Najeriya taswirar kadastara fili rajistar ƙasa Kebbi hukuma",
+        "result": "The first-party search surfaced the same KEBGIS and Kebbi State government land-administration sources; no Hausa-language public parcel map/API or anonymous parcel geometry response was identified.",
+        "actualResultUrls": [
+          "https://kebgis.com/",
+          "https://kebbistate.gov.ng/kebbi-state-e-services",
+          "https://osgof.gov.ng/cadastral-legal-surveys/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://kebgis.com/",
+      "operator": "Kebbi Geographic Information Services Agency (KEBGIS)",
+      "evidence": "First-party agency site describes KEBGIS as the Kebbi State government geospatial/land-management agency, with land registration, digital Certificate of Occupancy, property-document verification, and geospatial products. The page links its application host but does not expose public parcel features."
+    },
+    {
+      "url": "https://kebgis.com/about.html",
+      "operator": "Kebbi Geographic Information Services Agency (KEBGIS)",
+      "evidence": "First-party About page names the Kebbi GIS agency and describes a digital land registry, land registration guidance, and land-administration scope for Kebbi State. This is local/state custodian evidence, not evidence of an open parcel-vector API."
+    },
+    {
+      "url": "https://kebbistate.gov.ng/kebbi-state-e-services",
+      "operator": "Kebbi State Government",
+      "evidence": "Official state e-services page lists KEBBI GEOGRAPHIC INFORMATION SYSTEM (KEBGIS) under land administration and links to the KEBGIS website."
+    },
+    {
+      "url": "https://osgof.gov.ng/cadastral-legal-surveys/",
+      "operator": "Office of the Surveyor-General of the Federation",
+      "evidence": "Federal first-party page describes national cadastral/legal survey and cadastral GIS functions. It is general national agency evidence, not a Birnin Kebbi or Kebbi State parcel service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://kebgis.com/",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "KEBGIS public landing page retrieved. HTML and linked JavaScript were inspected; the page is an informational/service site and exposes an application-host link, but no anonymous map, feature service, parcel schema, CRS, or geometry endpoint was found."
+    },
+    {
+      "url": "https://kebgis.com/about.html",
+      "method": "GET via first-party discovery",
+      "status": 200,
+      "summary": "KEBGIS About page retrieved and used for agency scope and digital-registry evidence; no parcel feature response or public map/API was returned."
+    },
+    {
+      "url": "https://kebbistate.gov.ng/kebbi-state-e-services",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Official Kebbi State e-services page retrieved. It links KEBGIS as the land-administration service, but contains no parcel schema or geometry payload."
+    },
+    {
+      "url": "https://kebbistate.gov.ng/ministry-lands-housing",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Official Ministry of Lands & Housing page retrieved; no public parcel map/API or anonymous geometry response was exposed in the inspected page."
+    },
+    {
+      "url": "https://app.kebgis.com/",
+      "method": "GET via curl with verified TLS and redirects",
+      "status": 200,
+      "finalUrl": "https://app.kebgis.com/useraccounts/login",
+      "summary": "The linked KEBGIS application host redirected to a login page. No credentials, private token, CAPTCHA/Cloudflare bypass, or authenticated route was attempted. No anonymous parcel schema, CRS, native ID, or geometry response was obtained."
+    },
+    {
+      "url": "https://kebgis.ng/",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Separate KEBGIS-branded land digital-archive page retrieved. It describes document/search and Certificate of Occupancy features, including potentially owner-based search; no search was submitted and no parcel geometry was exposed or retained."
+    },
+    {
+      "url": "https://osgof.gov.ng/cadastral-legal-surveys/",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Federal cadastral-services page retrieved. It describes national cadastral GIS responsibilities but no Birnin Kebbi/Kebbi parcel feature endpoint."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "geometry": "Not available: no safe anonymous parcel feature response was returned.",
+      "native identity": "Not available: no public parcel feature schema or native parcel ID was exposed."
+    },
+    "crs": "Not confirmed.",
+    "geometryType": "Not confirmed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "KEBGIS is evidenced as the Kebbi State land/geospatial administration agency; Birnin Kebbi is the state capital and the agency site gives a Kebbi State-wide land-management scope.",
+    "verifiedOpenScope": "Local/state custodian and land-registration procedure/service evidence only; Birnin Kebbi parcel geometry coverage was not verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No point query was possible because no anonymous parcel geometry endpoint was identified. This is not evidence of parcel absence or citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["stable native parcel identifier if later exposed", "geometry", "source CRS", "service URL", "retrieval timestamp"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "personal", "tax", "account", "Certificate of Occupancy contents", "legal description", "rights/title details", "private credentials/tokens"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_state_cadastre_custodian_no_verified_open_parcel_geometry",
+  "remainingUncertainty": "KEBGIS and Kebbi State land-administration custody are evidenced, but the public application route is login-gated and the informational sites expose no current anonymous parcel map/API. Native identity, CRS, geometry type, exact-point coverage, and citywide completeness remain unverified. No exact-point miss, map miss, or login wall was interpreted as absence.",
+  "nextStep": "Serial reviewer should independently inspect any current public KEBGIS map/API route, confirm anonymous access, schema, CRS, stable native parcel ID, and bounded Birnin Kebbi geometry before adapter qualification."
+}

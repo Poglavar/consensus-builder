@@ -1,0 +1,26 @@
+{
+  "cityRecord": "city-4733-al-managil.json",
+  "cityCode": 4733,
+  "queueRank": 2965,
+  "city": "Al Managil",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "attempt": 1,
+  "reviewStatus": "complete_research_only",
+  "registryFound": null,
+  "queryAndRequestOutcome": "Separate English and Arabic first-party discovery was completed. National Sudan spatial and land-registration custodians were identified, but the official geoportal host was unresolvable and no anonymous parcel ID+geometry response was verified. No GeoJSON sample was written.",
+  "scopeLimits": [
+    "Exact WUP point [14.2446771030179, 32.9861128410293] and population metadata were preserved.",
+    "No local Al Managil registry evidence was promoted from national or third-party material.",
+    "No absence inference was made from DNS failure or unavailable service.",
+    "No unsafe property or personal fields were requested or retained.",
+    "No source integration or runtime admission was performed."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel geometry", "geometry CRS", "source layer/service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometrySamples": [],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "No qualified anonymous parcel response was available for independent serial review."},
+  "runtimeEligible": false,
+  "uncertainty": "National service descriptions indicate intended land/spatial-data capability but do not prove public citywide parcel coverage or current availability for Al Managil."
+}

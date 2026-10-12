@@ -1,0 +1,69 @@
+{
+  "cityCode": 1263,
+  "queueRank": 3124,
+  "name": "Kara",
+  "country": "Togo",
+  "countryCode": "TG",
+  "iso3": "TGO",
+  "locId": 768,
+  "capital": false,
+  "point": [9.55230265040724, 1.19480743885048],
+  "population2025": 192544,
+  "population2025k": 192.544,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "plausibility": "Moderate",
+  "registryFound": true,
+  "registry": {
+    "name": "Direction du Cadastre, de la Conservation Foncière et de l'Enregistrement (DCCFE), Office Togolais des Recettes (OTR)",
+    "custodianType": "national agency with regional Kara office/custodian",
+    "localEvidence": "The official DCCFE legal-documents page lists an order appointing the Conservateur régional de la propriété foncière de la région de la Kara (Arrêté n°330/2019/MEF/CAB). Official DCCFE material describes cadastral-plan maintenance and public information duties.",
+    "parcelPublication": "No anonymous public parcel layer, parcel API, or downloadable parcel geometry was verified in this attempt."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kara Togo cadastral parcel map official land registry",
+        "result": "Found the official DCCFE/OTR cadastre and conservation service pages, the Togo Geodata portal, and evidence of a regional Kara land-property conservator. No anonymous parcel viewer/API was verified.",
+        "actualResultUrls": [
+          "https://www.dadc.gouv.tg/index.php/services-dccfe.html",
+          "https://dadc.gouv.tg/index.php/direction/actualites/51-cadastre/les-missions-du-cadastre/119-missions-du-cadastre.html",
+          "https://www.dadc.gouv.tg/index.php/documents-juridiques.html",
+          "https://geodata.gouv.tg/",
+          "https://dccfe.otr.tg/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Kara Togo cadastre plan parcellaire registre foncier officiel",
+        "result": "French-language first-party discovery found DCCFE cadastral missions, regional Kara conservation evidence, NUP parcel-identifier policy, and service procedures. No anonymous parcel geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://dadc.gouv.tg/index.php/direction/actualites/51-cadastre/les-missions-du-cadastre/119-missions-du-cadastre.html",
+          "https://www.dadc.gouv.tg/index.php/documents-juridiques.html",
+          "https://otr.tg/index.php/fr/blog/avis-communiques/1342-communique-n-021-2024-otr-cg-ci-dccf-relatif-au-numero-unique-parcellaire-nup.html",
+          "https://dadc.gouv.tg/index.php/direction/procedures.html"
+        ]
+      }
+    ]
+  },
+  "sourceAssessment": {
+    "officialCustodian": "DCCFE/OTR; official material identifies the cadastral and land-conservation functions and a regional Kara conservator.",
+    "publicMapOrApi": null,
+    "schema": null,
+    "crs": null,
+    "nativeIdentity": "Togo's official 2024 notice establishes a Numéro Unique Parcellaire (NUP) as the parcel identifier, but no parcel record or geometry was anonymously retrieved.",
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "safeFieldAllowlist": ["stable native parcel identifier", "parcel geometry"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "transaction details"]
+  },
+  "geometry": {
+    "sampleGeoJSON": null,
+    "retainedFeatureCount": 0,
+    "reason": "No safe, publicly retrievable parcel geometry with a verified native identity was available anonymously."
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point is preserved in latitude/longitude order. A zero exact-point hit, login wall, blocked endpoint, or absent public map is not evidence of citywide parcel absence. Packet completion records research completion only; it is not source integration/admission."
+}

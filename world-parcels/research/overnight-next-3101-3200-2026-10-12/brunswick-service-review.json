@@ -1,0 +1,22 @@
+{
+  "cityRecord": "city-4868-brunswick.json",
+  "cityCode": 4868,
+  "queueRank": 3108,
+  "attempt": 1,
+  "reviewStatus": "complete_pending_serial_runtime_review",
+  "registryFound": true,
+  "custodian": "Katasteramt Braunschweig / LGLN, responsible for the kreisfreie Stadt Braunschweig",
+  "discovery": {"english": "First-party City of Braunschweig FRISBI and LGLN ALKIS pages found.", "german": "First-party FRISBI, Katasteramt Braunschweig, and OpenGeoData.NI ALKIS routes found."},
+  "requests": [
+    {"route": "City FRISBI portal", "url": "https://geoportal.braunschweig.de/WebOfficeNet/", "outcome": "HTML startup page fetched; client reported missing JavaScript components in text fetch; no login attempted."},
+    {"route": "LGLN ArcGIS REST service metadata", "url": "https://services-eu1.arcgis.com/4v3xxN52w88W065F/arcgis/rest/services/lgln_opengeodata_alkis_vektor/FeatureServer/0?f=pjson", "outcome": "Anonymous GET succeeded; polygon layer and service metadata inspected."},
+    {"route": "LGLN city GeoPackage", "url": "https://alkis-vektor-daten.s3.eu-de.cloud-object-storage.appdomain.cloud/lkr_03101_Stadt_Braunschweig_kon.gpkg.zip", "outcome": "Anonymous GET succeeded; archive contained official city GeoPackage with flurstuecke layer, 80,772 features, EPSG:25832."},
+    {"route": "Bounded parcel extraction", "outcome": "Anonymous local spatial query over a 300m x 300m bounding box returned three MultiPolygon parcels; only native objid retained in sample properties."},
+    {"route": "Exact WUP-point intersection", "outcome": "Point transformed without shifting from EPSG:4326 to EPSG:25832 and intersected against local flurstuecke; hit DENIAL0100005tSC. This is local evidence only, not a citywide completeness claim."}
+  ],
+  "schemaAndCrs": {"layer": "flurstuecke", "geometry": "MultiPolygon", "crs": "EPSG:25832", "nativeIdentity": "objid", "compositeKeyContext": "fsk is the native Flurstückskennzeichen; components fsn__zae, fsn__nen, fln and gmk__bez were inspected only as source mapping and not retained in GeoJSON properties."},
+  "safeFieldAllowlist": ["objid", "fsk", "gem__bez", "gmk__bez", "fln", "fsn__zae", "fsn__nen", "afl", "geometry"],
+  "scopeLimits": ["No owner, address, contact, titleholder, tax, account, or other personal/unsafe fields requested or retained.", "No login, credential, CAPTCHA bypass, Cloudflare defeat, or TLS exception used.", "Three polygons maximum respected; raw download and request evidence remain under ignored tmp/.", "Packet completion is not source integration or adapter admission."],
+  "runtimeReadiness": "held_independent_adapter_review",
+  "uncertainty": ["FRISBI client usability was not established from the text-only fetch; the official LGLN service independently provided usable public geometry.", "The download is current-source evidence but does not prove every parcel is available through a single bounded API query."]
+}

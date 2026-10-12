@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 3619,
+  "queueRank": 1956,
+  "name": "Tanga",
+  "country": "United Republic of Tanzania",
+  "countryCode": "TZ",
+  "iso3": "TZA",
+  "point": [-5.09096192967613, 39.0986679278526],
+  "population2025": 296202,
+  "population2025k": 296.202,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tanga Tanzania cadastral parcel map official land registry GIS",
+        "result": "Found the Ministry of Lands official e-Ardhi viewer and its public GeoServer WFS. The service exposes Tanga-area spatial-unit layers and returned bounded parcel geometries anonymously.",
+        "actualResultUrls": ["https://www.lands.go.tz/", "https://eardhi.lands.go.tz/", "https://eardhi.lands.go.tz/map/geoserver/taspro/ows"]
+      },
+      {
+        "language": "Swahili",
+        "query": "ramani ya cadastral Tanga Tanzania kiwanja ardhi tovuti rasmi",
+        "result": "Wizara ya Ardhi inaelekeza watumiaji kwenye mfumo wa e-Ardhi; huduma ya GeoServer ya umma ilionyesha tabaka za spatial units zenye jiometri katika eneo la Tanga. Hakuna huduma tofauti ya manispaa iliyothibitishwa.",
+        "actualResultUrls": ["https://www.lands.go.tz/landrent/", "https://tanga.go.tz/tanga-city", "https://eardhi.lands.go.tz/"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.lands.go.tz/",
+      "operator": "Ministry of Lands, Housing and Human Settlements Development",
+      "evidence": "First-party ministry site links directly to e-Ardhi and identifies the ministry's surveying, mapping, land administration, and title-registration functions."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/",
+      "operator": "e-Ardhi / Ministry of Lands",
+      "evidence": "Current public JavaScript configuration identifies the official GeoServer endpoint https://eardhi.lands.go.tz/map/geoserver/taspro."
+    },
+    {
+      "url": "https://tanga.go.tz/tanga-city",
+      "operator": "Tanga City Council / Tanga Region",
+      "evidence": "First-party local-government page confirms the Tanga City Council site and Tanga local administrative context; it did not expose a separate parcel API."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://eardhi.lands.go.tz/",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Public Angular viewer HTML retrieved. It loaded main.js, whose current configuration was inspected for the public map service."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/main.js",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Current configuration identified SERVER_URL https://eardhi.lands.go.tz/gw, GRAPHQL_API https://eardhi.lands.go.tz/api, and GEOSERVER_API https://eardhi.lands.go.tz/map/geoserver/taspro. No login or credentials were used."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Anonymous WFS capabilities returned. Advertised EPSG:4326 for tp_spatial_units, current_tp_spatial_units, and qualified_spatial_units, plus GeoJSON output. Capabilities listed a Tanga-area extent for several layers, but extents are layer-level and not treated as complete city coverage."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=taspro:tp_spatial_units&outputFormat=application/json&maxFeatures=3&bbox=39.07,-5.12,39.13,-5.06,EPSG:4326",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Bounded anonymous GeoJSON response returned three MultiPolygon features near Tanga. Native properties included numeric id, uid, parcel_id, parcel_no, block_number, locality, and other source fields; only id and geometry are eligible for retention."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=taspro:current_tp_spatial_units&outputFormat=application/json&maxFeatures=3&bbox=39.07,-5.12,39.13,-5.06,EPSG:4326",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Bounded anonymous GeoJSON response returned three current town-plan MultiPolygon features near Tanga, with the same native numeric id plus uid and parcel fields. No unsafe fields were retained."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=taspro:qualified_spatial_units&outputFormat=application/json&maxFeatures=3&bbox=39.07,-5.12,39.13,-5.06,EPSG:4326",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Bounded anonymous GeoJSON response returned three qualified MultiPolygon features near Tanga. The layer includes native numeric id and geometry in EPSG:4326; raw response was kept only in ignored scratch space."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=taspro:survey_polygons&outputFormat=application/json&maxFeatures=3&bbox=39.07,-5.12,39.13,-5.06,EPSG:4326",
+      "method": "GET via curl with verified TLS",
+      "status": "timeout",
+      "summary": "Request did not complete within the bounded 30-second timeout; this is not evidence of absence."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": "id",
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "geometry": "geom returned as GeoJSON MultiPolygon",
+      "native identity": "properties.id (numeric native database identity); uid and parcel fields were observed but not retained"
+    },
+    "crs": "EPSG:4326",
+    "geometryType": "MultiPolygon"
+  },
+  "coverageAssessment": {
+    "claimedScope": "e-Ardhi is a national Ministry of Lands system; the WFS contains spatial-unit and town-plan layers.",
+    "verifiedOpenScope": "Anonymous bounded WFS responses returned parcel geometries within the tested Tanga bbox. Citywide completeness, update cadence, and all Tanga neighborhoods were not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "The bounded response demonstrated nearby Tanga parcel coverage but did not establish an exact-point hit. Exact-point absence or a missed map extent would not prove citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["native parcel identifier: id", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "NIN", "legal description", "rights/title details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_anonymous_wfs_tanga_geometry_verified_citywide_scope_unverified",
+  "remainingUncertainty": "The official national map service is real and returns Tanga parcel geometry, but a serial reviewer must independently qualify adapter semantics, citywide coverage, stable identity behavior, and acceptable request limits before admission."
+}

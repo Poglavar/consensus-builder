@@ -1,0 +1,15 @@
+{
+  "taskId": "city:11885",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-11885-bangaon.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/bangaon-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T175733-29d6594e/stdout.jsonl"
+  ],
+  "reason": "Roster, queue and packet agree on Bangaon (rank 2692, India, exact WUP point, 219613 persons). Worker trace shows executed English and Bengali searches; official West Bengal land-record/cadastral custody is supported by government material. BanglarBhumi timed out and no original safe native-ID polygon response or sample exists. No live adapter, paging, 13-cell, metric GEOS, binding, or headed Details proof. Timeout is not citywide absence.",
+  "retainedFullPolygons": 0,
+  "runtimeAdmitted": false,
+  "checkedAt": "2026-10-11T18:01:16Z"
+}

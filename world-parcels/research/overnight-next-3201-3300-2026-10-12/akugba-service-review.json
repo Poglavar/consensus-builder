@@ -1,0 +1,18 @@
+{
+  "cityRecord": "city-6330-akugba.json",
+  "cityCode": 6330,
+  "queueRank": 3278,
+  "attempt": 1,
+  "reviewStatus": "complete_pending_serial_runtime_review",
+  "registryFound": null,
+  "summary": "Official Ondo State land-administration guidance and LandsApp were reached. The local Akoko office and survey process are evidenced, but public parcel-search actions are login/access controlled and no safe anonymous parcel ID plus polygon was qualified.",
+  "custodian": "Ondo State Ministry of Lands & Housing, Office of the Surveyor General; Akoko Area Lands Office is listed in the official survey-plan guidance. OSGoF is a national surveying/mapping authority, not the local custodian.",
+  "requests": "Separate English and Yoruba discovery, TLS-verified official Ondo page GETs, public services-catalog inspection, and bounded access-denied route checks are recorded in the city record. No credentials, unsafe fields, CAPTCHA/Cloudflare bypass, or TLS disable was used.",
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdFields": [], "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "geometry": {"verified": false, "sampleCount": 0, "sampleFile": null, "retainedFeatureProperties": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point [7.4555156855882, 5.74389366022943] and population 183921 persons are preserved.", "No exact-point hit, access-denied route, or unavailable API is treated as citywide absence.", "No raw source-specific attributes were retained.", "Completion is not source integration/admission."],
+  "runtimeReadiness": "held_independent_adapter_review",
+  "admissionDecision": "held",
+  "uncertainty": ["Native parcel IDs, CRS, polygons, and coverage remain unverified.", "No sample GeoJSON was written."]
+}

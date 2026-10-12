@@ -1,0 +1,26 @@
+{
+  "taskId": "city:9249",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-9249-bhind.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/bhind-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "tmp/valhalla-parcel-research/bhind/district-gis.html"
+  ],
+  "checkedAt": "2026-10-09T15:49:46+00:00",
+  "reason": "Official District Bhind land-record page identifies its land-record office; cached first-party GIS HTML exposes only a district GIS link. MP Bhulekh/GIS timeouts leave native parcel ID and polygon unverified.",
+  "reviewFindings": {
+    "queueIdentityVerified": true,
+    "englishAndLocalSearchesRecorded": true,
+    "retainedFullPolygons": 0,
+    "safeNativeIdGeometryVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "integrationState": "held"
+  }
+}

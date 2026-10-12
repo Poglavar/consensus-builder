@@ -1,0 +1,1273 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "804",
+  "cityName": "Aalst",
+  "sourceId": "be-vlaanderen-grb-adp",
+  "candidateSha256": "26381f6c9ce3e5ec5a6ff6e93f733f1d40630fdb3a48c7b3e19c00ec5f194e93",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 196,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 196,
+      "collectedUniqueCount": 196
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 610,
+      "sampleCentroidCell": {
+        "index": 4,
+        "dx": 0,
+        "dy": 0,
+        "bbox": [
+          4.04,
+          50.943,
+          4.041,
+          50.944
+        ],
+        "reason": "WUP point had no containing sampled parcel; sample centroid cell added.",
+        "complete": true,
+        "featureCount": 15,
+        "ids": [
+          "BE-GRB-ADP-4720592",
+          "BE-GRB-ADP-4744632",
+          "BE-GRB-ADP-4744730",
+          "BE-GRB-ADP-4745040",
+          "BE-GRB-ADP-4745167",
+          "BE-GRB-ADP-4745318",
+          "BE-GRB-ADP-4745335",
+          "BE-GRB-ADP-4745751",
+          "BE-GRB-ADP-4745793",
+          "BE-GRB-ADP-4745841",
+          "BE-GRB-ADP-4745941",
+          "BE-GRB-ADP-5121177",
+          "BE-GRB-ADP-5243228",
+          "BE-GRB-ADP-5609105",
+          "BE-GRB-ADP-6010086"
+        ]
+      }
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 6,
+      "distinctFeatureQueries": 6,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "60b57c122e4fd6edd13c27d900ea0629bab80fdc1a7bd1d7fd82051a4c32e85b",
+      "featureCount": 196,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32631",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "60b57c122e4fd6edd13c27d900ea0629bab80fdc1a7bd1d7fd82051a4c32e85b",
+  "featureCount": 196,
+  "sampleIds": [
+    "BE-GRB-ADP-5609105",
+    "BE-GRB-ADP-5121177",
+    "BE-GRB-ADP-4744632"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        4.038,
+        50.942,
+        4.039,
+        50.943
+      ],
+      "complete": true,
+      "featureCount": 18,
+      "ids": [
+        "BE-GRB-ADP-4442058",
+        "BE-GRB-ADP-3968450",
+        "BE-GRB-ADP-3965021",
+        "BE-GRB-ADP-3968422",
+        "BE-GRB-ADP-3964967",
+        "BE-GRB-ADP-3965016",
+        "BE-GRB-ADP-5123113",
+        "BE-GRB-ADP-3968414",
+        "BE-GRB-ADP-3968443",
+        "BE-GRB-ADP-3968506",
+        "BE-GRB-ADP-3968501",
+        "BE-GRB-ADP-3964992",
+        "BE-GRB-ADP-5243228",
+        "BE-GRB-ADP-6010086",
+        "BE-GRB-ADP-6010091",
+        "BE-GRB-ADP-5769694",
+        "BE-GRB-ADP-3968405",
+        "BE-GRB-ADP-4438566"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        4.039,
+        50.942,
+        4.04,
+        50.943
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "BE-GRB-ADP-3968450",
+        "BE-GRB-ADP-3968422",
+        "BE-GRB-ADP-5123113",
+        "BE-GRB-ADP-3968506",
+        "BE-GRB-ADP-3968501",
+        "BE-GRB-ADP-5243228",
+        "BE-GRB-ADP-6010086",
+        "BE-GRB-ADP-6010091",
+        "BE-GRB-ADP-5769694",
+        "BE-GRB-ADP-3968405",
+        "BE-GRB-ADP-4438566"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        4.04,
+        50.942,
+        4.041,
+        50.943
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "BE-GRB-ADP-4744730",
+        "BE-GRB-ADP-4745887",
+        "BE-GRB-ADP-4745793",
+        "BE-GRB-ADP-4745152",
+        "BE-GRB-ADP-4744747",
+        "BE-GRB-ADP-4745841",
+        "BE-GRB-ADP-5243228",
+        "BE-GRB-ADP-4745277",
+        "BE-GRB-ADP-6010086",
+        "BE-GRB-ADP-6010091",
+        "BE-GRB-ADP-5769694",
+        "BE-GRB-ADP-4438566",
+        "BE-GRB-ADP-5121232",
+        "BE-GRB-ADP-4745941",
+        "BE-GRB-ADP-4745751"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        4.038,
+        50.943,
+        4.039,
+        50.944
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "BE-GRB-ADP-5243228",
+        "BE-GRB-ADP-6010086",
+        "BE-GRB-ADP-6010087",
+        "BE-GRB-ADP-6010088",
+        "BE-GRB-ADP-6010091",
+        "BE-GRB-ADP-5769696",
+        "BE-GRB-ADP-5769694",
+        "BE-GRB-ADP-5769697"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        4.039,
+        50.943,
+        4.04,
+        50.944
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "BE-GRB-ADP-5609105",
+        "BE-GRB-ADP-5121177",
+        "BE-GRB-ADP-4745318",
+        "BE-GRB-ADP-4744632",
+        "BE-GRB-ADP-5243228",
+        "BE-GRB-ADP-6010086",
+        "BE-GRB-ADP-6010087",
+        "BE-GRB-ADP-6010088",
+        "BE-GRB-ADP-6010091",
+        "BE-GRB-ADP-5769694"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        4.04,
+        50.943,
+        4.041,
+        50.944
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "BE-GRB-ADP-4745040",
+        "BE-GRB-ADP-4745335",
+        "BE-GRB-ADP-5609105",
+        "BE-GRB-ADP-4744730",
+        "BE-GRB-ADP-5121177",
+        "BE-GRB-ADP-4745793",
+        "BE-GRB-ADP-4720592",
+        "BE-GRB-ADP-4745318",
+        "BE-GRB-ADP-4744632",
+        "BE-GRB-ADP-4745841",
+        "BE-GRB-ADP-4745167",
+        "BE-GRB-ADP-5243228",
+        "BE-GRB-ADP-6010086",
+        "BE-GRB-ADP-4745941",
+        "BE-GRB-ADP-4745751"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        4.038,
+        50.944,
+        4.039,
+        50.945
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "BE-GRB-ADP-4744563",
+        "BE-GRB-ADP-4745402",
+        "BE-GRB-ADP-4744773",
+        "BE-GRB-ADP-4745944",
+        "BE-GRB-ADP-5243228",
+        "BE-GRB-ADP-5909205",
+        "BE-GRB-ADP-5909206",
+        "BE-GRB-ADP-6010088"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        4.039,
+        50.944,
+        4.04,
+        50.945
+      ],
+      "complete": true,
+      "featureCount": 19,
+      "ids": [
+        "BE-GRB-ADP-4744563",
+        "BE-GRB-ADP-4745318",
+        "BE-GRB-ADP-4744632",
+        "BE-GRB-ADP-4745402",
+        "BE-GRB-ADP-4745754",
+        "BE-GRB-ADP-4745171",
+        "BE-GRB-ADP-4744773",
+        "BE-GRB-ADP-4745125",
+        "BE-GRB-ADP-4745944",
+        "BE-GRB-ADP-5121178",
+        "BE-GRB-ADP-5243228",
+        "BE-GRB-ADP-4745681",
+        "BE-GRB-ADP-4745816",
+        "BE-GRB-ADP-5121180",
+        "BE-GRB-ADP-4746015",
+        "BE-GRB-ADP-5909205",
+        "BE-GRB-ADP-5909206",
+        "BE-GRB-ADP-6010088",
+        "BE-GRB-ADP-5121175"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        4.04,
+        50.944,
+        4.041,
+        50.945
+      ],
+      "complete": true,
+      "featureCount": 26,
+      "ids": [
+        "BE-GRB-ADP-4745040",
+        "BE-GRB-ADP-5609105",
+        "BE-GRB-ADP-4744563",
+        "BE-GRB-ADP-4745300",
+        "BE-GRB-ADP-4745028",
+        "BE-GRB-ADP-4744857",
+        "BE-GRB-ADP-4720592",
+        "BE-GRB-ADP-4745318",
+        "BE-GRB-ADP-4745144",
+        "BE-GRB-ADP-4744632",
+        "BE-GRB-ADP-4745402",
+        "BE-GRB-ADP-4745754",
+        "BE-GRB-ADP-4745171",
+        "BE-GRB-ADP-4745125",
+        "BE-GRB-ADP-5121185",
+        "BE-GRB-ADP-4745167",
+        "BE-GRB-ADP-5121178",
+        "BE-GRB-ADP-5243228",
+        "BE-GRB-ADP-4745681",
+        "BE-GRB-ADP-4745816",
+        "BE-GRB-ADP-5121180",
+        "BE-GRB-ADP-4746015",
+        "BE-GRB-ADP-5909205",
+        "BE-GRB-ADP-5909206",
+        "BE-GRB-ADP-6010088",
+        "BE-GRB-ADP-5121175"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        4.039,
+        50.941,
+        4.04,
+        50.942
+      ],
+      "complete": true,
+      "featureCount": 24,
+      "ids": [
+        "BE-GRB-ADP-3968427",
+        "BE-GRB-ADP-3968507",
+        "BE-GRB-ADP-3968390",
+        "BE-GRB-ADP-3968459",
+        "BE-GRB-ADP-3968486",
+        "BE-GRB-ADP-3968450",
+        "BE-GRB-ADP-3968393",
+        "BE-GRB-ADP-3968422",
+        "BE-GRB-ADP-3968482",
+        "BE-GRB-ADP-3968451",
+        "BE-GRB-ADP-5123113",
+        "BE-GRB-ADP-3968417",
+        "BE-GRB-ADP-3968495",
+        "BE-GRB-ADP-3968506",
+        "BE-GRB-ADP-3968501",
+        "BE-GRB-ADP-3968461",
+        "BE-GRB-ADP-3968483",
+        "BE-GRB-ADP-5243228",
+        "BE-GRB-ADP-3968405",
+        "BE-GRB-ADP-3968503",
+        "BE-GRB-ADP-3968403",
+        "BE-GRB-ADP-4438566",
+        "BE-GRB-ADP-3968490",
+        "BE-GRB-ADP-3968384"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        4.039,
+        50.945,
+        4.04,
+        50.946
+      ],
+      "complete": true,
+      "featureCount": 67,
+      "ids": [
+        "BE-GRB-ADP-4744917",
+        "BE-GRB-ADP-4744788",
+        "BE-GRB-ADP-4744800",
+        "BE-GRB-ADP-4745086",
+        "BE-GRB-ADP-4744640",
+        "BE-GRB-ADP-4744563",
+        "BE-GRB-ADP-4745456",
+        "BE-GRB-ADP-4745657",
+        "BE-GRB-ADP-4746078",
+        "BE-GRB-ADP-4745068",
+        "BE-GRB-ADP-5121162",
+        "BE-GRB-ADP-4745449",
+        "BE-GRB-ADP-4745132",
+        "BE-GRB-ADP-4745942",
+        "BE-GRB-ADP-4745378",
+        "BE-GRB-ADP-4746074",
+        "BE-GRB-ADP-4745095",
+        "BE-GRB-ADP-4745210",
+        "BE-GRB-ADP-5121161",
+        "BE-GRB-ADP-4744661",
+        "BE-GRB-ADP-4744721",
+        "BE-GRB-ADP-4745637",
+        "BE-GRB-ADP-4744773",
+        "BE-GRB-ADP-4745125",
+        "BE-GRB-ADP-4745635",
+        "BE-GRB-ADP-4744759",
+        "BE-GRB-ADP-4746030",
+        "BE-GRB-ADP-4745944",
+        "BE-GRB-ADP-4442155",
+        "BE-GRB-ADP-5121165",
+        "BE-GRB-ADP-4745006",
+        "BE-GRB-ADP-4745615",
+        "BE-GRB-ADP-4745827",
+        "BE-GRB-ADP-4744977",
+        "BE-GRB-ADP-4745606",
+        "BE-GRB-ADP-4745703",
+        "BE-GRB-ADP-4744630",
+        "BE-GRB-ADP-4745448",
+        "BE-GRB-ADP-4744552",
+        "BE-GRB-ADP-4745816",
+        "BE-GRB-ADP-4746015",
+        "BE-GRB-ADP-4745370",
+        "BE-GRB-ADP-5909205",
+        "BE-GRB-ADP-5909206",
+        "BE-GRB-ADP-6010088",
+        "BE-GRB-ADP-4744569",
+        "BE-GRB-ADP-5471353",
+        "BE-GRB-ADP-4746147",
+        "BE-GRB-ADP-4745387",
+        "BE-GRB-ADP-4745242",
+        "BE-GRB-ADP-4745388",
+        "BE-GRB-ADP-4744581",
+        "BE-GRB-ADP-4744616",
+        "BE-GRB-ADP-5121175",
+        "BE-GRB-ADP-6029222",
+        "BE-GRB-ADP-5682591",
+        "BE-GRB-ADP-5121174",
+        "BE-GRB-ADP-4745202",
+        "BE-GRB-ADP-4745267",
+        "BE-GRB-ADP-4745608",
+        "BE-GRB-ADP-4746131",
+        "BE-GRB-ADP-4745508",
+        "BE-GRB-ADP-5703364",
+        "BE-GRB-ADP-4745800",
+        "BE-GRB-ADP-6081428",
+        "BE-GRB-ADP-4746003",
+        "BE-GRB-ADP-5703365"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        4.037,
+        50.943,
+        4.038,
+        50.944
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "BE-GRB-ADP-5243228",
+        "BE-GRB-ADP-6010086",
+        "BE-GRB-ADP-6010088",
+        "BE-GRB-ADP-5769696",
+        "BE-GRB-ADP-5769694",
+        "BE-GRB-ADP-5769697"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        4.041,
+        50.943,
+        4.042,
+        50.944
+      ],
+      "complete": true,
+      "featureCount": 78,
+      "ids": [
+        "BE-GRB-ADP-4745767",
+        "BE-GRB-ADP-4744184",
+        "BE-GRB-ADP-4745040",
+        "BE-GRB-ADP-4746025",
+        "BE-GRB-ADP-4745335",
+        "BE-GRB-ADP-4745510",
+        "BE-GRB-ADP-4745201",
+        "BE-GRB-ADP-5609105",
+        "BE-GRB-ADP-4745270",
+        "BE-GRB-ADP-4744102",
+        "BE-GRB-ADP-4745579",
+        "BE-GRB-ADP-4745748",
+        "BE-GRB-ADP-4745631",
+        "BE-GRB-ADP-4744217",
+        "BE-GRB-ADP-4744964",
+        "BE-GRB-ADP-4744117",
+        "BE-GRB-ADP-4745889",
+        "BE-GRB-ADP-4744246",
+        "BE-GRB-ADP-4744730",
+        "BE-GRB-ADP-4744275",
+        "BE-GRB-ADP-4745812",
+        "BE-GRB-ADP-4745326",
+        "BE-GRB-ADP-4745028",
+        "BE-GRB-ADP-4744118",
+        "BE-GRB-ADP-4746082",
+        "BE-GRB-ADP-4745123",
+        "BE-GRB-ADP-4746102",
+        "BE-GRB-ADP-5121177",
+        "BE-GRB-ADP-4745793",
+        "BE-GRB-ADP-4720592",
+        "BE-GRB-ADP-4746045",
+        "BE-GRB-ADP-4746065",
+        "BE-GRB-ADP-4744213",
+        "BE-GRB-ADP-4745318",
+        "BE-GRB-ADP-4744253",
+        "BE-GRB-ADP-4745919",
+        "BE-GRB-ADP-5121209",
+        "BE-GRB-ADP-4744972",
+        "BE-GRB-ADP-4745805",
+        "BE-GRB-ADP-4744683",
+        "BE-GRB-ADP-4745536",
+        "BE-GRB-ADP-4745742",
+        "BE-GRB-ADP-4745894",
+        "BE-GRB-ADP-4745768",
+        "BE-GRB-ADP-4746080",
+        "BE-GRB-ADP-4745433",
+        "BE-GRB-ADP-4744632",
+        "BE-GRB-ADP-4745216",
+        "BE-GRB-ADP-4744844",
+        "BE-GRB-ADP-4744134",
+        "BE-GRB-ADP-4745422",
+        "BE-GRB-ADP-4744263",
+        "BE-GRB-ADP-4745726",
+        "BE-GRB-ADP-4744100",
+        "BE-GRB-ADP-4744618",
+        "BE-GRB-ADP-4745460",
+        "BE-GRB-ADP-4746084",
+        "BE-GRB-ADP-4745841",
+        "BE-GRB-ADP-4746136",
+        "BE-GRB-ADP-4744198",
+        "BE-GRB-ADP-4745111",
+        "BE-GRB-ADP-4745825",
+        "BE-GRB-ADP-4745255",
+        "BE-GRB-ADP-4745167",
+        "BE-GRB-ADP-5121205",
+        "BE-GRB-ADP-4745254",
+        "BE-GRB-ADP-4745083",
+        "BE-GRB-ADP-4745361",
+        "BE-GRB-ADP-4744826",
+        "BE-GRB-ADP-4745664",
+        "BE-GRB-ADP-4744795",
+        "BE-GRB-ADP-4745277",
+        "BE-GRB-ADP-4745538",
+        "BE-GRB-ADP-4744970",
+        "BE-GRB-ADP-4744728",
+        "BE-GRB-ADP-4745567",
+        "BE-GRB-ADP-4745941",
+        "BE-GRB-ADP-4745751"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        4.04,
+        50.943,
+        4.041,
+        50.944
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "BE-GRB-ADP-4720592",
+        "BE-GRB-ADP-4744632",
+        "BE-GRB-ADP-4744730",
+        "BE-GRB-ADP-4745040",
+        "BE-GRB-ADP-4745167",
+        "BE-GRB-ADP-4745318",
+        "BE-GRB-ADP-4745335",
+        "BE-GRB-ADP-4745751",
+        "BE-GRB-ADP-4745793",
+        "BE-GRB-ADP-4745841",
+        "BE-GRB-ADP-4745941",
+        "BE-GRB-ADP-5121177",
+        "BE-GRB-ADP-5243228",
+        "BE-GRB-ADP-5609105",
+        "BE-GRB-ADP-6010086"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 42,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:39.183Z",
+      "queryHash": "9fd4b7fea1870c9736dd203452377e9b423c03da79faf1df66d06fb9e08fcabb",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 840
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:40.034Z",
+      "queryHash": "9fd4b7fea1870c9736dd203452377e9b423c03da79faf1df66d06fb9e08fcabb",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 429
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:40.471Z",
+      "queryHash": "c8fd629607d9e54ebecb296ca8ecf607dd04da86f18301ff086f7d5141cd732e",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 247
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:40.722Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 198
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:40.924Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 238
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:41.164Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 162
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:41.326Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 225
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:41.556Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 195
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:41.753Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 255
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:42.011Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 442
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:42.459Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 592
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:43.060Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 193
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:43.256Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 203
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:43.461Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 159
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:43.642Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 298
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:43.944Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:44.123Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 261
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:44.393Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 457
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:44.851Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 315
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:45.171Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 403
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:45.578Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 366
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:45.957Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 284
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:46.263Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 194
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:46.460Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 144
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:46.617Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 236
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:46.864Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 327
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:47.193Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 244
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:47.452Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 816
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:48.281Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 1222
+    },
+    {
+      "stage": "sample-centroid-cell-pass-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:49.568Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 779
+    },
+    {
+      "stage": "sample-centroid-cell-pass-two",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:50.365Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 430
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:50.844Z",
+      "queryHash": "6052235c2108aaac6dbfa220e659a8f57c7bd301465320bafc349111f5c2c2d4",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1,
+      "httpStatus": 200,
+      "elapsedMs": 362
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:51.209Z",
+      "queryHash": "41a472fb166d049b0cd3bedaa36bde4dbbd8af4e53f1c66b03be8df14501bec9",
+      "safeParamNames": [
+        "filter",
+        "limit",
+        "startIndex"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 263
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:51.492Z",
+      "queryHash": "cebf5892e65df883c2ff14bccaa04ddc7bc21eba413d1b59d9e198881162caeb",
+      "safeParamNames": [
+        "filter",
+        "limit",
+        "startIndex"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 2,
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:51.681Z",
+      "queryHash": "cd4826dacce288c4513c09e13e32a9d1f32b6fe3d0fbe7d4d5688222c8738c62",
+      "safeParamNames": [
+        "filter",
+        "limit",
+        "startIndex"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 3,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:51.939Z",
+      "queryHash": "9428ca068bda7a3a71813cd62b9bff77437860c1b8bbfc2798e266dd14822e7f",
+      "safeParamNames": [
+        "filter",
+        "limit",
+        "startIndex"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 4,
+      "httpStatus": 200,
+      "elapsedMs": 260
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:52.200Z",
+      "queryHash": "8c467e1360a733812c4414d79df94d5915c990e173dc0238fdaf7b5cd2ea3ac3",
+      "safeParamNames": [
+        "filter",
+        "limit",
+        "startIndex"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 5,
+      "httpStatus": 200,
+      "elapsedMs": 161
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:52.380Z",
+      "queryHash": "9fd4b7fea1870c9736dd203452377e9b423c03da79faf1df66d06fb9e08fcabb",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 164
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:52.820Z",
+      "queryHash": "df4991bcf06cc4d1b589f2d36578e0ee72e4abb4e98c54a2d9d84999a5ce08b4",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:54.218Z",
+      "queryHash": "6a07687e3da2997ebd2c62c147c3eaa6e15ad97effd70159ce74136d02cc1217",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 642
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:54.868Z",
+      "queryHash": "72981080e854b67dfd11b068550433c3b07be0512e60882dead26a074778e0bb",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 287
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "geo.api.vlaanderen.be",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:01:55.198Z",
+      "queryHash": "048187a6caa88791dbd213b477ad31ddf6c172fce7955144e940954463a2f4cf",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 193
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

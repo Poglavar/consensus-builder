@@ -1,0 +1,57 @@
+{
+  "cityRecord": "city-2387-oviedo-uvi-u.json",
+  "cityCode": 2387,
+  "queueRank": 2758,
+  "city": "Oviedo / Uviéu",
+  "country": "Spain",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "executedAttempts": [
+    {
+      "route": "English first-party discovery",
+      "url": "https://www.sedecatastro.gob.es/",
+      "outcome": "Success via official search result. Identified Spain's Dirección General del Catastro public cadastral viewer and cartographic services."
+    },
+    {
+      "route": "Spanish first-party discovery",
+      "url": "https://www.asturias.es/ast/temas/vivienda-territorio/gestion-urbanistica-y-registro-planeamiento/visor-gestion-urbanistica",
+      "outcome": "Success via official search result. Identified the Principado de Asturias planning/geographic viewer, which states that cadastral cartography can be displayed."
+    },
+    {
+      "route": "Official Principado parcel ArcGIS service discovery",
+      "url": "https://visorasturias.es/arcgis/rest/services/Asturias/Parcelarios/MapServer",
+      "outcome": "Success via official indexed service metadata. Service title Asturias/Parcelarios; annual Parcelario layers include 2025; spatial reference EPSG:25830; supported query formats include JSON, geoJSON, and PBF."
+    },
+    {
+      "route": "Direct ArcGIS service metadata GET",
+      "url": "https://visorasturias.es/arcgis/rest/services/Asturias/Parcelarios/MapServer?f=json",
+      "outcome": "Attempted with ordinary public GET. Local TLS verification failed because the host certificate chain was not trusted. No certificate exception was used."
+    },
+    {
+      "route": "Direct parcel-layer metadata GET",
+      "url": "https://visorasturias.es/arcgis/rest/services/Asturias/Parcelarios/MapServer/1?f=pjson",
+      "outcome": "Attempted through the public web fetcher; endpoint was inaccessible to that fetcher. No login, token, CAPTCHA, or bypass was attempted."
+    },
+    {
+      "route": "Bounded anonymous exact-point parcel query",
+      "url": "https://visorasturias.es/arcgis/rest/services/Asturias/Parcelarios/MapServer/1/query?where=1%3D1&geometry=-5.84679501465977%2C43.3662219381849&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&f=geojson",
+      "outcome": "Attempted as a point-intersection query using the exact WUP point without shifting it. Endpoint was inaccessible to the web fetcher; no hit or miss is inferred."
+    }
+  ],
+  "scopeLimits": [
+    "The regional service is evidence of a public parcel source, not proof that every parcel in Oviedo was enumerated.",
+    "No exact-point hit/miss, map-extent miss, timeout, or endpoint access failure is treated as evidence of citywide absence.",
+    "No owner, address, contact, titleholder, tax/account, personal, or other unsafe fields were requested or retained.",
+    "No parcel geometry or native ID was retained because the bounded REST request could not be completed with verified TLS in this environment.",
+    "No TLS verification was disabled and no certificate exception was used."
+  ],
+  "uncertainty": [
+    "The indexed service metadata establishes layer names, CRS, and supported formats, but the parcel-layer field schema was not retrieved in this attempt.",
+    "Registry qualification is at the Principado regional-service level; the service was not independently demonstrated to be an Oviedo municipal custodian.",
+    "Packet completion records executed research only; it does not represent source integration or runtime admission."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "retainedArtifacts": [],
+  "runtimeReadiness": "held"
+}

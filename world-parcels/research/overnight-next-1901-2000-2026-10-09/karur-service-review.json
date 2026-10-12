@@ -1,0 +1,46 @@
+{
+  "cityRecord": "city-10257-karur.json",
+  "cityCode": 10257,
+  "queueRank": 1939,
+  "city": "Karur",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Karur District Collector Office Survey and Land Records / Government of Tamil Nadu land e-Services",
+  "serviceUrl": "https://eservices.tn.gov.in/",
+  "discoveryUrls": [
+    "https://karur.nic.in/service/e-services-anytime-anywhere-land/",
+    "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/",
+    "https://www.tngis.tn.gov.in/apps.html"
+  ],
+  "attemptedRoutes": [
+    {"route": "GET https://karur.nic.in/service/e-services-anytime-anywhere-land/", "outcome": "official Karur page succeeded; local Survey and Land Records office and service link evidenced"},
+    {"route": "GET https://eservices.tn.gov.in/", "outcome": "anonymous TLS-verified curl timed out after 20 seconds; no JavaScript/configuration or API response"},
+    {"route": "GET https://tngis.tn.gov.in/generic_viewer/", "outcome": "anonymous TLS-verified curl timed out after 20 seconds; no JavaScript/configuration or API response"},
+    {"route": "GET https://www.tngis.tn.gov.in/apps.html", "outcome": "official GIS index succeeded through indexed retrieval; no parcel geometry response"}
+  ],
+  "scope": "Local Karur custody/procedure is evidenced, but no public parcel geometry service was qualified. Tamil Nadu ILR combines textual records, FMB/maps, and Chitta according to the official 2026 service announcement.",
+  "schemaAndCrs": null,
+  "nativeSourceFields": [],
+  "fieldMapping": {},
+  "compositeKeyProvenance": null,
+  "safeFieldAllowlist": ["native parcel identifier if verified", "geometry"],
+  "retainedGeojson": null,
+  "queryOutcomes": {
+    "exactWupPoint": "not attempted against a parcel endpoint because no endpoint was verified",
+    "boundedAnonymousGeometry": "not obtained",
+    "citywideCoverage": "unverified",
+    "geometryVerified": false
+  },
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, personal, tax/account, legal-description, or ownership fields were requested, logged, or retained.",
+  "limits": [
+    "No geometry means no native identity qualification and no sample GeoJSON.",
+    "The official service's survey/town/block/ward workflow is not equivalent to a citywide parcel API.",
+    "Timeouts and unavailable viewer configuration do not establish absence.",
+    "This packet is research evidence only and is not source integration/admission."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Recheck service reachability and current viewer configuration in a serial review; independently confirm any endpoint, schema, CRS, stable native identity, and bounded Karur coverage before adapter work."
+}

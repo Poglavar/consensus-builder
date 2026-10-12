@@ -1,0 +1,34 @@
+{
+  "taskId": "city:6813",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-6813-kebumen.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/kebumen-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T16:33:33.360684Z",
+  "reason": "First-party Kebumen catalog names a 2024 parcel-map dataset and local metadata describes polygon-capable HGU/HGB data, but no safe parcel vector payload or native ID was retrieved. The visible open-data resource listing is XLSX; metadata about possible formats does not establish a parcel polygon download. BHUMI and ATLAS timed out.",
+  "sourceUrlsReviewed": [
+    "https://data.go.id/dataset/dataset/peta-bidang-tanah-tahun-2024-79be34",
+    "https://satudata.kebumenkab.go.id/v2/index.php/web/modal_metadata/1521"
+  ],
+  "identity": {
+    "cityCode": 6813,
+    "queueRank": 1836,
+    "country": "Indonesia",
+    "countryCode": "ID",
+    "point": [
+      -7.67692961842971,
+      109.659270450225
+    ],
+    "populationPersons": 312542,
+    "verifiedAgainst": "2025 WUP archive SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114 and cohort pending queue"
+  },
+  "searchLanguagesVerified": [
+    "English",
+    "Indonesian"
+  ],
+  "retainedFullPolygons": 0,
+  "admissionGates": "No safe native-ID parcel polygon response or independent live adapter qualification. Fresh exact ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification remain unevidenced."
+}

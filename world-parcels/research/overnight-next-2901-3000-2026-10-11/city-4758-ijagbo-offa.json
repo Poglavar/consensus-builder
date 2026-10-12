@@ -1,0 +1,75 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 4758,
+  "queueRank": 2955,
+  "name": "Ijagbo Offa",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "locId": 566,
+  "capital": false,
+  "point": [8.15563286293833, 4.72280251919278],
+  "population2025": 201709,
+  "population2025k": 201.709,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ijagbo Offa Kwara cadastral parcel map land registry official",
+        "result": "Search identified the official Kwara State Government and KWGIS sites. The official material evidences KWGIS as the state geographic/land-administration custodian and describes registration procedures, but did not expose a public parcel viewer or anonymous parcel API.",
+        "actualResultUrls": ["https://kwarastate.gov.ng/", "https://kwarastate.gov.ng/online_services/register-for-your-land-titles/", "https://www.kwgis.org/e-services/"]
+      },
+      {
+        "language": "Yoruba (local/native)",
+        "query": "Ijagbo Offa Kwara ìforúkọsílẹ̀ ilẹ̀ maapu kádásítà osìṣẹ́",
+        "result": "No relevant Yoruba-language first-party cadastral result was found. The official English KWGIS/Kwara pages remained the available first-party route; no parcel viewer or public feature service was exposed.",
+        "actualResultUrls": ["https://kwarastate.gov.ng/", "https://www.kwgis.org/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Kwara State Geographic Information Service (KWGIS), with Kwara State Government land-registration pages identifying KWGIS and the related Bureau of Lands, Office of the Surveyor-General, Physical Planning Authority, and Urban and Regional Planning Directorate.",
+    "locality": "Ijagbo Offa is identified by the Kwara State Government as a town in Oyun Local Government Area; the state custodian is not a city-owned Ijagbo endpoint.",
+    "evidenceUrls": ["https://kwarastate.gov.ng/government/lgas/", "https://kwarastate.gov.ng/online_services/register-for-your-land-titles/", "https://www.kwgis.org/e-services/", "https://kwarastate.gov.ng/press_releases/cofo-ready-in-30-days-as-kwara-governor-launches-digital-land-administration/"],
+    "scopeNote": "This is evidence of a first-party state land/GIS custodian and public procedure, not evidence that parcel data is publicly queryable or complete for Ijagbo Offa."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "https://www.kwgis.org/e-services/",
+    "nativeIdField": null,
+    "nativeIdentityObserved": null,
+    "crs": null,
+    "boundedResponse": null,
+    "note": "The current official KWGIS pages were inspected for viewer links, JavaScript/configuration, and public map/API services. The E-Services page has no rendered content or viewer endpoint; the site exposes informational pages and a static KW-GIS map image. No anonymous parcel ID+geometry response was found, so no GeoJSON was retained."
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://kwarastate.gov.ng/", "outcome": "HTTP/web retrieval successful; official state site links KW-GIS, Directorate of Lands, and related land services."},
+    {"method": "GET", "url": "https://kwarastate.gov.ng/government/lgas/", "outcome": "HTTP/web retrieval successful; official page places Ijagbo among major towns of Oyun LGA."},
+    {"method": "GET", "url": "https://kwarastate.gov.ng/online_services/register-for-your-land-titles/", "outcome": "HTTP/web retrieval successful; official land-registration procedure identifies KWGIS and collaborating state land agencies; no parcel geometry endpoint."},
+    {"method": "GET", "url": "https://www.kwgis.org/e-services/", "outcome": "HTTP 200; official KWGIS E-Services page retrieved. WordPress REST metadata showed an empty page body; no viewer/API link, inline map JavaScript, or parcel schema was exposed."},
+    {"method": "GET", "url": "https://www.kwgis.org/wp-json/wp/v2/pages/123", "outcome": "HTTP 200; official page JSON confirmed the E-Services page content is empty and exposed only WordPress metadata."},
+    {"method": "GET", "url": "https://www.kwgis.org/map-shop/", "outcome": "HTTP/web retrieval successful; official map-shop route was checked for a public parcel/map service, but no anonymous parcel API was exposed."},
+    {"method": "GET", "url": "https://www.kwgis.org/apply-online/", "outcome": "HTTP/web retrieval successful; official application route was checked, but no public parcel feature service was exposed."},
+    {"method": "GET", "url": "https://www.kwgis.org/e-payment/", "outcome": "HTTP/web retrieval successful; official payment/GRM route was checked, but no parcel geometry or safe anonymous query was attempted or exposed."},
+    {"method": "GET", "url": "https://kwarastate.gov.ng/press_releases/cofo-ready-in-30-days-as-kwara-governor-launches-digital-land-administration/", "outcome": "HTTP/web retrieval successful; official 2025 announcement describes a KW-GIS-based digital land information system, but provides no public viewer/API URL or anonymous schema."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel geometry", "geometry CRS", "source layer/service metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The exact WUP point was preserved and never shifted; no exact-point parcel query was available to execute.",
+    "The official 2025 announcement indicates a digital land-information system exists, but the inspected public pages did not reveal its viewer/API or current JavaScript/configuration route.",
+    "Registry presence means a first-party state custodian/procedure is evidenced; it does not establish public parcel-data access or citywide coverage.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or admission."
+  ]
+}

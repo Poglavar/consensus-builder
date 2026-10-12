@@ -1,0 +1,15 @@
+{
+  "taskId": "city:11692",
+  "decision": "held",
+  "checkedAt": "2026-10-11T17:21:36Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-11692-wuhua.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/wuhua-service-review.json"
+  ],
+  "identity": "Rank 2665, code 11692, Wuhua, China, point [23.9251762074487,115.767018134493], 221702 persons match the immutable ranked roster and queue.",
+  "research": "English and Chinese executed search queries and result URLs appear in the paired packet; the paired service review records their outcomes. No sample polygon was retained. The official Wuhua Natural Resources Bureau disclosure guide establishes local custody and says registration materials follow special access rules; a direct county-page request timed out in root review.",
+  "firstPartyCheck": "Original Guangdong Tianditu portal and thematic-page caches were inspected. The original WFS configuration JSON (SHA-256 e8d4aeb9972da082028a88d3789778a3e99d2e22a8b841455252a2d862dae3cd) advertises XZPOI geocoding, not a cadastral polygon layer. This bounded observation and the county timeout do not prove cadastral absence.",
+  "holdReason": "No public parcel ID-plus-full-polygon response, source schema, adapter qualification, forced paging, thirteen bounded cells, metric GEOS checks, source binding, or headed Details-panel verification. Keep registry custody true and public geometry unresolved; runtime remains excluded."
+}

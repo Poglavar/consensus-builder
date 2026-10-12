@@ -1,0 +1,156 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 12083,
+  "queueRank": 3101,
+  "name": "Port Blair",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "capital": false,
+  "point": [11.6634674552343, 92.7271861980749],
+  "population2025": 193657,
+  "population2025k": 193.657,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Port Blair official cadastral parcel map land records Andaman Nicobar government GIS",
+        "result": "First-party discovery identified the South Andaman district land-record map, the Government of Andaman and Nicobar Revenue Department Dweep Bhoomi land-record system, and the official Andaman Bhunaksha viewer link. South Andaman's official tehsil page identifies Port Blair tehsil and its revenue administration. No anonymous parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://southandaman.nic.in/",
+          "https://nicobars.andaman.nic.in/service/land-record-map/",
+          "https://dweepbhoomi.andamannicobar.gov.in/process/html/index.php",
+          "http://as.and.nic.in:8080/bhunaksha/"
+        ]
+      },
+      {
+        "language": "Hindi (local/native-language discovery)",
+        "query": "पोर्ट ब्लेयर आधिकारिक भू-अभिलेख नक्शा खसरा अंडमान निकोबार",
+        "result": "Official Hindi South Andaman results identify पोर्ट ब्लेयर तहसील, its villages and revenue administration. The official land-record map and Dweep Bhoomi links are the same first-party cadastral leads; no anonymous parcel geometry or safe native parcel identity was exposed.",
+        "actualResultUrls": [
+          "https://southandaman.nic.in/hi/%E0%A4%A4%E0%A4%B9%E0%A4%B8%E0%A5%80%E0%A4%B2/",
+          "https://nicobars.andaman.nic.in/hi/service/land-record-map/",
+          "https://dweepbhoomi.andamannicobar.gov.in/process/html/index.php"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Department of Revenue, Andaman and Nicobar Islands Administration; South Andaman District Administration and Port Blair tehsil revenue administration",
+    "locality": "Port Blair tehsil, South Andaman district",
+    "evidenceUrls": [
+      "https://southandaman.nic.in/hi/%E0%A4%A4%E0%A4%B9%E0%A4%B8%E0%A5%80%E0%A4%B2/",
+      "https://nicobars.andaman.nic.in/service/land-record-map/",
+      "https://dweepbhoomi.andamannicobar.gov.in/process/html/index.php"
+    ],
+    "scopeNote": "The official district and Revenue Department material evidences a local land-record/map custodian and a Port Blair tehsil scope. It does not establish complete municipal or citywide open parcel geometry coverage."
+  },
+  "officialSources": [
+    {
+      "url": "https://southandaman.nic.in/hi/%E0%A4%A4%E0%A4%B9%E0%A4%B8%E0%A5%80%E0%A4%B2/",
+      "observation": "Official South Andaman Hindi page identifies Port Blair tehsil, its revenue area, revenue circles, patwari circles and villages."
+    },
+    {
+      "url": "https://nicobars.andaman.nic.in/service/land-record-map/",
+      "observation": "Official district portal says Andaman and Nicobar land records are computerized and links the public Land Record Map/Bhunaksha viewer at as.and.nic.in:8080/bhunaksha/."
+    },
+    {
+      "url": "https://dweepbhoomi.andamannicobar.gov.in/process/html/index.php",
+      "observation": "Official Revenue Department Dweep Bhoomi page describes integration of registration and survey departments for land-record management and links Bhunaksha, but citizen operations require account/login and CAPTCHA."
+    }
+  ],
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Andaman Bhunaksha / official South Andaman land-record map lead",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "note": "The linked public viewer did not return a usable anonymous HTML/JavaScript/service response during bounded requests. The exact WUP point was preserved and was not used as an absence test."
+  },
+  "requestOutcomes": [
+    {
+      "method": "SEARCH",
+      "url": "https://southandaman.nic.in/hi/%E0%A4%A4%E0%A4%B9%E0%A4%B8%E0%A5%80%E0%A4%B2/",
+      "outcome": "First-party Hindi page available through discovery; Port Blair tehsil and local revenue administration evidenced. No parcel geometry or schema published on the page."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://nicobars.andaman.nic.in/service/land-record-map/",
+      "outcome": "First-party land-record map page available through discovery; it states computerized land records and links the Andaman Bhunaksha viewer."
+    },
+    {
+      "method": "GET",
+      "url": "https://dweepbhoomi.andamannicobar.gov.in/process/html/index.php",
+      "outcome": "HTTP 200; current official Revenue Department page retrieved. It links Bhunaksha and documents the land-record system, while citizen service access is login/CAPTCHA mediated. No parcel response was requested."
+    },
+    {
+      "method": "GET",
+      "url": "http://as.and.nic.in:8080/bhunaksha/",
+      "outcome": "TLS was not applicable to this explicitly HTTP URL; request timed out after 20 seconds with no bytes. No viewer configuration, schema, CRS, native ID, or geometry was observed."
+    },
+    {
+      "method": "GET",
+      "url": "https://as.and.nic.in:8080/bhunaksha/",
+      "outcome": "Rejected by the server/protocol with OpenSSL wrong-version-number because the linked service is HTTP on port 8080; no TLS exception or insecure workaround was used."
+    },
+    {
+      "method": "GET",
+      "url": "http://as.and.nic.in/bhunaksha/",
+      "outcome": "HTTP 404 from Microsoft-HTTPAPI; this alternate unlinked route was not a parcel service response."
+    },
+    {
+      "method": "GET",
+      "url": "https://as.and.nic.in/bhunaksha/",
+      "outcome": "HTTP 404; this alternate unlinked HTTPS route did not expose a parcel service."
+    }
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable anonymous parcel-vector response; no hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official South Andaman/Port Blair land-record map and Revenue Department land-record platform.",
+    "verifiedOpenScope": "Local registry custody and an official public-map lead were evidenced, but anonymous geometry, schema, CRS, native identity, and citywide parcel coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "integration": "not_admitted",
+  "scopeLimits": [
+    "Exact WUP point [11.6634674552343,92.7271861980749] was preserved and not shifted to force a hit.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.",
+    "No parcel polygon or source-specific raw attribute set is retained.",
+    "No citywide polygon completeness, current anonymous API, CRS, native identity semantics, or update cadence was verified.",
+    "This packet records research only and is not source integration or admission."
+  ],
+  "uncertainty": "The local South Andaman/Port Blair land-record custodian and official Bhunaksha lead are evidenced, but the linked viewer was unreachable or unusable through bounded anonymous requests. Current public endpoint behavior, schema, CRS, native identity semantics, safe geometry access, and coverage remain unresolved."
+}

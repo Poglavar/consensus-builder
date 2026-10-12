@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-9841-bendaravadi.json",
+  "cityCode": 9841,
+  "queueRank": 3299,
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "queryAndRequestOutcome": "Separate English and Kannada first-party discovery identified Karnataka Revenue/Bhoomi, Mysuru district RTC, DILRMP cadastral status, and Karnataka LRI GIS sources. Direct anonymous GETs to Karnataka land-record service routes timed out; no public parcel ID-plus-geometry response was obtained.",
+  "attemptedRoutes": [
+    {"route": "https://landrecords.karnataka.gov.in/", "outcome": "Timed out after 12 seconds over default TLS."},
+    {"route": "https://landrecords.karnataka.gov.in/service0/", "outcome": "Timed out after 12 seconds over default TLS."},
+    {"route": "https://landrecords.karnataka.gov.in/service3/", "outcome": "Timed out after 25 seconds over default TLS."},
+    {"route": "https://sujala3lri.karnataka.gov.in/", "outcome": "Official LRI portal identified; no Bendaravadi parcel vector response was obtained."},
+    {"route": "https://mobservice.sujala3lri.karnataka.gov.in/Help/Api/GET-api-GetDSSSurveyNumber_village_wscode_district_taluk_hobli", "outcome": "Official survey-number API documentation identified; no guessed locality request was sent."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "geometrySamples": [],
+  "scopeLimits": [
+    "Exact WUP point [12.3645761680682, 76.9111611706644] was preserved in latitude/longitude order and was not shifted.",
+    "A timeout, map extent miss, login wall, or lack of exact-point response is not evidence of citywide absence.",
+    "No raw source-specific attribute set or unsafe ownership/address/titleholder/tax/account field was requested or retained.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+    "No GeoJSON sample is retained because no safe native parcel identity and full parcel polygon were observed.",
+    "No registry/catalog/runtime configuration, global report, queue ledger, or another city's file was changed."
+  ],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "State/local cadastral procedure evidence is established, but no open parcel vector service or bounded parcel ID-plus-geometry response was obtained. Independent serial adapter qualification remains required."},
+  "uncertainty": "An unpublished or currently unreachable Karnataka Bhoomi/Revenue Maps workflow may expose cadastral maps. The Bendaravadi name also appears in an official Chamarajanagar document, so locality alignment requires later confirmation.",
+  "admissionDecision": "held",
+  "runtimeEligible": false,
+  "recommendedDisposition": "Hold for serial reviewer retry against current Karnataka Bhoomi/Revenue Maps or LRI workflows, with independent locality and parcel-layer qualification.",
+  "completionSummary": {"packetComplete": true, "registryFound": true, "cityPointParcelSample": false, "runtimeReadiness": "held", "nextAttemptNeeded": true}
+}

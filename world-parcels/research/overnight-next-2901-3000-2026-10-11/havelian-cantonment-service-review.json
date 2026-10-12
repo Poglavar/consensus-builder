@@ -1,0 +1,70 @@
+{
+  "cityRecord": "city-7003-havelian-cantonment.json",
+  "cityCode": 7003,
+  "queueRank": 2902,
+  "city": "Havelian Cantonment",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "attempt": 1,
+  "reviewStatus": "complete_research_only",
+  "registryFound": null,
+  "queryAndRequestOutcome": "Separate English and native/local-language discovery was completed. General official ML&C and KP land-record evidence was found, but no city-specific anonymous parcel viewer/API with a safe native ID and geometry was verified. No GeoJSON sample was written.",
+  "routesAttempted": [
+    {
+      "route": "ML&C official home",
+      "request": "GET https://mlc.gov.pk/",
+      "outcome": "Shell request returned HTTP 403. Search/open evidence confirms the official federal Military Lands and Cantonments site and its cantonment-management scope; no parcel schema or public geometry endpoint was exposed. No login or bypass attempted."
+    },
+    {
+      "route": "ML&C Cantonment Land Administration Rules",
+      "request": "GET https://mlc.gov.pk/assets/media/cantonment-land-administration-rules1937-in-legal-framework.pdf",
+      "outcome": "Official rules were found through discovery. They refer to General Land Register maps, survey numbers, and Military Estate Officer/Cantonment Board procedures, but provide no public Havelian parcel API or safe geometry response."
+    },
+    {
+      "route": "KP Director Land Record",
+      "request": "GET https://revenue.kp.gov.pk/director-land-record/",
+      "outcome": "DNS resolution failed from this environment. No TLS exception, credential use, or alternate unsafe access attempted. Search evidence describes KP GIS-based cadastral mapping generally, not a Havelian endpoint."
+    },
+    {
+      "route": "KP Settlement and Digitization of Land Records",
+      "request": "GET https://sdlr.kp.gov.pk/",
+      "outcome": "DNS resolution failed from this environment. No parcel request or absence inference made."
+    },
+    {
+      "route": "Pakistan Bureau of Statistics GIS",
+      "request": "GET https://www.pbs.gov.pk/gis/",
+      "outcome": "HTTP 200. Official page describes census/admin GIS and scanned Mussavi/revenue-record mapping in KP and Punjab; it is not a public parcel feature service and no parcel request was made."
+    },
+    {
+      "route": "Punjab PULSE cadastral viewer (scope check only)",
+      "request": "GET https://lis.pulse.gop.pk/; inspect current JavaScript/configuration for public service URLs",
+      "outcome": "HTTP 200 and ArcGIS configuration discovered, but the viewer is Punjab-specific and its services are out of scope for Havelian, KP. No request was made against it as a Havelian source and no features were retained."
+    }
+  ],
+  "safeFieldAllowlist": [
+    "canonical native parcel ID only if source-proven",
+    "full parcel polygon or multipolygon geometry only",
+    "public source/service URL",
+    "native schema field names and field mapping in metadata only",
+    "source CRS, query extent, response metadata, and retrieval date"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometrySamples": [],
+  "scopeLimits": [
+    "Exact WUP point [34.0431596496854, 73.1315576194639] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit/miss, map extent miss, timeout, DNS failure, HTTP 403, or unusable UI was treated as evidence of citywide parcel absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute sets, non-parcel geometry, or synthetic row identity was retained.",
+    "No source integration, adapter admission, login, CAPTCHA/Cloudflare bypass, private token, or TLS verification exception was used.",
+    "Packet completion is research completion only; it is not source integration or runtime admission."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "No anonymous public parcel vector response with qualified native identity, geometry, schema, CRS, and city relevance was obtained; independent serial review remains required."
+  },
+  "runtimeEligible": false,
+  "recommendedDisposition": "Hold for serial reviewer retry with current official ML&C/Havelian Cantonment and KP land-record service discovery."
+}

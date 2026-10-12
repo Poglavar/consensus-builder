@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-4684-southampton.json",
+  "cityCode": 4684,
+  "queueRank": 1647,
+  "city": "Southampton",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Southampton City Council's official local land-charges procedure provides local custodian evidence, while HM Land Registry documents a national INSPIRE parcel source. The bounded anonymous requests retrieved no safe Southampton parcel feature response, so no sample was retained and runtime remains held.",
+  "queryOutcomes": "Separate English discovery queries are recorded in city-4684-southampton.json. English is also the country's local/native administrative language; the second query is separately worded and explicitly records that no translation applies.",
+  "requestOutcomes": "The council land-charges page and Southampton data maps page fetched successfully. The official interactive map returned an Incapsula interstitial. The official HM Land Registry download page was indexed as listing Southampton City Council but direct retrieval hit a redirect loop. No login, credentials, private token, CAPTCHA/Cloudflare bypass, TLS disablement, formal search submission, or unsafe property lookup was used.",
+  "scopeLimits": [
+    "Local land-charges procedure is not evidence of an open cadastral parcel API or complete citywide parcel coverage.",
+    "HM Land Registry INSPIRE polygons are indicative freehold registered-property extents, not definitive title-plan boundaries; leasehold and other exclusions remain possible.",
+    "The interactive-map interstitial and download redirect loop are access outcomes only, not evidence of citywide cadastral absence.",
+    "The exact WUP point was preserved and was not used as a forced parcel query or shifted to obtain a hit.",
+    "No GeoJSON sample was retained because no unchanged safe native geometry plus stable native identity was obtained.",
+    "This packet is research evidence only and must not be treated as source integration or adapter admission."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentityPolicy": "If the HMLR dataset is later retrieved, use its INSPIRE_ID/POLY_ID as the sole native parcel identity; do not use row order, filenames, or synthetic IDs. Do not retain address, owner, title, tax, contact, or other unsafe fields.",
+  "nativeFieldMapping": {
+    "documentedIdentity": "INSPIRE_ID (also documented as POLY_ID in the national polygon documentation)",
+    "documentedGeometry": "INSPIRE polygon geometry",
+    "documentedCrs": "EPSG:27700 / British National Grid",
+    "retrievedFeatureMapping": false
+  },
+  "crs": "EPSG:27700 documented by HM Land Registry; no Southampton feature response retrieved",
+  "geometryQuality": "not evaluated; no geometry retained",
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "A browser-mediated council layer or reachable monthly HMLR GML could provide safe parcel IDs and geometry, but this attempt did not obtain either. The official local procedure may also be request-based and time-limited. No negative citywide coverage conclusion is made.",
+  "retainedSample": null
+}

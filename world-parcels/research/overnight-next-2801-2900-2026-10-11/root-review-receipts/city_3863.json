@@ -1,0 +1,18 @@
+{
+  "taskId": "city:3863",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-3863-el-wak.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/el-wak-service-review.json",
+    "tmp/valhalla-parcel-research/el-wak-parcel-layer.json",
+    "tmp/valhalla-parcel-research/el-wak-parcel-query.geojson"
+  ],
+  "checkedAt": "2026-10-11T21:24:57Z",
+  "identityCheck": "WUP 2025 bulk CSV SHA-256 verified; exact code 3863, rank 2851, Kenya, point, and 208911 persons agree across source, roster, queue, and packet.",
+  "researchCheck": "Separate English and local-language queries with recorded result URLs; zero retained full polygons (maximum three), no verified safe native parcel ID plus geometry.",
+  "registryFound": null,
+  "reason": "The original ArcGIS layer cache bounds the tested WWF service at 39.431591–39.713223 E and -0.009499–0.281353 N, outside the WUP point 40.927935 E, 2.810997 N; the cached exact-point GeoJSON has zero features. Official land procedures are request based. The extent miss is not citywide absence and supplies no El Wak native parcel ID or geometry. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details verification are not evidenced; runtime/catalog/report admission stays held."
+}

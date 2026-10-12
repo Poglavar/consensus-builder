@@ -1,0 +1,30 @@
+{
+  "cityRecord": "city-188-col-n.json",
+  "cityCode": 188,
+  "queueRank": 3229,
+  "name": "Colón",
+  "country": "Panama",
+  "countryCode": "PA",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "reviewStatus": "complete_research_packet",
+  "queryAndRequestSummary": "English and Spanish first-party discovery were performed. ANATI cadastral procedure pages and the IGN Tommy Guardia ArcGIS service were identified. Direct anonymous REST attempts against the official IGN service returned an anti-automation challenge; the indexed service is populated-place/political-boundary mapping, not parcel geometry. No parcel sample was retained.",
+  "routesAttempted": [
+    {"method": "GET", "url": "https://www.panamadigital.gob.pa/InformacionTramite/informacion-de-puntos-catastrales", "result": "Official Panama Digital page identifies ANATI and a cadastral control-point procedure; procedure evidence only, no public parcel geometry endpoint."},
+    {"method": "GET", "url": "https://www.panamadigital.gob.pa/InformacionTramite/verificacion-de-medidas-y-linderos", "result": "Official ANATI procedure for verifying measurements and boundaries of registered properties; requires application materials and does not expose an anonymous parcel API."},
+    {"method": "GET", "url": "https://www.panamadigital.gob.pa/InformacionTramite/aprobacion-de-planos", "result": "Official ANATI cadastral plan-approval procedure; no public parcel feature service exposed."},
+    {"method": "GET", "url": "https://www.panamadigital.gob.pa/InformacionTramite/certificacion-de-ubicacion", "result": "Official ANATI location-certification procedure; requires property documents and does not expose safe anonymous parcel geometry."},
+    {"method": "GET", "url": "https://sigigntg.anati.gob.pa/arcgisserver/rest/services/Mapa_Web_de_Poblados_2025_MIL1/MapServer", "result": "Search-indexed official ArcGIS service metadata identifies a populated-place/political-boundary map with EPSG:3857, not cadastral parcels."},
+    {"method": "GET", "url": "https://sigigntg.anati.gob.pa/arcgisserver/rest/services?f=pjson", "result": "HTTP 403 / anti-automation challenge; direct REST service-directory request was not usable anonymously."},
+    {"method": "GET", "url": "https://sigigntg.anati.gob.pa/arcgisserver/rest/services/Mapa_Web_de_Poblados_2025_MIL1/MapServer/9/query?f=geojson&where=nomb_prov%3D%27Col%C3%B3n%27&outFields=cod_obj%2Cnomb_prov&returnGeometry=true&outSR=4326", "result": "HTTP 403 / anti-automation challenge; no parcel query was attempted as this is a province-boundary layer and not parcel data."}
+  ],
+  "geometryAssessment": {"publicParcelGeometryFound": false, "sampleGeojson": null, "nativeIdField": null, "crs": null, "boundedAnonymousResponse": {"result": "No parcel feature response obtained"}, "coverage": "No local parcel service coverage verified"},
+  "sourceFieldMapping": {"none": "No parcel schema was safely observed; no source attributes retained."},
+  "compositeKeyProvenance": "Not applicable; no native parcel identity was obtained.",
+  "safeFieldAllowlist": ["stable native parcel ID", "parcel polygon geometry", "geometry CRS", "public service metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identifiers", "tax/account details", "certificate/title"],
+  "registryAssessment": {"registryFound": null, "basis": "ANATI national cadastral procedures are evidenced, but no local Colón registry/map/procedure custodian or public parcel endpoint was independently established.", "limit": "National agency prose and a non-parcel IGN map service do not qualify a local source or establish citywide coverage."},
+  "runtimeReadiness": "held_pending_serial_review",
+  "integration": "not_admitted",
+  "uncertainty": ["The official IGN host challenged direct REST requests with anti-automation protection.", "The exact WUP point was preserved; no exact-point lookup was performed and no miss is inferred.", "No parcel geometry or stable native parcel identity was obtained.", "A later attempt should recheck the current official viewer/configuration and any local Colón cadastral service without bypassing access controls."]
+}

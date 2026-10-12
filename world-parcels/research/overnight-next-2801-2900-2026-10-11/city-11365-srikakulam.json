@@ -1,0 +1,138 @@
+{
+  "cityCode": 11365,
+  "queueRank": 2870,
+  "name": "Srikakulam",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "point": [18.297920027956, 83.8946419107167],
+  "population2025": 207661,
+  "population2025k": 207.661,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Srikakulam Andhra Pradesh official cadastral parcel map land records GIS Bhunaksha",
+        "result": "First-party results identified the Government of Andhra Pradesh Bhunaksha cadastral mapping portal, the official Srikakulam district site, and the Andhra Pradesh Space Applications Centre cadastral-map viewer. The public viewer route was inspected, but no usable anonymous parcel ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://bhunaksha.ap.gov.in/",
+          "https://srikakulam.ap.gov.in/",
+          "https://apsac.ap.gov.in/dashboard-staging/ap-cadastral-maps/"
+        ]
+      },
+      {
+        "language": "Telugu (local/native)",
+        "query": "శ్రీకాకుళం భూ రికార్డులు భూ నక్షా అధికారిక",
+        "result": "The first-party discovery result set included the Telugu Srikakulam district government site and the same official Andhra Pradesh Bhunaksha land-map service. No anonymous Srikakulam parcel vector endpoint, safe schema, CRS, or bounded geometry response was found.",
+        "actualResultUrls": [
+          "https://srikakulam.ap.gov.in/te/",
+          "https://bhunaksha.ap.gov.in/",
+          "https://apsac.ap.gov.in/dashboard-staging/ap-cadastral-maps/"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Government of Andhra Pradesh Department of Survey, Settlements and Land Records (Bhunaksha AP); the official Srikakulam district administration site confirms district government context. A separate city municipal cadastral custodian was not identified.",
+    "localRegistryOrProcedure": "The state public Bhunaksha service is an official cadastral-map procedure covering Andhra Pradesh and its district data, but this attempt did not establish an open Srikakulam city parcel layer or city-specific registry endpoint.",
+    "regionalPublicMap": "APSAC official AP GIS cadastral-map wrapper; its iframe points to an official ArcGIS Web AppBuilder application.",
+    "registryEvidenceUrls": [
+      "https://bhunaksha.ap.gov.in/bhunakshalpm/28/index.jsp",
+      "https://srikakulam.ap.gov.in/",
+      "https://apsac.ap.gov.in/dashboard-staging/ap-cadastral-maps/"
+    ]
+  },
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://bhunaksha.ap.gov.in/",
+      "httpStatus": 200,
+      "outcome": "First-party search result describes Bhunaksha AP as Government of Andhra Pradesh cadastral mapping software integrating land records and geo-referenced spatial data; no parcel response was obtained from the search result alone."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhunaksha.ap.gov.in/",
+      "httpStatus": "timeout",
+      "outcome": "Anonymous curl request timed out after 30 seconds. The timeout was not treated as absence. No credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhunaksha.ap.gov.in/bhunakshalpm/28/index.jsp",
+      "httpStatus": "timeout",
+      "outcome": "The official viewer route was identified by the first-party redirect, but a direct anonymous HTTPS request timed out after 15 seconds; no viewer configuration or parcel query was executed."
+    },
+    {
+      "method": "GET",
+      "url": "https://srikakulam.ap.gov.in/",
+      "httpStatus": 200,
+      "outcome": "Anonymous HTTPS GET returned the official district site. It identifies Srikakulam district administration and provides Telugu/English site routes, but no cadastral parcel-vector API or safe parcel schema."
+    },
+    {
+      "method": "GET",
+      "url": "https://apsac.ap.gov.in/dashboard-staging/ap-cadastral-maps/",
+      "httpStatus": 200,
+      "outcome": "Anonymous HTTPS GET returned the official APSAC cadastral-map wrapper and iframe URL https://apsac.ap.gov.in/gisportal/apps/webappviewer/index.html?id=7e3b53a1a265421483fbcbb26c275834."
+    },
+    {
+      "method": "GET",
+      "url": "https://apsac.ap.gov.in/gisportal/apps/webappviewer/config.json",
+      "httpStatus": 200,
+      "outcome": "Current Web AppBuilder configuration was inspected. map.itemId is empty, mapOptions are the generic [-98,40] default, and no operationalLayers/service URL was present; therefore no bounded anonymous parcel ID-plus-geometry request was possible."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "APSAC Web AppBuilder config.json retrieved; no configured map item or operational layer URL.",
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [18.297920027956, 83.8946419107167] was preserved in latitude/longitude order; no coordinate shift or parcel query was used.",
+      "featureCount": null,
+      "result": "No public parcel-vector route was exposed by the reachable official viewer configuration, so no bounded ID-plus-geometry response was executed or retained."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel-vector response; no hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Andhra Pradesh cadastral service and APSAC statewide GIS cadastral-map wrapper, with Srikakulam district government context.",
+    "verifiedOpenScope": "Official service existence and viewer configuration were verified; open Srikakulam city parcel geometry was not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "The exact WUP point was preserved and was not shifted to force a parcel hit.",
+    "A timeout, map extent miss, login wall, or unusable UI was not treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, parcel schema, service CRS, or stable parcel-identity semantics were verified.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "A genuine official Andhra Pradesh cadastral service and APSAC cadastral viewer lead were found. The current public Bhunaksha route timed out from this environment, while the APSAC Web AppBuilder configuration had no map item or operational service URL. No parcel identity or geometry can therefore be qualified in this attempt."
+}

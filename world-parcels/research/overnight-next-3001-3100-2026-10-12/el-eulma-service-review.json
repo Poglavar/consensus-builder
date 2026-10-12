@@ -1,0 +1,55 @@
+{
+  "cityRecord": "city-4866-el-eulma.json",
+  "cityCode": 4866,
+  "queueRank": 3007,
+  "city": "El Eulma",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "Separate English, French, and Arabic discovery identified Algeria's first-party DGDN/Ministry of Finance Fada El Djazair portal and local Sétif evidence for the El Eulma land registry. Direct anonymous requests to candidate official hosts timed out or returned 403/503, so no safe parcel identity-plus-geometry response was qualified and no GeoJSON sample is retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, URLs, routes, statuses, custodian findings, and limitations are recorded in city-4866-el-eulma.json.",
+  "custodians": [
+    {
+      "name": "Direction générale des domaines / General Directorate of National Domains (DGDN), Ministry of Finance",
+      "scope": "National Algerian land-property, cadastral-survey, and land-registry digital services",
+      "evidence": "https://fadaeldjazair.mf.gov.dz and Ministry of Finance publication"
+    },
+    {
+      "name": "Sétif wilaya land-survey and land-registry services / المحافظة العقارية بالعلمة",
+      "scope": "Local registry/cadastre jurisdiction including El Eulma",
+      "evidence": "https://sawtsetif.dz/v/9503/"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [36.1544897812602, 5.68648938016964] was preserved; it was not moved to force a parcel hit.",
+    "No exact-point hit or miss is inferred from failed host access.",
+    "Local registry evidence does not prove that a public citywide parcel vector layer exists.",
+    "No polygon is retained because no safe native ID-plus-geometry response was obtained.",
+    "No unsafe owner, address/contact, titleholder, personal, tax/account, or certificate fields were requested or retained.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "The first-party Algerian DGDN service and local El Eulma registry custodian were evidenced, but anonymous public parcel identity, geometry, CRS, and city coverage were not qualified."
+  },
+  "uncertainty": "The official portal may require a browser session or service-specific interaction before map/API configuration becomes visible. This packet records bounded anonymous attempts without treating unavailable responses as cadastral absence."
+}

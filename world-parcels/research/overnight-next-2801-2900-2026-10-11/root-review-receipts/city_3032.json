@@ -1,0 +1,18 @@
+{
+  "taskId": "city:3032",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-3032-rantau-prapat.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/rantau-prapat-service-review.json",
+    "tmp/valhalla-parcel-research/3032/resources.json",
+    "tmp/valhalla-parcel-research/3032/groups.json",
+    "tmp/valhalla-parcel-research/3032/https___bhumi_atrbpn_go_id_geoserver_umum_ows_service_WFS_request_GetCapabilities.xml"
+  ],
+  "checkedAt": "2026-10-11T22:02:01Z",
+  "identityCheck": "Ranked population roster, immutable pending queue and city packet agree on code, rank, country, exact WUP point and 2025 population in persons.",
+  "researchCheck": "Paired city packet and review record separate English and native-language executed queries and result URLs. No sample GeoJSON or full parcel polygon was retained (zero of the maximum three); no safe native parcel ID was verified.",
+  "custodyDecision": "Cached ATLAS response has seven general resources; the Labuhan Batu group has resource_count 0. Cached WFS response is Forbidden. The local office lead does not establish a Rantau Prapat-specific record response. Keep registryFound null; zero catalog resources and a 403 do not prove absence.",
+  "reason": "No independently evidenced fresh native-ID reads, forced pagination, 13 bounded cells, metric GEOS validity/duplicate/overlap/operation checks, full-parcel source binding or headed Details-panel verification. Source admission is withheld; runtime, catalog and generated coverage state were not changed."
+}

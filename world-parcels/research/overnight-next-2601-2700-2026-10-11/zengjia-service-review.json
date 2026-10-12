@@ -1,0 +1,66 @@
+{
+  "cityRecord": "city-8779-zengjia.json",
+  "cityCode": 8779,
+  "queueRank": 2635,
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "requests": [
+    {
+      "route": "https://ghzrzyj.cq.gov.cn/",
+      "method": "GET",
+      "outcome": "HTTP 200. Official Chongqing Planning and Natural Resources Bureau homepage loaded. No parcel API bootstrap or public cadastral layer was exposed in the bounded HTML inspection."
+    },
+    {
+      "route": "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/yzzd/202003/t20200323_5980576.html",
+      "method": "GET",
+      "outcome": "HTTP 200. Official guidance links cadastral-map and registration lookup to the Yu Kuai Ban service at http://zwfw.cq.gov.cn/icity/public/index and the mobile service; it is procedural evidence, not an anonymous parcel feature service."
+    },
+    {
+      "route": "https://ghzrzyj.cq.gov.cn/zwgk_186/zczxwdk_378544/wdzt/ywyd/202403/t20240314_13037887.html",
+      "method": "GET/search open",
+      "outcome": "Official guidance states that cadastral maps can be queried free of charge through registration halls or Yu Kuai Ban. No public ID-plus-geometry response was exposed."
+    },
+    {
+      "route": "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/zcwj/202205/t20220512_10708940.html",
+      "method": "GET/search open",
+      "outcome": "Official 2022 notice describes visual cadastral-map lookup in a pilot restricted to Liangjiang New Area and requiring the rights holder or authorized natural person; it does not qualify anonymous Zengjia parcel access."
+    },
+    {
+      "route": "https://gxq.cq.gov.cn/zj/zjz/",
+      "method": "GET/search open",
+      "outcome": "Official Chongqing High-Tech Zone page identifies Zengjia Town and its local government information. No cadastral viewer or parcel API was exposed."
+    },
+    {
+      "route": "http://ykb.cq315house.com/cqwwsq/",
+      "method": "GET",
+      "outcome": "DNS resolution failed in the research environment. No retry through credentials, proxies, or challenge bypass was attempted; this is a route failure, not evidence of absence."
+    },
+    {
+      "route": "http://zwfw.cq.gov.cn/icity/public/index",
+      "method": "GET",
+      "outcome": "Timed out after 20 seconds from the research environment. No login, registration, authentication, CAPTCHA, or private-token flow was attempted."
+    }
+  ],
+  "schemaCrs": {
+    "status": "not qualified",
+    "reason": "No parcel feature response was obtained; native field schema, CRS, pagination, stable native identity, and geometry encoding could not be verified."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier",
+    "parcel polygon geometry",
+    "source CRS only when explicitly returned"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleFiles": [],
+  "scopeLimits": [
+    "The exact WUP point [29.607675850683, 106.325626686476] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point parcel hit, map extent result, timeout, login wall, or unusable UI is treated as evidence of citywide absence.",
+    "No owner, address, contact, titleholder, certificate/title, tax/account, personal, or other unsafe fields were requested or retained.",
+    "A municipal/local registry custodian is evidenced, but no public anonymous parcel integration endpoint is qualified.",
+    "No retained GeoJSON sample was created because no safe native parcel ID plus full polygon was obtained.",
+    "runtimeReadiness remains held pending independent serial adapter qualification."
+  ],
+  "uncertainty": "Zengjia cadastral data may exist in authenticated, rights-holder-authorized, internal, or otherwise undiscovered registration systems. The checked official materials establish the custodian and lookup procedure but do not establish anonymous machine-readable parcel coverage."
+}

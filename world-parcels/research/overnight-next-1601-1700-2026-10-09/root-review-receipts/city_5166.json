@@ -1,0 +1,22 @@
+{
+  "taskId": "city:5166",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-5166-mwene-ditu.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/mwene-ditu-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T11:28:48Z",
+  "reason": "Official Ministry directory lists Mwene-Ditu as a land/cadastral circumscription, but no anonymous parcel feature response, native ID, or geometry is evidenced.",
+  "firstPartyChecks": [
+    {
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "httpStatus": 200,
+      "finding": "Current official directory contains Mwene-Ditu."
+    }
+  ],
+  "qualification": "No fresh native-ID geometry read, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification; runtime admission remains unqualified.",
+  "polygonSampleCount": 0,
+  "custody": "true: first-party institutional evidence; no claim of public parcel coverage or citywide absence"
+}

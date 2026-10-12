@@ -1,0 +1,142 @@
+{
+  "cityCode": 4417,
+  "queueRank": 1689,
+  "name": "Naga",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "point": [13.6290026335439, 123.191974140904],
+  "population2025": 338596,
+  "population2025k": 338.596,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Naga City Philippines official cadastral parcel map GIS assessor cadastre",
+        "result": "Found the official City of Naga maps page, official City Assessor property-identification service, official budget evidence mentioning digital cadastral maps/GIS shapefiles, and the national Geoportal Philippines parcel layer. No usable anonymous parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://www2.naga.gov.ph/2023-city-service/property-identification-location/",
+          "https://www2.naga.gov.ph/maps/",
+          "https://www2.naga.gov.ph/wp-content/uploads/2022/04/2022_FSOER_CASO.pdf",
+          "https://geoportal.gov.ph/",
+          "https://geoportal.gov.ph/gpapps/lotplotter"
+        ]
+      },
+      {
+        "language": "Filipino (local-language discovery)",
+        "query": "mapa cadastral lote Naga City Camarines Sur Philippines opisyal assessor katastre",
+        "result": "Local-language discovery found the official Naga City Assessor property-identification service and official city maps, but no separate public Filipino-language parcel viewer or open parcel API. Official administrative pages use English cadastral/taxmapping terminology.",
+        "actualResultUrls": [
+          "https://www2.naga.gov.ph/2023-city-service/property-identification-location/",
+          "https://www2.naga.gov.ph/maps/",
+          "https://geoportal.gov.ph/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Naga City website identifies the City Assessor's Office and Taxmapping staff as responsible for identifying property and preparing certified copies of maps. Official City Assessor budget evidence also mentions installation/update of digital cadastral maps and acquired GIS shapefiles. This establishes a local custodian, not an open parcel API or citywide geometry completeness.",
+  "officialSources": [
+    {
+      "url": "https://www2.naga.gov.ph/2023-city-service/property-identification-location/",
+      "observation": "Official City Assessor property-identification/location service: Taxmapping identifies property and prepares a certification or photocopy of a map; request is handled through City Assessor custody."
+    },
+    {
+      "url": "https://www2.naga.gov.ph/maps/",
+      "observation": "Official Naga City maps page provides city and barangay base maps, not parcel geometry."
+    },
+    {
+      "url": "https://www2.naga.gov.ph/wp-content/uploads/2022/04/2022_FSOER_CASO.pdf",
+      "observation": "Official City Assessor budget document mentions digital cadastral maps, GIS shapefiles, and land-parcel digitizing work."
+    },
+    {
+      "url": "https://geoportal.gov.ph/layers/fetchlayers",
+      "observation": "Current public Geoportal layer configuration lists LMB Parcel data as denr_parcel_data with style ParcelData; its download value is null."
+    },
+    {
+      "url": "https://geoportal.gov.ph/js/script.js",
+      "observation": "Current public frontend JavaScript references the Geoportal GeoServer WMS and WMS GetFeatureInfo interaction."
+    },
+    {
+      "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms",
+      "observation": "First-party WMS endpoint referenced by the live Geoportal configuration; bounded anonymous requests did not yield a usable parcel response."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www2.naga.gov.ph/2023-city-service/property-identification-location/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official local City Assessor service page returned; property identification and map-copy workflow recorded."
+    },
+    {
+      "url": "https://www2.naga.gov.ph/maps/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official city/barangay base-map page returned; no parcel feature service identified."
+    },
+    {
+      "url": "https://www2.naga.gov.ph/wp-content/uploads/2022/04/2022_FSOER_CASO.pdf",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official City Assessor budget PDF returned; mentions digital cadastral maps and GIS shapefiles but exposes no safe parcel response."
+    },
+    {
+      "url": "https://geoportal.gov.ph/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official public map application returned."
+    },
+    {
+      "url": "https://geoportal.gov.ph/layers/fetchlayers",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current layer JSON returned; found LMB denr_parcel_data / Parcel data with download null. No restricted download was attempted."
+    },
+    {
+      "url": "https://geoportal.gov.ph/js/script.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current frontend JavaScript returned; documented the GeoServer WMS endpoint and WMS feature-info route."
+    },
+    {
+      "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&LAYERS=geoportal:denr_parcel_data&QUERY_LAYERS=geoportal:denr_parcel_data&STYLES=&SRS=EPSG:4326&BBOX=123.1915,13.6285,123.1925,13.6295&WIDTH=800&HEIGHT=800&X=400&Y=400&INFO_FORMAT=application/json&FEATURE_COUNT=3",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Anonymous bounded exact-point vicinity request exceeded the 22-second timeout without a response; no ID, schema, CRS, attributes, or geometry obtained. This is not evidence of parcel absence."
+    },
+    {
+      "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Anonymous capabilities request exceeded the bounded timeout without a response; schema and CRS remain unverified."
+    }
+  ],
+  "source": {
+    "sourceId": "philippines-geoportal-lmb-parcel-data-naga-city-assessor",
+    "name": "Geoportal Philippines LMB Parcel data with Naga City Assessor custody",
+    "operator": "Land Management Bureau through Geoportal Philippines; local municipal custody evidenced by Naga City Assessor/Taxmapping",
+    "endpoint": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms",
+    "method": "First-party discovery, live JavaScript/configuration inspection, layer-catalog inspection, and bounded anonymous WMS requests",
+    "responseFormat": "WMS; no parcel feature response obtained",
+    "nativeCrs": null,
+    "nativeIdentity": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "scope": "National LMB parcel layer is cataloged and Naga local assessment/cadastral custody is evidenced. Coverage in Naga, schema, CRS, stable native identity, geometry access, update cadence, and citywide completeness remain unverified."
+  },
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": ["native parcel identity if later documented", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "titleholder", "address", "contact", "tax/account", "legal/title", "personal data"],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "National LMB parcel-data layer listed by Geoportal Philippines, with Naga City Assessor custody.",
+    "verifiedOpenScope": "Official catalog/configuration and local custodian evidence only; no bounded parcel feature response or geometry was verified.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_registry_evidenced_no_anonymous_parcel_response",
+  "runtimeReadiness": "held_serial_review",
+  "remainingUncertainty": "Exact-point parcel hit status, map extent, layer schema, CRS, native identity, geometry availability, update cadence, and citywide completeness are unknown. The Geoportal layer's non-open download state and request timeouts were not treated as absence. Packet completion is not source integration or admission."
+}

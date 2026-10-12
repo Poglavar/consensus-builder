@@ -1,0 +1,48 @@
+{
+  "cityCode": 5639,
+  "queueRank": 2429,
+  "name": "Thanlyin",
+  "aliases": ["thanlyin"],
+  "country": "Myanmar",
+  "countryCode": "MM",
+  "iso3": "MMR",
+  "point": [16.7569322094155, 96.2551214234546],
+  "population2025": 241523,
+  "population2025k": 241.523,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Thanlyin Myanmar cadastral parcel map GIS official land records",
+        "result": "Search identified Myanmar's official Settlement and Land Records Department, Survey Department, Yangon Region Development Affairs Thanlyin page, and a Myanmar Information Management Unit Thanlyin township map reference. No public Thanlyin parcel viewer, anonymous parcel API, or safe parcel geometry download was identified.",
+        "actualResultUrls": [
+          "https://slrd.gov.mm/en",
+          "https://surveydepartment.gov.mm/",
+          "https://www.yrdcmyanmar.com/pages.php?pagename=%E1%80%9E%E1%80%94%E1%80%BA%E1%80%9C%E1%80%BB%E1%80%84%E1%80%BA",
+          "https://myanmargeographicalsociety.org/thanlyin-township/"
+        ]
+      },
+      {
+        "language": "Burmese (local/native)",
+        "query": "သန်လျင် မြေစာရင်း မြေပုံ အစိုးရ",
+        "result": "Search identified the official Settlement and Land Records Department Burmese/English presence and an official Yangon Region Development Affairs Thanlyin page. Results did not expose an anonymous Thanlyin cadastral map or parcel-vector endpoint.",
+        "actualResultUrls": [
+          "https://slrd.gov.mm/en",
+          "https://www.yrdcmyanmar.com/pages.php?pagename=%E1%80%9E%E1%80%94%E1%80%BA%E1%80%9C%E1%80%BB%E1%80%84%E1%80%BA",
+          "https://www.moi.gov.mm/iprd/news/126729"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "Attempt 1 completed. National land-record and survey custodians were evidenced, but no Thanlyin-local registry/map service with anonymous parcel identity and geometry was verified. This packet is research completion only, not source integration or runtime admission.",
+  "runtimeReadiness": "held",
+  "resultCategory": "national_custodian_evidenced_no_anonymous_geometry",
+  "sampleGeoJSON": null,
+  "serviceReview": "thanlyin-service-review.json"
+}

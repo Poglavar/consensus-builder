@@ -1,0 +1,158 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "cityId": "wup2025:8103",
+  "cityCode": 8103,
+  "wupCityCode": 8103,
+  "queueRank": 1344,
+  "rank": 1344,
+  "name": "Petrolina",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso2": "BR",
+  "iso3": "BRA",
+  "point": [-9.39892391278909, -40.5095220912627],
+  "centerLatLon": [-9.39892391278909, -40.5095220912627],
+  "pointBasis": "Exact immutable WUP 2025 queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 418619,
+  "population2025k": 418.619,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "aliases": ["petrolina"],
+  "status": "complete",
+  "resultCategory": "official_municipal_cadastral_evidence_geometry_unverified",
+  "registryFound": true,
+  "registryBasis": "First-party Prefeitura de Petrolina material evidences a municipal Cadastro Imobiliário, cadastral/georeferencing work, and procedures requiring cadastral identifiers and parcel plans. No public parcel feature service was verified.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "The official municipal site was country/IP-blocked at the homepage during this attempt (HTTP 403), and no current public viewer JavaScript/configuration or anonymous parcel ID+geometry response was located. This is not evidence of citywide absence.",
+  "source": {
+    "sourceId": "petrolina-pmp-cadastro-imobiliario",
+    "name": "Prefeitura Municipal de Petrolina cadastral/urban-development sources",
+    "url": "https://petrolina.pe.gov.br/",
+    "operator": "Prefeitura Municipal de Petrolina; Secretaria de Finanças and Secretaria de Desenvolvimento Urbano, Habitação e Sustentabilidade materials",
+    "serviceType": "Official municipal cadastral and urban-development documentation; public parcel service not verified",
+    "layer": null,
+    "geometryType": null,
+    "nativeIdField": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "nativeCrs": null,
+    "geometryStatus": "not_verified",
+    "sampleCount": 0,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Municipal Cadastro Imobiliário and related urban parcel/loteamento procedures in Petrolina.",
+    "verifiedOpenScope": "First-party municipal legal/procedure documents and official public-agency references were verified; no open parcel feature response, layer schema, or CRS was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Petrolina Pernambuco official cadastral parcel map GIS municipal geospatial portal",
+        "result": "Found first-party Prefeitura cadastral/legal material describing Cadastro Imobiliário, parcel/loteamento procedures, and municipal georeferencing/update work; no public parcel API or viewer endpoint was found.",
+        "actualResultUrls": [
+          "https://petrolina.pe.gov.br/wp-content/uploads/2026/01/cd59a452-7240-4cc0-bd60-e3c078a788e2-DISPOSICAO-PRELIMINAR.pdf",
+          "https://petrolina.pe.gov.br/wp-content/uploads/2019/01/1.4_Levantamento_Cadastral.pdf",
+          "https://petrolina.pe.gov.br/wp-content/uploads/2019/01/2.2_Loteamento.pdf",
+          "https://petrolina.pe.gov.br/wp-content/uploads/2022/04/41-50.pdf"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Petrolina PE cadastro imobiliário mapa parcelas georreferenciamento prefeitura oficial",
+        "result": "Found official municipal Cadastro Imobiliário/CTM material, levantamento cadastral and loteamento procedures, and a municipal budget record for georreferenciamento e atualização de cadastro imobiliário; no public anonymous parcel geometry service was verified.",
+        "actualResultUrls": [
+          "https://petrolina.pe.gov.br/wp-content/uploads/2026/01/cd59a452-7240-4cc0-bd60-e3c078a788e2-DISPOSICAO-PRELIMINAR.pdf",
+          "https://petrolina.pe.gov.br/wp-content/uploads/2019/01/1.4_Levantamento_Cadastral.pdf",
+          "https://petrolina.pe.gov.br/wp-content/uploads/2019/01/2.2_Loteamento.pdf",
+          "https://petrolina.pe.gov.br/wp-content/uploads/2022/04/41-50.pdf",
+          "https://geope.pe.gov.br/login"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://petrolina.pe.gov.br/",
+        "operator": "Prefeitura Municipal de Petrolina",
+        "scope": "Official municipal domain; homepage was inaccessible from this environment with HTTP 403."
+      },
+      {
+        "url": "https://geope.pe.gov.br/login",
+        "operator": "Governo de Pernambuco / NIPAE-SAD",
+        "scope": "Official state property-management platform; login wall and state-property scope, not an open municipal parcel source. No login attempted."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://petrolina.pe.gov.br/",
+        "method": "GET; anonymous",
+        "httpStatus": 403,
+        "contentType": "text/html",
+        "assessment": "Official homepage returned an IP/country access-denied page; no viewer JavaScript/configuration could be followed."
+      },
+      {
+        "url": "https://petrolina.pe.gov.br/wp-content/uploads/2026/01/cd59a452-7240-4cc0-bd60-e3c078a788e2-DISPOSICAO-PRELIMINAR.pdf",
+        "method": "GET; anonymous",
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "assessment": "First-party updated Código Tributário material evidences municipal Cadastro Imobiliário and individualization of lots; no geometry or unsafe property attributes retained."
+      },
+      {
+        "url": "https://petrolina.pe.gov.br/wp-content/uploads/2019/01/1.4_Levantamento_Cadastral.pdf",
+        "method": "GET; anonymous",
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "assessment": "First-party cadastral procedure document; it refers to location, limits, areas, plans, and updated municipal inscription, but is not a parcel dataset."
+      },
+      {
+        "url": "https://petrolina.pe.gov.br/wp-content/uploads/2019/01/2.2_Loteamento.pdf",
+        "method": "GET; anonymous search result / first-party document",
+        "httpStatus": null,
+        "contentType": "application/pdf",
+        "assessment": "First-party loteamento procedure evidence found in discovery; no parcel feature endpoint or geometry response."
+      },
+      {
+        "url": "https://petrolina.pe.gov.br/wp-content/uploads/2022/04/41-50.pdf",
+        "method": "GET; anonymous search result / first-party document",
+        "httpStatus": null,
+        "contentType": "application/pdf",
+        "assessment": "First-party municipal budget material references georeferencing and updating the municipal real-estate cadastre; no geometry response."
+      },
+      {
+        "url": "https://geope.pe.gov.br/login",
+        "method": "GET; anonymous",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Public landing/login page confirms a state property platform and login requirement; no credentials or restricted lookup attempted."
+      }
+    ],
+    "schemaCrs": {
+      "nativeCrs": null,
+      "geometryResponseSchema": null,
+      "viewerLayers": []
+    }
+  },
+  "safeFieldAllowlist": ["safe native parcel ID if later verified", "geometry", "CRS/layer metadata", "HTTP status/content type", "public service metadata"],
+  "remainingUncertainty": "No live municipal viewer/configuration, public service endpoint, parcel layer schema, native identity, CRS, bounded geometry response, update currency, exact-point containment, or citywide completeness was verified. No owner, address, contact, titleholder, tax, inscription, or personal fields were retained.",
+  "registryEvidenceUrls": [
+    "https://petrolina.pe.gov.br/wp-content/uploads/2026/01/cd59a452-7240-4cc0-bd60-e3c078a788e2-DISPOSICAO-PRELIMINAR.pdf",
+    "https://petrolina.pe.gov.br/wp-content/uploads/2019/01/1.4_Levantamento_Cadastral.pdf",
+    "https://petrolina.pe.gov.br/wp-content/uploads/2019/01/2.2_Loteamento.pdf",
+    "https://petrolina.pe.gov.br/wp-content/uploads/2022/04/41-50.pdf"
+  ],
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": ["petrolina-pmp-cadastro-imobiliario"],
+  "adapterReady": false,
+  "nextStep": "Serial reviewer should independently inspect the current Prefeitura portal and any municipal GIS configuration, verify a safe parcel layer/schema/CRS/native identity with a bounded anonymous request, and assess coverage before any runtime admission; keep held meanwhile.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

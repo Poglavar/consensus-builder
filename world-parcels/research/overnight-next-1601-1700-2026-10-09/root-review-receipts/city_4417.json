@@ -1,0 +1,16 @@
+{
+  "taskId": "city:4417",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-4417-naga.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/naga-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:57:56Z",
+  "reason": "The Naga City Assessor custody and Geoportal parcel-layer listing are evidenced, but bounded WMS requests timed out. No native ID or polygon was retrieved; timeout is not absence.",
+  "identityCheck": "Queue, ranked roster, and original WUP 2025 CSV agree on code, rank, country, point and population in persons.",
+  "searchCheck": "Paired packet and review record distinct English and local-language executed queries with result URLs.",
+  "sampleCheck": "No full parcel polygon retained; therefore no native parcel ID or unsafe sample attributes to admit.",
+  "admissionGates": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed details-panel verification are not evidenced. Runtime remains held."
+}

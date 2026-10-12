@@ -1,0 +1,28 @@
+{
+  "cityRecord": "city-7991-petr-polis.json",
+  "cityCode": 7991,
+  "queueRank": 2780,
+  "city": "Petrópolis",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "reviewStatus": "held",
+  "reviewOutcome": "The official Prefeitura de Petrópolis Mapas e Cartografia service and SigWeb public map project were found, with EPSG:31983 metadata, but no anonymous Petrópolis parcel ID-plus-geometry response was verified. The packet is complete as discovery evidence and held from runtime qualification.",
+  "queryAndRequestOutcomes": "Separate English and Brazilian Portuguese discovery queries were executed. Official municipal search results exposed the SigWeb public project and map metadata. A bounded direct GET to the viewer timed out, and a current web fetch reported 404; no parcel schema, native ID, geometry response or service configuration was obtained. No login, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used.",
+  "cityOrLocalCustodian": "The Prefeitura Municipal de Petrópolis is the evidenced local GIS/map custodian through its Mapas e Cartografia service and SigWeb portal. The evidence concerns georeferenced municipal planning/base-map data; a local cadastral parcel registry or open parcel endpoint was not established.",
+  "safeFieldAllowlist": ["stable native parcel ID when independently verified", "geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"],
+  "schemaAndCrs": {"crsObserved": "EPSG:31983 / SIRGAS 2000 UTM zone 23S", "schemaObserved": null, "parcelIdentityObserved": false},
+  "sampleGeojson": null,
+  "scopeLimits": [
+    "No citywide completeness claim.",
+    "No exact-point or map-extent absence inference.",
+    "WUP point remains exactly [-22.5020859132972, -43.1788111216512] in latitude/longitude order.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used.",
+    "No parcel owner, address, titleholder, personal, tax/account, certificate, or contact fields were requested or retained.",
+    "No parcel sample GeoJSON was retained because no safe native ID-plus-geometry response was verified.",
+    "No registry, catalog, runtime configuration, queue, identity ledger, or global report was changed."
+  ],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "An interactive SigWeb workflow or undiscovered municipal service may provide parcel geometry in a later attempt. The observed timeout/404 are transport and route outcomes, not evidence of cadastral absence.",
+  "integrationDisposition": "Research packet only; no source integration or admission."
+}

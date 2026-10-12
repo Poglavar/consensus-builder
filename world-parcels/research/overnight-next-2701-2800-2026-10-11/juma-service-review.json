@@ -1,0 +1,20 @@
+{
+  "cityRecord": "city-2352-juma.json",
+  "cityCode": 2352,
+  "queueRank": 2769,
+  "city": "Juma",
+  "country": "Uzbekistan",
+  "countryCode": "UZ",
+  "reviewStatus": "held",
+  "reviewOutcome": "Official national cadastral/geoinformation services were evidenced, but no qualifying Juma public parcel-polygon response or safe retained geometry sample was verified.",
+  "queryAndRequestOutcomes": "Separate English and Uzbek discovery queries were executed and recorded. The official National Geoinformation Portal, its official Digital Government description, and the reported ArcGIS REST host were investigated anonymously. The portal and REST host timed out; the official description exposed service scope but not a geometry endpoint. No parcel request was issued without a verified endpoint.",
+  "cityOrLocalCustodian": "The Cadastre Agency is evidenced as the national official custodian/operator. A Juma or Samarqand local registry/cadastre custodian was not evidenced in this attempt; registryFound is true only for the official national cadastral map/registry service lead, not for a local adapter.",
+  "registryFound": null,
+  "safeFieldAllowlist": ["stable native parcel/object ID when independently verified", "geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate number", "personal identity", "registration details"],
+  "schemaAndCrs": "No qualifying parcel layer metadata, schema, or CRS response was obtained from the anonymous portal/REST checks.",
+  "sampleGeojson": null,
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "A runtime-only route, map interaction, or authenticated service may exist. A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI would not establish citywide absence; this packet makes no such claim. Coordinates and population fields were preserved exactly as required.",
+  "integrationDisposition": "Research packet only; not source integration or admission. Only the two named city artifacts were written; no registry/catalog/runtime files were changed."
+}

@@ -1,0 +1,41 @@
+{
+  "cityCode": 3980,
+  "queueRank": 2405,
+  "name": "Ho",
+  "country": "Ghana",
+  "countryCode": "GH",
+  "point": [6.60780596849067, 0.473621018796183],
+  "population2025": 243211,
+  "population2025k": 243.211,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ho Ghana official cadastral parcel map Lands Commission Ghana parcel search",
+        "result": "Official Ghana Lands Commission results identify the Commission as the national land-information and cadastral custodian, list official/administrative searches and cadastral plan services, and identify a Volta Regional Lands Commission office in Ho. The public online-services portal is reachable; the separate ELIS page is a login wall.",
+        "actualResultUrls": [
+          "https://www.lc.gov.gh/",
+          "https://www.lc.gov.gh/fees-charges/",
+          "https://www.lc.gov.gh/contact-us/csau/",
+          "https://www.lc.gov.gh/storage/2023/12/CLIENT-SERVICE-CHARTER.pdf",
+          "https://onlineservices.lc.gov.gh/",
+          "https://elis.lc.gov.gh/",
+          "https://mlnr.gov.gh/agency/lands-commission/"
+        ]
+      },
+      {
+        "language": "Ewe/local",
+        "query": "Ho Ghana ƒe agble dzodzro cadastral parcel map Lands Commission",
+        "result": "No distinct official Ewe-language parcel viewer or local cadastral API result was found. The official English-language Ghana Lands Commission sources remained the authoritative route for Ho and the Volta Region.",
+        "actualResultUrls": [
+          "https://www.lc.gov.gh/",
+          "https://www.lc.gov.gh/contact-us/csau/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "The Ghana Lands Commission is evidenced as the official custodian, and its Volta Regional office is specifically located in Ho. Public official service pages document cadastral/parcel plans and official searches, but no anonymous public parcel geometry response or map API was verified. No polygon sample is retained. This packet is not source integration or runtime admission."
+}

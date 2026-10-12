@@ -1,0 +1,39 @@
+{
+  "cityRecord": "city-5716-fukushima.json",
+  "schemaVersion": "1.0",
+  "cityCode": 5716,
+  "queueRank": 3296,
+  "city": "Fukushima",
+  "country": "Japan",
+  "countryCode": "JP",
+  "pointLatLon": [37.7688438833364, 140.462647337643],
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "status": "complete",
+  "disposition": "held",
+  "summary": "A local official Fukushima City parcel-reference map is evidenced, but no safe anonymous parcel-vector response with a stable native identity and full polygon was verified. Runtime remains held.",
+  "searchQueries": [
+    {"language": "English", "query": "Fukushima City official cadastral map parcel GIS public map API Japan Fukushima city cadastral map", "outcome": "Official city e-map and parcel-reference-map evidence found; current public vector endpoint not verified.", "resultUrls": ["https://www.city.fukushima.fukushima.jp/shisei/johokai-kojinjohohogo/10473.html", "https://www.sonicweb-asp.jp/fukushimacity/", "https://services1.arcgis.com/t2DiVWqSr8z6f9DT/ArcGIS/rest/services/fukushimashimap_%E8%A1%A8%E7%A4%BA/FeatureServer"]},
+    {"language": "Japanese (native/local)", "query": "福島市 地籍図 GIS 公開 地図 不動産 登記 地図", "outcome": "Official Japanese city result confirms 地番参考図 in the public e-map; no anonymous safe parcel geometry response verified.", "resultUrls": ["https://www.city.fukushima.fukushima.jp/shisan-tochi/kurashi/zekin/koteshisanze/sedo/chibansankozu.html", "https://www.city.fukushima.fukushima.jp/shisei/johokai-kojinjohohogo/10473.html", "https://houmukyoku.moj.go.jp/fukushima/static/click_map01.html"]}
+  ],
+  "attemptedRoutes": [
+    {"method": "GET", "url": "https://www.city.fukushima.fukushima.jp/shisei/johokai-kojinjohohogo/10473.html", "httpStatus": 200, "outcome": "Official Fukushima City e-map information page returned successfully; it documents the public geographic-information service and cautions that data are approximate reference information."},
+    {"method": "GET", "url": "https://www.sonicweb-asp.jp/fukushimacity/", "httpStatus": 200, "outcome": "Current public viewer returned successfully. Its map.js configuration exposes apiUrl https://www.sonicweb-asp.jp/fukushimacity/api/ and a raster theme th_31 named 地番参考図; the theme has no point_search or area_search parcel feature definition."},
+    {"method": "GET", "url": "https://www.sonicweb-asp.jp/fukushimacity/map.js?ver=1.0.347", "httpStatus": 200, "outcome": "Viewer JavaScript/configuration inspected. The parcel-reference theme is raster-only; gazetteer configuration exposes Japanese 地番 search types but no safe parcel-vector schema or public geometry response was obtained."},
+    {"method": "GET", "url": "https://services1.arcgis.com/t2DiVWqSr8z6f9DT/ArcGIS/rest/services/fukushimashimap_%E8%A1%A8%E7%A4%BA/FeatureServer", "httpStatus": 400, "outcome": "Previously indexed ArcGIS service URL currently returns Invalid URL; no WAF or TLS bypass attempted and no geometry used."},
+    {"method": "GET", "url": "https://services1.arcgis.com/t2DiVWqSr8z6f9DT/ArcGIS/rest/services/fukushimashimap_%E8%A1%A8%E7%A4%BA/FeatureServer/0/query", "httpStatus": 400, "outcome": "Bounded exact-point query route could not be executed because the current service endpoint is invalid; no exact-point hit or miss is inferred."}
+  ],
+  "schemaAndCrs": {"viewerConfig": "SonicWeb map.js; raster theme th_31 / 地番参考図", "parcelApi": null, "geometryCrs": "No parcel geometry response; viewer config does not establish a parcel-vector CRS.", "nativeIdentity": null, "sourceFieldMapping": null, "compositeKeyProvenance": null, "boundedAnonymousResponse": null},
+  "safeFieldAllowlist": ["stable native parcel identity only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "nativeFieldMapping": {},
+  "compositeKeyProvenance": null,
+  "crs": null,
+  "geometryQuality": "No parcel polygon retrieved.",
+  "geometryDecision": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "exactWupPointTest": "No usable parcel-vector response; exact point preserved and not used to infer absence."},
+  "coverageAssessment": {"claimedScope": "Fukushima City public e-map and local real-estate-registration discovery.", "verifiedOpenScope": "Official city parcel-reference map is available as a public viewer theme; vector parcel coverage, safe identity schema, CRS, and anonymous feature access are unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": ["Exact WUP point [37.7688438833364, 140.462647337643] was preserved in latitude/longitude order; no coordinate shift was made.", "A zero exact-point hit, invalid service endpoint, raster-only viewer, or unavailable vector API is not evidence of citywide absence.", "No retained GeoJSON sample was written because no safe full parcel polygon and stable native identity were obtained.", "No raw source-specific attribute set was retained; no unsafe owner, address, contact, titleholder, tax/account, or personal fields were requested.", "This packet records research completion only and is not source integration or registry admission."],
+  "uncertainty": "The city custodian and current public viewer are evidenced, but the parcel-reference layer is raster-only in the inspected configuration. A separate authenticated, unindexed, or office-only cadastral source may exist; native IDs, vector schema, CRS, completeness, licensing, and update cadence remain unresolved."
+}

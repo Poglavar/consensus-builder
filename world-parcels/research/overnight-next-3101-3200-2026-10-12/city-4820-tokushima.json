@@ -1,0 +1,46 @@
+{
+  "cityCode": 4820,
+  "queueRank": 3195,
+  "name": "Tokushima",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso2": "JP",
+  "iso3": "JPN",
+  "locId": 392,
+  "capital": false,
+  "point": [34.0705067874314, 134.54514721733],
+  "population2025": 188589,
+  "population2025k": 188.589,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {"language": "English", "query": "Tokushima City official cadastral parcel map GIS land registry Japan", "result": "First-party discovery found Tokushima City's official urban-construction policy/cadastral-survey page, the Tokushima Legal Affairs Bureau map-making page, and the prefectural open-data dataset for Tokushima City's parcel-number reference maps.", "actualResultUrls": ["https://www.city.tokushima.tokushima.jp/shisei/shiyakusho/ka_ichiran/toshikensetsu/tosi_seisaku.html", "https://houmukyoku.moj.go.jp/tokushima/page000170.html", "https://opendata.pref.tokushima.lg.jp/dataset/5190.html"]},
+      {"language": "Japanese (local/native language)", "query": "徳島市 公式 地籍図 公図 GIS 土地 台帳 地図", "result": "公式検索で、徳島市の地籍調査案内、法務局の地図作成案内、徳島市地番参考図の公開データセットを確認した。地番参考図はSHAPE形式で公開され、徳島市財政部税務事務所資産税課が作成者として示されている。", "actualResultUrls": ["https://www.city.tokushima.tokushima.jp/shisei/machi_keikaku/townplanning/tisekityosa/chiseki_chosa.html", "https://houmukyoku.moj.go.jp/tokushima/page000170.html", "https://opendata.pref.tokushima.lg.jp/dataset/5190.html"]}
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {"custodian": "Tokushima City Tax Office, Asset Tax Division is identified by the first-party open-data API as the dataset creator for the city's parcel-number reference maps; cadastral-survey work is assigned to the city's Urban Construction Policy Division. The Legal Affairs Bureau is the national land-registration map custodian.", "scope": "Municipal parcel-number reference maps are citywide dataset material, but the publisher explicitly says they are not proof of boundaries, exact position/shape, or rights; this is not a title/owner registry export.", "evidenceUrls": ["https://opendata.pref.tokushima.lg.jp/dataset/5190.html", "https://opendata.pref.tokushima.lg.jp/api/package_show?id=4ad7f7cc-34e6-4550-b16c-8534e68f2178", "https://www.city.tokushima.tokushima.jp/shisei/shiyakusho/ka_ichiran/toshikensetsu/tosi_seisaku.html", "https://houmukyoku.moj.go.jp/tokushima/page000170.html"]},
+  "parcelDiscovery": {"geometryFound": true, "sampleFiles": ["tokushima-sample.geojson"], "source": "Tokushima Prefecture Our Open Data / Tokushima City parcel-number reference map ZIP", "nativeIdField": "AZACD + TIBAN", "crs": "EPSG:2446 (JGD2000 / Japan Plane Rectangular CS IV); retained sample reprojected to EPSG:4326 GeoJSON", "boundedResponse": {"format": "ESRI Shapefile polygons inside ZIP", "observedLayer": "11新町", "featureCount": 2229, "sourceDate": "2026-01-01", "matchedNativeIdentity": "AZACD=14300 and TIBAN=3-3", "exactPointTest": "The exact WUP point was tested only after broad city data retrieval and fell within the retained polygon; coordinates were not shifted."}, "fieldMapping": {"nativeIdentity": "AZACD and TIBAN concatenated with '-'", "geometry": "Shapefile polygon geometry", "ignoredUnsafeFields": ["OWNERCD", "KANJNAME", "KANANAME", "JYUSHO", "TELNO", "ZIPCD", "SETAICD"]}, "compositeKeyProvenance": "The source schema exposes AZACD and TIBAN; the retained id 14300-3-3 is their source-field composite, not an internal row number."},
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://www.city.tokushima.tokushima.jp/shisei/shiyakusho/ka_ichiran/toshikensetsu/tosi_seisaku.html", "outcome": "HTTP 200 official city page; identifies Urban Construction Policy Division work including cadastral surveys and links to cadastral-survey information."},
+    {"method": "GET", "url": "https://houmukyoku.moj.go.jp/tokushima/page000170.html", "outcome": "HTTP 200 official Legal Affairs Bureau page; explains statutory land-registration maps and lists Tokushima map-making districts. General agency material, not by itself citywide open parcel geometry."},
+    {"method": "GET", "url": "https://opendata.pref.tokushima.lg.jp/dataset/5190.html", "outcome": "HTTP 200 official prefectural catalog; exposes Tokushima City parcel-number reference maps as a ZIP in SHAPE format, current as of 2026-01-01, with a rights/accuracy disclaimer."},
+    {"method": "GET", "url": "https://opendata.pref.tokushima.lg.jp/api/package_show?id=4ad7f7cc-34e6-4550-b16c-8534e68f2178", "outcome": "HTTP 200 public catalog API; confirmed dataset creator Tokushima City Tax Office Asset Tax Division, public ZIP resource, CC BY label, and resource download URL."},
+    {"method": "GET", "url": "https://opendata.pref.tokushima.lg.jp/fs/5/9/5/5/5/_/________8_1_1____.zip", "outcome": "HTTP 200 public ZIP downloaded to ignored scratch; nested district SHAPE archives were inspected. Layer 11新町 returned 2229 Polygon features, EPSG:2446, and safe source fields AZACD/TIBAN. No login, CAPTCHA, private token, or unsafe field request."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": "tokushima-sample.geojson",
+  "geometryDecision": {"verified": true, "sourceId": "14300-3-3", "sampleCount": 1, "sampleFile": "tokushima-sample.geojson", "nativeId": "14300-3-3", "nativeIdField": "AZACD + TIBAN", "exactWupPointTest": "hit after broad dataset retrieval; not used to infer citywide coverage"},
+  "coverageAssessment": {"claimedScope": "Tokushima City parcel-number reference maps published by the municipality through the prefectural open-data catalog.", "verifiedOpenScope": "A public citywide ZIP download was verified and a bounded native polygon response was observed; the publisher's disclaimer means legal boundary/right accuracy and complete cadastral coverage are not established.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review required",
+  "integration": "not_admitted",
+  "scopeLimits": ["The dataset is a parcel-number reference map, not a legal title or rights source.", "The publisher disclaims proof of boundaries, exact position/shape, and rights; no owner or unsafe attributes were retained.", "One full polygon is retained, with exactly one canonical native identity in GeoJSON properties.", "The exact WUP point was preserved in latitude/longitude order and was not shifted.", "Packet completion is research evidence only, not source integration or runtime admission."],
+  "uncertainty": "Public citywide geometry is available in the reference-map ZIP and one safe polygon was reproduced, but adapter semantics, update cadence beyond the published snapshot, legal boundary accuracy, and citywide completeness remain unresolved."
+}

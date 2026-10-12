@@ -1,0 +1,43 @@
+{
+  "cityCode": 1393,
+  "queueRank": 1945,
+  "city": "Smolensk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "point": [54.7814141645348, 32.0525610696316],
+  "population2025": 297177,
+  "population2025k": 297.177,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Smolensk official cadastral map public parcel map Rosreestr Smolensk",
+        "result": "Found the official Smolensk municipal map, the official city administration notice that the public cadastral map moved to NSPD, and official regional land/property service pages. The municipal map is a local public GIS with cadastral-value and planning layers; no anonymous parcel feature response was found in the bounded checks.",
+        "actualResultUrls": [
+          "https://map.smoladmin.ru/",
+          "https://www.smoladmin.ru/press-centr/upravleniya-rosreestra-po-smolenskoj-oblasti-informiruet/publichnaya-kadastrovaya-karta-perenesena-na-nspd/",
+          "https://depim.admin-smolensk.ru/deiatelnost/perechen-gosudarstvennyh-uslug/utverzhdenie-shemy-raspolozheniya-zemelnogo-uchastka-ili-zemelnyh-uchastkov-na-kadastrovom-plane-territorii/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Смоленск официальный кадастровая карта публичная карта земельных участков",
+        "result": "Found the official municipal Smolensk map and official Russian-language city/region pages identifying NSPD as the current public cadastral-map destination and describing land-parcel and cadastral-plan services. The live municipal map returned an image and map-layer metadata, but not a safe parcel ID-plus-geometry response.",
+        "actualResultUrls": [
+          "https://map.smoladmin.ru/",
+          "https://www.smoladmin.ru/press-centr/upravleniya-rosreestra-po-smolenskoj-oblasti-informiruet/publichnaya-kadastrovaya-karta-perenesena-na-nspd/",
+          "https://www.admin-smolensk.ru/fkp/kak-uznat-kadastrovuyu-stoimost-obekta-nedvizhimosti/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Smolensk municipal GIS at https://map.smoladmin.ru/ is a local public map operated under the city administration domain and advertises cadastral land-value, land-use/zoning, and planning layers. The official city notice identifies NSPD as the successor public cadastral-map route. This establishes local map/registry evidence, but not a verified parcel adapter.",
+  "serviceReview": "smolensk-service-review.json",
+  "runtimeReadiness": "held_no_verified_public_geometry"
+}

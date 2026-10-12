@@ -1,0 +1,1223 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "1928",
+  "cityName": "Hagen",
+  "sourceId": "de-nrw-lika-flurstueck",
+  "candidateSha256": "91a10a6bb61d448a305a41268cb65cc3e5120b16df69a1344723f35075eed3c8",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 235,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 235,
+      "collectedUniqueCount": 235
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 688
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 6,
+      "distinctFeatureQueries": 6,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "ad5cb0c73323959bd1495b6d0dbf79dc3857d7d9c1b72983981c3ece07a04b11",
+      "featureCount": 235,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32632",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "ad5cb0c73323959bd1495b6d0dbf79dc3857d7d9c1b72983981c3ece07a04b11",
+  "featureCount": 235,
+  "sampleIds": [
+    "DE-NRW-05132001100061______",
+    "DE-NRW-05132001100062______",
+    "DE-NRW-05132001100063______"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        7.466,
+        51.364,
+        7.467,
+        51.365
+      ],
+      "complete": true,
+      "featureCount": 35,
+      "ids": [
+        "DE-NRW-05132001100063______",
+        "DE-NRW-05132001100078______",
+        "DE-NRW-05132001100079______",
+        "DE-NRW-05132001100137______",
+        "DE-NRW-05132001200173______",
+        "DE-NRW-05132001200219______",
+        "DE-NRW-05132001200154______",
+        "DE-NRW-05132001200153______",
+        "DE-NRW-05132001200152______",
+        "DE-NRW-05132001200203______",
+        "DE-NRW-05132001200210______",
+        "DE-NRW-05132001200204______",
+        "DE-NRW-05132001200237______",
+        "DE-NRW-05132001200239______",
+        "DE-NRW-05132001200171______",
+        "DE-NRW-05132001200172______",
+        "DE-NRW-05132001200238______",
+        "DE-NRW-05132001200169______",
+        "DE-NRW-05132001200236______",
+        "DE-NRW-05132001200211______",
+        "DE-NRW-05132001200212______",
+        "DE-NRW-05132001200213______",
+        "DE-NRW-05132001200214______",
+        "DE-NRW-05132001200215______",
+        "DE-NRW-05132001200209______",
+        "DE-NRW-05132001100080______",
+        "DE-NRW-05132001200216______",
+        "DE-NRW-05132001100169______",
+        "DE-NRW-05132001100170______",
+        "DE-NRW-05132001100084______",
+        "DE-NRW-05132001100083______",
+        "DE-NRW-05132001100086______",
+        "DE-NRW-05132001100085______",
+        "DE-NRW-05132001200208______",
+        "DE-NRW-05132001200217______"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        7.467,
+        51.364,
+        7.468,
+        51.365
+      ],
+      "complete": true,
+      "featureCount": 25,
+      "ids": [
+        "DE-NRW-05132001100063______",
+        "DE-NRW-05132001100073______",
+        "DE-NRW-05132001100074______",
+        "DE-NRW-05132001100076______",
+        "DE-NRW-05132001100077______",
+        "DE-NRW-05132001100087______",
+        "DE-NRW-05132001100179______",
+        "DE-NRW-05132001100106______",
+        "DE-NRW-05132001100078______",
+        "DE-NRW-05132001100155______",
+        "DE-NRW-05132001100156______",
+        "DE-NRW-05132001100079______",
+        "DE-NRW-05132001100082______",
+        "DE-NRW-05132001100108______",
+        "DE-NRW-05132001100109______",
+        "DE-NRW-05132001100113______",
+        "DE-NRW-05132001100110______",
+        "DE-NRW-05132001100107______",
+        "DE-NRW-05132001100114______",
+        "DE-NRW-05132001100111______",
+        "DE-NRW-05132001100080______",
+        "DE-NRW-05132001100169______",
+        "DE-NRW-05132001100170______",
+        "DE-NRW-05132001100083______",
+        "DE-NRW-05132001100086______"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        7.468,
+        51.364,
+        7.469,
+        51.365
+      ],
+      "complete": true,
+      "featureCount": 19,
+      "ids": [
+        "DE-NRW-05132001100087______",
+        "DE-NRW-05132001100178______",
+        "DE-NRW-05132001100100______",
+        "DE-NRW-05132001100179______",
+        "DE-NRW-05132001100105______",
+        "DE-NRW-05132001100106______",
+        "DE-NRW-05132001100146______",
+        "DE-NRW-05132001100098______",
+        "DE-NRW-05132001100101______",
+        "DE-NRW-05132001100102______",
+        "DE-NRW-05132001100177______",
+        "DE-NRW-05132001100141______",
+        "DE-NRW-05132001100126______",
+        "DE-NRW-05132001100121______",
+        "DE-NRW-05132001100113______",
+        "DE-NRW-05132001100107______",
+        "DE-NRW-05132001100115______",
+        "DE-NRW-05132001100114______",
+        "DE-NRW-05132001100120______"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        7.466,
+        51.365,
+        7.467,
+        51.366
+      ],
+      "complete": true,
+      "featureCount": 42,
+      "ids": [
+        "DE-NRW-05132001100063______",
+        "DE-NRW-05132001200310______",
+        "DE-NRW-05132001200085______",
+        "DE-NRW-05132001200094______",
+        "DE-NRW-05132001200095______",
+        "DE-NRW-05132001200089______",
+        "DE-NRW-05132001200086______",
+        "DE-NRW-05132001200096______",
+        "DE-NRW-05132001200097______",
+        "DE-NRW-05132001200098______",
+        "DE-NRW-05132001200088______",
+        "DE-NRW-05132001200084______",
+        "DE-NRW-05132001200083______",
+        "DE-NRW-05132001200100______",
+        "DE-NRW-05132001200165______",
+        "DE-NRW-05132001200164______",
+        "DE-NRW-05132001200166______",
+        "DE-NRW-05132001200087______",
+        "DE-NRW-05132001200162______",
+        "DE-NRW-05132001200163______",
+        "DE-NRW-05132001200167______",
+        "DE-NRW-05132001200161______",
+        "DE-NRW-05132001200158______",
+        "DE-NRW-05132001200160______",
+        "DE-NRW-05132001200156______",
+        "DE-NRW-05132001200077______",
+        "DE-NRW-05132001200252______",
+        "DE-NRW-05132001200224______",
+        "DE-NRW-05132001200225______",
+        "DE-NRW-05132001200254______",
+        "DE-NRW-05132001200082______",
+        "DE-NRW-05132001200157______",
+        "DE-NRW-05132001200324______",
+        "DE-NRW-05132001200155______",
+        "DE-NRW-05132001200219______",
+        "DE-NRW-05132001200154______",
+        "DE-NRW-05132001200237______",
+        "DE-NRW-05132001200239______",
+        "DE-NRW-05132001200171______",
+        "DE-NRW-05132001200238______",
+        "DE-NRW-05132001200169______",
+        "DE-NRW-05132001200236______"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        7.467,
+        51.365,
+        7.468,
+        51.366
+      ],
+      "complete": true,
+      "featureCount": 24,
+      "ids": [
+        "DE-NRW-05132001100061______",
+        "DE-NRW-05132001100062______",
+        "DE-NRW-05132001100064______",
+        "DE-NRW-05132001100067______",
+        "DE-NRW-05132001100070______",
+        "DE-NRW-05132001100176______",
+        "DE-NRW-05132001100071______",
+        "DE-NRW-05132001100072______",
+        "DE-NRW-05132001100063______",
+        "DE-NRW-05132001100073______",
+        "DE-NRW-05132001100074______",
+        "DE-NRW-05132001100076______",
+        "DE-NRW-05132001100077______",
+        "DE-NRW-05132001100087______",
+        "DE-NRW-05132001100155______",
+        "DE-NRW-05132001200310______",
+        "DE-NRW-05132001200097______",
+        "DE-NRW-05132001200098______",
+        "DE-NRW-05132001200100______",
+        "DE-NRW-05132001200165______",
+        "DE-NRW-05132001200164______",
+        "DE-NRW-05132001200166______",
+        "DE-NRW-05132001200167______",
+        "DE-NRW-05132001200236______"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        7.468,
+        51.365,
+        7.469,
+        51.366
+      ],
+      "complete": true,
+      "featureCount": 25,
+      "ids": [
+        "DE-NRW-05132001100035______",
+        "DE-NRW-05132001100037______",
+        "DE-NRW-05132001100038______",
+        "DE-NRW-05132001100061______",
+        "DE-NRW-05132001100088______",
+        "DE-NRW-05132001100089______",
+        "DE-NRW-05132001100092______",
+        "DE-NRW-05132001100091______",
+        "DE-NRW-05132001100093______",
+        "DE-NRW-05132001100094______",
+        "DE-NRW-05132001100036______",
+        "DE-NRW-05132001100064______",
+        "DE-NRW-05132001100065______",
+        "DE-NRW-05132001100066______",
+        "DE-NRW-05132001100067______",
+        "DE-NRW-05132001100070______",
+        "DE-NRW-05132001100176______",
+        "DE-NRW-05132001100071______",
+        "DE-NRW-05132001100074______",
+        "DE-NRW-05132001100087______",
+        "DE-NRW-05132001100178______",
+        "DE-NRW-05132001100100______",
+        "DE-NRW-05132001100095______",
+        "DE-NRW-05132001100146______",
+        "DE-NRW-05132001100098______"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        7.466,
+        51.366,
+        7.467,
+        51.367
+      ],
+      "complete": true,
+      "featureCount": 24,
+      "ids": [
+        "DE-NRW-05132001100163______",
+        "DE-NRW-05132001100009______",
+        "DE-NRW-05132001100010______",
+        "DE-NRW-05132001200276______",
+        "DE-NRW-05132001200277______",
+        "DE-NRW-05132001100142______",
+        "DE-NRW-05132001100061______",
+        "DE-NRW-05132001200227______",
+        "DE-NRW-05132001200075______",
+        "DE-NRW-05132001200074______",
+        "DE-NRW-05132001200073______",
+        "DE-NRW-05132001200228______",
+        "DE-NRW-05132001100143______",
+        "DE-NRW-05132001200310______",
+        "DE-NRW-05132001200072______",
+        "DE-NRW-05132001200092______",
+        "DE-NRW-05132001200093______",
+        "DE-NRW-05132001200278______",
+        "DE-NRW-05132001200076______",
+        "DE-NRW-05132001200085______",
+        "DE-NRW-05132001200094______",
+        "DE-NRW-05132001200095______",
+        "DE-NRW-05132001200089______",
+        "DE-NRW-05132001200077______"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        7.467,
+        51.366,
+        7.468,
+        51.367
+      ],
+      "complete": true,
+      "featureCount": 26,
+      "ids": [
+        "DE-NRW-05132001100004______",
+        "DE-NRW-05132001100163______",
+        "DE-NRW-05132001100006______",
+        "DE-NRW-05132001100008______",
+        "DE-NRW-05132001100009______",
+        "DE-NRW-05132001100005______",
+        "DE-NRW-05132001100010______",
+        "DE-NRW-05132001000178______",
+        "DE-NRW-05132001100007______",
+        "DE-NRW-05132001100019______",
+        "DE-NRW-05132001100018______",
+        "DE-NRW-05132001100142______",
+        "DE-NRW-05132001100145______",
+        "DE-NRW-05132001100144______",
+        "DE-NRW-05132001100020______",
+        "DE-NRW-05132001100021______",
+        "DE-NRW-05132001100014______",
+        "DE-NRW-05132001100017______",
+        "DE-NRW-05132001100015______",
+        "DE-NRW-05132001100016______",
+        "DE-NRW-05132001100061______",
+        "DE-NRW-05132001100062______",
+        "DE-NRW-05132001100064______",
+        "DE-NRW-05132001100063______",
+        "DE-NRW-05132001100143______",
+        "DE-NRW-05132001200310______"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        7.468,
+        51.366,
+        7.469,
+        51.367
+      ],
+      "complete": true,
+      "featureCount": 30,
+      "ids": [
+        "DE-NRW-05132001000097______",
+        "DE-NRW-05132001000114______",
+        "DE-NRW-05132001000113______",
+        "DE-NRW-05132001000117______",
+        "DE-NRW-05132001000115______",
+        "DE-NRW-05132001000163______",
+        "DE-NRW-05132001000178______",
+        "DE-NRW-05132001100019______",
+        "DE-NRW-05132001100018______",
+        "DE-NRW-05132001100028______",
+        "DE-NRW-05132001100029______",
+        "DE-NRW-05132001100027______",
+        "DE-NRW-05132001100020______",
+        "DE-NRW-05132001100026______",
+        "DE-NRW-05132001100025______",
+        "DE-NRW-05132001100034______",
+        "DE-NRW-05132001100024______",
+        "DE-NRW-05132001100023______",
+        "DE-NRW-05132001100022______",
+        "DE-NRW-05132001100035______",
+        "DE-NRW-05132001100021______",
+        "DE-NRW-05132001100030______",
+        "DE-NRW-05132001100031______",
+        "DE-NRW-05132001100032______",
+        "DE-NRW-05132001100033______",
+        "DE-NRW-05132001100037______",
+        "DE-NRW-05132001100040______",
+        "DE-NRW-05132001100038______",
+        "DE-NRW-05132001100061______",
+        "DE-NRW-05132001100036______"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        7.467,
+        51.363,
+        7.468,
+        51.364
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "ids": [
+        "DE-NRW-05132804700115______",
+        "DE-NRW-05132804700133______",
+        "DE-NRW-05132804700082______",
+        "DE-NRW-05132804700136______",
+        "DE-NRW-05132804700089______",
+        "DE-NRW-05132804700081______",
+        "DE-NRW-05132001100087______",
+        "DE-NRW-05132001100113______",
+        "DE-NRW-05132001100110______",
+        "DE-NRW-05132001100114______",
+        "DE-NRW-05132001100116______",
+        "DE-NRW-05132001100111______",
+        "DE-NRW-05132001100112______",
+        "DE-NRW-05132001100137______",
+        "DE-NRW-05132001100139______",
+        "DE-NRW-05132001100086______",
+        "DE-NRW-05132804700108______"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        7.467,
+        51.367,
+        7.468,
+        51.368
+      ],
+      "complete": true,
+      "featureCount": 18,
+      "ids": [
+        "DE-NRW-05132001000175______",
+        "DE-NRW-05132001000055______",
+        "DE-NRW-05132001000174______",
+        "DE-NRW-05132001100165______",
+        "DE-NRW-05132001100004______",
+        "DE-NRW-05132001100163______",
+        "DE-NRW-05132001100006______",
+        "DE-NRW-05132001100005______",
+        "DE-NRW-05132001000088______",
+        "DE-NRW-05132001000054______",
+        "DE-NRW-05132001000053______",
+        "DE-NRW-05132001000177______",
+        "DE-NRW-05132001000052______",
+        "DE-NRW-05132001000183______",
+        "DE-NRW-05132001000182______",
+        "DE-NRW-05132001000181______",
+        "DE-NRW-05132001000178______",
+        "DE-NRW-05132001100007______"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        7.465,
+        51.365,
+        7.466,
+        51.366
+      ],
+      "complete": true,
+      "featureCount": 35,
+      "ids": [
+        "DE-NRW-05132001200284______",
+        "DE-NRW-05132001200062______",
+        "DE-NRW-05132001200158______",
+        "DE-NRW-05132001200156______",
+        "DE-NRW-05132001200248______",
+        "DE-NRW-05132001200064______",
+        "DE-NRW-05132001200273______",
+        "DE-NRW-05132001200272______",
+        "DE-NRW-05132001200066______",
+        "DE-NRW-05132001200067______",
+        "DE-NRW-05132001200302______",
+        "DE-NRW-05132001200077______",
+        "DE-NRW-05132001200078______",
+        "DE-NRW-05132001200252______",
+        "DE-NRW-05132001200254______",
+        "DE-NRW-05132001200068______",
+        "DE-NRW-05132001200082______",
+        "DE-NRW-05132001200157______",
+        "DE-NRW-05132001200288______",
+        "DE-NRW-05132001200324______",
+        "DE-NRW-05132001200301______",
+        "DE-NRW-05132001200143______",
+        "DE-NRW-05132001200136______",
+        "DE-NRW-05132001200144______",
+        "DE-NRW-05132001200137______",
+        "DE-NRW-05132001200135______",
+        "DE-NRW-05132001200138______",
+        "DE-NRW-05132001200140______",
+        "DE-NRW-05132001200231______",
+        "DE-NRW-05132001200142______",
+        "DE-NRW-05132001200141______",
+        "DE-NRW-05132001200155______",
+        "DE-NRW-05132001200219______",
+        "DE-NRW-05132001200150______",
+        "DE-NRW-05132001200329______"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        7.469,
+        51.365,
+        7.47,
+        51.366
+      ],
+      "complete": true,
+      "featureCount": 24,
+      "ids": [
+        "DE-NRW-05132804900368______",
+        "DE-NRW-05132804900001______",
+        "DE-NRW-05132804900015______",
+        "DE-NRW-05132804900014______",
+        "DE-NRW-05132804900003______",
+        "DE-NRW-05132804900002______",
+        "DE-NRW-05132001100054______",
+        "DE-NRW-05132001100051______",
+        "DE-NRW-05132001100040______",
+        "DE-NRW-05132001100038______",
+        "DE-NRW-05132001100039______",
+        "DE-NRW-05132001100061______",
+        "DE-NRW-05132001100055______",
+        "DE-NRW-05132001100052______",
+        "DE-NRW-05132001100057______",
+        "DE-NRW-05132001100056______",
+        "DE-NRW-05132001100060______",
+        "DE-NRW-05132001100090______",
+        "DE-NRW-05132001100088______",
+        "DE-NRW-05132001100089______",
+        "DE-NRW-05132001100092______",
+        "DE-NRW-05132001100091______",
+        "DE-NRW-05132001100146______",
+        "DE-NRW-05132001100184______"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 40,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:01.905Z",
+      "queryHash": "10c27fce289989639af23aaa56c82cce5deef76e1831732f7c208b9ad69567db",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 778
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:02.685Z",
+      "queryHash": "10c27fce289989639af23aaa56c82cce5deef76e1831732f7c208b9ad69567db",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 192
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:02.879Z",
+      "queryHash": "2717d1f4f4b07348ab7899879079d2e893e97a8987199cc3096a5dd3feecdfe2",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 1539
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:04.420Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 288
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:04.922Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 162
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:05.099Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 164
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:05.270Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 161
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:05.594Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 414
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:07.056Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 369
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:07.660Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 362
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:08.346Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 277
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:08.930Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 304
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:09.573Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 1937
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:11.524Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 1352
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:12.893Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 374
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:13.721Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 291
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:14.519Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 287
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:15.007Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 366
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:15.654Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 866
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:17.578Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 282
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:19.264Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 244
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:20.332Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 427
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:21.260Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 414
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:21.827Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 213
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:22.225Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 391
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:23.237Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 426
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:23.680Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 389
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:24.081Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 1192
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:25.869Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 460
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:26.771Z",
+      "queryHash": "7b12a60925d4298349b8eb4399fef63121e298fafcf723a4d4acaf6c2699523e",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1,
+      "httpStatus": 200,
+      "elapsedMs": 882
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:27.657Z",
+      "queryHash": "d94a5404e4285809623014a2b8ba43835767286a50019f869893084e94a7d813",
+      "safeParamNames": [
+        "filter",
+        "limit",
+        "offset"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1,
+      "offsetParam": "offset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1039
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:28.697Z",
+      "queryHash": "1d963b9d60aedd49dbc46117078221d753ea7de87aae0f59a408f53f08fd5e7d",
+      "safeParamNames": [
+        "filter",
+        "limit",
+        "offset"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1,
+      "offsetParam": "offset",
+      "offset": 2,
+      "httpStatus": 200,
+      "elapsedMs": 551
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:29.249Z",
+      "queryHash": "c955c474d1c8e4827fcc62c774d16504a14e8668d1991d2f230602ab7a38ce6b",
+      "safeParamNames": [
+        "filter",
+        "limit",
+        "offset"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1,
+      "offsetParam": "offset",
+      "offset": 3,
+      "httpStatus": 200,
+      "elapsedMs": 347
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:29.597Z",
+      "queryHash": "c7599689f34642a3f2d3c144f16431fdf7691d8c29fc7584dba495b13111a74b",
+      "safeParamNames": [
+        "filter",
+        "limit",
+        "offset"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1,
+      "offsetParam": "offset",
+      "offset": 4,
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:29.778Z",
+      "queryHash": "e420f67592916bbb85a6b4505413c13edf8a20b4c78306d3419c644e8ea82584",
+      "safeParamNames": [
+        "filter",
+        "limit",
+        "offset"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1,
+      "offsetParam": "offset",
+      "offset": 5,
+      "httpStatus": 200,
+      "elapsedMs": 149
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:29.929Z",
+      "queryHash": "10c27fce289989639af23aaa56c82cce5deef76e1831732f7c208b9ad69567db",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 144
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:30.095Z",
+      "queryHash": "649fdc9387f84fcbfa07c4886d34474ad50ec6f224f4d577a663125cbaed5734",
+      "safeParamNames": [
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 442
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:30.976Z",
+      "queryHash": "7bfe562a69948c0a8cda8de5fb0625b44cd70f684d88855ee19155bfef9b5d95",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 248
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:31.621Z",
+      "queryHash": "1c04d26e0769418adacc7008aafb679717defc56eef1568d692787aecdfa32d1",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 1216
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "ogc-api.nrw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:34.371Z",
+      "queryHash": "c419ea2059df65500dbf63f106b71cd9203ee64dfe41ddbb4b2690dabc6b57e8",
+      "safeParamNames": [
+        "filter",
+        "limit"
+      ],
+      "pageLimitParam": "limit",
+      "pageLimit": 1000,
+      "httpStatus": 200,
+      "elapsedMs": 1669
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

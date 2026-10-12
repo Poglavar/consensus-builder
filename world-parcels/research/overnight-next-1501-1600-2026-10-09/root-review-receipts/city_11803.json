@@ -1,0 +1,13 @@
+{
+  "taskId": "city:11803",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-11803-debandi.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/debandi-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:53:58.139676Z",
+  "reason": "Official West Bengal land-record leads and English/Bengali searches are recorded, but bounded requests to the land portal and geoportal timed out. No native-ID full-polygon response, adapter qualification, or headed Details verification exists. Timeout and unknown local revenue jurisdiction do not establish citywide absence; registry custody remains unresolved (null).",
+  "sourceAdmission": "not_admitted"
+}

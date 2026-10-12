@@ -1,0 +1,26 @@
+{
+  "cityRecord": "city-7667-harar.json",
+  "cityCode": 7667,
+  "queueRank": 2610,
+  "attempt": 1,
+  "serviceReview": {
+    "discovery": [
+      {"route": "https://www.harari.gov.et/en", "type": "official local government", "outcome": "Search result available; direct path returned HTTP 404 during fetch; no parcel service link evidenced."},
+      {"route": "https://hudco.gov.et/", "type": "official local custodian", "outcome": "HTTP 200; site context includes land holding registration, but no public map/API endpoint was found in page source."},
+      {"route": "https://eland.addiscadaster.gov.et/maps", "type": "official national/city-specific viewer", "outcome": "HTTP 200; JavaScript/configuration inspected. Production config is Addis-specific (AA-ADS, Addis branding, ncrprs_cadaster workspace)."},
+      {"route": "https://ethionsdi.gov.et/", "type": "official national spatial-data portal", "outcome": "Connection failed during bounded fetch; no conclusion about data absence."}
+    ],
+    "viewerAndApiInspection": {
+      "config": "https://eland.addiscadaster.gov.et/assets/api.config.json",
+      "observed": {"elandApi": "https://elandapi.addiscadaster.gov.et/api/", "gsUrl": "https://geos.addiscadaster.gov.et/geoserver/ncrprs_cadaster/", "wfsUrl": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ncrprs_cadaster:v_1_registered_parcel&outputFormat=application/json&srsname=EPSG:4326", "cityCode": "AA-ADS", "workspace": "ncrprs_cadaster"},
+      "capabilities": "WFS GetCapabilities returned HTTP 200. Advertised parcel layers include ncrprs_cadaster:v_1_registered_parcel and ncrprs_cadaster:v_1_parcel_cadaster_publish; capabilities do not establish Harar coverage.",
+      "schema": "DescribeFeatureType for v_1_registered_parcel returned HTTP 200 with safe fields uniqueparcelid, documentedarea, measuredarea, parcel_type, geometry (MultiPolygon), and citycode. No records retained.",
+      "boundedRequest": {"url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ncrprs_cadaster:v_1_registered_parcel&outputFormat=application/json&srsname=EPSG:4326&bbox=42.10,9.29,42.14,9.33,EPSG:4326&maxFeatures=3", "outcome": "HTTP 200; FeatureCollection totalFeatures=0, numberMatched=0, numberReturned=0. This is a bounded query against the Addis-configured service and is not evidence of citywide Harar absence."}
+    },
+    "safeFieldAllowlist": ["uniqueparcelid", "geometry", "citycode", "parcel_type", "documentedarea", "measuredarea"],
+    "retainedSamples": 0,
+    "scopeLimits": ["No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or unsafe ownership/address/titleholder fields used.", "No exact-point hit or map-extent inference was treated as citywide absence.", "No Harar-native parcel identity or geometry was evidenced, so no GeoJSON sample was retained.", "National/general agency material is distinguished from a local Harar service."],
+    "uncertainty": "Harar may have a local or non-public cadastral system not indexed or exposed anonymously. The failed NSDI connection and the Addis-only e-Land configuration limit discovery; follow-up should seek a Harari-specific public endpoint or documented data-sharing route."
+  },
+  "runtimeReadiness": "held"
+}

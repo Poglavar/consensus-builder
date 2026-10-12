@@ -1,0 +1,43 @@
+{
+  "cityRecord": "city-11743-balurghat.json",
+  "schemaVersion": "1.0",
+  "cityCode": 11743,
+  "queueRank": 1798,
+  "city": "Balurghat",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "The official West Bengal Banglarbhumi land-record portal and official government procedures were verified, and Balurghat BL&LRO/SD&LRO plus ADSR Balurghat were identified. Direct public portal routes timed out or returned 502, so no safe parcel ID, schema, CRS or geometry was obtained. Runtime remains held.",
+  "queryOutcomes": "Separate English and Bengali discovery queries and their actual first-party URLs are recorded in city-11743-balurghat.json.",
+  "requestOutcomes": "Official portal landing/home/property routes, Government of West Bengal procedure material, official registration GIS and an official West Bengal office listing were attempted and recorded. No login, credentials, private token retention, CAPTCHA bypass, unsafe field request or global TLS disable was used.",
+  "attemptedRoutes": [
+    {"route": "Banglarbhumi official portal", "url": "https://banglarbhumi.gov.in/", "outcome": "Direct request timed out; official discovery still exposed Plot Map/Mouza Map and land-record services."},
+    {"route": "Banglarbhumi home action", "url": "https://banglarbhumi.gov.in/BanglarBhumi/Home.action", "outcome": "Timed out; no public page response."},
+    {"route": "Banglarbhumi Know Your Property", "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action", "outcome": "502 Bad Gateway; no parcel response."},
+    {"route": "Government of West Bengal land-record procedure", "url": "https://wb.gov.in/government-schemes-details-minor-correction-of-land-records.aspx", "outcome": "200; official portal and local revenue-office procedure confirmed, no geometry."},
+    {"route": "Directorate of Registration and Stamp Revenue GIS", "url": "https://gisigr.wb.gov.in/dorsrhome/", "outcome": "200; ADSR Balurghat listed, but this is registration jurisdiction evidence, not parcel geometry."},
+    {"route": "West Bengal official office listing", "url": "https://www.par.wb.gov.in/writereaddata/No%2085%20CS.pdf", "outcome": "Official indexed document identifies BL&LRO Balurghat, DL&LRO Dakshin Dinajpur and SD&LRO Balurghat."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [25.2294650554093, 88.7796737181144] was preserved; no coordinate shift and no parcel hit/miss conclusion was made.",
+    "No city boundary, citywide coverage, parcel schema, stable native parcel ID, CRS or geometry was established.",
+    "Official service/procedure evidence is not equivalent to open parcel geometry evidence.",
+    "No owner, address, titleholder, contact, deed, tax/account or personal fields were requested or retained.",
+    "Completion records executed attempts only; adapter admission remains a separate serial-review decision."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": {"plotIdentity": "plot/dag number terminology in official procedures; not returned", "khatian": "official Record of Rights terminology; not requested", "mouza": "official cadastral unit terminology; no selection response"},
+  "compositeKeyProvenance": "District/block/mouza/plot is the official selection concept, but no concrete Balurghat codes or parcel key were returned.",
+  "crs": null,
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable parcel geometry response; no hit/miss inference", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "West Bengal land-record/cadastral-map services", "verifiedOpenScope": "Official procedure plus local-office evidence", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Anonymous parcel feature retrieval, native identity, geometry endpoint behavior and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

@@ -1,0 +1,121 @@
+{
+  "cityCode": 2598,
+  "queueRank": 3017,
+  "name": "Guantanamo",
+  "country": "Cuba",
+  "countryCode": "CU",
+  "iso3": "CUB",
+  "point": [20.1456530494398, -75.2058801444205],
+  "population2025": 198411,
+  "population2025k": 198.411,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Guantanamo Cuba official cadastral map parcel registry catastro map parcels government",
+        "result": "Search did not identify a current first-party Cuban parcel viewer or public parcel API for Guantanamo. It identified secondary references describing the Cuban planning/cadastre institutional route and a legal publication about the Guantanamo urban plan; official-domain requests were then attempted directly.",
+        "actualResultUrls": [
+          "https://www.inotu.gob.cu",
+          "https://www.guantanamo.gob.cu",
+          "https://www.ipf.cu",
+          "https://www.cibercuba.com/s/gacetaoficial/pdf/goc-2021-o69.pdf"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Guantánamo Cuba catastro registro de la propiedad mapa parcelas sitio oficial",
+        "result": "Search did not identify an accessible first-party Cuban cadastral map/API. Secondary results state that the territorial-planning system is responsible for cadastre and list the Dirección Provincial/Municipal de Ordenamiento Territorial y Urbanismo in Guantánamo; this is custodian/procedure evidence, not parcel-vector evidence.",
+        "actualResultUrls": [
+          "https://cubatramite.com/direcciones-de-planificacion-fisica/",
+          "https://www.inotu.gob.cu",
+          "https://www.guantanamo.gob.cu",
+          "https://www.cibercuba.com/s/gacetaoficial/acuerdo-9091-de-2021-de-consejo-de-ministros"
+        ]
+      }
+    ],
+    "sourceDiscoveryDate": "2026-10-12",
+    "sourceCitations": [
+      "https://cubatramite.com/direcciones-de-planificacion-fisica/",
+      "https://www.cibercuba.com/s/gacetaoficial/pdf/goc-2021-o69.pdf",
+      "https://www.cibercuba.com/s/gacetaoficial/acuerdo-9091-de-2021-de-consejo-de-ministros"
+    ]
+  },
+  "registryFound": null,
+  "registryCustodian": {
+    "name": "Cuban territorial-planning/cadastre system; provincial and municipal Dirección de Ordenamiento Territorial y Urbanismo in Guantánamo",
+    "scope": "The discovered material describes the national territorial-planning system as responsible for cadastre and identifies a Guantánamo provincial/municipal office. No local public registry, cadastral viewer, or parcel endpoint was evidenced.",
+    "evidence": "Secondary directory and legal-publication results identify the Guantánamo planning office and the planning/cadastre institutional responsibility. The cited material is not an authenticated parcel service response and is not treated as local registry integration evidence."
+  },
+  "service": {
+    "name": "No qualified public Guantánamo cadastral map/API service",
+    "viewerUrl": null,
+    "baseUrl": null,
+    "viewerConfiguration": "No current first-party viewer JavaScript or service configuration was retrievable anonymously. No credentials, login, CAPTCHA/Cloudflare bypass, or unsafe data request was attempted.",
+    "schemaAndCrs": {
+      "parcelSchema": null,
+      "nativeIdFields": null,
+      "geometryCrs": null,
+      "fieldMapping": {},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://www.ipf.cu",
+      "status": "dns-failure",
+      "outcome": "Host did not resolve in the bounded anonymous request; no retry or certificate exception was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.inotu.gob.cu",
+      "status": "timeout",
+      "outcome": "Connection timed out after approximately 8 seconds; no viewer or API response was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.guantanamo.gob.cu",
+      "status": "tls-connection-timeout",
+      "outcome": "TLS connection timed out; TLS verification was not disabled and no certificate exception was used."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.onei.gob.cu",
+      "status": "connection-reset",
+      "outcome": "Connection was reset before an HTTP response; this is not evidence of cadastral absence."
+    },
+    {
+      "method": "bounded exact-point parcel query",
+      "url": null,
+      "status": "not-attempted",
+      "outcome": "No public parcel endpoint was qualified, so no exact-point query was sent. The WUP point [20.1456530494398, -75.2058801444205] was not shifted."
+    }
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/2598/ (request outcomes and discovery notes; no unsafe attributes retained)",
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [20.1456530494398, -75.2058801444205] is preserved in latitude/longitude order and was not moved to force a parcel hit.",
+    "No city/local registry or public cadastral parcel service was evidenced; registryFound remains null.",
+    "DNS failure, timeout, connection reset, and unavailable UI/API evidence do not establish citywide cadastral absence.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "No GeoJSON sample is retained because no safe native parcel ID-plus-geometry response was obtained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The Cuban official sites may expose services intermittently or through routes not indexed by search; their current JavaScript/API configuration could not be qualified anonymously.",
+    "Parcel coverage, native identity fields, CRS, positional accuracy, and citywide completeness remain unverified.",
+    "The custodian identification relies partly on secondary reproductions/directories because the likely official hosts were inaccessible during this attempt.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "runtimeReadiness": "held"
+}

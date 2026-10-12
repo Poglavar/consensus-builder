@@ -1,0 +1,42 @@
+{
+  "cityRecord": "city-863-dashoguz.json",
+  "cityCode": 863,
+  "queueRank": 2807,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": null,
+  "registryCustodian": null,
+  "publicMapLead": null,
+  "queryOutcomes": "Separate English and Turkmen discovery queries were performed. Official national cadastral-law and digital-cadastre sources were found, but no local Dashoguz registry procedure, public cadastral viewer, or anonymous parcel-vector endpoint was exposed.",
+  "requestOutcomes": "The official government cadastre report, official cadastral-law HTML pages and an official Dashoguz-domain page were retrieved. Direct requests to minagri.gov.tm and the court.gov.tm PDF host failed before HTTP response. No credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used.",
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [41.8381620899803, 59.9646768990666] was preserved; it was not moved to force a parcel hit.",
+    "No exact-point hit or miss was inferred.",
+    "National law and digital-cadastre reporting do not establish Dashoguz cadastral coverage or an open parcel API.",
+    "No parcel polygon or source-specific raw attribute set is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "No Dashoguz local registry custodian or public anonymous parcel ID-plus-geometry response, schema, CRS, or citywide open coverage was qualified."
+  },
+  "uncertainty": "A dedicated cadastral service may exist behind a separate local or authenticated workflow, but its current anonymous public URL, schema, native identity semantics, geometry endpoint, CRS, and municipal coverage were not established safely."
+}

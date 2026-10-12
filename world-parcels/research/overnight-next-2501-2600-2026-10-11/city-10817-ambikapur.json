@@ -1,0 +1,59 @@
+{
+  "cityCode": 10817,
+  "queueRank": 2553,
+  "name": "Ambikapur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [23.1292257727542, 83.1869670127607],
+  "population2025": 230136,
+  "population2025k": 230.136,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "registryFound": true,
+  "registryBasis": "The official Surguja district government service page identifies the Ambikapur tehsil office and links the Chhattisgarh Bhu-Naksha cadastral map. The official BhuNaksha service resolved Ambikapur district/tehsil/RI/village selections and returned a live village extent. This evidences a local cadastral/map service, not citywide completeness.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ambikapur Chhattisgarh official cadastral map parcel GIS land records",
+        "result": "Found official Chhattisgarh Revenue & Disaster Management land-record portal, official BhuNaksha viewer, and official Surguja district page for the Ambikapur tehsil Bhu-Naksha service. The live viewer returned an Ambikapur village extent and a bounded safe plot lookup, but no parcel polygon geometry response was qualified.",
+        "actualResultUrls": ["https://revenue.cg.nic.in/", "https://revenue.cg.nic.in/bhunaksha/", "https://surguja.gov.in/service/%E0%A4%AD%E0%A5%82-%E0%A4%A8%E0%A4%95%E0%A5%8D%E0%A4%B6%E0%A4%BE/"]
+      },
+      {
+        "language": "Hindi",
+        "query": "अंबिकापुर छत्तीसगढ़ आधिकारिक भू नक्शा खसरा cadastral map",
+        "result": "Official Hindi government results confirmed Bhu-Naksha as the digitised cadastral map service under the Chhattisgarh Bhuiyan project and identified the Ambikapur tehsil office. The service exposed safe plot identifiers and map extents, but no qualified anonymous parcel polygon feature response.",
+        "actualResultUrls": ["https://surguja.gov.in/service/%E0%A4%AD%E0%A5%82-%E0%A4%A8%E0%A4%95%E0%A5%8D%E0%A4%B6%E0%A4%BE/", "https://bhuiyan.cg.nic.in/", "https://revenue.cg.nic.in/bhunaksha/"]
+      }
+    ]
+  },
+  "source": {
+    "name": "Chhattisgarh BhuNaksha / Bhuiyan",
+    "operator": "Chhattisgarh Revenue & Disaster Management Department with NIC-hosted BhuNaksha service; Ambikapur tehsil office, Surguja district",
+    "viewerUrl": "https://revenue.cg.nic.in/bhunaksha/",
+    "scope": "Official village-wise cadastral map service. Ambikapur tehsil, Ambikapur-4 RI, Ambikapur village was resolved as GIS code 390105.028; citywide vector coverage and georeferencing were not verified.",
+    "crs": null,
+    "nativeIdentity": "BhuNaksha plot ID (opaque ID returned for plot lookup) and plotNo/khasra number; no retained sample because geometry was not obtained.",
+    "gisCode": "390105.028",
+    "sourceFieldMapping": {"ID": "opaque native plot lookup identifier", "plotNo": "native plot/khasra number", "gisCode": "native village GIS code"},
+    "compositeKeyProvenance": "Selection values 39 (Surguja district), 01 (Ambikapur tehsil), 05 (Ambikapur-4 RI), 028 (Ambikapur village) were taken from the official viewer's public selection responses; the viewer returned gisCode 390105.028."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "runtimeReadiness": "held",
+  "resultCategory": "official_local_cadastral_service_live_extent_no_verified_open_parcel_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Official village-wise cadastral map coverage for Chhattisgarh, including Ambikapur village in Ambikapur tehsil.",
+    "verifiedOpenScope": "One Ambikapur village extent and one safe plot lookup response; no citywide completeness claim.",
+    "countrywideVerified": false,
+    "exactPointResult": "The WUP point was not used to shift or force a parcel lookup. No exact-point parcel result was obtained; this is not evidence of absence."
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source CRS", "geometry type", "source URL", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax", "account", "certificate", "title"],
+  "sampleGeojson": null,
+  "remainingUncertainty": "The public viewer's HTML, JavaScript/configuration, selection routes, village extent response, and ScalarDatahandler plot lookup were inspected. The village extent returned numeric coordinates but did not provide a parcel geometry. WMS GetCapabilities returned HTTP 500 with no schema/CRS payload, and no safe anonymous GeoJSON/WFS parcel response was found. Geometry CRS therefore remains unresolved.",
+  "notes": "Packet completion records executed research only; it is not source integration or admission. No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception were used."
+}

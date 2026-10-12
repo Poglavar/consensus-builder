@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:12030",
+  "cityCode": 12030,
+  "wupCityCode": 12030,
+  "name": "Linhai",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "rank": 1577,
+  "queueRank": 1577,
+  "point": [28.8603984478097, 121.157224420067],
+  "centerLatLon": [28.8603984478097, 121.157224420067],
+  "pointBasis": "Exact WUP2025 point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 362290,
+  "population2025k": 362.29,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "The official Linhai government portal and official notices evidence a Linhai Natural Resources and Planning Bureau with land and natural-resource duties, including natural-resource registration. This attempt did not verify a public cadastral parcel layer or a public real-estate-registration geometry service, so registryFound remains null.",
+  "registryEvidenceUrls": [
+    "https://www.linhai.gov.cn/",
+    "https://www.linhai.gov.cn/art/2024/5/27/art_1229777162_59066105.html",
+    "https://www.linhai.gov.cn/art/2023/10/27/art_1229517351_3901162.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official Zhejiang geospatial portal was reachable and its current JavaScript exposed public division and site-discovery routes. The anonymous division request returned JSON code 401 (未授权), the Linhai government host returned HTTP 403/openresty, and the Zhejiang map route returned HTTP 420. Site discovery for areaCode 331082 returned only province-level services, including the public online map URL; no current anonymous safe parcel feature response with a native ID and complete polygon was verified. No login, credential, CAPTCHA bypass, private token, unsafe attribute query or TLS exception was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "local-government-custodian_indication_public-geospatial-platform_geometry-unverified",
+  "coverageAssessment": {
+    "claimedScope": "Official Linhai government and Zhejiang public geospatial-platform evidence cover local natural-resources custodian indication and a province-level online map service entry only.",
+    "verifiedOpenScope": "Official local custodian evidence and current public portal configuration/service-discovery evidence were verified; Linhai parcel layer, schema, CRS, stable native identity and anonymous geometry response were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Linhai China official cadastral map parcel natural resources bureau public map API",
+        "scope": "Identify the local registry/custodian and an official public cadastral or geospatial map route.",
+        "result": "Search identified the official Linhai government portal and official Zhejiang geospatial platform routes. Official Linhai results evidence the Natural Resources and Planning Bureau and land-registration work, but no public anonymous parcel feature endpoint or parcel schema was exposed.",
+        "actualResultUrls": [
+          "https://www.linhai.gov.cn/",
+          "https://www.linhai.gov.cn/art/2024/5/27/art_1229777162_59066105.html",
+          "https://ditu.zjzwfw.gov.cn/",
+          "https://zhejiang.tianditu.gov.cn/map"
+        ],
+        "executionMethod": "Separate English web search followed by first-party page inspection and bounded public GET requests."
+      },
+      {
+        "language": "native/local",
+        "query": "临海市 不动产登记 地籍图 查询 官方",
+        "scope": "Independent Chinese-language discovery for a local official registry or cadastral-map route.",
+        "result": "Chinese-language search identified official Linhai notices from the Natural Resources and Planning Bureau concerning natural-resource ownership registration and water-conservancy real-estate registration. No current public parcel layer, native ID schema or anonymous complete polygon response was found.",
+        "actualResultUrls": [
+          "https://www.linhai.gov.cn/art/2024/5/27/art_1229777162_59066105.html",
+          "https://www.linhai.gov.cn/art/2023/10/27/art_1229517351_3901162.html",
+          "https://www.linhai.gov.cn/"
+        ],
+        "executionMethod": "Separate Chinese-language web search followed by first-party page inspection and bounded public GET requests."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "HTTP 403/420 and the division endpoint's authorization response are route/access limitations only and do not support citywide absence. Current Linhai cadastral service URL, parcel-layer existence, schema, CRS, stable native identity, safe field availability, polygon availability and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify a current official Linhai/Zhejiang cadastral or public geospatial parcel service. Do not enable runtime from this packet alone."
+}

@@ -1,0 +1,25 @@
+{
+  "taskId": "city:7771",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-7771-chita.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/chita-service-review.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-11T17:48:42Z",
+  "reason": "The packet and paired review identify Rosreestr regional custody, but the NSPD viewer timed out before any official Chita native parcel ID plus full polygon was read. The mirror UI is not accepted as source evidence and the timeout does not establish parcel absence.",
+  "identity": "Official 2025 WUP source archive, ranked roster, pending queue and packet agree on code, rank, country, point and population persons.",
+  "bilingualResearch": "English and local-language executed searches with URLs are recorded in the packet and paired review.",
+  "qualification": {
+    "fullPolygonsRetained": 0,
+    "freshAdapterNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeAdmitted": false
+}

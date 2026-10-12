@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8492-kendari.json",
+  "cityCode": 8492,
+  "queueRank": 1383,
+  "purpose": "Document first-party discovery, current public map/service routes, bounded anonymous access review, and evidence limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official discovery identified BHUMI ATR/BPN as the national public land-map viewer and SIMSETGIS as Kendari's municipal asset GIS. Direct anonymous requests to the viewer and municipal GIS timed out from this environment, so no current JavaScript/configuration, service endpoint, schema/CRS, safe parcel ID, or geometry was verified. No sample GeoJSON is retained.",
+  "registryAssessment": "BHUMI documents public visualisation of land parcels and search by coordinates or non-personal land identifiers. SIMSETGIS describes municipal government assets, including land assets. Neither route yielded a verified anonymous local cadastral registry response in this attempt; registryFound remains null.",
+  "safeFieldAllowlist": ["safe parcel or non-personal land identifier only if publicly exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {"language":"English","query":"Kendari Indonesia official cadastral parcel map API ATR BPN geoportal","outcome":"Official BHUMI ATR/BPN documentation and Kendari municipal GIS/open-data sources found; no verified anonymous parcel geometry response.","actualResultUrls":["https://bhumi.atrbpn.go.id/","https://bhumi.atrbpn.go.id/bantuan/landing","https://bhumi.atrbpn.go.id/bantuan/katalog_data","https://simsetgis.kendarikota.go.id/","https://satudata.kendarikota.go.id/"]},
+    {"language":"Indonesian","query":"Kendari peta bidang tanah resmi ATR BPN geoportal","outcome":"BHUMI documentation confirms bidang tanah map content and non-personal search concepts; official Kendari Satu Data confirms certified municipal land-asset reporting. No open citywide parcel-vector download was verified.","actualResultUrls":["https://bhumi.atrbpn.go.id/bantuan/unsur_peta","https://bhumi.atrbpn.go.id/bantuan/katalog_data","https://satudata.kendarikota.go.id/pt_BR/dataset/data-luas-aset-tanah-pemerintah-kota-yang-telah-bersertifikat-m2-kota-kendari-2025","https://simsetgis.kendarikota.go.id/"]}
+  ],
+  "attempts": [
+    {"url":"https://bhumi.atrbpn.go.id/","method":"GET","httpStatus":"timeout","result":"No response within 30 seconds from the available anonymous client; no TLS bypass, login, CAPTCHA/Cloudflare circumvention, or token use."},
+    {"url":"https://simsetgis.kendarikota.go.id/","method":"GET","httpStatus":"timeout","result":"No response within 20 seconds from the available anonymous client; no endpoint or schema inferred."},
+    {"url":"https://bhumi.atrbpn.go.id/bantuan/landing","method":"GET","httpStatus":"discovery-only","result":"Search-indexed official documentation says BHUMI is an open geospatial land/tata ruang map, includes a disclaimer, and is not guaranteed complete or authoritative without official information procedure."},
+    {"url":"https://bhumi.atrbpn.go.id/bantuan/unsur_peta","method":"GET","httpStatus":"discovery-only","result":"Search-indexed official documentation describes bidang tanah, coordinate display, and search by coordinate/NIB/HAK/NIBEL; no parcel response was requested."},
+    {"url":"https://bhumi.atrbpn.go.id/bantuan/katalog_data","method":"GET","httpStatus":"discovery-only","result":"Search-indexed official documentation identifies bidang tanah, administrative boundaries, and ZNT as datasets; no raw source attributes were retained."},
+    {"url":"https://satudata.kendarikota.go.id/pt_BR/dataset/data-luas-aset-tanah-pemerintah-kota-yang-telah-bersertifikat-m2-kota-kendari-2025","method":"GET","httpStatus":"discovery-only","result":"Official municipal open-data record describes aggregate certified government land-asset area and an XLSX resource; it is not parcel geometry and was not downloaded or retained."}
+  ],
+  "nativeFieldMapping": null,
+  "geometryEvidence": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"Not completed. The exact WUP point [-3.99122776823972,122.520273611264] was preserved and not shifted; timeout and documentation-only evidence are not evidence of citywide absence."},
+  "remainingUncertainty": "The viewer's current JavaScript/configuration, public service endpoints, CRS, native parcel identity, exact-point containment, and citywide coverage remain unverified. A future attempt may use a trusted client to inspect the public viewer without login and request only safe IDs plus geometry.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

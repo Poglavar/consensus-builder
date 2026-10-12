@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "attempted": [
+    {
+      "rank": 3009,
+      "cityCode": 4153,
+      "name": "Dijon",
+      "country": "France",
+      "iso2": "FR",
+      "pop2025k": 198.697,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/4153/city-4153-provider-4153.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/4153/provider-4153-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 3018,
+      "cityCode": 1186,
+      "name": "Gitega",
+      "country": "Burundi",
+      "iso2": "BI",
+      "pop2025k": 198.363,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/africa-capitals-2026-10-08/city-gitega.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 3028,
+      "cityCode": 3446,
+      "name": "Heerlen",
+      "country": "Netherlands",
+      "iso2": "NL",
+      "pop2025k": 197.633,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/3446/city-3446-provider-3446.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/3446/provider-3446-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 3060,
+      "cityCode": 12097,
+      "name": "Dongjiao",
+      "country": "China",
+      "iso2": "CN",
+      "pop2025k": 195.809,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/growth-top20-integration-2026-10-07/china.json",
+          "cityId": "wup2025:12097",
+          "cityName": "Dongjiao",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/growth-top20-2026-10-07/city-12097.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 3095,
+      "cityCode": 3173,
+      "name": "Nijmegen",
+      "country": "Netherlands",
+      "iso2": "NL",
+      "pop2025k": 193.964,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/3173/city-3173-provider-3173.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/3173/provider-3173-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "identityReviewRequired": []
+}

@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-12",
+  "wupCityCode": 9534,
+  "queueRank": 3077,
+  "name": "Ruzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "cityId": "wup2025:9534",
+  "point": [34.1680452045332, 112.841591359056],
+  "population2025": 195236,
+  "population2025k": 195.236,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ruzhou China official cadastral parcel map land registration natural resources bureau GIS",
+        "result": "First-party discovery found the Ruzhou Municipal Natural Resources and Planning Bureau page. Its published duties explicitly cover natural-resource surveys, surveying/geospatial information, unified natural-resource and real-estate registration, cadastral investigation, cadastral surveying, and management of the related information platform. No public anonymous parcel feature endpoint was identified.",
+        "actualResultUrls": ["https://ruzhou.gov.cn/contents/65426/455260.html", "https://ruzhou.gov.cn/"]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "汝州市 不动产登记 地籍图 地图 服务 官方 自然资源局",
+        "result": "First-party discovery confirmed 汝州市自然资源和规划局 as the local institutional custodian. Results also exposed the official Henan Tianditu public map portal and the Henan land-selection cloud portal, but inspected public pages did not expose a safe parcel ID plus geometry response or cadastral layer API for Ruzhou.",
+        "actualResultUrls": ["https://ruzhou.gov.cn/contents/65426/455260.html", "https://henan.tianditu.gov.cn/", "https://tdyxypt.dnr.henan.gov.cn/"]
+      }
+    ]
+  },
+  "officialLeads": [
+    {
+      "url": "https://ruzhou.gov.cn/contents/65426/455260.html",
+      "operator": "Ruzhou Municipal Natural Resources and Planning Bureau",
+      "evidence": "Official Ruzhou government page describing local natural-resource surveying/geospatial duties and unified natural-resource and real-estate registration custody, including cadastral investigation and surveying."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/",
+      "operator": "Tianditu Henan / Henan surveying and geographic-information authorities",
+      "evidence": "Official provincial public map portal with map services, web/data API descriptions, and city/county interoperability; no Ruzhou parcel layer was verified anonymously."
+    },
+    {
+      "url": "https://tdyxypt.dnr.henan.gov.cn/",
+      "operator": "Henan Department of Natural Resources land-selection cloud",
+      "evidence": "Official provincial natural-resources portal discovered as a related map/application lead; no safe parcel geometry response was retrieved."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.ruzhou.gov.cn/",
+      "method": "GET via TLS-verified curl",
+      "status": "HTTP 200",
+      "summary": "Official city portal loaded; HTML exposed government navigation and the natural-resources bureau lead."
+    },
+    {
+      "url": "https://ruzhou.gov.cn/contents/65426/455260.html",
+      "method": "GET via TLS-verified curl",
+      "status": "HTTP 200",
+      "summary": "Official bureau responsibilities page loaded. Inspected HTML contained institutional/procedural information but no parcel viewer JavaScript, layer schema, CRS, or anonymous geometry endpoint."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/",
+      "method": "GET via TLS-verified curl",
+      "status": "HTTP 200",
+      "summary": "Official provincial public map portal loaded. No unauthenticated Ruzhou parcel feature response was obtained."
+    },
+    {
+      "url": "https://tdyxypt.dnr.henan.gov.cn/",
+      "method": "GET via TLS-verified curl",
+      "status": "HTTP 200",
+      "summary": "Official provincial land-selection application loaded, but no parcel request was made because the inspected route did not provide a verified safe public parcel endpoint."
+    },
+    {
+      "url": "https://www.henanditu.cn/",
+      "method": "GET via TLS-verified curl",
+      "status": "TLS certificate validation failed; HTTP 000",
+      "summary": "The endpoint was not used further; no certificate exception was authorized. This is not evidence of cadastral absence."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Ruzhou municipal natural-resources and real-estate-registration custody, with provincial public mapping leads.",
+    "verifiedOpenScope": "Local institutional custody and public map/application landing pages only; no open parcel geometry coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "resultCategory": "official_local_registry_custodian_no_verified_open_parcel_geometry",
+  "sourceFields": null,
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "verifiedSample": false,
+  "sourceIds": [],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "scopeLimits": [
+    "Exact WUP point [34.1680452045332, 112.841591359056] was preserved; no exact-point hit/miss inference was made.",
+    "Local custodian evidence does not establish an anonymous parcel API or citywide open coverage.",
+    "No parcel polygon, stable native parcel identity, source schema, or CRS was retrieved or retained.",
+    "TLS failure or absence of a discoverable endpoint is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current parcel viewer/API route, layer schema, CRS, stable native parcel identity, citywide coverage, and anonymous runtime accessibility remain unresolved. No claim is made about parcel absence, legal title, ownership, or completeness of any Chinese cadastral dataset.",
+  "retainedSample": null
+}

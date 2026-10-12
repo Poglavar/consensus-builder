@@ -1,0 +1,13 @@
+{
+  "taskId": "city:3354",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-3354-morogoro.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/morogoro-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:29:18.511266Z",
+  "reason": "Official e-Ardhi WFS capabilities and schema establish Tanzanian spatial-unit custody, but the saved feature response is a service exception and bounded Morogoro reads timed out; no native parcel geometry or qualification evidence. The spatial_units advertised bounding box does not cover the WUP point. No citywide absence inferred.",
+  "primarySourceUrl": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows?service=WFS&version=1.0.0&request=GetCapabilities"
+}

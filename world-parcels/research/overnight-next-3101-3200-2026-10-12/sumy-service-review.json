@@ -1,0 +1,54 @@
+{
+  "cityRecord": "city-3508-sumy.json",
+  "cityCode": 3508,
+  "queueRank": 3179,
+  "city": "Sumy",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Ukrainian first-party discovery evidenced the Sumy Oblast StateGeoCadastre custodian and Sumy city CNAP land-registration route. Bounded anonymous checks did not produce a safe parcel-ID-plus-geometry response. No geometry sample is retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, actual result URLs, direct request outcomes, scope limits, safe field allowlist, and uncertainty are recorded in city-3508-sumy.json. No login, CAPTCHA/Cloudflare bypass, credentials, private tokens, TLS bypass, or unsafe-field request occurred.",
+  "custodians": [
+    {
+      "name": "Main Department of the StateGeoCadastre in Sumy Oblast",
+      "scope": "Regional state cadastral and registration custodian route; an open local parcel API was not qualified.",
+      "evidence": "https://sumska.land.gov.ua/info/derzhavna-reiestratsiia-ta-kadastr/"
+    },
+    {
+      "name": "Sumy city CNAP",
+      "scope": "Local administrative-service access point for land-parcel registration and cadastral extracts; not evidenced as a geometry service.",
+      "evidence": "https://cnap.gov.ua/node/2034"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native cadastral parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "The WUP point [50.9125624857734, 34.7966600064341] and population 189130 persons are preserved in the city record.",
+    "No anonymous ID-plus-geometry response, schema, CRS, or citywide vector coverage was qualified.",
+    "The National Geoportal map route redirected to login; the legacy public cadastral-map route timed out and an alternate host failed DNS resolution.",
+    "No unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "Additional parcel services may exist behind authenticated or client-specific routes that were not accessed.",
+    "Official documentation describes cadastral map/search functions, but the current public machine endpoint was not established in this attempt.",
+    "No independent runtime adapter qualification was performed."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

@@ -1,0 +1,31 @@
+{
+  "taskId": "city:7116",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-7116-beawar.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/beawar-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T13:57:59Z",
+  "reason": "The first-party DILRMP Beawar status and Rajasthan Bhu-Naksha viewer identify a cadastral source, but the bounded viewer request timed out and no Beawar parcel ID or geometry response was retained. A timeout does not establish citywide absence. Independent live adapter qualification has no fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed details-panel verification.",
+  "identityCheck": {
+    "rank": 2521,
+    "cityCode": 7116,
+    "country": "India",
+    "countryCode": "IN",
+    "point": [
+      26.100820590642,
+      74.3188098496136
+    ],
+    "populationPersons": 232862,
+    "matchedWup2025SourceQueueAndRankedRoster": true
+  },
+  "searchesChecked": [
+    "English",
+    "Hindi"
+  ],
+  "retainedPolygonCount": 0,
+  "runtimeAdmission": "held"
+}

@@ -1,0 +1,17 @@
+{
+  "taskId": "packet:5072",
+  "decision": "held",
+  "reason": "Catania rank 1229, Italy, unchanged point and 453376 persons match the immutable roster. English and Italian executed-search records are present. Original first-party SITR bbox cache has 15 C351/087015 polygon features with safe ORIGINE:NUMERO components, supporting regional cadastral-map custody and bounded public geometry discovery. Three id-only polygons were retained, but sample C351A000600:756 differs at one longitude vertex from the original response; unchanged-source retention therefore fails. Complete fresh native-ID reads, forced paging, 13 cells, metric GEOS/operation checks, source binding and headed Details verification remain missing. No citywide completeness or admission.",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5072-catania.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/catania-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/catania-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/catania/bbox-query.json",
+    "tmp/valhalla-parcel-research/catania/particelle.json",
+    "tmp/valhalla-parcel-research/catania/mapserver.json"
+  ],
+  "checkedAt": "2026-10-09T13:03:22.983203Z"
+}

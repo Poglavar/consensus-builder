@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 605,
+  "queueRank": 1885,
+  "cityId": "queue:1885",
+  "name": "Nukus",
+  "country": "Uzbekistan",
+  "countryCode": "UZ",
+  "iso3": "UZB",
+  "point": [42.4554116548286, 59.6080559079088],
+  "centerLatLon": [42.4554116548286, 59.6080559079088],
+  "population2025": 304362,
+  "population2025k": 304.362,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nukus Uzbekistan official cadastral map parcel public viewer API cadastre",
+        "result": "First-party discovery identified the official Uzbekistan National Geoinformation Portal at open.ngis.uz, the official State Cadastre Chamber site, and the Qoraqalpog‘iston regional cadastral branch in Nukus. A catalog describing the portal also exposed the ArcGIS REST host db.ngis.uz/db/rest/services, but this is secondary discovery evidence pending direct service verification.",
+        "actualResultUrls": [
+          "https://open.ngis.uz/",
+          "https://uzdkp.uz/",
+          "https://hukumat.uz/en/adliya/sections/view/2830",
+          "https://db.ngis.uz/db/rest/services?f=pjson"
+        ]
+      },
+      {
+        "language": "native/local (Uzbek)",
+        "query": "Nukus O'zbekiston kadastr xaritasi rasmiy portal uchastka",
+        "result": "Native-language discovery confirmed the official National Geoinformation Portal and official Qoraqalpog‘iston cadastral administration in Nukus. Government digital-service material describes open.ngis.uz as providing public information from the real-estate rights register, including cadastral number, location and use purpose; it does not expose a verified anonymous parcel geometry response in the search result.",
+        "actualResultUrls": [
+          "https://dgov.uz/uz/solution/detail/52/",
+          "https://gov.uz/oz/kadastr/news/view/143473",
+          "https://uzdkp.uz/",
+          "https://open.ngis.uz/"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Uzbek first-party discovery, followed by bounded TLS-verified GET attempts; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe fields, or global TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://open.ngis.uz/",
+      "observation": "Official National Geoinformation Portal of the Cadastre Agency; indexed page describes cadastral-number lookup and map layers, but the portal did not return within the bounded direct request."
+    },
+    {
+      "url": "https://db.ngis.uz/db/rest/services?f=pjson",
+      "observation": "ArcGIS REST services endpoint associated with the official portal by catalog evidence; bounded direct request timed out, so service folders, layers, schema, CRS and parcel response were not verified."
+    },
+    {
+      "url": "https://uzdkp.uz/",
+      "observation": "Official State Cadastre Chamber site lists the Qoraqalpog‘iston Republic regional administration at G‘aresizlik MFY, O‘zbekiston ko‘chasi 121, Nukus, establishing local cadastral custody."
+    },
+    {
+      "url": "https://hukumat.uz/en/adliya/sections/view/2830",
+      "observation": "Official government registry-office directory identifies a Nukus city registry office and a Nukus district registry office; this is local registry administration evidence, not parcel geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://open.ngis.uz/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS-verified bounded request timed out; no HTML, JavaScript, configuration, map extent, schema or API route was obtained. Not evidence of citywide absence."
+    },
+    {
+      "url": "https://db.ngis.uz/db/rest/services?f=pjson",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS-verified bounded ArcGIS REST request timed out; no service listing or layer schema was obtained. No follow-on feature request was issued."
+    },
+    {
+      "url": "https://uzdkp.uz/",
+      "method": "GET via first-party indexed page",
+      "httpStatus": null,
+      "contentType": "text/html",
+      "assessment": "Official site content was inspected through indexed first-party results; local Qoraqalpog‘iston/Nukus administration was evidenced, but no public parcel feature response was obtained."
+    },
+    {
+      "url": "https://hukumat.uz/en/adliya/sections/view/2830",
+      "method": "GET via first-party indexed result",
+      "httpStatus": null,
+      "contentType": "text/html",
+      "assessment": "Official directory result identified Nukus registry offices; no parcel geometry or schema was requested or retained."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel id", "full parcel polygon or multipolygon geometry", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": null,
+  "geometryQuality": "No parcel geometry obtained; no sample GeoJSON written.",
+  "coverageAssessment": {
+    "claimedScope": "Official Uzbekistan National Geoinformation Portal and the local Qoraqalpog‘iston cadastral/registry administration serving Nukus.",
+    "verifiedOpenScope": "Local custodial and official portal evidence only; anonymous parcel ID-plus-geometry coverage was not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review remains required",
+  "remainingUncertainty": "The current portal JavaScript/configuration, ArcGIS service listing, parcel layer names, native identity field, CRS, map extent and citywide completeness remain unresolved because direct portal and REST requests timed out. This is an access/inspection limit, not evidence of cadastral absence. The exact WUP point was preserved and never shifted; no exact-point hit or miss was inferred.",
+  "nextStep": "A later attempt may retry the official portal and ArcGIS REST host, then issue only a bounded anonymous ID-plus-geometry request if a public parcel layer and safe schema are exposed."
+}

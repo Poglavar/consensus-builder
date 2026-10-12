@@ -1,0 +1,19 @@
+{
+  "taskId": "city:8068",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-8068-governador-valadares.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/governador-valadares-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-11T12:19:24Z",
+  "registryFound": true,
+  "reason": "Original UN WUP 2025 CSV SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114 confirms code 8068, rank 2452, Brazil, point [-18.8696123423888,-41.9590411819791], and Pop 239.06 thousand = 239060 persons. English and Portuguese search queries and outcomes were inspected and independently repeated. The municipal official journal describes Cadastro Imobiliário Municipal registration, supporting local custody but explicitly administrative/fiscal scope. The worker's direct anonymous homepage cache is a 302 to Google with BotDeTect; this is an access wall, not citywide absence. No safe native-ID polygon response or retained polygon exists. Fresh ID reads, paging, 13 bounded cells, metric GEOS checks, source binding, and headed details-panel verification have no independent qualification evidence. Runtime admission remains held.",
+  "firstPartySourcesChecked": [
+    "https://www.valadares.mg.gov.br/",
+    "https://www.valadares.mg.gov.br/abrir_arquivo.aspx?arquivo=%7B2EDE3EA7-8C80-2EE6-7D8E-DBCA4266BEB7%7D.pdf&cdLocal=12",
+    "https://www.valadares.mg.gov.br/abrir_arquivo.aspx?arquivo=%7B244E5AD7-A6BB-A2ED-51CA-63EBE8E33CDE%7D.pdf&cdLocal=12"
+  ],
+  "retainedFullPolygonCount": 0
+}

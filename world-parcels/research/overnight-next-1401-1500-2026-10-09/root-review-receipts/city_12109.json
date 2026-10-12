@@ -1,0 +1,22 @@
+{
+  "taskId": "city:12109",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-12109-wenling.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/wenling-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:13:37Z",
+  "firstPartyUrlsChecked": [
+    "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2760/site/attach/-1/2404121603498685341.pdf"
+  ],
+  "reason": "Local registration custody confirmed. Municipal site access was limited; no native-ID polygon response or independent adapter qualification; public geometry remains unknown.",
+  "checks": {
+    "queueIdentity": "matched rank, code, country, point, population in persons against pending queue and ranked roster",
+    "bilingualSearches": "English and local-language executed searches documented in packet and paired review",
+    "fullPolygonsRetained": 0,
+    "runtimeAdmission": "not qualified; fresh exact ID reads, forced paging, 13 cells, metric GEOS checks, source binding and headed Details proof absent"
+  }
+}

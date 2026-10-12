@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 9341,
+  "wupCityCode": 9341,
+  "queueRank": 2696,
+  "cityId": "wup2025:9341",
+  "name": "Kasaragod",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "point": [12.5107289264317, 75.0078012656782],
+  "centerLatLon": [12.5107289264317, 75.0078012656782],
+  "population2025": 219354,
+  "population2025k": 219.354,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "Kerala Directorate of Survey and Land Records / Kerala Land Records Modernization Mission eMaps and Ente Bhoomi public land-record services",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kasaragod Kerala official cadastral parcel map land records survey department",
+        "result": "Found first-party Kerala eMaps/Bhu-Naksha, Ente Bhoomi, Directorate of Survey and Land Records Kasaragod office listings, Kasaragod district revenue offices, and Kerala planning map material. The official cadastral viewers describe parcel sketches and land-record integration, but indexed pages did not expose a safe anonymous parcel API response.",
+        "actualResultUrls": [
+          "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+          "https://emaps.kerala.gov.in/bhunaksha/kl/home.html",
+          "https://entebhoomi.kerala.gov.in/web/home",
+          "https://dslr.kerala.gov.in/en/sub-offices-2/",
+          "https://www.clr.kerala.gov.in/eng/index.php/kasargod"
+        ]
+      },
+      {
+        "language": "Malayalam",
+        "query": "കാസർഗോഡ് ഭൂ രേഖ മാപ്പ് സർവേ ഔദ്യോഗിക",
+        "result": "Malayalam discovery returned the official Ente Bhoomi Malayalam portal and Kerala survey/land-record references. The portal describes real-time land parcel maps and identifies Kasaragod digital-survey activity, but no safe anonymous ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://entebhoomi.kerala.gov.in/web/home",
+          "https://survey.entebhoomi.kerala.gov.in/portal/web/campoffice",
+          "https://dslr.kerala.gov.in/en/sub-offices-2/"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/home.html",
+      "operator": "Kerala Land Records Modernization Mission; Directorate of Survey and Land Records",
+      "scope": "Kerala cadastral mapping and land-record integration; viewer advertises updated digital sketch for individual parcels",
+      "observation": "First-party indexed page identifies eMaps as a cadastral mapping application integrating spatial and textual land records. The public page exposes parcel-oriented map functionality but no downloadable anonymous feature endpoint in indexed content."
+    },
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/home",
+      "operator": "Government of Kerala Ente Bhoomi / Integrated Land Information Management System",
+      "scope": "Kerala integrated land information and digital survey services",
+      "observation": "Current first-party page was fetched successfully and states that land parcel maps and digital survey records are part of the system. Malayalam content specifically names Kasaragod district digital-survey rollout, but service access is login-oriented."
+    },
+    {
+      "url": "https://dslr.kerala.gov.in/en/sub-offices-2/",
+      "operator": "Kerala Directorate of Survey and Land Records",
+      "scope": "Local Kasaragod district survey administration",
+      "observation": "Official directory lists Survey Deputy Director, Re-Survey Assistant Director, District Survey Superintendent, Re-Survey Superintendent, and District Digitization Centre entries for Kasaragod. This establishes a local survey/land-record custodian; it does not itself provide parcel geometry."
+    },
+    {
+      "url": "https://survey.entebhoomi.kerala.gov.in/portal/web/campoffice",
+      "operator": "Kerala Survey and Land Records / Ente Bhoomi",
+      "scope": "Kasaragod digital-survey camp offices and villages",
+      "observation": "Official portal lists Kasaragod/Kasargode offices and villages including Kasaragod, Nekraje, Perumbala, and other survey-camp locations. It is administrative coverage evidence, not a parcel feature response."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "http://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+      "method": "HEAD/GET redirect check",
+      "status": "HTTP 307 to HTTPS; redirected HTTPS failed certificate verification because the host certificate was expired",
+      "summary": "TLS verification was not disabled and no certificate exception was used. The viewer JavaScript/configuration could not be safely fetched from this host. This is an access failure, not evidence of absent coverage."
+    },
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/home",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Current Ente Bhoomi HTML and its home JavaScript were fetched. The page content was descriptive/login-oriented; no anonymous parcel schema or ID-plus-geometry response was returned."
+    },
+    {
+      "url": "https://bhunaksha.entebhoomi.kerala.gov.in",
+      "method": "HEAD",
+      "status": "HTTP 403",
+      "summary": "Current cadastral host was reachable but denied the unauthenticated root request. No login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe route was attempted."
+    },
+    {
+      "url": "https://staging-bhunaksha.entebhoomi.kerala.gov.in",
+      "method": "HEAD",
+      "status": "connection timeout after 20 seconds",
+      "summary": "Staging cadastral host did not respond within the bounded request. This is not evidence of absent Kasaragod parcels."
+    },
+    {
+      "url": "https://dslr.kerala.gov.in/en/sub-offices-2/ and https://survey.entebhoomi.kerala.gov.in/portal/web/campoffice",
+      "method": "GET via first-party indexed pages",
+      "status": "HTTP 200/readable indexed content",
+      "summary": "Official local custodian and survey-camp evidence was read. No parcel geometry or anonymous feature response was returned."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Kerala state cadastral/land-record systems with Kasaragod district survey administration and Ente Bhoomi digital-survey coverage references.",
+    "verifiedOpenScope": "Local Kasaragod survey custodianship and public procedural/viewer descriptions only; no successful bounded parcel feature response or service schema was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "Kasaragod district Survey and Land Records offices and Kerala land-record portals are evidenced."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "Not assessed; no parcel geometry returned.",
+    "crs": "Unknown; no public feature response or viewer configuration was safely retrieved.",
+    "identityReadiness": "Not ready; no stable native parcel identity was returned.",
+    "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+    "attributesRequested": "No parcel attributes were requested. Owner, address, contact, titleholder, personal, tax, account, and document fields were not requested or retained."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "Serial review must independently qualify a live anonymous parcel response, stable native identity, CRS/axis handling, and Kasaragod coverage before runtime use.",
+  "scopeLimits": [
+    "Exact WUP point [12.5107289264317,75.0078012656782] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point query or map-extent hit was obtained; a zero hit, timeout, login wall, TLS access failure, or unusable UI is not evidence of citywide parcel absence.",
+    "No retained GeoJSON sample because no safe native parcel feature with geometry and identity was obtained.",
+    "Packet completion is research evidence only and is not source integration/admission.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception used."
+  ],
+  "identityPolicy": "No GeoJSON was retained. If later obtained, retain exactly one stable native parcel identity in properties.id; keep native field mapping and any composite-key provenance in city/service-review metadata."
+}

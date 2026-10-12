@@ -1,0 +1,14 @@
+{
+  "taskId": "city:7734",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-7734-godhra.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/godhra-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261010T093612-249bd8ae/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T09:40:52.626872Z",
+  "reviewNote": "Official Gujarat material identifies the Panchmahals land-record and Godhra City Survey custodians; official service links do not yield a safe anonymous native-ID-plus-full-polygon response. No retained polygon or independent adapter and headed Details qualification. Missing geometry is unresolved, not citywide absence.",
+  "searchReview": "Packet records English and local-language searches; reviewer executed an additional local-language query on 2026-10-10. Search results establish source leads and custody only, not parcel geometry."
+}

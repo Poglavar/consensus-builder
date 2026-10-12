@@ -1,0 +1,80 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 6555,
+  "queueRank": 3149,
+  "name": "Waled",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "locId": 360,
+  "capital": false,
+  "point": [-6.8912425446849, 108.722996381531],
+  "population2025": 190709,
+  "population2025k": 190.709,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Waled Cirebon Indonesia cadastral parcel map official land registry viewer",
+        "result": "Discovery found the official ATR/BPN BHUMI/ATLAS portals and the Kabupaten Cirebon land office. No Waled-specific open parcel-vector endpoint or safe anonymous parcel response was verified.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/peta", "https://atlas.atrbpn.go.id/", "https://kab-cirebon.atrbpn.go.id/"]
+      },
+      {
+        "language": "Indonesian (local/official)",
+        "query": "Waled Cirebon peta bidang tanah kadaster resmi ATR BPN",
+        "result": "Penelusuran menemukan portal resmi BHUMI/ATLAS ATR/BPN dan Kantor Pertanahan Kabupaten Cirebon. Tidak ditemukan endpoint terbuka khusus Waled atau respons bidang tanah anonim yang aman dan dapat diverifikasi.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/peta", "https://bhumi.atrbpn.go.id/bantuan/unsur_peta", "https://kab-cirebon.atrbpn.go.id/assets/b60bf7e4-b0b9-4a30-b3d7-a465b167a232"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": "Kantor Pertanahan Kabupaten Cirebon, ATR/BPN (local/regency custodian evidenced; open parcel service not evidenced).",
+    "locality": "Waled, Kecamatan Waled, Kabupaten Cirebon, Jawa Barat.",
+    "evidenceUrls": ["https://kab-cirebon.atrbpn.go.id/", "https://kab-cirebon.atrbpn.go.id/assets/b60bf7e4-b0b9-4a30-b3d7-a465b167a232"],
+    "scopeNote": "The official office identity and county-level land custodian were evidenced, but no public Waled parcel API, schema, CRS, stable native ID, or geometry was qualified; registryFound therefore remains null."
+  },
+  "officialSources": [
+    {"url": "https://bhumi.atrbpn.go.id/peta", "observation": "Official interactive BHUMI map page retrieved; help pages describe public spatial layers and parcel search concepts."},
+    {"url": "https://atlas.atrbpn.go.id/", "observation": "Official ATR/BPN ATLAS geospatial catalog retrieved; it describes published spatial datasets and parcel-related attributes."},
+    {"url": "https://kab-cirebon.atrbpn.go.id/assets/b60bf7e4-b0b9-4a30-b3d7-a465b167a232", "observation": "Official Kabupaten Cirebon ATR/BPN material identifies Kantor Pertanahan Kabupaten Cirebon and its service office."},
+    {"url": "https://jdih.cirebonkab.go.id/storage/app/uploads/public/202/2pb/320/2022pb3209326.pdf", "observation": "Official Cirebon Regency village-boundary map identifies Desa Waled Kota and its SRGI 2013/UTM mapping context; it is administrative boundary evidence, not parcel coverage."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://bhumi.atrbpn.go.id/peta", "outcome": "HTTP 200; official current viewer HTML retrieved."},
+    {"method": "GET", "url": "https://bhumi.atrbpn.go.id/_next/static/chunks/app/peta/page-8a839f09e317b44a.js", "outcome": "HTTP 200; current JavaScript/configuration inspected. It exposes a Bidang Tanah layer with vendor Geoserver and configured path /bhumigs/umum; no parcel attributes were retained."},
+    {"method": "GET", "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WMS&request=GetCapabilities", "outcome": "HTTP 404; host served BHUMI not-found HTML, not WMS capabilities."},
+    {"method": "GET", "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WFS&request=GetCapabilities", "outcome": "HTTP 404; host served BHUMI not-found HTML, not WFS capabilities."},
+    {"method": "GET", "url": "https://atlas.atrbpn.go.id/", "outcome": "HTTP 200; official ATLAS catalog landing page retrieved and current JavaScript inspected for catalog routes."},
+    {"method": "GET", "url": "https://kab-cirebon.atrbpn.go.id/assets/b60bf7e4-b0b9-4a30-b3d7-a465b167a232", "outcome": "HTTP 200 via official search result; Kabupaten Cirebon land-office identity and service contact observed."},
+    {"method": "GET", "url": "https://jdih.cirebonkab.go.id/storage/app/uploads/public/202/2pb/320/2022pb3209326.pdf", "outcome": "HTTP 200; official Waled Kota administrative boundary PDF retrieved; no parcel polygons or parcel IDs."},
+    {"method": "POST", "url": "https://bhumi.atrbpn.go.id/expapi/loginApi", "outcome": "Not attempted: current viewer JavaScript contains a token/login flow, but no credentials or login were used under the research constraints."},
+    {"method": "POST", "url": "https://bhumi.atrbpn.go.id/expapi/getPersil", "outcome": "Not attempted: viewer route requires the token flow; no private token, credential, or login wall was bypassed."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "National ATR/BPN public geospatial viewer/catalog with a Bidang Tanah layer and Kabupaten Cirebon land-office custodian.",
+    "verifiedOpenScope": "No anonymous WMS/WFS capabilities or bounded parcel ID+geometry response was verified for Waled.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel ID", "full parcel polygon", "CRS", "public service metadata", "retrieval date"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The exact WUP point [-6.8912425446849, 108.722996381531] was preserved and not shifted; no exact-point hit or miss was used as an absence claim.",
+    "A public viewer layer configuration and a local land-office custodian do not establish anonymous citywide parcel coverage.",
+    "The configured /bhumigs/umum route returned 404 for direct WMS/WFS capabilities; the viewer's token flow was not invoked.",
+    "No parcel ID, native schema, CRS response, or geometry was verified, so no sample GeoJSON was retained.",
+    "No unsafe personal, owner, address, contact, titleholder, tax, account, credential, or private-token data was requested or retained. This packet is research evidence only and is not source integration or admission."
+  ]
+}

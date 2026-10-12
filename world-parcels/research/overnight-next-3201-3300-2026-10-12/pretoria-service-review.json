@@ -1,0 +1,46 @@
+{
+  "cityRecord": "city-11570-pretoria.json",
+  "cityCode": 11570,
+  "queueRank": 3289,
+  "city": "Pretoria",
+  "country": "China",
+  "countryCode": "CN",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "Yixing Real Estate Registration Center (宜兴市不动产登记中心) and Yixing Natural Resources and Planning Bureau (宜兴市自然资源和规划局)",
+  "publicMapLead": "https://www.jszwfw.gov.cn/bdczt/bdcindex.html",
+  "queryOutcomes": "Separate English and Chinese first-party discovery queries were executed; exact text, outcomes, and URLs are in city-11570-pretoria.json. The queue name/coordinate inconsistency was preserved rather than corrected.",
+  "requestOutcomes": "The official Jiangsu landing page loaded, and its Yixing configuration redirected to a Jiangsu government login flow. Official Yixing material evidenced the local registration custodian. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used.",
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [31.2687177699523, 119.837739464339] preserved and not moved.",
+    "No exact-point or map-extent conclusion treated as citywide absence.",
+    "No verified anonymous citywide parcel-vector feed.",
+    "No parcel polygon or raw source attribute set retained.",
+    "Independent serial review required before adapter/runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "No anonymous safe parcel ID-plus-geometry response, schema, CRS, or citywide open coverage qualified."
+  },
+  "uncertainty": "Public local registration workflow may require authentication or interactive state; the login redirect does not prove parcel-source absence. The queue label Pretoria is unresolved against the preserved Jiangsu point.",
+  "admissionDecision": "held",
+  "geometrySamples": []
+}

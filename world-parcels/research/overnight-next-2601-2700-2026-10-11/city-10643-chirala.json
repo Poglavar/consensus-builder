@@ -1,0 +1,58 @@
+{
+  "cityCode": 10643,
+  "queueRank": 2625,
+  "country": "India",
+  "countryCode": "IN",
+  "point": [15.8196353648213, 80.3489955305235],
+  "population2025": 224718,
+  "population2025k": 224.718,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chirala Andhra Pradesh official cadastral parcel map land records GIS",
+        "result": "Found the official Andhra Pradesh Bhunaksha cadastral-mapping platform and the official Chirala municipal GIS map page. The Bhunaksha page describes a Government of Andhra Pradesh cadastral mapping and geo-referenced spatial-data platform, but its direct host timed out during bounded retrieval; no Chirala parcel API response or safe geometry was obtained.",
+        "actualResultUrls": [
+          "https://bhunaksha.ap.gov.in/",
+          "https://chirala.cdma.ap.gov.in/ulbprofile/chirala/gis-map",
+          "https://ap.nic.in/en/publication/presentation-of-state-centre/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "చీరాల ఆంధ్రప్రదేశ్ భూ రికార్డులు కాడాస్ట్రల్ మ్యాప్ అధికారిక",
+        "result": "Telugu-language search found the official Andhra Pradesh Bhuseva land-information portal and the official Bhunaksha/AP land-record context. No Chirala-specific Telugu parcel service or anonymous parcel geometry endpoint was evidenced.",
+        "actualResultUrls": [
+          "https://bhudhaar.ap.gov.in/",
+          "https://bhunaksha.ap.gov.in/",
+          "https://dolr.gov.in/en/citizen-centric-services/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "sourceAssessment": {
+    "localCustodian": {
+      "name": "Department of Survey, Settlements and Land Records, Government of Andhra Pradesh",
+      "url": "https://bhunaksha.ap.gov.in/",
+      "evidence": "The official Bhunaksha page identifies itself as the Andhra Pradesh Government Survey, Settlements and Land Records platform and describes cadastral mapping and geo-referenced spatial data. This evidences a state cadastral custodian, but this attempt did not prove a Chirala-specific public layer or endpoint."
+    },
+    "cityMap": {
+      "name": "Chirala Municipality official GIS map",
+      "url": "https://chirala.cdma.ap.gov.in/ulbprofile/chirala/gis-map",
+      "evidence": "The official Chirala municipal page exposes a public GIS map with streets/satellite base layers and Sachivalayam search. Its current JavaScript points to an authenticated external ULB API for Sachivalayam data; no cadastral parcel layer was exposed."
+    },
+    "generalAgency": {
+      "name": "Department of Land Resources, Government of India",
+      "url": "https://dolr.gov.in/en/citizen-centric-services/",
+      "scope": "General national land-records and cadastral-map program context; not treated as a Chirala-specific registry or parcel service."
+    }
+  },
+  "parcelSource": null,
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "No safe anonymous native parcel ID plus geometry response was obtained. Independent serial adapter qualification is still required before runtime admission."
+  }
+}

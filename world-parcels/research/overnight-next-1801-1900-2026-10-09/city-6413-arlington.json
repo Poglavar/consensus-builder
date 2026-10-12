@@ -1,0 +1,70 @@
+{
+  "cityCode": 6413,
+  "queueRank": 1843,
+  "name": "Arlington",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso3": "USA",
+  "point": [32.7174112900959, -97.0729125498606],
+  "population2025": 311130,
+  "population2025k": 311.13,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Arlington Texas official GIS parcel map ArcGIS REST parcels",
+        "result": "Found the City of Arlington, Texas Maps Online reference and first-party ArcGIS REST services. The OpenData OD_Property MapServer documents a Tax Parcel polygon layer and the city plat-search page directs users to Maps Online for parcel identification.",
+        "actualResultUrls": [
+          "https://www.arlingtontx.gov/Government/Data-Information/Data-Information-Directory/Open-Data/Plat-Search",
+          "https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer",
+          "https://gis.arlingtontx.gov/mapsonline/"
+        ]
+      },
+      {
+        "language": "Spanish (local-language check)",
+        "query": "Arlington Texas mapa oficial de parcelas catastro GIS",
+        "result": "No distinct Spanish-language Arlington cadastral portal was found in the discovery results; the official City of Arlington English Maps Online and ArcGIS parcel service were the relevant first-party results. The service was then tested directly without translation or coordinate modification.",
+        "actualResultUrls": [
+          "https://www.arlingtontx.gov/Government/Data-Information/Data-Information-Directory/Open-Data/Plat-Search",
+          "https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "provider": "City of Arlington, Texas GIS / OpenData",
+    "viewerUrl": "https://gis.arlingtontx.gov/mapsonline/",
+    "serviceRoute": "https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2",
+    "serviceType": "ArcGIS REST Feature Layer",
+    "parcelLayerConfirmed": true,
+    "nativeIdField": "TaxParcelId",
+    "geometryField": "Shape",
+    "nativeFieldMapping": {"TaxParcelId": "stable parcel identifier", "Shape": "parcel polygon geometry"},
+    "compositeKeyProvenance": null,
+    "crs": {"serviceWkid": 102738, "serviceLatestWkid": 2276, "sampleOutputWkid": 4326}
+  },
+  "verifiedSample": {
+    "count": 3,
+    "exactWupPointQuery": true,
+    "exactWupPointResult": "zero features",
+    "boundedQuery": "Envelope -97.08,32.71,-97.06,32.73 in EPSG:4326; intersects; resultRecordCount=3",
+    "result": "Three parcel polygons were returned from the bounded anonymous query and retained with only TaxParcelId identities.",
+    "sampleFile": "arlington-parcel-samples.geojson",
+    "requestEvidence": "tmp/valhalla-parcel-research/6413/"
+  },
+  "coverageAssessment": {
+    "claimedScope": "City of Arlington, Texas OpenData property service.",
+    "verifiedOpenScope": "Accessible Tax Parcel layer in the city service; bounded query returned safe ID-plus-geometry features.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "notes": "Local city GIS custodian and current public parcel layer are evidenced. Exact WUP point was queried unchanged in latitude/longitude order and returned no feature; this is not evidence of citywide absence. No owner, address, titleholder, contact, personal, tax/account, or other unsafe fields were requested or retained. This packet is research evidence only and is not source integration or runtime admission."
+}

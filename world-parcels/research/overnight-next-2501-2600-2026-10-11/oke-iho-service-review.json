@@ -1,0 +1,22 @@
+{
+  "cityRecord": "city-1842-oke-iho.json",
+  "cityCode": 1842,
+  "queueRank": 2531,
+  "name": "Oke Iho",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "reviewStatus": "held",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "attempt": 1,
+  "point": [8.03631803180286, 3.35499252112648],
+  "requestSummary": "Official Oyo State cadastral custodian evidence was found: the Office of the Surveyor General's Digital Land Survey Plan Registry and OyoGISS. The registry page loaded and documented public survey-plan verification, but its linked anonymous search endpoint returned 403. No parcel geometry, safe native parcel identity, schema, or CRS response was obtained. A direct OyoGISS page fetch timed out. No login, credential, CAPTCHA bypass, private token, unsafe field, or TLS exception was used.",
+  "safeFieldAllowlist": ["native parcel identity", "geometry", "CRS", "source layer/theme", "feature count", "service metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account"],
+  "requests": "See city-1842-oke-iho.json requestsAndEndpointChecks for every attempted route and outcome.",
+  "schemaAndCrs": "No parcel feature or schema response was obtained; CRS is therefore unverified.",
+  "sampleGeoJson": null,
+  "scopeLimits": ["No parcel polygon retained", "No exact-point hit or miss interpreted as citywide coverage evidence", "No authenticated service accessed", "No adapter admission or runtime integration", "Search endpoint access was blocked anonymously"],
+  "uncertainty": "The official OyoGISS programme may have a separate public map/API route, and the survey registry may require interactive or authorized access. The observed 403 and timeout are route limitations only, not evidence that Oke Iho lacks cadastral coverage.",
+  "completionSummary": "Attempt 1 research accurately recorded; packet complete as a held local-registry research record, not source integration."
+}

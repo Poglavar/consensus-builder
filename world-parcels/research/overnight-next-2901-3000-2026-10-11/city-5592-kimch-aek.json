@@ -1,0 +1,96 @@
+{
+  "cityCode": 5592,
+  "queueRank": 2943,
+  "name": "Kimch'aek",
+  "country": "Dem. People's Republic of Korea",
+  "countryCode": "KP",
+  "iso3": "PRK",
+  "point": [40.6851623480354, 129.197749611568],
+  "population2025": 202236,
+  "population2025k": 202.236,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kimchaek DPR Korea cadastral map parcel land registry official",
+        "result": "No DPRK or Kimchaek first-party cadastral viewer, parcel API, or local registry page was returned. Results were unrelated South Korean cadastral services and a general Kimchaek reference page.",
+        "actualResultUrls": [
+          "https://stat.molit.go.kr/portal/cate/statView.do?hRsId=24",
+          "https://kras.go.kr/",
+          "https://en.wikipedia.org/wiki/Kimchaek"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "김책시 지적도 토지대장 국토정보 공식",
+        "result": "No DPRK or Kimchaek first-party cadastral viewer, parcel API, or local registry page was returned. Results were South Korean national cadastral services, not a DPRK local custodian.",
+        "actualResultUrls": [
+          "https://stat.molit.go.kr/portal/cate/statView.do?hRsId=24",
+          "https://m.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000026&HighCtgCD=A02001001&Mcode=10207",
+          "https://www.eum.go.kr/web/am/amMain.jsp"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "site:naenara.com.kp 김책시 지도",
+        "result": "No Kimchaek cadastral or parcel service was returned. The only first-party DPRK-domain result was a PDF map for the Sinuiju International Economic Zone and did not expose parcel data.",
+        "actualResultUrls": ["https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "attemptedRoutes": [
+    {
+      "route": "DPRK first-party web discovery",
+      "url": "https://www.naenara.com.kp/",
+      "outcome": "Search-domain discovery only; no Kimchaek cadastral/map endpoint identified. No login or restricted route attempted."
+    },
+    {
+      "route": "DPRK first-party map/document result",
+      "url": "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf",
+      "outcome": "Public PDF map for Sinuiju economic zone; not Kimchaek and no parcel identity or polygon API. Not retained."
+    },
+    {
+      "route": "South Korean national cadastral search result",
+      "url": "https://stat.molit.go.kr/portal/cate/statView.do?hRsId=24",
+      "outcome": "South Korea cadastral statistics service; wrong country and not a Kimchaek registry. Not used as source integration."
+    }
+  ],
+  "requestOutcomes": "No official Kimchaek/DPRK public map or cadastral API was identified, so no bounded parcel ID+geometry request could be made. No credentials, private tokens, CAPTCHA or Cloudflare bypass, unsafe fields, or TLS-verification exception was used.",
+  "scopeLimits": [
+    "The exact WUP point [40.6851623480354, 129.197749611568] was preserved in latitude/longitude order; no coordinate shift or exact-point parcel hit/miss inference was made.",
+    "Search non-discovery and absence of a public endpoint are not evidence of citywide cadastral absence.",
+    "No local registry/cadastre/map/procedure custodian was actually evidenced; registryFound remains null.",
+    "No stable native parcel identity, native schema, CRS, or full parcel polygon was obtained; no GeoJSON sample is retained.",
+    "No owner, address, titleholder, contact, personal, tax, account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate-reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No official parcel endpoint was identified; no hit/miss test was performed.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Public web discovery for Kimchaek/DPRK first-party cadastral or parcel-map sources.",
+    "verifiedOpenScope": "No Kimchaek/DPRK parcel service verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "DPRK local cadastral custodianship, public service availability, parcel identity semantics, schema, CRS, geometry delivery, and citywide coverage remain unresolved. No claim is made about parcel absence, land rights, ownership, or completeness."
+}

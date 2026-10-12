@@ -1,0 +1,112 @@
+{
+  "cityCode": 1491,
+  "queueRank": 3103,
+  "name": "Ternopil",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "iso3": "UKR",
+  "locId": 804,
+  "capital": false,
+  "point": [49.5563753683664, 25.598891479423],
+  "population2025": 193565,
+  "population2025k": 193.565,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ternopil Ukraine official cadastral parcel map GIS land registry viewer",
+        "result": "First-party results identified the Ternopil City Council municipal GIS/open-data route, the regional StateGeoCadastre office, Ukraine's official NSDI parcel-search documentation, and the state urban-planning geoportal. The municipal open-data description says the Ternopil urban-planning cadastral geoportal provides geospatial data and planning documentation. No safe anonymous parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://opendata.ternopilcity.gov.ua/dataset/956e39d1-a677-40d5-a215-5e40f199a387/resource/22745a70-95ce-4337-871d-d40738ae1620",
+          "https://ternopilska.land.gov.ua/icat/kadastr-i-reiestratsiia/",
+          "https://nsdi.gov.ua/docs/portal/1start/4poshukZD.html",
+          "https://kadastr.gov.ua/"
+        ]
+      },
+      {
+        "language": "Ukrainian (local)",
+        "query": "Тернопіль офіційна кадастрова карта земельний кадастр геопортал",
+        "result": "Ukrainian first-party results identified the Ternopil City Council municipal geospatial/cadastral portal, its interactive municipal maps, the regional StateGeoCadastre cadastral-and-registration page, and official parcel-search instructions. The local portal could not be inspected through a normal verified anonymous connection during this attempt; no parcel geometry was retained.",
+        "actualResultUrls": [
+          "https://gis.tmrada.gov.ua/portal/home/",
+          "https://ternopilcity.gov.ua/municipal-data-map/interaktivna-karta-reestru-komunalnogo-mayna/",
+          "https://ternopilcity.gov.ua/en/generalniy-plan/43421.html",
+          "https://ternopilska.land.gov.ua/icat/kadastr-i-reiestratsiia/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Ternopil City Council municipal urban-planning cadastral geoportal, with the regional Main Department of the StateGeoCadastre in Ternopil Oblast as the state cadastral custodian",
+    "scope": "Local municipal GIS/urban-planning data route is evidenced by the Ternopil open-data portal and city pages; regional StateGeoCadastre cadastral-and-registration responsibilities are evidenced separately. This does not qualify open citywide parcel geometry access.",
+    "evidenceUrls": [
+      "https://opendata.ternopilcity.gov.ua/dataset/956e39d1-a677-40d5-a215-5e40f199a387/resource/22745a70-95ce-4337-871d-d40738ae1620",
+      "https://gis.tmrada.gov.ua/portal/home/",
+      "https://ternopilska.land.gov.ua/icat/kadastr-i-reiestratsiia/"
+    ],
+    "scopeNote": "The municipal source is the local custodian route. The regional StateGeoCadastre page is recorded as state cadastral context, not as proof of a local parcel API."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Ternopil municipal urban-planning cadastral geoportal; Ukraine NSDI/public cadastral routes",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "attemptedRoutes": [
+      {
+        "method": "GET",
+        "url": "https://gis.tmrada.gov.ua/portal/home/",
+        "outcome": "TLS certificate hostname mismatch; request was not continued because no certificate exception was authorized"
+      },
+      {
+        "method": "GET",
+        "url": "http://gis.tmrada.gov.ua/portal/home/",
+        "outcome": "timeout after 20 seconds; no HTML, JavaScript, configuration, schema, CRS, or service endpoint inspected"
+      },
+      {
+        "method": "GET",
+        "url": "https://kadastr.gov.ua/",
+        "outcome": "HTTP 200 HTML received; current landing page/scripts were inspected, but this is the state urban-planning geoportal and no parcel feature endpoint was exposed in the bounded inspection"
+      },
+      {
+        "method": "GET",
+        "url": "https://nsdi.gov.ua/",
+        "outcome": "HTTP 200 HTML received; official site was reachable, but no anonymous parcel feature response was requested because the available route is documented as interactive/search-oriented"
+      },
+      {
+        "method": "GET",
+        "url": "https://e.land.gov.ua/",
+        "outcome": "HTTP 200 HTML received; no anonymous parcel ID-plus-geometry response was obtained and no login or private/unsafe request was attempted"
+      },
+      {
+        "method": "GET",
+        "url": "https://opendata.ternopilcity.gov.ua/dataset/956e39d1-a677-40d5-a215-5e40f199a387/resource/22745a70-95ce-4337-871d-d40738ae1620",
+        "outcome": "HTTP 200 HTML received; resource description pointed to https://gis.tmrada.gov.ua/portal/home/ but did not provide a downloadable parcel layer or anonymous feature endpoint"
+      },
+      {
+        "method": "GET",
+        "url": "https://ternopilcity.maps.arcgis.com/sharing/rest/search?f=json&num=100&q=orgid:d5neoyf1ulR8JFph%20AND%20(type:%22Feature%20Service%22%20OR%20type:%22Map%20Service%22%20OR%20type:%22Web%20Map%22)",
+        "outcome": "HTTP 200 ArcGIS JSON received for the city organization's public items; returned services were municipal amenities/operational layers, not cadastral parcel polygons"
+      }
+    ],
+    "note": "The exact WUP point was preserved and was not shifted or used as an absence test. No parcel ID, geometry, schema, CRS, or bounded anonymous parcel-feature response was obtained."
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The local municipal GIS host was not inspectable through a normal verified anonymous connection; the certificate mismatch was not bypassed.",
+    "National and state pages document parcel/cadastral search and services, but do not by themselves evidence a callable anonymous citywide geometry endpoint.",
+    "The ArcGIS organization search was bounded to public items and did not identify a cadastral parcel service.",
+    "Timeouts, TLS access failure, an uninformative landing page, or no exact-point hit are service-access/visibility limits, not evidence of citywide parcel absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration or runtime admission."
+  ]
+}

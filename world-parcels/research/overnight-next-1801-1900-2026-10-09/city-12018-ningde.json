@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 12018,
+  "queueRank": 1825,
+  "cityId": "queue:1825",
+  "name": "Ningde",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [26.660006736577, 119.530515230441],
+  "centerLatLon": [26.660006736577, 119.530515230441],
+  "population2025": 314107,
+  "population2025k": 314.107,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ningde China cadastral parcel map land registration GIS official",
+        "result": "First-party discovery identified the official Fujian Natural Resources Department report on Ningde's multi-survey information platform and registration-system data linkage, and the official Fujian Tianditu public geospatial platform. No public anonymous parcel feature endpoint was exposed by the available indexed first-party pages.",
+        "actualResultUrls": [
+          "https://zrzyt.fujian.gov.cn/zwgk/xwdt/zrzyyw/202308/t20230829_6242628.htm",
+          "https://fujian.tianditu.gov.cn/"
+        ]
+      },
+      {
+        "language": "native/local (Simplified Chinese)",
+        "query": "宁德市 不动产登记 地籍图 宗地图 GIS 官方",
+        "result": "First-party discovery identified the Fujian Natural Resources Department's Ningde report and the official Fujian Tianditu portal. The results establish local natural-resources/registration data custody and a public geospatial platform, but did not expose a safe anonymous parcel ID-plus-geometry response.",
+        "actualResultUrls": [
+          "https://zrzyt.fujian.gov.cn/zwgk/xwdt/zrzyyw/202308/t20230829_6242628.htm",
+          "https://fujian.tianditu.gov.cn/"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Simplified Chinese first-party discovery followed by TLS-verified bounded GETs; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe fields, or global TLS disablement used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://zrzyt.fujian.gov.cn/zwgk/xwdt/zrzyyw/202308/t20230829_6242628.htm",
+      "observation": "Official Fujian Natural Resources Department report states Ningde uses a multi-survey information-management platform linking Ningde data aggregation, construction approval, and real-estate registration systems. This establishes local institutional custody, not open vector access."
+    },
+    {
+      "url": "https://fujian.tianditu.gov.cn/",
+      "observation": "Official Fujian Tianditu public geospatial-information portal; its indexed description advertises map browsing and API categories, but no Ningde cadastral layer, parcel schema, CRS, or anonymous parcel response was verified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://zrzyt.fujian.gov.cn/zwgk/xwdt/zrzyyw/202308/t20230829_6242628.htm",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "TLS-verified bounded request failed during DNS resolution after 8 seconds; indexed first-party result supplied the custody evidence. Not evidence of cadastral absence."
+    },
+    {
+      "url": "https://fujian.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "TLS-verified bounded request timed out connecting after 8 seconds. No JavaScript/configuration, service URL, schema, CRS, or parcel response could be inspected. Not evidence of cadastral absence."
+    },
+    {
+      "url": "https://www.ningde.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "TLS-verified bounded request timed out during DNS resolution after 8 seconds. Not evidence of cadastral absence."
+    },
+    {
+      "url": "https://zrzyt.fujian.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official Fujian Natural Resources Department homepage loaded; no Ningde parcel feature service or safe parcel identity/geometry response was found in the bounded inspection."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Ningde local natural-resources and real-estate registration administration under Fujian province, China.",
+    "verifiedOpenScope": "Local institutional custody and provincial public geospatial platform only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeIdentityPolicy": "No native parcel identity was observed; do not synthesize one from search results, response order, or internal records.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no geometry retained",
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "The current public viewer/API route, access controls, parcel schema, CRS, stable native parcel identity, geometry quality, update currency, and citywide coverage remain unresolved. The exact WUP point was preserved and was not used to infer presence or absence. No owner, address, titleholder, contact, tax/account, personal, or unsafe fields were requested or retained.",
+  "retainedSample": null
+}

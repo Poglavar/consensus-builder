@@ -1,0 +1,63 @@
+{
+  "cityRecord": "city-7030-neyshabur.json",
+  "cityCode": 7030,
+  "queueRank": 2441,
+  "city": "Neyshabur",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "point": [36.2129689731323, 58.793986536782],
+  "reviewStatus": "held",
+  "registryFound": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "attempts": [
+    {
+      "type": "first_party_discovery",
+      "language": "English",
+      "query": "Neyshabur Iran official cadastral map parcel GIS cadastre",
+      "outcome": "Found national portal references, no indexed city parcel service.",
+      "urls": ["https://cadastre.ssaa.ir/", "https://ssaa.ir/"]
+    },
+    {
+      "type": "first_party_discovery",
+      "language": "Persian",
+      "query": "نیشابور کاداستر نقشه کاداستری سامانه رسمی",
+      "outcome": "Found national cadastral portal references; no indexed city parcel service.",
+      "urls": ["https://cadastre.ssaa.ir/", "https://shamim.ssaa.ir/"]
+    },
+    {
+      "type": "anonymous_public_get",
+      "url": "https://cadastre.ssaa.ir/",
+      "outcome": "Timed out without a response during bounded HTTPS GET; no login, credential, CAPTCHA, or TLS bypass was attempted."
+    },
+    {
+      "type": "anonymous_public_get",
+      "url": "https://shamim.ssaa.ir/",
+      "outcome": "Timed out during bounded HTTPS probe; no authenticated access was attempted."
+    }
+  ],
+  "viewerConfiguration": {
+    "officialViewerInspected": false,
+    "reason": "Official host did not return within bounded anonymous request window; current JavaScript/configuration and API routes could not be inspected.",
+    "crs": null,
+    "layers": null,
+    "schema": null,
+    "sampleResponse": null
+  },
+  "fieldMapping": {
+    "nativeIdField": null,
+    "nativeSourceFields": [],
+    "compositeKeyProvenance": null,
+    "safeAllowlist": ["stable native parcel identifier", "geometry", "CRS", "service layer name", "query extent", "request outcome"]
+  },
+  "geometryEvidence": {
+    "sampleGeoJSON": null,
+    "featureCount": 0,
+    "note": "No geometry retained. Zero response is not asserted; the service was unavailable during bounded probing."
+  },
+  "uncertainty": [
+    "The exact WUP point was preserved and was not shifted to seek a hit.",
+    "No citywide absence conclusion is made.",
+    "No local registry custodian or public parcel API was independently evidenced.",
+    "A serial reviewer must independently qualify any future adapter; packet completion is not source integration or admission."
+  ]
+}

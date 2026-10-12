@@ -1,0 +1,12 @@
+{
+  "taskId": "city:1302",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-1302-eldoret.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/eldoret-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T14:52:59.797589Z",
+  "reason": "Official Eldoret registry context remains unresolved for registryFound; first-party ArcGIS metadata shows thematic and boundary layers, while the parcel-like candidate is scoped to Nairobi. No native parcel polygon or adapter qualification."
+}

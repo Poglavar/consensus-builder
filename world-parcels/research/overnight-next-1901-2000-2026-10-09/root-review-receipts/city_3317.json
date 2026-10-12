@@ -1,0 +1,12 @@
+{
+  "taskId": "city:3317",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-3317-bukittinggi.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/bukittinggi-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:34:32.733339Z",
+  "reason": "WUP identity and English/Indonesian executed search trace match. Original and fresh first-party BHUMI layer metadata names Bidang Tanah, umum:Persil and nib, supporting national ATR/BPN custody, but not Bukittinggi feature coverage. Fresh WFS capabilities return HTML 404. No native-ID polygon response or independent adapter/UI qualification exists; endpoint failure is not citywide absence."
+}

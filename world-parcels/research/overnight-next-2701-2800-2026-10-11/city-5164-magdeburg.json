@@ -1,0 +1,115 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for Magdeburg, Germany; claims are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 5164,
+  "queueRank": 2787,
+  "name": "Magdeburg",
+  "country": "Germany",
+  "countryCode": "DE",
+  "iso3": "DEU",
+  "point": [52.127610039449, 11.6192784314093],
+  "population2025": 212686,
+  "population2025k": 212.686,
+  "populationUnit": "persons",
+  "aliases": ["magdeburg"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Magdeburg official geoportal cadastral parcels GIS WFS WMS",
+        "result": "Found the first-party Geodatenportal Sachsen-Anhalt open-data page, official ALKIS WFS/WMS documentation, and the official Magdeburg planning viewer. The state WFS returned bounded parcel polygons near the unchanged WUP point.",
+        "actualResultUrls": [
+          "https://lvermgeo.sachsen-anhalt.de/de/gdp-open-data.html",
+          "https://geodatenportal.sachsen-anhalt.de/gfds/de/gdp-alkis-geowebdienste.html",
+          "https://fplan.magdeburg.de/"
+        ]
+      },
+      {
+        "language": "German",
+        "query": "Magdeburg offizielles Geoportal Flurstücke Liegenschaftskarte Sachsen-Anhalt",
+        "result": "Found the first-party LVermGeo pages documenting Flurstücke without personal data, the ALKIS WFS/WMS endpoints, and the Sachsen-Anhalt-Viewer/Liegenschaftskarte. The public WFS capabilities and bounded GetFeature response were retrieved anonymously.",
+        "actualResultUrls": [
+          "https://lvermgeo.sachsen-anhalt.de/de/gdp-liegenschaftskarte.html",
+          "https://lvermgeo.sachsen-anhalt.de/de/gdp-open-data.html",
+          "https://geodatenportal.sachsen-anhalt.de/gfds/de/gdp-alkis-geowebdienste.html"
+        ]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://lvermgeo.sachsen-anhalt.de/de/gdp-open-data.html",
+      "observation": "First-party LVermGeo open-data page lists Flurstücke without personal data and the public ALKIS WFS/WMS services; it explicitly lists the Magdeburg independent city in related cadastral overview downloads."
+    },
+    {
+      "url": "https://geodatenportal.sachsen-anhalt.de/gfds/de/gdp-alkis-geowebdienste.html",
+      "observation": "First-party service documentation identifies the ALKIS WMS and WFS, describes parcel layers, and distinguishes the public/non-owner service from owner-data services."
+    },
+    {
+      "url": "https://fplan.magdeburg.de/",
+      "observation": "Official Magdeburg municipal GeoMedia SmartClient public planning map was identified; it was treated as a municipal planning viewer, not as evidence of cadastral parcel API custody."
+    },
+    {
+      "url": "https://lvermgeo.sachsen-anhalt.de/de/gdp-liegenschaftskarte.html",
+      "observation": "First-party page states that the Liegenschaftskarte contains parcel boundaries and that ALKIS data are available as object-based datasets; owner and personal data were not pursued."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.geodatenportal.sachsen-anhalt.de/wss/service/ST_LVermGeo_ALKIS_WFS_OpenData/guest?service=WFS&request=GetCapabilities",
+      "method": "GET capabilities",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "outcome": "Anonymous capabilities response identified WFS ST ALKIS Vereinfacht, provider Landesamt fuer Vermessung und Geoinformation Sachsen-Anhalt, feature type ave:Flurstueck, and default CRS EPSG:25832."
+    },
+    {
+      "url": "https://www.geodatenportal.sachsen-anhalt.de/wss/service/ST_LVermGeo_ALKIS_WFS_OpenData/guest?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&count=3&srsName=EPSG%3A25832&bbox=678987%2C5778167%2C679587%2C5778767",
+      "method": "GET bounded anonymous parcel query",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "outcome": "Returned three Flurstueck features with MultiSurface geometry in EPSG:25832 near the unchanged WUP point. Safe native IDs were read from idflurst/oid; source properties were not retained."
+    },
+    {
+      "url": "https://fplan.magdeburg.de/",
+      "method": "GET public municipal viewer landing page",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Public GeoMedia SmartClient page was reachable. It is a planning viewer; no cadastral parcel endpoint was established from this request."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A first-party state cadastral custodian and public ALKIS parcel WFS were verified, and the bounded response returned parcel geometry in Magdeburg. This establishes a public cadastral source, not runtime admission.",
+  "registryEvidenceUrls": [
+    "https://lvermgeo.sachsen-anhalt.de/de/gdp-open-data.html",
+    "https://www.geodatenportal.sachsen-anhalt.de/wss/service/ST_LVermGeo_ALKIS_WFS_OpenData/guest?service=WFS&request=GetCapabilities"
+  ],
+  "verifiedSample": true,
+  "sampleFile": "magdeburg-safe-sample.geojson",
+  "sampleFiles": ["magdeburg-safe-sample.geojson"],
+  "publicParcelGeometryFound": true,
+  "source": "lvermgeo-sachsen-anhalt-alkis-wfs-open-data",
+  "sourceIds": ["idflurst:DESTLIKA0003Mn36", "idflurst:DESTLIKA0003Mn3H", "idflurst:DESTLIKA0003Mn3T"],
+  "verifiedParcelResponse": "Three safe-ID MultiPolygon features were returned by the bounded EPSG:25832 query and transformed to EPSG:4326 for the retained sample.",
+  "nativeSchema": {
+    "geometryType": "MultiSurface / MultiPolygon",
+    "crs": "EPSG:25832",
+    "nativeIdentityUsed": "idflurst",
+    "nativeIdentityAlternativesObserved": ["gml:id", "oid", "flstkennz"],
+    "sourceFieldMapping": {"idflurst": "native parcel identity", "geometry": "native Flurstueck geometry"},
+    "compositeKeyProvenance": "The response also exposed flstkennz, gemaschl, flurschl, flstnrzae and optional flstnrnen; the retained canonical identity is the native idflurst field and no synthetic row number was used."
+  },
+  "resultCategory": "primary_source_investigated_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Statewide Sachsen-Anhalt ALKIS open-data WFS, with Flurstueck features and no owner data in the inspected public service.",
+    "verifiedOpenScope": "Anonymous parcel polygons verified in a 600 m by 600 m EPSG:25832 bbox around the unchanged WUP point.",
+    "countrywideVerified": false,
+    "citywideCompleteness": false
+  },
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "overnight-next-2701-2800-2026-10-11",
+  "remainingUncertainty": "The exact WUP point was preserved and not shifted. Three nearby polygons establish public parcel availability, not citywide completeness, legal currency, or runtime suitability. The public source is state-level LVermGeo rather than a demonstrably city-operated registry. No owner, address, contact, titleholder, tax/account, personal, or unsafe fields were requested or retained."
+}

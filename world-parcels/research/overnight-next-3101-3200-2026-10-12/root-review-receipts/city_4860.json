@@ -1,0 +1,19 @@
+{
+  "taskId": "city:4860",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-4860-yopal.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/yopal-service-review.json",
+    "tmp/valhalla-parcel-research/yopal-4860/geovisor.headers",
+    "tmp/valhalla-parcel-research/yopal-4860/geovisor.html"
+  ],
+  "checkedAt": "2026-10-12T03:31:01Z",
+  "finding": "Yopal, Colombia; rank 3120; 192631 persons; point [5.33292490392046,-72.3953803617033]. English and Spanish searches are recorded. The first-party 2024 IGAC notice establishes Sabanalarga cadastral custody for Yopal at that date. The cached municipal geovisor HTTP 200 response is a WordPress landing page, not a parcel vector response; the IGAC ArcGIS route timed out. Current custodian and anonymous parcel access remain unresolved.",
+  "geometrySamplesRetained": 0,
+  "admissionGates": "No source-proven native parcel ID or full polygon; no fresh exact-ID read, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details verification.",
+  "absenceInference": "None; a point-zero result, timeout, unavailable viewer, or login wall does not establish citywide absence.",
+  "integration": "not_admitted"
+}

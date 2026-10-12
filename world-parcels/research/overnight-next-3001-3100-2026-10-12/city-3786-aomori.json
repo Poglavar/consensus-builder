@@ -1,0 +1,36 @@
+{
+  "cityCode": 3786,
+  "queueRank": 3084,
+  "name": "Aomori",
+  "country": "Japan",
+  "countryCode": "JP",
+  "point": [40.818683185326, 140.746405929132],
+  "population2025": 194917,
+  "population2025k": 194.917,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Aomori City official cadastral map parcel GIS public map",
+        "result": "Found the official Aomori City geographic information service page linking to the public Aomapp viewer. The viewer is described as providing online geographic information; configuration inspection exposed a KIBANCHIZU (cadastral map) raster layer, but no anonymous vector parcel endpoint.",
+        "actualResultUrls": ["https://www.city.aomori.aomori.jp/shisei/jouhokoukai/1010276.html", "https://www2.wagmap.jp/aomoricity-sp/"]
+      },
+      {
+        "language": "Japanese",
+        "query": "青森市 公式 地籍図 公開 GIS 筆界 地番図",
+        "result": "Found the official 青森市地理情報公開サービス「あおまっぷ」 and official GIS migration documentation identifying land-improvement-district parcel-boundary polygon layers. The public viewer currently exposes a KIBANCHIZU cadastral-map raster configuration; no safe anonymous parcel geometry/ID response was retained.",
+        "actualResultUrls": ["https://www.city.aomori.aomori.jp/shisei/jouhokoukai/1010276.html", "https://www.city.aomori.aomori.jp/_res/projects/default_project/_page_/001/008/673/04_gis_bettenn2_ikoureiya-itirann.pdf", "https://www2.wagmap.jp/aomoricity-sp/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "name": "Aomori City Geographic Information Public Service (あおまっぷ)",
+    "custodian": "Aomori City",
+    "serviceUrl": "https://www2.wagmap.jp/aomoricity-sp/",
+    "parcelEvidence": "Official viewer configuration names a KIBANCHIZU cadastral-map layer with native geodetic code 4301, GA projection, and Japan-wide extent. This is map/raster evidence, not a vector parcel dataset.",
+    "runtimeReadiness": "held"
+  }
+}

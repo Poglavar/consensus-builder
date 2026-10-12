@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-2479-mongo.json",
+  "cityCode": 2479,
+  "queueRank": 2647,
+  "name": "Mongo",
+  "country": "Chad",
+  "countryCode": "TD",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "reviewStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": null,
+  "runtimeReadiness": "held",
+  "verifiedSample": false,
+  "sampleFile": null,
+  "summary": "English and French first-party discovery found the official ANATS national titles-agency site and a Mongo/Guéra office reference in its current JavaScript bundle. No public cadastral viewer, parcel API, schema, CRS response, native parcel ID, or safe geometry was verified. The office role is not sufficiently evidenced as a local cadastral registry, so registryFound remains null.",
+  "queryOutcomes": [
+    {"language": "English", "query": "Mongo Chad cadastral map parcel land registry official", "outcome": "Official ANATS and Chad government portal found; no official Mongo parcel service or geometry verified."},
+    {"language": "native/local", "query": "Mongo Tchad cadastre parcelle registre foncier site officiel", "outcome": "Official ANATS bundle references CAU de Mongo Guéra; the role is not documented as cadastral and no parcel service verified."}
+  ],
+  "requestOutcomes": [
+    {"request": "GET https://www.anats.td/", "outcome": "HTTP 200 JavaScript application shell; no parcel payload in HTML."},
+    {"request": "GET https://www.anats.td/static/js/main.257a64ae.js", "outcome": "HTTP 200; inspected current public bundle and found Mongo/Guéra office text, but no cadastral API/viewer endpoint or feature schema."},
+    {"request": "GET https://connect.gouv.td/", "outcome": "General government portal shell; no parcel payload or service URL observed."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point preserved as [12.1848936095305,18.6909978739847]; no coordinate shift or exact-point hit/miss inference.",
+    "No parcel geometry, native identity, schema, or CRS response was obtained; no GeoJSON retained.",
+    "The ANATS Mongo/Guéra reference does not by itself prove a local cadastral registry, parcel map, citywide coverage, or public anonymous API.",
+    "Unavailable or opaque public UI is an availability/evidence limitation, not evidence of cadastral absence.",
+    "No unsafe fields, credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS exception used.",
+    "Packet completion is not source integration or admission."
+  ],
+  "safeFieldAllowlist": ["stable native ID", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+  "nativeFieldMapping": null,
+  "uncertainty": "The national agency is official and the Mongo/Guéra office reference is present in the live public bundle, but the local office function, cadastral service availability, parcel identity semantics, CRS/axis details, coverage completeness, and anonymous geometry behavior remain unverified.",
+  "serialReviewRecommendation": "Hold. Retry or independently inspect any current official Chad cadastral/title viewer or service and qualify local scope, schema, native identity, CRS, coverage, and bounded anonymous geometry before runtime consideration."
+}

@@ -1,0 +1,98 @@
+{
+  "cityRecord": "city-1529-pokhariya.json",
+  "cityCode": 1529,
+  "queueRank": 2409,
+  "name": "Pokhariya",
+  "country": "Nepal",
+  "countryCode": "NP",
+  "pointLatLon": [27.0544856098853, 84.7451093928861],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.dolma.gov.np/office/Pokhariya",
+      "httpStatus": 200,
+      "outcome": "Official DOLMA page identifies Land Administration Office Pokhariya, Pokhariya, Parsa, and provides land-administration service context. This is local custodian evidence, not parcel geometry evidence."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://merokitta.dos.gov.np/application/main",
+      "httpStatus": 200,
+      "outcome": "Official Survey Department MeroKitta page exposes map-print, plot-register-print, field-book and survey-request services. The workflow requires landholder documents and OTP; no anonymous map API or geometry response was exposed in the public page."
+    },
+    {
+      "method": "GET",
+      "url": "https://dos.gov.np/services-list/",
+      "httpStatus": 200,
+      "outcome": "Official Survey Department services page was reachable over verified TLS and links to MeroKitta and official data/download material. No Pokhariya parcel feature service was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://merokitta.dos.gov.np/application/main",
+      "httpStatus": "TLS verification failed",
+      "outcome": "Direct curl inspection stopped at certificate verification failure. TLS verification was not disabled and no certificate exception was used. The route was still independently observed through official indexed page content."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.dolma.gov.np/office/Pokhariya",
+      "httpStatus": "TLS verification failed",
+      "outcome": "Direct curl inspection stopped at certificate verification failure. TLS verification was not disabled and no certificate exception was used."
+    },
+    {
+      "method": "GET",
+      "url": "https://merokitta.dos.gov.np/application/main",
+      "httpStatus": "not attempted",
+      "outcome": "No owner, address, contact, titleholder, tax/account, personal, certificate, or OTP-protected request was made. The exact WUP point was not shifted and no exact-point parcel hit/miss was asserted."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "apiBase": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "No bounded anonymous parcel response was available from the public official routes inspected.",
+      "featureCount": 0,
+      "nativeIdentity": null
+    }
+  },
+  "localCustodianAssessment": "The DOLMA Land Administration Office Pokhariya page is direct local-custodian evidence. The Survey Department is the national cadastral/map-service authority. MeroKitta's public workflow is service-request based and requires landholder materials; it was not treated as a public anonymous parcel API.",
+  "safeFieldAllowlist": [
+    "stable native parcel identity if later exposed anonymously",
+    "polygon geometry if later exposed anonymously",
+    "source service URL",
+    "source CRS / coordinate order",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "tax/account",
+    "certificate/title",
+    "personal data",
+    "citizenship",
+    "mobile number",
+    "OTP"
+  ],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Local custodian and national official service are evidenced, but no anonymous parcel schema, CRS, safe native identity, or geometry response was independently qualified."
+  },
+  "scopeLimits": [
+    "The exact WUP point [27.0544856098853, 84.7451093928861] was preserved and was not shifted.",
+    "No exact-point hit or miss was claimed because no anonymous coordinate parcel endpoint was evidenced.",
+    "Public service-page reachability does not establish citywide parcel coverage, geometry availability, update cadence, or licensing.",
+    "No full parcel polygon is retained.",
+    "TLS verification failures were recorded; TLS was not disabled and no exception was authorized or used.",
+    "No unsafe owner, address, contact, titleholder, tax/account, personal, certificate, citizenship, mobile, or OTP fields were requested or retained."
+  ],
+  "uncertainty": "The local Pokhariya land-administration custodian and national Survey Department service are verified from official sources. Anonymous parcel geometry, schema, native identity, CRS, and citywide coverage remain unverified. Runtime adapter qualification remains held for serial review."
+}

@@ -1,0 +1,70 @@
+{
+  "cityCode": 3366,
+  "queueRank": 2729,
+  "country": "China",
+  "countryCode": "CN",
+  "point": [29.6590572103938, 91.1204931098001],
+  "population2025": 216372,
+  "population2025k": 216.372,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lhasa China official cadastral parcel map land registry GIS service",
+        "result": "Search found a public ArcGIS REST FeatureServer named Historic_Lhasa_GIS_WFL1 with a Parcel layer, and official Lhasa/Xizang natural-resources pages describing local unified real-estate registration and public geographic-information services.",
+        "actualResultUrls": [
+          "https://services2.arcgis.com/8k2PygHqghVevhzy/ArcGIS/rest/services/Historic_Lhasa_GIS_WFL1/FeatureServer",
+          "https://zrzyj.lasa.gov.cn/zrzyj/tjxx/202408/14390e689b9d4b028c232bf0b161191b.shtml",
+          "https://zrzyt.xizang.gov.cn/dt/tttj/202205/t20220519_299151.html"
+        ]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "拉萨 官方 不动产登记 地籍图 地图 服务",
+        "result": "Search found the official Lhasa Natural Resources Bureau result page and a local official article on 不动产登记; it did not expose an anonymous current cadastral parcel API. The official Xizang page identifies 天地图·西藏 as a public geographic-information service portal.",
+        "actualResultUrls": [
+          "https://zrzyj.lasa.gov.cn/zrzyj/jggk/common_list.shtml",
+          "https://zrzyj.lasa.gov.cn/zrzyj/tjxx/202408/14390e689b9d4b028c232bf0b161191b.shtml",
+          "https://zrzyt.xizang.gov.cn/fw/zyxz/202004/t20200430_139102.html",
+          "https://zrzyt.xizang.gov.cn/dt/tttj/202205/t20220519_299151.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Lhasa Municipal Natural Resources Bureau / Lhasa Real Estate Registration Center",
+    "evidence": "The official Lhasa bureau reports unified real-estate registration work and provides a local official registration-information procedure page; this establishes a local registry/procedure, not an open parcel download.",
+    "urls": [
+      "https://zrzyj.lasa.gov.cn/zrzyj/tjxx/202408/14390e689b9d4b028c232bf0b161191b.shtml",
+      "https://zrzyj.lasa.gov.cn/zrzyj/wjzl/202201/716983aec380423ebacf7ba589d0393d.shtml"
+    ]
+  },
+  "sourceAssessment": {
+    "service": "Historic_Lhasa_GIS_WFL1 / Parcel layer 21",
+    "serviceUrl": "https://services2.arcgis.com/8k2PygHqghVevhzy/ArcGIS/rest/services/Historic_Lhasa_GIS_WFL1/FeatureServer/21",
+    "serviceDescription": "Circa mid-20th c. urban composition of Lhasa based on the Peter Aufschnaiter map of 1949 and a declassified USGS aerial image from 1966.",
+    "count": 886,
+    "geometryType": "esriGeometryPolygon",
+    "crs": "EPSG:3857 service coordinates; anonymous GeoJSON request returned EPSG:4326",
+    "nativeIdentity": "OBJECTID (ArcGIS OID); source also exposes DISTRICT, ID, and PD_ID, but those fields were not retained as parcel properties.",
+    "extentWebMercator": [10136923.67015361, 3457561.1310328664, 10147497.917771537, 3463350.9068794348],
+    "extentApproxLonLat": [91.130, 29.652, 91.163, 29.687],
+    "exactPointHit": false,
+    "boundedPointRequest": {
+      "request": "Envelope 91.1195–91.1215 longitude, 29.6585–29.6595 latitude; spatialRelIntersects; where=1=1; outFields=OBJECTID; returnGeometry=false",
+      "result": "objectIds=null; no error",
+      "interpretation": "The WUP point is outside this layer extent. This is a map extent miss, not evidence of citywide parcel absence."
+    },
+    "safeFieldAllowlist": ["OBJECTID", "geometry"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "registration", "encumbrance"]
+  },
+  "runtimeReadiness": "held",
+  "uncertainty": [
+    "The public parcel layer is historical and not evidenced as the current local cadastral registry.",
+    "The official local registry pages establish procedure/custodian context but no anonymous current parcel geometry endpoint was exposed.",
+    "No parcel sample is retained because the available polygons are outside the exact WUP-point window and the source scope is historical; no coordinate was shifted to force a hit."
+  ]
+}

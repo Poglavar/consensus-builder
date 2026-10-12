@@ -1,0 +1,17 @@
+{
+  "taskId": "packet:632",
+  "decision": "held",
+  "checkedAt": "2026-10-09T12:14:01.549766Z",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-632-surrey.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/surrey-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/surrey-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/surrey-632/exact-point-query.geojson",
+    "tmp/valhalla-parcel-research/surrey-632/bounded-envelope-query.geojson"
+  ],
+  "reason": "Rank 1226, WUP 632, Canada, unchanged point and 454230 persons match the immutable roster. English and French search attempts are documented in the paired packet. Original City of Surrey point response has two records with identical geometry and MSLINK but different OBJECTIDs; original bounded envelope has three full polygons and exceededTransferLimit=true. The three saved geometries and IDs match that response and retain only an id property. Local public geometry is supported, but completeness, stable deduplication and adapter admission are unqualified. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details proof are missing. No admission."
+}

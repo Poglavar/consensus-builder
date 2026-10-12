@@ -1,0 +1,56 @@
+{
+  "cityCode": 4016,
+  "queueRank": 1416,
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "point": [10.4670531788344, -66.576460925261],
+  "population2025": 399477,
+  "population2025k": 399.477,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Guarenas Venezuela official cadastral parcel map land registry GIS",
+        "result": "Found the official Alcaldía de Guarenas site and the municipal SIGAT/SATMAP service, which describe municipal administration and publish municipal ordinances. Search results also surfaced historical IGVSB geoportal service references, but no current public parcel feature service or safe parcel-ID geometry was verified.",
+        "actualResultUrls": [
+          "https://alcaldiadeguarenas.gob.ve/",
+          "https://alcaldiadeguarenas.gob.ve/la-alcaldia/",
+          "https://guarenas.sigat.net/",
+          "https://igvsb.geoportalsb.gob.ve/cgi-bin/mapserv"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Guarenas Venezuela mapa catastral oficial catastro registro de tierras SIG GIS",
+        "result": "The Spanish-language discovery query found the Alcaldía de Guarenas, SIGAT/SATMAP, Venezuelan national cadastral law references, and historical IGVSB map-service references. No anonymous current parcel schema, CRS, safe native ID, or parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://alcaldiadeguarenas.gob.ve/contacto/",
+          "https://guarenas.sigat.net/",
+          "https://tugacetaoficial.com/leyes/ley-de-geografia-cartografia-y-catastro-nacional-gaceta-37002-2000-texto/",
+          "https://igvsb.geoportalsb.gob.ve/cgi-bin/mapserv"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registry": {
+    "custodian": "The Alcaldía del Municipio Ambrosio Plaza (Guarenas) is the evidenced local government; its official SIGAT site identifies SATMAP as the municipal autonomous tax-administration service. A cadastral map or parcel-query endpoint was not evidenced.",
+    "localOffice": "No directly evidenced public Oficina Municipal de Catastro procedure or parcel viewer was found in the reviewed first-party pages.",
+    "sourceScope": "Municipal administrative and tax-service pages; national IGVSB map-service references. These do not establish open parcel geometry coverage for Guarenas.",
+    "geometryAccess": "No safe anonymous parcel feature response was obtained. No credentials, private tokens, CAPTCHA bypass, unsafe owner/address fields, or global TLS weakening were used."
+  },
+  "geometry": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a verified parcel feature service. The exact WUP point was not treated as evidence of absence and was not shifted.",
+    "crs": null
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "No current anonymous safe-ID parcel geometry service, schema/CRS, or independently qualified adapter was verified. This packet records source discovery only and does not imply source integration or admission.",
+    "adapterAdmission": false
+  }
+}

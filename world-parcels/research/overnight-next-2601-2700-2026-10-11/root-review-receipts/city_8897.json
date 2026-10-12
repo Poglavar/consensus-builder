@@ -1,0 +1,18 @@
+{
+  "taskId": "city:8897",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-8897-dhampur.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/dhampur-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T175733-57d0296d/stdout.jsonl",
+    "tmp/valhalla-parcel-research/8897/bhunaksha.html",
+    "tmp/valhalla-parcel-research/8897/bhunaksha.headers",
+    "tmp/valhalla-parcel-research/8897/main-76RVRF3Z.js"
+  ],
+  "reason": "Roster, queue and packet agree on Dhampur (rank 2694, India, exact WUP point, 219479 persons). Worker trace shows executed English and Hindi searches; official UP dashboard reports Bijnor/Dhampur cadastral map linkage. Original viewer HTML/JavaScript and HTTP headers support a live Bhu-Naksha viewer, but the bounded extent request returned all zeros and the menu/level route did not expose a safe native-ID polygon response. No sample exists. No live adapter, paging, 13-cell, metric GEOS, binding, or headed Details proof. A zero extent is not citywide absence.",
+  "retainedFullPolygons": 0,
+  "runtimeAdmitted": false,
+  "checkedAt": "2026-10-11T18:01:16Z"
+}

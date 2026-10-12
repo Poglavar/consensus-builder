@@ -1,0 +1,157 @@
+{
+  "cityCode": 6682,
+  "queueRank": 3209,
+  "name": "Amassoma",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso2": "NG",
+  "iso3": "NGA",
+  "locId": 566,
+  "capital": false,
+  "point": [4.97495916542313, 6.10771354552521],
+  "population2025": 188265,
+  "population2025k": 188.265,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Amassoma Nigeria official cadastral parcel map GIS Bayelsa State Ministry of Lands BGIS",
+        "result": "First-party discovery identified the official Bayelsa Geographic Information System (BGIS) and the Bayelsa State Ministry of Lands and Survey. BGIS describes digital land-record management and a computerized database of land titles, survey plans, and property documents, but discovery did not expose a public parcel viewer/API endpoint for anonymous bounded geometry retrieval.",
+        "actualResultUrls": [
+          "https://bgis.bayelsastate.gov.ng/",
+          "https://bgis.bayelsastate.gov.ng/services/",
+          "https://mols.bayelsastate.gov.ng/"
+        ]
+      },
+      {
+        "language": "Ijaw/Izon (local-language attempt)",
+        "query": "Amassoma Ijaw GIS cadastral parcel map Bayelsa",
+        "result": "A separate local-language-oriented discovery attempt was run using the local Ijaw/Izon identity of Southern Ijaw/Amassoma. It returned place/map references and the same official BGIS lead, but no official Ijaw-language cadastral endpoint or public parcel geometry service. English is the operating language of the official Bayelsa sites inspected.",
+        "actualResultUrls": [
+          "https://bgis.bayelsastate.gov.ng/",
+          "https://mols.bayelsastate.gov.ng/",
+          "https://bayelsajudiciary.gov.ng/magisterial-districts/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Bayelsa Geographic Information System (BGIS), under the Bayelsa State Ministry of Lands, Housing and Urban Development",
+    "scope": "Bayelsa State land administration, digital land records, land titles, survey plans, property documents, and cadastral mapping; state-level scope includes the Amassoma/Southern Ijaw area in principle",
+    "evidenceUrls": [
+      "https://bgis.bayelsastate.gov.ng/",
+      "https://bgis.bayelsastate.gov.ng/about-us/",
+      "https://bgis.bayelsastate.gov.ng/services/",
+      "https://mols.bayelsastate.gov.ng/"
+    ],
+    "scopeNote": "This is a state cadastral/land-information custodian and official service lead, not a verified citywide anonymous parcel-vector feed for Amassoma. No separate Amassoma municipal registry was evidenced."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Bayelsa GIS (BGIS) official public site and Bayelsa Ministry of Lands and Survey",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null,
+    "note": "No anonymous safe parcel ID-plus-geometry response was obtained. The exact WUP point was preserved and was not shifted. No exact-point miss or citywide absence inference was made."
+  },
+  "requestOutcomes": [
+    {
+      "method": "SEARCH",
+      "url": "https://bgis.bayelsastate.gov.ng/",
+      "outcome": "First-party search identified BGIS as Bayelsa's official geographic information and land-information system; page text states that it maintains land titles, survey plans, and property documents."
+    },
+    {
+      "method": "GET",
+      "url": "https://bgis.bayelsastate.gov.ng/",
+      "outcome": "HTTP 200. Home page HTML and JavaScript were inspected. It exposed informational content, a property-address contact form, and WordPress endpoints, but no public map viewer, parcel layer URL, service configuration, schema, CRS, or parcel response."
+    },
+    {
+      "method": "GET",
+      "url": "https://bgis.bayelsastate.gov.ng/services/",
+      "outcome": "HTTP 200. Official services page retrieved; no anonymous parcel-vector endpoint or safe parcel query was exposed in the page/configuration inspected."
+    },
+    {
+      "method": "GET",
+      "url": "https://bgis.bayelsastate.gov.ng/wp-json/wp/v2/pages/94505",
+      "outcome": "HTTP 200. Public WordPress page JSON confirmed the official Services page content, but contained no map/API URL, parcel schema, CRS, or bounded geometry response."
+    },
+    {
+      "method": "GET",
+      "url": "https://bgis.bayelsastate.gov.ng/about-us/",
+      "outcome": "HTTP 200. Official About page retrieved; it supports BGIS custodianship context but did not expose a public parcel service endpoint."
+    },
+    {
+      "method": "GET",
+      "url": "https://mols.bayelsastate.gov.ng/",
+      "outcome": "HTTP 200. Official Bayelsa Ministry of Lands and Survey site retrieved and recorded as the supervising government context; no public parcel API or geometry response was exposed in the inspected page."
+    },
+    {
+      "method": "GET",
+      "url": "https://bayelsajudiciary.gov.ng/magisterial-districts/",
+      "outcome": "HTTP 200 via first-party discovery. The official judiciary page lists Amassoma as a Bayelsa magisterial district, supporting place/custodian context only; it is not a cadastral source and no parcel data was requested."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "featureCount": 0,
+      "result": "No parcel response obtained; zero is not an absence finding."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public service/layer metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal data",
+    "tax/account",
+    "certificate/title"
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable parcel endpoint was reached; exact WUP point [4.97495916542313, 6.10771354552521] was preserved in latitude/longitude order and not shifted. No hit/miss inference was made."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bayelsa State GIS and land-information system",
+    "verifiedOpenScope": "Official state custodian and public informational site only; live anonymous schema and parcel geometry were not verified",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "Exact WUP point [4.97495916542313, 6.10771354552521] was preserved in latitude/longitude order; no coordinate shift was made.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide cadastral absence.",
+    "No native parcel identity, schema, CRS, or full polygon geometry was verified, so no sample GeoJSON is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, title, or other unsafe fields were requested or retained.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "BGIS and the Bayelsa Ministry of Lands are evidenced as the relevant state custodial and service authorities, but the current public viewer/API endpoint, native parcel identity semantics, CRS, anonymous geometry delivery, update behavior, and Amassoma citywide completeness remain unresolved."
+}

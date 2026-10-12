@@ -1,0 +1,18 @@
+{
+  "taskId": "city:5426",
+  "decision": "held",
+  "evidenceFiles": [
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-5426-hossana.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/hossana-service-review.json",
+    "tmp/valhalla-parcel-research/5426/hossana-site.html",
+    "tmp/valhalla-parcel-research/5426/services.html",
+    "tmp/valhalla-parcel-research/5426/service-9016.html"
+  ],
+  "reason": "WUP 2025 source, immutable queue and packet agree on code 5426, rank 2661, Ethiopia, point [7.56063002855833,37.8607792486057] and 221895 persons. English and Amharic executed searches are recorded. Cached first-party municipal pages support land-holding registration and a cadastral service workflow, so registryFound true is grounded as institutional custody; they do not provide a public parcel feature response. There is no retained polygon or safe native parcel ID. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding and headed Details verification are absent. Keep the city held without an absence claim or runtime admission.",
+  "retainedFullPolygons": 0,
+  "runtimeAdmitted": false,
+  "checkedAt": "2026-10-11T17:16:39Z"
+}

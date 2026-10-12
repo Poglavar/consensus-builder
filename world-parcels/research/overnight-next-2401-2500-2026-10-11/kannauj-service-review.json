@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-9467-kannauj.json",
+  "cityCode": 9467,
+  "queueRank": 2417,
+  "name": "Kannauj",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [27.0474475821003, 79.9190693565481],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://upbhunaksha.gov.in/Public/LayarPublic.aspx","httpStatus":200,"outcome":"Official Uttar Pradesh BhuNaksha public viewer loaded. Current HTML exposed Angular bundles and the anonymous public map interface."},
+    {"method":"GET","url":"https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels","httpStatus":200,"outcome":"Current viewer endpoint returned the level labels District, Tehsil, Village."},
+    {"method":"POST","url":"https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue","httpStatus":200,"request":"level=1&codes=","outcome":"Returned district list; Kannauj was code 160 and Hindi value कन्नौज."},
+    {"method":"POST","url":"https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue","httpStatus":200,"request":"level=2&codes=160","outcome":"Returned tehsil list; Kannauj tehsil was code 00834 and Hindi value कन्नौज."},
+    {"method":"POST","url":"https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue","httpStatus":200,"request":"level=3&codes=160,00834","outcome":"Returned 262 village choices; 236 hadData=true. Village 147082 (कन्नौज कछोहा) was a mapped choice."},
+    {"method":"POST","url":"https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref","httpStatus":200,"request":"gisLevels=160,00834,147082","outcome":"Returned non-zero extent xmin 393685.1827, ymin 2991008.1611, xmax 395805.9458, ymax 2994015.4723, CRS EPSG:32644, gisCode 16000834147082. The WUP point projected with UTM zone 44 is approximately 392796.55,2992150.39, so it lies west of this selected village extent; no coordinate was shifted for a hit."},
+    {"method":"POST","url":"https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY","httpStatus":200,"request":"giscode=16000834147082&x=392796.55&y=2992150.39&plotno=","outcome":"Returned {}. This is an exact-coordinate/selected-village miss or service response limitation, not evidence of citywide absence."},
+    {"method":"POST","url":"https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotByPlotNo","httpStatus":200,"request":"giscode=16000834147082&plotno=1","outcome":"Returned safe bounded plot response with kide 1, stable service id 5SXCWn7rSceIV4cSJKxKmA, and min/max coordinates; no raw attribute set or geometry was retained."},
+    {"method":"GET","url":"https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot?bhucode=16000834147082&id=5SXCWn7rSceIV4cSJKxKmA","httpStatus":401,"outcome":"Returned Missing or invalid Authorization header. No login, credential, private token, or unsafe workaround was attempted."},
+    {"method":"GET","url":"https://upbhunaksha.gov.in/bhunakshaserver/WMS/tile?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities&LAYERS=VILLAGE_MAP&gis_code=16000834147082","httpStatus":401,"outcome":"Current JavaScript documented the WMS tile route and VILLAGE_MAP layer, but direct anonymous GetCapabilities returned Unauthorized - Invalid or missing token; no feature geometry was extracted from imagery."},
+    {"method":"SEARCH","url":"https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=160","httpStatus":200,"outcome":"Official Uttar Pradesh digitization dashboard identifies Kannauj district and reports village/mapsheet linkage counts; this is coverage context, not parcel geometry."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "https://upbhunaksha.gov.in/Public/LayarPublic.aspx and current main-76RVRF3Z.js bundle",
+    "apiBase": "https://upbhunaksha.gov.in/bhunakshaserver",
+    "geometryCrs": "Map extent response declares EPSG:32644 (WGS 84 / UTM zone 44N); WUP point was preserved in latitude/longitude and only projected for comparison.",
+    "nativeIdentity": "The service returned id 5SXCWn7rSceIV4cSJKxKmA and plot number kide 1 in a bounded lookup. No synthetic row number was used; no identity was placed in a retained GeoJSON sample.",
+    "sourceFieldMapping": {"id":"service-returned plot identifier","kide":"native plot-number field returned by plot lookup","minx":"native projected bounding-box minimum X","miny":"native projected bounding-box minimum Y","maxx":"native projected bounding-box maximum X","maxy":"native projected bounding-box maximum Y","giscode":"district/tehsil/village service key","geometry":"not obtained from the anonymous safe route"},
+    "boundedAnonymousResponse": {"requestScope":"one public plot-number lookup plus one exact projected-coordinate lookup","featureCount":0,"plotLookupId":"5SXCWn7rSceIV4cSJKxKmA","geometryRetained":false}
+  },
+  "localCustodianAssessment": "Kannauj district administration is the local administrative custodian context, and the Uttar Pradesh Revenue Council links Bhu-Naksha/Bhu-lekh services. The verified map service is operated at the Uttar Pradesh state BhuNaksha endpoint; no separate Kannauj municipal parcel API was evidenced. National NIC Bhu-Naksha documentation was treated as general system prose, not local registry evidence.",
+  "safeFieldAllowlist": ["stable service-returned parcel identifier when independently observed","bounded plot-number response","map extent","source service URL","source CRS / coordinate order","retrieval date"],
+  "unsafeFieldsNotRequested": ["owner","address","contact","titleholder","tax/account","certificate/title","personal data"],
+  "qualification": {"serialReviewerRequired": true,"runtimeReadiness":"held","reason":"Official anonymous map service, live schema/CRS, administrative resolution, and bounded safe lookup were evidenced; anonymous geometry retrieval was not available without Authorization and adapter qualification remains a separate serial review."},
+  "scopeLimits": ["The exact WUP point and latitude/longitude order were preserved.","The exact-coordinate empty response is a point/service miss only, not a citywide absence determination.","The selected village extent does not contain the projected WUP point; no coordinate was shifted to force a hit.","No full parcel polygon is retained and no sample GeoJSON is created.","The dashboard linkage counts do not establish citywide parcel coverage at the urban point.","No owner, address, contact, titleholder, tax/account, or personal fields were requested or retained.","Raw HTML, JavaScript, level responses, and request captures remain under ignored tmp/valhalla-parcel-research/kannauj-9467/."],
+  "uncertainty": "The official public viewer and anonymous administrative/map routes are reachable, but the exact city point did not resolve to a plot in the tested village key and plot geometry requires an Authorization header. Coverage across the urban settlement, village association, update cadence, licensing, and runtime adapter behavior remain for serial review."
+}

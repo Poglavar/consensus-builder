@@ -1,0 +1,26 @@
+{
+  "taskId": "city:6762",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-6762-mek-el.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/mek-el-service-review.json",
+    "tmp/valhalla-parcel-research/mek-el/eland.headers",
+    "tmp/valhalla-parcel-research/mek-el/eland.html",
+    "tmp/valhalla-parcel-research/mek-el/main.d3525dff4b9098d6.js",
+    "tmp/valhalla-parcel-research/mek-el/runtime.8ea72521f0889291.js"
+  ],
+  "checkedAt": "2026-10-10T17:38:33Z",
+  "reason": "The immutable WUP identity and English/Amharic search records agree with the queue. The saved first-party e-Land HTTP 200 response is an HTML shell and JavaScript, not a native-ID polygon response. Ethio-NSDI timed out. Local custodianship and public parcel geometry remain unverified; timeout is not absence.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

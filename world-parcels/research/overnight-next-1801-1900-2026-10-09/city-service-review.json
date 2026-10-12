@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-4773-city.json",
+  "cityCode": 4773,
+  "queueRank": 1882,
+  "city": "Veys",
+  "nativeName": "ویس",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Iran's SSAA cadastral/land-registration systems and Shamim service identity were identified. No anonymous public parcel response with a stable native ID and geometry was verified, so no GeoJSON sample was retained.",
+  "queryOutcomes": "Separate English and Persian discovery queries are recorded in city-4773-city.json. They identified official SSAA/Shamim systems; general map and secondary procedural results were not treated as parcel service evidence.",
+  "requestOutcomes": [
+    {"route":"https://ssaa.ir","method":"GET","status":"timeout","outcome":"Official national SSAA host did not respond within the 15-second request limit; no login, credentials, CAPTCHA/Cloudflare bypass or TLS-disable exception used."},
+    {"route":"https://shamim.ssaa.ir","method":"GET","status":"timeout","outcome":"Official Shamim host did not respond within the 15-second request limit; no authorized or interactive access was attempted."},
+    {"route":"https://mapcarta.com/12569736","method":"GET/search discovery","status":"200/search result","outcome":"Third-party place reference confirms Veys/Weys location context only; it is not cadastral parcel evidence and no geometry was retained."},
+    {"route":"https://www.samanehha.com/web/327/%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D8%B4%D9%85%DB%8C%D9%85","method":"GET/search discovery","status":"200/search result","outcome":"Secondary Persian documentation describes Shamim as an SSAA cadastral positioning system with organizational access constraints; it is procedural context, not parcel geometry evidence."}
+  ],
+  "requestCoordinates": {"wupPointLatLon":[31.4874242591069,48.8771459252476],"coordinateOrderNote":"WUP point preserved as latitude/longitude. No exact-point query completed; no coordinate shift applied."},
+  "safeFieldAllowlist": ["stable native parcel ID if exposed", "polygon geometry", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": {"source":null,"retainedSample":null},
+  "geometryQuality": "No parcel geometry response obtained; zero samples retained.",
+  "geometryDecision": {"verified":false,"sourceId":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"Not completed because no usable anonymous parcel service response was obtained; this is not evidence of parcel absence.","requestEvidence":"tmp/valhalla-parcel-research/4773/"},
+  "coverageAssessment": {"claimedScope":"Iranian SSAA national cadastral infrastructure relevant to Veys in Khuzestan.","verifiedOpenScope":"Official service identities only; anonymous parcel schema, CRS, stable IDs, geometry, local custodian route and citywide coverage unverified.","citywideVerified":false,"countrywideVerified":false},
+  "scopeLimits": [
+    "The attempted official SSAA and Shamim hosts timed out and did not provide a usable anonymous parcel response.",
+    "No exact-point hit, extent miss, timeout or restricted-service result is evidence of citywide parcel absence.",
+    "A potentially different provincial or interactive route may exist; richer access was not attempted because it could require authorization.",
+    "No owner, address, titleholder, contact, tax/account, personal or unsafe fields were requested, logged or retained.",
+    "Packet completion is research evidence only and does not admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review remains required",
+  "uncertainty": "Parcel completeness, legal status, update currency, stable native identity, CRS and citywide coverage remain unverified."
+}

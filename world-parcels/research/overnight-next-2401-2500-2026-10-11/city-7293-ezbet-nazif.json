@@ -1,0 +1,89 @@
+{
+  "cityCode": 7293,
+  "queueRank": 2442,
+  "name": "Ezbet Nazif",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso2": "EG",
+  "iso3": "EGY",
+  "point": [26.2836672865176, 31.9429236500534],
+  "population2025": 240283,
+  "population2025k": 240.283,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ezbet Nazif Egypt official cadastral parcel map land registry",
+        "result": "Search found Egypt's official Egyptian Survey Authority (ESA) map/service pages and general real-estate-registration material, but no Ezbet Nazif-specific public parcel feature service or safe anonymous parcel response.",
+        "actualResultUrls": ["https://www.esa.gov.eg/services.aspx", "https://www.esa.gov.eg/sellingMapRoom.aspx", "https://mped.gov.eg/singlenews?id=1099&lang=en"]
+      },
+      {
+        "language": "Arabic",
+        "query": "عزبة ناصف مصر خريطة كادستر تسجيل عقاري جهة رسمية",
+        "result": "البحث عثر على صفحات هيئة المساحة المصرية الرسمية لخدمات الخرائط والخرائط الرقمية، وعلى مواد عامة للتسجيل العقاري، لكنه لم يعثر على خدمة عامة خاصة بعزبة ناصف تعيد هوية قطعة آمنة وهندسة مضلع.",
+        "actualResultUrls": ["https://www.esa.gov.eg/services.aspx", "https://www.esa.gov.eg/egypt_maps.aspx", "https://psm.gov.eg/Services/281?serviceName=%D8%B7%D9%84%D8%A8-%D8%A7%D8%B3%D8%AA%D8%AE%D8%B1%D8%A7%D8%AC-%D8%B4%D9%87%D8%A7%D8%AF%D8%A9-%D8%B9%D9%82%D8%A7%D8%B1%D9%8A%D8%A9"]
+      }
+    ]
+  },
+  "requestOutcomes": [
+    {
+      "route": "ESA services index",
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "method": "GET",
+      "outcome": "HTTP 200. Official ESA service index lists digital maps, coordinate certificates, topographic mapping, and boundary-separation services; it exposes no anonymous parcel feature endpoint in the page/configuration inspected."
+    },
+    {
+      "route": "ESA digital-map service link",
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "method": "GET",
+      "outcome": "Public page route was requested while following the official services navigation; no safe parcel ID plus complete polygon response was obtained. The public ESA site presents map products/services rather than a verified citywide parcel API."
+    },
+    {
+      "route": "ESA paper-map service",
+      "url": "https://www.esa.gov.eg/sellingMapRoom.aspx",
+      "method": "GET",
+      "outcome": "HTTP 200. Official page says maps are supplied through map-sales rooms and describes a request/order workflow; no anonymous parcel geometry or parcel identity response."
+    },
+    {
+      "route": "ESA Egypt maps and governorate map index",
+      "url": "https://www.esa.gov.eg/egypt_maps.aspx",
+      "method": "GET",
+      "outcome": "HTTP 200. Page links national and governorate map products, including Sohag imagery/map material; these are map products, not a verified parcel feature service."
+    },
+    {
+      "route": "ESA governorate image map",
+      "url": "https://www.esa.gov.eg/testmap.aspx",
+      "method": "GET",
+      "outcome": "HTTP 200. Current HTML image-map configuration exposes governorate links, including Sohag, but no parcel layer, schema, CRS, or anonymous ID+geometry request."
+    },
+    {
+      "route": "Public-service real-estate certificate page",
+      "url": "https://psm.gov.eg/Services/281?serviceName=%D8%B7%D9%84%D8%A8-%D8%A7%D8%B3%D8%AA%D8%AE%D8%B1%D8%A7%D8%AC_%D8%B4%D9%87%D8%A7%D8%AF%D8%A9_%D8%B9%D9%82%D8%A7%D8%B1%D9%8A%D8%A9",
+      "method": "GET via public search result",
+      "outcome": "Public service description requires selecting governorate/area and does not expose safe parcel geometry. No login, credentials, or owner/property lookup was attempted."
+    }
+  ],
+  "runtimeReadiness": "held",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryRetention": {
+    "sampleGeoJSON": null,
+    "featureCount": 0,
+    "reason": "No safe anonymous native parcel ID plus complete polygon response was verified."
+  },
+  "scopeLimits": [
+    "The exact WUP point [26.2836672865176, 31.9429236500534] is preserved in latitude/longitude order; no coordinate was shifted.",
+    "ESA is evidenced as the national map/cadastral custodian, but no city/local registry custodian or open Ezbet Nazif parcel service was verified.",
+    "Map-product pages, a service index, missing parcel endpoints, and no exact-point query are not evidence of citywide cadastral absence.",
+    "No owner, address, contact, titleholder, personal, tax/account, or other unsafe fields were requested or retained.",
+    "No native parcel identity, source schema, CRS, or full polygon was retrieved; no sample GeoJSON is retained.",
+    "Packet completion is not source integration/admission; runtime remains held pending independent serial review."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only if independently confirmed", "full parcel polygon geometry", "source layer metadata", "CRS"],
+  "qualificationDecision": "hold",
+  "uncertainty": "A restricted, browser-only, authenticated, unpublished, or currently unavailable ESA/local cadastral service may exist. Public pages inspected did not establish anonymous parcel identity, geometry, CRS, or citywide coverage."
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "city:3563",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-3563-tula.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/tula-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/tula/bti_tula_ru_.html"
+  ],
+  "checkedAt": "2026-10-10T10:41:00.907304Z",
+  "reason": "Immutable rank 1598, Russian Federation, point and 356025 persons match both queue sources. English and Russian searches are recorded. Original official Tula BTI HTML identifies the regional public institution and cadastral work, supporting institutional custody; no parcel feature response was obtained from timed-out national map routes. Timeout is not citywide absence. No adapter admission gates are evidenced.",
+  "sourceAdmission": "not_admitted"
+}

@@ -1,0 +1,25 @@
+{
+  "taskId": "city:9420",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-9420-guxian.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/guxian-service-review.json"
+  ],
+  "identityCheck": "UN WUP 2025 bulk row, ranked roster, pending queue and packet agree: Guxian, China, code 9420, rank 2361, point [34.6744685125421, 112.845040886148], population 247503 persons.",
+  "searchCheck": "Packet records executed English and Chinese queries with result URLs, but its Chinese query targeted 固县镇 in Tongbai County. That homophone is not bound to the WUP point near Luoyang.",
+  "custodyDecision": "Packet registryFound=true is not accepted for this WUP settlement until locality is bound. First-party Luoyang/Yanshi material identifies 顾县镇 as a plausible near-point locality and a Luoyang natural-resources authority; a dedicated Guxian parcel registry or public parcel-vector response remains unverified.",
+  "firstPartyUrlsChecked": [
+    "https://www.yanshi.gov.cn/upload/content/file/20250813/1755057284517129.pdf",
+    "https://www.ly.gov.cn/2026/01-14/1035334.html",
+    "https://www.tongbai.gov.cn/2024/03-06/741524.html"
+  ],
+  "sourceFinding": "The worker inspected Henan Tianditu and government service pages, but no source-proven native parcel identity, CRS, full polygon or bounded parcel feature response was retained. Tongbai HTTP 403 is not parcel absence. The source-to-WUP locality binding is unresolved.",
+  "sampleCheck": "No parcel sample file or full polygon retained; zero is within the three-polygon cap and no unsafe attributes were observed in the paired artifacts.",
+  "admissionCheck": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. No runtime, catalog or report admission.",
+  "reason": "The reviewed Chinese search appears to have followed a different Guxian homophone; source binding and public parcel geometry remain unresolved. The immutable WUP identity stays unchanged.",
+  "checkedAt": "2026-10-11T10:23:28Z"
+}

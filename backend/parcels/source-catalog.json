@@ -532,7 +532,11 @@
         "saint_brieuc",
         "bussy_saint_georges",
         "saint_nazaire",
-        "la_rochelle"
+        "la_rochelle",
+        "nantes",
+        "rouen",
+        "toulon",
+        "strasbourg"
       ],
       "additionalCityEvidence": {
         "marseille": "research/overnight-cities-2026-10-08/marseille-ign-root-acceptance.json",
@@ -1100,7 +1104,11 @@
         "saint_brieuc": 32630,
         "bussy_saint_georges": 32631,
         "saint_nazaire": 32630,
-        "la_rochelle": 32630
+        "la_rochelle": 32630,
+        "nantes": 32630,
+        "rouen": 32631,
+        "toulon": 32631,
+        "strasbourg": 32632
       },
       "defaultForCity": true,
       "version": "2.0.0",
@@ -1319,7 +1327,42 @@
         "amsterdam",
         "rotterdam",
         "thehague",
-        "utrecht"
+        "utrecht",
+        "leiden",
+        "zoetermeer",
+        "heemskerk",
+        "haarlem",
+        "hoofddorp",
+        "dordrecht",
+        "alphen_aan_den_rijn",
+        "alkmaar",
+        "gouda",
+        "purmerend",
+        "hoorn",
+        "bussum",
+        "hilversum",
+        "almere",
+        "zeist",
+        "s_hertogenbosch",
+        "amersfoort",
+        "lelystad",
+        "eindhoven",
+        "oss",
+        "veenendaal",
+        "ede",
+        "helmond",
+        "leeuwarden",
+        "nijmegen",
+        "maastricht",
+        "arnhem",
+        "apeldoorn",
+        "zwolle",
+        "heerlen",
+        "deventer",
+        "groningen",
+        "almelo",
+        "hengelo",
+        "enschede"
       ],
       "additionalCityEvidence": {
         "thehague": "research/world-capitals-2026-10-08/the-hague-acceptance.json",
@@ -1340,6 +1383,47 @@
             "research/amsterdam-live.json"
           ]
         }
+      },
+      "metricSridByCity": {
+        "amsterdam": 32631,
+        "rotterdam": 32631,
+        "thehague": 32631,
+        "utrecht": 32631,
+        "leiden": 32631,
+        "zoetermeer": 32631,
+        "heemskerk": 32631,
+        "haarlem": 32631,
+        "hoofddorp": 32631,
+        "dordrecht": 32631,
+        "alphen_aan_den_rijn": 32631,
+        "alkmaar": 32631,
+        "gouda": 32631,
+        "purmerend": 32631,
+        "hoorn": 32631,
+        "bussum": 32631,
+        "hilversum": 32631,
+        "almere": 32631,
+        "zeist": 32631,
+        "s_hertogenbosch": 32631,
+        "amersfoort": 32631,
+        "lelystad": 32631,
+        "eindhoven": 32631,
+        "oss": 32631,
+        "veenendaal": 32631,
+        "ede": 32631,
+        "helmond": 32631,
+        "leeuwarden": 32631,
+        "nijmegen": 32631,
+        "maastricht": 32631,
+        "arnhem": 32631,
+        "apeldoorn": 32631,
+        "zwolle": 32632,
+        "heerlen": 32631,
+        "deventer": 32632,
+        "groningen": 32632,
+        "almelo": 32632,
+        "hengelo": 32632,
+        "enschede": 32632
       }
     },
     {
@@ -1371,7 +1455,14 @@
       "licenceUrl": "https://www.vlaanderen.be/digitaal-vlaanderen/onze-diensten-en-platformen/open-data/voorwaarden-voor-het-hergebruik-van-overheidsinformatie/modellicentie-gratis-hergebruik",
       "catalogueUrl": "https://www.vlaanderen.be/datavindplaats/catalogus/ogc-api-features-grb",
       "cityIds": [
-        "antwerp"
+        "antwerp",
+        "bruges",
+        "kortrijk",
+        "ghent",
+        "aalst",
+        "sint_niklaas",
+        "mechelen",
+        "leuven"
       ],
       "discovery": {
         "jurisdiction": {
@@ -1433,7 +1524,24 @@
         "dortmund",
         "dusseldorf",
         "bonn",
-        "wuppertal"
+        "wuppertal",
+        "aachen",
+        "krefeld",
+        "bocholt",
+        "hurth",
+        "marl",
+        "remscheid",
+        "hagen",
+        "munster",
+        "unna",
+        "ludenscheid",
+        "iserlohn",
+        "hamm",
+        "siegen",
+        "gutersloh",
+        "bielefeld",
+        "herford",
+        "paderborn"
       ],
       "additionalCityEvidence": {
         "dusseldorf": "research/overnight-cities-2026-10-08/dusseldorf-nrw-root-acceptance.json",
@@ -1706,7 +1814,8 @@
       "cityIds": [
         "sydney",
         "campbelltown",
-        "cambridge_park"
+        "cambridge_park",
+        "wollongong"
       ],
       "scope": "New South Wales cadastral lots; a bounded western Sydney metropolitan entry is enabled around the verified sample. This does not establish complete Sydney coverage or legal title. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
       "evidenceFile": "research/sydney-live.json",
@@ -1717,7 +1826,8 @@
       "metricSridByCity": {
         "sydney": 32756,
         "campbelltown": 32756,
-        "cambridge_park": 32756
+        "cambridge_park": 32756,
+        "wollongong": 32756
       },
       "additionalCityEvidence": {
         "campbelltown": "research/qualification-2026-10-11-round2/1981/qualification.json",
@@ -3138,7 +3248,8 @@
       "adapter": "arcgis",
       "countryCode": "US",
       "cityIds": [
-        "des_moines"
+        "des_moines",
+        "urbandale"
       ],
       "boundsQueryMode": "object-ids",
       "idsQueryMode": "object-ids",
@@ -3276,7 +3387,7 @@
       "idField": "PARCELID",
       "objectIdField": "OBJECTID",
       "idType": "string",
-      "idPattern": "^[0-9]{17}$",
+      "idPattern": "^[0-9A-Za-z]{17}$",
       "idPrefix": "US-MT-HELENA-",
       "outFields": [
         "OBJECTID",
@@ -3290,14 +3401,16 @@
       "countryCode": "US",
       "stateCode": "MT",
       "cityIds": [
-        "helena"
+        "helena",
+        "south_central"
       ],
       "operator": "Montana Department of Revenue and county GIS offices; integrated by Montana State Library",
       "scope": "Capital-region parcel polygons around Helena.",
       "catalogueUrl": "https://www.msl.mt.gov/geoinfo/msdi/cadastral/",
       "licenceNote": "Source conditions informational; users choose source and intended use.",
       "caveats": [
-        "NULL PARCELID source rows have no cadastral identity and are excluded through explicit attributeNotNull; no synthesized parcel identity."
+        "NULL PARCELID source rows have no cadastral identity and are excluded through explicit attributeNotNull; no synthesized parcel identity.",
+        "PARCELID is always 17 characters; 4,654 of 921,301 carry letters (MSTR condominium masters, MINE claims, RAILWAY and others), counted 2026-10-12."
       ],
       "attributeNotNull": [
         "PARCELID"
@@ -5529,7 +5642,10 @@
       "countryCode": "GR",
       "metricSrid": 32634,
       "cityIds": [
-        "athens"
+        "athens",
+        "ioannina",
+        "larissa",
+        "chania"
       ],
       "scope": "Athens entry centered on the verified city-center sample. The active cadastral layer returned 27 distinct KAEKs in a roughly 0.01 km² neighborhood; wider Athens, Greece-wide coverage and currentness have not been established.",
       "evidenceFile": "research/athens-live-2026-10-08.json",
@@ -5545,6 +5661,12 @@
             "research/athens-live-2026-10-08.json"
           ]
         }
+      },
+      "metricSridByCity": {
+        "athens": 32634,
+        "ioannina": 32634,
+        "larissa": 32634,
+        "chania": 32635
       }
     },
     {
@@ -5829,7 +5951,14 @@
       "metricSrid": 32760,
       "cityIds": [
         "wellington",
-        "auckland"
+        "auckland",
+        "christchurch",
+        "lower_hutt",
+        "palmerston_north",
+        "hamilton_nz",
+        "papakura",
+        "glenfield",
+        "otumoetai"
       ],
       "maxConcurrentQueries": 2,
       "scope": "174 current primary parcel references in 13 Wellington cells, all valid with no sampled overlaps. LINZ parcel data through a public ArcGIS publication; primary parcels only, no historic/pending records. Wider runtime coverage unverified.",
@@ -5854,6 +5983,17 @@
             "research/world-capitals-2026-10-08/wellington-acceptance.json"
           ]
         }
+      },
+      "metricSridByCity": {
+        "wellington": 32760,
+        "auckland": 32760,
+        "christchurch": 32759,
+        "lower_hutt": 32760,
+        "palmerston_north": 32760,
+        "hamilton_nz": 32760,
+        "papakura": 32760,
+        "glenfield": 32760,
+        "otumoetai": 32760
       }
     },
     {
@@ -5998,7 +6138,21 @@
       "metricSrid": 32636,
       "cityIds": [
         "jerusalem",
-        "eastjerusalem"
+        "eastjerusalem",
+        "ashkelon",
+        "ashdod",
+        "haifa",
+        "netanya",
+        "hadera",
+        "rehovot",
+        "daliyat_al_karmel",
+        "tira",
+        "rosh_haayin",
+        "kafr_yasif",
+        "beersheba",
+        "taibe",
+        "umm_al_fahm",
+        "modiin_maccabim_reut"
       ],
       "maxConcurrentQueries": 2,
       "scope": "123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
@@ -7043,7 +7197,19 @@
       "countryCode": "DE",
       "metricSrid": 32632,
       "cityIds": [
-        "stuttgart"
+        "stuttgart",
+        "freiburg_im_breisgau",
+        "karlsruhe",
+        "mannheim",
+        "heidelberg",
+        "pforzheim",
+        "sindelfingen",
+        "gerlingen",
+        "heilbronn",
+        "reutlingen",
+        "constance",
+        "ravensburg",
+        "ulm"
       ],
       "scope": "78 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 78 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Stuttgart parcels returned through the Baden-Württemberg LGL ALKIS service; nearby valid ground is verified, without requiring the settlement centroid itself to fall inside a parcel. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
       "evidenceFile": "research/overnight-cities-2026-10-08/stuttgart-lgl-root-acceptance.json",
@@ -7831,7 +7997,9 @@
       "metricSrid": 32633,
       "cityIds": [
         "dresden",
-        "leipzig"
+        "leipzig",
+        "zwickau",
+        "chemnitz"
       ],
       "maxConcurrentQueries": 2,
       "name": "GeoSN Saxony simplified ALKIS cadastral parcel polygons",
@@ -8228,7 +8396,9 @@
       "metricSrid": 3059,
       "countryCode": "LV",
       "cityIds": [
-        "riga"
+        "riga",
+        "liepaja",
+        "daugavpils"
       ],
       "maxConcurrentQueries": 1,
       "name": "Riga public cadastral parcel polygons",
@@ -8249,6 +8419,11 @@
             "research/country-integration-audit-2026-10-09/riga-root-acceptance.json"
           ]
         }
+      },
+      "metricSridByCity": {
+        "riga": 3059,
+        "liepaja": 32634,
+        "daugavpils": 32635
       }
     },
     {
@@ -8274,7 +8449,8 @@
       "maxBboxKm2": 1,
       "countryCode": "EE",
       "cityIds": [
-        "tallinn"
+        "tallinn",
+        "tartu"
       ],
       "maxConcurrentQueries": 1,
       "name": "Tallinn public cadastral parcel polygons",
@@ -8295,6 +8471,10 @@
             "research/country-integration-audit-2026-10-09/tallinn-root-acceptance.json"
           ]
         }
+      },
+      "metricSridByCity": {
+        "tallinn": 3301,
+        "tartu": 32635
       }
     },
     {
@@ -8328,7 +8508,9 @@
       "propertyNameRequestValue": "geometry,nationalcadastralreference",
       "countryCode": "LT",
       "cityIds": [
-        "vilnius"
+        "vilnius",
+        "klaipeda",
+        "panevezys"
       ],
       "maxBboxKm2": 1,
       "maxConcurrentQueries": 1,
@@ -8351,6 +8533,11 @@
             "research/country-integration-audit-2026-10-09/vilnius-root-acceptance.json"
           ]
         }
+      },
+      "metricSridByCity": {
+        "vilnius": 32635,
+        "klaipeda": 32634,
+        "panevezys": 32635
       }
     },
     {
@@ -9310,7 +9497,13 @@
       ],
       "countryCode": "DE",
       "cityIds": [
-        "wiesbaden"
+        "wiesbaden",
+        "russelsheim_am_main",
+        "giessen",
+        "darmstadt",
+        "hanau",
+        "kassel",
+        "fulda"
       ],
       "metricSrid": 32632,
       "maxBboxKm2": 1,
@@ -9858,7 +10051,11 @@
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
       "maxConcurrentQueries": 2,
-      "cityIds": [],
+      "cityIds": [
+        "hazel_dell",
+        "bellevue",
+        "yakima"
+      ],
       "licenceNote": "Source conditions are informational; users choose their source and intended use.",
       "operator": "Washington Technology Solutions (WaTech) Washington State Parcels Project; data from Washington counties",
       "endpoint": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0",
@@ -9922,7 +10119,10 @@
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
       "maxConcurrentQueries": 2,
-      "cityIds": [],
+      "cityIds": [
+        "fairland",
+        "columbia_md"
+      ],
       "licenceNote": "Source conditions are informational; users choose their source and intended use.",
       "operator": "Maryland Department of Planning and State Department of Assessments and Taxation, via MD iMAP",
       "endpoint": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre/MD_ParcelBoundaries/MapServer/0",
@@ -10110,7 +10310,9 @@
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
       "maxConcurrentQueries": 2,
-      "cityIds": [],
+      "cityIds": [
+        "anchorage"
+      ],
       "licenceNote": "Source conditions are informational; users choose their source and intended use.",
       "operator": "Unattributed ArcGIS Online compilation of Alaska local-government parcel data",
       "endpoint": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0",
@@ -10241,7 +10443,10 @@
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
       "maxConcurrentQueries": 2,
-      "cityIds": [],
+      "cityIds": [
+        "layton",
+        "ogden"
+      ],
       "licenceNote": "Source conditions are informational; users choose their source and intended use.",
       "operator": "Utah Geospatial Resource Center and Utah county recorders/assessors",
       "endpoint": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0",
@@ -10312,7 +10517,10 @@
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
       "maxConcurrentQueries": 2,
-      "cityIds": [],
+      "cityIds": [
+        "kenosha",
+        "racine"
+      ],
       "licenceNote": "Source conditions are informational; users choose their source and intended use.",
       "operator": "Wisconsin State Cartographer's Office / Wisconsin Land Information Program (Department of Administration); county parcel data",
       "endpoint": "https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
@@ -10374,7 +10582,9 @@
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
       "maxConcurrentQueries": 2,
-      "cityIds": [],
+      "cityIds": [
+        "fort_wayne"
+      ],
       "licenceNote": "Source conditions are informational; users choose their source and intended use.",
       "operator": "Indiana Geographic Information Office / IndianaMap; county parcel data",
       "endpoint": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
@@ -10435,7 +10645,9 @@
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
       "maxConcurrentQueries": 2,
-      "cityIds": [],
+      "cityIds": [
+        "greensboro"
+      ],
       "licenceNote": "Source conditions are informational; users choose their source and intended use.",
       "operator": "NC OneMap / NC Center for Geographic Information and Analysis; county parcel data",
       "endpoint": "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/FeatureServer/1",
@@ -10539,7 +10751,9 @@
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
       "maxConcurrentQueries": 2,
-      "cityIds": [],
+      "cityIds": [
+        "wilmington"
+      ],
       "licenceNote": "Source conditions are informational; users choose their source and intended use.",
       "operator": "State of Delaware FirstMap; county parcel data",
       "endpoint": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0",
@@ -10601,7 +10815,9 @@
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
       "maxConcurrentQueries": 2,
-      "cityIds": [],
+      "cityIds": [
+        "fargo"
+      ],
       "licenceNote": "Source conditions are informational; users choose their source and intended use.",
       "operator": "North Dakota Information Technology / ND GIS Hub State Parcel Program; county parcel data",
       "endpoint": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0",
@@ -10751,7 +10967,58 @@
         "Geometry is the provider's own EPSG:2180 to EPSG:4326 output, unrounded and unrepaired; the adapter rejects any returned polygon that does not contain the queried point.",
         "Requests are paced to one start per second per adapter instance; GUGiK publishes no rate limit."
       ],
-      "cityIds": [],
+      "cityIds": [
+        "szczecin",
+        "stargard",
+        "gorzow_wielkopolski",
+        "zielona_gora",
+        "koszalin",
+        "lubin",
+        "legnica",
+        "slupsk",
+        "pila",
+        "leszno",
+        "wroclaw",
+        "gniezno",
+        "wejherowo",
+        "gdynia",
+        "ostrow_wielkopolski",
+        "inowroclaw",
+        "kalisz",
+        "tczew",
+        "opole",
+        "torun",
+        "grudziadz",
+        "elblag",
+        "wloclawek",
+        "rybnik",
+        "jastrzebie_zdroj",
+        "gliwice",
+        "pabianice",
+        "tychy",
+        "plock",
+        "bielsko_biala",
+        "piotrkow_trybunalski",
+        "olsztyn",
+        "tomaszow_mazowiecki",
+        "warszawa_warsaw",
+        "legionowo",
+        "kielce",
+        "wolomin",
+        "radom",
+        "nowy_sacz",
+        "tarnow",
+        "lomza",
+        "elk",
+        "siedlce",
+        "suwalki",
+        "stalowa_wola",
+        "rzeszow",
+        "lublin",
+        "przemysl",
+        "zamosc",
+        "chelm"
+      ],
       "evidenceFile": "research/countries/PL-adapter-2026-10-12.json",
       "operator": "Główny Urząd Geodezji i Kartografii (GUGiK); EGiB data maintained by county starosties",
       "attribution": "GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click",
@@ -10768,6 +11035,58 @@
         },
         "paceMs": 1000,
         "keepPublishedFields": true
+      },
+      "metricSridByCity": {
+        "szczecin": 32633,
+        "stargard": 32633,
+        "gorzow_wielkopolski": 32633,
+        "zielona_gora": 32633,
+        "koszalin": 32633,
+        "lubin": 32633,
+        "legnica": 32633,
+        "slupsk": 32633,
+        "pila": 32633,
+        "leszno": 32633,
+        "wroclaw": 32633,
+        "gniezno": 32633,
+        "wejherowo": 32634,
+        "gdynia": 32634,
+        "ostrow_wielkopolski": 32633,
+        "inowroclaw": 32634,
+        "kalisz": 32634,
+        "tczew": 32634,
+        "opole": 32633,
+        "torun": 32634,
+        "grudziadz": 32634,
+        "elblag": 32634,
+        "wloclawek": 32634,
+        "rybnik": 32634,
+        "jastrzebie_zdroj": 32634,
+        "gliwice": 32634,
+        "pabianice": 32634,
+        "tychy": 32634,
+        "plock": 32634,
+        "bielsko_biala": 32634,
+        "piotrkow_trybunalski": 32634,
+        "olsztyn": 32634,
+        "tomaszow_mazowiecki": 32634,
+        "warszawa_warsaw": 32634,
+        "legionowo": 32634,
+        "kielce": 32634,
+        "wolomin": 32634,
+        "radom": 32634,
+        "nowy_sacz": 32634,
+        "tarnow": 32634,
+        "lomza": 32634,
+        "elk": 32634,
+        "siedlce": 32634,
+        "suwalki": 32634,
+        "stalowa_wola": 32634,
+        "rzeszow": 32634,
+        "lublin": 32634,
+        "przemysl": 32634,
+        "zamosc": 32634,
+        "chelm": 32634
       }
     },
     {
@@ -10814,7 +11133,11 @@
       "licenceNote": "Source conditions are informational; users choose their source and intended use.",
       "catalogueUrl": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
       "evidenceFile": "research/statewide-us-2026-10-12/CA.json",
-      "cityIds": [],
+      "cityIds": [
+        "livermore",
+        "davis",
+        "madera"
+      ],
       "discovery": {
         "jurisdiction": {
           "countryCode": "US",
@@ -10829,6 +11152,11 @@
           ]
         },
         "paceMs": 1000
+      },
+      "metricSridByCity": {
+        "livermore": 32610,
+        "davis": 32610,
+        "madera": 32610
       }
     },
     {
@@ -10882,7 +11210,19 @@
       "licenceNote": "Source conditions are informational; users choose their source and intended use.",
       "catalogueUrl": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0",
       "evidenceFile": "research/statewide-us-2026-10-12/FL.json",
-      "cityIds": [],
+      "cityIds": [
+        "bradenton",
+        "sarasota",
+        "bayonet_point",
+        "tampa",
+        "ventura_bay",
+        "lakeland",
+        "forest_city",
+        "port_saint_lucie",
+        "saint_johns_park",
+        "holiday_hill",
+        "jacksonville_beach"
+      ],
       "discovery": {
         "jurisdiction": {
           "countryCode": "US",
@@ -10938,7 +11278,14 @@
       "licenceNote": "Source conditions are informational; users choose their source and intended use.",
       "catalogueUrl": "https://www.mass.gov/info-details/massgis-data-property-tax-parcels",
       "evidenceFile": "research/statewide-us-2026-10-12/MA.json",
-      "cityIds": [],
+      "cityIds": [
+        "springfield_ma",
+        "worcester",
+        "fall_river",
+        "lowell",
+        "lawrence",
+        "lynn"
+      ],
       "discovery": {
         "jurisdiction": {
           "countryCode": "US",
@@ -10953,6 +11300,14 @@
           ]
         },
         "paceMs": 1000
+      },
+      "metricSridByCity": {
+        "springfield_ma": 32618,
+        "worcester": 32619,
+        "fall_river": 32619,
+        "lowell": 32619,
+        "lawrence": 32619,
+        "lynn": 32619
       }
     },
     {
@@ -11006,7 +11361,12 @@
       "licenceNote": "Source conditions are informational; users choose their source and intended use.",
       "catalogueUrl": "https://ohioparcels-geohio.hub.arcgis.com/",
       "evidenceFile": "research/statewide-us-2026-10-12/OH.json",
-      "cityIds": [],
+      "cityIds": [
+        "ludlow",
+        "toledo",
+        "firestone_park",
+        "euclid"
+      ],
       "discovery": {
         "jurisdiction": {
           "countryCode": "US",
@@ -11021,6 +11381,12 @@
           ]
         },
         "paceMs": 1000
+      },
+      "metricSridByCity": {
+        "ludlow": 32616,
+        "toledo": 32617,
+        "firestone_park": 32617,
+        "euclid": 32617
       }
     },
     {
@@ -11070,7 +11436,10 @@
       "licenceNote": "Source conditions are informational; users choose their source and intended use.",
       "catalogueUrl": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
       "evidenceFile": "research/statewide-us-2026-10-12/CO.json",
-      "cityIds": [],
+      "cityIds": [
+        "boulder",
+        "greeley"
+      ],
       "discovery": {
         "jurisdiction": {
           "countryCode": "US",

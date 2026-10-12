@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-11998-xianyou.json",
+  "purpose": "Document first-party registry/map discovery, current viewer-route outcomes, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Putian sources establish a local Xianyou County Real Estate Registration Center and official Fujian sources establish a public Tianditu·Fujian map platform. The current map URL timed out during a bounded request; no anonymous safe ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "Local registry custody found through official Putian Natural Resources Bureau materials that name the Xianyou County Real Estate Registration Center, its service role and public contact/location. This is local registry evidence, not proof of open parcel geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzyj.putian.gov.cn/ztzl/yhyshj/202306/t20230607_1824379.htm",
+      "observation": "Official Putian Natural Resources Bureau page identifies the Xianyou County Real Estate Registration Center and its public registration-service role/contact."
+    },
+    {
+      "url": "https://zrzyj.putian.gov.cn/zfxxgk/xzgfxwj/202307/P020230725585741451387.pdf",
+      "observation": "Official Putian administrative service material lists the Xianyou registration center contact and registration service arrangements."
+    },
+    {
+      "url": "https://zrzyt.fj.gov.cn/zwgk/xwdt/zrzyyw/202403/t20240322_6418271.htm",
+      "observation": "Official Fujian Natural Resources material links the current Tianditu·Fujian public map platform at https://fujian.tianditu.gov.cn/map."
+    }
+  ],
+  "viewerConfiguration": {
+    "documentedHomeUrl": "https://fujian.tianditu.gov.cn/map",
+    "observedServiceTypes": ["provincial public geospatial map platform", "official map/geospatial information service"],
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://zrzyj.putian.gov.cn/ztzl/yhyshj/202306/t20230607_1824379.htm",
+      "method": "GET/web search result inspection",
+      "normalTlsVerification": true,
+      "result": "Official page opened in search inspection; Xianyou local registration custodian and public contact observed. No parcel geometry."
+    },
+    {
+      "url": "https://zrzyj.putian.gov.cn/zfxxgk/xzgfxwj/202307/P020230725585741451387.pdf",
+      "method": "GET/web search result inspection",
+      "normalTlsVerification": true,
+      "result": "Official PDF identified Xianyou registration-center service details. No parcel geometry or API."
+    },
+    {
+      "url": "https://zrzyt.fj.gov.cn/zwgk/xwdt/zrzyyw/202403/t20240322_6418271.htm",
+      "method": "GET/web search result inspection",
+      "normalTlsVerification": true,
+      "result": "Official Fujian page opened; current Tianditu·Fujian map URL observed. No parcel schema or feature response."
+    },
+    {
+      "url": "https://fujian.tianditu.gov.cn/map",
+      "method": "GET via curl, bounded 20-second timeout",
+      "normalTlsVerification": true,
+      "result": "Request timed out after 20 seconds; no HTML, JavaScript/configuration, schema, CRS or feature response obtained. No TLS exception used."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No WUP-point parcel query submitted because the current official map endpoint timed out and no parcel service endpoint was identified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official local and provincial sources cover Xianyou registration custody and Fujian public geospatial-map availability.",
+    "verifiedOpenScope": "Official custody and map-platform evidence verified; no current anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "The timeout is a route/access limitation only, not evidence of cadastral absence. Current service URL, parcel schema, CRS, native identity, geometry availability and citywide completeness remain unverified.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."
+  }
+}

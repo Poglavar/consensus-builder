@@ -1,0 +1,16 @@
+{
+  "taskId": "city:8694",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-8694-rishikesh.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/rishikesh-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T14:33:24Z",
+  "independentlyOpenedFirstPartyUrls": [
+    "https://bor.uk.gov.in/bhu-abhilekh/",
+    "https://bhunaksha.uk.gov.in/05/index.html"
+  ],
+  "reason": "The Board of Revenue page supports state land-record custody, while the documented BhuNaksha viewer remained inaccessible. Rishikesh map hierarchy, native-ID polygons and fresh adapter reads are unresolved. Paging, 13-cell metric audit, source binding and headed Details check are missing; city remains held. Viewer unavailability is not cadastral absence."
+}

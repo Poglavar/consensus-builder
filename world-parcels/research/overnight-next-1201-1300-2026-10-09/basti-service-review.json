@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10239-basti.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Review official Basti/UP cadastral service discovery and bounded anonymous API behavior.",
+  "assessment": "Basti district and UP Board of Revenue sources establish an official local/state revenue-map route. The current BhuNaksha JavaScript configuration was followed to its public API. Hierarchy and map extent requests worked anonymously; safe plot metadata worked for bounded plot-number lookups; full polygon retrieval was held because the current geometry endpoint required an Authorization header. No polygon is retained.",
+  "registryAssessment": "registryFound=true is supported by the official Basti district service page and official UP BhuNaksha service. This is evidence of revenue/cadastral service custody only, not title, ownership, or citywide parcel availability.",
+  "scopeLimits": {"maxFullPolygonsRetainedInRepository": 3, "fullPolygonsRetained": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "coverageAssessment": {"claimedScope": "Official Basti district and UP BhuNaksha service; bounded test of Basti tehsil and village 181394.", "verifiedOpenScope": "Hierarchy, map extent, CRS, and safe plot metadata only; no anonymous full parcel polygon.", "geometryVerified": false, "citywideVerified": false, "countrywideVerified": false},
+  "officialPrimarySources": [
+    {"url": "https://basti.nic.in/", "operator": "District Administration Basti, Government of Uttar Pradesh", "observation": "Official district page identifies Online Khatauni and district mapping context."},
+    {"url": "https://upbhunaksha.gov.in/home/", "operator": "Board of Revenue, Government of Uttar Pradesh / NIC", "observation": "Official BhuNaksha public viewer loaded and its live JavaScript named the current API routes."},
+    {"url": "https://upbhulekh.gov.in/", "operator": "Government of Uttar Pradesh / NIC", "observation": "Official Bhulekh land-record service linked from the district route."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Basti Uttar Pradesh official cadastral map parcel map Bhulekh BhuNaksha", "actualResultUrls": ["https://basti.nic.in/", "https://upbhunaksha.gov.in/home/", "https://bor.up.nic.in/"], "outcome": "Official district, BhuNaksha, and Board of Revenue routes identified."},
+    {"language": "Hindi", "query": "बस्ती उत्तर प्रदेश आधिकारिक भू नक्शा खसरा नक्शा", "actualResultUrls": ["https://basti.nic.in/hi/", "https://upbhunaksha.gov.in/home/", "https://bor.up.nic.in/"], "outcome": "Hindi official pages and the same public cadastral service identified."}
+  ],
+  "attempts": [
+    "Fetched the official BhuNaksha viewer and inspected the current JavaScript configuration; no login, credentials, CAPTCHA bypass, or TLS exception was used.",
+    "Queried level 1, 2, and 3 hierarchy endpoints anonymously; Basti district=185, Basti tehsil=00939, tested village=181394 (अइलहा).",
+    "Queried getVVVVExtentGeoref for 18500939181394; received EPSG:32644 extent.",
+    "Queried getPlotAtXY with the exact WUP point [26.8009241721327,82.7436691752189] in latitude/longitude order; response was {} for the tested village and was not interpreted as absence.",
+    "Queried plot numbers 1, 2, and 10; responses contained safe ids, kide values, and bounding boxes, but no full geometry.",
+    "Queried v1/khasramap/plot with the safe id from plot 1; endpoint returned 401 Missing or invalid Authorization header. No token was sought or used."
+  ],
+  "safeFieldAllowlist": ["stable native parcel id if independently qualified", "plot/kide identifier", "geometry", "CRS", "map extent", "source endpoint", "public schema metadata"],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Tested only against the bounded village context; empty response is not evidence of citywide absence."},
+  "uncertainty": ["The current public geometry route may require a viewer session or authorization bootstrap.", "The tested revenue village is not proven to contain the urban WUP point.", "Citywide and countrywide parcel coverage remain unknown."],
+  "runtimeReadiness": "held",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09T15:10:00Z",
+  "cityRecord": "city-5468-s-o-jos-do-rio-preto.json",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "purpose": "Independent service review for São José do Rio Preto official cadastral and parcel-oriented map sources.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The municipal public SIG is evidenced and its Quadras layer returned one block polygon at the exact WUP point. No individual parcel layer or safe parcel identity was verified, so no GeoJSON sample is retained. Runtime readiness remains held pending serial review.",
+  "registryAssessment": "The official São Paulo service catalog names the Prefeitura de São José do Rio Preto / Serviço Municipal da Fazenda as responsible for the public Mapa Digital. The separate measures-and-confrontations service references Cadastro Imobiliário (IPTU) and documentary requirements; it is not anonymous parcel geometry access. This is municipal map/cadastral-service evidence, not title or ownership evidence.",
+  "coverageAssessment": {
+    "claimedScope": "Municipal digital map with neighborhoods, streets, registered addresses and quadras.",
+    "verifiedOpenScope": "Anonymous ArcGIS item configuration, Quadras layer schema, and one bounded exact-point Quadras geometry response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true,
+    "parcelGeometryVerified": false
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://servicos.sp.gov.br/fcarta/65EDA651-6615-44DE-845E-968C744294CB",
+      "operator": "Prefeitura de São José do Rio Preto - Serviço Municipal da Fazenda",
+      "scope": "Official public Mapa Digital service listing and responsible municipal custodian."
+    },
+    {
+      "url": "https://sig.riopreto.sp.gov.br/portal/apps/webappviewer/index.html?id=a2d1e2a003dd450b8af235748758904b",
+      "operator": "Prefeitura de São José do Rio Preto",
+      "scope": "Official ArcGIS Web Mapping Application."
+    },
+    {
+      "url": "https://sig.riopreto.sp.gov.br/server/rest/services/Planejamento/Bairros_e_Quadras/MapServer/2",
+      "operator": "Municipal SIG service",
+      "scope": "Public Quadras block layer; not an individual parcel layer."
+    },
+    {
+      "url": "https://servicos.sp.gov.br/fcarta/1EB6CE0B-1A09-4309-A677-76FF0809C313",
+      "operator": "Prefeitura de São José do Rio Preto - Secretaria Municipal da Fazenda",
+      "scope": "Official measures/confrontations procedure referencing Cadastro Imobiliário (IPTU); documentary/property service, not open parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "São José do Rio Preto official cadastral parcel map geoportal cadastro imobiliário mapa",
+      "result": "Official municipal map service, SIG application and municipal cadastral-service references found; no open parcel layer established.",
+      "actualResultUrls": ["https://servicos.sp.gov.br/fcarta/65EDA651-6615-44DE-845E-968C744294CB", "https://sig.riopreto.sp.gov.br/portal/apps/webappviewer/index.html?id=a2d1e2a003dd450b8af235748758904b"]
+    },
+    {
+      "language": "Portuguese (Brazil)",
+      "query": "São José do Rio Preto cadastro imobiliário mapa lotes geoprocessamento prefeitura",
+      "result": "Official Mapa Digital and Cadastro Imobiliário (IPTU) procedure found; no anonymous individual parcel geometry established.",
+      "actualResultUrls": ["https://servicos.sp.gov.br/fcarta/65EDA651-6615-44DE-845E-968C744294CB", "https://servicos.sp.gov.br/fcarta/1EB6CE0B-1A09-4309-A677-76FF0809C313", "https://sig.riopreto.sp.gov.br/portal/apps/webappviewer/index.html?id=a2d1e2a003dd450b8af235748758904b"]
+    }
+  ],
+  "attempts": [
+    "Ran separate English and Portuguese first-party discovery queries.",
+    "Followed the official service-catalog link to the municipal SIG and extracted current ArcGIS item configuration.",
+    "Verified Quadras layer metadata, polygon type, EPSG:31982 source CRS and safe schema fields.",
+    "Executed a bounded anonymous exact-point query using the immutable WUP coordinate and received one block polygon in GeoJSON.",
+    "Did not retain the block polygon because it is not an individual parcel and no parcel-native identity was established.",
+    "Did not log in, use credentials/private tokens, defeat access controls, request unsafe fields, or shift the WUP point."
+  ],
+  "geometryEvidence": {
+    "verified": true,
+    "parcelGeometryVerified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": "OBJECTID=28647 observed for returned Quadras feature; not retained as parcel identity",
+    "nativeIdField": "OBJECTID",
+    "exactWupPointTest": "One Quadras polygon intersected the exact WUP point. This is not evidence of individual parcel presence or absence.",
+    "requestEvidence": [
+      {
+        "url": "https://sig.riopreto.sp.gov.br/server/rest/services/Planejamento/Bairros_e_Quadras/MapServer/2?f=json",
+        "method": "GET; anonymous",
+        "httpStatus": 200,
+        "assessment": "Public block-layer metadata verified."
+      },
+      {
+        "url": "https://sig.riopreto.sp.gov.br/server/rest/services/Planejamento/Bairros_e_Quadras/MapServer/2/query",
+        "method": "GET; anonymous bounded exact-point query",
+        "httpStatus": 200,
+        "assessment": "One Quadras polygon returned; not retained as a parcel sample."
+      }
+    ]
+  },
+  "safeFieldAllowlist": ["safe native block identity for diagnosis", "geometry", "CRS/layer metadata", "request status/content type"],
+  "nextStep": "Serial reviewer should independently inspect current municipal service configuration and determine whether a separate anonymous parcel layer exists; keep runtime held until parcel identity and coverage are qualified.",
+  "remainingUncertainty": "The public map's bounded configuration exposed blocks and streets, but did not prove whether individual parcel data exists behind another layer, a protected workflow, or an unpublished service. A timeout, login/documentary procedure, or absent layer in this bounded inspection is not evidence of citywide absence."
+}

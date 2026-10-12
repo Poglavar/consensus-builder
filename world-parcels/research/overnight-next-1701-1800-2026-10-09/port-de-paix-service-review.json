@@ -1,0 +1,55 @@
+{
+  "cityRecord": "city-1133-port-de-paix.json",
+  "cityCode": 1133,
+  "queueRank": 1761,
+  "city": "Port-de-Paix",
+  "country": "Haiti",
+  "countryCode": "HT",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "disposition": "held",
+  "summary": "First-party Haitian sources were inspected with browser-like headers and TLS verification. No safe public parcel service, native parcel identity, parcel schema, CRS, or polygon geometry was verified. No GeoJSON sample is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and French/Haitian-Creole queries, exact text, outcomes, and actual first-party URLs are recorded in city-1133-port-de-paix.json.",
+  "requestOutcomes": "IHSI, DGI, SIA Haiti, and the Port-de-Paix municipal site returned HTTP 200 but exposed no parcel service; SIA exposed only administrative/environmental GeoJSON routes. CIAT returned HTTP 503. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception was used.",
+  "attemptedRoutes": [
+    "https://ciat.gouv.ht/legislation-institutions-foncier/",
+    "https://ihsi.gouv.ht/statistiques/banque_de_donnee_geographique",
+    "https://dgi.gouv.ht/plan-du-site/",
+    "https://sia-haiti.ht/geo/carte/",
+    "https://sia-haiti.ht/geo/geojson/commune",
+    "https://mairiedeportdepaix.com/"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [19.9413175024373, -72.7770244434136] and population fields were preserved; the point was not shifted and no exact-point parcel test was attempted.",
+    "SIA administrative/environmental boundaries are not cadastral parcels and were not retained as samples.",
+    "No public parcel identity, native field mapping, CRS, geometry response, or composite parcel key was obtained; no synthetic identity or geometry was created.",
+    "CIAT HTTP 503 and absent public routes are not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry if returned", "geometry CRS", "source layer/service metadata"],
+  "nativeFieldMapping": {},
+  "compositeKeyProvenance": "No parcel response was obtained; no composite key was constructed.",
+  "crs": null,
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed; no hit/miss inference.",
+    "requestEvidence": ["SIA official map HTTP 200, administrative/environmental layers only", "IHSI official geographic-data page HTTP 200, non-parcel maps", "DGI official site map HTTP 200, no public parcel endpoint", "Port-de-Paix municipal site HTTP 200, no public parcel endpoint", "CIAT official land/cadastre page HTTP 503"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Haitian land/cadastre institutions and public geographic services relevant to Port-de-Paix.",
+    "verifiedOpenScope": "Administrative/environmental map layers only; no parcel geometry or parcel schema verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "No claim is made about parcel absence, ownership, title, taxation, completeness, or local registry custody."
+}

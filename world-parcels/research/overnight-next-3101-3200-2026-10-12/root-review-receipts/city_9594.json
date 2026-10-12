@@ -1,0 +1,27 @@
+{
+  "taskId": "city:9594",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-9594-duyun.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/duyun-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T03:53:25Z",
+  "queueIdentity": {
+    "rank": 3136,
+    "cityCode": 9594,
+    "country": "China",
+    "point": [
+      26.264120483783,
+      107.511712924868
+    ],
+    "populationPersons": 191596
+  },
+  "finding": "The official Duyun government responsibilities document identifies the municipal Natural Resources Bureau as a land-right and cadastral custodian. Official portal inspection yielded no anonymous parcel ID and polygon route, schema, or CRS. No exact-point query or citywide absence finding is supported.",
+  "registryFound": true,
+  "geometrySamplesRetained": 0,
+  "admissionGates": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS full-polygon validity/duplicate/overlap/operation checks, source binding, or headed Details-panel verification. Runtime, catalog and report admission remain held.",
+  "absenceInference": "None; public access limitations and bounded failures are not citywide absence."
+}

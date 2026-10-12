@@ -1,0 +1,45 @@
+{
+  "taskId": "city:4320",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-4320-d-zce.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/d-zce-service-review.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/d-zce-tkgm-parsel-sample.geojson",
+    "tmp/valhalla-parcel-research/root-review/4320/wfs-safe.json",
+    "tmp/valhalla-parcel-research/root-review/4320/tkgm-office.html"
+  ],
+  "checkedAt": "2026-10-12T05:02:48Z",
+  "queueIdentity": {
+    "rank": 3188,
+    "cityCode": 4320,
+    "city": "Düzce",
+    "country": "Türkiye",
+    "countryCode": "TR",
+    "point": [
+      40.8426878836539,
+      31.1585892461472
+    ],
+    "populationPersons": 188805
+  },
+  "finding": "The verified WUP 2025 archive, immutable roster, queue, and packet agree. English and Turkish executed searches are recorded with first-party result URLs. The official municipal viewer and TKGM office support a parcel source lead and institutional custody. A cached first-party bounded WFS response has three native feature IDs; the retained sample has coordinate-identical full Polygon geometries and only the safe id property. Two distinct WFS IDs overlap by 92.37344 square metres in EPSG:32636, 99.87008% of the smaller polygon, so source duplicate/overlap semantics remain unresolved.",
+  "firstPartyResponse": {
+    "cache": "tmp/valhalla-parcel-research/root-review/4320/wfs-safe.json",
+    "sha256": "1469c6dbd79b856df29fccd83931a95e5a5379812b155926cf29f307a407f9e9",
+    "source": "http://haritaserver.duzce.bel.tr/geoserver/wfs",
+    "featureCount": 3,
+    "requestedProperties": [
+      "objectid",
+      "geometry"
+    ],
+    "ids": [
+      "tkgm_parsel.187033757",
+      "tkgm_parsel.186400291",
+      "tkgm_parsel.187033791"
+    ]
+  },
+  "admissionGates": "No complete fresh native-ID adapter qualification, forced paging, 13 bounded cells, resolved metric overlap and operations, source binding, or headed Details-panel verification. HTTPS certificate verification failed in discovery. Keep held; no runtime, catalog, registry, or report admission."
+}

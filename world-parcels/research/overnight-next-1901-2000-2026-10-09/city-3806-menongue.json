@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 3806,
+  "queueRank": 1917,
+  "name": "Menongue",
+  "country": "Angola",
+  "countryCode": "AO",
+  "iso3": "AGO",
+  "point": [-14.6595609096696, 17.6861353100988],
+  "population2025": 299802,
+  "population2025k": 299.802,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Menongue Angola cadastral parcels land registry map official",
+        "result": "Found the official IGCA national cadastral authority and Angola government property-registration sources. No Menongue-specific public parcel viewer or anonymous parcel API was found.",
+        "actualResultUrls": [
+          "https://www.igca.gov.ao/home",
+          "https://inscrevaja.minfin.gov.ao/",
+          "https://governo.gov.ao/provincia/cubango"
+        ]
+      },
+      {
+        "language": "Portuguese (local/official language)",
+        "query": "Menongue Angola cadastro predial parcelas mapa oficial",
+        "result": "Found IGCA as the national cartography and cadastre authority and Inscreva Já as a nationwide property-registration campaign. The results did not evidence a Menongue local registry custodian, public parcel layer, or safe anonymous geometry endpoint.",
+        "actualResultUrls": [
+          "https://www.igca.gov.ao/home",
+          "https://inscrevaja.minfin.gov.ao/",
+          "https://mtti.gov.ao/ao/galerias/registo-predial/",
+          "https://governo.gov.ao/provincia/cubango"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.igca.gov.ao/home",
+      "operator": "Instituto Geográfico e Cadastral de Angola (IGCA)",
+      "evidence": "First-party IGCA page identifies the institute as Angola's national authority for cartography and cadastre and coordinator of the national geographic information system. This is national-agency evidence, not direct Menongue local-custodian evidence."
+    },
+    {
+      "url": "https://inscrevaja.minfin.gov.ao/",
+      "operator": "Angola Ministry of Finance property-registration campaign",
+      "evidence": "First-party campaign page states that Inscreva Já is intended to register properties nationwide and offers polygon registration. The public landing page did not expose a parcel fabric or anonymous parcel query."
+    },
+    {
+      "url": "https://governo.gov.ao/provincia/cubango",
+      "operator": "Government of Angola / Cubango provincial page",
+      "evidence": "First-party provincial page lists Menongue as a municipality and provincial capital, but supplies no cadastral map, registry office endpoint, parcel schema, or local service contact."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://inscrevaja.minfin.gov.ao/",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Public Angular landing page retrieved. It loaded runtime.js, polyfills.js, scripts.js, and main.js; no parcel feature response was returned."
+    },
+    {
+      "url": "https://inscrevaja.minfin.gov.ao/main.js",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Current JavaScript/configuration inspected. It references the authenticated Ministry of Finance API at https://capupa-service.minfin.gov.ao/api-ip and authentication services, but no anonymous Menongue parcel endpoint or public feature schema was identified. No credentials, tokens, login, or CAPTCHA bypass was used."
+    },
+    {
+      "url": "https://capupa-service.minfin.gov.ao/api-ip/",
+      "method": "GET with verified TLS",
+      "status": 200,
+      "summary": "Service returned an application response stating the request was not permitted (retorno.codigo 300); no schema, geometry, CRS, or parcel identity was returned."
+    },
+    {
+      "url": "https://www.igca.gov.ao/home",
+      "method": "GET via first-party discovery",
+      "status": "200/indexed",
+      "summary": "Official national-agency page confirmed IGCA's cadastral remit, but no Menongue parcel viewer/API route was exposed by the result."
+    },
+    {
+      "url": "https://mtti.gov.ao/ao/galerias/registo-predial/",
+      "method": "GET via first-party discovery",
+      "status": "200/indexed",
+      "summary": "Official government gallery result identified a Registo Predial page, but it exposed no public anonymous parcel feature service or geometry response."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "geometry": "Not available: no safe anonymous parcel feature response was returned.",
+      "native identity": "Not available: no parcel feature schema or native ID was exposed by the attempted public routes."
+    },
+    "crs": "Not confirmed.",
+    "geometryType": "Not confirmed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "IGCA is evidenced as Angola's national cadastral authority; Inscreva Já claims nationwide property registration.",
+    "verifiedOpenScope": "National agency and nationwide campaign only. Menongue parcel geometry, local registry custody, feature coverage, native identity, CRS, and map extent were not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No usable point or parcel response was obtained. This is an access/endpoint limitation, not evidence of citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["native parcel identifier if later exposed", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "rights/title details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "national_cadastre_authority_geometry_unverified",
+  "remainingUncertainty": "A current official national cadastral authority and property-registration campaign were evidenced, but no Menongue-specific anonymous map/API, safe parcel ID, CRS, geometry, or local registry custodian was established. The authenticated Ministry API route rejected the unauthenticated request.",
+  "nextStep": "Serial reviewer should independently inspect any current official Menongue or Cubango cadastral service, confirm anonymous access, identify the native parcel ID and CRS, and verify city coverage before adapter admission."
+}

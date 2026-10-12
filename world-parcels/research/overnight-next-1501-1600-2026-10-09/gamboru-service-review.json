@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-8885-gamboru.json",
+  "purpose": "Document first-party registry discovery, current public portal behavior, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official BOGIS material establishes a Borno state registry custodian relevant to Gamboru. The official public portal is an account-based land-application workflow. No anonymous safe ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "Local/state registry custody found through official BOGIS sources. This is distinguished from general national surveying agency information and is not treated as proof of open parcel geometry or citywide coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bogis.bornostate.gov.ng/",
+      "observation": "Official BOGIS site describes the Borno State Geographic Information Service and land/property administration services."
+    },
+    {
+      "url": "https://app.bogis.bornostate.gov.ng/",
+      "observation": "Official BOGIS application portal offers land-title/deed applications, requires account-based submission, and lists survey plans and related documents among application requirements; it is not an anonymous parcel feature service."
+    },
+    {
+      "url": "https://bogis.bornostate.gov.ng/assets/web/docx/2.%20Borno%20State%20Land%20Use%20Regulations%202022.pdf",
+      "observation": "Official Borno regulations identify the BOGIS File Archive as the depositary for registration books, land files, survey files, layouts, title-deed plans, registers, and related plans/maps, and describe the BOGIS Digital Data Repository."
+    }
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://bogis.bornostate.gov.ng/",
+    "applicationPortalUrl": "https://app.bogis.bornostate.gov.ng/",
+    "observedPublicCapability": "Account-based land-related application workflow; no public parcel-map viewer or documented anonymous GIS endpoint observed.",
+    "schemaAndCrs": "Not verified from a parcel service response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://bogis.bornostate.gov.ng/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200; official BOGIS informational site returned. No public parcel geometry endpoint was exposed in the inspected page links."
+    },
+    {
+      "url": "https://app.bogis.bornostate.gov.ng/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200; official portal returned an account/application landing page. It advertises land-title/deed applications and requires account-based workflow; no anonymous parcel geometry response."
+    },
+    {
+      "url": "https://app.bogis.bornostate.gov.ng/maps",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 404; no public map route at this guessed path. This is a route finding only, not evidence of cadastral absence."
+    },
+    {
+      "url": "https://app.bogis.bornostate.gov.ng/search",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 404; no public search route at this guessed path. No further route guessing or authenticated workflow was attempted."
+    },
+    {
+      "url": "https://bogis.hanodahost.com/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "DNS resolution failed from the research environment; treated as unavailable/third-party hosting, not as evidence of absence."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No WUP-point parcel query submitted because no public parcel service route and safe request shape were verified."
+  },
+  "nativeFieldMapping": {
+    "sourceFieldNames": [],
+    "mapping": null,
+    "compositeKeyProvenance": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "BOGIS is the Borno state land-administration and registry custodian relevant to Gamboru.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "uncertainty": "A public portal without an exposed map/API, 404 guessed routes, and a DNS failure are access/route findings only. They do not establish parcel absence. CRS, schema, native identity, parcel coverage, and anonymous citywide access remain unverified.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."
+  }
+}

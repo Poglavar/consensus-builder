@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6528-bida.json",
+  "cityCode": 6528,
+  "purpose": "Document first-party discovery, current public map access outcomes, and bounded anonymous parcel-geometry review for Bida.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Niger State Ministry of Lands and Survey and NIGIS agency establish the relevant state land-administration route. The NIGIS public Maps page exposes only static regional/LGA/cadastral-zone images, with the cadastral image explicitly Minna-focused. No anonymous Bida parcel feature response, safe native parcel ID, CRS, or full polygon was obtained. No login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe field request was used.",
+  "registryAssessment": "registryFound remains null: a state custodian is evidenced, but no public Bida cadastral map/API or parcel geometry was verified. General agency and legal-service prose is not treated as source integration.",
+  "safeFieldAllowlist": ["safe parcel/native plot identifier if exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Bida Nigeria official cadastral map parcel land registry GIS Niger State",
+      "outcome": "Official Niger State ministry, NIGIS, Bida Emirate, OSGOF, and NGSA routes found; no anonymous Bida parcel feature response or safe geometry found.",
+      "actualResultUrls": ["https://nigerstate.gov.ng/niger-state-ministry-of-lands-and-survey/", "https://www.nigisservices.com/", "https://nigerstate.gov.ng/bida-emirate/", "https://osgof.gov.ng/", "https://ngsa.gov.ng/mgcp-topographic-maps-of-nigeria/"]
+    },
+    {
+      "language": "Nupe/local",
+      "query": "Bida Nupe land map",
+      "outcome": "Historical/general Nupe and Bida maps were found, but no current official Bida cadastral service or safe parcel geometry was found.",
+      "actualResultUrls": ["https://nigerstate.gov.ng/bida-emirate/", "https://commons.wikimedia.org/wiki/File%3AMap_of_Nupe_and_Ilorin%2C_also_showing_the_plans_of_the_cities_of_Bida_and_Ilorin.jpg", "https://www.nigisservices.com/index.php/information/maps"]
+    }
+  ],
+  "attempts": [
+    {"url": "https://nigerstate.gov.ng/niger-state-ministry-of-lands-and-survey/", "method": "GET/search-open+curl", "result": "Official ministry page loaded; land-administration and GIS mandate evidenced, but no public parcel service or geometry endpoint exposed."},
+    {"url": "https://www.nigisservices.com/", "method": "GET/curl", "result": "Official NIGIS homepage loaded; services and agency identity evidenced, but no public parcel API/configuration exposed in HTML."},
+    {"url": "https://www.nigisservices.com/index.php/information/maps", "method": "GET/curl", "result": "Public map page loaded. It listed static links for Niger State LGAs, Minna cadastral zones, Minna billing areas, Minna roads, and area offices; no Bida parcel layer, service URL, CRS/schema response, or native parcel ID was exposed."},
+    {"url": "https://nigerstate.gov.ng/bida-emirate/", "method": "GET/search-open", "result": "Official Bida Emirate page loaded and provided local administrative/Nupe context only; no cadastral service or parcel geometry."},
+    {"url": "https://osgof.gov.ng/", "method": "GET/search-open", "result": "Official federal survey agency route found with general cadastral-survey request services; no Bida parcel dataset or anonymous feature response."},
+    {"url": "https://ngsa.gov.ng/mgcp-topographic-maps-of-nigeria/", "method": "GET/search-open", "result": "Official topographic-map page lists Sheet 184 Bida; topographic coverage is not cadastral parcel geometry."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "nativeIdField": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "No parcel containment test completed. The exact WUP point [9.0806551084161, 6.00587274996127] was preserved and not shifted; no hit/miss was used as citywide evidence."
+  },
+  "remainingUncertainty": "Bida's exact parcel, stable native parcel identifier, parcel CRS, anonymous API request shape, and citywide coverage remain unverified. The NIGIS site may publish only static maps publicly or may require an authenticated/office workflow for parcel records.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

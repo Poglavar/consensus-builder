@@ -1,0 +1,14 @@
+{
+  "taskId": "city:3932",
+  "decision": "held",
+  "checkedAt": "2026-10-11T20:21:13Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-3932-santa-maria.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/santa-maria-service-review.json"
+  ],
+  "firstPartyCustodyUrl": "https://urbanismo.santamaria.rs.gov.br/144-geo-santa-maria",
+  "review": "Immutable WUP queue and ranked roster agree on code 3932, rank 2798, Brazil, point [-29.6915141491841, -53.8250039928481], and 211991 persons. Official municipal GIS description includes lots in the urban 1st District-Sede and some district seats; packet records English and Portuguese searches. Current GeoMais entry led to a login page; no anonymous native parcel ID or geometry, bounded cells, pagination, metric GEOS checks, source binding, or headed Details-panel verification. Login wall is not absence. No full polygons retained; runtime/catalog/coverage admission remains held."
+}

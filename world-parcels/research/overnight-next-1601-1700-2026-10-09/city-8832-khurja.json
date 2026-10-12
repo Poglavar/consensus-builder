@@ -1,0 +1,83 @@
+{
+  "cityCode": 8832,
+  "queueRank": 1623,
+  "name": "Khurja",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [28.2478685699603, 77.8534420775922],
+  "population2025": 352785,
+  "population2025k": 352.785,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Khurja Uttar Pradesh official cadastral map parcel land records portal",
+        "result": "First-party discovery identified the Uttar Pradesh Bhulekh portal, the Uttar Pradesh Board of Revenue service directory, and the official Bhunaksha map application. The Bhunaksha application exposed anonymous administrative selectors and map endpoints, but no safe parcel identity plus full polygon response was verified.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/",
+          "https://bor.up.nic.in/Department_login.aspx",
+          "https://upbhunaksha.gov.in/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "खुर्जा उत्तर प्रदेश सरकारी भू-नक्शा भू-अभिलेख पार्सल पोर्टल",
+        "result": "प्रथम-पक्षीय खोज में उत्तर प्रदेश भूलेख, राजस्व परिषद और आधिकारिक भू-नक्शा सेवा मिली। आधिकारिक डिजिटाइजेशन रिपोर्ट में बुलन्दशहर जिले के खुर्जा तहसील के गांव और भू-नक्शा लिंकिंग/जियो-रेफरेंस स्थिति दिखी; सुरक्षित पार्सल पहचान और पूर्ण बहुभुज उत्तर सत्यापित नहीं हुआ।",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=142&tehsilCode=00751",
+          "https://bor.up.nic.in/Department_login.aspx",
+          "https://upbhunaksha.gov.in/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Uttar Pradesh Board of Revenue/Bhulekh and Bhunaksha services identify the state revenue land-record and cadastral-map custodian. Anonymous Bhunaksha metadata resolved district 142 (Bulandshahar), tehsil 00751 (Khurja), and village options including खुर्जा अन्दर चुंगी and खुर्जा बाहर चुंगी. This evidences a local/tehsil map service, not open parcel completeness or title data.",
+  "officialSources": [
+    {"url": "https://upbhunaksha.gov.in/", "observation": "Current official Bhunaksha JavaScript identifies the public map application and its anonymous map/plot service routes."},
+    {"url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=142&tehsilCode=00751", "observation": "Official digitization dashboard identifies Bulandshahar / Khurja and reports village, cadastral-map linking and georeferencing status."},
+    {"url": "https://bor.up.nic.in/Department_login.aspx", "observation": "Official Board of Revenue directory lists Bhulekh and Bhunaksha/Shajra services, including revenue-village maps and plot boundaries."},
+    {"url": "https://upbhulekh.gov.in/", "observation": "Official Uttar Pradesh Bhulekh portal describes state land-record access and links plot/map-related records."}
+  ],
+  "source": {
+    "sourceId": "uttar-pradesh-bhunaksha-khurja",
+    "name": "Uttar Pradesh Bhunaksha / Bhulekh cadastral-map service",
+    "operator": "Board of Revenue, Uttar Pradesh / Uttar Pradesh revenue administration",
+    "endpoint": "https://upbhunaksha.gov.in/bhunakshaserver",
+    "method": "First-party English/Hindi discovery plus bounded anonymous GET/JavaScript inspection and metadata POST requests",
+    "responseFormat": "JSON administrative metadata and map-info response; no parcel feature response",
+    "nativeCrs": null,
+    "queryOutputCrs": null,
+    "nativeIdentity": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "scope": "Bulandshahar district / Khurja tehsil cadastral-map metadata; no verified open parcel geometry for Khurja city."
+  },
+  "requests": [
+    {"url": "https://upbhulekh.gov.in/", "method": "GET", "httpStatus": 200, "outcome": "Official Bhulekh landing page returned."},
+    {"url": "https://bor.up.nic.in/Department_login.aspx", "method": "GET", "httpStatus": 200, "outcome": "Official Board of Revenue directory returned and listed Bhunaksha/Shajra and Bhulekh services."},
+    {"url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=142&tehsilCode=00751", "method": "GET", "httpStatus": 200, "outcome": "Official dashboard returned Khurja tehsil village digitization/linking status; it is tabular status evidence, not parcel geometry."},
+    {"url": "https://upbhunaksha.gov.in/", "method": "GET", "httpStatus": 200, "outcome": "Current public Bhunaksha application returned; JavaScript configuration was inspected."},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels", "method": "GET", "httpStatus": 200, "outcome": "Returned District, Tehsil, Village level labels."},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "method": "POST", "httpStatus": 200, "request": "level=1", "outcome": "Returned district metadata including code 142 for Bulandshahar."},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "method": "POST", "httpStatus": 200, "request": "level=2; codes=142", "outcome": "Returned tehsil metadata including code 00751 for Khurja."},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "method": "POST", "httpStatus": 200, "request": "level=3; codes=142,00751", "outcome": "Returned 195 village options, including Khurja urban entries; only administrative metadata was retained."},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/getGisCodeFromLevels?gisLevels=09,142,00751", "method": "POST", "httpStatus": 200, "outcome": "Returned GIS code 0914200751."},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref", "method": "POST", "httpStatus": 200, "request": "gisLevels=09,142,00751 and village-qualified variants", "outcome": "Returned xmin/ymin/xmax/ymax all zero and no map attribution; no parcel geometry or native parcel identity was returned."}
+  ],
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "legal_description", "value", "full parcel attributes"],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Official Uttar Pradesh state, Board of Revenue, Bulandshahar/Khุrja digitization dashboard, and Bhunaksha application routes investigated.",
+    "verifiedOpenScope": "Tehsil-level cadastral-map service custody and administrative metadata are evidenced, but no anonymous native parcel identity plus full polygon response was verified.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_registry_map_evidenced_no_verified_public_parcel_geometry",
+  "runtimeReadiness": "held_serial_review",
+  "remainingUncertainty": "The official services establish state/tehsil cadastral-map custody and village-level digitization metadata, but not city boundary coverage, native parcel schema, CRS, anonymous geometry access, or completeness. A zero map extent and absent geometry are not evidence of citywide parcel absence. No unsafe records were requested or retained. Packet completion is not source integration or admission."
+}

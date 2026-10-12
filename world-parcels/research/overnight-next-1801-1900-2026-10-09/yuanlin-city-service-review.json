@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-12127-yuanlin-city.json",
+  "cohort": "overnight-next-1801-1900",
+  "purpose": "Review official Taiwan/NLSC and Yuanlin Land Office channels for safe anonymous cadastral geometry and stable parcel identifiers.",
+  "cityCode": 12127,
+  "queueRank": 1855,
+  "city": "Yuanlin City",
+  "country": "China, Taiwan Province of China",
+  "countryCode": "TW",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Yuanlin Land Office pages establish local cadastral custody and services. NLSC public capabilities and DescribeFeatureType expose the CADAS_MERGE cadastral layer and multipolygon schema, but the bounded anonymous feature request returned Permission Denied and the exact-point viewer overlay returned a no-land-number message. No geometry or native parcel identity was retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Traditional-Chinese discovery queries, outcomes and actual URLs are recorded in the city record.",
+  "requestOutcomes": "NLSC viewer, capabilities and schema loaded anonymously. The exact bounded CADAS_MERGE feature request was denied; the exact-point overlay request returned [{\"msg\":\"地號查詢無資料!\"}]. Yuanlin Land Office pages loaded and documented local services. No safe parcel feature response was obtained.",
+  "attemptedRoutes": [
+    "NLSC T09 public cadastral viewer",
+    "NLSC WFS GetCapabilities",
+    "NLSC WFS DescribeFeatureType for WFS:CADAS_MERGE",
+    "NLSC WFS bounded GetFeature request at the unchanged WUP point",
+    "NLSC landmaps cadastral overlay request at the unchanged WUP point",
+    "Changhua County Yuanlin Land Office official service and duties pages"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [23.9313794330103, 120.542206563103] was preserved in latitude/longitude order and never shifted; no exact-point hit/miss inference was made.",
+    "No Yuanlin city boundary or complete citywide coverage was established for an open parcel geometry service.",
+    "No parcel geometry, stable native parcel identity, source row or feature CRS was retrieved or retained.",
+    "Local registry custody and a public viewer/schema are not proof of unrestricted anonymous vector access.",
+    "Permission Denied, no-land-number result, map extent behavior, timeout, login wall or unusable UI is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "CITY/SECT/LANDNO composite identity only if publicly returned and proven stable",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": {"CITY": "city code/name component", "SECT": "land-section component", "LANDNO": "parcel-number component", "geometry": "gml:multiPolygonProperty"},
+  "compositeKeyProvenance": "NLSC DescribeFeatureType only; CITY + SECT + LANDNO is a candidate source composite and was not instantiated because no feature row was returned.",
+  "crs": "EPSG:3826 used for request coordinates; feature CRS unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": "NLSC-T09-WFS-CADAS_MERGE",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Exact unchanged WUP point sent to the NLSC cadastral route; WFS returned Permission Denied and viewer overlay returned no land-number result. No hit/miss inference was made.",
+    "requestEvidence": [
+      {"url": "https://wfs.nlsc.gov.tw/WFS?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&TYPENAME=WFS:CADAS_MERGE&SRSNAME=EPSG:3826&BBOX=203398.0,2647498.8,203398.7,2647499.5,EPSG:3826&OUTPUTFORMAT=application/json", "method": "GET", "httpStatus": 200, "result": "Permission Denied"},
+      {"url": "https://landmaps.nlsc.gov.tw/S_Maps/qryTileMapIndex?type=2&flag=1&city=N01&x=203398.3645&y=2647499.1481&alpah=0.5f", "method": "GET", "httpStatus": 200, "result": "[{\"msg\":\"地號查詢無資料!\"}]"}
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official NLSC national cadastral service and Changhua County Yuanlin local land-office service reviewed.",
+    "verifiedOpenScope": "Cadastral layer/schema and local custodian were verified; anonymous feature access was denied and citywide geometry coverage is unknown.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "uncertainty": "No safe anonymous parcel polygon/native ID was returned. The WUP point may still lie within mapped cadastral coverage; denial and no-land-number response are not evidence of absence."
+}

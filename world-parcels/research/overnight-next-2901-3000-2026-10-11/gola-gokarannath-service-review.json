@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-9491-gola-gokarannath.json",
+  "cityCode": 9491,
+  "queueRank": 2950,
+  "city": "Gola Gokarannath",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewedAt": "2026-10-11",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "Bilingual first-party discovery and direct anonymous inspection evidenced the Uttar Pradesh Board of Revenue/Bhulekh and the current Bhu-Naksha viewer, including Gola Gokaran Nath tehsil administrative levels. The viewer returned no qualified parcel geometry or native parcel identity in the bounded requests, so runtime remains held.",
+  "queryAndRequestOutcomes": "All executed queries, actual URLs, current viewer configuration findings, administrative-level POSTs, map extent request, and exact-point/plot-number diagnostics are recorded in city-9491-gola-gokarannath.json.",
+  "custodians": [
+    {"name": "Board of Revenue, Uttar Pradesh / Bhulekh", "scope": "State land records, khasra/khatauni and bhu-naksha services.", "evidence": "https://upbhulekh.gov.in/"},
+    {"name": "Gola Gokaran Nath tehsil revenue administration, Kheri", "scope": "Local tehsil revenue/cadastral service context evidenced by official DARMS and Bhu-Naksha administrative levels.", "evidence": "https://revenuedarms.up.gov.in/public_report?distCode=153&tehsilCode=00799"},
+    {"name": "National Informatics Centre / Uttar Pradesh Bhu-Naksha", "scope": "Public cadastral map viewer and map/plot lookup service.", "evidence": "https://upbhunaksha.gov.in/bhunaksha/09/index.html"}
+  ],
+  "schemaAndCrs": {"parcelSchema": "Not qualified anonymously", "nativeIdFields": [], "geometryCrs": null, "fieldMapping": "No raw source attributes retained", "compositeKeyProvenance": null},
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["canonical native parcel identifier", "geometry", "source CRS", "public service metadata", "retrieval date"],
+  "scopeLimits": ["No credentials, login, CAPTCHA bypass, private tokens or unsafe fields were used.", "Exact WUP point preserved; no coordinate shifting.", "No geometry sample is included.", "Zero extent and empty plot responses are not citywide absence evidence.", "Packet completion is not source integration/admission."],
+  "uncertainty": ["No independently qualified public parcel adapter.", "No CRS or parcel feature schema returned.", "No citywide completeness evidence."],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "registryFound": true,
+  "doNotInfer": ["Registry evidence is not runtime admission.", "Administrative village catalogs are not parcel geometry.", "An empty exact-point lookup is not citywide parcel absence."]
+}

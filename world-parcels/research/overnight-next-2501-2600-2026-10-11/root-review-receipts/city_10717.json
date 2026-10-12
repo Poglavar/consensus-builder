@@ -1,0 +1,45 @@
+{
+  "taskId": "city:10717",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-10717-tiruvallur.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/tiruvallur-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-11T14:07:55Z",
+  "reason": "Tiruvallur District states its urban land records are computerized and provides land e-Services procedures. The worker recorded state service timeout and viewer access limits; no safe native-ID polygon response or independently qualified adapter was evidenced.",
+  "identityCheck": {
+    "source": "2025 UN WUP bulk CSV SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, ranked roster, and pending queue",
+    "rank": 2530,
+    "cityCode": 10717,
+    "country": "India",
+    "pointLatLon": [
+      13.1240523617681,
+      79.9158697925941
+    ],
+    "populationPersons": 232380,
+    "matched": true
+  },
+  "searchLanguagesChecked": [
+    "English",
+    "Tamil"
+  ],
+  "firstPartyPagesChecked": [
+    "https://tiruvallur.nic.in/departments/survey-and-land-records/",
+    "https://tiruvallur.nic.in/service/e-services-anytime-anywhere-land/"
+  ],
+  "registryFound": true,
+  "retainedPolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdRead": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeAdmission": false,
+  "absenceConclusion": null
+}

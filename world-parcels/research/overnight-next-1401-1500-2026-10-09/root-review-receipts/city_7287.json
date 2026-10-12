@@ -1,0 +1,15 @@
+{
+  "taskId": "city:7287",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-7287-guangyuan.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/guangyuan-service-review.json",
+    "tmp/valhalla-parcel-research/7287/index.html",
+    "tmp/valhalla-parcel-research/7287/config.js",
+    "tmp/valhalla-parcel-research/7287/index.js"
+  ],
+  "checkedAt": "2026-10-09T17:57:59.592534Z",
+  "reason": "Immutable rank 1488 identity and English/Chinese searches checked. First-party portal cache identifies municipal registration workflow and /declaration API, but no safe native-ID parcel polygon response or adapter gates are evidenced; reported 401 routes are not evidence of citywide absence."
+}

@@ -1,0 +1,12 @@
+{
+  "taskId": "city:3744",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-3744-catia-la-mar-la-guaira.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/catia-la-mar-la-guaira-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T15:32:09Z",
+  "reason": "The immutable WUP identity and English/Spanish searches match the queue. First-party IGVSB vector catalog lists reference layers, not parcels. No verified native parcel ID, full polygon, live adapter, forced paging, 13 cells, metric GEOS checks, source binding or headed Details proof. Custody is supported; public geometry remains unresolved, not absent."
+}

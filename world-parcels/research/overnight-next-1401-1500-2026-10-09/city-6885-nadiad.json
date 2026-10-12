@@ -1,0 +1,137 @@
+{
+  "cityCode": 6885,
+  "queueRank": 1452,
+  "name": "Nadiad",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [22.6940615423695, 72.8601823783396],
+  "population2025": 391934,
+  "population2025k": 391.934,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nadiad Gujarat official cadastral parcel map GIS land records survey parcels site:gov.in",
+        "result": "First-party discovery found the Government of Gujarat Revenue Department's IORA service page, official links to AnyRoR rural records and e-Milkat property cards, the official Kheda collectorate link, and the Department of Land Resources NAKSHA urban parcel-mapping portal. Gujarat is an evidenced cadastral/land-record custodian, but no anonymous Nadiad parcel feature response was verified.",
+        "actualResultUrls": [
+          "https://revenuedepartment.gujarat.gov.in/iora-service",
+          "https://anyror.gujarat.gov.in/",
+          "https://e-milkat.gujarat.gov.in/",
+          "https://kheda.gujarat.gov.in/",
+          "https://naksha.dolr.gov.in/NakshaPortal/",
+          "https://dolr.gov.in/en/ulpin/"
+        ]
+      },
+      {
+        "language": "Gujarati",
+        "query": "નડિયાદ ગુજરાત સત્તાવાર જમીન નકશો કેડસ્ટ્રલ પાર્સલ રેકોર્ડ",
+        "result": "Gujarati-language discovery identified the official Gujarat Revenue Department service page and its Gujarati land-record/property-card links, plus a Gujarat-specific Kheda/Nadiad land-record reference. The current public portals expose record/property-card procedures and NAKSHA documentation, but no safe anonymous Nadiad parcel geometry or native parcel ID was obtained.",
+        "actualResultUrls": [
+          "https://revenuedepartment.gujarat.gov.in/iora-service",
+          "https://anyror.gujarat.gov.in/",
+          "https://e-milkat.gujarat.gov.in/",
+          "https://kheda.gujarat.gov.in/",
+          "https://naksha.dolr.gov.in/NakshaPortal/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Gujarat Revenue Department online services",
+        "operator": "Revenue Department, Government of Gujarat",
+        "homeUrl": "https://revenuedepartment.gujarat.gov.in/iora-service",
+        "observation": "First-party page explicitly links Online Viewing of Record of Right for Rural Area (AnyRoR), Online Viewing of Property Cards (e-Milkat), and IORA revenue applications, including survey-boundary/part measurement and property-card-copy procedures. It is a statewide service/custodian reference, not proof of an open Nadiad parcel API."
+      },
+      {
+        "name": "NAKSHA",
+        "operator": "Department of Land Resources, Government of India",
+        "homeUrl": "https://naksha.dolr.gov.in/NakshaPortal/",
+        "observation": "Current public JavaScript/configuration was fetched anonymously. The application advertises urban plot/cadastral workflows and routes such as GetPlotDataByLGDCode, GetGeoDbPlotData, GetPlotDataByPlotId, and GetPublicULBList, but no public Nadiad feature endpoint or safe parcel response was exposed without authentication/session context."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://revenuedepartment.gujarat.gov.in/iora-service",
+        "httpStatus": 200,
+        "result": "Official HTML page fetched and inspected; links to AnyRoR, e-Milkat, Gujarat land-record authority, and Kheda collectorate were confirmed. No parcel geometry or native ID was returned."
+      },
+      {
+        "url": "https://naksha.dolr.gov.in/NakshaPortal/",
+        "httpStatus": 200,
+        "result": "Current Angular application shell fetched. The page requires JavaScript; no map/parcel response is embedded in the HTML."
+      },
+      {
+        "url": "https://naksha.dolr.gov.in/NakshaPortal/assets/config/config.json",
+        "httpStatus": 200,
+        "result": "Current public application configuration fetched. It exposes parcel-related route names and map/RoR workflows, but no usable public API base URL or anonymous Nadiad dataset. Sensitive runtime seed was not retained."
+      },
+      {
+        "url": "https://naksha.dolr.gov.in/NakshaExternalApi/Master/GetStatelist",
+        "httpStatus": 404,
+        "result": "Anonymous GET to the route inferred from the public config returned 404 on the public host. No credentials, login, CAPTCHA bypass, or alternate private route was attempted."
+      },
+      {
+        "url": "https://naksha.dolr.gov.in/NakshaExternalApi/Master/GetPublicULBList",
+        "httpStatus": 404,
+        "result": "Anonymous GET to the public-ULB route inferred from current configuration returned 404; no parcel data."
+      },
+      {
+        "url": "https://naksha.dolr.gov.in/NakshaExternalApi/Map/GetPlotDataByLGDCode",
+        "httpStatus": 404,
+        "result": "Anonymous GET to the plot-data route inferred from current configuration returned 404; no geometry or safe parcel identity."
+      },
+      {
+        "url": "https://naksha.dolr.gov.in/NakshaExternalApi/Publication/GetPlotDataForClaim",
+        "httpStatus": 404,
+        "result": "Anonymous GET to the public plot route inferred from current configuration returned 404; no geometry or safe parcel identity."
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://revenuedepartment.gujarat.gov.in/iora-service",
+    "https://naksha.dolr.gov.in/NakshaPortal/",
+    "https://dolr.gov.in/en/ulpin/"
+  ],
+  "registryBasis": "First-party Gujarat Revenue Department land-record/property-card services and the first-party NAKSHA urban parcel-mapping portal were evidenced. This establishes official cadastral/land-record custodianship, not an open Nadiad feature service or citywide parcel coverage.",
+  "source": {
+    "sourceId": "IN-6885-NADIAD-GJ-REVENUE-NAKSHA-REVIEW",
+    "name": "Gujarat Revenue Department and NAKSHA official land-record services",
+    "url": "https://revenuedepartment.gujarat.gov.in/iora-service",
+    "operator": "Revenue Department, Government of Gujarat; Department of Land Resources, Government of India",
+    "serviceType": "Official land-record/property-card and urban parcel-mapping services reviewed; no safe anonymous parcel feature response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Gujarat Revenue Department services are statewide land-record/property-card services; NAKSHA is a national urban parcel-mapping programme.",
+    "verifiedOpenScope": "Official service pages, current NAKSHA app shell/configuration, and bounded anonymous route checks only. Nadiad parcel feature coverage, schema, native IDs, CRS, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_cadastral_service_geometry_unverified",
+  "technicalBlocker": "The official Gujarat pages expose land-record/property-card workflows, while the current NAKSHA public shell exposes route names but the inferred anonymous public-host API calls returned 404. No safe anonymous parcel feature response with native identity and geometry was available.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "Gujarat portals may require a browser session, district/taluka/village or survey-number inputs, or a separate service host. A zero exact-point hit, map extent miss, or absent anonymous response is not treated as citywide absence.",
+  "nextStep": "Hold runtime integration. A later researcher may inspect a documented public Gujarat/NAKSHA feature endpoint or a user-facing parcel selection flow, confirming CRS, native identity, and safe fields before retaining geometry.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [22.6940615423695, 72.8601823783396],
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not a municipal boundary or parcel-coverage claim.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:3236",
+  "wupCityCode": 3236,
+  "cityCode": 3236,
+  "queueRank": 1267,
+  "rank": 1267,
+  "name": "Gemena",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso2": "CD",
+  "iso3": "COD",
+  "point": [3.24829752121518, 19.7791382484463],
+  "centerLatLon": [3.24829752121518, 19.7791382484463],
+  "pointBasis": "Immutable WUP 2025 queue point copied unchanged in latitude/longitude order; no coordinate adjustment.",
+  "population2025": 440327,
+  "population2025k": 440.327,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "status": "complete",
+  "resultCategory": "official_local_cadastral_custodian_and_procedure_verified_no_public_parcel_geometry",
+  "registryFound": true,
+  "registryBasis": "The official DRC Ministry of Land Affairs jurisdiction directory lists Gemena as a land/cadastral jurisdiction under Sud-Ubangi. The official government service catalogue documents formal consultation of cadastral and land registers through the Conservateur des Titres Immobiliers or Chef de Division du Cadastre. No open Gemena parcel map or anonymous parcel-geometry endpoint was verified.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_quality_review",
+  "blocker": "No safe public parcel polygon or qualified anonymous parcel adapter was verified; runtime remains held.",
+  "source": {
+    "operator": "Ministère des Affaires Foncières de la République démocratique du Congo",
+    "localCustodianEvidence": "Official jurisdiction list names Gemena under Sud-Ubangi.",
+    "registryDirectoryUrl": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "consultationProcedureUrl": "https://servicepublic.gouv.cd/service/4671",
+    "publicPlatformChecked": "https://bic.cd/"
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Official ministry jurisdiction directory, official government service procedure, and public BIC landing page/current JavaScript configuration inspection.",
+    "verifiedOpenScope": "Local cadastral jurisdiction and formal register-consultation procedure are evidenced; no open parcel geometry is evidenced.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "technicalBlocker": "The official Ministry pages expose jurisdiction/procedure information but no public parcel geometry API. BIC was reachable and its current client includes a cadastral-map route and cadastral-search configuration code backed by an application data service, but no anonymous safe parcel route, response schema, CRS, or bounded parcel geometry response was established. No credentials or private tokens were used.",
+  "remainingUncertainty": "A zero exact-point parcel hit, map extent miss, timeout, login wall, or unusable client would not establish citywide absence. The ministry procedure may require a formal paid request and local office interaction; coverage, freshness, CRS, schema, and anonymous geometry access remain unverified. No owner, address, contact, titleholder, tax/account, or personal fields were requested or retained.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gemena official cadastral parcel map land registry Democratic Republic of the Congo",
+        "result": "First-party discovery found the DRC Ministry of Land Affairs jurisdiction directory listing Gemena under Sud-Ubangi, and the government service catalogue describing cadastral-register consultation. No official open Gemena parcel map/API was found.",
+        "actualResultUrls": ["https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "https://servicepublic.gouv.cd/service/4671", "https://bic.cd/"]
+      },
+      {
+        "language": "French",
+        "query": "Gemena cadastre parcellaire carte officielle République démocratique du Congo",
+        "result": "French-language first-party discovery found the same official Ministry jurisdiction directory and public-service procedure. BIC's public cadastral application was inspected, but no anonymous safe Gemena parcel geometry response was identified.",
+        "actualResultUrls": ["https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "https://servicepublic.gouv.cd/service/4671", "https://bic.cd/"]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Official directory lists Gemena under Sud-Ubangi; jurisdiction evidence only, not parcel geometry."
+      },
+      {
+        "url": "https://servicepublic.gouv.cd/service/4671",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Official government catalogue describes formal paid consultation of cadastral and land registers through local land/title offices; it is a procedure, not an open API."
+      },
+      {
+        "url": "https://bic.cd/",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Public landing page reachable. Current JavaScript exposes a cadastral-map route, parcel-search UI modules, and application configuration/data-service code, but no verified anonymous safe parcel lookup response or parcel schema was established. No login, credentials, or private token was used."
+      },
+      {
+        "url": "https://bic.cd/assets/index-BrUTiL_J.js",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Current client bundle inspected for public route/configuration discovery. It references cadastral-map/search modules and a hosted application data client; no bounded parcel ID+geometry response was requested or retained."
+      }
+    ],
+    "inspectedConfiguration": {
+      "officialRegistryDirectory": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "procedurePage": "https://servicepublic.gouv.cd/service/4671",
+      "publicPlatform": "https://bic.cd/",
+      "publicParcelEndpointObserved": false,
+      "responseSchemaObserved": "No cadastral parcel response observed",
+      "explicitCrsObserved": false
+    }
+  },
+  "registryEvidenceUrls": ["https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "https://servicepublic.gouv.cd/service/4671"],
+  "checkedAt": "2026-10-09",
+  "researchAttempt": 1,
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "adapterReady": false,
+  "runtimeAssessment": {"status": "held_quality_review", "reason": "Registry custodian and consultation procedure are evidenced, but no public parcel geometry or qualified adapter was verified."}
+}

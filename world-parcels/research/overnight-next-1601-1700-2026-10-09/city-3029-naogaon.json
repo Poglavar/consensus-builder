@@ -1,0 +1,119 @@
+{
+  "cityCode": 3029,
+  "queueRank": 1688,
+  "name": "Naogaon",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "iso3": "BGD",
+  "locId": 50,
+  "point": [24.8081959533893, 88.9503061704767],
+  "population2025": 338623,
+  "population2025k": 338.623,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Naogaon Bangladesh official cadastral parcel map land records GIS site:gov.bd",
+        "result": "First-party discovery identified the Bangladesh Department of Land Records and Surveys (DLRS) Naogaon district route, the public Settlement map-search viewer, and the official map-purchase portal. The viewer documentation and live JavaScript expose an anonymous map workflow, but no bounded Naogaon parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://dlrs.gov.bd/site/page/bdb4dd38-4e2d-4e12-b44c-bc4a165019b5/nolink/%E0%A6%A8%E0%A6%93%E0%A6%97%E0%A6%BE%E0%A6%81",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.settlement.gov.bd/"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "নওগাঁ সরকারি খতিয়ান মৌজা ম্যাপ ভূমি রেকর্ড জিআইএস",
+        "result": "First-party Bengali discovery identified the DLRS Naogaon page and the official Settlement map-search service. The service lists division, district, survey, upazila/thana, mouza, sheet and dag/plot steps; no safe anonymous parcel geometry was verified for Naogaon in this attempt.",
+        "actualResultUrls": [
+          "https://dlrs.gov.bd/site/page/bdb4dd38-4e2d-4e12-b44c-bc4a165019b5/nolink/%E0%A6%A8%E0%A6%93%E0%A6%97%E0%A6%BE%E0%A6%81",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://www.settlement.gov.bd/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://dlrs.gov.bd/site/page/bdb4dd38-4e2d-4e12-b44c-bc4a165019b5/nolink/%E0%A6%A8%E0%A6%93%E0%A6%97%E0%A6%BE%E0%A6%81",
+      "observation": "Official Bangladesh DLRS page specifically names Naogaon and links the national land-record/map services. This is local district custodian evidence, not proof of an open vector API."
+    },
+    {
+      "url": "https://settlement.gov.bd/Map/MapSearch",
+      "observation": "Official public map viewer presents Division, District, Survey, Upazila/Thana, Mouza, Sheet and Dag/Plot controls. Its HTML loaded successfully and current JavaScript was inspected."
+    },
+    {
+      "url": "https://map.settlement.gov.bd/",
+      "observation": "Official DLRS integrated map-purchase portal describes CS, SA, RS, BRS and BDS mouza-map routes; it does not provide a city-bounded parcel feature API in the inspected public material."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://settlement.gov.bd/Map/MapSearch",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Viewer HTML loaded over TLS. No login was used. The page exposed the current MapSearch.js configuration."
+    },
+    {
+      "url": "https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current JavaScript exposed POST /Map/GetDivisionList, /Khatian/getdistrictlistdivisionwise, /Khatian/GetSurveyListDistrictWise, /Khatian/GetThanaListBySurveyMap and /Khatian/GetSheetJsonBySurvey, with GeoJSON consumed by Leaflet. No unsafe fields were requested."
+    },
+    {
+      "url": "https://settlement.gov.bd/Map/GetDivisionList",
+      "method": "POST with empty body",
+      "httpStatus": 200,
+      "outcome": "Returned Bangladesh divisions; Rajshahi was identified as unit code 030000000."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise",
+      "method": "POST divid=030000000",
+      "httpStatus": 200,
+      "outcome": "Returned Rajshahi division districts and identified Naogaon as unit code 031400000 with component code 4126."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise",
+      "method": "POST districtid=031400000&comcod=4126",
+      "httpStatus": 200,
+      "outcome": "Returned an empty JSON array in the bounded anonymous request. No survey, upazila, mouza, sheet, dag or parcel geometry request could be safely advanced from this response."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+      "method": "POST comcod=4126&rsno1=10&districtid=031400000",
+      "httpStatus": 200,
+      "outcome": "Returned an empty JSON array for the bounded exploratory survey value; this is not evidence of Naogaon-wide absence and no exact-point inference was made."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official DLRS Naogaon district page and Settlement public map viewer evidence a Bangladesh government cadastral/map custodian and public procedure. The attempt did not verify an open city-bounded parcel API or geometry response.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel feature response retrieved",
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "bangladesh-dlrs-settlement-mapsearch",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Bangladesh DLRS Settlement map-search and official Naogaon district land-record route.",
+    "cityCoverage": "Naogaon is named by the official district route, but city boundary coverage and exact WUP-point parcel coverage were not verified.",
+    "exactPointChecked": false,
+    "note": "The exact WUP point [24.8081959533893, 88.9503061704767] was preserved in latitude/longitude order and was not shifted. Empty endpoint responses were not treated as citywide absence."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "retainedSample": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The viewer route is identified, but the Naogaon survey enumeration, current layer schema, CRS, stable native parcel identity, anonymous geometry access and citywide coverage remain unresolved. No owner, address, contact, titleholder, tax/account or personal fields were requested or retained. This packet is not source integration or admission."
+}

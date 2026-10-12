@@ -1,0 +1,16 @@
+{
+  "taskId": "city:6702",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-6702-bonsa-bota.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/bonsa-bota-service-review.json",
+    "tmp/valhalla-parcel-research/6702/api.config.json",
+    "tmp/valhalla-parcel-research/6702/capabilities.body",
+    "tmp/valhalla-parcel-research/6702/schema.body",
+    "tmp/valhalla-parcel-research/6702/bbox.body"
+  ],
+  "checkedAt": "2026-10-11T12:45:46Z",
+  "reason": "WUP rank 2472, Ethiopia, exact point and 237061 persons match the immutable roster and queue. English and Afaan Oromo executed searches are recorded. Original Addis e-Land production config identifies AA-ADS; WFS metadata describes an Addis-scoped layer and the bounded Bonsa Bota query returned zero. This does not establish Bonsa Bota absence. No verified local custodian or safe native-ID full polygon; registryFound remains null. No live adapter qualification or headed Details check; held."
+}

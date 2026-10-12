@@ -1,0 +1,43 @@
+{
+  "taskId": "city:1819",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-1819-regina.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/regina-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/root-review-receipts/source-evidence/city_1819-first-party-cache-review.json"
+  ],
+  "checkedAt": "2026-10-11T14:04:27Z",
+  "reason": "The original City of Regina Tax Parcels point response contains one full 68-coordinate polygon with OBJECTID 15492 as its only property. Its cached first-party layer schema names Tax Parcels in EPSG:26913, while the separate OpenData layer is ASSESSMENT_REGIONS. The English and French executed searches are recorded in the paired city packet. This discovery does not establish independent fresh adapter ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding or a headed Details-panel check; the city remains held and no citywide absence is inferred.",
+  "identityCheck": {
+    "rank": 2525,
+    "cityCode": 1819,
+    "country": "Canada",
+    "pointLatLon": [
+      50.4539802211127,
+      -104.612859019816
+    ],
+    "populationPersons": 232623,
+    "matchedImmutableRosterAndQueue": true
+  },
+  "searchLanguagesChecked": [
+    "English",
+    "French"
+  ],
+  "registryFound": true,
+  "admissionGates": {
+    "freshNativeIdRead": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "absenceConclusion": null,
+  "runtimeAdmission": false,
+  "discoveryNativeIdReadOnly": true,
+  "originalCachedPolygonCount": 1,
+  "durableSamplePolygonCount": 0
+}

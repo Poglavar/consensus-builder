@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 10167,
+  "queueRank": 3217,
+  "name": "Domariaganj",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "capital": false,
+  "point": [27.1909456873267, 82.6626361660407],
+  "population2025": 187658,
+  "population2025k": 187.658,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Domariaganj Uttar Pradesh official cadastral parcel map land records Bhulekh BhuNaksha",
+        "result": "First-party discovery identified the Government of Uttar Pradesh BhuNaksha viewer and Bhulekh land-record portal. The official viewer exposes anonymous level-selection and map-information endpoints.",
+        "actualResultUrls": ["https://upbhunaksha.gov.in/home/", "https://upbhulekh.gov.in/", "https://bor.up.nic.in/"]
+      },
+      {
+        "language": "Hindi (local)",
+        "query": "डुमरियागंज सिद्धार्थनगर भू नक्शा खतौनी सरकारी",
+        "result": "Hindi-language first-party discovery identified the Uttar Pradesh BhuNaksha and Bhulekh portals and Siddharthnagar district government revenue links. The BhuNaksha selector returned सिद्धार्थनगर, डुमरियागंज, and डुमरियागंज village labels.",
+        "actualResultUrls": ["https://upbhunaksha.gov.in/home/", "https://upbhulekh.gov.in/", "https://siddharthnagar.nic.in/hi/", "https://bor.up.nic.in/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Board of Revenue, Government of Uttar Pradesh; Siddharthnagar district / Domariaganj tehsil revenue administration",
+    "locality": "Domariaganj tehsil, Siddharthnagar district, Uttar Pradesh",
+    "evidenceUrls": ["https://upbhunaksha.gov.in/home/", "https://upbhulekh.gov.in/", "https://siddharthnagar.nic.in/service/revenue/"],
+    "scopeNote": "The official state viewer exposed the Siddharthnagar district, Domariaganj tehsil, and a village-level selection. This evidences a local/state land-record map service, not open citywide parcel geometry completeness."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Government of Uttar Pradesh BhuNaksha",
+    "nativeIdField": "kide or id (viewer response fields observed in JavaScript; no parcel record returned)",
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {
+      "canonicalId": "Not observed in a parcel response",
+      "safeGeometry": "wkbGeometry (viewer JavaScript path for polygon response)",
+      "otherDocumentedFields": ["gisCode", "plotno", "id", "kide"]
+    },
+    "compositeKeyProvenance": "The viewer uses the administrative GIS code 18400936221349 for the selected village and sends plot identifiers to parcel endpoints, but no parcel record or stable native parcel identity was returned. No synthetic identity was assigned."
+  },
+  "officialSources": [
+    {"url": "https://upbhunaksha.gov.in/home/", "observation": "Current first-party BhuNaksha viewer loaded successfully and exposed the public map UI."},
+    {"url": "https://upbhulekh.gov.in/", "observation": "Official UP Bhulekh portal states that the Board of Revenue provides land records and links parcel-related services including BhuNaksha."},
+    {"url": "https://siddharthnagar.nic.in/service/revenue/", "observation": "Siddharthnagar district government revenue page identifies the Board of Revenue, Government of Uttar Pradesh."}
+  ],
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://upbhunaksha.gov.in/home/", "outcome": "200; current viewer HTML retrieved with browser-like headers and cookie jar."},
+    {"method": "GET", "url": "https://upbhunaksha.gov.in/main-76RVRF3Z.js", "outcome": "200; current viewer JavaScript inspected. Public service base and map/level routes were identified; no token value retained."},
+    {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "body": "level=1&codes=", "outcome": "200; district list returned, including Siddharthnagar code 184."},
+    {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "body": "level=2&codes=184", "outcome": "200; tehsil list returned, including Domariaganj code 00936."},
+    {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "body": "level=3&codes=184,00936", "outcome": "200; village list returned, including डुमरियागंज code 221349, with hasData=false."},
+    {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref", "body": "gisLevels=184,00936,221349", "outcome": "200; response identified village GIS code 18400936221349 but returned xmin/ymin/xmax/ymax all zero, so no map extent or parcel geometry was available."},
+    {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY", "body": "Not sent: no usable map extent or CRS was returned for the selected village; exact WUP point was not shifted and was not used as an absence test.", "outcome": "Not attempted to avoid an unbounded/invalid spatial probe."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "UP BhuNaksha is a state viewer with district, tehsil, and village selection; the official Bhulekh portal describes UP land-record coverage.",
+    "verifiedOpenScope": "Administrative selection for Siddharthnagar / Domariaganj / डुमरियागंज was verified, but no nonempty parcel polygon response was verified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "remainingUncertainty": [
+    "The selected village is reported by the viewer as hasData=false and its map extent is all zero; this is a map availability result for that selection, not evidence that Domariaganj citywide has no parcels.",
+    "The exact WUP point was preserved in latitude/longitude order and was not shifted. No exact-point hit or miss was asserted.",
+    "The viewer JavaScript references wkbGeometry, id, and kide in parcel-detail paths, but no parcel response was obtained, so native identity, CRS, geometry type, and safe polygon schema remain unverified.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained."
+  ],
+  "nextStep": "A later attempt may inspect alternative official UP revenue/map routes or a different valid village selection, without treating this map-unavailable result as citywide absence."
+}

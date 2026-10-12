@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "cityCount": 0,
+  "cities": [],
+  "resolvedDecisions": [
+    {
+      "cityCode": 10768,
+      "rank": 2501,
+      "decision": "different_settlement",
+      "decisionFile": "root-identity-decision-overlay.json",
+      "reviewedAt": "2026-10-11T13:25:42.164Z"
+    }
+  ]
+}

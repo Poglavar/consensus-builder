@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10359",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-10359-bhadohi.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/bhadohi-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T14:30:38Z",
+  "independentlyOpenedFirstPartyUrls": [
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=198",
+    "https://upbhunaksha.gov.in/"
+  ],
+  "reason": "Official Uttar Pradesh dashboard confirms Bhadohi cadastral-map custody. Administrative selectors resolved, but the relevant map extent and plot probes did not yield a native parcel ID or full polygon; the arbitrary zero extent is not absence, and adapter/Details qualification is missing."
+}

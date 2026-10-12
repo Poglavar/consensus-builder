@@ -1,0 +1,71 @@
+{
+  "cityRecord": "city-9294-jizhou.json",
+  "cityCode": 9294,
+  "queueRank": 3148,
+  "city": "Jizhou",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "reviewStatus": "complete_research_held_runtime",
+  "registryFound": true,
+  "custodians": [
+    {
+      "name": "Tianjin Municipal Planning and Natural Resources Bureau / Jizhou district planning and natural-resources administration",
+      "scope": "Official Tianjin bureau material evidences Jizhou land and building real-estate registration notices; Tianjin Tianditu is the public geographic-information platform operated under the bureau.",
+      "evidence": "https://ghhzrzy.tj.gov.cn/WZWSREL3l3cGQvdGRnbF80MzAxOS90ZGNyZ2cvMjAyMzA1L3QyMDIzMDUyNl82MjUxMjA0Lmh0bWw%3D"
+    }
+  ],
+  "requests": [
+    {
+      "route": "GET https://tianjin.tianditu.gov.cn/",
+      "outcome": "TLS certificate expired; request stopped before HTTP. No verification bypass used."
+    },
+    {
+      "route": "GET https://tianjin.tianditu.gov.cn/static/help/note.html",
+      "outcome": "Official documentation identifies vector, imagery, terrain, place/address and real-estate-registration thematic services; no parcel schema or geometry response obtained."
+    },
+    {
+      "route": "GET https://tianjin.tianditu.gov.cn/static/html/bzmap.html",
+      "outcome": "Official Jizhou map/download page identified; cartographic map material only, with no safe parcel feature response."
+    },
+    {
+      "route": "GET https://ghhzrzy.tj.gov.cn/WZWSREL3l3cGQvdGRnbF80MzAxOS90ZGNyZ2cvMjAyMzA1L3QyMDIzMDUyNl82MjUxMjA0Lmh0bWw%3D",
+      "outcome": "Official bureau search result/page evidences current Jizhou real-estate registration notices; no parcel API or geometry returned."
+    },
+    {
+      "route": "GET https://ghhzrzy.tj.gov.cn/zwgk_143/zcwj/jjzcwj/202505/W020250507323305464653.pdf",
+      "outcome": "Official registration standard inspected for cadastral terminology and scope; no public Jizhou parcel geometry endpoint."
+    }
+  ],
+  "queryOutcomes": "Separate English and Chinese first-party discovery queries were executed and recorded in city-9294-jizhou.json. They identified Tianjin Tianditu, the municipal planning/natural-resources bureau, and Jizhou registration notices, but did not qualify anonymous parcel geometry access.",
+  "schemaAndCrs": {
+    "nativeIdFields": [],
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "geometryCrs": null,
+    "note": "No parcel layer metadata or feature response was returned."
+  },
+  "retainedSamples": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [40.0440289221055, 117.398748171146] was preserved and not shifted.",
+    "No certificate failure, unavailable viewer, map extent miss, timeout, or lack of an exact-point response was treated as evidence of citywide absence.",
+    "No parcel polygon is retained because no safe native identity plus full geometry was returned.",
+    "No unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "The current Tianjin Tianditu frontend/API route and whether its cadastral-registration thematic layer exposes safe anonymous parcel geometry remain unresolved because the base host failed TLS verification.",
+    "Parcel coverage, native identity semantics, field mapping, CRS, and citywide completeness remain unverified."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "evidenceCache": "tmp/valhalla-parcel-research/9294/"
+}

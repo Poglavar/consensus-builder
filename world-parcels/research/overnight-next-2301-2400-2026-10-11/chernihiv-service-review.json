@@ -1,0 +1,21 @@
+{
+  "cityRecord": "city-2406-chernihiv.json",
+  "cityCode": 2406,
+  "queueRank": 2380,
+  "name": "Chernihiv",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "pointLatLon": [51.504232569263, 31.2830863814241],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "sampleGeoJSON": null,
+  "queryAndRequestOutcome": "Separate English and Ukrainian first-party discovery found the Chernihiv regional StateGeoCadastre custodian and the Public Cadastral Map. Regional pages loaded, but the map host timed out on an anonymous GET after 25 seconds; no viewer configuration, service URL, schema, CRS, ID, or geometry was invented or retained.",
+  "safeFieldAllowlist": ["stable native parcel identity if later exposed", "full polygon geometry if later exposed", "source service URL", "CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "scopeLimits": ["The timeout and any zero exact-point result would not establish citywide absence.", "The regional custodian/procedure evidence is distinct from a verified local parcel geometry API.", "No sample GeoJSON was written because no safe native ID plus full polygon response was obtained.", "Runtime readiness remains held; this packet is research evidence only and is not source integration or admission."],
+  "uncertainty": "A first-party Ukrainian cadastral custodian and public map are evidenced for Chernihiv Oblast, but anonymous parcel-service access, schema, CRS, completeness, currentness, and reuse terms remain unresolved.",
+  "runtimeReadiness": "held_serial_review"
+}

@@ -1,0 +1,17 @@
+{
+  "taskId": "city:6557",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-6557-cockrell-hill.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/cockrell-hill-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-6557-cockrell-hill-parcel-sample.geojson",
+    "tmp/valhalla-parcel-research/6557/dcad-2025-point.geojson",
+    "tmp/valhalla-parcel-research/6557/dallas-point.geojson",
+    "tmp/valhalla-parcel-research/6557/txgio-point.geojson",
+    "backend/parcels/source-catalog.json"
+  ],
+  "checkedAt": "2026-10-11T14:31:56.143590Z",
+  "reason": "WUP rank 2548, United States, unchanged point and 230727 persons match the immutable roster and queue. Two executed English/local-language searches are recorded. The retained single full polygon with only id=303823 exactly matches the cached first-party DCAD point response OBJECTID and geometry; a separate Dallas service returned one point polygon. The Texas route returned an unsupported-operation error, not absence. An existing Dallas source catalog entry uses GIS_ACCT identity for a different city; this packet does not establish Cockrell Hill source binding. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are absent."
+}

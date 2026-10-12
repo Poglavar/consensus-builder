@@ -9,6 +9,12 @@ export { validateBounds } from './source-contract.js';
 
 const MAX_DISTINCT_MANIFEST_PAGES = 128;
 
+// Fixed-width cadastral fields can contain a literal blank section. Preserve every
+// source component exactly; the snapshot namespace codec intentionally rejects spaces.
+export const encodeArcgisCompositeId = values => values.map(value =>
+    encodeURIComponent(String(value)).replaceAll('~', '%7E')).join('~');
+export const splitArcgisCompositeId = value => value.split('~').map(decodeURIComponent);
+
 export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
     const { id, endpoint, idField, objectIdField, idPrefix, outFields } = descriptor;
     const pageSize = descriptor.pageSize || 2000;
@@ -101,16 +107,12 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         return /^(0|[1-9][0-9]*)$/.test(text) && Number.isSafeInteger(Number(text));
     }
 
-    // Fixed-width cadastral fields can contain a literal blank section. Preserve every
-    // source component exactly; the snapshot namespace codec intentionally rejects spaces.
-    const encodeCompositeId = values => values.map(value =>
-        encodeURIComponent(String(value)).replaceAll('~', '%7E')).join('~');
     function decodeCompositeId(value) {
         if (typeof value !== 'string' || value.length > 4096) throw new Error('Invalid composite parcel ID.');
-        const parts = value.split('~').map(decodeURIComponent);
+        const parts = splitArcgisCompositeId(value);
         if (parts.length !== idFields.length || parts.some((part, index) =>
             !validNativeId(part, descriptor.idFieldTypes[idFields[index]]))
-            || encodeCompositeId(parts) !== value) throw new Error('Invalid composite parcel ID.');
+            || encodeArcgisCompositeId(parts) !== value) throw new Error('Invalid composite parcel ID.');
         return parts;
     }
 
@@ -125,7 +127,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             throw upstreamError('Parcel provider returned a missing or invalid native parcel ID.');
         }
         try {
-            const encoded = encodeCompositeId(values);
+            const encoded = encodeArcgisCompositeId(values);
             decodeCompositeId(encoded);
             return encoded;
         }

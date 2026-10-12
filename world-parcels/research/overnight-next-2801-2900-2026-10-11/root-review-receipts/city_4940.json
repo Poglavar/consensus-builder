@@ -1,0 +1,29 @@
+{
+  "taskId": "city:4940",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-4940-middelburg.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/middelburg-service-review.json",
+    "tmp/valhalla-parcel-research/4940/csg-service.json",
+    "tmp/valhalla-parcel-research/4940/layer-2.json",
+    "tmp/valhalla-parcel-research/4940/sample-source.json",
+    "tmp/valhalla-parcel-research/runs/20261011T205934-a5ffd330/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-11T21:03:48Z",
+  "reason": "Government-hosted CSG Erven response contains three bounded polygons and PRCL_KEY native fields, but exceededTransferLimit=true and no durable safe GeoJSON sample was retained. Other layer probes include zero and query errors, not citywide absence. No independent live adapter qualification, complete paging, 13 cells, metric GEOS review, source binding, or headed Details verification.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "registryCustody": true,
+  "publicGeometryDiscovery": true,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

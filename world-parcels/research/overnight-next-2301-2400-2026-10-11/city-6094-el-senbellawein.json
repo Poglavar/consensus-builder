@@ -1,0 +1,91 @@
+{
+  "cityCode": 6094,
+  "queueRank": 2398,
+  "country": "Egypt",
+  "countryCode": "EG",
+  "point": [30.8932343330992, 31.4603411613124],
+  "population2025": 243779,
+  "population2025k": 243.779,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "El Senbellawein Egypt official cadastral parcel map GIS land registry Dakahlia",
+        "result": "First-party discovery identified the Egyptian General Survey Authority (ESA) as the official national survey/mapping body and found official digital-map and map-sales/service pages. No public El Senbellawein parcel viewer, feature service, or safe anonymous ID-plus-geometry response was identified.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/projects.aspx"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "السنبلاوين مصر خريطة كادسترية عقارية مساحية سجل رسمي",
+        "result": "البحث الرسمي وجد هيئة المساحة المصرية وصفحات الخرائط الرقمية والخرائط الورقية، كما وجد صفحة مصلحة الضرائب المصرية التي تثبت مكتب السنبلاوين المحلي؛ لم يظهر عارض قطع أراضٍ عام أو واجهة API مجهولة تعيد هوية أصلية وهندسة آمنة.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/sellingmaproom.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://eta.gov.eg/ar/node/1062"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.esa.gov.eg/",
+        "method": "GET anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "result": "Official ESA landing page retrieved. It describes the authority's national survey, cadastral-map, and property-record functions; no parcel feature endpoint was exposed in the public page." 
+      },
+      {
+        "url": "https://www.esa.gov.eg/services.aspx",
+        "method": "GET anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "result": "Official services page retrieved. It lists paper maps, digital maps, coordinate certificates, boundary separation, and related survey services; it does not expose a public parcel query API." 
+      },
+      {
+        "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+        "method": "GET anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "result": "Official digital-map page retrieved. It states that digital maps are supplied after a customer identifies the location, scale, requested layers, format, and projection, with quotation/payment workflow. This is a request/sales procedure, not anonymous feature access." 
+      },
+      {
+        "url": "https://www.esa.gov.eg/projects.aspx",
+        "method": "GET anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "result": "Official project page retrieved. It describes national urban cadastral-register and agricultural-register digitization projects, but no current public viewer, service URL, schema, CRS, or parcel response." 
+      },
+      {
+        "url": "https://eta.gov.eg/ar/node/1062",
+        "method": "GET anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "result": "Official Egyptian Tax Authority page retrieved and lists a Senbellawein tax office and its local coverage. This is local administrative/tax-office evidence, not a cadastral parcel geometry service; no tax or property records were requested." 
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": "The national ESA survey/mapping custodian and an official local tax-office page were evidenced, but no El Senbellawein-local cadastral registry, public parcel map, or anonymous parcel feature service was verified. RegistryFound remains null under the local-custodian rule.",
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not run against a verified parcel endpoint. Exact WUP point [30.8932343330992, 31.4603411613124] was preserved unchanged; no absence inference is made.",
+    "nativeIdField": null,
+    "crs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Egyptian General Survey Authority public discovery and service/procedure pages, plus official local Senbellawein administrative evidence.",
+    "verifiedOpenScope": "Institutional and request-procedure metadata only; no safe anonymous parcel ID plus geometry response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "full parcel polygon geometry", "source URL", "source/output CRS", "retrieval date", "administrative codes"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "integrationDecision": "not_integrated",
+  "uncertainty": "ESA's official pages establish national survey/cadastral mapping responsibility and a paid/request-based digital-map workflow, but the current public surface did not expose a city-specific viewer/API, schema, CRS, native parcel identity, or geometry. A timeout, login wall, unavailable UI, or zero exact-point result would not establish citywide absence. No login, credential, CAPTCHA/Cloudflare bypass, TLS exception, or unsafe field request was used."
+}

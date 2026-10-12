@@ -1,0 +1,105 @@
+{
+  "cityCode": 2505,
+  "queueRank": 3263,
+  "name": "Kulob",
+  "country": "Tajikistan",
+  "countryCode": "TJ",
+  "iso3": "TJK",
+  "locId": 762,
+  "capital": false,
+  "point": [37.9157895096194, 69.7917670391339],
+  "population2025": 184502,
+  "population2025k": 184.502,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kulob Tajikistan official cadastral parcel map registry GIS land cadastre",
+        "result": "First-party discovery identified Tajikistan Geoportal as a public map portal describing location lookup for homes, land parcels and objects, and the State Committee for Land Management and Geodesy as the national cadastre/registration custodian. No Kulob-local public parcel API or openly documented parcel geometry endpoint was qualified.",
+        "actualResultUrls": ["https://geoportal.tj/", "https://egov.tj/site/zamingeo-tj?lang=en", "https://geodesy.tj/kartografija-i-gis/"]
+      },
+      {
+        "language": "Tajik (local/native)",
+        "query": "Кӯлоб Тоҷикистон кадастр харита қитъаи замин расмӣ; рақами кадастрии Кӯлоб геопортал",
+        "result": "Расмии ҷустуҷӯ Geoportal.tj-ро ёфт, ки ҷойгиршавӣ ва рақами кадастрии объектҳои бақайдгирифташударо шарҳ медиҳад; қонунгузорӣ низ ворид кардани ҳудуди қитъаи замин ба харитаи кадастриро пешбинӣ мекунад. Хадамоти оммавии маҳаллии Кӯлоб бо посухи беном ID-и қитъа ва геометрия тасдиқ нашуд.",
+        "actualResultUrls": ["https://geoportal.tj/", "https://mmk.tj/node/506", "https://baqaydgiri.tj/fehrist/default3"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": "The State Committee for Land Management and Geodesy is evidenced as the national authority for land cadastre, geodesy, cartography and state registration of immovable property. Geoportal.tj is described as a public national map portal.",
+    "scopeNote": "National custodian and portal evidence do not establish a Kulob-local registry endpoint or citywide open parcel coverage; registryFound remains null. The public baqaydgiri.tj page is an official registration/encumbrance list, not a parcel geometry viewer."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": null,
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {
+      "nativeIdentity": null,
+      "safeGeometry": null,
+      "otherDocumentedFields": [],
+      "compositeKeyProvenance": null
+    },
+    "note": "No safe anonymous parcel ID-plus-geometry response was obtained. The exact WUP point was preserved and was not shifted or used as a citywide absence test."
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://geoportal.tj/",
+      "outcome": "TLS verification failed because the server certificate was expired. No certificate exception was authorized or used; current JavaScript/configuration, schema, CRS and parcel response could not be inspected."
+    },
+    {
+      "method": "GET",
+      "url": "http://geoportal.tj/",
+      "outcome": "HTTP 301 redirect to https://geoportal.tj/; the redirected HTTPS request then failed normal TLS verification."
+    },
+    {
+      "method": "GET",
+      "url": "https://baqaydgiri.tj/fehrist/default3",
+      "outcome": "HTTP 200. Official public registration/encumbrance list exposes search controls and cadastral-number text for listed records, but no parcel polygon, map service, public geometry schema, or Kulob-local parcel endpoint was exposed by the inspected page. Unsafe owner/address details were not retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://egov.tj/site/zamingeo-tj?lang=en",
+      "outcome": "HTTP 200 via first-party discovery. Official description identifies the State Committee's national land-management, cadastre, geodesy, cartography and immovable-property-registration remit; it provides no anonymous parcel geometry endpoint."
+    },
+    {
+      "method": "GET",
+      "url": "https://geodesy.tj/kartografija-i-gis/",
+      "outcome": "HTTP 200 via first-party discovery. Official enterprise page describes digital map and plan production, including city plans, but no open parcel API, native parcel schema or CRS was exposed."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if publicly exposed and source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The Geoportal may contain public parcel data but could not be inspected under normal TLS verification because its certificate was expired.",
+    "A national custodian and general portal description are not evidence of citywide Kulob parcel coverage.",
+    "No exact-point hit, TLS failure, unavailable viewer or absent geometry response is treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no safe source geometry and stable native identity were verified.",
+    "Independent serial review is required before any adapter or runtime qualification."
+  ],
+  "admissionDecision": "held",
+  "geometrySamples": []
+}

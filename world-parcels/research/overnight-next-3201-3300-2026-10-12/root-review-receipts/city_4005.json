@@ -1,0 +1,19 @@
+{
+  "taskId": "city:4005",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-4005-manzhouli.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/manzhouli-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T06:43:56Z",
+  "findings": {
+    "identity": "Verified against the SHA-256-matching original WUP bulk archive, immutable ranked roster, queue and city packet: rank 3240; Manzhouli, China; exact WUP 2025 point [49.5851868428102, 117.440627290922]; 186375 persons.",
+    "searches": "English and Chinese queries, results and first-party URLs are recorded in the packet.",
+    "custody": "Paired packet cites local Manzhouli Natural Resources Bureau government publications for custody, so registryFound remains true; reviewer reopening of the cited city pages timed out. Regional viewer route is not a parcel feature response, and its timeout/login context is not citywide absence.",
+    "firstPartyUrl": "https://www.manzhouli.gov.cn/OpennessContent/show/536710.html",
+    "geometry": "Zero retained sample polygons; no original first-party parcel response/cache artifact supports acceptance metrics.",
+    "admission": "No source parcel response or full polygon with safe native ID was retained. Independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding and headed Details-panel verification are all unevidenced. No runtime/catalog/registry/report admission."
+  }
+}

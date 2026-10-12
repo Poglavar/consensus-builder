@@ -1,0 +1,239 @@
+{
+  "schemaVersion": 1,
+  "attempted": [
+    {
+      "rank": 1302,
+      "cityCode": 8475,
+      "name": "Providence",
+      "country": "United States of America",
+      "iso2": "US",
+      "pop2025k": 429.694,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/us-capitals-2026-10-06/ri.json",
+          "cityId": "us-capital:RI",
+          "cityName": "Providence",
+          "parcelStatus": "verified_sample_capital_scope",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/subnational/US/RI.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1306,
+      "cityCode": 3187,
+      "name": "Samadon",
+      "country": "Egypt",
+      "iso2": "EG",
+      "pop2025k": 428.126,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-samadon.json",
+          "cityId": "wup2025:3187",
+          "cityName": "Samadon",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-city-samadon.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1316,
+      "cityCode": 1780,
+      "name": "Torit",
+      "country": "South Sudan",
+      "iso2": "SS",
+      "pop2025k": 424.731,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-torit.json",
+          "cityId": "wup2025:1780",
+          "cityName": "Torit",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-city-torit.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-followup-services.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1330,
+      "cityCode": 426,
+      "name": "Chișinău",
+      "country": "Republic of Moldova",
+      "iso2": "MD",
+      "pop2025k": 422.035,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/world-capitals-2026-10-08/city-chisinau.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/world-capitals-2026-10-08/europe-index.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1334,
+      "cityCode": 1195,
+      "name": "Tete",
+      "country": "Mozambique",
+      "iso2": "MZ",
+      "pop2025k": 421.174,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-1195.json",
+          "cityId": "wup2025:1195",
+          "cityName": "Tete",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-city-1195.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1343,
+      "cityCode": 8097,
+      "name": "Ikot Ekpene",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "pop2025k": 418.65,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-8097.json",
+          "cityId": "wup2025:8097",
+          "cityName": "Ikot Ekpene",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-city-8097.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1361,
+      "cityCode": 1337,
+      "name": "Port Moresby",
+      "country": "Papua New Guinea",
+      "iso2": "PG",
+      "pop2025k": 413.223,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/world-capitals-2026-10-08/city-port-moresby.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1377,
+      "cityCode": 411,
+      "name": "Windhoek",
+      "country": "Namibia",
+      "iso2": "NA",
+      "pop2025k": 409.758,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/africa-capitals-2026-10-08/city-windhoek.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1391,
+      "cityCode": 3330,
+      "name": "Resistencia",
+      "country": "Argentina",
+      "iso2": "AR",
+      "pop2025k": 406.337,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/subnational/AR/H.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "identityReviewRequired": []
+}

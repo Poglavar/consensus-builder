@@ -1,0 +1,115 @@
+{
+  "cityCode": 9753,
+  "queueRank": 1800,
+  "city": "Raichur",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [16.2043552927926, 77.353432638309],
+  "population2025": 319647,
+  "population2025k": 319.647,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Raichur Karnataka official cadastral map parcel land records GIS Bhoomi Karnataka",
+        "result": "First-party discovery identified the Raichur district administration land-record page, which directs users to the Karnataka Land Records portal and identifies the Deputy Commissioner's Office, Raichur as the local revenue contact. DILRMP's official Raichur district status page exposes tehsil-level cadastral-map, geo-referencing and parcel statistics. No open Raichur city parcel feature API or safe downloadable polygon was identified.",
+        "actualResultUrls": [
+          "https://raichur.nic.in/en/service/land-records/",
+          "https://landrecords.karnataka.gov.in/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/561"
+        ]
+      },
+      {
+        "language": "Kannada",
+        "query": "ರಾಯಚೂರು ಕರ್ನಾಟಕ ಅಧಿಕೃತ ಭೂ ದಾಖಲೆ ನಕ್ಷೆ ಜಮೀನು ಪಾರ್ಸೆಲ್ ಭೂಮಿ",
+        "result": "Kannada-language discovery resolved to Karnataka Bhoomi/land-record terminology and the same first-party Karnataka land-record destination; results did not expose a separate Raichur cadastral vector endpoint or safe parcel geometry.",
+        "actualResultUrls": [
+          "https://landrecords.karnataka.gov.in/",
+          "https://raichur.nic.in/en/service/land-records/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Karnataka Revenue Department / Survey, Settlement and Land Records (Bhoomi), with the Raichur district administration and Deputy Commissioner's Office as local custodial evidence.",
+  "registryEvidence": {
+    "portalUrl": "https://landrecords.karnataka.gov.in/",
+    "localOfficeEvidenceUrl": "https://raichur.nic.in/en/service/land-records/",
+    "serviceEvidence": "The official Raichur district page labels Land Records, links to the Karnataka Land Records portal, and lists the Deputy Commissioner's Office, Saath Kacheri, Raichur. The official DILRMP page provides Raichur tehsil-level cadastral-map and land-parcel status fields.",
+    "locality": "Raichur city, Raichur district, Karnataka"
+  },
+  "sourceReview": {
+    "service": "Karnataka Bhoomi / Land Records public portal and DILRMP status service",
+    "baseUrl": "https://landrecords.karnataka.gov.in/",
+    "officialAssetsInspected": [
+      "https://raichur.nic.in/en/service/land-records/"
+    ],
+    "nativeFieldMapping": {
+      "parcelIdentity": "Not returned; official discovery refers to survey-number / RTC-oriented land records",
+      "geometry": "No parcel geometry response obtained",
+      "administrativeSelection": "District / taluk / hobli / village workflow is described by public discovery material but no Raichur selection payload was retrieved"
+    },
+    "compositeKeyProvenance": "Potential survey-number plus administrative-unit selection is inferred only from official service terminology; no concrete parcel key was returned.",
+    "crs": null,
+    "safeFieldAllowlist": [
+      "stable native parcel identifier only, if independently confirmed",
+      "full parcel polygon geometry",
+      "geometry CRS / coordinate reference metadata",
+      "public service, layer and administrative metadata"
+    ]
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://raichur.nic.in/en/service/land-records/",
+      "outcome": "HTTP 200; official page retrieved. It links to https://landrecords.karnataka.gov.in/ and identifies the Raichur Deputy Commissioner's Office. No parcel payload or geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://landrecords.karnataka.gov.in/",
+      "outcome": "Timed out after 25 seconds over ordinary TLS-verified public GET; no current HTML, JavaScript, schema or API configuration obtained. No login attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://landrecords.karnataka.gov.in/service3/",
+      "outcome": "Timed out after 25 seconds over ordinary TLS-verified public GET; no revenue-map response or geometry obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/561",
+      "outcome": "Search discovery exposed the official Raichur tehsil-level status page and its cadastral-map/parcel fields, but direct curl certificate validation failed; no TLS exception was authorized or used and no response was retained as executed request evidence."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel geometry response; no exact-point hit/miss inference.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Karnataka Bhoomi land-record/revenue-map workflow and official Raichur district/DILRMP custodial evidence.",
+    "verifiedOpenScope": "Official local custodian and public service links only; no city-bounded parcel geometry response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "The exact WUP point [16.2043552927926, 77.353432638309] was preserved in latitude/longitude order and not shifted.",
+    "A timeout, certificate-validation failure, unavailable UI, or no exact-point response is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, deed, tax/account, personal or other unsafe fields were requested or retained.",
+    "No native parcel identity, CRS, raw source-specific attributes, or GeoJSON sample was retained.",
+    "Packet completion records executed attempts only; runtime adapter qualification and admission remain a separate serial-review decision."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current Karnataka portal's route sequence, Raichur administrative codes, native parcel identity field, CRS, geometry delivery format, city-boundary relationship and completeness remain unresolved.",
+  "retainedSample": null
+}

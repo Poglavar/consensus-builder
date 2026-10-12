@@ -1,0 +1,126 @@
+{
+  "cityCode": 2486,
+  "queueRank": 3011,
+  "name": "Borj Al Burullous",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "point": [31.5671036020924, 31.0550484742231],
+  "population2025": 198645,
+  "population2025k": 198.645,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Borj Al Burullous Egypt official cadastral map parcel registry Kafr El Sheikh General Authority for Survey",
+        "result": "First-party discovery identified the Egyptian General Authority for Survey (ESA) as the national survey/cadastral custodian and the official Kafr El Sheikh governorate ArcGIS portal as a local spatial-service route. The public service metadata found was administrative/spatial rather than a parcel layer.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main2.aspx",
+          "https://portal.kfs.gov.eg/server/rest/services/Services_MIL1/MapServer/legend",
+          "https://portal.kfs.gov.eg/server/rest/services/Hosted/Marakez_V3/FeatureServer/layers"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "برج البرلس مصر خريطة كادسترية سجل عقاري الهيئة المصرية العامة للمساحة كفر الشيخ",
+        "result": "Arabic discovery confirmed the official ESA describes cadastral/title-record and map services, and the Kafr El Sheikh portal's official legend names برج البرلس. It did not expose an anonymous safe parcel ID-plus-geometry response.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://portal.kfs.gov.eg/server/rest/services/Services_MIL1/MapServer/legend",
+          "https://kfs.gov.eg/services/019bbb46-a0c4-7373-a25b-d7853ad3b16c"
+        ]
+      }
+    ],
+    "sourceDiscoveryDate": "2026-10-12",
+    "sourceCitations": [
+      "https://www.esa.gov.eg/main2.aspx",
+      "https://www.esa.gov.eg/main.aspx",
+      "https://portal.kfs.gov.eg/server/rest/services/Services_MIL1/MapServer/legend",
+      "https://portal.kfs.gov.eg/server/rest/services/Hosted/Marakez_V3/FeatureServer/layers",
+      "https://kfs.gov.eg/services/019bbb46-a0c4-7373-a25b-d7853ad3b16c"
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Egyptian General Authority for Survey (ESA), with Kafr El Sheikh Governorate spatial-services portal",
+    "scope": "ESA is the national survey/cadastral and map custodian; the Kafr El Sheikh portal is a local government spatial map route naming Borj Al Burullous.",
+    "evidence": "ESA first-party pages describe cadastral/title-record, digital-map, paper-map, and urban cadastre projects. The Kafr El Sheikh ArcGIS legend and hosted administrative layer explicitly include برج البرلس. This does not establish public parcel-vector coverage."
+  },
+  "service": {
+    "name": "Kafr El Sheikh Governorate ArcGIS services / خدمات محافظة كفر الشيخ المكانية",
+    "viewerUrl": "https://kfs.gov.eg/services/019bbb46-a0c4-7373-a25b-d7853ad3b16c",
+    "baseUrl": "https://portal.kfs.gov.eg/server/rest/services/",
+    "viewerConfiguration": "The official service page timed out in anonymous retrieval. Search-indexed ArcGIS REST metadata exposed Services_MIL1 and Hosted/Marakez_V3, but only administrative/requests layers were identified; no parcel layer was qualified.",
+    "schemaAndCrs": {
+      "parcelSchema": null,
+      "nativeIdFields": null,
+      "geometryCrs": "Hosted/Marakez_V3 administrative layer metadata reports EPSG:32636; this is not parcel CRS evidence.",
+      "fieldMapping": {},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://kfs.gov.eg/services/019bbb46-a0c4-7373-a25b-d7853ad3b16c",
+      "status": "timeout",
+      "outcome": "Official local service page did not complete anonymous retrieval; no login, CAPTCHA bypass, or credentialed retry was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://portal.kfs.gov.eg/server/rest/services/Services_MIL1/MapServer?f=pjson",
+      "status": "timeout",
+      "outcome": "Direct ArcGIS service metadata request timed out after 20 seconds."
+    },
+    {
+      "method": "GET",
+      "url": "https://portal.kfs.gov.eg/server/rest/services/Services_MIL1/MapServer/1?f=pjson",
+      "status": "not-retrieved",
+      "outcome": "Queued after the service metadata timeout; no schema was accepted without a response."
+    },
+    {
+      "method": "GET",
+      "url": "https://portal.kfs.gov.eg/server/rest/services/Services_MIL1/MapServer/1/query?where=1%3D1&outFields=*&returnGeometry=true&geometry={point-31.5671036020924,31.0550484742231}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&f=geojson",
+      "status": "not-retrieved",
+      "outcome": "Bounded exact-point query was not completed because the service host timed out; no exact-point hit or miss is inferred."
+    },
+    {
+      "method": "GET/search-index inspection",
+      "url": "https://portal.kfs.gov.eg/server/rest/services/Services_MIL1/MapServer/legend",
+      "status": "200-indexed",
+      "outcome": "Official ArcGIS legend identifies a Markaz layer and includes برج البرلس; it does not expose parcel polygons or parcel identifiers."
+    },
+    {
+      "method": "GET/search-index inspection",
+      "url": "https://portal.kfs.gov.eg/server/rest/services/Hosted/Marakez_V3/FeatureServer/layers",
+      "status": "200-indexed",
+      "outcome": "Official hosted layer metadata identifies an administrative Markaz polygon layer, EPSG:32636, and the برج البرلس value; no parcel schema was found."
+    }
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/2486/ (request cache and timeout notes; no unsafe attributes retained)",
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [31.5671036020924, 31.0550484742231] was preserved in latitude/longitude order and was not shifted.",
+    "The discovered local ArcGIS services are evidenced as administrative/spatial services, not as a qualified cadastral parcel endpoint.",
+    "Timeout and unavailable query responses are not evidence of citywide cadastral absence.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "No GeoJSON sample is retained because no safe native parcel ID-plus-geometry response was obtained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The Kafr El Sheikh viewer may load additional configuration or layers in a normal browser session, but anonymous current JavaScript/API configuration could not be qualified here.",
+    "Parcel coverage, native identity fields, parcel CRS, positional accuracy, and citywide completeness remain unverified.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "runtimeReadiness": "held"
+}

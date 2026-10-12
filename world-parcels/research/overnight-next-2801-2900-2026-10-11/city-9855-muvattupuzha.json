@@ -1,0 +1,76 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 9855,
+  "queueRank": 2834,
+  "name": "Muvattupuzha",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [9.99455430126789, 76.5792956470536],
+  "population2025": 209875,
+  "population2025k": 209.875,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Muvattupuzha official cadastral parcel map Kerala GIS land records",
+        "result": "First-party discovery found Kerala Bhu-Naksha, Ente Bhoomi, Kerala Revenue eMaps, the Muvattupuzha Municipality official map page, and KMAP. Bhu-Naksha is the strongest cadastral-map lead, but no anonymous Muvattupuzha parcel ID-plus-geometry response was qualified.",
+        "actualResultUrls": ["https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html", "https://survey.entebhoomi.kerala.gov.in/portal/survey/search", "https://www.revenue.kerala.gov.in/pages/home.php", "https://muvattupuzhamunicipality.lsgkerala.gov.in/node/137", "https://maptile.ksmart.lsgkerala.gov.in/"]
+      },
+      {
+        "language": "Malayalam",
+        "query": "മൂവാറ്റുപുഴ ഔദ്യോഗിക ഭൂപ്പടം ഭൂമിരേഖ കഡസ്ട്രൽ ജിഐഎസ്",
+        "result": "Malayalam first-party discovery found Kerala government land-record and digital-survey portals plus the official Muvattupuzha Municipality site. The observed workflows require village/block/survey inputs and/or CAPTCHA or login; no safe anonymous parcel-vector endpoint was verified.",
+        "actualResultUrls": ["https://entebhoomi.kerala.gov.in/web/home", "https://survey.entebhoomi.kerala.gov.in/portal/survey/search", "https://muvattupuzhamunicipality.lsgkerala.gov.in/"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "basis": "Kerala state cadastral and land-record portals were identified, and the official Muvattupuzha Municipality portal was verified, but a Muvattupuzha-local cadastral registry/map procedure or city-specific open parcel feed was not established.",
+    "localCustodianScope": "Muvattupuzha Municipality is an official local-government portal and publishes a municipality map page, but the observed map is not evidence of cadastral parcel-vector coverage. Kerala Revenue/Survey portals are state custodial leads, not local registry evidence.",
+    "urls": ["https://muvattupuzhamunicipality.lsgkerala.gov.in/node/137", "https://www.revenue.kerala.gov.in/pages/home.php", "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html"]
+  },
+  "officialSources": [
+    {"url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html", "observation": "Official Kerala Bhu-Naksha page describes cadastral mapping and exposes block/survey/subdivision search controls; current host failed TLS verification from the workspace, so its live schema and geometry service were not inspected."},
+    {"url": "https://www.revenue.kerala.gov.in/pages/home.php", "observation": "Official Kerala Revenue page describes eMaps as cadastral mapping integrated with textual land records and says updated digital sketches can be provided; this is general state-agency prose, not Muvattupuzha coverage evidence."},
+    {"url": "https://survey.entebhoomi.kerala.gov.in/portal/survey/search", "observation": "Official Ente Bhoomi survey search exposes district/taluk/village/block/survey-number/subdivision inputs and CAPTCHA; no anonymous parcel geometry was exposed in the retrieved HTML/JavaScript workflow."},
+    {"url": "https://muvattupuzhamunicipality.lsgkerala.gov.in/node/137", "observation": "Official Muvattupuzha Municipality page provides Map_Ernakulam_Muvattupuzha.pdf and a map link, but not a parcel-vector service in the observed page."},
+    {"url": "https://maptile.ksmart.lsgkerala.gov.in/", "observation": "Current official KMAP viewer shell was retrieved; its JavaScript references a KMAP ArcGIS Plot_Licensee permit layer, not cadastral parcels."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": {
+    "name": "Kerala Bhu-Naksha / Revenue eMaps / Ente Bhoomi and Muvattupuzha Municipality/KMAP leads",
+    "viewerUrl": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+    "serviceBase": null,
+    "administrativeSelection": null,
+    "nativeFieldMapping": {},
+    "crs": null
+  },
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "requestsAndEndpointChecks": [
+    {"method": "GET", "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html", "outcome": "TLS certificate verification failed because the certificate was expired; no certificate exception was used."},
+    {"method": "GET", "url": "https://survey.entebhoomi.kerala.gov.in/portal/survey/search", "outcome": "HTTP 200; current HTML and JavaScript were retrieved. The search POST route requires survey administrative inputs and CAPTCHA; no request was submitted and no geometry route was found."},
+    {"method": "GET", "url": "https://www.revenue.kerala.gov.in/pages/home.php", "outcome": "HTTP 403 from workspace; official search result and page description were recorded, but no bypass was attempted."},
+    {"method": "GET", "url": "https://muvattupuzhamunicipality.lsgkerala.gov.in/node/137", "outcome": "HTTP 200 via first-party retrieval; official municipality map PDF/link was observed, but no vector parcel endpoint was exposed."},
+    {"method": "GET", "url": "https://maptile.ksmart.lsgkerala.gov.in/", "outcome": "HTTP 200; current viewer JavaScript/configuration was retrieved."},
+    {"method": "GET", "url": "https://kmap.lsgkerala.gov.in/server/rest/services/Organization/Plot_Licensee/FeatureServer/0", "outcome": "HTTP 200 ArcGIS REST HTML directory; layer identified as Plot_Licensee with polygon geometry type and EPSG:3857 in the returned metadata."},
+    {"method": "GET", "url": "https://kmap.lsgkerala.gov.in/server/rest/services/Organization/Plot_Licensee/FeatureServer/0/query?where=1%3D0&outFields=OBJECTID&returnGeometry=false&f=json", "outcome": "HTTP 200 JSON; valid query returned zero features by design. This is a permit-layer schema check, not evidence of parcel absence."}
+  ],
+  "resultCategory": "state_registry_and_local_map_leads_found_no_verified_public_vector_parcel_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Kerala state cadastral/digital land-record portals and official Muvattupuzha municipal mapping leads were identified.",
+    "verifiedOpenScope": "No anonymous parcel ID-plus-geometry response, native parcel identity, parcel schema, CRS, or citywide completeness was verified for Muvattupuzha.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The exact WUP point [9.99455430126789, 76.5792956470536] was preserved and not shifted. TLS failure, CAPTCHA-gated survey workflow, permit-layer response, and lack of an exact-point query do not establish citywide cadastral absence. No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained. This packet is research evidence only and is not source integration or admission."
+}

@@ -1,0 +1,93 @@
+{
+  "cityCode": 2668,
+  "queueRank": 1292,
+  "name": "Hamilton",
+  "country": "Canada",
+  "countryCode": "CA",
+  "rank": 1292,
+  "point": [43.2335378918963, -79.8541587136975],
+  "population2025": 432788,
+  "population2025k": 432.788,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hamilton Ontario official parcel GIS property parcels open data ArcGIS feature service City of Hamilton",
+        "result": "First-party City of Hamilton pages identified the Open Data catalogue and interactive mapping context. ArcGIS item metadata attributed the Hamilton Assessment Parcel feature service to the City of Hamilton; anonymous layer metadata and a bounded geometry query succeeded.",
+        "actualResultUrls": [
+          "https://www.hamilton.ca/city-council/data-maps/open-data",
+          "https://open.hamilton.ca/",
+          "https://www.arcgis.com/home/item.html?id=b18cec4690d241029935df1b02bb19db",
+          "https://services.arcgis.com/rYz782eMbySr2srL/arcgis/rest/services/Hamilton_Assessment_Parcel/FeatureServer/0"
+        ],
+        "scope": "Find a public parcel layer and request only safe source ID plus geometry/CRS metadata."
+      },
+      {
+        "language": "French",
+        "query": "Hamilton Ontario données officielles parcelles cadastrales SIG lots propriété service cartographique municipal",
+        "result": "French-language discovery did not identify a distinct French municipal parcel portal; the official City of Hamilton English Open Data and mapping sources remained the relevant first-party routes. The same public ArcGIS parcel service was then checked anonymously.",
+        "actualResultUrls": [
+          "https://www.hamilton.ca/city-council/data-maps/open-data",
+          "https://open.hamilton.ca/",
+          "https://services.arcgis.com/rYz782eMbySr2srL/arcgis/rest/services/Hamilton_Assessment_Parcel/FeatureServer/0"
+        ],
+        "scope": "Independent local-language discovery; no owner, address, title, tax, contact, or account fields requested."
+      }
+    ]
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": {
+    "sampleFile": "sample-2668-hamilton-parcels.geojson",
+    "sampleCount": 3,
+    "queryEnvelopeWgs84": [-79.855, 43.233, -79.853, 43.235],
+    "requestedFields": ["OBJECTID"],
+    "returnedCrs": "EPSG:4326",
+    "exceededTransferLimit": true
+  },
+  "source": {
+    "sourceId": "b18cec4690d241029935df1b02bb19db",
+    "name": "Hamilton Assessment Parcel",
+    "url": "https://services.arcgis.com/rYz782eMbySr2srL/arcgis/rest/services/Hamilton_Assessment_Parcel/FeatureServer/0",
+    "operator": "City of Hamilton (ArcGIS item accessInformation); parcel source described as Teranet data received February 9, 2024",
+    "serviceType": "ArcGIS hosted FeatureServer",
+    "layer": "Hamilton Assessment Parcel, layer 0",
+    "geometryType": "esriGeometryPolygon",
+    "outputCrs": "EPSG:4326 for bounded query; layer native metadata EPSG:102100/latestWkid 3857",
+    "nativeIdField": "OBJECTID",
+    "nativeIdEvidence": "Layer metadata declares OBJECTID as the system-maintained unique ID and object ID field.",
+    "attributesRequested": ["OBJECTID", "geometry"],
+    "sampleCount": 3,
+    "sampleFile": "sample-2668-hamilton-parcels.geojson",
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "geometryStatus": "verified_bounded_anonymous_response",
+    "safeFieldPolicy": "No raw source attribute set retained; only canonical native OBJECTID and geometry were retained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City of Hamilton official open-data/mapping context and the public Hamilton Assessment Parcel service; one small WGS84 envelope was queried.",
+    "verifiedOpenScope": "Anonymous public parcel polygons and stable OBJECTID identities were verified in the tested envelope. Citywide completeness, freshness beyond service metadata, and cadastral/legal title coverage were not asserted.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "resultCategory": "official_city_parcel_geometry_verified",
+  "remainingUncertainty": "The bounded response reported exceededTransferLimit=true, so it is a sample rather than a completeness test. The exact WUP point was not shifted and no citywide absence or completeness inference is made.",
+  "runtimeReadiness": "held_pending_serial_adapter_review",
+  "adapterReady": false,
+  "centerLatLon": [43.2335378918963, -79.8541587136975],
+  "pointBasis": "Exact unchanged WUP 2025 settlement point (latitude, longitude); not a parcel-derived coordinate.",
+  "sourceIds": ["b18cec4690d241029935df1b02bb19db"],
+  "registryBasis": "The City of Hamilton's official Open Data page identifies its public data catalogue; the public ArcGIS item is attributed to City of Hamilton and exposes the Hamilton Assessment Parcel layer with anonymous metadata and geometry query access.",
+  "registryEvidenceUrls": [
+    "https://www.hamilton.ca/city-council/data-maps/open-data",
+    "https://open.hamilton.ca/",
+    "https://www.arcgis.com/sharing/rest/content/items/b18cec4690d241029935df1b02bb19db?f=json",
+    "https://services.arcgis.com/rYz782eMbySr2srL/arcgis/rest/services/Hamilton_Assessment_Parcel/FeatureServer/0?f=pjson"
+  ],
+  "cohort": "overnight-next-1201-1300",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

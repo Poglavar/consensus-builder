@@ -1,0 +1,17 @@
+{
+  "taskId": "city:6692",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-6692-xilinhot.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/xilinhot-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-11T12:23:33Z",
+  "reason": "The SHA-256-verified WUP 2025 archive, immutable rank roster and queue agree on code 6692, rank 2455, China, exact point and 238715 persons. The paired packet records English and Chinese executed searches; independent searches found the cited first-party registration center and city policy, supporting registryFound=true. The league site was inaccessible to the worker; the official cadastral-map guide describes a login workflow. No anonymous full parcel polygon, safe native parcel ID, schema or CRS was returned. There is no original feature response from which to accept coverage metrics. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are absent. Access limits do not establish citywide absence. No sample or runtime admission is recorded.",
+  "firstPartySourcesChecked": [
+    "https://www.xilinhaote.gov.cn/xilinhaote/zwgk/zfxxgkzl/fdzdgknr/zcfg/zfwj18/2024112211305618799/index.html",
+    "https://www.xilinhaote.gov.cn/xilinhaote/xwzx/xsyw/2024092710244757039/index.html",
+    "https://zrzyj.xlgl.gov.cn/zrzyj/zdyw/bdcdj/2024120309272192616/index.html"
+  ]
+}

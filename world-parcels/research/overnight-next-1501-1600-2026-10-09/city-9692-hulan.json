@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:9692",
+  "cityCode": 9692,
+  "wupCityCode": 9692,
+  "name": "Hulan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "rank": 1581,
+  "queueRank": 1581,
+  "point": [45.9319993699482, 126.575515480315],
+  "centerLatLon": [45.9319993699482, 126.575515480315],
+  "pointBasis": "Exact WUP2025 point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 361540,
+  "population2025k": 361.54,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "A current official Harbin municipal public geospatial portal and Harbin Natural Resources and Planning Bureau ownership were verified, but this attempt did not verify a Hulan-specific cadastral or real-estate-registration procedure or public parcel service. Registry custody is therefore not promoted to true.",
+  "registryEvidenceUrls": [
+    "https://heilongjiang.tianditu.gov.cn/haerbin/",
+    "https://hrbcredit.harbin.gov.cn/creditMess.do?conId=f11f13dcd822ed96f773c15e1820ce&method=thirdPage"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official Harbin Tianditu portal was reachable. Its current viewer HTML, env.js, framework.js and config.json were inspected: the configured public layers are Tianditu basemaps and municipal HRB_VEC/HRB_IMG basemap/annotation MapServer services; no cadastral parcel layer or parcel schema was exposed. The configured ArcGIS host request to the service root timed out after 20 seconds. No credentials, CAPTCHA bypass, certificate exception or unsafe property query was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "municipal-public-map-custodian-indication_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Official Harbin municipal public geospatial portal and its current viewer configuration were inspected; this is map-platform evidence only.",
+    "verifiedOpenScope": "Public basemap/annotation configuration and a general public POI/search route were verified; no Hulan cadastral layer, safe native parcel identity, CRS-backed parcel feature response or polygon was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hulan Harbin China official cadastral map parcel natural resources bureau public map API",
+        "scope": "Identify a local registry custodian and an official public cadastral or geospatial map route.",
+        "result": "Search located the official Harbin Tianditu municipal geospatial portal and a Harbin government credit-service result describing online real-estate and cadastral-map visualization goals. No Hulan-specific public parcel endpoint was exposed.",
+        "actualResultUrls": [
+          "https://heilongjiang.tianditu.gov.cn/haerbin/",
+          "https://hrbcredit.harbin.gov.cn/creditMess.do?conId=f11f13dcd822ed96f773c15e1820ce&method=thirdPage"
+        ],
+        "executionMethod": "Separate English web search followed by first-party result inspection and direct public GETs."
+      },
+      {
+        "language": "native/local",
+        "query": "呼兰区 不动产登记 地籍图 查询 官方",
+        "scope": "Independent Chinese-language discovery for a Hulan official registry or cadastral-map route.",
+        "result": "Chinese-language search located the official Harbin Tianditu portal and Harbin government material referring to online real-estate/cadastral-map visualization, but did not locate a current Hulan-specific anonymous parcel service or parcel schema.",
+        "actualResultUrls": [
+          "https://heilongjiang.tianditu.gov.cn/haerbin/",
+          "https://hrbcredit.harbin.gov.cn/creditMess.do?conId=f11f13dcd822ed96f773c15e1820ce&method=thirdPage"
+        ],
+        "executionMethod": "Separate Chinese-language web search followed by first-party result inspection and direct public GETs."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The configured map is not evidence of cadastral absence. Current Hulan registry custodian/service URL, parcel layer existence, schema, CRS, stable native identity, anonymous geometry availability and citywide completeness remain unverified. The WUP exact point was not shifted and no exact-point parcel hit/miss was inferred.",
+  "nextStep": "Serial reviewer may independently qualify a current official Hulan/Harbin cadastral or real-estate-registration map/API service. Do not enable runtime from this packet alone."
+}

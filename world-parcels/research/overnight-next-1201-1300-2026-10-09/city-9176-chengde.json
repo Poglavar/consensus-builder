@@ -1,0 +1,99 @@
+{
+  "cityCode": 9176,
+  "queueRank": 1249,
+  "name": "Chengde",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1249,
+  "point": [40.962009217654, 117.922629548203],
+  "population2025": 444971,
+  "population2025k": 444.971,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chengde China official cadastral parcel map land registry public map API",
+        "result": "First-party discovery identified the Chengde Natural Resources and Planning Bureau and its Real Estate Registration Center portal. Official material describes registration and cadastral-survey responsibilities, but no public anonymous parcel-vector endpoint was identified.",
+        "actualResultUrls": [
+          "https://zrgh.chengde.gov.cn/online/public/cms/jgjs",
+          "https://www.chengde.gov.cn/art/2025/7/17/art_9938_1076028.html",
+          "https://www.chengde.gov.cn/art/2023/5/9/art_3248_929302.html"
+        ],
+        "scope": "Find a first-party local registry/cadastre/map service and safe anonymous parcel IDs plus geometry; do not request owner, address, contact, titleholder, tax, account, or certificate data."
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "承德市 不动产登记 地籍图 宗地图 官方 地图 查询",
+        "result": "First-party Chinese-language discovery found the Chengde Real Estate Registration Center portal and official government descriptions of registration/cadastral duties. The certificate query route is login-gated; no anonymous cadastral geometry response was verified.",
+        "actualResultUrls": [
+          "https://zrgh.chengde.gov.cn/online/index",
+          "https://zrgh.chengde.gov.cn/online/public/cms/jgjs",
+          "https://zrgh.chengde.gov.cn/col/col1039/index.html",
+          "https://www.chengde.gov.cn/art/2023/5/9/art_3248_929302.html"
+        ],
+        "method": "Independent Simplified-Chinese discovery followed by anonymous first-party portal HTML and route review.",
+        "scope": "Verify local custody and any public source-native parcel geometry only; identity-authenticated property-record queries were not used."
+      }
+    ]
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Chengde Natural Resources and Planning Bureau / Chengde Real Estate Registration Center portal",
+    "url": "https://zrgh.chengde.gov.cn/online/index",
+    "operator": "Chengde Natural Resources and Planning Bureau; Chengde Real Estate Registration Center",
+    "serviceType": "Official local registration portal and custodian information; no anonymous parcel geometry service verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "The official portal identifies the local registration custodian and provides registration/progress routes. The certificate query redirects to the account login page; no login, CAPTCHA bypass, private token, or property-record query was attempted."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Chengde portal and government material, first-party English and Simplified-Chinese discovery, current public portal HTML, and bounded anonymous route checks.",
+    "verifiedOpenScope": "Local registry custody and official procedure context are evidenced; anonymous parcel geometry, schema, CRS, native ID, exact-point hit, and citywide completeness remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymously accessible cadastral geometry endpoint was identified. The official certificate/property query route redirects to /online/platform/login; no credentials or identity-gated records were used.",
+  "remainingUncertainty": "A separately published municipal or provincial cadastral/map service may exist, but no current public anonymous parcel-vector URL was verified. The exact unchanged WUP point was not tested against a verified cadastral endpoint and no absence inference is made.",
+  "nextStep": "If independently reviewing this city again, continue only from an official published anonymous map service or safe metadata endpoint; do not use identity-authenticated property-record queries.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9176,
+  "cityId": "wup2025:9176",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [40.962009217654, 117.922629548203],
+  "populationPlausibility2025": "Low",
+  "pointBasis": "Exact unchanged WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Chengde portal identifies the Chengde Real Estate Registration Center as subordinate to the Chengde Natural Resources and Planning Bureau. The city government describes the bureau's responsibility for unified real-estate registration, cadastral surveying, and geospatial public services. This establishes local institutional custody, not public anonymous parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://zrgh.chengde.gov.cn/online/index",
+    "https://zrgh.chengde.gov.cn/online/public/cms/jgjs",
+    "https://zrgh.chengde.gov.cn/online/public/search/certificate",
+    "https://www.chengde.gov.cn/art/2025/7/17/art_9938_1076028.html",
+    "https://www.chengde.gov.cn/art/2023/5/9/art_3248_929302.html"
+  ],
+  "runtimeAssessment": {
+    "status": "unknown_no_verified_public_geometry",
+    "reason": "No anonymous parcel geometry endpoint was verified or queried at the exact WUP point. The property/certificate workflow is login-gated; no absence claim is made."
+  },
+  "cohort": "overnight-next-1201-1300",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

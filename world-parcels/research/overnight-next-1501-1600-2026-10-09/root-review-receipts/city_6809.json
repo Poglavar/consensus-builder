@@ -1,0 +1,18 @@
+{
+  "taskId": "city:6809",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-6809-mirpur-khas.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/mirpur-khas-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:32:47Z",
+  "reason": "WUP code 6809, rank 1507, Pakistan, point and 376343 persons match the immutable roster and queue. English and Urdu/Sindhi searches identify the official Sindh Zameen land-record and Deh Maps service; the Mirpurkhas district map entry supports local relevance. No original anonymous native-ID complete-polygon response or retained sample exists. Map-host DNS failure, TLS mismatch and CAPTCHA do not establish absence. Fresh ID reads, forced paging, 13 cells, metric GEOS checks, source binding and headed Details are unproved.",
+  "independentlyCheckedFirstPartyUrls": [
+    "https://www.sindhzameen.gos.pk/Default.aspx",
+    "https://sindhzameen.gos.pk/map/SindhMaps.aspx",
+    "https://sindhzameen.gos.pk/FAQs.aspx"
+  ],
+  "sourceAdmission": "not_admitted"
+}

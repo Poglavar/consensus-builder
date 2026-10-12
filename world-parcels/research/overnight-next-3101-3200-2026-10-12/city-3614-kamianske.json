@@ -1,0 +1,102 @@
+{
+  "cityCode": 3614,
+  "queueRank": 3117,
+  "name": "Kamianske",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "iso3": "UKR",
+  "locId": 804,
+  "capital": false,
+  "point": [48.489632182252, 34.6367353673958],
+  "population2025": 192645,
+  "population2025k": 192.645,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kamianske Ukraine official cadastral map parcel public map",
+        "result": "First-party discovery identified the Kamianske municipal urban-planning GIS, the Dnipropetrovsk regional StateGeoCadastre office, and official Ukrainian public cadastral-map documentation. The municipal GIS is local and public, but its exposed catalog contains urban-planning datasets rather than a cadastral parcel polygon service.",
+        "actualResultUrls": [
+          "https://kamianske.cadastre.com.ua/",
+          "https://land.gov.ua/dnipropetrovska-oblast/",
+          "https://admincher.gov.ua/info/service/byservicescope-301/4928/details",
+          "https://wikimap.dzk.gov.ua/wiki/%D0%9F%D1%83%D0%B1%D0%BB%D1%96%D1%87%D0%BD%D0%B0_%D0%BA%D0%B0%D0%B4%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B2%D0%B0_%D0%BA%D0%B0%D1%80%D1%82%D0%B0"
+        ]
+      },
+      {
+        "language": "Ukrainian (local)",
+        "query": "Кам'янське Дніпропетровська область офіційна кадастрова карта земельний кадастр",
+        "result": "Україномовний пошук підтвердив міський ГІС МБК Кам'янської міської територіальної громади, місцевий підрозділ Держгеокадастру в Кам'янському районі та опис Публічної кадастрової карти. Безпечної анонімної відповіді з ідентифікатором земельної ділянки та геометрією не отримано.",
+        "actualResultUrls": [
+          "https://kamianske.cadastre.com.ua/",
+          "https://dnipropetrovska.land.gov.ua/icat/cadastre/",
+          "https://land.gov.ua/faq/",
+          "https://dzk.gov.ua/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "GIS MBC of Kamianske City Territorial Community; regional state cadastral context is the Main Department of the StateGeoCadastre in Dnipropetrovsk Oblast, with Department No. 3 in Kamianske district.",
+    "scope": "The municipal portal is an evidenced local urban-planning GIS and public map/catalog route. Its published datasets and map configuration do not evidence an open cadastral parcel geometry service.",
+    "evidenceUrls": [
+      "https://kamianske.cadastre.com.ua/",
+      "https://kamianske.cadastre.com.ua/maps/main",
+      "https://land.gov.ua/dnipropetrovska-oblast/",
+      "https://dnipropetrovska.land.gov.ua/icat/cadastre/"
+    ],
+    "scopeNote": "The municipal GIS is the local custodian route. StateGeoCadastre pages are recorded as national/regional cadastral context, not as proof of a callable local parcel API."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Kamianske municipal urban-planning GIS and Ukraine public cadastral-map routes",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "attemptedRoutes": [
+      {
+        "method": "GET",
+        "url": "https://kamianske.cadastre.com.ua/",
+        "outcome": "HTTP 200 HTML received; current JavaScript/configuration was inspected. The portal identifies local holder Управління містобудування та архітектури Кам'янської міської ради and public 4326 urban-planning datasets, but no cadastral parcel layer or anonymous parcel feature endpoint was exposed."
+      },
+      {
+        "method": "GET",
+        "url": "https://kamianske.cadastre.com.ua/maps/main",
+        "outcome": "HTTP 200 HTML received; map configuration was inspected. The map exposes base-map tiles and thematic municipal maps, not a parcel polygon service."
+      },
+      {
+        "method": "GET",
+        "url": "https://kamianske.cadastre.com.ua/data/9587e69d35fd",
+        "outcome": "HTTP 200 HTML received for the public 'Наявність МБД' catalog entry; it is a municipal urban-planning polygon dataset with SRID 4326, not a cadastral parcel dataset. No parcel IDs or parcel geometry were requested or retained."
+      },
+      {
+        "method": "GET",
+        "url": "https://map.land.gov.ua/kadastrova-karta",
+        "outcome": "Timed out after 20 seconds; no HTML, JavaScript, configuration, schema, CRS, or service endpoint was inspected."
+      },
+      {
+        "method": "GET",
+        "url": "https://land.gov.ua/dnipropetrovska-oblast/",
+        "outcome": "First-party regional page was reachable through discovery results and evidences the Kamianske district office, but it is administrative prose and does not provide an anonymous parcel geometry response."
+      }
+    ],
+    "note": "The exact WUP point was preserved and was not shifted or used as an absence test. No parcel ID, geometry, parcel schema, or bounded anonymous parcel-feature response was obtained."
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The local municipal GIS is public and inspectable, but its current catalog does not establish cadastral parcel coverage or a parcel API.",
+    "The national public cadastral viewer timed out; this is an access/visibility limit, not evidence of citywide parcel absence.",
+    "No exact-point hit or miss was used as evidence of citywide coverage or absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration or runtime admission."
+  ]
+}

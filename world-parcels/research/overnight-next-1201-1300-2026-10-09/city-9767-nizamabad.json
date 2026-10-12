@@ -1,0 +1,158 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:9767",
+  "wupCityCode": 9767,
+  "queueRank": 1258,
+  "rank": 1258,
+  "name": "Nizamabad",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [18.6760713100723, 78.0987992055297],
+  "centerLatLon": [18.6760713100723, 78.0987992055297],
+  "pointBasis": "Exact immutable WUP 2025 queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 442690,
+  "population2025k": 442.69,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "aliases": ["nizamabad"],
+  "status": "complete",
+  "resultCategory": "official_state_cadastral_service_verified_geometry_unavailable",
+  "registryFound": true,
+  "registryBasis": "The official Telangana TGRAC land-information service exposes a cadastral-boundary polygon layer and the official TGRAC project page specifically documents Bhu Bharathi work for Nizamabad District, including land-parcel map layouts and geo-rectified village maps. This establishes an official state/local cadastral source context, not citywide completeness.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "The official ArcGIS layer schema and WGS84 CRS were inspected, but the bounded anonymous exact-point query timed out without a response. No safe feature response or polygon was retained; timeout is not evidence of citywide absence.",
+  "source": {
+    "sourceId": null,
+    "name": "Telangana TGRAC Land Information System / TS Cadastral Boundary 30 cm",
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer/0",
+    "operator": "Telangana State Remote Sensing Applications Centre (TGRAC), Government of Telangana; cadastral administration context is the Telangana Revenue Department / Chief Commissioner Land Administration",
+    "serviceType": "Official ArcGIS REST cadastral-boundary feature layer",
+    "layer": "TS Cadastral Boundary 30 cm (layer 0)",
+    "geometryType": "esriGeometryPolygon",
+    "nativeIdField": "FID",
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": true,
+    "geometryStatus": "not_verified",
+    "nativeCrs": "EPSG:4326 / WGS 84",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "fieldMapping": {
+      "nativeIdentity": "FID (esriFieldTypeOID)",
+      "safeGeometryFields": ["Shape"],
+      "contextFieldsObserved": ["District", "Mandal", "Village", "DMV_1991", "V_2011", "Base_Syno"],
+      "retainedFields": []
+    }
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Telangana TGRAC state land-information and cadastral-boundary service, with official project documentation naming Nizamabad District.",
+    "verifiedOpenScope": "Public layer metadata and service extent only; no live feature response was obtained in the bounded query.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nizamabad Telangana official cadastral parcel map GIS land records city survey map",
+        "result": "Found official Nizamabad district administration references, the Telangana TGRAC cadastral/land-information project and REST service, the Telangana Bhu Bharati official land-records portal, and the Government of India DILRMP Nizamabad map-digitization status page. TGRAC exposed a public polygon cadastral layer; no bounded feature response was obtained.",
+        "actualResultUrls": [
+          "https://tgrac.telangana.gov.in/trac/surveyoflands-project.php",
+          "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer/0",
+          "https://bhulandrecords.in/",
+          "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/533",
+          "https://nizamabad.telangana.gov.in/"
+        ]
+      },
+      {
+        "language": "Telugu",
+        "query": "నిజామాబాద్ తెలంగాణ అధికారిక కాడస్ట్రల్ పార్సెల్ మ్యాప్ భూ రికార్డులు GIS నగర సర్వే",
+        "result": "First-party discovery returned Telangana government/TGRAC cadastral and land-record sources, including the Nizamabad-specific Bhu Bharathi project description. The Telugu-language search did not expose a separate public parcel endpoint; the same official ArcGIS service was inspected.",
+        "actualResultUrls": [
+          "https://tgrac.telangana.gov.in/trac/surveyoflands-project.php",
+          "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer/0",
+          "https://bhulandrecords.in/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer/0",
+        "operator": "TGRAC, Government of Telangana",
+        "scope": "Public ArcGIS Feature Layer named TS Cadastral Boundary 30 cm; polygon geometry, EPSG:4326, public Query capability, max record count 1000."
+      },
+      {
+        "url": "https://tgrac.telangana.gov.in/trac/surveyoflands-project.php",
+        "operator": "TGRAC, Government of Telangana",
+        "scope": "Project documentation; explicitly names Nizamabad District Bhu Bharathi spill-over work and parcel-map-layout/geo-rectified village-map outputs."
+      },
+      {
+        "url": "https://bhulandrecords.in/",
+        "operator": "Revenue Department, Government of Telangana",
+        "scope": "Official Bhu Bharati Record of Rights information portal; used for service identity only, not queried for unsafe record fields."
+      },
+      {
+        "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/533",
+        "operator": "Department of Land Resources, Government of India",
+        "scope": "Nizamabad district map-digitization status context; not treated as a parcel geometry endpoint."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer/0?f=pjson",
+        "method": "GET; anonymous public metadata request over TLS",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Loaded layer metadata: polygon geometry, EPSG:4326, public Query/Data capabilities, safe FID OID field, and field schema."
+      },
+      {
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer/1?f=pjson",
+        "method": "GET; anonymous public metadata request over TLS",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Loaded metadata for a separate point layer; it exposes unsafe farmer/owner/contact-style fields, so it was not queried or retained."
+      },
+      {
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer/0/query",
+        "method": "GET; anonymous public query with exact WUP point, esriGeometryPoint, inSR=4326, spatialRel=intersects, outFields=FID, returnGeometry=true, outSR=4326",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "Timed out after 30 seconds with no response. No feature, ID, polygon, or absence conclusion was recorded."
+      },
+      {
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer/0/query",
+        "method": "GET; same bounded exact-point query requesting f=geojson",
+        "httpStatus": 400,
+        "contentType": "text/html or service error",
+        "assessment": "Service rejected the GeoJSON-format attempt; no geometry was returned."
+      }
+    ],
+    "schemaCrs": {
+      "nativeCrs": "EPSG:4326 / WGS 84",
+      "geometryResponseSchema": "ArcGIS REST feature-layer JSON schema; polygon geometry expected, but no feature response obtained",
+      "viewerLayers": ["0: TS Cadastral Boundary 30 cm", "1: dharani_data (not queried because of unsafe fields)"]
+    }
+  },
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "official service URLs", "HTTP status/content type", "public service metadata", "FID only if returned safely", "geometry only if independently verified"],
+  "remainingUncertainty": "Whether the public layer contains a feature at the exact WUP point, how much of Nizamabad urban area is covered, whether FID is stable across service refreshes, and whether a bounded anonymous query can return a safe polygon remain unknown. Layer 1 contains unsafe farmer/owner/contact-style fields and was excluded. The exact WUP point was preserved and not used as evidence of absence.",
+  "registryEvidenceUrls": [
+    "https://tgrac.telangana.gov.in/trac/surveyoflands-project.php",
+    "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer/0",
+    "https://bhulandrecords.in/",
+    "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/533"
+  ],
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "adapterReady": false,
+  "adapterQualification": "held_pending_serial_review",
+  "nextStep": "Serial reviewer should independently retry the current TGRAC ArcGIS query with safe fields and qualify feature identity/geometry stability; keep runtime held until a real polygon response is independently verified.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

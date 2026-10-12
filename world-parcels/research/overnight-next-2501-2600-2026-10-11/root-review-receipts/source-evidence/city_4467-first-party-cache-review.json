@@ -1,0 +1,64 @@
+{
+  "taskId": "city:4467",
+  "checkedAt": "2026-10-11T14:03:07Z",
+  "originalCacheFiles": {
+    "layer-196.json": {
+      "path": "tmp/valhalla-parcel-research/kiel-4467/layer-196.json",
+      "sha256": "b4bec1bb178e573c789ccc51e97d04049afcf263248905504a09725017d77676"
+    },
+    "layer-11.json": {
+      "path": "tmp/valhalla-parcel-research/kiel-4467/layer-11.json",
+      "sha256": "a59a13653be1f731fc74ff7d17703a7ebad648651061c8794c3a7409a87ebe78"
+    },
+    "query-basic-196.json": {
+      "path": "tmp/valhalla-parcel-research/kiel-4467/query-basic-196.json",
+      "sha256": "c0c3cfd2b69c23d7df4f14588fd2471ef86212d1a3b2bbca125e7dc6cf650bfb"
+    },
+    "query-basic.json": {
+      "path": "tmp/valhalla-parcel-research/kiel-4467/query-basic.json",
+      "sha256": "c0c3cfd2b69c23d7df4f14588fd2471ef86212d1a3b2bbca125e7dc6cf650bfb"
+    },
+    "query-envelope.json": {
+      "path": "tmp/valhalla-parcel-research/kiel-4467/query-envelope.json",
+      "sha256": "c0c3cfd2b69c23d7df4f14588fd2471ef86212d1a3b2bbca125e7dc6cf650bfb"
+    },
+    "query-point.json": {
+      "path": "tmp/valhalla-parcel-research/kiel-4467/query-point.json",
+      "sha256": "c0c3cfd2b69c23d7df4f14588fd2471ef86212d1a3b2bbca125e7dc6cf650bfb"
+    },
+    "query-basic-11.json": {
+      "path": "tmp/valhalla-parcel-research/kiel-4467/query-basic-11.json",
+      "sha256": "c0c3cfd2b69c23d7df4f14588fd2471ef86212d1a3b2bbca125e7dc6cf650bfb"
+    }
+  },
+  "observed": {
+    "layers": [
+      {
+        "name": "Flurstuecke eigen",
+        "geometryType": "esriGeometryPolygon",
+        "latestWkid": 4647,
+        "identityFields": [
+          "OBJECTID",
+          "FLSTKENNZ"
+        ]
+      },
+      {
+        "name": "Flurstücke",
+        "geometryType": "esriGeometryPolygon",
+        "latestWkid": 4647,
+        "identityFields": [
+          "OBJECTID",
+          "FLSTKENNZ"
+        ]
+      }
+    ],
+    "featureQueryErrorCodes": [
+      400,
+      400,
+      400,
+      400,
+      400
+    ],
+    "returnedFeatureCount": 0
+  }
+}

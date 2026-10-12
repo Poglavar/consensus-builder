@@ -1,0 +1,89 @@
+{
+  "cityCode": 2382,
+  "queueRank": 3197,
+  "country": "Brazil",
+  "countryCode": "BR",
+  "point": [-16.452679587017, -54.6351575611747],
+  "population2025": 188577,
+  "population2025k": 188.577,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rondonópolis MT cadastral map parcel GIS official",
+        "result": "Search located the official municipal SIGGEO page, which describes a public territorial/geoprocessing platform integrating cartography and real-estate cadastre, and links to the public ArcGIS Experience.",
+        "actualResultUrls": [
+          "https://www.rondonopolis.mt.gov.br/projetos/rondonopolis-mais-inteligente/siggeo/",
+          "https://experience.arcgis.com/experience/d1d0101777b14e92930fee1d2765464a"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Rondonópolis MT cadastro imobiliário mapa oficial geoprocessamento parcelas",
+        "result": "Search located the official SIGGEO service and municipal Fazenda references to Cadastro Fiscal Imobiliário Urbano; the SIGGEO page explicitly lists public cartographic consultation and property search.",
+        "actualResultUrls": [
+          "https://rondonopolis.mt.gov.br/projetos/rondonopolis-mais-inteligente/siggeo/",
+          "https://rondonopolis.mt.gov.br/orgaos-municipais/secretaria-municipal-de-fazenda/",
+          "https://rondonopolis.mt.gov.br/servicos/certidao-de-inexistencia-de-titularidade-de-imoveis/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Município de Rondonópolis, Secretaria Municipal de Fazenda / SIGGEO",
+    "service": "SIG RONDONÓPOLIS public ArcGIS Web Experience",
+    "serviceUrl": "https://experience.arcgis.com/experience/d1d0101777b14e92930fee1d2765464a",
+    "webMapItem": "https://www.arcgis.com/home/item.html?id=95689b3e8fc54bca99e835b083bb2e21",
+    "parcelLayer": "https://services.arcgis.com/n4lF54Alm3639FBe/arcgis/rest/services/Base_Cartográfica_Rondonópolis/FeatureServer/16",
+    "layerTitle": "LOTES",
+    "layerGeometryType": "esriGeometryPolygon",
+    "nativeSpatialReference": "EPSG:3857 (WKID 102100; latestWkid 3857)",
+    "safeNativeIdentity": "id (native layer field; numeric), with FID as the service object ID",
+    "safeFields": ["id", "FID", "geometry"],
+    "unsafeFieldsOmitted": ["cadastro", "inscricao_", "insc_lote", "codigo", "numero_pre", "logradouro", "matricula", "cib", "IPTU/tax fields", "all owner/address/contact/titleholder/personal fields"],
+    "sourceFieldMapping": {
+      "canonicalId": "id",
+      "serviceObjectId": "FID",
+      "geometry": "ArcGIS polygon geometry; requested as GeoJSON with outSR=4326"
+    },
+    "compositeKeyProvenance": null
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "url": "https://www.arcgis.com/sharing/rest/content/items/d1d0101777b14e92930fee1d2765464a/data?f=json",
+      "outcome": "success",
+      "purpose": "Read the current public Experience configuration and follow its map reference"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.arcgis.com/sharing/rest/content/items/95689b3e8fc54bca99e835b083bb2e21/data?f=json",
+      "outcome": "success",
+      "purpose": "Read the current public Web Map configuration and resolve the LOTES layer"
+    },
+    {
+      "method": "GET",
+      "url": "https://services.arcgis.com/n4lF54Alm3639FBe/arcgis/rest/services/Base_Cartográfica_Rondonópolis/FeatureServer/16?f=pjson",
+      "outcome": "success",
+      "purpose": "Inspect layer schema, geometry type, CRS and field names"
+    },
+    {
+      "method": "GET",
+      "url": "https://services.arcgis.com/n4lF54Alm3639FBe/arcgis/rest/services/Base_Cartográfica_Rondonópolis/FeatureServer/16/query?f=geojson&where=1%3D1&outFields=FID&returnGeometry=true&geometry=-54.6351575611747%2C-16.452679587017&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326",
+      "outcome": "success; one polygon returned, native FID 144582",
+      "purpose": "Bounded exact immutable WUP-point geometry check; no citywide absence inference"
+    },
+    {
+      "method": "GET",
+      "url": "https://services.arcgis.com/n4lF54Alm3639FBe/arcgis/rest/services/Base_Cartográfica_Rondonópolis/FeatureServer/16/query?f=geojson&where=1%3D1&outFields=FID%2Cid&returnGeometry=true&geometry=-54.645%2C-16.462%2C-54.625%2C-16.443&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&orderByFields=FID",
+      "outcome": "success; three polygon records returned in bounded envelope (native ids 96538, 54402, 74927 in ignored response cache)",
+      "purpose": "Bounded anonymous ID+geometry availability check"
+    }
+  ],
+  "sample": null,
+  "runtimeReadiness": "held",
+  "notes": "Official municipal cadastre/map evidence is present and the public parcel layer is queryable anonymously. No retained GeoJSON sample was written because the required packet can be qualified from bounded ignored responses and no raw source attributes are retained. This is research evidence, not source integration or adapter admission."
+}

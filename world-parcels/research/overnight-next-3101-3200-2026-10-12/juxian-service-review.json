@@ -1,0 +1,25 @@
+{
+  "cityRecord": "city-10618-juxian.json",
+  "cityCode": 10618,
+  "queueRank": 3170,
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "Juxian County Natural Resources and Planning Bureau / Juxian Real Estate Registration Center; local service is described as using the Shandong provincial online real-estate-registration platform.",
+  "publicMapLead": null,
+  "queryOutcomes": "Separate English and Simplified Chinese discovery queries were executed and recorded in the city record. First-party Juxian government pages and a local-government news report evidenced the local registry custodian, but no public parcel viewer/API or anonymous parcel ID-plus-geometry response was identified.",
+  "requestOutcomes": "HTTP GET of the official Juxian government homepage, department directory, and 2025 natural-resources work-plan interpretation returned HTTP 200 HTML. HTTPS GET failed certificate verification and was not bypassed. The local-government news report was used as service context. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS verification bypass was used.",
+  "schemaAndCrs": null,
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "Exact WUP point [35.5899819411797, 118.830477278756] was preserved and not moved.",
+    "No exact-point hit, map-extent miss, timeout, certificate failure, or unavailable UI was treated as evidence of citywide absence.",
+    "Local registry custodianship is evidenced, but the cited provincial online platform does not establish anonymous parcel geometry access or citywide vector coverage.",
+    "No GeoJSON sample is included because no safe native parcel identity and full polygon were observed.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or admission."
+  ],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "Local registry evidence exists, but no first-party anonymous Juxian parcel ID-plus-geometry response was available during this attempt; independent serial review is required before any adapter/runtime qualification."},
+  "uncertainty": "The current public provincial-platform route, native field schema, CRS, query semantics, and citywide coverage remain unknown."
+}

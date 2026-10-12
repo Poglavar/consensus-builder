@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-11053-jehanabad.json",
+  "cityCode": 11053,
+  "queueRank": 3226,
+  "city": "Jehanabad",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "Bilingual first-party discovery and current viewer inspection identified Bihar's official BhuNaksha service and Jehanabad district revenue custodian. The live selector returned Jehanabad district/circle/mauza metadata, but the selected special-survey extent request returned HTTP 204; no safe parcel ID or polygon was retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries and requests, including URLs, payloads, statuses, schema observations, and limits, are recorded in city-11053-jehanabad.json.",
+  "custodians": [
+    {"name": "Directorate of Land Records & Survey / Revenue and Land Reforms Department, Government of Bihar", "scope": "State cadastral mapping and land-record services, including BhuNaksha.", "evidence": "Official BhuNaksha, BiharBhumi, and DLRS pages plus live selector REST responses."},
+    {"name": "Jehanabad District Administration", "scope": "Local district revenue and land-reforms service lead.", "evidence": "Official Jehanabad district Revenue and Land Reforms page."}
+  ],
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["native parcel identifier if publicly returned and source-proven", "full parcel polygon geometry", "source CRS", "public service metadata", "retrieval date"],
+  "registryFound": true,
+  "registryBasis": "A local district revenue page and a current official state cadastral viewer with Jehanabad administrative selectors were evidenced. This does not establish open citywide parcel geometry completeness.",
+  "publicParcelGeometryFound": false,
+  "coverageLimits": ["Only selector metadata was verified for Jehanabad; no parcel geometry was returned.", "The exact WUP point was not shifted and no exact-point absence inference was made.", "No citywide or countrywide coverage qualification was performed."],
+  "uncertainty": ["The selected map extent route returned HTTP 204.", "Direct WMS capabilities and direct village-selector fetch did not yield usable schema responses.", "A later attempt may need to reproduce the interactive viewer sequence or a different populated map instance."],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "doNotInfer": ["No geometry is not evidence that Jehanabad has no parcels.", "The packet is research evidence only, not source integration or admission."]
+}

@@ -1,0 +1,93 @@
+{
+  "cityCode": 2969,
+  "queueRank": 2877,
+  "city": "Lalmonirhat",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "point": [25.9141742321487, 89.4409107961104],
+  "population2025": 207112,
+  "population2025k": 207.112,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lalmonirhat Bangladesh official cadastral parcel map land office DLRS map service",
+        "result": "First-party discovery identified the Department of Land Records and Surveys (DLRS), the official Settlement map search, the official DLRS integrated online Mouza map purchase portal, and the official Lalmonirhat district portal. The current public map service was inspected anonymously; it exposed district, survey, upazila and mouza discovery but no parcel-vector response.",
+        "actualResultUrls": ["https://dlrs.gov.bd/", "https://settlement.gov.bd/Map/MapSearch", "https://map.settlement.gov.bd/", "https://www.lalmonirhat.gov.bd/"]
+      },
+      {
+        "language": "Bengali",
+        "query": "লালমনিরহাট সরকারি খতিয়ান মৌজা ম্যাপ ভূমি অফিস ডিএলআরএস",
+        "result": "First-party Bengali discovery identified the official DLRS portal, official Settlement map search, official DLRS map-purchase portal, Lalmonirhat district land-service pages, and the Lalmonirhat Sadar official portal. Anonymous location enumeration confirmed রংপুর বিভাগ → লালমনিরহাট জেলা and the public portal's লালমনিরহাট upazila/mouza records; no safe parcel polygon response was returned.",
+        "actualResultUrls": ["https://dlrs.gov.bd/", "https://settlement.gov.bd/Map/MapSearch", "https://map.settlement.gov.bd/", "https://www.lalmonirhat.gov.bd/", "https://sadar.lalmonirhat.gov.bd/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Department of Land Records and Surveys (DLRS), Bangladesh, with the official Settlement map service and Lalmonirhat district land administration portal as the local public administrative route. A distinct city parcel custodian was not independently identified.",
+  "registryEvidence": {
+    "localCustodianUrl": "https://www.lalmonirhat.gov.bd/",
+    "officialMapSearchUrl": "https://settlement.gov.bd/Map/MapSearch",
+    "officialMapPurchaseUrl": "https://map.settlement.gov.bd/",
+    "evidence": "The official Settlement service enumerated Rangpur division, Lalmonirhat district, the current RS (BRS) survey, and the Lalmonirhat upazila. The official map-purchase service enumerated Lalmonirhat district and upazila mouza records. The official district portal exposes land-service links."
+  },
+  "sourceReview": {
+    "service": "Bangladesh DLRS Online Land Records and Survey Management map search, supplemented by the current DLRS Integrated Online Map Purchase System.",
+    "baseUrls": ["https://settlement.gov.bd/Map/MapSearch", "https://map.settlement.gov.bd/", "https://dlrs.gov.bd/"],
+    "officialAssetsInspected": ["Settlement map-search HTML", "Settlement MapSearch.js", "DLRS map-purchase HTML and current JavaScript", "official district and Sadar portals"],
+    "nativeFieldMapping": "Settlement boundary response uses unitcode for administrative boundary lookup and returns a geoJson string with administrative properties; no parcel feature schema was returned. Map-purchase location responses expose name and jlNo for mouzas and survey names, but these are map-document/location fields, not verified parcel identities.",
+    "compositeKeyProvenance": "No composite parcel key was constructed. Mouza name/JL number and survey type were retained only as discovery evidence, not promoted to parcel identity.",
+    "crs": "The official district boundary response returned GeoJSON coordinate arrays in longitude/latitude order, but did not state a CRS. No parcel CRS was observed.",
+    "safeFieldAllowlist": ["stable public parcel identifier only if independently verified", "full parcel polygon geometry", "public service/layer/coverage metadata", "administrative boundary metadata", "public mouza, survey and sheet discovery metadata"]
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://settlement.gov.bd/Map/MapSearch", "outcome": "HTTP 200; official public map-search HTML retrieved. No login was used."},
+    {"method": "GET", "url": "https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ", "outcome": "HTTP 200; current JavaScript inspected. It exposed POST routes for division, district, survey, upazila, mouza, sheet and sheet GeoJSON operations."},
+    {"method": "POST", "url": "https://settlement.gov.bd/Map/GetDivisionList", "outcome": "HTTP 200; anonymous division enumeration returned Rangpur with unitcode 080000000."},
+    {"method": "POST", "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise", "outcome": "HTTP 200; anonymous division-to-district enumeration returned Lalmonirhat with unitcode 080300000 and comcod 4186."},
+    {"method": "POST", "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise", "outcome": "HTTP 200; anonymous survey enumeration returned RS (BRS), rsnum 201901, described as digital survey and ongoing."},
+    {"method": "POST", "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap", "outcome": "HTTP 200 but empty array for the current anonymous request parameters; this is a route/data-result limitation, not evidence of absence."},
+    {"method": "POST", "url": "https://settlement.gov.bd/Map/GetallBoundaryJson", "outcome": "HTTP 200; anonymous administrative boundary response returned GeoJSON for Lalmonirhat district (MultiPolygon, properties naming Lalmonirhat). This is administrative evidence only, not parcel geometry."},
+    {"method": "GET", "url": "https://map.settlement.gov.bd/", "outcome": "HTTP 200; current public DLRS map-purchase portal and JavaScript retrieved."},
+    {"method": "GET", "url": "https://map.settlement.gov.bd/api/locations/divisions", "outcome": "HTTP 200; returned Bengali division names including রংপুর."},
+    {"method": "GET", "url": "https://map.settlement.gov.bd/api/locations/districts?division=রংপুর", "outcome": "HTTP 200; returned Bengali district names including লালমনিরহাট."},
+    {"method": "GET", "url": "https://map.settlement.gov.bd/api/locations/upazilas?division=রংপুর&district=লালমনিরহাট", "outcome": "HTTP 200; returned upazilas including লালমনিরহাট."},
+    {"method": "GET", "url": "https://map.settlement.gov.bd/api/locations/mouzas?division=রংপুর&district=লালমনিরহাট&upazila=লালমনিরহাট", "outcome": "HTTP 200; returned a large public mouza list with name and jlNo fields."},
+    {"method": "GET", "url": "https://map.settlement.gov.bd/api/locations/survey-types?division=রংপুর&district=লালমনিরহাট&upazila=লালমনিরহাট", "outcome": "HTTP 200; returned public survey types আর.এস and বি.আর.এস."},
+    {"method": "GET", "url": "https://map.settlement.gov.bd/api/search-mouzas?division=রংপুর&district=লালমনিরহাট&upazila=লালমনিরহাট&query=লালমনিরহাট", "outcome": "HTTP 400 JSON error: Missing search term; no search result and no geometry."},
+    {"method": "GET", "url": "https://map.settlement.gov.bd/api/search?division=রংপুর&district=লালমনিরহাট&upazila=লালমনিরহাট&query=লালমনিরহাট", "outcome": "HTTP 400 JSON error: Missing required search parameters; no result and no geometry."}
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": "https://settlement.gov.bd/Map/MapSearch",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "The exact WUP point [25.9141742321487, 89.4409107961104] was preserved and not shifted. No parcel query returned a feature, so no exact-point hit/miss or citywide absence inference was made.",
+    "requestEvidence": ["official map-search viewer and JavaScript retrieved", "Lalmonirhat administrative boundary returned", "public survey/upazila/mouza discovery returned", "no parcel schema, stable parcel identity and full parcel polygon returned"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bangladesh DLRS/Settlement land-record and survey map services, with Lalmonirhat administrative discovery.",
+    "verifiedOpenScope": "Administrative boundary and public survey/mouza discovery only; parcel-vector coverage and citywide parcel completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "The exact WUP point [25.9141742321487, 89.4409107961104] and latitude/longitude order were preserved; no coordinate was shifted.",
+    "A zero exact-point hit, empty endpoint result, map extent miss, timeout, login wall or unusable UI is not evidence of citywide cadastral absence.",
+    "Administrative boundary GeoJSON and mouza discovery records are not parcel polygons and do not establish citywide parcel coverage.",
+    "No owner, address, titleholder, contact, personal, tax/account, registration or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set or sample GeoJSON was retained because no anonymous parcel geometry and stable native identity were verified.",
+    "Packet completion records executed attempts only; it does not qualify or admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "A local public land-record/map route and current DLRS survey/mouza discovery are evidenced, but the anonymous parcel feature route, native parcel identity semantics, parcel CRS, currentness, city correspondence and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

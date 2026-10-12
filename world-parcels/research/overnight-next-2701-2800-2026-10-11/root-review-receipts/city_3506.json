@@ -1,0 +1,17 @@
+{
+  "taskId": "city:3506",
+  "decision": "held",
+  "checkedAt": "2026-10-11T19:40:46Z",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-3506-i-neg-l.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/i-neg-l-service-review.json"
+  ],
+  "identityCheck": "Rank 2766, city code 3506, Türkiye, original point [40.0879571953575,29.5066565146545] and 214129 persons match the immutable ranked roster and pending queue (214.129 thousand).",
+  "discoveryCheck": "English and Turkish executed searches and outcomes are recorded. The first-party İnegöl district cadastral unit page was corroborated by a current indexed official page; a direct live request returned HTTP 500. Viewer redirect and inspection failures do not establish parcel absence. No full polygon or native parcel ID was retained (0 of maximum 3).",
+  "registryFound": true,
+  "admissionCheck": "No safe native-ID-plus-geometry response, current layer schema or independent live adapter qualification for exact ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap, source binding, or headed Details panel verification.",
+  "runtimeDisposition": "held; no catalog, runtime, registry or coverage/report admission change"
+}

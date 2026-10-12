@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 11380,
+  "queueRank": 2511,
+  "name": "Conghua",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [23.5453936984256, 113.581157869199],
+  "population2025": 233861,
+  "population2025k": 233.861,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Conghua China cadastral map parcel GIS official natural resources bureau 23.5453937 113.5811579",
+        "result": "Search found the official Guangzhou Planning and Natural Resources Bureau Conghua Branch contact page, the official Conghua real-estate registration-center service page, and the official Guangzhou online land/house information-query system. No anonymous public parcel geometry service was found.",
+        "actualResultUrls": [
+          "https://www.conghua.gov.cn/zfjg/gzsghhzrzyjchqfj/zwgk/zfxxgkml/zzjg/lxfs/",
+          "https://ghzyj.gz.gov.cn/sjb/fw/ckzy/content/post_4904337.html",
+          "https://bdcda.gzlpc.gov.cn/wxpro_ts/grcx/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "从化 地籍图 宗地图 自然资源局 官方 地图 服务",
+        "result": "Official Chinese results identify the Conghua Branch and Conghua Real Estate Registration Center as the local custodians. The service page lists state-owned, agricultural, collective, homestead, forestry and easement registration scopes. The online query system requires real-name identity information and captcha; no anonymous parcel-ID-plus-geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://www.conghua.gov.cn/zfjg/gzsghhzrzyjchqfj/zwgk/zfxxgkml/zzjg/lxfs/",
+          "https://ghzyj.gz.gov.cn/sjb/fw/ckzy/content/post_4904337.html",
+          "https://bdcda.gzlpc.gov.cn/wxpro_ts/grcx/",
+          "https://ghzyj.gz.gov.cn/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Conghua government and Guangzhou planning/natural-resources pages identify the Guangzhou Planning and Natural Resources Bureau Conghua Branch and the Conghua Real Estate Registration Center. The service scope expressly includes Conghua land-use registration, collective land ownership, collective construction land, homestead rights, agricultural land, forestry rights and related real-estate registration. This establishes a local registry custodian, not open parcel geometry access.",
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Conghua District land and real-estate registration/cadastral records under the district branch and registration center.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_registry_custodian_no_anonymous_geometry",
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.conghua.gov.cn/zfjg/gzsghhzrzyjchqfj/zwgk/zfxxgkml/zzjg/lxfs/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Conghua government contact page retrieved. It identifies the local planning/natural-resources branch, registration phone, archive-query phone and official branch contact details. No parcel map/API link was present."
+    },
+    {
+      "url": "https://ghzyj.gz.gov.cn/sjb/fw/ckzy/content/post_4904337.html",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Guangzhou real-estate registration-center page retrieved. It identifies the Conghua center and lists local registration scopes including land, collective land, homesteads, agricultural land, forestry and easements. No public geometry endpoint was linked."
+    },
+    {
+      "url": "https://bdcda.gzlpc.gov.cn/wxpro_ts/grcx/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Guangzhou land/house information-query page retrieved. The page states that online queries use real-name identity documents, application information and captcha. The page is not an anonymous parcel map service; no query was submitted and no identity or unsafe field was requested."
+    },
+    {
+      "url": "https://bdcda.gzlpc.gov.cn/wxpro/Scripts/grcx/page.js?kk=kk1",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Current JavaScript was inspected. It posts to /wxpro/grcx/IndexPost and polls /wxpro/grcx/CheckUUID after collecting identity data, then uses authenticated application details. This route was not invoked."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Guangdong Tianditu landing page retrieved. Its public configuration exposed general map/province services but no Conghua cadastral parcel layer or safe anonymous parcel geometry route."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/statics/config.js",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Current Tianditu configuration inspected. No parcel-specific service URL or usable public token was present."
+    },
+    {
+      "url": "https://ghzyj.gz.gov.cn/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Guangzhou planning/natural-resources homepage retrieved. It linked general services such as Tianditu and registration information but did not expose an anonymous Conghua parcel geometry API."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel geometry", "geometry CRS", "source service URL", "retrieval timestamp"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "technicalBlocker": "No public anonymous map/API route returning a safe native parcel identifier plus geometry was exposed. The official online query route requires real-name identity information and captcha, so it was not used.",
+  "remainingUncertainty": "No exact-point or bounded parcel bbox query was performed because no qualifying anonymous endpoint was discovered. This is not evidence of citywide parcel absence, and the WUP coordinate was not shifted.",
+  "nextStep": "On a later attempt, inspect any newly published official Conghua/Guangzhou map viewer configuration for an anonymous cadastral service and qualify only a bounded safe ID-plus-geometry response. Independently qualify any adapter before runtime admission.",
+  "sampleGeoJSON": null
+}

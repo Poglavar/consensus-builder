@@ -1,0 +1,27 @@
+{
+  "taskId": "city:9298",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-9298-xinji.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/xinji-service-review.json",
+    "tmp/valhalla-parcel-research/xinji/xinji-gov.html",
+    "tmp/valhalla-parcel-research/xinji/xinji-policy.html"
+  ],
+  "checkedAt": "2026-10-11T22:30:01Z",
+  "reason": "WUP identity matches packet and queue. Separate English and Chinese searches are recorded. The cached first-party Xinji government service article explicitly names the local real-estate registration center in transfer registration procedures, grounding registryFound true as institutional custody only. No anonymous parcel ID-plus-geometry response, complete native polygon, or independent source adapter qualification is evidenced.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "registryFound": true,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

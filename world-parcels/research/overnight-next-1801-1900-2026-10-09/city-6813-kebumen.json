@@ -1,0 +1,62 @@
+{
+  "cityCode": 6813,
+  "queueRank": 1836,
+  "city": "Kebumen",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "point": [-7.67692961842971, 109.659270450225],
+  "population2025": 312542,
+  "population2025k": 312.542,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kebumen Indonesia official cadastral parcel map GIS ATR BPN Kebumen land parcel map",
+        "result": "First-party discovery found the official Kebumen open-data catalog entry for Peta Bidang Tanah Tahun 2024, the Kebumen Geoportal, and ATR/BPN BHUMI/ATLAS. The catalog and portals establish public map/data infrastructure, but no anonymous parcel feature response with a safe native ID and full polygon was verified.",
+        "actualResultUrls": ["https://data.go.id/dataset/dataset/peta-bidang-tanah-tahun-2024-79be34", "https://satudata.kebumenkab.go.id/v2/index.php/web/modal_metadata/1521", "https://geoportal.kebumenkab.go.id/main/", "https://bhumi.atrbpn.go.id/bantuan/peta", "https://atlas.atrbpn.go.id/"]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Kebumen peta bidang tanah kadaster resmi ATR BPN peta GIS pertanahan Kebumen",
+        "result": "First-party Indonesian-language discovery identified the same official Kebumen Peta Bidang Tanah Tahun 2024 catalog record and local Geoportal, plus ATR/BPN documentation describing BHUMI as the public land-map service. The local metadata page describes polygon/SHP/GeoJSON/KML capability for a HGU/HGB layer, but no downloadable Kebumen parcel geometry or bounded anonymous parcel API response was obtained.",
+        "actualResultUrls": ["https://data.go.id/dataset/dataset/peta-bidang-tanah-tahun-2024-79be34", "https://satudata.kebumenkab.go.id/v2/index.php/web/modal_metadata/1521", "https://geoportal.kebumenkab.go.id/main/", "https://jdih.atrbpn.go.id/uploads/1021/Petunjuk%20Teknis%20Nomor%205%20Tahun%202021%20tentang%20Juknis%20Layanan%20Informasi%20Pertanahan%20dan%20Ruang%20Secara%20Elektronik.pdf"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Kabupaten Kebumen data/geoportal services and the local Kantor Pertanahan Kabupaten Kebumen under ATR/BPN are evidenced custodians; an open parcel geometry endpoint was not verified.",
+  "registryEvidence": {
+    "localDatasetUrl": "https://data.go.id/dataset/dataset/peta-bidang-tanah-tahun-2024-79be34",
+    "localMetadataUrl": "https://satudata.kebumenkab.go.id/v2/index.php/web/modal_metadata/1521",
+    "geoportalUrl": "https://geoportal.kebumenkab.go.id/main/",
+    "officialViewerUrl": "https://bhumi.atrbpn.go.id/bantuan/peta",
+    "portalUrl": "https://atlas.atrbpn.go.id/",
+    "evidence": "The official catalog names Peta Bidang Tanah Tahun 2024 for Kabupaten Kebumen. The local metadata catalog describes spatial polygon formats for a HGU/HGB land-rights layer. Geoportal and ATR/BPN viewer documentation establish public map portals, but the actual parcel payload was not retrieved."
+  },
+  "sourceReview": {
+    "service": "Kabupaten Kebumen open-data/Geoportal and ATR/BPN BHUMI/ATLAS",
+    "officialAssetsInspected": ["https://data.go.id/dataset/dataset/peta-bidang-tanah-tahun-2024-79be34", "https://satudata.kebumenkab.go.id/v2/index.php/web/modal_metadata/1521", "https://geoportal.kebumenkab.go.id/main/", "https://bhumi.atrbpn.go.id/bantuan/peta", "https://atlas.atrbpn.go.id/"],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": "unverified; no parcel geometry response obtained"
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://data.go.id/dataset/dataset/peta-bidang-tanah-tahun-2024-79be34", "outcome": "First-party catalog record found in discovery; resource download/API URL was not exposed by the bounded fetch."},
+    {"method": "GET", "url": "https://satudata.kebumenkab.go.id/v2/index.php/web/modal_metadata/1521", "outcome": "200; official metadata page readable. It describes HGU/HGB polygon formats and land-right attributes, but no parcel geometry payload was returned and no unsafe attributes were requested or retained."},
+    {"method": "GET", "url": "https://geoportal.kebumenkab.go.id/main/", "outcome": "Public URL identified; bounded request returned a JavaScript-app shell/required JavaScript, with no service endpoint or parcel feature response exposed."},
+    {"method": "GET", "url": "https://bhumi.atrbpn.go.id/", "outcome": "Bounded anonymous request timed out; no login, CAPTCHA bypass, or TLS exception used."},
+    {"method": "GET", "url": "https://bhumi.atrbpn.go.id/bantuan/peta", "outcome": "Public help page documented BHUMI/ATLAS integration and land-map purpose; no Kebumen parcel feature response exposed."},
+    {"method": "GET", "url": "https://atlas.atrbpn.go.id/", "outcome": "Bounded anonymous request timed out from this environment; no parcel schema, CRS, or geometry response verified."}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not performed against parcel geometry; no hit/miss inference", "requestEvidence": ["Official Kebumen parcel-map catalog record", "Official local metadata page", "Geoportal JavaScript shell", "BHUMI timeout", "ATLAS timeout"]},
+  "coverageAssessment": {"claimedScope": "Official Kebumen open-data/Geoportal and ATR/BPN public land-map portals", "verifiedOpenScope": "Official catalog, metadata, and public viewer documentation only; parcel vector response not verified", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": ["Exact WUP point was preserved and not shifted.", "A timeout, JavaScript shell, or unavailable parcel endpoint is not evidence of citywide parcel absence.", "The catalog record establishes a local parcel-map dataset but not a retrieved anonymous geometry service.", "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.", "No raw source-specific attribute set and no GeoJSON sample were retained.", "Packet completion is not source integration/admission; serial reviewer qualification remains required."],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Anonymous download/API access, stable native parcel identity, field schema, CRS, geometry completeness, update currency, and citywide coverage remain unresolved.",
+  "retainedSample": null
+}

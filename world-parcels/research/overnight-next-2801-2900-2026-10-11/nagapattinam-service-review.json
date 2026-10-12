@@ -1,0 +1,42 @@
+{
+  "cityRecord": "city-10813-nagapattinam.json",
+  "cityCode": 10813,
+  "queueRank": 2805,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "Assistant Director of Survey and Land Records, District Collectorate Nagapattinam, evidenced by official district administration pages describing local survey, FMB, village/town map, and record-room functions.",
+  "publicServiceLead": "Tamil Nadu e-services at http://eservices.tn.gov.in/eservicesnew/home.html and TNGIS at https://www.tngis.tn.gov.in/apps.html.",
+  "queryOutcomes": "Separate English and Tamil discovery queries were performed. Official local Survey and Land Records custody and state service leads were found, but no anonymous parcel-vector endpoint was exposed.",
+  "requestOutcomes": "Official district pages, the official Tamil page, the official TNGIS directory, and the district portal were retrieved. The linked Tamil Nadu e-services host timed out during a bounded anonymous GET. No credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used.",
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [10.7824577630385, 79.8372653046759] was preserved and was not moved to force a parcel hit.",
+    "No exact-point hit or miss was inferred from the timeout or absent public geometry.",
+    "District registry custody and state GIS/service pages do not establish open cadastral vector coverage.",
+    "No parcel polygon or source-specific raw attribute set is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "Local registry custody is evidenced, but no public anonymous parcel ID-plus-geometry response, schema, CRS, or citywide open coverage was qualified."
+  },
+  "uncertainty": "A dedicated Tamil Nadu cadastral workflow may require survey identifiers, a session, or a separate current map service, but its anonymous public URL, native identity semantics, geometry endpoint, CRS, and municipal coverage were not established safely."
+}

@@ -1,0 +1,17 @@
+{
+  "cityRecord":"city-9286-anda.json",
+  "cityCode":9286,
+  "queueRank":2814,
+  "checkedAt":"2026-10-11",
+  "attempt":1,
+  "serviceReviewStatus":"complete_research_only",
+  "registryFound":null,
+  "queryAndRequestOutcome":"English and Chinese discovery were performed separately. Official Anda registration custody and the Heilongjiang public map viewer were found. Viewer configuration was inspected; no safe anonymous parcel ID-plus-geometry response, schema, CRS, or stable native identity was available. The regional boundary-map request returned HTTP 502.",
+  "safeFieldAllowlist":["stable native parcel identifier only if source-proven","full parcel polygon geometry","geometry CRS","public source/service metadata","retrieval date"],
+  "geometrySamples":[],
+  "scopeLimits":["Exact WUP point [46.4111359103128,125.332243462753] was preserved in latitude/longitude order.","No coordinate shift, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used.","A zero exact-point hit, map extent miss, gateway failure, login wall, or unusable UI is not evidence of citywide absence.","No raw source-specific attributes or polygon were retained."],
+  "qualification":{"verifiedSample":false,"parcelGeometryVerified":false,"runtimeReadiness":"held","reason":"No anonymous parcel vector with a qualified native identity, geometry, schema, or CRS was obtained; independent serial review remains required."},
+  "uncertainty":"The local registration center may operate an authenticated or non-indexed cadastral workflow, while the regional public viewer may expose additional services through interactive configuration. Those possibilities were not treated as verified open parcel coverage.",
+  "runtimeEligible":false,
+  "recommendedDisposition":"Hold for serial reviewer retry with current official viewer discovery and independent adapter qualification."
+}

@@ -1,0 +1,74 @@
+{
+  "descriptor": {
+    "id": "pl-gugik-uldk",
+    "name": "GUGiK ULDK national parcel lookup (Usługa Lokalizacji Działek Katastralnych)",
+    "adapter": "pl-uldk-point",
+    "endpoint": "https://uldk.gugik.gov.pl/",
+    "idField": "id",
+    "idPrefix": "PL-ULDK-",
+    "idPattern": "^[0-9]{6}_[0-9]\\.[0-9]{4}\\.(?:AR_[0-9]{1,4}\\.)?[0-9]{1,6}(?:/[0-9]{1,6})?$",
+    "outFields": [
+      "id"
+    ],
+    "queryMode": "point",
+    "capabilities": {
+      "areaEnumeration": false,
+      "bbox": false,
+      "exactId": true,
+      "point": true
+    },
+    "countryCode": "PL",
+    "metricSrid": 2180,
+    "maxConcurrentQueries": 1,
+    "scope": "National point and exact-ID lookup of EGiB cadastral parcels (one parcel per request, WGS84 output requested from the provider). Live-verified on 2026-10-12 for 51 of 53 uncovered Polish UN cities (point containment, identical exact re-read, explicit absence). Earlier live samples: Warsaw and Kraków (2026-09-29), Bydgoszcz (2026-10-09). Bbox queries and area enumeration are unavailable.",
+    "caveats": [
+      "Point and exact-ID lookup only: a clicked parcel never proves a viewport complete.",
+      "ULDK serves EGiB data held by county starosties; counties whose data is missing, stale or temporarily unavailable may answer with the same no-result line as a genuinely absent parcel.",
+      "Explicit absence is accepted only from the exact reply \"-1 brak wyników\"; every other \"-1\" message, count line, HTML or non-text reply is treated as unavailable.",
+      "Parcel IDs outside the documented TERYT form WWPPGG_R.OOOO[.AR_N].NR_DZ are rejected rather than coerced; unusual county numbering would surface as provider errors, not silent data.",
+      "Geometry is the provider's own EPSG:2180 to EPSG:4326 output, unrounded and unrepaired; the adapter rejects any returned polygon that does not contain the queried point.",
+      "Requests are paced to one start per second per adapter instance; GUGiK publishes no rate limit."
+    ],
+    "cityIds": [
+      "3805"
+    ],
+    "evidenceFile": "research/countries/PL-adapter-2026-10-12.json",
+    "operator": "Główny Urząd Geodezji i Kartografii (GUGiK); EGiB data maintained by county starosties",
+    "attribution": "GUGiK ULDK · county EGiB cadastral parcels · parcel lookup on click",
+    "catalogueUrl": "https://uldk.gugik.gov.pl/opis.html",
+    "licenceNote": "Anonymous public HTTPS API without credentials. ULDK's own reuse terms were not read in this session (documentation host unreachable from the verification machine); confirm them before publication. Cadastral geometry does not establish legal title or survey accuracy.",
+    "discovery": {
+      "jurisdiction": {
+        "countryCode": "PL",
+        "basis": "ULDK is GUGiK's national parcel lookup that answers point and TERYT-ID queries from the county EGiB cadastral databases.",
+        "evidence": [
+          "research/countries/PL.json",
+          "research/countries/PL-adapter-2026-10-12.json"
+        ]
+      },
+      "paceMs": 1000,
+      "keepPublishedFields": true
+    }
+  },
+  "city": {
+    "code": "3805",
+    "name": "Wołomin",
+    "point": [
+      21.2337346051155,
+      52.342697415251
+    ]
+  },
+  "sampleIds": [
+    "PL-ULDK-143412_4.0027.194"
+  ],
+  "absentId": "PL-ULDK-143412_4.0027.999999",
+  "metricEpsg": "EPSG:32634",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "GUGiK ULDK national parcel lookup (Usługa Lokalizacji Działek Katastralnych)",
+      "ULDK is GUGiK's national parcel lookup that answers point and TERYT-ID queries from the county EGiB cadastral databases."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

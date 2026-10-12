@@ -1,0 +1,12 @@
+{
+  "taskId": "city:4353",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-4353-grenoble.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/grenoble-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/grenoble-parcel-samples.geojson"
+  ],
+  "checkedAt": "2026-10-10T10:29:28Z",
+  "reason": "One exact-point polygon matches the saved first-party IGN response; no fresh native-ID adapter reads, forced pagination, 13 bounded cells, metric GEOS overlap checks, source binding, or headed Details-panel proof."
+}

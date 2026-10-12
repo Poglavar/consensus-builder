@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7287-guangyuan.json",
+  "purpose": "Document first-party Guangyuan cadastral/real-estate-registration discovery and bounded anonymous parcel-geometry attempts.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Guangyuan's official Natural Resources Bureau and local real-estate registration center are evidenced by first-party pages. The current online portal was inspected through its public HTML, config, and JavaScript. Its archive/property routes returned HTTP 401 without a session, and no anonymous parcel ID-plus-geometry response, schema, or CRS was verified. No geometry sample is retained and production integration remains held.",
+  "registryAssessment": "Local municipal registry custodian verified through the official Guangyuan Natural Resources Bureau and local online real-estate registration portal. This establishes a local registry/service custodian, not open cadastral geometry access.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzy.cngy.gov.cn/zfxxgk/jigou/index.html",
+      "observation": "Official Guangyuan Natural Resources Bureau institutional page. It assigns the bureau responsibility for unified natural-resource and real-estate registration, cadastral survey, real-estate mapping, and registration information management."
+    },
+    {
+      "url": "https://zrzy.cngy.gov.cn/New/Detail/20211217163046993.html",
+      "observation": "Official bureau notice describing the Guangyuan real-estate registration center's certificate QR-code workflow, including access to a parcel map and unit map."
+    },
+    {
+      "url": "https://www.gybdcwx.cn/common/pc/index.html",
+      "observation": "Current official local online real-estate registration portal; public HTML loads current frontend assets and configuration."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Guangyuan China official cadastral parcel map land registry GIS natural resources bureau",
+      "result": "Found official municipal bureau, official real-estate registration notice, and local online portal; no anonymous parcel geometry API verified.",
+      "actualResultUrls": ["https://zrzy.cngy.gov.cn/", "https://zrzy.cngy.gov.cn/New/Detail/20211217163046993.html", "https://www.gybdcwx.cn/common/pc/index.html"]
+    },
+    {
+      "language": "Chinese",
+      "query": "广元市 官方 不动产登记 地籍图 宗地图 查询 自然资源局",
+      "result": "Found official bureau and service information. The current archive/property workflow requires authorization; no anonymous geometry response verified.",
+      "actualResultUrls": ["https://zrzy.cngy.gov.cn/zfxxgk/jigou/index.html", "https://zrzy.cngy.gov.cn/New/Detail/20211217163046993.html", "https://www.gybdcwx.cn/common/pc/index.html"]
+    }
+  ],
+  "attempts": [
+    {"url": "https://zrzy.cngy.gov.cn/", "method": "GET", "httpStatus": 200, "result": "Official homepage fetched; no parcel endpoint or geometry schema exposed."},
+    {"url": "https://zrzy.cngy.gov.cn/zfxxgk/jigou/index.html", "method": "GET", "httpStatus": 200, "result": "Official institutional scope fetched and recorded."},
+    {"url": "https://zrzy.cngy.gov.cn/New/Detail/20211217163046993.html", "method": "GET", "httpStatus": 200, "result": "Official QR-code parcel/unit-map workflow notice fetched."},
+    {"url": "https://www.gybdcwx.cn/common/pc/index.html", "method": "GET", "httpStatus": 200, "result": "Current public portal HTML fetched."},
+    {"url": "https://www.gybdcwx.cn/config.js", "method": "GET", "httpStatus": 200, "result": "Current config exposed /declaration API base; no parcel layer or CRS."},
+    {"url": "https://www.gybdcwx.cn/declaration/system/crypto/config", "method": "POST", "httpStatus": 200, "requestBody": "{}", "result": "Returned enabled=false and empty public-key data."},
+    {"url": "https://www.gybdcwx.cn/declaration/bdc-affix/user-houses", "method": "GET", "httpStatus": 401, "result": "Unauthorised; no session created."},
+    {"url": "https://www.gybdcwx.cn/declaration/wyc/getArchivesFileQuery", "method": "POST", "httpStatus": 401, "requestBody": "{}", "result": "Unauthorised; no unsafe archive/property fields sent."}
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": {
+    "sourceFieldsObserved": ["bdcdyh", "bdcqzh", "zl", "fdzl", "slid", "axIdent"],
+    "retainedIdentity": null,
+    "retainedIdentityProvenance": null,
+    "note": "Observed only in current frontend archive/property workflow code; no parcel feature response or stable native parcel identity was verified."
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not executed against a usable public parcel endpoint; exact WUP point [32.4468106026384, 105.859404008599] was preserved and not shifted.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal natural-resources and unified real-estate-registration services for Guangyuan, including registered parcel/unit map access through a certificate QR workflow.",
+    "verifiedOpenScope": "Official custodian and current portal configuration verified; anonymous archive/property routes returned 401 and no parcel geometry response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The portal may expose parcel/unit-map material through a logged-in, QR-code, or controlled workflow. No statement about parcel absence, completeness, CRS, update cadence, or adapter compatibility is made.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

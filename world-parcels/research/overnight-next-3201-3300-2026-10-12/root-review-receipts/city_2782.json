@@ -1,0 +1,18 @@
+{
+  "taskId": "city:2782",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-2782-haragach.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/haragach-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T05:57:17Z",
+  "findings": {
+    "identity": "Archived WUP 2025 source SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114 checked; city code 2782, rank 3225, Bangladesh, exact 2025 point, and 187237 persons agree across roster, queue, and packet.",
+    "searches": "Packet records executed English and Bangla queries with URLs and outcomes; separate original search-engine traces were not retained.",
+    "custodyAndFirstParty": "Fresh bounded official DLRS search returned one AVAILABLE digitized RS map inventory record (id 717896987571195000), total 1; this is a map record, not a native parcel identifier or geometry. Local map custodian is evidenced.",
+    "geometry": "Zero retained polygons and no independently verified safe native parcel ID with full polygon. The point or an unavailable map response does not establish citywide absence.",
+    "admission": "Held: no fresh parcel native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap/operation checks, source binding, or headed Details-panel verification. No runtime, catalog, or report admission."
+  }
+}

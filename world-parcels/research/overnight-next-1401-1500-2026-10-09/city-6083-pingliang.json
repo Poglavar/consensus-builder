@@ -1,0 +1,56 @@
+{
+  "cityCode": 6083,
+  "queueRank": 1423,
+  "country": "China",
+  "countryCode": "CN",
+  "point": [35.5403516109263, 106.67835520171],
+  "population2025": 398221,
+  "population2025k": 398.221,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pingliang China official cadastral parcel map land registry GIS",
+        "result": "Found the official Pingliang Municipal Natural Resources Bureau, which links the city's unified real-estate registration service and a provincial Tianditu Pingliang map. Search and direct checks did not verify a public anonymous parcel-feature endpoint or safe parcel geometry response.",
+        "actualResultUrls": [
+          "https://zrzy.pingliang.gov.cn/",
+          "https://gansu.tianditu.gov.cn/pingliang/map/",
+          "https://bdcyc.mnr.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "平凉市 官方 不动产登记 地籍图 宗地图 查询",
+        "result": "平凉市自然资源局官网 confirms 不动产统一登记 and links the official provincial government-service route. First-party guidance for 甘快办 describes authenticated real-estate-information queries; no anonymous parcel geometry or public cadastral schema was verified.",
+        "actualResultUrls": [
+          "https://zrzy.pingliang.gov.cn/",
+          "https://zrzy.pingliang.gov.cn/zfxxgk/fdzdgknr/zcjd/sjzcjd/art/2024/art_b60d8b3872ed451e8f33b45395342401.html",
+          "https://zwfw.gansu.gov.cn/pingliang/index.html",
+          "https://zwfw.gansu.gov.cn/jingning/zczx/zxfb/art/2023/art_f9460f650f9a4b92bffdc1c191ff459c.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Pingliang Municipal Natural Resources Bureau (平凉市自然资源局)",
+    "localOffice": "Pingliang municipal unified real-estate registration service / 不动产登记中心",
+    "localOfficeEvidenceUrl": "https://zrzy.pingliang.gov.cn/",
+    "sourceScope": "Municipal natural-resources administration and unified real-estate registration services; the official site exposes service links and registration notices.",
+    "geometryAccess": "No safe anonymous parcel geometry route was verified. The public government-service and Gan Kuai Ban descriptions indicate authenticated or service-window real-estate information queries; no credentials were used."
+  },
+  "geometry": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "No usable anonymous parcel-feature request was available. The exact WUP point was not treated as evidence of absence and was not shifted.",
+    "crs": null
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "A real local registry custodian was verified, but no public safe-ID geometry response or independently qualified adapter was found.",
+    "adapterAdmission": false
+  }
+}

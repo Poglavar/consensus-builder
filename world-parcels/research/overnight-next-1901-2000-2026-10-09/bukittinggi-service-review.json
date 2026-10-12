@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-3317-bukittinggi.json",
+  "cityCode": 3317,
+  "queueRank": 1919,
+  "city": "Bukittinggi",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "ATR/BPN BHUMI and ATLAS national geospatial portal",
+  "serviceUrl": "https://bhumi.atrbpn.go.id/bhumigs/umum",
+  "scope": "Published national Bidang Tanah layer configured as Geoserver layer umum:Persil; Bukittinggi-specific geometry coverage was not verified.",
+  "schemaAndCrs": "Published metadata exposes penggunaan, tipehak, luas, nib, and akurasibidang. CRS and geometry type were not confirmed because capabilities and feature routes were unusable.",
+  "nativeIdentity": "nib (Nomor Identifikasi Bidang) is the documented preferred native identity; no synthetic identity, OBJECTID, or composite key was used.",
+  "fieldMapping": {
+    "nib": "canonical native parcel identity if independently retrieved",
+    "geometry": "parcel polygon geometry if independently retrieved"
+  },
+  "requestOutcome": "Official map and anonymous published-layer metadata succeeded. WFS capabilities returned 404 HTML and the bounded anonymous geometry request returned BHUMI 404 HTML/UI content. Exact WUP point [-0.309320238800289, 100.380747689581] was not treated as a negative result.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained because no safe native-ID-plus-geometry response was obtained.",
+  "safeFieldAllowlist": ["nib", "geometry"],
+  "unsafeDataPolicy": "Owner, address, contact, titleholder, tax/account, legal-description, and rights-detail fields were not requested or retained.",
+  "officialCustodyEvidence": "ATR/BPN official BHUMI/ATLAS documentation and live published layer metadata evidence a national cadastral map service. A distinct local Kantor Pertanahan Kota Bukittinggi API was not located.",
+  "limits": [
+    "National layer metadata does not prove complete Bukittinggi coverage.",
+    "No exact-point feature response was available; this is not evidence of citywide absence.",
+    "The public OWS route may be UI-proxied or changed; no login, credentials, private tokens, CAPTCHA bypass, or TLS exception was used.",
+    "No raw source attribute set or parcel polygon was retained.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Independent review must confirm the current anonymous feature endpoint, CRS handling, Bukittinggi coverage, NIB stability, and adapter safety before admission."
+}

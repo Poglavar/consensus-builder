@@ -1,0 +1,28 @@
+{
+  "taskId": "city:2231",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-2231-kolda.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/kolda-service-review.json",
+    "tmp/valhalla-parcel-research/kolda/onddl-api-base.json",
+    "tmp/valhalla-parcel-research/kolda/wfs-kolda.json"
+  ],
+  "checkedAt": "2026-10-12T00:17:18Z",
+  "reason": "The original WUP 2025 row agrees with queue and packet: city 2231, rank 2989, Senegal, exact point [12.8934851754938,-14.9369263744723], 200327 persons. English and French searches with result URLs are recorded. DGID/CSF Kolda supports registryFound true. The original ONDDL catalog has nine administrative datasets; the saved bounded WFS response has two department MultiPolygons (Kolda and Medina Yoro Foula), not one as the worker packet says. Neither is a parcel, and no native parcel ID or full parcel sample was obtained. Inspected public layers and a login wall do not prove citywide absence. No independent live adapter qualification or headed Details check exists.",
+  "registryFound": true,
+  "durableSamplePolygonCount": 0,
+  "observedBoundedParcelPolygonCount": 0,
+  "observedBoundedAdministrativePolygonCount": 2,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

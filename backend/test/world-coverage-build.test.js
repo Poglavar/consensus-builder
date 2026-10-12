@@ -7,7 +7,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
     buildCoverage, buildRegions, cityStatusTier, countryProbeTier, countryCoverageTier, countryCoverageLevel, regionBucketTier,
-    regionCoverageLevel, regionIdFor, parseCityConfigs, simplifyRing, strongest, UNPAINTED_SUBNATIONAL
+    regionCoverageLevel, regionIdFor, parseCityConfigs, simplifyRing, strongest, UNPAINTED_SUBNATIONAL,
+    latestOutcomes, cityChecks, temperFull, readOutcomes
 } from '../../scripts/build-world-coverage.mjs';
 
 const REPO = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../..');
@@ -96,7 +97,8 @@ describe('buildCoverage', () => {
         regionReviews: JSON.parse(read('world-parcels/region-coverage-reviews.json')).reviews,
         catalog: JSON.parse(read('backend/parcels/source-catalog.json')).sources,
         cityConfigSource: read('frontend/js/city-config.js'),
-        demographics: JSON.parse(read('world-parcels/report/city-demographics.json'))
+        demographics: JSON.parse(read('world-parcels/report/city-demographics.json')),
+        outcomes: readOutcomes(path.join(REPO, 'world-parcels/research/qualification-outcomes'))
     };
     const built = buildCoverage(inputs);
 
@@ -116,7 +118,9 @@ describe('buildCoverage', () => {
 
     it('keeps coverage separate from operational tier for reviewed countries', () => {
         const byCode = Object.fromEntries(built.countries.map(country => [country.cc, country]));
-        expect(byCode.NL).toMatchObject({ coverage: 'full', tier: 'source', coverageSources: [{ title: expect.any(String), url: expect.stringMatching(/^https:\/\//) }] });
+        // The Netherlands' national review stands; Waalwijk's failed parcel check makes it `mostly`.
+        expect(byCode.NL).toMatchObject({ coverage: 'mostly', tier: 'source', note: expect.stringMatching(/failed in Waalwijk; \d+ of \d+ checked cities work\.$/),
+            coverageSources: [{ title: expect.any(String), url: expect.stringMatching(/^https:\/\//) }] });
         expect(byCode.SI).toMatchObject({ coverage: 'full', tier: 'source' });
         expect(byCode.ES.coverage).toBe('partial');
         expect(byCode.HR).toMatchObject({
@@ -163,12 +167,28 @@ describe('buildCoverage', () => {
             ...overrides
         });
         const source = (sourceId, countryCode, verificationStatus = 'verified_nonempty_sample') => ({ sourceId, countryCode, verificationStatus });
-        const compile = ({ sourceRows = [], reviews = [], probes = [], coverageRows = [], cities = [], cc = 'AA', cityConfigSource = 'const CITY_CONFIGS = {};', demographics = null } = {}) => {
+        const compile = ({ sourceRows = [], reviews = [], probes = [], coverageRows = [], cities = [], cc = 'AA', cityConfigSource = 'const CITY_CONFIGS = {};', demographics = null, outcomes = [] } = {}) => {
             const countries = { type: 'FeatureCollection', features: [makeFeature(cc), ...(cc === 'AA' ? [makeFeature('BB')] : [])] };
             return buildCoverage({ registry: registry({ sources: sourceRows, countryProbes: probes, countryCoverage: coverageRows, cities }),
-                countryReviews: reviews, countries, cityConfigSource, demographics });
+                countryReviews: reviews, countries, cityConfigSource, demographics, outcomes });
         };
         const find = (result, cc) => result.countries.find(country => country.cc === cc);
+
+        it('tempers a reviewed full country by its failed city checks, counting live app cities as working', () => {
+            const sourceRows = [source('aa-parcels', 'AA')];
+            const reviews = [review('AA', ['aa-parcels'])];
+            const checked = (cityCode, cityName, outcome, countryCode = 'AA') => ({ cityCode, cityName, countryCode, point: [0.5, 0.5], outcome, finishedAt: '2026-10-12T10:00:00Z' });
+            const live = "const CITY_CONFIGS = { capital: { id: 'capital', label: 'Capital, AA', sourceId: 'aa-parcels', wupCityCode: 7, map: { defaultCenter: [0.5, 0.5] } } };";
+            const failed = [checked(1, 'Held One', 'held'), checked(2, 'Held Two', 'held')];
+            // One live city and one qualified city against two failures is not a majority.
+            const even = find(compile({ sourceRows, reviews, cityConfigSource: live, outcomes: [checked(3, 'Works', 'qualified'), ...failed] }), 'AA');
+            expect(even).toMatchObject({ coverage: 'partial', tier: 'source' });
+            const most = find(compile({ sourceRows, reviews, cityConfigSource: live, outcomes: [checked(3, 'Works', 'qualified'), checked(4, 'Also', 'qualified'), ...failed,
+                checked(5, 'Throttled', 'unchecked'), checked(6, 'Elsewhere', 'held', 'BB'), checked(7, 'Capital', 'held')] }), 'AA');
+            expect(most).toMatchObject({ coverage: 'mostly', tier: 'source', note: 'Reviewed national scope Parcel checks failed in Held One and Held Two; 3 of 5 checked cities work.',
+                coverageSources: [{ title: 'Scope evidence', url: 'https://scope.invalid/source' }] });
+            expect(find(compile({ sourceRows, reviews, outcomes: [checked(3, 'Works', 'qualified')] }), 'AA').coverage).toBe('full');
+        });
 
         it('promotes only a dated, evidenced, exclusion-free review with a matching local verified source', () => {
             const goodSource = source('aa-parcels', 'AA');
@@ -347,7 +367,13 @@ describe('buildCoverage', () => {
 
         it('keeps the United States partial while reviewed states are full and gapped states stay partial', () => {
             expect(countries.US.coverage).toBe('partial');
-            for (const id of ['US-MD', 'US-NC', 'US-ND', 'US-NJ', 'US-UT', 'US-WI']) expect(regions[id].coverage, id).toBe('full');
+            expect(regions['US-ND'].coverage).toBe('full');
+            // Reviewed statewide sources where the parcel check failed in a minority of checked cities.
+            for (const id of ['US-MD', 'US-NC', 'US-NJ', 'US-UT', 'US-WI']) {
+                expect(regions[id], id).toMatchObject({ coverage: 'mostly', tier: 'source', note: expect.stringMatching(/Parcel checks failed in .+; \d+ of \d+ checked cities work\.$/) });
+                expect(regions[id].coverageSources.length, id).toBeGreaterThan(0);
+            }
+            expect(regions['US-WI'].note).toMatch(/failed in Green Bay and Westhaven Trails; 4 of 6/);
             // Asotin County is missing from the Washington compilation; Esmeralda has no digital parcels.
             expect(regions['US-WA']).toMatchObject({ coverage: 'partial', note: expect.stringMatching(/Asotin absent/) });
             expect(regions['US-NV'].coverage).toBe('partial');
@@ -356,7 +382,10 @@ describe('buildCoverage', () => {
 
         it('grants full exactly to the reviewed regions, so a review that stops passing its gates is caught', () => {
             const fullReviews = reviews.filter(review => review.coverage === 'full').map(review => review.regionCode).sort();
-            expect(built.regions.filter(region => region.coverage === 'full').map(region => region.id).sort()).toEqual(fullReviews);
+            // A reviewed region is full unless failed city checks tempered it, which its note then says.
+            const tempered = built.regions.filter(region => / checked cities work\.$/.test(region.note)).map(region => region.id);
+            expect(built.regions.filter(region => region.coverage === 'full' || tempered.includes(region.id)).map(region => region.id).sort()).toEqual(fullReviews);
+            expect(built.regions.filter(region => region.coverage === 'mostly').every(region => tempered.includes(region.id))).toBe(true);
             for (const review of reviews) {
                 expect(review.evidenceFiles.every(file => existsSync(path.join(REPO, file))), `${review.regionCode} evidence files`).toBe(true);
             }
@@ -437,6 +466,31 @@ describe('buildCoverage', () => {
             const neighbour = { id: 'aa-two-statewide', discovery: { jurisdiction: { admin1: ['AA-TWO'], basis: 'Neighbour layer.' } } };
             expect(regionsOf({ registry: registry(), catalog: [provider], reviews: [review('AA-ONE', ['aa-statewide'])] })['AA-ONE'].coverage).toBe('full');
             expect(regionsOf({ registry: registry(), catalog: [neighbour], reviews: [review('AA-ONE', ['aa-two-statewide'])] })['AA-ONE'].coverage).toBe('unknown');
+        });
+
+        it('keeps the latest check per city and tempers a full region only by failures inside its outline', () => {
+            const at = (cityCode, cityName, outcome, finishedAt, point = [0.5, 0.5]) => ({ cityCode, cityName, countryCode: 'AA', point, outcome, finishedAt });
+            expect(latestOutcomes([{ cities: [at(1, 'A', 'held', '2026-10-12T10:00:00Z')] }, { cities: [at(1, 'A', 'qualified', '2026-10-12T11:00:00Z')] }, { cities: [at(1, 'A', 'held', '2026-10-12T09:00:00Z')] }]))
+                .toMatchObject([{ cityCode: 1, outcome: 'qualified' }]);
+            expect(cityChecks([{ name: 'Live' }], [at(1, 'Q', 'qualified'), at(2, 'H', 'held'), at(3, 'U', 'unchecked'), at(4, 'L', 'held')], new Set([4])))
+                .toEqual({ works: ['Live', 'Q'], failed: ['H'] });
+            expect(temperFull('full', { works: ['a'], failed: [] })).toBe('full');
+            expect(temperFull('full', { works: ['a', 'b'], failed: ['c'] })).toBe('mostly');
+            expect(temperFull('full', { works: ['a'], failed: ['c'] })).toBe('partial');
+            expect(temperFull('partial', { works: [], failed: ['c'] })).toBe('partial');
+
+            const sources = [verified('aa-one-parcels')];
+            const reviews = [review('AA-ONE', ['aa-one-parcels'])];
+            const outcomes = [at(1, 'One A', 'qualified'), at(2, 'One B', 'qualified'), at(3, 'One C', 'held'), at(4, 'Two A', 'held', undefined, [0.5, 1.5]), at(5, 'One D', 'unchecked')];
+            const tempered = regionsOf({ registry: registry({ sources }), reviews, outcomes });
+            expect(tempered['AA-ONE']).toMatchObject({ coverage: 'mostly', tier: 'source', note: 'Reviewed regional scope Parcel checks failed in One C; 2 of 3 checked cities work.',
+                coverageSources: [{ title: 'Regional scope evidence', url: 'https://scope.invalid/region' }] });
+            const split = regionsOf({ registry: registry({ sources }), reviews, outcomes: [at(1, 'One A', 'qualified'), at(3, 'One C', 'held')] });
+            expect(split['AA-ONE'].coverage).toBe('partial');
+            // A live app city inside the outline works there too.
+            const withLive = regionsOf({ registry: registry({ sources }), reviews, outcomes: [at(1, 'One A', 'qualified'), at(3, 'One C', 'held')],
+                liveCities: [{ name: 'Live One', cc: 'AA', lat: 0.5, lon: 0.5 }, { name: 'Live Two', cc: 'AA', lat: 0.5, lon: 1.5 }] });
+            expect(withLive['AA-ONE']).toMatchObject({ coverage: 'mostly', note: expect.stringMatching(/2 of 3 checked cities work\.$/) });
         });
 
         it('derives partial from buckets, executable providers and verified cities inside the outline only', () => {

@@ -1,0 +1,45 @@
+{
+  "taskId": "city:1489",
+  "decision": "held",
+  "checkedAt": "2026-10-12T00:29:28Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-1489-ni.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ni-service-review.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/nis/layer.json",
+    "tmp/valhalla-parcel-research/nis/service.json",
+    "tmp/valhalla-parcel-research/nis/exact.json",
+    "tmp/valhalla-parcel-research/nis/bounded.geojson"
+  ],
+  "reason": "Official Nis_NEP metadata classifies parcela polygons, but the service advertises TilesOnly and cached anonymous query responses are HTML and ArcGIS error 500; no native-ID geometry read succeeded.",
+  "identityCheck": {
+    "queueRank": 2999,
+    "name": "Niš",
+    "country": "Serbia",
+    "countryCode": "RS",
+    "point": [
+      43.3188198916352,
+      21.9103223663759
+    ],
+    "populationPersons": 199431,
+    "matchedQueueRosterAndOriginalWupCsv": true
+  },
+  "researchCheck": {
+    "englishAndLocalQueryRecordsPresent": true,
+    "independentSearchExecutionLogPresent": false,
+    "retainedFullPolygons": 0,
+    "safeNativeParcelIdVerified": false
+  },
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "custodyDecision": true,
+  "scopeNote": "Municipal parcel-layer discovery supports local custody, not geometry retrieval or runtime admission. Query errors do not establish citywide absence."
+}

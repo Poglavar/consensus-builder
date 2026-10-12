@@ -1,0 +1,16 @@
+{
+  "taskId": "city:195",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-195-iquique.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/iquique-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "tmp/valhalla-parcel-research/iquique-prc-point-query.geojson"
+  ],
+  "checkedAt": "2026-10-10T16:04:29Z",
+  "reviewNotes": "Official PRC_Iquique layer and original exact-point response yield one safe OBJECTID 844 polygon, but live first-party metadata identifies it as planning geometry, not a cadastral parcel. Registry custody remains unresolved (null). English and Spanish searches are recorded; no parcel sample or qualifying adapter evidence exists. Municipal challenge is not absence.",
+  "admissionGate": "No independently evidenced fresh native parcel-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, or headed Details-panel verification. No runtime, catalog, or generated coverage admission."
+}

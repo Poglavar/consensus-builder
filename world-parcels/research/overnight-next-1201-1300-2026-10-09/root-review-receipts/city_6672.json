@@ -1,0 +1,19 @@
+{
+  "taskId": "city:6672",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-6672-bishoftu.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/bishoftu-service-review.json",
+    "tmp/valhalla-parcel-research/bishoftu/getfeature.json",
+    "tmp/valhalla-parcel-research/bishoftu/parcel-publish.json",
+    "tmp/valhalla-parcel-research/bishoftu/wfs.xml",
+    "tmp/valhalla-parcel-research/bishoftu/parcel-schema.xsd"
+  ],
+  "checkedAt": "2026-10-09T12:21:47Z",
+  "identityReview": "Queue and roster agree on code 6672, rank 1257, Ethiopia, point [8.75862197493687, 38.9583814728029], and 442776 persons.",
+  "searchReview": "Executed English and native/local language search queries and result URLs are recorded in the paired packet and service review.",
+  "geometryReview": "Zero retained polygons; no unsafe parcel attributes retained.",
+  "admissionReview": "Official city site lists a Land Office. Original WFS responses each have zero returned features around the WUP point; this is bounded non-detection, not citywide absence. No native-ID parcel polygon or adapter qualification."
+}

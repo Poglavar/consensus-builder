@@ -1,0 +1,113 @@
+{
+  "purpose": "resumable WUP cadastral-source research packet",
+  "schemaVersion": 1,
+  "kind": "city-parcel-research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 10048,
+  "queueRank": 3182,
+  "name": "Jiaxiang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [35.4169990069877, 116.370079435903],
+  "population2025": 188977,
+  "population2025k": 188.977,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jiaxiang China cadastral parcel GIS property registry official map service",
+        "result": "Search found official Jining government and natural-resources references to the Jiaxiang County Real Estate Registration Center, but no Jiaxiang-specific public cadastral viewer or anonymous parcel ID+geometry API.",
+        "actualResultUrls": [
+          "https://www.jining.gov.cn/art/2026/9/18/art_102167_2804507.html",
+          "https://www.jining.gov.cn/art/2021/8/16/art_71765_2732505.html",
+          "https://www.jining.gov.cn/art/2024/4/2/art_28553_2867547.html"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "嘉祥县 不动产登记 地籍图 地图 服务 官方",
+        "result": "Search identified official Jining service-list and policy pages naming 嘉祥县不动产登记中心 and registration services, but no public parcel map/API endpoint or safe parcel geometry response.",
+        "actualResultUrls": [
+          "https://www.jining.gov.cn/art/2026/9/18/art_102167_2804507.html",
+          "https://www.jining.gov.cn/art/2021/8/16/art_71765_2732505.html",
+          "https://www.jining.gov.cn/art/2019/8/2/art_66880_839.html"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "嘉祥县 自然资源局 不动产登记中心 官方",
+        "result": "Official Jining sources corroborated the local registration custodian and county-level online-registration context. No current public viewer route, JavaScript configuration, anonymous feature service, native parcel ID field, or CRS was exposed by the bounded requests.",
+        "actualResultUrls": [
+          "https://www.jining.gov.cn/art/2024/4/2/art_28553_2867547.html",
+          "https://www.jining.gov.cn/art/2023/9/26/art_73989_2723022.html",
+          "https://www.jining.gov.cn/art/2021/8/16/art_71765_2732505.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "Jining Municipal Government's official Jiaxiang service list repeatedly names 嘉祥县不动产登记中心 (Jiaxiang County Real Estate Registration Center) and includes lawful registration-material inquiry plus parcel/real-estate registration procedures. Official Jining natural-resources policy pages also name the county center in the local registration system. This establishes a local registry custodian, not public parcel geometry access.",
+  "officialSources": [
+    {
+      "url": "https://www.jining.gov.cn/art/2026/9/18/art_102167_2804507.html",
+      "role": "official Jining Municipal Government Jiaxiang service/use list",
+      "access": "TLS-verified GET returned HTTP 200; HTML inspection found repeated Jiaxiang County Real Estate Registration Center entries, including registration-material inquiry and land/building registration procedures. No parcel geometry or public map endpoint was present."
+    },
+    {
+      "url": "https://www.jining.gov.cn/art/2021/8/16/art_71765_2732505.html",
+      "role": "official Jining natural-resources registration policy page",
+      "access": "TLS-verified GET returned HTTP 200; page names 嘉祥县不动产登记中心 in the municipal cross-region/online registration implementation context. No anonymous parcel service or geometry was exposed."
+    },
+    {
+      "url": "https://www.jining.gov.cn/art/2023/9/26/art_73989_2723022.html",
+      "role": "official Jining natural-resources online-registration policy page",
+      "access": "Search result identified the official page as a county-inclusive online registration policy reference; no parcel API or geometry response was identified during this bounded attempt."
+    },
+    {
+      "url": "https://www.jining.gov.cn/art/2019/8/2/art_66880_839.html",
+      "role": "official Jining government online-registration implementation page",
+      "access": "Search result identified the official page describing county online real-estate registration-center rollout, including Jiaxiang; it is procedural context, not a parcel geometry service."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "requestOutcomes": [
+    {
+      "route": "https://www.jining.gov.cn/art/2026/9/18/art_102167_2804507.html",
+      "method": "GET",
+      "outcome": "HTTP 200; official Jiaxiang service list inspected for local registry custodian, map/viewer links, parcel IDs, and geometry. Custodian and procedures were present; no safe parcel geometry or map/API route was present."
+    },
+    {
+      "route": "https://www.jining.gov.cn/art/2021/8/16/art_71765_2732505.html",
+      "method": "GET",
+      "outcome": "HTTP 200; official policy page inspected. Jiaxiang County Real Estate Registration Center was named, but the response contained policy prose only and no anonymous parcel ID+geometry response."
+    },
+    {
+      "route": "https://nrp.jining.gov.cn/art/2024/4/2/art_28553_2867547.html",
+      "method": "GET",
+      "outcome": "HTTP 404; no evidence inferred from the missing page, and no alternate route or bypass was attempted."
+    },
+    {
+      "route": "https://www.jining.gov.cn/art/2023/9/26/art_73989_2723022.html",
+      "method": "SEARCH RESULT / bounded follow-up discovery",
+      "outcome": "Official policy reference found in discovery; no parcel viewer/API route or geometry response identified."
+    },
+    {
+      "route": "https://www.jining.gov.cn/art/2019/8/2/art_66880_839.html",
+      "method": "SEARCH RESULT / bounded follow-up discovery",
+      "outcome": "Official online-registration rollout reference found in discovery; no parcel viewer/API route or geometry response identified."
+    }
+  ],
+  "schemaAndCrs": null,
+  "resultCategory": "local_registry_custodian_verified_no_public_parcel_api",
+  "coverageAssessment": "No exact-point parcel query was attempted because no public Jiaxiang parcel endpoint was identified. The exact WUP point was preserved and not shifted. This is not evidence of citywide absence.",
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The current Jiaxiang registry viewer, if any, its JavaScript/configuration, service routes, native parcel identity field, field schema, CRS, anonymous query semantics, and citywide coverage remain unknown. No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained. This packet is research evidence only, not source integration or admission."
+}

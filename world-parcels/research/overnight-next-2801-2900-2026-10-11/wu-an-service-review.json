@@ -1,0 +1,42 @@
+{
+  "cityRecord": "city-9326-wu-an.json",
+  "cityCode": 9326,
+  "queueRank": 2896,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "Wu'an Natural Resources and Planning Bureau and Wu'an Real Estate Registration Center, evidenced by public reporting and a government procurement notice; no open cadastral endpoint was evidenced.",
+  "publicMapLead": null,
+  "queryOutcomes": "Separate English and Chinese discovery queries were performed. They identified the local registration custodian and online registration-service reporting, but no anonymous Wu'an parcel-vector viewer or API.",
+  "requestOutcomes": "The cited public pages were reviewed through web discovery. Anonymous GET to https://www.wuan.gov.cn/ failed TLS handshake; no certificate exception was authorized or used. No login, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or shifted coordinate was used.",
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "geometryCrs": null,
+    "nativeIdField": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "No anonymous public parcel ID-plus-geometry response, schema, CRS, native identity semantics, or open citywide coverage was qualified."
+  },
+  "scopeLimits": [
+    "Exact WUP point [36.7072023387661, 114.188933330574] was preserved; it was not moved to force a parcel hit.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.",
+    "Local registration-custodian evidence does not establish open citywide parcel geometry coverage.",
+    "No parcel polygon or raw source-specific attribute set is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or admission; independent serial review remains required."
+  ],
+  "uncertainty": "The local registration custodian is evidenced, but the current public Wu'an site was not retrievable by anonymous TLS-verified GET and no safe parcel-vector route or sample was identified."
+}

@@ -1,0 +1,117 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 9415,
+  "queueRank": 3254,
+  "name": "Achalpur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [21.2787137182501, 77.5161627427999],
+  "population2025": 185432,
+  "population2025k": 185.432,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Achalpur Maharashtra official cadastral parcel map land records GIS official",
+        "result": "First-party discovery found the official Amravati district page for the Deputy Superintendent Land Records Office, Achalpur, the Maharashtra Bhumi Abhilekh services page, and the Mahabhumi dashboard. The official services describe e-Maps/Bhu Naksha and survey-number maps, but discovery did not expose an anonymous parcel API response.",
+        "actualResultUrls": [
+          "https://amravati.gov.in/en/document/deputy-superintendent-land-records-office-achalpur/",
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard"
+        ]
+      },
+      {
+        "language": "Marathi (native/local-language discovery)",
+        "query": "अचलपूर महाराष्ट्र अधिकृत भू अभिलेख नकाशा गट नंबर जमीन नोंदणी",
+        "result": "Native-language first-party discovery found Maharashtra Bhumi Abhilekh pages describing भू-नकाशा/e-नकाशा, village maps, and survey-number maps. The pages identify the state land-record custodian and the Achalpur office, but no bounded anonymous parcel ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/",
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://mahabhumi.gov.in/Mahabhumilink/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Amravati district administration page names a Deputy Superintendent Land Records Office for Achalpur. Maharashtra Bhumi Abhilekh/Mahabhumi is the state first-party land-record custodian and documents Bhu Naksha/e-Maps and survey-number maps. This evidences a local registry/cadastre custodian and public service lead, not an open parcel feature response.",
+  "officialSources": [
+    {
+      "url": "https://amravati.gov.in/en/document/deputy-superintendent-land-records-office-achalpur/",
+      "observation": "Official District Amravati document page titled Deputy Superintendent Land Records Office, Achalpur; it links an office document/PDF. No parcel geometry was present in the HTML page."
+    },
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Services",
+      "observation": "Official Maharashtra Bhumi Abhilekh services page lists e-Maps/Bhu Naksha, 7/12, 8A, property-card and e-record services."
+    },
+    {
+      "url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+      "observation": "Official Mahabhumi dashboard identifies Mahabhunakasha (maps with land records) and state-authorized digital land-record services."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": "District Amravati Deputy Superintendent Land Records Office, Achalpur; Maharashtra Bhumi Abhilekh/Mahabhumi Bhu Naksha lead",
+  "sourceIds": [],
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://amravati.gov.in/en/document/deputy-superintendent-land-records-office-achalpur/",
+      "outcome": "TLS-default curl succeeded; the page identified the official Achalpur land-records office and linked an office PDF. No parcel schema or geometry response was present."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Services",
+      "outcome": "First-party discovery returned the official service page and documented e-Maps/Bhu Naksha and survey-number map services. A direct TLS-default curl attempt timed out after 25 seconds before a response body was received."
+    },
+    {
+      "method": "GET",
+      "url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+      "outcome": "First-party discovery returned the official dashboard and Mahabhunakasha lead. No anonymous feature schema or geometry response was exposed; no login or credential flow was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Services/View712",
+      "outcome": "First-party indexed service page showed district, taluka/office, village/city and survey-number inputs for 7/12 lookup. This is a record lookup UI, not evidence of an open parcel geometry API; no unsafe fields were requested."
+    },
+    {
+      "method": "GET",
+      "url": "https://mrsac.gov.in/writereaddata/MRSAC/map/15653346185d4d1c5ab0751TH_AMT_Achalpur.pdf",
+      "outcome": "First-party discovery identified an official MRSAC Taluka Achalpur village-map PDF sourced from Maharashtra Land Record Department maps. It is a village-boundary overview, not a parcel feature service, so no parcel sample was retained."
+    }
+  ],
+  "schemaAndCrs": {
+    "observedService": "Maharashtra Bhumi Abhilekh/Mahabhumi Bhu Naksha and e-Maps service lead",
+    "geometryType": null,
+    "crs": null,
+    "nativeIdentityCandidates": [],
+    "qualification": "No anonymous parcel feature response was obtained; native parcel identity, geometry schema and CRS remain unverified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Achalpur local land-record office under Maharashtra state Bhumi Abhilekh/Mahabhumi services.",
+    "verifiedOpenScope": "A local custodian and public map/record service leads were verified, but no open parcel ID-plus-geometry response or citywide parcel coverage was qualified.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The Bhu Naksha/e-Maps viewer may expose parcel maps interactively or through current JavaScript/configuration when reachable, but this attempt did not obtain that response. The exact WUP point was preserved and not used as an absence test. No owner, address, contact, titleholder, tax, account, or other unsafe fields were requested. This packet is research evidence only and is not source integration or admission.",
+  "completionSummary": {
+    "packetComplete": true,
+    "registryFound": true,
+    "cityPointParcelSample": false,
+    "runtimeReadiness": "held",
+    "nextAttemptNeeded": true
+  }
+}

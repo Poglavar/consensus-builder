@@ -1,0 +1,1087 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "4238",
+  "cityName": "Heilbronn",
+  "sourceId": "de-bw-lgl-alkis-flurstueck",
+  "candidateSha256": "022b50163766d0e1603fa340bf75c8faa84f80422ed2df56f9a26aa00aa4ecbf",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 46,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 46,
+      "collectedUniqueCount": 46
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 314
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 5,
+      "distinctFeatureQueries": 5,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "d5016fd1a1df3d575b36c89656080fc1dc52327db62b412f3ac23dab82e1d890",
+      "featureCount": 46,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32632",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "d5016fd1a1df3d575b36c89656080fc1dc52327db62b412f3ac23dab82e1d890",
+  "featureCount": 46,
+  "sampleIds": [
+    "DE-BW-ALKIS-08091000001515000001",
+    "DE-BW-ALKIS-08091000000182000010",
+    "DE-BW-ALKIS-08091000000002000601"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        9.215,
+        49.15,
+        9.216,
+        49.151
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "DE-BW-ALKIS-08091000000001001102",
+        "DE-BW-ALKIS-08091000000002000601",
+        "DE-BW-ALKIS-08091000001578000013",
+        "DE-BW-ALKIS-08091000001578000400",
+        "DE-BW-ALKIS-08091000001578000802",
+        "DE-BW-ALKIS-08091000001581000000",
+        "DE-BW-ALKIS-08091000001587000000",
+        "DE-BW-ALKIS-08091000001587000100",
+        "DE-BW-ALKIS-08091000001589000006",
+        "DE-BW-ALKIS-08091000001596000100",
+        "DE-BW-ALKIS-08091000001660000100",
+        "DE-BW-ALKIS-08091000001660000203",
+        "DE-BW-ALKIS-08091000001660001100",
+        "DE-BW-ALKIS-08091000001661000001",
+        "DE-BW-ALKIS-08091000001663000002"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        9.216,
+        49.15,
+        9.217,
+        49.151
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "DE-BW-ALKIS-08091000000001001102",
+        "DE-BW-ALKIS-08091000000002000601",
+        "DE-BW-ALKIS-08091000000182000010",
+        "DE-BW-ALKIS-08091000000182000700",
+        "DE-BW-ALKIS-08091000001578000013",
+        "DE-BW-ALKIS-08091000001578000400",
+        "DE-BW-ALKIS-08091000001578000802",
+        "DE-BW-ALKIS-08091000001578000900",
+        "DE-BW-ALKIS-08091000001587000000",
+        "DE-BW-ALKIS-08091000001587000100",
+        "DE-BW-ALKIS-08091000001587000401",
+        "DE-BW-ALKIS-08091000001589000006",
+        "DE-BW-ALKIS-08091000001596000100",
+        "DE-BW-ALKIS-08091000001660000100"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        9.217,
+        49.15,
+        9.218,
+        49.151
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "DE-BW-ALKIS-08091000000001001102",
+        "DE-BW-ALKIS-08091000000182000010",
+        "DE-BW-ALKIS-08091000000182000700",
+        "DE-BW-ALKIS-08091000001555000200",
+        "DE-BW-ALKIS-08091000001578000501",
+        "DE-BW-ALKIS-08091000001578000802",
+        "DE-BW-ALKIS-08091000001578000900",
+        "DE-BW-ALKIS-08091000001587000100",
+        "DE-BW-ALKIS-08091000001587000401",
+        "DE-BW-ALKIS-08091000001589000006",
+        "DE-BW-ALKIS-08091000001596000004",
+        "DE-BW-ALKIS-08091000001596000100"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        9.215,
+        49.151,
+        9.216,
+        49.152
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "DE-BW-ALKIS-08091000000002000601",
+        "DE-BW-ALKIS-08091000001518000002",
+        "DE-BW-ALKIS-08091000001578000400",
+        "DE-BW-ALKIS-08091000001581000000",
+        "DE-BW-ALKIS-08091000001587000000",
+        "DE-BW-ALKIS-08091000001587000100",
+        "DE-BW-ALKIS-08091000001589000006",
+        "DE-BW-ALKIS-08091000001596000100",
+        "DE-BW-ALKIS-08091000001660000100",
+        "DE-BW-ALKIS-08091000001660000203",
+        "DE-BW-ALKIS-08091000001660001100",
+        "DE-BW-ALKIS-08091000001661000001",
+        "DE-BW-ALKIS-08091000001663000002",
+        "DE-BW-ALKIS-08091000002094000003"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        9.216,
+        49.151,
+        9.217,
+        49.152
+      ],
+      "complete": true,
+      "featureCount": 16,
+      "ids": [
+        "DE-BW-ALKIS-08091000000002000601",
+        "DE-BW-ALKIS-08091000000182000010",
+        "DE-BW-ALKIS-08091000001515000001",
+        "DE-BW-ALKIS-08091000001549000000",
+        "DE-BW-ALKIS-08091000001550000002",
+        "DE-BW-ALKIS-08091000001578000400",
+        "DE-BW-ALKIS-08091000001583000000",
+        "DE-BW-ALKIS-08091000001583000100",
+        "DE-BW-ALKIS-08091000001583000200",
+        "DE-BW-ALKIS-08091000001587000000",
+        "DE-BW-ALKIS-08091000001587000100",
+        "DE-BW-ALKIS-08091000001589000006",
+        "DE-BW-ALKIS-08091000001596000100",
+        "DE-BW-ALKIS-08091000001596000200",
+        "DE-BW-ALKIS-08091000001660000100",
+        "DE-BW-ALKIS-08091000002094000003"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        9.217,
+        49.151,
+        9.218,
+        49.152
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "DE-BW-ALKIS-08091000000182000010",
+        "DE-BW-ALKIS-08091000001515000001",
+        "DE-BW-ALKIS-08091000001549000000",
+        "DE-BW-ALKIS-08091000001550000002",
+        "DE-BW-ALKIS-08091000001583000200",
+        "DE-BW-ALKIS-08091000001587000100",
+        "DE-BW-ALKIS-08091000001589000006",
+        "DE-BW-ALKIS-08091000001596000004",
+        "DE-BW-ALKIS-08091000001596000100",
+        "DE-BW-ALKIS-08091000001596000200",
+        "DE-BW-ALKIS-08091000002094000003"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        9.215,
+        49.152,
+        9.216,
+        49.153
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "DE-BW-ALKIS-08091000000002000601",
+        "DE-BW-ALKIS-08091000001518000002",
+        "DE-BW-ALKIS-08091000001589000006",
+        "DE-BW-ALKIS-08091000001651000001",
+        "DE-BW-ALKIS-08091000001660000100",
+        "DE-BW-ALKIS-08091000001661000001",
+        "DE-BW-ALKIS-08091000001663000002",
+        "DE-BW-ALKIS-08091000001680000004",
+        "DE-BW-ALKIS-08091000001680000100",
+        "DE-BW-ALKIS-08091000001680000300",
+        "DE-BW-ALKIS-08091000002094000003"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        9.216,
+        49.152,
+        9.217,
+        49.153
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "DE-BW-ALKIS-08091000000002000601",
+        "DE-BW-ALKIS-08091000000182000010",
+        "DE-BW-ALKIS-08091000001515000001",
+        "DE-BW-ALKIS-08091000001549000000",
+        "DE-BW-ALKIS-08091000001550000002",
+        "DE-BW-ALKIS-08091000001589000006",
+        "DE-BW-ALKIS-08091000001651000001",
+        "DE-BW-ALKIS-08091000001660000100",
+        "DE-BW-ALKIS-08091000001680000004",
+        "DE-BW-ALKIS-08091000001680000100",
+        "DE-BW-ALKIS-08091000001680000300",
+        "DE-BW-ALKIS-08091000002094000003"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        9.217,
+        49.152,
+        9.218,
+        49.153
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "DE-BW-ALKIS-08091000000182000010",
+        "DE-BW-ALKIS-08091000001515000001",
+        "DE-BW-ALKIS-08091000001549000000",
+        "DE-BW-ALKIS-08091000001550000002",
+        "DE-BW-ALKIS-08091000001589000006",
+        "DE-BW-ALKIS-08091000001612000000",
+        "DE-BW-ALKIS-08091000001680000004",
+        "DE-BW-ALKIS-08091000002094000003"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        9.216,
+        49.149,
+        9.217,
+        49.15
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "DE-BW-ALKIS-08091000000001001102",
+        "DE-BW-ALKIS-08091000000002000601",
+        "DE-BW-ALKIS-08091000000182000010",
+        "DE-BW-ALKIS-08091000000182000700",
+        "DE-BW-ALKIS-08091000001578000013",
+        "DE-BW-ALKIS-08091000001578000400",
+        "DE-BW-ALKIS-08091000001578000603",
+        "DE-BW-ALKIS-08091000001578000701",
+        "DE-BW-ALKIS-08091000001578000802",
+        "DE-BW-ALKIS-08091000001578000900",
+        "DE-BW-ALKIS-08091000001578001301",
+        "DE-BW-ALKIS-08091000001587000401",
+        "DE-BW-ALKIS-08091000001589000006"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        9.216,
+        49.153,
+        9.217,
+        49.154
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "DE-BW-ALKIS-08091000000002000601",
+        "DE-BW-ALKIS-08091000001549000000",
+        "DE-BW-ALKIS-08091000001589000006",
+        "DE-BW-ALKIS-08091000001651000001",
+        "DE-BW-ALKIS-08091000001680000004",
+        "DE-BW-ALKIS-08091000001680000100",
+        "DE-BW-ALKIS-08091000001680000300",
+        "DE-BW-ALKIS-08091000002094000003"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        9.214,
+        49.151,
+        9.215,
+        49.152
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "DE-BW-ALKIS-08091000000002000601",
+        "DE-BW-ALKIS-08091000001518000002",
+        "DE-BW-ALKIS-08091000001523000003",
+        "DE-BW-ALKIS-08091000001578000400",
+        "DE-BW-ALKIS-08091000001589000006",
+        "DE-BW-ALKIS-08091000001643000000",
+        "DE-BW-ALKIS-08091000001657000007",
+        "DE-BW-ALKIS-08091000001660000000",
+        "DE-BW-ALKIS-08091000001660000100",
+        "DE-BW-ALKIS-08091000001660000203",
+        "DE-BW-ALKIS-08091000001660001100",
+        "DE-BW-ALKIS-08091000001661000001",
+        "DE-BW-ALKIS-08091000001663000002",
+        "DE-BW-ALKIS-08091000002094000003"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        9.218,
+        49.151,
+        9.219,
+        49.152
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "DE-BW-ALKIS-08091000000001001601",
+        "DE-BW-ALKIS-08091000000182000010",
+        "DE-BW-ALKIS-08091000001515000001",
+        "DE-BW-ALKIS-08091000001549000000",
+        "DE-BW-ALKIS-08091000001559000000",
+        "DE-BW-ALKIS-08091000001587000100",
+        "DE-BW-ALKIS-08091000001596000004",
+        "DE-BW-ALKIS-08091000001596000302",
+        "DE-BW-ALKIS-08091000002094000003"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 37,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:26.376Z",
+      "queryHash": "96b04b9e41a01ca7cc43ddd41420ddd3198c4eb490e349bc7459be4dd29f1ec0",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 403
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:26.782Z",
+      "queryHash": "96b04b9e41a01ca7cc43ddd41420ddd3198c4eb490e349bc7459be4dd29f1ec0",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 350
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:27.145Z",
+      "queryHash": "2f556302ad07586361fc6b0302856fc2ae83cadba23f9ef848cffc0c7cbd0f00",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 234
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:27.380Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 152
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:27.608Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 252
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:27.872Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 123
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:28.001Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 114
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:28.145Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 109
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:28.268Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 204
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:28.474Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 171
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:28.646Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:28.838Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 118
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:28.957Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 130
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:29.116Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:29.319Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 273
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:29.613Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 121
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:29.751Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 233
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:29.997Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:30.200Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 208
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:30.411Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 138
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:30.563Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 120
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:30.696Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 120
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:30.817Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 211
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:31.036Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 116
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:31.160Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 122
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:31.302Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 116
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:31.470Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 104
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:31.590Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 194
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:31.824Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 100
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:31.935Z",
+      "queryHash": "e5fef82ee8dfd1d21163bda66515f8c98f2e9f1cfac50f70cd74bc34ad0be871",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 121
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:32.056Z",
+      "queryHash": "eab8ed4be7a0ee8c70939027d1fa95ae1bc92a5e6981b7fff2c5db0f6c620ab5",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 133
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:32.189Z",
+      "queryHash": "de8bab96e01ac60b802bf5f75e3ec61e06d2e57611da079a3920cc807cd4ad94",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 108
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:32.297Z",
+      "queryHash": "3b805cd3d49f444c5b56ad6c9d8929b4f3f2ac891983f6487c7339f8183487c5",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 106
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:32.403Z",
+      "queryHash": "5b0fafea0fe253808b1618b747fabe7808ccdb05a765767541e02fe6934fa4ff",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 98
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:32.502Z",
+      "queryHash": "96b04b9e41a01ca7cc43ddd41420ddd3198c4eb490e349bc7459be4dd29f1ec0",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 101
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:32.616Z",
+      "queryHash": "110e58cf8aa14e20ef2c8a6b1258d4d9ecce039fe3327553481447a36f9c50a8",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 115
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "owsproxy.lgl-bw.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:07:32.784Z",
+      "queryHash": "880a917c8b16212dc2b4ebae55f30b60e7b64f78266dd0b20186cee9c6933e15",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 136
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

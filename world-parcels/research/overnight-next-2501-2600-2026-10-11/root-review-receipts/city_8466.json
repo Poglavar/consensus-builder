@@ -1,0 +1,25 @@
+{
+  "taskId": "city:8466",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-8466-nandurbar.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/nandurbar-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T14:11:26.871802Z",
+  "reason": "Nandurbar: official Maharashtra viewer and district custodian are documented, but the viewer timed out in the worker evidence. No first-party parcel response/cache, native parcel ID, full polygon, or independent live adapter qualification is attached. Timeout does not establish citywide absence.",
+  "geometryReview": {
+    "fullPolygonsRetained": 0,
+    "safeNativeIdVerified": false
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

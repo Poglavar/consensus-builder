@@ -1,0 +1,14 @@
+{
+  "taskId": "city:10878",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-10878-cenxi.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/cenxi-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/cenxi/attempts.txt"
+  ],
+  "checkedAt": "2026-10-10T17:33:02Z",
+  "reason": "Official registration administration is evidenced, but no anonymous Cenxi parcel geometry with stable native ID was obtained. TLS failures, timeout and HTTP 418 are access limits; no adapter qualification or headed Details verification exists."
+}

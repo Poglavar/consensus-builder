@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-286-sidon.json",
+  "cityCode": 286,
+  "queueRank": 2532,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "researchStatus": "complete",
+  "registryFound": true,
+  "registryMeaning": "The official Lebanese DLRC directory evidences a local Sidon–Jezzine registry office and the South cadastral office. It does not prove an open parcel service or source integration.",
+  "identity": {"name":"Sidon","nativeName":"صيدا","country":"Lebanon","countryCode":"LB","iso3":"LBN","point":[33.549733669263,35.380906250917]},
+  "queries": [
+    {"language":"English","query":"Lebanon official cadastral parcel map viewer Sidon Directorate of Land Registry and Cadastre","outcome":"Official DLRC site, paid title-register service, and office directory found; no open first-party parcel geometry API found.","urls":["https://www.lrc.gov.lb/en","https://payment.lrc.gov.lb/main.aspx?lang=en","https://www.lrc.gov.lb/en/content/registry-offices-location"]},
+    {"language":"Arabic","query":"لبنان صيدا خريطة عقارية السجل العقاري المساحة","outcome":"Official Arabic DLRC directory found Sidon–Jezzine registry and South cadastral offices; commercial map claims were treated as non-authoritative.","urls":["https://www.lrc.gov.lb/ar/node/62","https://www.lrc.gov.lb/ar/content/%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9-%D8%A7%D9%84%D9%85%D9%88%D9%82%D8%B9","https://lebcad.com/ar/"]}
+  ],
+  "requestOutcomes": [
+    {"url":"https://www.lrc.gov.lb/en","method":"GET","outcome":"HTTP 200; first-party DLRC site and service navigation retrieved."},
+    {"url":"https://www.lrc.gov.lb/ar/node/62","method":"GET","outcome":"HTTP 200; Arabic office directory names أمانة السجل العقاري في صيدا – جزين and دائرة المساحة في الجنوب."},
+    {"url":"https://payment.lrc.gov.lb/main.aspx?lang=en","method":"GET","outcome":"HTTP 200; current paid title-register form exposes province/caza/cadastral-zone/parcel inputs; no public parcel geometry endpoint observed. No form submission made."},
+    {"url":"https://maps.moph.gov.lb/server/rest/services/Administrative_Zones/MapServer/4?f=pjson","method":"GET","outcome":"HTTP 200; ArcGIS layer metadata identifies a polygon administrative-zone layer named Cadaster with ID/OID/NAME/NAME_AR/PCODE/STATUS, not parcel fields."},
+    {"url":"https://maps.moph.gov.lb/server/rest/services/Administrative_Zones/MapServer/4/query","method":"GET","outcome":"HTTP 200; exact preserved point query with outFields=ID,OID,NAME,NAME_AR,PCODE,STATUS, returnGeometry=true, outSR=4326 returned one polygon Saida Ed-Dekermane / صيدا الدكرمان. It was rejected as administrative-zone geometry, not retained as a parcel sample."},
+    {"url":"https://lebcad.com/ar/","method":"GET","outcome":"HTTP 200 search-visible product page claims Sidon-area parcel-map coverage but explicitly describes maps as for reference/planning and not official legal cadastral records; no parcel API was qualified."}
+  ],
+  "scopeLimits": ["No successful first-party parcel request", "No safe native parcel ID", "No retained parcel geometry", "No citywide parcel coverage verification", "The administrative-zone exact-point hit is not a parcel hit", "No absence inference from non-discovery, paid workflow, or non-parcel response"],
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "source service URL", "declared CRS", "geometry type", "retrieval date"],
+  "unsafeFields": "Owner, address, contact, titleholder, tax/account, certificate/title, and personal fields were not requested or retained.",
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "The local official custodian is established, but the official public workflow is document-oriented and paid, and no anonymous parcel geometry endpoint was found. The only successful geometry response was an administrative cadastral-zone polygon. Serial review is required before any adapter qualification.",
+  "recommendedNextStep": "Independently re-check the current DLRC/mobile service or a formally documented public parcel endpoint if one becomes available; do not admit the MOPH administrative-zone layer as parcel source."
+}

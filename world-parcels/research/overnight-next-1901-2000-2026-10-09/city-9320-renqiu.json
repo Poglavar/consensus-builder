@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 9320,
+  "queueRank": 1958,
+  "name": "Renqiu",
+  "country": "China",
+  "countryCode": "CN",
+  "cityId": "wup2025:9320",
+  "point": [38.6983882145447, 116.078144505163],
+  "population2025": 295917,
+  "population2025k": 295.917,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "registryFound": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Renqiu China official cadastral parcel map GIS natural resources land registry",
+        "result": "Search did not identify a Renqiu-specific public cadastral map or parcel feature service. It returned the Ministry of Natural Resources real-estate registration information portal and official land-transfer notices that name the Renqiu Natural Resources and Planning Bureau, but no parcel geometry service.",
+        "actualResultUrls": ["https://rerc.com.cn/", "https://ggzyfw.beijing.gov.cn/xtgghbcrgg/20260902/5695178.html"]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "任丘市 自然资源和规划局 地籍图 不动产登记 地图",
+        "result": "Search found the official Renqiu government website and first-party Hebei public-resource land-transfer notices naming 任丘市自然资源和规划局 and its land-trading service center. No public cadastral viewer, map/API endpoint, schema, CRS, or anonymous parcel geometry response was found.",
+        "actualResultUrls": ["https://www.renqiu.gov.cn/", "https://www.renqiu.gov.cn/renqiu/mlrqzrzy/newslist_meili_dy.shtml", "https://ggzyfw.beijing.gov.cn/xtgghbcrgg/20260703/5609164.html"]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.renqiu.gov.cn/",
+      "operator": "Renqiu Municipal People's Government",
+      "scope": "Official municipal government portal; its navigation includes a Natural Resources section.",
+      "observation": "The public site was fetched successfully and exposes general government content, but no public parcel viewer or cadastral API was identified in the inspected page/configuration." 
+    },
+    {
+      "url": "https://ggzyfw.beijing.gov.cn/xtgghbcrgg/20260703/5609164.html",
+      "operator": "Renqiu Public Resources Trading Center / Renqiu Natural Resources and Planning Bureau Land Trading Service Center",
+      "scope": "Official public land-use-right auction notice for Renqiu.",
+      "observation": "This is evidence of a local natural-resources/land administration custodian and public land transaction records, not a cadastral parcel geometry service. No geometry was retained." 
+    },
+    {
+      "url": "https://rerc.com.cn/",
+      "operator": "Ministry of Natural Resources Real Estate Registration Center",
+      "scope": "National real-estate registration information and local-site directory.",
+      "observation": "The portal advertises registration information services and links to provincial/local registration sites, but the bounded inspection did not expose a Renqiu parcel layer or safe anonymous geometry endpoint." 
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "http://www.renqiu.gov.cn/",
+      "method": "GET with curl; followed redirect",
+      "status": "HTTP 301 then HTTPS 200",
+      "observation": "Redirected to https://www.renqiu.gov.cn/ and returned HTML. The page exposed a Natural Resources navigation link; no parcel response." 
+    },
+    {
+      "url": "https://www.renqiu.gov.cn/renqiu/mlrqzrzy/newslist_meili_dy.shtml",
+      "method": "GET with curl using default TLS verification",
+      "status": "HTTP 200",
+      "observation": "Official Natural Resources information page returned general municipal content. No cadastral map, service URL, schema, CRS, or anonymous ID-plus-geometry response was present in the inspected HTML." 
+    },
+    {
+      "url": "https://ggzyfw.beijing.gov.cn/xtgghbcrgg/20260703/5609164.html",
+      "method": "GET via first-party web inspection",
+      "status": "Official page accessible",
+      "observation": "Land-transfer notice identifies Renqiu Natural Resources and Planning Bureau's land-trading service center and a safe public land parcel/project number, but supplies no full cadastral polygon and was not used as geometry evidence." 
+    },
+    {
+      "url": "https://rerc.com.cn/",
+      "method": "GET via first-party web inspection",
+      "status": "Official page accessible",
+      "observation": "National registration information portal was accessible. No bounded Renqiu parcel feature response, source schema, or CRS was obtained." 
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Renqiu official government portal, its Natural Resources section, national registration portal lead, and official public land-transfer notices.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "citywideParcelCoverage": "unverified",
+    "note": "No exact-point hit or miss, map extent miss, timeout, login wall, or unusable UI is treated as evidence of citywide absence. No parcel geometry was obtained." 
+  },
+  "sourceFields": null,
+  "crs": null,
+  "safeFieldAllowlist": ["native parcel identifier", "geometry", "source CRS", "service URL", "retrieval timestamp"],
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_response",
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_natural_resources_custodian_found_no_verified_open_parcel_endpoint",
+  "blocker": "The official Renqiu government portal and official land-transfer records establish a local natural-resources/land administration lead, but the bounded anonymous checks did not yield a public cadastral viewer or ID-plus-geometry endpoint. No unsafe fields were requested.",
+  "remainingUncertainty": "A cadastral service may exist behind a separate provincial/local registration workflow, client-side configuration, or access-controlled system. This attempt cannot establish absence or citywide coverage.",
+  "nextStep": "On a future attempt, inspect any current official map/registration application configuration and test only documented anonymous endpoints for a small Renqiu-area response containing a safe native ID and geometry. Keep runtime held until independent serial qualification."
+}

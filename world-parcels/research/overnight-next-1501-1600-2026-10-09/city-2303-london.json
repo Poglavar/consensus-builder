@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 2303,
+  "cityCode": 2303,
+  "queueRank": 1579,
+  "cityId": "wup2025:2303",
+  "name": "London",
+  "country": "Canada",
+  "countryCode": "CA",
+  "iso3": "CAN",
+  "point": [42.9854320723653, -81.246421845116],
+  "centerLatLon": [42.9854320723653, -81.246421845116],
+  "population2025": 362006,
+  "population2025k": 362.006,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "London Ontario official parcel map GIS cadastral property map City of London Ontario",
+        "result": "Found the City of London Maps page, its CityMap parcel-identification instructions, the municipal ArcGIS Parcels service, and the City open-data Parcels catalog.",
+        "actualResultUrls": [
+          "https://london.ca/living-london/maps",
+          "https://maps.london.ca/server/rest/services/Parcels/MapServer",
+          "https://maps.london.ca/server/rest/services/References/ParcelMapping/MapServer/0",
+          "https://opendata.london.ca/datasets/1b14d93461b34591b5bd32a881763dbe_53/explore"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "London Ontario carte parcellaire officielle cadastre carte propriétés",
+        "result": "Search results were mainly English municipal sources and a French federal electoral-map document; no separate French-language London parcel service was identified. The English municipal parcel service remains the relevant first-party source.",
+        "actualResultUrls": [
+          "https://maps.london.ca/server/rest/services/References/ParcelMapping/MapServer/0",
+          "https://london.ca/living-london/maps",
+          "https://redecoupage-redistribution-2022.ca/com/on/rprt/on_rprt_f.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The City of London publishes CityMap property/parcel identification and a municipal ArcGIS parcel layer. Ontario land registry is a separate provincial legal-record system; no owner, address, title, or other unsafe fields were requested.",
+  "source": {
+    "operator": "City of London, Ontario",
+    "serviceUrl": "https://maps.london.ca/server/rest/services/References/ParcelMapping/MapServer/0",
+    "catalogUrl": "https://opendata.london.ca/datasets/1b14d93461b34591b5bd32a881763dbe_53/explore",
+    "layer": "ProdGeoDB.PARCELMAPPING.AssessmentParcels",
+    "geometryType": "esriGeometryPolygon",
+    "crs": "EPSG:26917",
+    "supportedQueryFormats": ["JSON", "geoJSON", "PBF"],
+    "nativeIdentityCandidates": ["OBJECTID", "GIS_ID"],
+    "sourceFieldMapping": {
+      "OBJECTID": "ArcGIS object identifier; stable identity candidate subject to service-version validation",
+      "GIS_ID": "Municipal GIS parcel identifier; preferred native identity candidate if validated by adapter review",
+      "ParcelType": "parcel classification; not retained in sample properties",
+      "PropertyCode": "municipal property code; not retained in sample properties"
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://london.ca/living-london/maps",
+      "method": "GET/search open",
+      "status": "HTTP 200 / official page found",
+      "summary": "City page says CityMap can identify a parcel and provide property information; it does not itself expose a downloadable parcel schema."
+    },
+    {
+      "url": "https://maps.london.ca/server/rest/services/References/ParcelMapping/MapServer/0",
+      "method": "GET",
+      "status": "HTTP 200 / metadata readable",
+      "summary": "Anonymous ArcGIS layer metadata exposed polygon geometry, EPSG:26917, GeoJSON support, max record count 1000, and fields including OBJECTID and GIS_ID."
+    },
+    {
+      "url": "https://maps.london.ca/server/rest/services/References/ParcelMapping/MapServer/0/query",
+      "method": "GET",
+      "status": "timeout after 60 seconds from this environment",
+      "request": "where=1=1; geometry=-81.246421845116,42.9854320723653; geometryType=esriGeometryPoint; inSR=4326; spatialRel=esriSpatialRelIntersects; outFields=OBJECTID,GIS_ID,ParcelType,PropertyCode; returnGeometry=true; outSR=4326; f=geojson",
+      "summary": "No response body or parcel feature was received. This is an endpoint/transport limitation for the attempted bounded query, not evidence of absence."
+    }
+  ],
+  "verifiedSample": false,
+  "targetGeometryEvidence": "service metadata only; no bounded parcel geometry response",
+  "coverageAssessment": {
+    "claimedScope": "Municipal London parcel-mapping layer; the service extent is city-area in UTM zone 17, but coverage was not independently tested with a successful feature query.",
+    "verifiedOpenScope": "Municipal parcel layer metadata verified; target geometry and citywide completeness unverified.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["OBJECTID", "GIS_ID", "ParcelType", "PropertyCode", "geometry"],
+  "nativeIdReadiness": "candidate_only_pending_serial_adapter_validation",
+  "runtimeReadiness": "held",
+  "blocker": "The official parcel query timed out before returning a bounded anonymous ID-plus-geometry response.",
+  "remainingUncertainty": "No parcel polygon was retained, so exact-point coverage, geometry quality, and the preferred stable native identity were not independently validated.",
+  "nextStep": "Retry the same municipal ArcGIS query when reachable, preferably with a small bbox or nearby known municipal map location; retain at most three polygons with exactly one validated native ID in each feature properties object."
+}

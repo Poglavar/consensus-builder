@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "attempted": [
+    {
+      "rank": 2818,
+      "cityCode": 3383,
+      "name": "Paraná",
+      "country": "Argentina",
+      "iso2": "AR",
+      "pop2025k": 211.11,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/subnational/AR/E.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2821,
+      "cityCode": 6345,
+      "name": "Lindberg",
+      "country": "United States of America",
+      "iso2": "US",
+      "pop2025k": 210.973,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/6345/city-6345-provider-6345.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/6345/provider-6345-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2827,
+      "cityCode": 3809,
+      "name": "Ennerdale",
+      "country": "South Africa",
+      "iso2": "ZA",
+      "pop2025k": 210.428,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-integration-2026-10-08/index.json",
+          "cityId": "wup2025:3809",
+          "cityName": "Ennerdale",
+          "parcelStatus": "verified_sample_partial_coverage",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-city-3809-parcel-response.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-city-3809.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-index.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-integration-2026-10-08/giscoe-acceptance.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-integration-2026-10-08/giscoe-small-native-geometry-samples.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/3809/city-3809-provider-3809.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/3809/provider-3809-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2849,
+      "cityCode": 4503,
+      "name": "Nancy",
+      "country": "France",
+      "iso2": "FR",
+      "pop2025k": 208.941,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/4503/city-4503-provider-4503.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/4503/provider-4503-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2886,
+      "cityCode": 930,
+      "name": "Berne (Bern)",
+      "country": "Switzerland",
+      "iso2": "CH",
+      "pop2025k": 206.716,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "previous-capital-city-name-coordinate-candidate",
+          "source": "world-capitals prior-check roster",
+          "evidenceFile": "research/countries/CH.json; research/europe/CH.json",
+          "cityId": "capital:CH:bern",
+          "cityName": "Bern",
+          "researchStatus": "previously_checked",
+          "manualCityEvidence": [
+            {
+              "path": "research/countries/CH.json; research/europe/CH.json",
+              "note": "City-specific Bern query at central Bern; parent verified the Bern location evidence."
+            }
+          ],
+          "identityConfidence": "review-required",
+          "distanceKm": 3.81
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": {
+        "decision": "confirmed_attempt",
+        "decisionFile": "root-identity-decision-overlay.json",
+        "reviewedAt": "2026-10-11T20:23:18.943Z"
+      }
+    },
+    {
+      "rank": 2892,
+      "cityCode": 2809,
+      "name": "Maurepas",
+      "country": "France",
+      "iso2": "FR",
+      "pop2025k": 206.195,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/2809/city-2809-provider-2809.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/2809/provider-2809-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2899,
+      "cityCode": 2745,
+      "name": "Orléans",
+      "country": "France",
+      "iso2": "FR",
+      "pop2025k": 205.657,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/2745/city-2745-provider-2745.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/2745/provider-2745-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "identityReviewRequired": []
+}

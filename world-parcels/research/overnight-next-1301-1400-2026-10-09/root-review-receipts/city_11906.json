@@ -1,0 +1,21 @@
+{
+  "taskId": "city:11906",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-11906-lishui.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/lishui-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-09T14:57:04.536623Z",
+  "reason": "Local natural-resources authority and open-data platform are evidenced, but local cadastral custody and anonymous native-ID/full-polygon response remain unverified. Original cached queryBaseData response contains 10 dataList rows and totalCount 1818; packet/review overstate this as screening all 1818 datasets. Registry custody remains null and catalog absence is not inferred. No adapter qualification gates or headed Details check are evidenced.",
+  "firstPartyPagesChecked": [
+    "https://data.lishui.gov.cn/"
+  ],
+  "admissionGates": "No verified full polygon/native ID; fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are unproved.",
+  "firstPartyCacheChecked": {
+    "path": "tmp/valhalla-parcel-research/lishui/base-data.json",
+    "dataListRows": 10,
+    "totalCount": 1818
+  }
+}

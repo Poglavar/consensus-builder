@@ -1,0 +1,14 @@
+{
+  "taskId": "city:2303",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-2303-london.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/london-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/identity-2303-official-geography-response.json"
+  ],
+  "checkedAt": "2026-10-10T10:16:34.395897Z",
+  "reason": "WUP identity and English/French search records checked; prior London England evidence is distinct from this Ontario city. Official municipal layer metadata identifies a polygon layer and OBJECTID, but marks GIS_ID nonunique. Worker bounded geometry query timed out and an independent direct metadata request also timed out. No full polygon, stable native-ID read, forced paging, 13 cells, metric GEOS checks, source binding or headed Details verification is evidenced; source stays held without an absence claim."
+}

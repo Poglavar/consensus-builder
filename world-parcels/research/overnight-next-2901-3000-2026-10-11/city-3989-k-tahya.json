@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityCode": 3989,
+  "queueRank": 2954,
+  "cityId": "queue:2954",
+  "name": "Kütahya",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "iso2": "TR",
+  "iso3": "TUR",
+  "locId": 792,
+  "capital": false,
+  "point": [39.4172411721698, 29.9933893427155],
+  "centerLatLon": [39.4172411721698, 29.9933893427155],
+  "population2025": 201723,
+  "population2025k": 201.723,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kütahya Türkiye official cadastral parcel map TKGM Kütahya municipality GIS",
+        "result": "Found the official TKGM Parsel Sorgu viewer and official Kütahya Municipality E-İmar page; the live viewer configuration identifies the public TKGM CBS API.",
+        "actualResultUrls": [
+          "https://parselsorgu.tkgm.gov.tr/",
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://www.kutahya.bel.tr/eimar.asp"
+        ]
+      },
+      {
+        "language": "Turkish (native/local)",
+        "query": "Kütahya belediyesi imar kadastro parsel harita resmi; Türkiye Kütahya kadastro parsel sorgu resmi",
+        "result": "Found the official Kütahya Municipality E-İmar service, TKGM Parsel Sorgulama documentation, and the official Kütahya Cadastre Directorate listing.",
+        "actualResultUrls": [
+          "https://www.kutahya.bel.tr/eimar.asp",
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://tkgm.gov.tr/eskisehir-bm/bagli-mudurlukler"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://parselsorgu.tkgm.gov.tr/",
+      "operator": "Tapu ve Kadastro Genel Müdürlüğü (TKGM)",
+      "scope": "Türkiye-wide public parcel viewer",
+      "observation": "Current viewer HTML and main.js loaded successfully; app/util/constants.min.js exposes the current public CBS API base URL."
+    },
+    {
+      "url": "https://www.kutahya.bel.tr/eimar.asp",
+      "operator": "T.C. Kütahya Belediyesi",
+      "scope": "Kütahya municipal E-İmar presentation/procedure",
+      "observation": "Official municipal page describes parcel/address-based zoning-information lookup; it is not independently qualified here as a public parcel-geometry API."
+    },
+    {
+      "url": "https://tkgm.gov.tr/eskisehir-bm/bagli-mudurlukler",
+      "operator": "TKGM",
+      "scope": "Local registry custodian listing",
+      "observation": "Official TKGM regional page lists Kütahya Kadastro Müdürlüğü/Kütahya."
+    }
+  ],
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "Official TKGM identifies the national cadastre/parcel service and lists Kütahya Kadastro Müdürlüğü; official Kütahya Municipality identifies its E-İmar parcel procedure.",
+    "urls": [
+      "https://parselsorgu.tkgm.gov.tr/",
+      "https://tkgm.gov.tr/eskisehir-bm/bagli-mudurlukler",
+      "https://www.kutahya.bel.tr/eimar.asp"
+    ]
+  },
+  "source": {
+    "sourceId": "tkgm-parsel-sorgu-cbsapi-v3.1",
+    "name": "TKGM Parsel Sorgu / MEGSİS Web API",
+    "operator": "Tapu ve Kadastro Genel Müdürlüğü",
+    "scope": "National public coordinate lookup; this packet verifies one bounded Kütahya response only",
+    "endpoint": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/{latitude}/{longitude}/",
+    "method": "GET",
+    "responseFormat": "GeoJSON Feature",
+    "crs": "WGS84 / EPSG:4326 coordinate order observed in response as [longitude, latitude]",
+    "reuseStatus": "Public anonymous response observed; runtime adapter qualification remains held"
+  },
+  "verifiedParcelResponse": {
+    "sourceId": "tkgm-parsel-sorgu-cbsapi-v3.1",
+    "requestUrl": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/39.417241/29.993389/",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [29.993389, 39.417241, 29.993389, 39.417241],
+    "parcelRecordCount": 1,
+    "recordListPath": "Feature",
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "composite native key: ilId/ilceId/mahalleId/adaNo/parselNo",
+    "nativeFieldsObserved": ["ilId", "ilceId", "mahalleId", "adaNo", "parselNo"],
+    "nativeIdentityObserved": "65/669/144744/921/9",
+    "responseFile": "tmp/valhalla-parcel-research/3989/coord.json",
+    "pagination": "not applicable; single-feature coordinate lookup"
+  },
+  "requests": [
+    {
+      "url": "https://parselsorgu.tkgm.gov.tr/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official viewer HTML loaded with browser-like headers and cookie jar."
+    },
+    {
+      "url": "https://parselsorgu.tkgm.gov.tr/main.js?v=76.3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "assessment": "Current viewer bootstrap loaded; it references util/constants."
+    },
+    {
+      "url": "https://parselsorgu.tkgm.gov.tr/app/util/constants.min.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "assessment": "Current configuration exposed the public base https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/ and no private token was used or retained."
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/39.417241/29.993389/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Bounded exact-point anonymous response returned one closed Polygon with safe cadastral composite identity fields; full unchanged response is in ignored scratch storage."
+    },
+    {
+      "url": "https://www.kutahya.bel.tr/eimar.asp",
+      "method": "GET",
+      "httpStatus": "200 via search result/open inspection",
+      "contentType": "text/html",
+      "assessment": "Official municipal E-İmar page found; no separate public parcel API was qualified."
+    }
+  ],
+  "safeFieldAllowlist": ["canonical native parcel identity", "full parcel polygon geometry", "source CRS", "public service metadata", "retrieval date"],
+  "geometrySamples": [
+    {
+      "sampleFile": "k-tahya-sample.geojson",
+      "featureCount": 1,
+      "nativeIdentity": "65/669/144744/921/9"
+    }
+  ],
+  "publicParcelGeometryFound": true,
+  "verifiedSample": true,
+  "coverageAssessment": {
+    "claimedScope": "TKGM public parcel service is national; Kütahya Municipality E-İmar is municipal and zoning-oriented.",
+    "verifiedOpenScope": "One Kütahya parcel Polygon returned by the TKGM coordinate endpoint at the preserved WUP point.",
+    "countrywideVerified": false
+  },
+  "scopeLimits": [
+    "The exact WUP point [39.4172411721698, 29.9933893427155] was preserved in latitude/longitude order and was not shifted.",
+    "The exact-point response proves one returned parcel only, not citywide completeness or boundary coverage.",
+    "The API response exposes native fields but no standalone parcelId; identity provenance is the native composite ilId/ilceId/mahalleId/adaNo/parselNo.",
+    "No owner, address, contact, titleholder, personal, tax/account, or certificate fields were requested or retained.",
+    "No login, credentials, CAPTCHA/Cloudflare bypass, private token, or TLS exception was used.",
+    "Packet completion is not source integration/admission."
+  ],
+  "remainingUncertainty": "The public TKGM coordinate endpoint is verified for one exact-point Kütahya polygon. Citywide completeness, endpoint rate/terms, administrative-query behavior, and independent runtime adapter qualification remain untested.",
+  "runtimeReadiness": "held",
+  "nextStep": "Serial reviewer should independently qualify the current TKGM response and composite identity semantics before any adapter/runtime admission."
+}

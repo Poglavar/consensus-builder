@@ -1,0 +1,32 @@
+{
+  "taskId": "city:4432",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-4432-dilolo.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/dilolo-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json"
+  ],
+  "checkedAt": "2026-10-12T01:22:04.335570Z",
+  "city": "Dilolo",
+  "queueRank": 3036,
+  "registryFound": true,
+  "identityCheck": "Packet code, rank, country, 2025 point and population persons match pending queue, ranked roster, and the verified original WUP 2025 source row (bulk SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114).",
+  "searchCheck": "English and French queries are recorded with actual result URLs.",
+  "polygonCheck": "Zero retained full polygons and zero retained parcel ID attributes; sample count is within the three-polygon limit.",
+  "runtimeQualification": {
+    "freshNativeIdReads": "not_evidenced",
+    "forcedPaging": "not_evidenced",
+    "boundedCells13": "not_evidenced",
+    "metricGeosValidityAndOverlap": "not_evidenced",
+    "sourceBinding": "not_evidenced",
+    "headedDetailsPanel": "not_evidenced"
+  },
+  "reason": "The ministry lists Dilolo as a Lualaba land-registration district. Its public land-search form requires applicant data and does not supply anonymous parcel polygons or native IDs.",
+  "scopeLimit": "Custody does not establish public parcel-vector access or citywide completeness. Unavailable viewers, HTML shells, TLS failures and untested points do not prove parcel absence. No runtime, catalog or report admission.",
+  "sourceUrls": [
+    "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+  ]
+}

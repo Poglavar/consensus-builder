@@ -1,0 +1,85 @@
+{
+  "cityRecord": "city-10254-haixing.json",
+  "cityCode": 10254,
+  "queueRank": 2493,
+  "name": "Haixing",
+  "country": "China",
+  "countryCode": "CN",
+  "pointLatLon": [40.3054836112596, 122.133213526113],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "routes": [
+    {
+      "method": "SEARCH",
+      "url": "https://ggzyfw.beijing.gov.cn/xtgghbcrgg/20260319/5466580.html",
+      "httpStatus": 200,
+      "outcome": "Official Hebei public-resource announcement states that 海兴县自然资源和规划局 decided to transfer a county land parcel and that 海兴县公共资源交易中心 handles the transaction. This evidences a local land/natural-resources custodian, not a public cadastral vector service."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.hnhx.gov.cn/hxfzzf/rootimages/uploadimg/1693230421100601/1693230421100601.pdf",
+      "httpStatus": 200,
+      "outcome": "Official Haixing County government PDF contains the county bureau name 海兴县自然资源和规划局. It is administrative evidence only; no parcel geometry or viewer/API configuration was present in the retained result."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.hnhx.gov.cn/",
+      "httpStatus": 200,
+      "outcome": "TLS-verified official county site returned a 57-byte redirect to /portal/index.html."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.hnhx.gov.cn/portal/index.html",
+      "httpStatus": 404,
+      "outcome": "The redirected county portal path returned Not Found. No login, credentials, CAPTCHA, certificate bypass, or private token was attempted."
+    },
+    {
+      "method": "SEARCH/VIEWER-DISCOVERY",
+      "url": "https://www.hnhx.gov.cn/",
+      "httpStatus": null,
+      "outcome": "English and Chinese first-party searches and the reachable county landing response did not expose an official cadastral map viewer, JavaScript configuration, public parcel API, or anonymous ID-plus-geometry response."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "parcelApi": null,
+    "geometryCrs": "No parcel geometry response obtained; CRS and coordinate order remain unverified.",
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "boundedAnonymousResponse": null
+  },
+  "localCustodianAssessment": "The official county-government PDF and official public-resource announcement evidence 海兴县自然资源和规划局 as a local natural-resources/land custodian and the county public-resource trading center as a related service operator. General national or provincial prose was not used as local registry evidence. No public local cadastral map/vector endpoint was verified.",
+  "safeFieldAllowlist": [
+    "stable native parcel identity",
+    "polygon geometry",
+    "source service URL",
+    "source CRS / coordinate order",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "tax/account",
+    "certificate/title",
+    "personal data"
+  ],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "No anonymous parcel geometry or city-bounded public vector response was verified; serial review must independently qualify any real adapter before runtime consideration."
+  },
+  "scopeLimits": [
+    "The exact WUP point and latitude/longitude order were preserved; no coordinate was shifted to force a parcel hit.",
+    "No exact-point parcel hit or miss was used as a citywide absence claim.",
+    "No owner, address, contact, titleholder, tax/account, certificate, or personal fields were requested or retained.",
+    "No GeoJSON sample is retained because no safe full parcel polygon and native identity were obtained.",
+    "The county portal redirect ended in a 404, so current viewer JavaScript/configuration and any service route could not be inspected.",
+    "This packet records research completion only and is not source integration or registry admission."
+  ],
+  "uncertainty": "Local custody is supported, but anonymous parcel-service reachability, viewer/API configuration, parcel schema/CRS, coverage, update cadence, licensing, and runtime behavior remain unverified. The absence of a public vector endpoint is an access/discovery limitation, not evidence of citywide cadastral absence."
+}

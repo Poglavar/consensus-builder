@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-9733-perinthalmanna.json",
+  "cityCode": 9733,
+  "queueRank": 2945,
+  "city": "Perinthalmanna",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewedAt": "2026-10-11",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Malayalam first-party discovery evidenced Kerala's local revenue office, Survey and Land Records cadastral services, Ente Bhoomi, and IKM's Perinthalmanna premises-mapping work. Anonymous parcel geometry and a stable native parcel identity were not qualified because public forms were CAPTCHA/login gated and the Bhu-Naksha/GIS routes were unavailable in this environment.",
+  "queryAndRequestOutcomes": "All executed discovery queries, URLs, request statuses, viewer access failures, and scope limits are recorded in city-9733-perinthalmanna.json.",
+  "custodians": [
+    {"name": "Kerala Revenue Department / Perinthalmanna Village Office", "scope": "Local village revenue and land-information service.", "evidence": "https://landrevenue.kerala.gov.in/core/Office_websites/indexor.php?nm=489Perintalmannavillageoffice"},
+    {"name": "Kerala Directorate of Survey and Land Records", "scope": "State cadastral mapping and survey records.", "evidence": "https://emaps.kerala.gov.in/bhunaksha/kl/home.html; https://entebhoomi.kerala.gov.in/web/home"},
+    {"name": "Information Kerala Mission GIS", "scope": "Municipal GIS and premises mapping; Perinthalmanna Municipality is explicitly named.", "evidence": "https://ikm.gov.in/index.php/en/gis-team"}
+  ],
+  "schemaAndCrs": {"parcelSchema": "Not qualified anonymously", "nativeIdFields": [], "geometryCrs": null, "fieldMapping": "No raw source attributes retained", "compositeKeyProvenance": null},
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["canonical native parcel identifier", "geometry", "source CRS", "public service metadata", "retrieval date"],
+  "scopeLimits": ["No credentials, login, CAPTCHA bypass, unsafe landholder fields, or private tokens were used.", "The exact WUP point was preserved; no coordinate shifting was performed.", "No anonymous parcel response was available, so there is no geometry sample.", "403, certificate failure, 502, and timeout do not establish citywide absence."],
+  "uncertainty": ["No independently qualified public parcel adapter.", "No CRS or public feature schema was returned.", "No citywide completeness evidence."],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "registryFound": true,
+  "doNotInfer": ["Registry evidence is not runtime admission.", "Municipal mapping history is not proof of current open parcel coverage."]
+}

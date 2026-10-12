@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:10780",
+  "cityCode": 10780,
+  "wupCityCode": 10780,
+  "name": "Liuyang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "rank": 1536,
+  "queueRank": 1536,
+  "point": [28.1512434270619, 113.623198148119],
+  "centerLatLon": [28.1512434270619, 113.623198148119],
+  "pointBasis": "Exact WUP2025 point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 371661,
+  "population2025k": 371.661,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "The official Liuyang government portal identifies a Liuyang Natural Resources Bureau as a local government department, but this attempt did not verify a cadastral/real-estate-registration procedure or a current public parcel service. Registry custody is therefore not promoted to true.",
+  "registryEvidenceUrls": [
+    "https://www.liuyang.gov.cn/",
+    "https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html",
+    "https://lbs.tianditu.gov.cn/server/search2.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official Hunan Tianditu portal was identified and its public page lists Liuyang, but the bounded direct GET timed out before its current JavaScript/configuration could be inspected. The Liuyang government host returned a TLS hostname mismatch on direct GET; its official page was nevertheless indexed and inspected through first-party web results. No current anonymous safe parcel feature response exposing a native ID and complete polygon was verified. No credentials, CAPTCHA bypass, certificate exception or unsafe property query was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "local-government-map-custodian-indication_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "The official Liuyang government portal identifies a local Natural Resources Bureau, and the official Hunan Tianditu portal provides a provincial public geospatial-map entry with Liuyang listed among its areas.",
+    "verifiedOpenScope": "Local government department indication and provincial public map portal evidence verified; current Liuyang parcel layer, schema, CRS, native identity and anonymous geometry response were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Liuyang China official cadastral map parcel natural resources bureau public map API",
+        "scope": "Identify a local registry custodian and an official public cadastral or geospatial map route.",
+        "result": "Search located the official Liuyang government portal and the official Hunan Tianditu portal. The results did not expose a current anonymous parcel feature endpoint or parcel schema.",
+        "actualResultUrls": [
+          "https://www.liuyang.gov.cn/",
+          "https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html",
+          "https://lbs.tianditu.gov.cn/server/search2.html"
+        ],
+        "executionMethod": "Separate English web search followed by first-party page inspection."
+      },
+      {
+        "language": "native/local",
+        "query": "浏阳市 不动产登记 地籍图 查询 官方",
+        "scope": "Independent Chinese-language discovery for a local official registry or cadastral-map route.",
+        "result": "Chinese-language search located the official Liuyang government portal, which lists the Liuyang Natural Resources Bureau, and the official Hunan Tianditu portal, which lists Liuyang as an area. No current public parcel layer, native ID schema or safe anonymous polygon response was found.",
+        "actualResultUrls": [
+          "https://www.liuyang.gov.cn/",
+          "https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html",
+          "https://lbs.tianditu.gov.cn/server/search2.html"
+        ],
+        "executionMethod": "Separate Chinese-language web search followed by first-party page inspection."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The timeout and TLS hostname mismatch are route/access limitations only and do not support citywide absence. Current Liuyang service URL, viewer configuration, parcel-layer existence, schema, CRS, stable native identity, safe field availability, polygon availability and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify a current official Liuyang/Changsha/Hunan cadastral or Tianditu service. Do not enable runtime from this packet alone."
+}

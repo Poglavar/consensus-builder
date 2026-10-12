@@ -1,0 +1,55 @@
+{
+  "cityRecord": "city-11245-jhanjharpur.json",
+  "cityCode": 11245,
+  "queueRank": 3003,
+  "city": "Jhanjharpur",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "Separate English and Hindi first-party discovery found Bihar Government's BhuNaksha cadastral viewer and BiharBhumi land-record gateway. The current viewer HTML/JavaScript was inspected and anonymous hierarchy requests succeeded through Madhubani district and Jhanjharpur subdivision, but no safe anonymous parcel ID-plus-geometry response was qualified.",
+  "queryAndRequestOutcomes": "All executed discovery queries, URLs, routes, statuses, configuration findings, and scratch evidence are recorded in city-11245-jhanjharpur.json.",
+  "custodians": [
+    {
+      "name": "Directorate of Land Records & Survey, Government of Bihar",
+      "scope": "State cadastral mapping service and BhuNaksha viewer",
+      "evidence": "https://bhunaksha.bihar.gov.in/index.jsp and live viewer hierarchy response"
+    },
+    {
+      "name": "Department of Revenue and Land Reforms, Government of Bihar",
+      "scope": "State land-record gateway and revenue-record services",
+      "evidence": "https://biharbhumi.bihar.gov.in/"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [26.2676106223873, 86.2835535424739] was preserved; it was not moved to force a parcel hit.",
+    "No exact-point hit or miss is inferred from the hierarchy workflow.",
+    "Jhanjharpur subdivision/circle selection is local administrative evidence, not proof of citywide vector coverage.",
+    "No polygon is retained because no safe native ID-plus-geometry response was obtained.",
+    "No unsafe owner, address/contact, titleholder, personal, tax/account, or certificate fields were requested or retained.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "A first-party Bihar cadastral viewer and Jhanjharpur administrative branch were evidenced, but safe public parcel identity, geometry, CRS, and city coverage were not qualified."
+  },
+  "uncertainty": "The viewer may require further village and survey/map-instance interaction before plot details become available. This packet records the bounded anonymous research attempts without treating missing geometry as absence."
+}

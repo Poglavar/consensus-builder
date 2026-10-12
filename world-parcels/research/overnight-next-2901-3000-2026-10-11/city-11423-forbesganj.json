@@ -1,0 +1,173 @@
+{
+  "cityCode": 11423,
+  "queueRank": 2953,
+  "name": "Forbesganj",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [26.3009718048352, 87.2633049296526],
+  "population2025": 201833,
+  "population2025k": 201.833,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Forbesganj Bihar official cadastral parcel map GIS land records revenue department",
+        "result": "First-party results identified the Government of Bihar Revenue and Land Reforms Department, BiharBhumi, and the Directorate of Land Records & Survey BhuNaksha Bihar. The Bihar GIS page is a general state GIS portal and was not treated as a parcel registry.",
+        "actualResultUrls": [
+          "https://state.bihar.gov.in/lrc/CitizenHome.html",
+          "https://biharbhumi.bihar.gov.in/",
+          "https://bhunaksha.bihar.gov.in/",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://gis.bihar.gov.in/DEPTS/Default.aspx"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "Forbesganj बिहार आधिकारिक भू-नक्शा cadastral parcel map land records",
+        "result": "First-party results identified BiharBhumi (भू-नक्शा / राजस्व मानचित्र) and BhuNaksha Bihar. The live BhuNaksha selector returned फारबिसगंज and Forbesganj administrative values; no safe vector parcel response was obtained.",
+        "actualResultUrls": [
+          "https://biharbhumi.bihar.gov.in/",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://bhunaksha.bihar.gov.in/10/indexmain.jsp"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "Government of Bihar Revenue and Land Reforms / Directorate of Land Records & Survey publishes the BhuNaksha Bihar cadastral viewer. Its live public selector enumerated district ARARIA code 07, subdivision फारबिसगंज code 02, circle Forbesganj code 06, and cadastral map choices. This is local/state registry evidence, but it does not by itself verify citywide parcel geometry.",
+    "urls": [
+      "https://state.bihar.gov.in/lrc/CitizenHome.html",
+      "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "https://bhunaksha.bihar.gov.in/10/indexmain.jsp"
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "observation": "Official Directorate of Land Records & Survey viewer describes BhuNaksha Bihar as cadastral mapping software for digitized cadastral maps. The page's JavaScript posts state=10 to the public map application."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+      "observation": "Official public map shell loads config.js and index.js; the current client calls REST Levels, MapInfo, ScalarDatahandler, and WMS routes."
+    },
+    {
+      "url": "https://state.bihar.gov.in/lrc/CitizenHome.html",
+      "observation": "Official Bihar Revenue and Land Reforms Department describes land survey, settlement, record-of-rights maintenance, and cadastral khatian handling."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Fetched official public BhuNaksha landing page; JavaScript revealed state=10 and map handoff to indexmain.jsp."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/config.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Fetched current client configuration; SERVICE_PATH is ../, so public REST routes resolve at the site root."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Fetched current client JavaScript. It documents Levels/ListsAfterLevel, MapInfo/getVVVVExtentGeoref, MapInfo/getPlotAtXY, ScalarDatahandler, and WMS calls; it uses OpenLayers image/WMS rendering rather than a public vector parcel endpoint."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count",
+      "method": "POST",
+      "params": {"state": "10"},
+      "httpStatus": 200,
+      "outcome": "Returned 7 levels: district, subdivision, circle, mauza, survey type, map instance, sheet number."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/LevelLabels",
+      "method": "POST",
+      "params": {"state": "10"},
+      "httpStatus": 200,
+      "outcome": "Returned Hindi level labels including जिला, अनुमंडल, अंचल, मौजा, Survey Type, Map Instance, Sheet No."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "params": {"state": "10", "level": "1", "codes": "07,", "hasmap": "true"},
+      "httpStatus": 200,
+      "outcome": "Returned Forbesganj subdivision as Hindi फारबिसगंज code 02, along with Araria circle code 01 and other district-level values."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "params": {"state": "10", "level": "2", "codes": "07,02,", "hasmap": "true"},
+      "httpStatus": 200,
+      "outcome": "Returned Forbesganj circle code 06 and 114 mauza entries; this establishes administrative availability, not city boundary coverage."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "params": {"state": "10", "level": "2", "codes": "07,02,06,", "hasmap": "true"},
+      "httpStatus": 200,
+      "outcome": "Returned 114 Forbesganj-circle mauza entries plus Special Survey, Revisional Survey, Cadastral Survey, First Map, and map instance 00. No parcel geometry was returned by this metadata call."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "params": {"state": "10", "gisLevels": "07,02,06,0421,CS,00,00,", "srs": "0"},
+      "httpStatus": 200,
+      "outcome": "Returned a gisCode and attribution for mauza Amhara but xmin/xmax/ymin/ymax and epsg were null; no extent or geometry retained."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "params": {"state": "10", "gisLevels": "07,02,06,0523,CS,00,00,", "srs": "0"},
+      "httpStatus": 200,
+      "outcome": "Returned a gisCode and attribution for mauza Ganj Bhag but xmin/xmax/ymin/ymax and epsg were null; no extent or geometry retained."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/WMS?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned an empty response in this request environment; no CRS or layer metadata could be independently parsed."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY",
+      "method": "POST",
+      "outcome": "Not executed with fabricated coordinates because the official extent response supplied no usable map CRS/extent. No anonymous parcel ID+geometry response is claimed."
+    }
+  ],
+  "source": {
+    "name": "BhuNaksha Bihar",
+    "publisher": "Directorate of Land Records & Survey, Government of Bihar / NIC",
+    "scope": "Official Bihar cadastral viewer with Forbesganj administrative selections; citywide parcel coverage and current vector geometry are unverified.",
+    "endpoint": "https://bhunaksha.bihar.gov.in/",
+    "protocol": "HTML/JavaScript public viewer with REST metadata and WMS map routes",
+    "featureType": "Cadastral map viewer; no public vector feature schema obtained",
+    "geometryField": null,
+    "sourceIdField": null,
+    "requestProperties": ["administrative selection codes", "gisCode", "WMS map layers"],
+    "responseFormat": "JSON metadata and WMS imagery routes",
+    "crs": null
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "retainedPolygonSampleFile": null,
+  "coverageAssessment": {
+    "claimedScope": "Bihar state cadastral viewer; the observed Forbesganj administrative hierarchy is not evidence of complete city or circle coverage.",
+    "verifiedOpenScope": "Forbesganj administrative selection and mauza metadata only; no parcel polygon or safe native parcel ID verified.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed", "geometry", "administrative codes needed for provenance"],
+  "remainingUncertainty": "The exact WUP point was not forced into a parcel lookup. A zero or unavailable extent response is not treated as absence. The public client appears to render WMS imagery and may require a valid map-instance/sheet combination or session state for map extents; no login or credential flow was attempted.",
+  "runtimeReadiness": "held",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No verified public parcel polygon with a safe native identity was obtained; serial reviewer qualification is required before any adapter admission."
+  },
+  "resultCategory": "city_registry_or_map_evidence_geometry_unverified"
+}

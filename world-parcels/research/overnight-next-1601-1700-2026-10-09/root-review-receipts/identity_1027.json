@@ -1,0 +1,15 @@
+{
+  "taskId": "identity:1027",
+  "decision": "resolved",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/root-identity-decision-overlay.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/identity-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/skip-ledger.json",
+    "world-parcels/research/retry/countries/BO.json",
+    "world-parcels/research/retry/countries/BO-parcel-response.json",
+    "world-parcels/research/countries/SL.json"
+  ],
+  "checkedAt": "2026-10-10T10:46:31.385381Z"
+}

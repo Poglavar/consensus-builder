@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:2835",
+  "cityCode": 669,
+  "queueRank": 2835,
+  "name": "Blitta-Gare",
+  "country": "Togo",
+  "countryCode": "TG",
+  "iso2": "TG",
+  "iso3": "TGO",
+  "point": [8.33251733223623, 0.993829146076863],
+  "centerLatLon": [8.33251733223623, 0.993829146076863],
+  "population2025": 209755,
+  "population2025k": 209.755,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Togo official cadastral map parcel viewer GIS Blitta-Gare",
+        "result": "Found the official Togo Geodata portal, the OTR/DCCFE cadastre authority, and official government references to cadastral procedures. No public Blitta-Gare parcel-vector endpoint was found in discovery.",
+        "actualResultUrls": ["https://geodata.gouv.tg/cartes", "https://dadc.gouv.tg/", "https://togo.gouv.tg/"]
+      },
+      {
+        "language": "French (official/local administrative language)",
+        "query": "Togo cadastre carte parcellaire service officiel Blitta-Gare",
+        "result": "Found the official OTR/DCCFE site and Togo Geodata portal. The current Geodata configuration lists a restricted cadastre state-domains layer, but no anonymous parcel geometry response was available for Blitta-Gare.",
+        "actualResultUrls": ["https://dadc.gouv.tg/", "https://geodata.gouv.tg/cartes", "https://otr.tg/index.php/fr/blog/avis-communiques/1342-communique-n-021-2024-otr-cg-ci-dccf-relatif-au-numero-unique-parcellaire-nup.html"]
+      }
+    ],
+    "queriedAt": "2026-10-11"
+  },
+  "registryFound": true,
+  "registryCustodian": "OTR, Direction du Cadastre, de la Conservation Foncière et de l’Enregistrement (DCCFE); the official Geodata layer metadata identifies the source as the Togolese land registry agency. A Blitta-Gare-specific local office or open parcel service was not evidenced.",
+  "portalsFound": [
+    {"url": "https://geodata.gouv.tg/cartes", "observation": "Official public Togo Geodata viewer loaded; its JavaScript points to api.geodata.gouv.tg and geoserver.geoportail.gouv.tg."},
+    {"url": "https://dadc.gouv.tg/", "observation": "Official OTR/DCCFE cadastre site loaded; it describes cadastre services and procedures but exposes no public parcel-vector API in inspected HTML."},
+    {"url": "https://otr.tg/index.php/fr/blog/avis-communiques/1342-communique-n-021-2024-otr-cg-ci-dccf-relatif-au-numero-unique-parcellaire-nup.html", "observation": "Official notice establishes the national Numéro Unique Parcellaire (NUP) policy, but publishes no parcel geometry or query endpoint."}
+  ],
+  "requestsAndEndpointChecks": [
+    {"url": "https://geodata.gouv.tg/cartes", "method": "GET", "httpStatus": 200, "contentType": "text/html", "assessment": "Viewer HTML loaded with browser-like headers; current JavaScript/configuration was inspected."},
+    {"url": "https://geodata.gouv.tg/static/js/main.9c865432.js", "method": "GET", "httpStatus": 200, "contentType": "application/javascript", "assessment": "Current bundle identified api.geodata.gouv.tg and geoserver.geoportail.gouv.tg service bases and the public layer/config routes."},
+    {"url": "https://api.geodata.gouv.tg/app/get_open_data_config", "method": "GET", "httpStatus": 200, "contentType": "application/json", "assessment": "Current configuration returned a non-open-data layer named Cadastre - Domaines de l’État, source_collecte Cadastre Togolais; no parcel features were returned."},
+    {"url": "https://api.geodata.gouv.tg/app/1/get_couche_metadata", "method": "POST", "httpStatus": 200, "contentType": "application/json", "assessment": "Metadata for layer a798544d-9882-46a9-9bc0-76c884f89069 returned schema prise:cadastre_domaines_etat with objectid and other native fields; this is schema evidence only, not geometry access."},
+    {"url": "https://api.geodata.gouv.tg/app/1/get_couche_glimpse", "method": "POST", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned authorization denial (Vous n’êtes pas autorisé à avoir accès à la donnée demandée); zero parcel records and no geometry."},
+    {"url": "https://geoserver.geoportail.gouv.tg/geoserver/prise/ows?service=WFS&version=1.0.0&request=GetCapabilities", "method": "GET", "httpStatus": 404, "contentType": "application/json", "assessment": "Guessed WFS workspace route returned Not Found; not treated as evidence of absence."},
+    {"url": "https://geoserver.geoportail.gouv.tg/geoserver/prise/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=prise:cadastre_domaines_etat&outputFormat=application/json&maxFeatures=3&propertyName=objectid&bbox=8.330,0.992,8.335,0.996,EPSG:4326", "method": "GET", "httpStatus": 404, "contentType": "application/json", "assessment": "Bounded guessed ID-plus-geometry WFS request failed because the guessed route was not found; no parcel response retained."}
+  ],
+  "source": null,
+  "verifiedParcelResponse": null,
+  "schemaAndCrs": {"parcelSchema": "prise:cadastre_domaines_etat metadata only", "nativeIdField": "objectid (metadata only)", "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "coverageAssessment": {"claimedScope": "The official Geodata platform is national in presentation and the OTR/DCCFE is the national cadastre authority; the inspected restricted layer is identified as Togolese land-registry data.", "verifiedOpenScope": "none", "countrywideVerified": false},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "bounded query metadata", "retrieval date"],
+  "geometrySamples": [],
+  "scopeLimits": [
+    "Exact WUP point [8.33251733223623, 0.993829146076863] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit/miss, map extent miss, authorization denial, or guessed WFS 404 was treated as citywide absence.",
+    "No parcel polygon, native identity read, CRS, or bounded nonempty parcel response was obtained or retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, title, or other unsafe fields were requested or retained.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used.",
+    "Packet completion is research completion only, not source integration or admission."
+  ],
+  "remainingUncertainty": "The official Geodata/OTR systems may contain Blitta-Gare cadastral records, but anonymous public access, current service route, parcel completeness, native identity semantics, and CRS were not established.",
+  "nextStep": "Serial reviewer may recheck the official Geodata viewer and OTR/DCCFE deployments for a published or authorized public parcel route, using only a bounded anonymous ID-plus-geometry request if exposed.",
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification"
+}

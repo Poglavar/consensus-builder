@@ -1,0 +1,12 @@
+{
+  "taskId": "city:11407",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-11407-giridih.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/giridih-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T14:41:19.423417Z",
+  "reason": "Official Giridih land-record service and Jharkhand viewer links are evidenced; viewer timeouts left local cadastral custody conservatively unresolved and no safe native ID, full polygon, or adapter qualification was obtained."
+}

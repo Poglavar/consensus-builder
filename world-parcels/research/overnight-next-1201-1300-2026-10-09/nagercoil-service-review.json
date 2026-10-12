@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10193-nagercoil.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Document Nagercoil's official local/state cadastral entry points and bounded anonymous service attempts without retaining unsafe land-record fields.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Kanniyakumari District Administration provides an official Nagercoil-linked land-record service page, and Tamil Nadu's official e-Services/TNGIS/TamilNilam materials document Patta/FMB/Chitta/TSLR, A-Register and urban land-survey-map routes. No safe anonymous parcel identifier plus full native polygon response was obtained. The unanswered or timed-out routes do not establish parcel absence.",
+  "registryAssessment": "registryFound=true is supported by the official Kanniyakumari district service page, which identifies Nagercoil as the collectorate city and links to Survey & Settlement land-record services. This is custodian/service evidence only; it is not evidence of title, ownership, or public parcel geometry.",
+  "coverageAssessment": {
+    "claimedScope": "Official Kanniyakumari district and Tamil Nadu land-record/GIS documentation and bounded public GET attempts.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://kanniyakumari.nic.in/service/land-records-a-register/",
+      "operator": "Kanniyakumari District Administration, Government of Tamil Nadu",
+      "observation": "The page lists Patta/FMB/Chitta/TSLR, A-Register, verification and urban land-survey services, links to the state portal, and identifies Collectorate, Nagercoil."
+    },
+    {
+      "url": "https://eservices.tn.gov.in/eservicesnew/home.html",
+      "operator": "Government of Tamil Nadu / Survey & Settlement",
+      "observation": "The official Tamil-language portal lists urban land-survey records and urban land-survey maps among its services."
+    },
+    {
+      "url": "https://www.tngis.tn.gov.in/assets/api_files/district_spatial_extent_api.pdf",
+      "operator": "Tamil Nadu Geographical Information System / TNeGA",
+      "observation": "The official API document describes a generic district extent GET route; it does not document parcel geometry or a parcel identifier schema."
+    },
+    {
+      "url": "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/",
+      "operator": "NIC Tamil Nadu",
+      "observation": "The official notice describes Integrated Land Record and TamilNilam routes combining textual records, FMB/maps and Chitta."
+    },
+    {
+      "url": "https://www.tngis.tn.gov.in/apps.html",
+      "operator": "Tamil Nadu Geographical Information System / TNeGA",
+      "observation": "The official TNGIS portal describes state GIS applications and cautions that its data is informational and subject to maintenance; no public parcel endpoint was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Nagercoil Tamil Nadu official cadastral parcel map land records GIS viewer API",
+      "actualResultUrls": [
+        "https://kanniyakumari.nic.in/service/land-records-a-register/",
+        "https://eservices.tn.gov.in/eservicesnew/home.html",
+        "https://www.tngis.tn.gov.in/apps.html",
+        "https://www.tngis.tn.gov.in/assets/api_files/district_spatial_extent_api.pdf",
+        "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/"
+      ],
+      "method": "English-language discovery followed by first-party review.",
+      "scope": "Official local/state custody and safe anonymous parcel geometry only; no unsafe record fields."
+    },
+    {
+      "language": "Tamil",
+      "query": "நாகர்கோவில் தமிழ்நாடு அதிகாரப்பூர்வ நில அளவை வரைபடம் நிலப்பதிவு இணையதளம்",
+      "actualResultUrls": [
+        "https://eservices.tn.gov.in/eservicesnew/home.html",
+        "https://kanniyakumari.nic.in/service/land-records-a-register/",
+        "https://tamilnilam.tn.gov.in/citizen",
+        "https://www.tngis.tn.gov.in/apps.html"
+      ],
+      "method": "Separate Tamil-language discovery followed by first-party review.",
+      "scope": "அதிகாரப்பூர்வ சேவைகள் மற்றும் பாதுகாப்பான பொது வடிவியல் வழிகளை மட்டும் ஆய்வு செய்தல்; உரிமையாளர்/முகவரி/கணக்கு தரவுகளைத் தவிர்த்தல்."
+    }
+  ],
+  "attempts": [
+    "Opened the official Kanniyakumari district land-record page; it links Nagercoil to state Survey & Settlement services and urban land-survey maps.",
+    "Opened the official Tamil Nadu e-Services portal through web retrieval; it displayed Tamil-language links for urban land-survey records and maps.",
+    "Inspected the official TNGIS generic API PDF; it documents only a district extent endpoint in the reviewed material, not a parcel feature schema.",
+    "Attempted documented TNGIS generic extent GET requests for a bounded district/all probe from the shell; DNS resolution for tngis.tnega.org failed before HTTP.",
+    "Attempted anonymous GET of TamilNilam citizen route; web retrieval timed out. No inference about data presence or absence was made.",
+    "Reviewed the official NIC Tamil Nadu notice describing Integrated Land Record/TamilNilam and the official TNGIS app page; neither supplied a safe public parcel geometry response in this pass."
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not run: no anonymous parcel geometry layer was verified. Exact WUP point [8.17640257083294,77.4260297031687] was preserved unchanged.",
+    "requestEvidence": [
+      {
+        "url": "https://kanniyakumari.nic.in/service/land-records-a-register/",
+        "method": "GET; anonymous public read",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official local service page readable; no parcel geometry response."
+      },
+      {
+        "url": "https://eservices.tn.gov.in/eservicesnew/home.html",
+        "method": "GET; anonymous public read",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official portal readable via web retrieval; no survey-number/session query executed."
+      },
+      {
+        "url": "https://tngis.tnega.org/generic_api/v1/get_extent?initLevel=1&filter_code=lgd_code&district=589",
+        "method": "GET; anonymous documented API probe",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "DNS failure before HTTP; no response and no parcel-availability conclusion."
+      },
+      {
+        "url": "https://tamilnilam.tn.gov.in/citizen",
+        "method": "GET; anonymous public read",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "Timed out before response; no data-availability conclusion."
+      }
+    ]
+  },
+  "safeFieldAllowlist": ["publicParcelId", "nativeGeometry", "geometryType", "sourceCrs", "sourceLayer", "retrievalTime"],
+  "nextStep": "Serial reviewer should independently validate any future anonymous native parcel endpoint before adapter qualification. Runtime remains held.",
+  "remainingUncertainty": "The public availability and schema of TamilNilam/Collabland/TNGIS parcel geometry for Nagercoil, including urban coverage and CRS, remain unverified."
+}

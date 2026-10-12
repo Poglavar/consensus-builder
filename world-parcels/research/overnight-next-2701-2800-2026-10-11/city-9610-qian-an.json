@@ -1,0 +1,84 @@
+{
+  "cityCode": 9610,
+  "queueRank": 2793,
+  "name": "Qian'an",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [40.0044314081115, 118.707726801893],
+  "population2025": 212430,
+  "population2025k": 212.43,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Qian'an China official cadastral parcel map land registry GIS natural resources",
+        "result": "First-party discovery found the official Qian'an government site and an official Qian'an territorial-spatial-planning PDF. The indexed official material evidences local planning/natural-resources work, but no anonymous cadastral parcel map, public parcel API, or downloadable safe parcel geometry was located.",
+        "actualResultUrls": [
+          "https://www.qianan.gov.cn/",
+          "https://www.qianan.gov.cn/main/file/2026-02-27/17721613225334028927d9c41c045205019c9d0bce251937.pdf"
+        ]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "迁安市 不动产登记 地籍图 宗地 GIS 自然资源和规划局 官方",
+        "result": "First-party Chinese discovery found official Qian'an government yearbook and planning/environmental material naming 迁安市自然资源和规划局 and describing its planning/natural-resources role. It did not expose a public anonymous cadastral parcel viewer or ID-plus-geometry endpoint, and no local registry procedure was directly evidenced.",
+        "actualResultUrls": [
+          "https://www.qianan.gov.cn/main/file/2026-01-29/17696764596044028927d9be53906385019c08efce547ffc.pdf",
+          "https://www.qianan.gov.cn/main/file/2024-10-24/17297301142184028927d91b225ec2270192bbf2f2aa42c3.pdf",
+          "https://www.qianan.gov.cn/main/file/2026-03-11/17731955684684028927d9c41c045951019cdab125542b66.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": "Qian'an Municipal Natural Resources and Planning Bureau is evidenced in official Qian'an government material; a local cadastral/real-estate registration custodian or public registration procedure was not directly evidenced.",
+    "evidence": "Official Qian'an government documents name the municipal Natural Resources and Planning Bureau in planning and land-use contexts. This is institutional context only and is insufficient to set registryFound=true.",
+    "urls": [
+      "https://www.qianan.gov.cn/main/file/2026-01-29/17696764596044028927d9be53906385019c08efce547ffc.pdf",
+      "https://www.qianan.gov.cn/main/file/2024-10-24/17297301142184028927d91b225ec2270192bbf2f2aa42c3.pdf"
+    ]
+  },
+  "sourceAssessment": {
+    "service": null,
+    "serviceUrl": null,
+    "serviceDescription": "No public cadastral parcel service was verified.",
+    "schema": null,
+    "crs": null,
+    "nativeIdentity": null,
+    "exactPointHit": null,
+    "boundedPointRequest": {
+      "request": "Not performed because no public parcel endpoint was identified.",
+      "result": "No parcel response.",
+      "interpretation": "No exact-point hit/miss inference; the WUP point was preserved unchanged."
+    },
+    "safeFieldAllowlist": ["verified stable native parcel/object ID", "full native parcel polygon geometry", "declared geometry CRS", "source layer/service metadata", "bounded query metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "registration details", "personal fields"]
+  },
+  "routesAttempted": [
+    {
+      "url": "https://www.qianan.gov.cn/",
+      "method": "GET",
+      "outcome": "Direct curl failed TLS hostname verification (certificate subject mismatch); TLS verification was not disabled and no exception was used."
+    },
+    {
+      "url": "https://www.qianan.gov.cn/main/file/2026-02-27/17721613225334028927d9c41c045205019c9d0bce251937.pdf",
+      "method": "GET/open",
+      "outcome": "Official indexed result was discovered; web open timed out before content retrieval."
+    },
+    {
+      "url": "https://www.qianan.gov.cn/main/file/2026-01-29/17696764596044028927d9be53906385019c08efce547ffc.pdf",
+      "method": "GET/open",
+      "outcome": "Official indexed result naming the local Natural Resources and Planning Bureau was discovered; no parcel service endpoint was exposed."
+    }
+  ],
+  "runtimeReadiness": "held",
+  "uncertainty": [
+    "No anonymous parcel schema, CRS, stable native parcel identity, or geometry response was verified.",
+    "Certificate mismatch and timeout are access limitations, not evidence of citywide cadastral absence.",
+    "The exact WUP point [40.0044314081115, 118.707726801893] was not shifted and was not used to infer parcel absence.",
+    "This research packet is not source integration or runtime admission; independent serial qualification remains required."
+  ]
+}

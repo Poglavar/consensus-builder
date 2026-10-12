@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 2456,
+  "wupCityCode": 2456,
+  "queueRank": 2640,
+  "cityId": "wup2025:2456",
+  "name": "Neuquén",
+  "country": "Argentina",
+  "countryCode": "AR",
+  "iso2": "AR",
+  "iso3": "ARG",
+  "point": [-38.9516300686619, -68.0804705509146],
+  "centerLatLon": [-38.9516300686619, -68.0804705509146],
+  "population2025": 223753,
+  "population2025k": 223.753,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "verifiedSample": true,
+  "sampleFile": "city-2456-neuqu-n-sample.geojson",
+  "source": "Dirección Provincial de Catastro e Información Territorial de Neuquén (DPCeIT), public IDE/Catastro ArcGIS MapServer",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Neuquén Argentina official cadastral parcel map GIS API",
+        "result": "Found the first-party DPCeIT website, public Catastro IDE ArcGIS service, provincial parcel layer, and ITC public geoservice documentation.",
+        "actualResultUrls": ["https://dpc.neuquen.gov.ar/", "https://catastro.neuquen.gov.ar/server/rest/services/IDE/Catastro/MapServer/4", "https://dpc.neuquen.gov.ar/Home/SistemaITC"]
+      },
+      {
+        "language": "native/local",
+        "query": "Neuquén Argentina catastro parcelas mapa oficial SIG API",
+        "result": "Encontró la Dirección Provincial de Catastro e Información Territorial y el servicio oficial IDE/Catastro con la capa Parcelas; la documentación del ITC indica servicios públicos WFS y WMS sin clave.",
+        "actualResultUrls": ["https://dpc.neuquen.gov.ar/", "https://catastro.neuquen.gov.ar/server/rest/services/IDE/Catastro/MapServer", "https://dpc.neuquen.gov.ar/Home/SistemaITC"]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {"url": "https://dpc.neuquen.gov.ar/", "operator": "Dirección Provincial de Catastro e Información Territorial", "scope": "Province of Neuquén; local custodian for Neuquén Capital", "observation": "First-party provincial cadastral agency site identifies Neuquén Capital office and public cadastral/ITC services."},
+    {"url": "https://catastro.neuquen.gov.ar/server/rest/services/IDE/Catastro/MapServer", "operator": "DPCeIT", "scope": "Province of Neuquén", "observation": "Official service describes current parcels categorized as rural extensive, rural intensive, and urban; layer 4 is Parcelas polygon data."},
+    {"url": "https://dpc.neuquen.gov.ar/Home/SistemaITC", "operator": "DPCeIT", "scope": "Public ITC access", "observation": "Official documentation says basic public information is available without a key and identifies WFS/WMS geoservices."}
+  ],
+  "requestsAndEndpointChecks": [
+    {"url": "https://catastro.neuquen.gov.ar/server/rest/services/IDE/Catastro/MapServer?f=pjson", "method": "GET", "status": "HTTP 200", "summary": "Public service metadata returned; layer 4 Parcelas is a polygon layer and service spatial reference is EPSG:4326."},
+    {"url": "https://catastro.neuquen.gov.ar/server/rest/services/IDE/Catastro/MapServer/4?f=pjson", "method": "GET", "status": "HTTP 200", "summary": "Parcelas metadata returned. Polygon geometry, display field PAR_NOMENCLATURA, source CRS POSGAR 1994 Argentina Zone 2, and output extent CRS 4326 were observed. Native OBJECTID is available as a stable service identity candidate."},
+    {"url": "https://catastro.neuquen.gov.ar/server/rest/services/IDE/Catastro/MapServer/4/query", "method": "GET", "status": "HTTP 200", "summary": "Exact WUP point query using inSR=4326, returnGeometry=true, outFields=OBJECTID, outSR=4326 returned an empty FeatureCollection. This is only an exact-point result, not an absence claim."},
+    {"url": "https://catastro.neuquen.gov.ar/server/rest/services/IDE/Catastro/MapServer/4/query", "method": "GET", "status": "HTTP 200", "summary": "Bounded envelope query [-68.13,-38.99,-68.03,-38.91] with outFields=OBJECTID, returnGeometry=true, outSR=4326, resultRecordCount=3 returned three parcel polygons and exceededTransferLimit=true. The retained sample is unchanged geometry with properties reduced to canonical id."},
+    {"url": "https://dpcatastro.neuquen.gov.ar/server/rest/services/EditFeatures/MapServer/7/query", "method": "GET", "status": "timeout after 15 seconds", "summary": "Alternative first-party editable Parcelas endpoint did not return a bounded exact-point request; no data retained from it."}
+  ],
+  "coverageAssessment": {"claimedScope": "Provincial current parcel service; Neuquén is within the province and the bounded envelope surrounds the WUP point.", "verifiedOpenScope": "Successful anonymous metadata and bounded feature response from the provincial IDE/Catastro service; exact point returned no intersecting feature.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true, "registryExistenceScope": "First-party provincial cadastral custodian and public parcel service evidenced."},
+  "qualityAssessment": {"geometryQuality": "Returned polygon geometries in GeoJSON, output CRS 4326.", "crs": "Layer source CRS is POSGAR_1994_Argentina_Zone_2; request explicitly transformed output to EPSG:4326 and returned longitude/latitude coordinates.", "identityReadiness": "OBJECTID is the ArcGIS native OID and was used as the sample identity; native field mapping is OBJECTID -> properties.id.", "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"], "attributesRequested": "Only OBJECTID was requested; no owner, address, contact, titleholder, personal, tax, account, or document fields were requested or retained."},
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "Serial review must independently qualify the adapter, citywide coverage, native identity semantics, and safe field behavior before runtime use.",
+  "scopeLimits": ["Exact WUP point [-38.9516300686619,-68.0804705509146] was preserved in latitude/longitude order and was not shifted.", "Exact-point empty response is not evidence of citywide absence.", "The bounded sample demonstrates service response near Neuquén but does not establish complete municipal coverage.", "Packet completion is research evidence only and is not source integration/admission.", "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception used."],
+  "identityPolicy": "Retained GeoJSON has exactly one canonical native identity in properties.id. Native field mapping and CRS provenance are recorded here and in the service review."
+}

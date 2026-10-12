@@ -1,0 +1,79 @@
+{
+  "cityCode": 1084,
+  "queueRank": 1299,
+  "name": "Kisumu",
+  "country": "Kenya",
+  "countryCode": "KE",
+  "iso3": "KEN",
+  "point": [-0.0912140573810018, 34.7712992043041],
+  "population2025": 430532,
+  "population2025k": 430.532,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official State Department for Lands registry directory names the Kisumu Lands Office at Ardhi House Kisumu and assigns it land registration, land adjudication and settlement, land administration, land valuation, and land survey and mapping functions. This is city-local registry custody evidence, not public parcel geometry access.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kisumu Kenya official cadastral map parcel GIS land registry survey parcels",
+        "result": "First-party results identified the State Department for Lands registry directory, the official Ardhisasa land-information application, a Kisumu County spatial-database procurement document describing cadastral data preparation, and a County GIS launch story. No anonymous public parcel feature service or geometry endpoint was identified.",
+        "actualResultUrls": [
+          "https://www.lands.go.ke/land-registries",
+          "https://ardhisasa.lands.go.ke/",
+          "https://www.kisumu.go.ke/wp-content/uploads/FINAL-FINAL-FOR-REQUEST-FOR-PROPOSAL-LAND-SPATIAL-WITH-NEG-NO.-2.pdf",
+          "https://storymaps.arcgis.com/stories/19ae8bdfb8f8445cad50d1c2f9b8f380"
+        ]
+      },
+      {
+        "language": "Swahili",
+        "query": "Kisumu Kenya ramani ya ardhi ya cadastral viwanja usajili wa ardhi GIS rasmi",
+        "result": "The Swahili-language discovery attempt did not yield a distinct public Kisumu parcel viewer. The official Kenya Lands Swahili service charter was relevant to land-map services, while the first-party Kisumu registry and Ardhisasa sources remained the applicable evidence.",
+        "actualResultUrls": [
+          "https://www.lands.go.ke/sites/default/files/2025-04/SDLPP%20Kiswahili%20Service%20Charter.pdf",
+          "https://www.lands.go.ke/land-registries",
+          "https://ardhisasa.lands.go.ke/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.lands.go.ke/land-registries",
+      "observation": "Official State Department for Lands directory lists Kisumu Lands Office, Ardhi House Kisumu, with land registration and land survey and mapping responsibilities."
+    },
+    {
+      "url": "https://ardhisasa.lands.go.ke/",
+      "observation": "Official Ardhisasa application loaded anonymously. Its current JavaScript configuration points to the public-facing government application/API, but the visible service is an application and land-information workflow rather than an anonymous city parcel map."
+    },
+    {
+      "url": "https://www.kisumu.go.ke/wp-content/uploads/FINAL-FINAL-FOR-REQUEST-FOR-PROPOSAL-LAND-SPATIAL-WITH-NEG-NO.-2.pdf",
+      "observation": "Official County of Kisumu procurement document describes intended spatial databases containing cadastral information and use of UTM Arc 1960, but does not expose a public parcel feature endpoint."
+    },
+    {
+      "url": "https://storymaps.arcgis.com/stories/19ae8bdfb8f8445cad50d1c2f9b8f380",
+      "observation": "County GIS laboratory launch story describes spatial planning and land-management GIS work; the ArcGIS item data request returned HTTP 403 because the item subscription was unavailable. No parcel geometry was inferred."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No safe anonymous parcel feature endpoint was verified, so no exact-point or bounded city geometry claim is made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Kisumu local registry custody is established by the official State Department for Lands directory; County procurement material indicates cadastral data work, but public geometry coverage is not established.",
+    "verifiedOpenScope": "No anonymous safe parcel geometry or schema was verified. National Ardhisasa service availability does not establish citywide public vector access.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held; no independently qualified public parcel geometry",
+  "resultCategory": "city_registry_evidenced_no_public_geometry_verified",
+  "remainingUncertainty": "The exact parcel coverage at the WUP point, the current publication state of any Kisumu County GIS layers, and whether Ardhisasa exposes any safe anonymous geometry route remain unknown. No login, credential, owner, address, titleholder, tax, contact, or property-record lookup was attempted."
+}

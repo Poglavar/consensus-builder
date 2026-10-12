@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8436-bhiwadi.json",
+  "purpose": "Independent first-party registry/map discovery and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointMissNotInterpretedAsAbsence": true
+  },
+  "assessment": "BIDA provides local Bhiwadi authority evidence and Rajasthan's Urban GIS Portal/Bhu-Naksha provide official cadastral-map discovery routes. The current viewer points to an ArcGIS Khasra layer, but bounded anonymous metadata and point requests timed out; no sample was retained and runtime remains held.",
+  "registryAssessment": "Local custody is evidenced by Bhiwadi Integrated Development Authority. State cadastral/map custody is evidenced by Rajasthan Urban GIS and Bhu-Naksha. Neither was verified as an open, responsive, Bhiwadi-specific vector parcel service.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bida.rajasthan.gov.in/content/raj/bida/en/home.html",
+      "operator": "Bhiwadi Integrated Development Authority, Government of Rajasthan",
+      "observation": "Official page identifies BIDA headquarters at Bhiwadi and lists property-ID, plot/lease and mutation services. No lookup was submitted."
+    },
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+      "operator": "Government of Rajasthan Urban GIS Portal",
+      "observation": "Official public viewer exposes Khasra and plot search/map controls and states that settlement boundaries are viewing-only."
+    },
+    {
+      "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+      "operator": "Rajasthan Bhu-Naksha / Department of Land Resources route",
+      "observation": "Official cadastral-mapping route was discovered, but direct anonymous GET timed out."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bhiwadi Rajasthan official cadastral parcel map land records GIS Bhiwadi municipal official",
+      "result": "BIDA, Urban GIS, Bhu-Naksha and official planning sources found; no verified public parcel vector response.",
+      "actualResultUrls": ["https://bida.rajasthan.gov.in/content/raj/bida/en/home.html", "https://rajdharaa.rajasthan.gov.in/citizenudh/index", "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html"]
+    },
+    {
+      "language": "Hindi",
+      "query": "भिवाड़ी राजस्थान आधिकारिक भू अभिलेख कैडस्ट्रल पार्सल मानचित्र भूमि रिकॉर्ड GIS",
+      "result": "Hindi discovery confirmed the official Rajasthan map routes and BIDA planning material; no parcel polygon endpoint was verified.",
+      "actualResultUrls": ["https://rajdharaa.rajasthan.gov.in/citizenudh/index", "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html", "https://bida.rajasthan.gov.in/content/dam/doitassets/bida/documents/plaining/BKT%20Map.pdf"]
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": "Current Urban GIS viewer inspection",
+      "result": "HTML, Config.js and map.js retrieved. Config identifies a JDA Settlement_JDA Khasra ArcGIS layer and viewer queries returnGeometry=true/outFields=*; no Bhiwadi-specific service was established.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    },
+    {
+      "attempt": "Bounded ArcGIS Khasra metadata and exact-point query",
+      "result": "Both anonymous requests timed out. No geometry, schema, CRS or native ID obtained; exact-point outcome unknown.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    },
+    {
+      "attempt": "Official Bhu-Naksha route",
+      "result": "Direct anonymous page request timed out. No retry, TLS exception, login, CAPTCHA bypass or token use.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    }
+  ],
+  "requests": [
+    {"url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index", "method": "GET", "outcome": "HTTP 200; viewer HTML cached only under ignored scratch", "safeRequest": true},
+    {"url": "https://rajdharaa.rajasthan.gov.in/citizenudh/js/Config.js", "method": "GET", "outcome": "HTTP 200; current configuration cached only under ignored scratch", "safeRequest": true},
+    {"url": "https://rajdharaa.rajasthan.gov.in/citizenudh/js/map.js", "method": "GET", "outcome": "HTTP 200; current viewer logic cached only under ignored scratch", "safeRequest": true},
+    {"url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0?f=pjson", "method": "GET", "outcome": "timeout", "safeRequest": true},
+    {"url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0/query", "method": "GET", "outcome": "timeout for bounded point geometry query", "safeRequest": true},
+    {"url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html", "method": "GET", "outcome": "timeout", "safeRequest": true}
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "sampleFile": null,
+    "details": "No full parcel polygon and no verified stable native cadastral identity were obtained. No exact-point hit or miss was used to infer coverage."
+  },
+  "coverageAssessment": {
+    "claimedScope": "BIDA, Rajasthan Urban GIS, Bhu-Naksha and current viewer-configured ArcGIS Khasra route.",
+    "verifiedOpenScope": "Official authority/viewer pages and JavaScript configuration only; parcel geometry, schema, CRS and citywide extent remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel or khasra identifier", "geometry", "CRS", "source layer/service metadata"],
+  "remainingUncertainty": "The official map routes may recover or expose Bhiwadi-specific cadastral features through a later anonymous workflow; current availability is unknown.",
+  "runtimeDecision": "held_not_enabled_no_verified_public_geometry"
+}

@@ -1,0 +1,32 @@
+{
+  "cityRecord": "city-910-kindia.json",
+  "cityCode": 910,
+  "queueRank": 2881,
+  "city": "Kindia",
+  "country": "Guinea",
+  "countryCode": "GN",
+  "reviewedAt": "2026-10-11",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and French first-party discovery identified Guinea's official cadastre.mines.gov.gn ArcGIS host and the official Kindia prefecture portal. The application layer is token-gated; the only anonymous map service exposed country boundaries, not parcels. No parcel ID or polygon was retained.",
+  "queryAndRequestOutcomes": "See city-910-kindia.json freshResearch and requestsAndEndpointChecks; all executed discovery routes, statuses, schema observations, and the bounded anonymous non-parcel query are recorded there.",
+  "custodians": [
+    {
+      "name": "Guinea cadastre/mining GIS host",
+      "scope": "National ArcGIS service catalog and token-gated GuineaPortal application layer; anonymous SSRS service exposes country boundaries only.",
+      "evidence": "Official REST catalog, MapServer metadata, and bounded GeoJSON query."
+    },
+    {
+      "name": "Préfecture de Kindia",
+      "scope": "Local prefecture administration and information portal; no public parcel service evidenced.",
+      "evidence": "Official portal discovery result."
+    }
+  ],
+  "safeFieldAllowlist": ["native parcel identifier if publicly returned", "geometry", "source CRS", "service metadata"],
+  "geometrySamples": [],
+  "uncertainty": ["No live public parcel schema response", "No parcel geometry", "No safe native parcel ID", "Token-gated application layer not accessed", "No citywide coverage qualification"],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "registryFound": null,
+  "doNotInfer": ["A country-boundary query is not a parcel sample", "A token/login wall is not evidence that Kindia lacks parcels", "Packet completion is not source integration/admission"]
+}

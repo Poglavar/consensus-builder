@@ -1,0 +1,19 @@
+{
+  "taskId": "city:11457",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-11457-bhagalpur.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/bhagalpur-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:48:16Z",
+  "reason": "Immutable WUP identity and English/Hindi searches agree with the roster. Saved first-party Bihar viewer HTML lists Bhagalpur district and its JS exposes cadastral routes, supporting an official land-record route. The saved level-count body is 0, but the probe used state=22 (district code) rather than the viewer's Bihar state=10, so it cannot establish unavailable hierarchy or parcel absence. Other saved responses are empty. No native parcel ID, full polygon, or CRS was verified.",
+  "firstPartyArtifactsInspected": [
+    "tmp/valhalla-parcel-research/bhagalpur-bhunaksha-index.html",
+    "tmp/valhalla-parcel-research/bhagalpur-bhunaksha-index.js",
+    "tmp/valhalla-parcel-research/bhagalpur-level-count.txt",
+    "tmp/valhalla-parcel-research/bhagalpur-wms-capabilities.xml"
+  ],
+  "admissionGates": "No fresh parcel native-ID read, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Runtime remains held."
+}

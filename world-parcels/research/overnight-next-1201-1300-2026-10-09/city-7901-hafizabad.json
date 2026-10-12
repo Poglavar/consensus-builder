@@ -1,0 +1,158 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09T00:00:00Z",
+  "cityCode": 7901,
+  "queueRank": 1223,
+  "cityId": "wup:7901",
+  "name": "Hafizabad",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "centerLatLon": [32.0705864531695, 73.6889825364113],
+  "point": [32.0705864531695, 73.6889825364113],
+  "population2025": 454903,
+  "population2025k": 454.903,
+  "populationUnit": "persons",
+  "year": 2025,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hafizabad Pakistan official cadastral map land records parcel GIS Punjab",
+        "result": "Found official Hafizabad district GIS/revenue pages, the Municipal Committee Hafizabad services-map index and a 2023-24 city base-map PDF with a parcel-boundary legend, Punjab PULSE cadastral-map material listing Hafizabad, and the Punjab Land Records cadastral-map interface. The public ArcGIS REST routes in the viewer configuration were token-gated in anonymous requests.",
+        "actualResultUrls": [
+          "https://hafizabad.punjab.gov.pk/maps",
+          "https://hafizabad.punjab.gov.pk/gis_maps",
+          "https://hafizabad.punjab.gov.pk/administration_hfd",
+          "https://mchafizabad.lgpunjab.org.pk/map/",
+          "https://mchafizabad.lgpunjab.org.pk/wp-content/uploads/2024/05/Base-Map_MC-Hafizabad_2023-24.pdf",
+          "https://lis.pulse.gop.pk/",
+          "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+          "https://pmdfc.punjab.gov.pk/gis-map-16_cities-pcp"
+        ]
+      },
+      {
+        "language": "Urdu",
+        "query": "حافظ آباد پاکستان سرکاری کادستر نقشہ اراضی ریکارڈ GIS پارسل",
+        "result": "Search results identified the official Punjab Land Records village-wise cadastral-map interface, Punjab PULSE/PLRA cadastral material listing Hafizabad, and Hafizabad district GIS/revenue pages. No anonymous safe Hafizabad parcel polygon response was exposed; the bounded REST routes returned Token Required.",
+        "actualResultUrls": [
+          "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+          "https://lis.pulse.gop.pk/",
+          "https://onlinefard.punjab-zameen.gov.pk/",
+          "https://hafizabad.punjab.gov.pk/maps",
+          "https://hafizabad.punjab.gov.pk/administration_hfd"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://mchafizabad.lgpunjab.org.pk/map/",
+      "observation": "Official Municipal Committee Hafizabad services-map index lists the Updated Maps 2023-24 set and Base Map_Hafizabad City."
+    },
+    {
+      "url": "https://mchafizabad.lgpunjab.org.pk/wp-content/uploads/2024/05/Base-Map_MC-Hafizabad_2023-24.pdf",
+      "observation": "Official rendered city base map dated April 2024, map version 1.5, includes a Parcel Boundary legend and municipal boundaries. It is not an exposed vector parcel API and carries a source-data disclaimer."
+    },
+    {
+      "url": "https://hafizabad.punjab.gov.pk/maps",
+      "observation": "Official district page describes the Hafizabad GIS Cell and links Admin Boundaries (Patwar Circle), Health, and Revenue Estates maps."
+    },
+    {
+      "url": "https://hafizabad.punjab.gov.pk/administration_hfd",
+      "observation": "Official district administration page assigns Revenue Administration maintenance and updating of periodical revenue/land records and oversight of registrations and related records."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "observation": "Official/public Punjab PULSE viewer lists Hafizabad under Cadastral Maps and exposes parcel-related layers with an indicative-property-lines disclaimer."
+    },
+    {
+      "url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+      "observation": "Official Punjab Land Records cadastral-map interface is village-wise and requests district, tehsil, village, and year selection; no Hafizabad geometry was retained."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Viewer HTML loaded. Current JavaScript configuration identified the public ArcGIS host, token endpoint, Punjab cadastral MapServer, and Hafizabad sublayer id 10. No token was requested or used."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "ArcGIS error body code 499 Token Required; no service schema returned."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/10?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Hafizabad sublayer metadata route returned ArcGIS error body code 499 Token Required; no schema or CRS returned."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/10/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&resultRecordCount=1&f=geojson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Bounded anonymous feature query returned ArcGIS error body code 499 Token Required; no ID or geometry returned."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Punjab/Admin__Boundaries/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Viewer-configured administrative MapServer metadata route returned ArcGIS error body code 499 Token Required; not a parcel response."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/GPC/GPC_Parcels/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Viewer-configured GPC parcel service metadata route returned ArcGIS error body code 499 Token Required; no schema or geometry returned."
+    },
+    {
+      "url": "https://hafizabad.punjab.gov.pk/maps",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "Direct curl attempt timed out after 20 seconds; browser-indexed first-party page evidence was separately available."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Municipal Committee Hafizabad material provides a city base map with an explicit parcel-boundary legend, and the official district administration identifies Revenue Administration land-record custody. This establishes local/public cadastral-map context, not legal title coverage or complete citywide vector coverage.",
+  "registryEvidenceUrls": [
+    "https://mchafizabad.lgpunjab.org.pk/map/",
+    "https://mchafizabad.lgpunjab.org.pk/wp-content/uploads/2024/05/Base-Map_MC-Hafizabad_2023-24.pdf",
+    "https://hafizabad.punjab.gov.pk/administration_hfd"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "url": "https://lis.pulse.gop.pk/",
+    "kind": "Public Punjab PULSE cadastral viewer with ArcGIS-backed layers",
+    "publisher": "Punjab Urban Land Systems Enhancement / Punjab Land Records Authority",
+    "scope": "Viewer advertises Hafizabad cadastral maps and parcel-related layers; anonymous REST metadata and feature access were not verified because the referenced service returned Token Required.",
+    "safeSampleFile": null,
+    "sampleAttributes": "none retained",
+    "nativeFields": []
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not executed against a returned feature layer: Hafizabad sublayer metadata and feature query were token-gated. Exact WUP point was preserved and not shifted.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Hafizabad municipal city map, district GIS/revenue pages, and Punjab PULSE/PLRA cadastral material.",
+    "verifiedOpenScope": "Rendered municipal parcel-boundary map and viewer-listed cadastral layer only; no anonymous vector feature response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["OBJECTID", "parcel/cadastral identifier only if exposed by a future anonymous safe endpoint", "geometry"],
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "official_registry_context_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "The April 2024 MC Hafizabad PDF is a rendered map and does not prove complete or current parcel coverage. PULSE advertises Hafizabad cadastral material, but anonymous ArcGIS REST inspection was token-gated; no polygon IDs, schema, CRS, or citywide completeness were verified. No owner, address, contact, titleholder, tax, or account fields were requested or retained."
+}

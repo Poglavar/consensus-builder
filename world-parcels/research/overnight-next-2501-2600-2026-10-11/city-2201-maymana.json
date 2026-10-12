@@ -1,0 +1,89 @@
+{
+  "cityCode": 2201,
+  "queueRank": 2560,
+  "name": "Maymana",
+  "country": "Afghanistan",
+  "countryCode": "AF",
+  "iso3": "AFG",
+  "point": [35.9065978989835, 64.8013091724235],
+  "population2025": 229355,
+  "population2025k": 229.355,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Maymana Afghanistan official cadastral map land registry parcel Faryab",
+        "result": "First-party discovery identified the Afghanistan Ministry of Urban Development and Housing land-management/cadastre directorate, the Maymana Municipality site, and official MUDH notices about Maymana urban plans and Faryab land surveying. No public anonymous parcel feature service or downloadable Maymana parcel layer was found.",
+        "actualResultUrls": [
+          "https://www.mudh.gov.af/index.php/en/dm-land-management-affairs",
+          "https://www.maymana-m.gov.af/",
+          "https://mudh.gov.af/dr/node/3502",
+          "https://www.mudh.gov.af/index.php/dr/node/2539"
+        ]
+      },
+      {
+        "language": "Dari/Pashto",
+        "query": "افغانستان میمنه فاریاب کادستر نقشه زمین ثبت اراضی رسمی",
+        "result": "جستجوی دری/پشتو به منابع رسمی وزارت شهرسازی و مسکن درباره ریاست عمومی جیودیزی، کدستر و قباله، گزارش ثبت زمین های دولتی در فاریاب، و گزارش پلان بهسازی شهر میمنه رسید. هیچ پاسخ عمومی و ناشناس شامل شناسه قطعه و هندسه برای میمنه پیدا نشد.",
+        "actualResultUrls": [
+          "https://www.mudh.gov.af/index.php/dr/%D9%85%D8%B9%DB%8C%D9%86%DB%8C%D8%AA-%D8%A7%D9%85%D9%88%D8%B1-%D8%B2%D9%85%DB%8C%D9%86%D8%AF%D8%A7%D8%B1%DB%8C",
+          "https://www.mudh.gov.af/index.php/dr/node/2539",
+          "https://mudh.gov.af/dr/node/3502",
+          "https://www.maymana-m.gov.af/"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Maymana Municipality is evidenced by its official site, which identifies the municipality and its Maimana/Faryab address. The official MUDH Faryab/Maymana notices evidence a provincial urban-development presence, but neither source publishes an open parcel layer.",
+    "nationalCadastreAuthority": "Afghanistan Ministry of Urban Development and Housing, Deputy Ministry of Land Management Affairs, General Directorate of Geodesy, Cadaster and Deed.",
+    "registryBasis": "The official national authority page explicitly assigns cadastral survey, land-management information registration, deeds and cadaster services to the General Directorate of Geodesy, Cadaster and Deed; the official Maymana municipal site and Maymana-specific urban-plan notice provide local city context. This supports registryFound=true for source discovery only, not adapter qualification or citywide geometry coverage.",
+    "registryFoundReason": "A first-party cadastre authority and a first-party Maymana municipal/local urban-planning context were evidenced. No public parcel response was obtained."
+  },
+  "schemaAndCrs": {
+    "viewerUrl": null,
+    "responseType": null,
+    "geometryType": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "inspectionNote": "Bounded retrieval of the official MUDH land-management page and Maymana Municipality page returned ordinary HTML/prose only; inspected content exposed institutional responsibilities and city notices, not a public map viewer, JavaScript parcel configuration, OGC service, ArcGIS service, or ID-plus-geometry response. No parcel endpoint was qualified."
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not executed against a qualified parcel endpoint; the exact WUP point was preserved and not shifted.",
+    "nativeIdField": null,
+    "safeFieldsRetained": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Afghanistan national land-management/cadastre authority plus Maymana municipal and MUDH Faryab/Maymana urban-planning evidence.",
+    "verifiedOpenScope": "Official source identity and local city context only; no parcel geometry, map extent, or citywide coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identity if later evidenced", "full parcel polygon geometry if later evidenced", "source service URL", "observed coordinate order", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "required; research evidence is not source integration or admission",
+  "sampleGeoJSON": null,
+  "scopeLimits": [
+    "The exact WUP point [35.9065978989835, 64.8013091724235] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point parcel result was obtained; this is not evidence of a zero hit or citywide absence.",
+    "No native parcel identity, source field schema, CRS, or geometry was obtained; no sample GeoJSON is retained.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification disablement was used.",
+    "Packet completion records research only; it is not source integration or runtime admission."
+  ],
+  "uncertainty": "Afghanistan's first-party cadastre authority and Maymana/Faryab local context are evidenced, but no current anonymous public parcel service was exposed by the checked official pages. Maymana-specific parcel access, native identity, schema, CRS, geometry and citywide coverage remain unverified."
+}

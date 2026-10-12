@@ -1,0 +1,82 @@
+{
+  "cityCode": 9006,
+  "queueRank": 1472,
+  "name": "Changping",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [40.2122378376686, 116.225196461282],
+  "population2025": 386664,
+  "population2025k": 386.664,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Changping Beijing official cadastral parcel map land registration map service API",
+        "result": "First-party discovery found the Beijing Municipal Commission of Planning and Natural Resources announcement for real-estate registration information and cadastral-map visualization, plus the official Beijing Tianditu public geospatial service portal. The announced registry query requires identity verification for visual real-estate lookup; no anonymous safe parcel feature response was verified.",
+        "actualResultUrls": [
+          "https://english.beijing.gov.cn/government/policytoolkittwo/INV_Policy_Text/202411/t20241127_3951281.html",
+          "https://beijing.tianditu.gov.cn/bjtdt-main/service.html",
+          "https://bdc.ghzrzyw.beijing.gov.cn/eo/wizard/mainMenu.go"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "昌平区 不动产登记 地图 地籍图 官方",
+        "result": "First-party Chinese discovery found the official Chinese announcement describing Beijing's cadastral-map and parcel-map query modules and the official Beijing Tianditu service portal. The announcement states that cadastral/parcel lookup is available through the Beijing real-estate registration platform, while owner-oriented access is handled at district registration halls; no anonymous Changping parcel geometry or schema was verified.",
+        "actualResultUrls": [
+          "https://ghzrzyw.beijing.gov.cn/zhengwuxinxi/zcwj/qtwj/202405/t20240529_3697872.html",
+          "https://ghzrzyw.beijing.gov.cn/zhengwuxinxi/zcwj/qtwj/202405/t20240521_3689773.html",
+          "https://beijing.tianditu.gov.cn/bjtdt-main/service.html",
+          "https://bdc.ghzrzyw.beijing.gov.cn/eo/wizard/mainMenu.go"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://ghzrzyw.beijing.gov.cn/zhengwuxinxi/zcwj/qtwj/202405/t20240529_3697872.html",
+    "https://ghzrzyw.beijing.gov.cn/zhengwuxinxi/zcwj/qtwj/202405/t20240521_3689773.html",
+    "https://bdc.ghzrzyw.beijing.gov.cn/eo/wizard/mainMenu.go"
+  ],
+  "registryBasis": "The official Beijing Municipal Commission of Planning and Natural Resources identifies the municipal real-estate registration platform and its cadastral-map/parcel-map query modules. This is a first-party registry/cadastre custodian and procedure, but not evidence of an open Changping parcel feature API.",
+  "source": {
+    "sourceId": "CN-9006-CHANGPING-BEIJING-CADASTRAL-REVIEW",
+    "name": "Beijing official real-estate registration and cadastral-map query service",
+    "url": "https://bdc.ghzrzyw.beijing.gov.cn/eo/wizard/mainMenu.go",
+    "operator": "北京市规划和自然资源委员会 / Beijing Municipal Commission of Planning and Natural Resources",
+    "serviceType": "Official municipal registry and cadastral-map query platform; anonymous parcel geometry not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official notices describe Beijing-wide cadastral and sub-cadastral map query and parcel-map query modules, with real-estate registration information for registered properties; they do not establish an openly downloadable, citywide Changping parcel layer.",
+    "verifiedOpenScope": "Official policy and service pages were fetched. The registry entry point and HTTPS route both timed out in bounded anonymous requests; Beijing Tianditu service resources were fetched, but no parcel layer, public feature endpoint, schema, CRS, or native parcel ID was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "Bounded anonymous GET requests to http://bdc.ghzrzyw.beijing.gov.cn/eo/wizard/mainMenu.go and https://bdc.ghzrzyw.beijing.gov.cn/eo/wizard/mainMenu.go timed out after 25 and 20 seconds respectively. The official policy says visual real-estate/cadastral lookup uses identity verification; no login, credentials, private token, CAPTCHA bypass, or TLS weakening was used. The official Beijing Tianditu service page returned HTML, but its listed public resources did not expose a verified parcel feature request or safe ID-plus-geometry response.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "The current registry application's JavaScript/configuration, exact access policy for Changping, schema, CRS, native identity field, and parcel coverage remain unknown. Timeout, authorization requirements, and lack of an exact-point hit are not evidence of citywide absence.",
+  "nextStep": "Hold runtime integration. A later serial reviewer may qualify an anonymous first-party parcel endpoint only after independently verifying schema, CRS, stable native identity, and safe ID-plus-geometry output.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [40.2122378376686, 116.225196461282],
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact immutable WUP 2025 settlement point; not shifted to force a parcel hit.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

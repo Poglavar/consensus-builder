@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:8642",
+  "cityCode": 8642,
+  "wupCityCode": 8642,
+  "name": "Timika",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso2": "ID",
+  "iso3": "IDN",
+  "rank": 1510,
+  "queueRank": 1510,
+  "point": [-4.55868837605439, 136.883414592167],
+  "centerLatLon": [-4.55868837605439, 136.883414592167],
+  "pointBasis": "Exact immutable WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 375910,
+  "population2025k": 375.91,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Mimika Regency government reporting identifies Kantor Pertanahan Kabupaten Mimika (ATR/BPN) as the local land office and places the office in Timika. This establishes local registry custody, not public parcel-geometry availability.",
+  "registryEvidenceUrls": [
+    "https://diskominfo.mimikakab.go.id/berita/bupati-mimika-hadiri-rapat-koordinasi-gugus-tugas-reforma-agraria-tahun-2026",
+    "https://jdih.mimikakab.go.id/common/dokumen/2024ptun33.g..2023.ptun.jpr.pdf",
+    "https://bhumi.atrbpn.go.id/bantuan/peta"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "BHUMI's current JavaScript identifies a Geoserver layer `umum:Persil` at `/bhumigs/umum` and an `/expapi/getPersil` POST route that is used with a token. Anonymous GET requests to the service and endpoint did not return parcel data; no login, credentials, token, CAPTCHA bypass, or unsafe field request was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Kantor Pertanahan Kabupaten Mimika is the local registry custodian for Mimika Regency, including Timika; BHUMI is the national ATR/BPN public spatial viewer.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Timika Indonesia official cadastral parcel map viewer land registry ATR BPN Mimika",
+        "scope": "Identify the local registry custodian and a safe public parcel-geometry route.",
+        "result": "Search identified official Mimika Regency reporting naming Kantor Pertanahan Kabupaten Mimika, the official BHUMI map documentation, and an official court document locating the land office in Timika. No anonymous parcel geometry was verified.",
+        "actualResultUrls": [
+          "https://diskominfo.mimikakab.go.id/berita/bupati-mimika-hadiri-rapat-koordinasi-gugus-tugas-reforma-agraria-tahun-2026",
+          "https://jdih.mimikakab.go.id/common/dokumen/2024ptun33.g..2023.ptun.jpr.pdf",
+          "https://bhumi.atrbpn.go.id/bantuan/peta"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Indonesian",
+        "query": "situs resmi peta bidang tanah Timika Kabupaten Mimika Kantor Pertanahan ATR BPN",
+        "scope": "Independent local-language search for the local registry and public cadastral geometry.",
+        "result": "Search confirmed official Mimika Regency references to Kantor Pertanahan Kabupaten Mimika and the official BHUMI public map. It did not produce a verified anonymous ID-plus-complete-polygon response.",
+        "actualResultUrls": [
+          "https://diskominfo.mimikakab.go.id/berita/bupati-mimika-hadiri-rapat-koordinasi-gugus-tugas-reforma-agraria-tahun-2026",
+          "https://bhumi.atrbpn.go.id/bantuan/landing",
+          "https://bhumi.atrbpn.go.id/bantuan/peta"
+        ],
+        "executionMethod": "Separate Indonesian-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The exact WUP point was not shifted. A zero point hit or failed anonymous request is not treated as evidence of citywide absence. BHUMI CRS, response schema, native parcel identity, parcel coverage and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify the BHUMI route or another first-party Indonesian cadastral adapter; do not enable runtime from this packet alone."
+}

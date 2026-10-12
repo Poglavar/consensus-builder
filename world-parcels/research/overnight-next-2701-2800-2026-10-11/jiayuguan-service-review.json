@@ -1,0 +1,20 @@
+{
+  "cityRecord": "city-3258-jiayuguan.json",
+  "cityCode": 3258,
+  "queueRank": 2718,
+  "city": "Jiayuguan",
+  "country": "China",
+  "countryCode": "CN",
+  "reviewStatus": "held",
+  "reviewOutcome": "A first-party Jiayuguan public geographic-information platform and local GeoServer WFS cadastral layer were verified with a bounded anonymous ID-plus-geometry response; runtime readiness remains held pending serial reviewer qualification.",
+  "queryAndRequestOutcomes": "Separate English and Chinese discovery was completed. The official Jiayuguan Natural Resources Bureau identifies 天地图·嘉峪关 as the authoritative local map platform. Its public JavaScript/configuration exposed the local jygserver workspace. WMS and WFS capabilities were reachable; WFS DescribeFeatureType verified jygserver:zongdi (宗地), EPSG:4326 geometry, and native identity fields. A bounded WFS GetFeature request returned 3 of 3831 matched features, from which a safe three-polygon sample retaining only feature IDs and geometry was written.",
+  "cityOrLocalCustodian": "嘉峪关市自然资源局 (Jiayuguan Natural Resources Bureau) and its 天地图·嘉峪关 geographic-information public-service platform are evidenced as the local custodian/platform. General national agency prose was not used as local source evidence.",
+  "safeFieldAllowlist": ["stable native parcel ID", "geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"],
+  "schemaAndCrs": {"service": "WFS 2.0.0", "layer": "jygserver:zongdi", "title": "宗地", "crs": "EPSG:4326", "geometryType": "MultiPolygon", "nativeIdentity": "GeoJSON feature id zongdi.<OBJECTID>", "boundedResponse": {"count": 3, "numberMatched": 3831, "numberReturned": 3}},
+  "sampleGeojson": "jiayuguan-safe-sample.geojson",
+  "scopeLimits": ["No citywide completeness or legal/public-use admission claim.", "No exact-point absence inference; WUP point remains exactly [39.7930141031446,98.2707265971408].", "Only 3 full parcel polygons were retained; source attributes were not retained.", "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used."],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "Independent serial review is still needed for adapter qualification, identity semantics, service stability, update cadence, and runtime policy; the successful public response alone does not admit the source.",
+  "integrationDisposition": "Research packet only; no registry/catalog/runtime files changed."
+}

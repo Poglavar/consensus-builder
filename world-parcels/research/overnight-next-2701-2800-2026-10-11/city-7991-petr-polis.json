@@ -1,0 +1,99 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel sources for Petrópolis, Brazil; claims are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 7991,
+  "queueRank": 2780,
+  "name": "Petrópolis",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "locId": 76,
+  "point": [-22.5020859132972, -43.1788111216512],
+  "population2025": 213191,
+  "population2025k": 213.191,
+  "populationUnit": "persons",
+  "aliases": ["petropolis"],
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Petrópolis Brazil official cadastral parcel map GIS municipality",
+        "result": "Found the Prefeitura Municipal de Petrópolis official Mapas e Cartografia page and its official SigWeb public map portal. The indexed public map identifies the Petrópolis project, EPSG:31983, and a municipality-scale extent; no anonymous parcel ID-plus-geometry response was established.",
+        "actualResultUrls": ["https://www.petropolis.rj.gov.br/pmp/index.php/servico/20-mapas-e-cartografia", "https://sig.petropolis.rj.gov.br/sig3715/index.php/view/map?project=petropolis&repository=publico", "https://sig.petropolis.rj.gov.br/"]
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Petrópolis cadastro imobiliário mapa geoprocessamento prefeitura",
+        "result": "The official Prefeitura page describes Banco de Dados Georreferenciados, zoneamento and base maps, and the official SigWeb search result exposes the Petrópolis public project in EPSG:31983. Official material states that georeferenced municipal planning data are incorporated into the Prefeitura database, but no public parcel layer/schema or bounded parcel response was verified.",
+        "actualResultUrls": ["https://www.petropolis.rj.gov.br/pmp/index.php/mapas-e-cartografia", "https://sig.petropolis.rj.gov.br/sig3715/index.php/view/map?project=petropolis&repository=publico", "https://sapl.petropolis.rj.leg.br/media/sapl/public/materialegislativa/2023/22821/gp586.pdf"]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://www.petropolis.rj.gov.br/pmp/index.php/servico/20-mapas-e-cartografia",
+      "observation": "Official municipal service page advertises Banco de Dados Georreferenciados, zoneamento, base maps and related cartography services. This establishes a municipal GIS/custodian context, not parcel coverage by itself."
+    },
+    {
+      "url": "https://sig.petropolis.rj.gov.br/sig3715/index.php/view/map?project=petropolis&repository=publico",
+      "observation": "Official SigWeb public-project result identifies the Petrópolis project, projection EPSG:31983 and extent 650998.2603, 7502348.5813, 729306.3482, 7545864.5458. The indexed page exposed a municipal map project but not a safe parcel feature response."
+    },
+    {
+      "url": "https://sig.petropolis.rj.gov.br/",
+      "observation": "Official SigWeb landing result describes public map data as indicative and for access to basic information/planning, and lists municipal thematic layers including LUPOS and base imagery. No parcel schema or public download was exposed in the observed indexed material."
+    },
+    {
+      "url": "https://sapl.petropolis.rj.leg.br/media/sapl/public/materialegislativa/2023/22821/gp586.pdf",
+      "observation": "Official municipal legislative PDF states that municipal zone limits are georeferenced in EPSG:31983 / SIRGAS 2000 UTM zone 23S and incorporated into the Prefeitura's georeferenced management database. This is planning/zone evidence, not a parcel geometry service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://sig.petropolis.rj.gov.br/sig3715/index.php/view/map?project=petropolis&repository=publico",
+      "method": "GET official SigWeb public map/viewer",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Bounded direct curl retrieval timed out after 20 seconds without response body. The web index separately exposed the project metadata. This is a transport/viewer outcome, not evidence of citywide parcel absence."
+    },
+    {
+      "url": "https://sig.petropolis.rj.gov.br/sig3715/index.php/view/map?project=petropolis&repository=publico",
+      "method": "GET via indexed first-party page",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "outcome": "The current web fetch reported 404 while the search index returned project metadata. No alternate route was inferred and no bypass or credentials were attempted."
+    },
+    {
+      "url": "https://sig.petropolis.rj.gov.br/",
+      "method": "GET official SigWeb landing page",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Search-indexed first-party result was available and documented public layers, projection and scope. Direct page body was not retrieved in the bounded request path."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Prefeitura de Petrópolis Mapas e Cartografia service and official SigWeb public project evidence a local municipal GIS/map custodian. A local open cadastral parcel service and citywide parcel coverage were not established.",
+  "registryEvidenceUrls": ["https://www.petropolis.rj.gov.br/pmp/index.php/servico/20-mapas-e-cartografia", "https://sig.petropolis.rj.gov.br/"],
+  "verifiedSample": false,
+  "sampleFile": null,
+  "sampleFiles": [],
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "nativeSchema": null,
+  "resultCategory": "official_municipal_gis_found_city_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Petrópolis Prefeitura publishes a public SigWeb map project and georeferenced municipal planning/base-map data.",
+    "verifiedOpenScope": "Official map-project metadata and EPSG:31983 were observed; no parcel layer, native parcel identifier, schema, or bounded ID-plus-geometry response was obtained.",
+    "countrywideVerified": false,
+    "citywideCompleteness": false
+  },
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "remainingUncertainty": "The public SigWeb project may expose additional layers through an interactive route or current JavaScript/configuration not retrieved during the bounded checks. The exact WUP point was preserved and not shifted. Timeout, 404, or lack of an exact-point response is not evidence of citywide cadastral absence.",
+  "safeFieldAllowlist": ["stable native parcel ID when independently verified", "geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"]
+}

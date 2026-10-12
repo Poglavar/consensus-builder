@@ -1,0 +1,82 @@
+{
+  "cityCode": 1895,
+  "queueRank": 2555,
+  "city": "Wonju",
+  "country": "Republic of Korea",
+  "countryCode": "KR",
+  "point": [37.3421161760985, 127.949470395472],
+  "population2025": 230065,
+  "population2025k": 230.065,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Wonju official cadastral parcel map geospatial portal Korea",
+        "result": "First-party discovery found the official Wonju municipal Life Geography Map, its continuous cadastral-map layer, and the municipality's GeoServer WMS/WFS gateway. National K-GeoP was also identified, but the local municipal service provides the city-specific source.",
+        "actualResultUrls": ["https://map.wonju.go.kr/lifemap/map/theme-map.lm", "https://www.kgeop.go.kr/info/infoMap.do"]
+      },
+      {
+        "language": "Korean",
+        "query": "원주시 공식 지적도 토지정보시스템 연속지적도 공간정보",
+        "result": "공식 원주시 생활지리 지도에서 연속지적도 레이어를 확인했고, 현재 JavaScript 설정에서 원주시 GeoServer의 LP_PA_CBND 레이어와 EPSG:5186 WMS/WFS 서비스를 확인했다.",
+        "actualResultUrls": ["https://map.wonju.go.kr/lifemap/map/theme-map.lm", "https://www.wonju.go.kr/www/contents.do?key=270"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Wonju City municipal geospatial/map service; the public Life Geography Map exposes the continuous cadastral map and the city-specific GeoServer gateway.",
+  "registryEvidence": {
+    "localCustodianUrl": "https://map.wonju.go.kr/lifemap/map/theme-map.lm",
+    "publicMapServiceUrl": "https://map.wonju.go.kr/gs-gate/wfs",
+    "evidence": "The official municipal page labels the layer 연속지적도 (continuous cadastral map). Its current JavaScript config names the service layer wonju:LP_PA_CBND and the gateway /gs-gate/wms; the public WFS capabilities lists the same feature type with Wonju coverage and EPSG:5186."
+  },
+  "sourceReview": {
+    "service": "Wonju municipal Life Geography Map / GeoServer continuous cadastral layer LP_PA_CBND",
+    "baseUrls": ["https://map.wonju.go.kr/lifemap/map/theme-map.lm", "https://map.wonju.go.kr/gs-gate/wms", "https://map.wonju.go.kr/gs-gate/wfs"],
+    "officialAssetsInspected": ["current map HTML", "current app.js layer configuration", "WMS GetCapabilities", "WFS GetCapabilities", "bounded WFS GeoJSON response"],
+    "nativeFieldMapping": "Feature id is the GeoServer/native layer identity (LP_PA_CBND.<numeric suffix>); returned source attributes included PNU, JIBUN and BCHK but were not retained in the sample.",
+    "compositeKeyProvenance": "No composite key constructed; the stable feature id supplied by WFS was used.",
+    "crs": "EPSG:5186 in the service response; retained sample is in EPSG:5186 with an explicit GeoJSON CRS member.",
+    "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "geometry CRS", "public service/layer metadata"]
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://map.wonju.go.kr/lifemap/map/theme-map.lm", "outcome": "200; official map HTML exposed CSRF configuration and map-service metadata."},
+    {"method": "GET", "url": "https://map.wonju.go.kr/lifemap/resources/map/js/app.js", "outcome": "200; current JavaScript identified JIJUK layer LP_PA_CBND, WMS gateway, and coordinate-to-PNU POST route."},
+    {"method": "GET", "url": "https://map.wonju.go.kr/gs-gate/wms?service=WMS&request=GetCapabilities&version=1.1.1", "outcome": "200; WMS capabilities listed wonju:LP_PA_CBND, EPSG:5186 and GetFeatureInfo support."},
+    {"method": "GET", "url": "https://map.wonju.go.kr/gs-gate/wfs?service=WFS&request=GetCapabilities&version=1.0.0", "outcome": "200; WFS capabilities listed wonju:LP_PA_CBND as a queryable feature type, EPSG:5186, and Wonju lat/lon bounds."},
+    {"method": "GET", "url": "https://map.wonju.go.kr/gs-gate/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=wonju%3ALP_PA_CBND&outputFormat=application%2Fjson&srsName=EPSG%3A5186&maxFeatures=3&bbox=284084.821748401%2C527354.1737090645%2C284184.821748401%2C527454.1737090645%2CEPSG%3A5186", "outcome": "200; bounded anonymous FeatureCollection reported totalFeatures=27 and returned three safe-reviewable parcel features with native ids and full MultiPolygon geometry. Raw attributes were inspected only in ignored scratch evidence."},
+    {"method": "POST", "url": "https://map.wonju.go.kr/lifemap/map/get-pnu-by-coordinate.lm", "outcome": "200 after using the page-provided CSRF token; exact WUP point transformed to EPSG:5186 [284134.821748401,527404.1737090645] returned {result:true} but no parcel property object. This was not treated as absence."}
+  ],
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "wonju:LP_PA_CBND.91555",
+    "sampleCount": 1,
+    "sampleFile": "wonju-parcel-sample.geojson",
+    "nativeId": "LP_PA_CBND.91555",
+    "nativeIdField": "WFS feature id",
+    "exactWupPointTest": "Exact WUP point was preserved and tested through the official coordinate-to-PNU route; no hit/miss inference was made from its result.",
+    "requestEvidence": ["WFS capabilities", "bounded WFS GeoJSON response", "full polygon retained with safe native id only"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Wonju municipal continuous cadastral map layer LP_PA_CBND.",
+    "verifiedOpenScope": "Official public WFS layer with Wonju-wide bounding box in capabilities; one bounded response inspected near the exact point.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "scopeLimits": [
+    "Exact WUP point [37.3421161760985,127.949470395472] and latitude/longitude order were preserved; no coordinate was shifted.",
+    "The WFS bbox was a bounded service/schema test, not evidence of complete citywide extraction; citywideVerified remains false.",
+    "The coordinate-to-PNU response had no returned parcel object; this is not evidence of parcel absence.",
+    "No owner, address, titleholder, contact, title, tax/account, personal or other unsafe fields were requested or retained.",
+    "Packet completion records research only and does not qualify or admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The public municipal WFS exposes safe parcel identities and geometry, but currentness, exact administrative city-boundary completeness, field semantics beyond the observed identity, and production adapter suitability require independent serial review.",
+  "retainedSample": {"file": "wonju-parcel-sample.geojson", "featureCount": 1, "propertiesPolicy": "canonical native id only"}
+}

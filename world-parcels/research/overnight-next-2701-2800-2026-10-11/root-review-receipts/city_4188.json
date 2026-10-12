@@ -1,0 +1,13 @@
+{
+  "taskId": "city:4188",
+  "decision": "held",
+  "checkedAt": "2026-10-11T18:15:57Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-4188-marab.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/marab-service-review.json"
+  ],
+  "review": "WUP 2025 code 4188, rank 2704, Brazil, point [-5.35905844846975,-49.1124990020739], and 218914 persons match the verified source archive, queue, packet, and paired review. English and Portuguese executed searches are recorded. First-party Maraba municipal SDU and cadastral-service evidence supports local custody (registryFound true), but the lookup workflow supplied no safe parcel polygon or native-ID response. A direct PDF request returned 403; this access failure is not citywide absence. No full polygon was retained. Independent live adapter qualification, including forced paging, 13 bounded cells, metric geometry checks, source binding, and headed Details verification, is absent. No admission."
+}

@@ -1,0 +1,20 @@
+{
+  "cityRecord": "city-6957-kaspiysk.json",
+  "cityCode": 6957,
+  "queueRank": 3013,
+  "city": "Kaspiysk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "Separate English and Russian discovery identified the first-party NSМD/NSPD cadastral-map route and official Kaspiysk municipal land/cadastral procedure evidence. Direct anonymous viewer/API attempts timed out or were unavailable, so no safe parcel ID-plus-geometry response was qualified and no GeoJSON sample is retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, URLs, routes, statuses, custodian findings, and limitations are recorded in city-6957-kaspiysk.json.",
+  "custodians": [{"name": "Rosreestr / ФГИС ЕЦП НСПД", "scope": "National EGRN cadastral map and public spatial-data platform", "evidence": "https://nspd.gov.ru/map"}, {"name": "Administration of urban okrug City of Kaspiysk", "scope": "Local land-planning, land-allocation, surveying and cadastral-registration procedure", "evidence": "https://www.kaspiysk.org/storage/files/Постановление%20№150.pdf; https://www.kaspiysk.org/storage/files/ПМ%20Каспийск%204%20га_Том_03.pdf"}],
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdField": null, "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point [42.8810451320123, 47.6325621368155] was preserved; it was not moved to force a parcel hit.", "No exact-point hit or miss is inferred from failed access.", "No polygon is retained because no safe native ID-plus-geometry response was obtained.", "Municipal documents show local cadastral procedure but do not prove public citywide vector coverage.", "No unsafe owner, address/contact, titleholder, personal, tax/account, or certificate fields were requested or retained.", "Independent serial review is required before adapter/runtime qualification."],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "The first-party NSМD/NSPD route and local Kaspiysk cadastral procedure were evidenced, but anonymous parcel identity, geometry, CRS, and city coverage were not qualified."},
+  "uncertainty": "The official map may expose data after normal browser interaction or from a network location with access; this packet records bounded anonymous attempts without treating unavailable responses as cadastral absence."
+}

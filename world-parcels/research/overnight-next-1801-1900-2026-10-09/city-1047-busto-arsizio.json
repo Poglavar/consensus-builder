@@ -1,0 +1,143 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence and executed public requests.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 1047,
+  "queueRank": 1893,
+  "cityId": "1047:IT:busto-arsizio",
+  "name": "Busto Arsizio",
+  "country": "Italy",
+  "countryCode": "IT",
+  "iso3": "ITA",
+  "locId": 380,
+  "point": [45.6040119276554, 8.8991164856004],
+  "population2025": 302759,
+  "population2025k": 302.759,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "aliases": ["busto arsizio"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Busto Arsizio official cadastral map parcels geoportale catasto",
+        "result": "Search identified the official Comune di Busto Arsizio Catasto e urbanistica page, the municipal Carta tecnica comunale page, and the Agenzia delle Entrate Geoportale Cartografico Catastale.",
+        "actualResultUrls": [
+          "https://www.comune.bustoarsizio.va.it/index.php/it/page/catasto-e-urbanistica",
+          "https://www.comune.bustoarsizio.va.it/it/documenti_pubblici/carta-tecnica-comunale",
+          "https://geoportale.cartografia.agenziaentrate.gov.it/age-inspire/srv/spa/catalog.search",
+          "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php?service=WMS&request=GetCapabilities"
+        ]
+      },
+      {
+        "language": "Italian",
+        "query": "Busto Arsizio sito ufficiale mappa catastale particelle",
+        "result": "Search identified the Comune catasto/urbanistica service page and official urbanistic-attestation guidance referring to exact cadastral parcel identification; the national Agenzia delle Entrate cadastral WMS was reachable anonymously.",
+        "actualResultUrls": [
+          "https://www.comune.bustoarsizio.va.it/it/page/catasto-e-urbanistica",
+          "https://www.comune.bustoarsizio.va.it/it/servizi/richiesta-attestazioni-urbanistiche",
+          "https://geoportale.cartografia.agenziaentrate.gov.it/age-inspire/srv/ita/catalog.search",
+          "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php?service=WMS&request=GetCapabilities"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.comune.bustoarsizio.va.it/index.php/it/page/catasto-e-urbanistica",
+      "custodian": "Comune di Busto Arsizio",
+      "observation": "First-party municipal category documents catasto and urbanistica services, including CDU and access-to-records procedures. This is local procedural/custody evidence, not an anonymous parcel geometry API."
+    },
+    {
+      "url": "https://www.comune.bustoarsizio.va.it/it/servizi/richiesta-attestazioni-urbanistiche",
+      "custodian": "Comune di Busto Arsizio",
+      "observation": "The municipal procedure requires exact identification of the cadastral parcel (mappale) for urbanistic attestations. No owner or unsafe fields were requested."
+    },
+    {
+      "url": "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php?service=WMS&request=GetCapabilities",
+      "custodian": "Agenzia delle Entrate",
+      "observation": "Anonymous WMS capabilities identify Cartografia Catastale and the CP.CadastralParcel (Particelle) layer, with EPSG:6706 and other CRS declarations. WMS is image/GetFeatureInfo oriented; no parcel polygon geometry endpoint was exposed by the inspected route."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoportale.cartografia.agenziaentrate.gov.it/age-inspire/srv/ita/catalog.search",
+      "method": "GET",
+      "outcome": "TLS-verified anonymous request returned HTTP 200 HTML. The current JavaScript/configuration referenced map/config-viewer.xml and enabled the catalog map viewer; no Busto-specific parcel feature API was exposed in the returned page."
+    },
+    {
+      "url": "https://geoportale.cartografia.agenziaentrate.gov.it/age-inspire/wms/ows01.php?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "outcome": "Request followed a redirect/login-wall path and did not provide a usable public capability response; no login attempted."
+    },
+    {
+      "url": "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "outcome": "TLS-verified anonymous request returned HTTP 200 XML capabilities. CP.CadastralParcel / Particelle was present; schema metadata listed safe parcel display fields but not a geometry feature-download route."
+    },
+    {
+      "url": "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "outcome": "Anonymous request returned an XML SOAP fault/internal client error; no WFS capability or geometry response."
+    },
+    {
+      "url": "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php?service=WMS&version=1.3.0&request=GetFeatureInfo&layers=CP.CadastralParcel&query_layers=CP.CadastralParcel&crs=EPSG:6706&bbox=45.6035,8.8985,45.6045,8.8997&width=800&height=800&i=480&j=410&info_format=text/html&feature_count=3",
+      "method": "GET",
+      "outcome": "TLS-verified anonymous bounded GetFeatureInfo returned HTTP 200 HTML for the parcel layer. It reported one safe native INSPIRE identity, label, and NationalCadastralReference (localId IT.AGE.PLA.E514_000500.506; label 506; reference E514_000500.506). It did not return polygon geometry, and the pixel query is not treated as an exact-point hit or citywide coverage proof."
+    },
+    {
+      "url": "https://www.comune.bustoarsizio.va.it/it/documenti_pubblici/carta-tecnica-comunale",
+      "method": "GET",
+      "outcome": "Official municipal page was readable and identifies public Carta Tecnica Comunale cartographic documents handled by Urbanistica - Espropri - SIT; no parcel API or geometry response was exposed."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "First-party Comune di Busto Arsizio cadastral/urbanistic procedures establish a local municipal cadastral/urbanistic custodian, while Agenzia delle Entrate first-party WMS capabilities and bounded GetFeatureInfo establish a national cadastral map service with a safe native parcel identity response.",
+  "registryEvidenceUrls": [
+    "https://www.comune.bustoarsizio.va.it/index.php/it/page/catasto-e-urbanistica",
+    "https://www.comune.bustoarsizio.va.it/it/servizi/richiesta-attestazioni-urbanistiche",
+    "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php?service=WMS&request=GetCapabilities"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php",
+  "sourceIds": ["IT.AGE.PLA.E514_000500.506"],
+  "verifiedParcelResponse": {
+    "nativeId": "IT.AGE.PLA.E514_000500.506",
+    "nativeIdField": "InspireId localId",
+    "label": "506",
+    "nationalCadastralReference": "E514_000500.506",
+    "geometry": false
+  },
+  "resultCategory": "city_registry_and_safe_id_evidence_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Comune di Busto Arsizio municipal cadastral/urbanistic procedures plus Agenzia delle Entrate national cadastral WMS.",
+    "verifiedOpenScope": "A bounded anonymous WMS GetFeatureInfo response was observed, but Busto citywide coverage, stable identity semantics beyond the returned fields, current data vintage, and polygon retrieval remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "pointBasis": "Exact WUP queue point preserved; no coordinate shift and no exact-point hit/miss inference.",
+  "safeFieldAllowlist": ["stable native parcel identifier only", "full parcel polygon geometry", "source layer metadata", "CRS metadata", "safe parcel display label/reference"],
+  "nativeFieldMapping": {"InspireId localId": "stable native parcel identity candidate", "Label": "safe display label", "NationalCadastralReference": "safe cadastral reference"},
+  "compositeKeyProvenance": null,
+  "crs": "EPSG:6706 declared by WMS capabilities; no geometry response retrieved.",
+  "geometryQuality": "not evaluated; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": "IT.AGE.PLA.E514_000500.506",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": "IT.AGE.PLA.E514_000500.506",
+    "nativeIdField": "InspireId localId",
+    "exactWupPointTest": "No polygon geometry was returned; the bounded GetFeatureInfo response is not used as an exact-point or citywide hit claim.",
+    "requestEvidence": ["WMS capabilities: HTTP 200 XML", "WMS GetFeatureInfo: HTTP 200 safe ID/label/reference HTML", "WFS capability attempt: XML SOAP fault", "geoportale WMS path: redirect/login-wall path"]
+  },
+  "uncertainty": "The official WMS is reachable anonymously and returned a safe parcel identity for a bounded map query, but the current public route exposes no retained polygon geometry, anonymous citywide extraction behavior, or independently qualified runtime adapter. No owner, address, contact, titleholder, personal, tax/account, or unsafe fields were requested or retained.",
+  "researchGroup": "europe"
+}

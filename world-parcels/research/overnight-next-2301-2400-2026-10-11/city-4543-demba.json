@@ -1,0 +1,113 @@
+{
+  "cityCode": 4543,
+  "queueRank": 2355,
+  "name": "Demba",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "point": [-5.48961713513931, 22.2702634146899],
+  "population2025": 248191,
+  "population2025k": 248.191,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Demba Democratic Republic of the Congo cadastral parcel map official land registry cadastre",
+        "result": "First-party discovery found the national Ministry of Land Affairs, its circonscriptions list, a national land-registry consultation procedure, and BIC (Bureau d'Informations Cadastrales). No Demba-specific public parcel viewer or local feature service was found.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://bic.cd/"
+        ]
+      },
+      {
+        "language": "French (native/local)",
+        "query": "Demba République démocratique du Congo cadastre parcellaire carte officielle registre foncier",
+        "result": "La recherche officielle a trouvé le Ministère des Affaires Foncières, la procédure nationale de consultation des registres et le BIC. La liste ministérielle des circonscriptions ne fournit pas de service parcellaire public identifié pour Demba; aucun polygone cadastral public anonyme n'a été qualifié.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+          "https://bic.cd/cadastral-map"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "first-party English and French discovery plus bounded official viewer JavaScript/configuration and anonymous safe-field requests",
+  "sourceReview": "The national Ministry of Land Affairs is evidenced as the general cadastral/land-registry custodian. The official circonscriptions page and request procedure are national guidance, not evidence of a Demba local registry or public parcel API. BIC describes a cadastral product and its public home page says service is available for Nord-Kivu and Sud-Kivu; the cadastral-map route is a login wall. Demba/Kasaï-Central local parcel coverage was not evidenced.",
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.google.com/search?q=Demba+Democratic+Republic+of+the+Congo+cadastral+parcel+map+official+land+registry+cadastre",
+      "httpStatus": 200,
+      "outcome": "Discovery query returned first-party Ministry of Land Affairs, Service Public and BIC pages; no Demba-specific public parcel viewer was identified. Search-result wrapper URL is recorded only as the query route; qualifying evidence URLs are recorded in freshResearch."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.google.com/search?q=Demba+République+démocratique+du+Congo+cadastre+parcellaire+carte+officielle+registre+foncier",
+      "httpStatus": 200,
+      "outcome": "Recherche en français: sources officielles nationales trouvées, mais aucun service parcellaire public propre à Demba/Kasaï-Central identifié."
+    },
+    {
+      "method": "GET",
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "httpStatus": 200,
+      "outcome": "Official ministry list loaded. It reports 143 circonscriptions across 26 provinces; bounded page inspection did not evidence a Demba or Kasaï-Central parcel feature endpoint. This is general national administrative evidence, not local Demba registry evidence."
+    },
+    {
+      "method": "GET",
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "httpStatus": 200,
+      "outcome": "Official national procedure loaded: consultation requires a formal request to the Conservateur des Titres Immobiliers or Chef de Division du Cadastre and returns an official information sheet/certificate. No anonymous geometry service is exposed. Unsafe owner/title fields were not requested."
+    },
+    {
+      "method": "GET",
+      "url": "https://bic.cd/",
+      "httpStatus": 200,
+      "outcome": "BIC public home page loaded. It presents cadastral data and states public service availability for Nord-Kivu and Sud-Kivu, not Demba/Kasaï-Central."
+    },
+    {
+      "method": "GET",
+      "url": "https://bic.cd/cadastral-map",
+      "httpStatus": 200,
+      "outcome": "Current BIC map route resolves to an authentication/login wall. No login, credentials, CAPTCHA bypass, or private token was used."
+    },
+    {
+      "method": "GET",
+      "url": "https://bic.cd/assets/index-BrUTiL_J.js",
+      "httpStatus": 200,
+      "outcome": "Current public JavaScript inspected. It exposes the public Supabase project and lazy cadastral-map module; no separate first-party Demba service URL was found."
+    },
+    {
+      "method": "POST",
+      "url": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/rpc/search_parcels_public",
+      "httpStatus": 200,
+      "outcome": "Anonymous public RPC followed from current BIC JavaScript. Safe bounded requests p_query=Demba, p_mode=parcel/title, p_limit=3, p_test_mode=false returned empty arrays for both modes. This is a query result only and is not treated as citywide absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/cadastral_parcels?select=id,parcel_number,gps_coordinates,province,ville,commune,quartier,avenue,territoire,collectivite,groupement,village,parcel_type,area_sqm&limit=3",
+      "httpStatus": 200,
+      "outcome": "Anonymous safe-field projection returned an empty array. A preceding geometry-column probe returned HTTP 400 because the table uses gps_coordinates rather than geometry; no raw unsafe row was requested or retained."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "BIC current JavaScript identifies a public Supabase backend and search_parcels_public RPC; the map route itself is login-gated.",
+    "geometryCrs": "Not observed in an anonymous parcel response.",
+    "nativeIdentity": "BIC source code uses cadastral_parcels.id and parcel_number, but no Demba row was returned; neither is qualified as a Demba sample identity.",
+    "sourceFieldMapping": {"gps_coordinates": "native parcel coordinate array referenced by BIC code; no response retained", "id": "native database identifier referenced by BIC code", "parcel_number": "native parcel search field referenced by BIC code"},
+    "boundedAnonymousResponse": {"requestScope": "Exact WUP point [-5.48961713513931, 22.2702634146899] preserved; no coordinate shift and no exact-point parcel query was used.", "featureCount": 0, "geometryFeatureCount": 0, "result": "No Demba result and no anonymous polygon response; zero results are not evidence of citywide absence."}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full unchanged parcel polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "National custodian and procedure are evidenced, but no Demba local registry, anonymous public parcel geometry, CRS, or qualified native ID-plus-polygon sample was obtained."},
+  "scopeLimits": ["Exact WUP point [-5.48961713513931, 22.2702634146899] preserved; no coordinate shift.", "No exact-point hit, map extent miss, timeout, login wall, empty RPC result, or unusable UI was treated as citywide cadastral absence.", "General national registry procedure and BIC product claims do not establish Demba local source integration.", "No parcel polygon retained; maximum allowed would have been three full polygons.", "No Demba citywide coverage, update cadence, service CRS, or stable parcel identity semantics verified.", "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields requested or retained."],
+  "uncertainty": "The Ministry of Land Affairs is a credible national custodian, but local Demba/Kasaï-Central registry availability and public parcel coverage remain unresolved. BIC's public product is region-limited on its home page and login-gated for the map. The anonymous BIC RPC/table checks produced no Demba rows. Runtime/admission remains held and requires independent serial qualification."
+}

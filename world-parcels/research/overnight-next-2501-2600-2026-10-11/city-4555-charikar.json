@@ -1,0 +1,58 @@
+{
+  "cityCode": 4555,
+  "queueRank": 2592,
+  "country": "Afghanistan",
+  "countryCode": "AF",
+  "name": "Charikar",
+  "point": [35.0201265104779, 69.1683757152762],
+  "population2025": 227054,
+  "population2025k": 227.054,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Afghanistan official cadastral parcel map Charikar land registry GIS",
+        "result": "Official Afghan government results identified the Ministry of Urban Development and Land / former ARAZI as the relevant land-administration custodian and described land information, cadastral survey, and registration programmes. No current anonymous Charikar-specific cadastral viewer, parcel API, public service configuration, safe native parcel identity, or geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.mudh.gov.af/index.php/en/institutional-development-programme-land-administration-idpl",
+          "https://www.mudh.gov.af/sites/default/files/2019-10/ARAZI%20Operational%20Strategy.pdf",
+          "https://www.charikar-m.gov.af/dr/%D8%B4%D8%A7%D8%B1%D9%88%D8%A7%D9%84%DB%8C-%DA%86%D8%A7%D8%B1%DB%8C%DA%A9%D8%A7%D8%B1"
+        ]
+      },
+      {
+        "language": "Dari/Pashto",
+        "query": "افغانستان کادستر نقشه پارسل چاریکار اداره اراضی",
+        "result": "دری/Pashto official results confirmed cadastral-survey and land-administration responsibilities, including the land-information-system programme, but did not expose a current public Charikar parcel map/API, schema, CRS, safe parcel identity, or downloadable geometry. The Charikar municipality result was not usable for bounded anonymous service inspection.",
+        "actualResultUrls": [
+          "https://www.mail.gov.af/dr/%D9%85%D8%AF%DB%8C%D8%B1%DB%8C%D8%AA-%D8%AA%D8%AE%D9%86%DB%8C%DA%A9%DB%8C-%D8%B3%D8%B1%D9%88%DB%8C-%DA%A9%D8%AF%D8%B3%D8%AA%D8%B1",
+          "https://www.mudh.gov.af/dr/%D8%AA%D8%A7%D8%B1%DB%8C%D8%AE%DA%86%D9%87-%D9%88%D8%B2%D8%A7%D8%B1%D8%AA%C2%A0%D8%B4%D9%87%D8%B1%D8%B3%D8%A7%D8%B2%DB%8C-%D9%88-%D9%85%D8%B3%DA%A9%D9%86",
+          "https://www.charikar-m.gov.af/dr/%D8%B4%D8%A7%D8%B1%D9%88%D8%A7%D9%84%DB%8C-%DA%86%D8%A7%D8%B1%DB%8C%DA%A9%D8%A7%D8%B1"
+        ]
+      }
+    ]
+  },
+  "source": {
+    "name": "Afghanistan Ministry of Urban Development and Land / former ARAZI land-information and cadastral programme; Charikar Municipality portal",
+    "operator": "Ministry of Urban Development and Land / former Afghanistan Independent Land Authority (ARAZI); Charikar Municipality",
+    "viewerUrl": null,
+    "scope": "Official national land-administration programme and official municipal portal discovery only; no current open Charikar parcel dataset or citywide cadastral coverage was verified.",
+    "crs": null,
+    "nativeIdentity": null
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "runtimeReadiness": "held",
+  "resultCategory": "official_land_administration_programme_no_verified_open_charikar_geometry",
+  "coverageAssessment": {
+    "claimedScope": "National land-information/cadastral programme plus Charikar municipal portal; no citywide parcel coverage claim.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current existence, accessibility, schema, CRS, update status, and geographic completeness of any Charikar or Parwan parcel register could not be verified from anonymous public endpoints. The exact WUP point is preserved unchanged; no exact-point hit, map extent miss, timeout, login wall, or unusable UI was treated as evidence of citywide absence.",
+  "safeFieldAllowlist": ["geometry", "CRS", "stable native parcel identity", "source scope/provenance"],
+  "notes": "Executed anonymous first-party discovery and bounded GET attempts only. No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe owner/address/contact/titleholder/tax/account fields, or TLS exception were used. Packet completion records research only; it is not source integration or admission. No GeoJSON sample was retained because no safe native parcel geometry was verified."
+}

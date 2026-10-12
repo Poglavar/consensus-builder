@@ -1,0 +1,41 @@
+{
+  "cityCode": 8802,
+  "queueRank": 2698,
+  "name": "Karauli",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [26.4957038400374, 77.0217781941409],
+  "population2025": 219291,
+  "population2025k": 219.291,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Karauli Rajasthan official cadastral land records map GIS parcel service Rajasthan Apna Khata",
+        "result": "First-party discovery found Rajasthan's Apna Khata/e-Dharti land-record portal, the Rajasthan Bhu-Naksha map route, Rajdharaa Urban GIS, and the Government of India's DILRMP Karauli district status page. The official results describe land records, khasra/cadastral maps and GIS viewing, but no safe anonymous Karauli parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://apnakhata.rajasthan.gov.in/LRCLogin.aspx",
+          "https://bhunaksha.rajasthan.gov.in/Viewmap/",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/107",
+          "https://gis.rajasthan.gov.in/index.htm"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "करौली राजस्थान आधिकारिक भू-नक्शा खसरा जमाबंदी भूमि अभिलेख",
+        "result": "Hindi-language first-party discovery returned the Rajasthan Government Apna Khata portal and its Hindi land-record/map service labels. The DILRMP result identifies district KARAULI in Rajasthan and exposes map-digitization/parcel-status reporting. No safe anonymous parcel geometry response was obtained.",
+        "actualResultUrls": [
+          "https://apnakhata.rajasthan.gov.in/LRCLogin.aspx",
+          "https://apnakhata.rajasthan.gov.in/Owner_wise/DistrictMap.aspx",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/107"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "Rajasthan Government Revenue Board/e-Dharti (Apna Khata) and Rajasthan cadastral-map/GIS routes are evidenced. DILRMP explicitly reports Karauli district map/parcel modernization status. This establishes a state/district land-record workflow, not a qualified city parcel integration.",
+  "runtimeReadiness": "held"
+}

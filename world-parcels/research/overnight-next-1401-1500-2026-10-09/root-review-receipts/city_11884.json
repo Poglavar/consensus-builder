@@ -1,0 +1,12 @@
+{
+  "taskId": "city:11884",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-11884-yongkang.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/yongkang-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:38:56Z",
+  "reason": "Official local cadastral custodian is evidenced; public parcel geometry and independent live adapter admission gates remain unverified after a bounded viewer timeout."
+}

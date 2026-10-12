@@ -1,0 +1,19 @@
+{
+  "cityRecord": "city-5609-kashan.json",
+  "cityCode": 5609,
+  "queueRank": 2708,
+  "city": "Kashan",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "reviewStatus": "held",
+  "reviewOutcome": "A Kashan-local map procedure is evidenced, but no qualifying public cadastral parcel-polygon service or safe retained geometry sample was verified.",
+  "queryAndRequestOutcomes": "Separate English and Persian first-party discovery was performed and recorded in the city record. The Kashan engineering organization’s official page documents an electronic building-plan map system built with Kashan Municipality and authenticated access. Anonymous GET probes to the linked service, Kashan municipal site, and national cadastral candidates timed out; no login or bypass was attempted. No schema, CRS, bounded ID+geometry response, or parcel polygon was obtained.",
+  "cityOrLocalCustodian": "The Kashan branch of Iran’s Construction Engineering Organization and Kashan Municipality are evidenced as local custodians of an electronic building-plan map workflow. The national cadastral candidates are attributed to Iran’s registration organization at the service/domain level, but no live anonymous parcel layer was verified.",
+  "safeFieldAllowlist": ["stable native parcel/object ID when independently verified", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "registration details", "personal fields"],
+  "schemaAndCrs": "No usable public response was returned, so schema and CRS remain unverified. The local source description mentions plan, area and property-location records but does not publish a parcel-layer schema or CRS.",
+  "sampleGeojson": null,
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "Timeouts and authenticated-service indications are access limitations, not evidence of citywide cadastral absence. The exact WUP point was not moved to seek a hit. Local building-plan mapping should not be conflated with an open cadastral parcel source.",
+  "integrationDisposition": "Research packet only; not source integration or admission. No registry/catalog/runtime files were changed."
+}

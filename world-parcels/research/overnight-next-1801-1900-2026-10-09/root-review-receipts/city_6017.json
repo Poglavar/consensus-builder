@@ -1,0 +1,38 @@
+{
+  "taskId": "city:6017",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-6017-kindu.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/kindu-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T17:01:16.136773Z",
+  "reason": "The first-party DRC service catalogue documents national formal register consultation, but no Kindu-local custodian or anonymous parcel feed was verified. The saved BIC page and bundle supply no qualified Kindu native-ID polygon response. Local custody remains unresolved, not false.",
+  "sourceUrlsReviewed": [
+    "https://servicepublic.gouv.cd/service/4671",
+    "https://bic.cd/"
+  ],
+  "identity": {
+    "cityCode": 6017,
+    "queueRank": 1859,
+    "name": "Kindu",
+    "country": "Democratic Republic of the Congo",
+    "countryCode": "CD",
+    "point": [
+      -2.9460241256905,
+      25.9180137937463
+    ],
+    "populationPersons": 309727,
+    "verifiedAgainst": "cohort ranked-population.json and pending-queue.json"
+  },
+  "searchLanguagesVerified": [
+    "English",
+    "French",
+    "Swahili"
+  ],
+  "registryFound": null,
+  "retainedFullPolygons": 0,
+  "admissionGates": "No independently qualified live adapter. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification are not evidenced."
+}

@@ -1,0 +1,21 @@
+{
+  "taskId": "city:8012",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-8012-ribeira.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ribeira-service-review.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-8012-ribeira-sample.geojson"
+  ],
+  "checkedAt": "2026-10-11T17:12:51Z",
+  "finding": "UN archive, immutable queue, and packet agree on Brazil city 8012, rank 2659, WUP point and 222035 persons. English and Portuguese searches with result URLs are recorded. Municipal ArcGIS metadata identifies polygon layer and objectid. Retained bounded sample has three full ID-only polygons, valid in EPSG:31983 with no pairwise sample overlap. Exact point missed; response exceeded transfer limit. Locality alignment, complete source response, and adapter qualification remain unresolved; bounded sample is not citywide absence or coverage proof.",
+  "missingAdmissionGates": [
+    "fresh exact native-ID round trips",
+    "forced paging and stable complete manifest",
+    "13 bounded cells",
+    "independent full-source metric GEOS duplicate/overlap/operation checks",
+    "source binding and locality alignment",
+    "headed Details-panel verification"
+  ]
+}

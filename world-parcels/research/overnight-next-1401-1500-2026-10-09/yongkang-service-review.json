@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11884-yongkang.json",
+  "purpose": "Document first-party local registry context and bounded anonymous parcel-geometry access review for Yongkang, China.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Yongkang's official Natural Resources and Planning Bureau and Real Estate Registration Center are evidenced as local custodians for natural-resource, cadastral, and real-estate registration information. Zhejiang's official geographic-information public-service platform was identified as the provincial map route. The bounded anonymous fetch timed out before the current viewer configuration or public parcel API could be inspected; no geometry was retained.",
+  "registryAssessment": "Local registry/cadastre custodian verified: 永康市自然资源和规划局, with 永康市不动产登记中心 evidenced by official government materials.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.yk.gov.cn/art/2021/9/10/art_1229197153_2280.html",
+      "observation": "Official Yongkang Natural Resources and Planning Bureau government-information guide; identifies the bureau, its public-information channel, and the municipal custodian context. It is not itself a parcel feature service."
+    },
+    {
+      "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3586/site/attach/0/6cb76bfb76bc40fbaff7474e8ecf8d31.pdf",
+      "observation": "Official Yongkang Real Estate Registration Center 2023 report; states responsibilities for land, housing, forest-land and rural-contract registration, cadastral investigation support, archives, and lawful public information query/use."
+    },
+    {
+      "url": "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+      "observation": "Official Zhejiang geographic-information public-service platform advertised as a public map/geographic-information service. TLS-verified bounded direct fetch timed out before JavaScript/configuration inspection."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Yongkang Zhejiang China official cadastral parcel map GIS land registry public service",
+      "result": "Search identified the official Zhejiang GIS platform and official Yongkang bureau materials; no anonymous parcel feature service was established.",
+      "actualResultUrls": ["https://ditu.zjzwfw.gov.cn/platform-main/index.html", "https://www.yk.gov.cn/art/2021/9/10/art_1229197153_2280.html"]
+    },
+    {
+      "language": "Chinese",
+      "query": "永康市 不动产登记 地籍图 查询 地图 官方",
+      "result": "Search identified official Yongkang bureau and registration-center materials; no anonymous parcel geometry endpoint was established.",
+      "actualResultUrls": ["https://www.yk.gov.cn/art/2021/9/10/art_1229197153_2280.html", "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3586/site/attach/0/6cb76bfb76bc40fbaff7474e8ecf8d31.pdf"]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+      "result": "TLS-verified bounded anonymous GET attempted with a 20-second timeout; DNS/request resolution timed out. No retry with credentials, CAPTCHA bypass, or TLS weakening was attempted."
+    },
+    {
+      "url": "https://www.yk.gov.cn/art/2021/9/10/art_1229197153_2280.html",
+      "result": "Official local bureau government-information guide was found through first-party discovery; it establishes custodian context, not parcel geometry."
+    },
+    {
+      "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3586/site/attach/0/6cb76bfb76bc40fbaff7474e8ecf8d31.pdf",
+      "result": "Official registration-center report was opened and read; it establishes local registration/cadastral responsibilities, not an open parcel endpoint."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a public feature service. The timeout is not evidence of citywide absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal cadastral and real-estate-registration administration under Yongkang's Natural Resources and Planning Bureau and Real Estate Registration Center, with a provincial public GIS discovery route.",
+    "verifiedOpenScope": "Local custodian and administrative responsibilities verified, but anonymous parcel geometry, schema/CRS, native identity, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The current map application's JavaScript/configuration, endpoints, access policy, schema/CRS, stable native identity, and exact-point parcel coverage remain unknown.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}
