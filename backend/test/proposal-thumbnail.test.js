@@ -253,3 +253,25 @@ describe('goal handling', () => {
         expect(getProposalCadastreParcelIds({})).toEqual([]);
     });
 });
+
+describe('resolveProposalPolygon on a plan of buildings', () => {
+    const square = (lng, lat) => [[[lng, lat], [lng + 0.001, lat], [lng + 0.001, lat + 0.001], [lng, lat + 0.001], [lng, lat]]];
+    const site = { type: 'MultiPolygon', coordinates: [square(15.97, 45.80)] };
+
+    it('draws every building, not the site they share', () => {
+        const resolved = resolveProposalPolygon({
+            goal: 'buildings', site,
+            geometry: { buildings: [
+                { type: 'Feature', geometry: { type: 'Polygon', coordinates: square(15.9701, 45.8001) } },
+                { type: 'Feature', geometry: { type: 'MultiPolygon', coordinates: [square(15.9703, 45.8001), square(15.9705, 45.8001)] } }
+            ] }
+        });
+        expect(resolved.polygonOrder).toBe('lnglat');
+        expect(resolved.polygon).toEqual([square(15.9701, 45.8001), square(15.9703, 45.8001), square(15.9705, 45.8001)]);
+    });
+
+    it('still frames the site when the plan holds no drawable building', () => {
+        const resolved = resolveProposalPolygon({ goal: 'buildings', site, geometry: { buildings: [{ type: 'Feature', geometry: null }] } });
+        expect(resolved.polygon).toEqual(site.coordinates[0]);
+    });
+});

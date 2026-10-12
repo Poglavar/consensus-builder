@@ -134,6 +134,20 @@ export function resolveProposalPolygon(proposal) {
         if (resolved) return resolved;
     }
 
+    // A plan's buildings (geometry.buildings, one feature each): every footprint is drawn, before the
+    // site, so two plans on one site do not share a picture of the site alone (the two Candlestick
+    // Point plans rendered byte-identical thumbnails, 2026-10-12).
+    if (proposal.geometry && Array.isArray(proposal.geometry.buildings) && proposal.geometry.buildings.length) {
+        const parts = [];
+        for (const f of proposal.geometry.buildings) {
+            const g = f && f.geometry;
+            if (!g || !Array.isArray(g.coordinates)) continue;
+            if (g.type === 'Polygon') parts.push(g.coordinates);
+            else if (g.type === 'MultiPolygon') parts.push(...g.coordinates);
+        }
+        if (parts.length) return { polygon: parts.length === 1 ? parts[0] : parts, polygonOrder: 'lnglat' };
+    }
+
     // The proposal's site (PARCEL-OPTIONAL.md): its ground, a MultiPolygon, and on open ground (an
     // explore city, unsurveyed land) the only geometry a record may have. Every part is framed.
     const site = proposal.site;
@@ -141,14 +155,6 @@ export function resolveProposalPolygon(proposal) {
         if (site.type === 'Polygon') return { polygon: site.coordinates, polygonOrder: 'lnglat' };
         if (site.type === 'MultiPolygon') {
             return { polygon: site.coordinates.length === 1 ? site.coordinates[0] : site.coordinates, polygonOrder: 'lnglat' };
-        }
-    }
-
-    // Generic geometry collection fallback (e.g. parcel-only proposals)
-    if (proposal.geometry && Array.isArray(proposal.geometry.buildings)) {
-        for (const f of proposal.geometry.buildings) {
-            const resolved = fromGeometry(f && f.geometry);
-            if (resolved) return resolved;
         }
     }
 
