@@ -116,7 +116,7 @@ test.describe('Supporting identity controls @core', () => {
     const cityToken = page.locator('.city-token-overlay');
     await expect(cityToken).toBeVisible();
     await cityToken.locator('[data-city-token-register]').click();
-    await expect(cityToken.locator('[data-city-token-register]')).toHaveText('🏅 Registered');
+    await expect(cityToken.locator('[data-city-token-register]')).toHaveText('Registered');
     await expect(cityToken.locator('[data-city-token-claim]')).toBeEnabled();
     await cityToken.locator('[data-city-token-claim]').click();
     await expect(cityToken.locator('[data-city-token-allotment]')).toHaveText(/0\.0+ CTY/);

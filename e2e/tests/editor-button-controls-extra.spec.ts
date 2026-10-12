@@ -37,7 +37,7 @@ test.describe('Dynamic editor control effects @features', () => {
       await page.locator('.parcel-transport-btn--track').click();
       const modal = page.locator('#track-speed-modal');
       await expect(modal).toBeVisible();
-      await modal.locator('.roadwidth-card[data-speed="' + choice.speed + '"]').click();
+      await modal.locator('.track-speed-option[data-speed="' + choice.speed + '"]').click();
       await expect(modal).toBeHidden();
       await expect(page.locator('#road-drawing-controls')).toBeVisible();
       await expect.poll(() => page.evaluate(() => Function('return trackSpeed')())).toBe(choice.speed);

@@ -115,7 +115,7 @@ async function startRoadFromAdjacentParcel(page: import('@playwright/test').Page
 async function draftRoadAcrossStructure(page: import('@playwright/test').Page): Promise<void> {
   await clickMapPoint(page, 15.9817, 45.80025);
   await clickMapPoint(page, 15.9827, 45.80025);
-  const choice = page.locator('.cb-confirm-dialog');
+  const choice = page.locator('.cb-dialog-overlay--confirm .cb-dialog');
   await expect(choice).toBeVisible();
   await expect(choice).toContainText(/park/i);
 }
@@ -135,7 +135,7 @@ test.describe('shared dynamic button factories @features', () => {
 
     const controls = page.locator('#road-drawing-controls');
     await controls.getByRole('button', { name: 'Cancel', exact: true }).click();
-    const choice = page.locator('.cb-confirm-dialog');
+    const choice = page.locator('.cb-dialog-overlay--confirm .cb-dialog');
     await expect(choice).toBeVisible();
     await choice.getByRole('button', { name: 'Keep drawing', exact: true }).click();
     await expect(choice).toBeHidden();
@@ -161,7 +161,7 @@ test.describe('shared dynamic button factories @features', () => {
     await expect(page.locator('#road-length')).not.toHaveText('0 m');
     const controls = page.locator('#road-drawing-controls');
     await controls.getByRole('button', { name: 'Cancel', exact: true }).click();
-    const choice = page.locator('.cb-confirm-dialog');
+    const choice = page.locator('.cb-dialog-overlay--confirm .cb-dialog');
     await expect(choice).toBeVisible();
     await choice.getByRole('button', { name: 'Discard the drawing', exact: true }).click();
     await expect(choice).toBeHidden();
@@ -301,7 +301,7 @@ test.describe('shared dynamic button factories @features', () => {
       await createSpace(page, 'park');
       await startRoadFromAdjacentParcel(page);
       await draftRoadAcrossStructure(page);
-      const choice = page.locator('.cb-confirm-dialog');
+      const choice = page.locator('.cb-dialog-overlay--confirm .cb-dialog');
       await choice.getByRole('button', { name: decision.choice, exact: true }).click();
       await expect(choice).toBeHidden();
       if (decision.accepted) {
@@ -336,7 +336,7 @@ test.describe('shared dynamic button factories @features', () => {
 
       await clickMapPoint(page, 15.9822, 45.7998);
       await clickMapPoint(page, 15.9822, 45.8007);
-      const choice = page.locator('.cb-confirm-dialog');
+      const choice = page.locator('.cb-dialog-overlay--confirm .cb-dialog');
       await expect(choice).toBeVisible();
       await expect(choice).toContainText('pedestrian route crosses');
       const routeLengthBeforeChoice = await page.locator('#road-length').innerText();
@@ -384,7 +384,7 @@ test.describe('shared dynamic button factories @features', () => {
       await startRoadFromAdjacentParcel(page);
       await clickMapPoint(page, 15.9819, 45.80025);
       await clickMapPoint(page, 15.9825, 45.80025);
-      const choice = page.locator('.cb-confirm-dialog');
+      const choice = page.locator('.cb-dialog-overlay--confirm .cb-dialog');
       await expect(choice).toBeVisible();
       await expect(choice).toContainText(/building/i);
       await choice.getByRole('button', { name: decision.choice, exact: true }).click();

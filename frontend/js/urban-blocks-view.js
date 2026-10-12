@@ -123,7 +123,8 @@
         el('urban-block-list-refresh').disabled = !state.enabled || ['roads', 'blocks'].includes(state.phase);
         const rows = rankedBlocks.map((feature, index) => {
             const item = doc.createElement('li');
-            const button = doc.createElement('button'); button.type = 'button'; button.dataset.blockId = feature.id;
+            // A selectable cb-option row (css/primitives.css); the framed block is aria-current.
+            const button = doc.createElement('button'); button.type = 'button'; button.className = 'cb-option urban-block-row'; button.dataset.blockId = feature.id;
             const rank = doc.createElement('span'); rank.className = 'urban-block-rank'; rank.textContent = format(index + 1);
             const description = doc.createElement('span'); description.className = 'urban-block-row-description';
             const name = doc.createElement('strong'); name.className = 'urban-block-row-name';

@@ -49,20 +49,6 @@ if (typeof document !== 'undefined') {
     });
 }
 
-// Clicking the selected goal expands the collapsed proposal-goal grid.
-if (typeof document !== 'undefined' && !window.__proposalGoalCollapseInstalled) {
-    document.addEventListener('click', (event) => {
-        const group = document.getElementById('proposalGoalGroup');
-        if (!group || !group.classList.contains('is-collapsed') || !group.contains(event.target)) return;
-        const button = event.target.closest('.proposal-type-button[data-proposal-tool]');
-        if (!button || !button.classList.contains('selected')) return;
-        event.stopPropagation();
-        event.preventDefault();
-        expandProposalGoalGroup();
-    }, true);
-    window.__proposalGoalCollapseInstalled = true;
-}
-
 if (typeof window !== 'undefined') {
     window.showStructureProposalDialog = showStructureProposalDialog;
     window.handleProposalToolButton = handleProposalToolButton;

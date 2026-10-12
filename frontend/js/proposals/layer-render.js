@@ -1140,18 +1140,6 @@ function focusOnRemovedParcelLocation(parcelId, parcelItem) {
     }
 }
 
-function collapseProposalGoalGroup() {
-    const group = document.getElementById('proposalGoalGroup');
-    if (!group) return;
-    const hasSelection = !!group.querySelector('.proposal-type-button[data-proposal-tool].selected');
-    group.classList.toggle('is-collapsed', hasSelection);
-}
-
-function expandProposalGoalGroup() {
-    const group = document.getElementById('proposalGoalGroup');
-    if (group) group.classList.remove('is-collapsed');
-}
-
 function centerOnProposal(proposalIdOrHash) {
     const proposal = getProposalByIdOrHash(proposalIdOrHash);
     if (!proposal) return;

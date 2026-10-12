@@ -16,7 +16,7 @@
         return applied
             ? {
                 applied: true,
-                className: 'btn btn-warning',
+                className: 'btn btn-danger',
                 iconClass: 'fa-box-archive',
                 label: t('panel.proposal.actions.remove', 'Unapply'),
                 handlerName: 'removeProposalFromMap',

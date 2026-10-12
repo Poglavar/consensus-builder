@@ -1,4 +1,6 @@
-/* The how-to guide shell is a nested scroller; the public landing page uses normal document flow. */
+/* The how-to guide shell (css/howto.css) scrolls its reading column on its own; the public landing
+   page uses normal document flow, with the page navigation's links sticky in their column on a
+   wide screen. */
 html.urban-planning-page {
     height: auto;
     min-height: 100%;
@@ -23,14 +25,11 @@ body.urban-planning-page .intro-with-visual > img {
 
 @media (min-width: 768px) {
     body.urban-planning-page .sidebar {
-        position: sticky;
-        top: 0;
-        align-self: flex-start;
+        overflow: visible;
     }
-}
 
-@media (max-width: 767.98px) {
-    body.urban-planning-page .main-content {
-        flex: 1 0 auto;
+    body.urban-planning-page .sidebar-links {
+        position: sticky;
+        top: 20px;
     }
 }

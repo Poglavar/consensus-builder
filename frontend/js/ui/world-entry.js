@@ -339,22 +339,23 @@
         banner.appendChild(el('p', 'explore-banner__text', {
             text: t('world.explore.banner', 'No parcels here: you can draw a site and propose, but a proposal can only execute through an authority\'s verdict.')
         }));
+        // The actions are the shared small buttons (css/primitives.css), Ask the one primary.
         const actions = el('div', 'explore-banner__actions');
         if (!place || place.kind !== 'ocean') {
-            const ask = el('button', 'explore-banner__btn explore-banner__btn--primary', { type: 'button', id: 'explore-banner-ask', text: askLabel(place) });
+            const ask = el('button', 'btn btn-sm btn-primary', { type: 'button', id: 'explore-banner-ask', text: askLabel(place) });
             ask.disabled = state.request === 'sending' || state.request === 'done';
             ask.addEventListener('click', askFromBanner);
             actions.appendChild(ask);
         }
-        const world = el('button', 'explore-banner__btn', { type: 'button', id: 'explore-banner-world', text: t('world.explore.worldView', 'World view') });
+        const world = el('button', 'btn btn-sm', { type: 'button', id: 'explore-banner-world', text: t('world.explore.worldView', 'World view') });
         world.addEventListener('click', () => open({}).catch(error => console.error('[world-entry] world view failed to open', error)));
         actions.appendChild(world);
         banner.appendChild(actions);
         if (state.request === 'error') {
             banner.appendChild(el('p', 'explore-banner__error', { text: t('world.request.error', 'Could not send the request. Try again?') }));
         }
-        const dismissLabel = t('world.explore.dismiss', 'Dismiss');
-        const close = el('button', 'explore-banner__close', { type: 'button', 'aria-label': dismissLabel, title: dismissLabel, text: '×' });
+        const dismissLabel = t('world.explore.dismiss', 'Close');
+        const close = el('button', 'close-circle-btn explore-banner__close', { type: 'button', 'aria-label': dismissLabel, title: dismissLabel, text: '×' });
         close.addEventListener('click', () => {
             try { global.sessionStorage.setItem(BANNER_DISMISSED_KEY, '1'); } catch (_) { /* the banner just closes for now */ }
             banner.remove();

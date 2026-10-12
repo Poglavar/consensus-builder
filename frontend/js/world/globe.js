@@ -432,18 +432,21 @@
         }
         root.appendChild(top);
 
-        const closeBtn = el('button', 'world-view__close', { type: 'button' });
+        // The shared controls (css/primitives.css, css/map-shell.css) read the dark tokens the world
+        // view wears (css/tokens.css): the close is the one close-circle-btn, "Back to the map" a
+        // btn, the phone legend toggle map chrome. The world-* classes beside them only place them.
+        const closeBtn = el('button', 'close-circle-btn close-circle-btn--lg world-view__close', { type: 'button' });
         closeBtn.textContent = opts.closeLabel ? '' : '×';
         if (opts.closeLabel) {
             root.classList.add('world-view--back-to-map');
-            closeBtn.classList.add('world-view__close--back');
+            closeBtn.className = 'btn world-view__close world-view__close--back';
         }
         if (opts.closable !== false) (opts.closeLabel ? top : root).appendChild(closeBtn);
 
         const overview = el('div', 'world-view__overview');
         root.appendChild(overview);
         const legend = el('div', 'world-legend');
-        const legendToggle = el('button', 'world-legend__toggle', {
+        const legendToggle = el('button', 'map-shell-button world-legend__toggle', {
             type: 'button', 'aria-expanded': 'false', 'aria-controls': 'world-legend-content'
         });
         legendToggle.appendChild(el('i', 'fas fa-list-ul', { 'aria-hidden': 'true' }));
@@ -909,7 +912,7 @@
             const statusKey = global.WorldCoverage.statusKey(place);
             popup.textContent = '';
             popup.className = 'world-popup world-popup--' + status;
-            const close = el('button', 'world-popup__close', { type: 'button', 'aria-label': t('world.close', 'Close'), text: '×' });
+            const close = el('button', 'close-circle-btn world-popup__close', { type: 'button', 'aria-label': t('world.close', 'Close'), text: '×' });
             close.addEventListener('click', deselect);
             const badge = el('p', 'world-popup__tier');
             badge.append(el('span', 'world-tier-dot world-tier-dot--' + status), el('span', '', {
@@ -968,11 +971,11 @@
                 : null;
             if (liveCityId) {
                 const cityLabel = (coverage.liveCities.find(c => c.id === liveCityId) || {}).name || place.name;
-                const open = el('button', 'world-btn world-btn--primary', { type: 'button', text: t('world.action.open', 'Open {{city}}', { city: cityLabel }) });
+                const open = el('button', 'btn btn-primary', { type: 'button', text: t('world.action.open', 'Open {{city}}', { city: cityLabel }) });
                 open.addEventListener('click', () => { if (typeof opts.onOpenCity === 'function') opts.onOpenCity(liveCityId, point); });
                 actions.appendChild(open);
             } else {
-                const explore = el('button', 'world-btn' + (tier === 'source' ? '' : ' world-btn--primary'), { type: 'button', text: t('world.action.explore', 'Open the map here') });
+                const explore = el('button', 'btn' + (tier === 'source' ? '' : ' btn-primary'), { type: 'button', text: t('world.action.explore', 'Open the map here') });
                 explore.addEventListener('click', () => { if (typeof opts.onExplore === 'function') opts.onExplore(point); });
                 if (tier === 'source') {
                     const labels = {
@@ -980,7 +983,7 @@
                         done: t('world.request.done', 'Request noted, thank you'),
                         error: t('world.request.error', 'Could not send the request. Try again?')
                     };
-                    const ask = el('button', 'world-btn world-btn--primary', {
+                    const ask = el('button', 'btn btn-primary', {
                         type: 'button',
                         text: requestState === 'done' || requestState === 'sending' ? labels[requestState]
                             : area ? t('world.action.askArea', 'Ask for this area') : t('world.action.askCity', 'Ask for this city')

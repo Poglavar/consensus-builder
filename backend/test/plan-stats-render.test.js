@@ -125,7 +125,8 @@ function openDialog(proposals, options = {}) {
 // The dialog binds itself on DOMContentLoaded; the tests above call showPlanStatsModal directly,
 // so only the deep-link tests need the event actually fired.
 const fireReady = window => (window.document.listeners.DOMContentLoaded || []).forEach(fn => fn());
-const isOpen = window => window.document.getElementById('plan-stats-modal')?.style.display === 'flex';
+// The dialog wears the dialog primitive and is shown and hidden with the `hidden` attribute.
+const isOpen = window => window.document.getElementById('plan-stats-modal')?.hidden === false;
 
 const rect = (lon0, lat0, lon1, lat1) => [[[lon0, lat0], [lon1, lat0], [lon1, lat1], [lon0, lat1], [lon0, lat0]]];
 const SIBENIK = rect(15.8850, 43.7350, 15.8870, 43.7365);
@@ -164,7 +165,7 @@ describe('opening the dialog', () => {
 
         ['resulting-parcels', 'buildings', 'floor-area', 'apartments', 'people', 'jobs', 'sales-value']
             .forEach(key => expect(slot(window, key), key).not.toBe('—'));
-        expect(window.document.getElementById('plan-stats-modal').style.display).toBe('flex');
+        expect(window.document.getElementById('plan-stats-modal').hidden).toBe(false);
     });
 
     it('counts the applied proposals and says how many it left out', async () => {
@@ -309,7 +310,7 @@ describe('the period table', () => {
         const window = openDialog([block(null)]);
         await window.showPlanStatsModal();
 
-        expect(window.document.querySelector('[data-plan-stat="epoch-section"]').style.display).toBe('none');
+        expect(window.document.querySelector('[data-plan-stat="epoch-section"]').hidden).toBe(true);
     });
 });
 
@@ -415,7 +416,7 @@ describe('?planStats deep link, after the reader closes it', () => {
         await Promise.resolve();
         expect(isOpen(window)).toBe(true);
 
-        window.document.getElementById('plan-stats-modal').style.display = 'none';   // reader closes it
+        window.document.getElementById('plan-stats-modal').hidden = true;            // reader closes it
         visible = plan;                                                              // plan keeps loading
         window.__tick();
         await Promise.resolve();

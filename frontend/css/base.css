@@ -37,14 +37,8 @@ body {
     box-sizing: border-box;
 }
 
-/* Default tap-friendly button height unless explicitly overridden */
-button,
-input[type="button"],
-input[type="submit"],
-input[type="reset"],
-.btn {
-    min-height: 40px;
-}
+/* Buttons take their size from their class (.btn and the map chrome in css/utilities.css and
+   css/map-shell.css); there is no global minimum, so tabs, chips and icon buttons keep their own. */
 
 /* -------------------- Typography scale -------------------- */
 html {
@@ -73,14 +67,8 @@ h3 {
     gap: var(--cb-space-3);
 }
 
+/* Its close is the shared close-circle-btn; this only places it at the end of the row. */
 .cb-multitab-banner__close {
     margin-left: auto;
     flex: 0 0 auto;
-    background: transparent;
-    border: none;
-    color: inherit;
-    font-size: 1.4rem;
-    line-height: 1;
-    cursor: pointer;
-    padding: 0 4px;
 }

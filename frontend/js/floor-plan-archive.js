@@ -4,7 +4,7 @@
 const params=new URLSearchParams(location.search),translations=window.__floorPlanArchiveTranslations;
 const lang=translations[(params.get('lang')||'en').slice(0,2)]?(params.get('lang')||'en').slice(0,2):'en';
 const tr=key=>translations[lang][key]||translations.en[key]||key,el=id=>document.getElementById(id);
-document.documentElement.lang=lang;document.title=tr('title');document.querySelector('[role=tablist]').setAttribute('aria-label',tr('title'));document.querySelectorAll('[data-i18n]').forEach(node=>node.textContent=tr(node.dataset.i18n));
+document.documentElement.lang=lang;document.title=tr('title');document.querySelector('[role=tablist]').setAttribute('aria-label',tr('title'));document.querySelectorAll('[data-i18n]').forEach(node=>node.textContent=tr(node.dataset.i18n));window.CbPageHeader.apply(lang);
 for(const [id,key] of [['agency-search','search'],['source-filter','sourceSearch']]){el(id).placeholder=tr(key);el(id).setAttribute('aria-label',tr(key));}
 const backend=window.__floorPlanArchiveApi.apiBase(location),geometry=window.__floorPlanReviewGeometry,renderer=window.__floorPlanReviewRenderer;
 let catalogue={buildings:[],sources:[]},building=null,plans=[],agencies=[],mode='2d',map=null;
@@ -13,7 +13,7 @@ const selected=()=>plans[Number(el('unit').value)];
 async function get(path){const response=await fetch(backend+path,{cache:'no-store'});if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.json();}
 function textNode(tag,text,className){const node=document.createElement(tag);node.textContent=text;if(className)node.className=className;return node;}
 function safeURL(value){try{const u=new URL(value);return ['http:','https:'].includes(u.protocol)?u:null;}catch{return null;}}
-function sourceLink(url,label){const u=safeURL(url);if(!u)return textNode('span',label);const a=textNode('a',label);a.href=u.href;a.target='_blank';a.rel='noopener noreferrer';return a;}
+function sourceLink(url,label){const u=safeURL(url);if(!u)return textNode('span',label);const a=textNode('a',label,'cb-link cb-link--external');a.href=u.href;a.target='_blank';a.rel='noopener noreferrer';return a;}
 function empty(id,key){el(id).replaceChildren(textNode('p',tr(key),'empty'));}
 function status(key){el('status').textContent=tr(key);}
 function fail(error){el('status').textContent=`${tr('unavailable')}: ${error.message}`;console.error(error);}

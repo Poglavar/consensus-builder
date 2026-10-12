@@ -11,11 +11,11 @@ body.realistic-mode-active #mode-walk-toggle {
 
 /* Realistic (real-world) button — slot 4 of the left-edge mode strip, always visible. The slot
    ladder, and the rule that a button is hidden rather than moved, live at the top of map.css. */
-#mode-realistic-toggle.map-mode-realistic-btn {
+#mode-realistic-toggle.map-mode-tile {
     top: var(--map-mode-slot-4);
 }
 
-#mode-realistic-toggle.map-mode-realistic-btn:disabled {
+#mode-realistic-toggle.map-mode-tile:disabled {
     opacity: 0.7;
     cursor: progress;
 }
@@ -27,7 +27,7 @@ body.realistic-mode-active #mode-walk-toggle {
     left: 50%;
     top: calc(var(--map-shell-top-clearance) + var(--map-shell-gap));
     transform: translateX(-50%);
-    z-index: 1001;
+    z-index: calc(var(--cb-z-map-chrome) + 1);
     display: none;
     width: max-content;
     max-width: min(420px, calc(100% - 112px));
@@ -52,7 +52,7 @@ body.realistic-mode-active #mode-walk-toggle {
 #three-container .photoreal-cover {
     position: absolute;
     inset: 0;
-    z-index: 4;
+    z-index: var(--cb-z-local-4);
     background: #87ceeb;
     display: flex;
     flex-direction: column;
@@ -85,7 +85,7 @@ body.realistic-mode-active #mode-walk-toggle {
     left: 50%;
     bottom: 24px;
     transform: translateX(-50%);
-    z-index: 6;
+    z-index: var(--cb-z-local-6);
     max-width: 80%;
     padding: 8px 14px;
     border-radius: 999px;
@@ -116,7 +116,7 @@ body.realistic-mode-active #mode-walk-toggle {
     position: absolute;
     right: 4px;
     bottom: calc(var(--map-visible-bottom) + var(--cb-space-1));
-    z-index: 6;
+    z-index: var(--cb-z-local-6);
     display: none;
     align-items: flex-end;
     justify-content: flex-end;

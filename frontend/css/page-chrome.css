@@ -1,0 +1,148 @@
+/* ========== Page chrome ==========
+   The one header every non-map page carries (docs/design-language.md, "Every non-map page carries
+   the same header"): the product mark, the page title, one "Back to the map" link and the language
+   control where the page has one. Each satellite page loads css/tokens.css, css/primitives.css and
+   this file first, then its own stylesheet; the strings of pages that translate themselves by
+   script come from js/ui/page-header.js. Values are tokens only.
+
+   <body class="cb-page">
+   <header class="cb-page-header">
+     <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo.png" alt="" width="28" height="28"><span>Consensus Builder</span></span>
+     <div class="cb-page-header__title"><h1>Page title</h1></div>
+     <a class="cb-link cb-back-link" href="/"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>Back to the map</a>
+     <select class="cb-page-header__lang" aria-label="Language">…</select>   (or a .cb-segmented of links)
+   </header>
+
+   Desktop: one row, brand · title · back link · language. Phone: the brand and the back link on
+   the first row, the title and the language on the second. */
+
+.cb-page {
+    margin: 0;
+    background: var(--cb-bg);
+    color: var(--cb-text);
+    font-family: var(--cb-font-sans);
+    line-height: var(--cb-leading);
+    -webkit-text-size-adjust: 100%;
+}
+
+.cb-page-header {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2) var(--cb-space-4);
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 56px;
+    padding: var(--cb-space-2) var(--cb-space-5);
+    border-bottom: 1px solid var(--cb-line);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font-family: var(--cb-font-sans);
+    font-size: var(--cb-text-base);
+    line-height: var(--cb-leading);
+}
+
+.cb-page-header__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    flex: 0 0 auto;
+    min-width: 0;
+    color: var(--cb-text-strong);
+    font-weight: var(--cb-weight-bold);
+    white-space: nowrap;
+}
+
+.cb-page-header__logo {
+    display: block;
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+}
+
+/* The page's name: its h1 on a tool or guide page, the report's kicker where the page has a hero
+   heading of its own. */
+.cb-page-header__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-left: var(--cb-space-4);
+    border-left: 1px solid var(--cb-line);
+}
+
+.cb-page-header__title > * {
+    margin: 0;
+    color: var(--cb-text-strong);
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-semibold);
+    line-height: 1.3;
+    letter-spacing: normal;
+    text-transform: none;
+    overflow-wrap: anywhere;
+}
+
+.cb-back-link {
+    flex: 0 0 auto;
+    font-weight: var(--cb-weight-medium);
+    white-space: nowrap;
+}
+
+.cb-back-link > i {
+    margin-right: var(--cb-space-2);
+}
+
+.cb-page-header__lang {
+    flex: 0 0 auto;
+    width: auto;
+}
+
+/* A page per language (the guides) switches with links: the current page carries aria-current. */
+.cb-page-header__lang.cb-segmented {
+    flex-wrap: nowrap;
+    gap: var(--cb-space-1);
+}
+
+.cb-page-header__lang a.cb-segmented__option {
+    text-decoration: none;
+}
+
+.cb-page-header__lang .cb-segmented__option[aria-current="page"] {
+    border-color: var(--cb-primary);
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary-soft-ink);
+}
+
+@media (max-width: 767.98px) {
+    .cb-page-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+            "brand back"
+            "title lang";
+        align-items: center;
+        padding: var(--cb-space-2) var(--cb-space-4);
+    }
+
+    .cb-page-header__brand { grid-area: brand; }
+    .cb-page-header > .cb-back-link { grid-area: back; justify-self: end; }
+    .cb-page-header__lang { grid-area: lang; justify-self: end; }
+
+    .cb-page-header__title {
+        grid-area: title;
+        padding-left: 0;
+        border-left: 0;
+    }
+
+    .cb-page-header:not(:has(.cb-page-header__lang)) .cb-page-header__title {
+        grid-column: 1 / -1;
+    }
+
+    .cb-page-header__title > * {
+        font-size: var(--cb-text-base);
+    }
+}
+
+@media print {
+    .cb-page-header .cb-back-link,
+    .cb-page-header__lang {
+        display: none;
+    }
+}

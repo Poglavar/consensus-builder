@@ -33,7 +33,7 @@
     position: absolute;
     top: var(--map-shell-edge);
     left: var(--map-shell-edge);
-    z-index: 1000;
+    z-index: var(--cb-z-map-chrome);
 }
 
 .map-shell-slot--tray {
@@ -41,13 +41,13 @@
     left: 50%;
     bottom: var(--map-shell-bottom);
     transform: translateX(-50%);
-    z-index: 1000;
+    z-index: var(--cb-z-map-chrome);
 }
 
 /* ---- Floating buttons ---- */
 .map-shell-cluster {
     position: absolute;
-    z-index: 1000;
+    z-index: var(--cb-z-map-chrome);
     display: flex;
     gap: var(--map-shell-gap);
 }
@@ -157,7 +157,7 @@ body:not(.three-mode-active):is(.site-tool-active, .station-placement-active, .a
     visibility: hidden;
 }
 
-body.three-mode-active :is(.map-editor-toolbar, .site-panel, .area-monitor-creation-panel) {
+body.three-mode-active :is(.map-editor-toolbar, .area-monitor-creation-panel) {
     display: none;
 }
 
@@ -183,11 +183,45 @@ body.three-mode-active :is(.map-editor-toolbar, .site-panel, .area-monitor-creat
     z-index: var(--cb-z-notice);
 }
 
-body.site-tool-active .site-panel__actions {
-    position: sticky;
-    bottom: 0;
-    background: var(--cb-surface);
-    padding-block: var(--cb-space-2);
+/* Its inside (js/area-monitor/ui.js showCreationPanel): a title, the name field, the parcel
+   count, the Cancel / Create row and the error line. The input and buttons are the shared ones. */
+.area-monitor-creation-panel__title {
+    margin: 0 0 var(--cb-space-3);
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+}
+
+.area-monitor-creation-panel__field {
+    margin-bottom: var(--cb-space-3);
+}
+
+.area-monitor-creation-panel__label {
+    display: block;
+    margin-bottom: var(--cb-space-1);
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-medium);
+}
+
+.area-monitor-creation-panel__input {
+    display: block;
+    width: 100%;
+}
+
+.area-monitor-creation-panel__parcels {
+    margin: 0 0 var(--cb-space-3);
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
+}
+
+.area-monitor-creation-panel__actions {
+    margin-top: var(--cb-space-4);
+}
+
+.area-monitor-creation-panel__error {
+    margin: var(--cb-space-2) 0 0;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-danger);
 }
 
 @media (max-width: 767.98px) {
@@ -219,7 +253,6 @@ body.site-tool-active .site-panel__actions {
 }
 body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 
-
 .map-shell-button {
     position: relative;
     display: inline-flex;
@@ -230,11 +263,11 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     height: var(--map-shell-button-size);
     padding: 0 10px;
     box-sizing: border-box;
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--cb-line-glass);
     border-radius: 20px;
-    background: rgba(255, 255, 255, 0.97);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    color: #1f2937;
+    background: var(--cb-glass);
+    box-shadow: var(--cb-shadow-sm);
+    color: var(--cb-text);
     font: inherit;
     font-size: 14px;
     font-weight: 600;
@@ -243,28 +276,39 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 
 .map-shell-button i {
     font-size: 16px;
-    color: #374151;
+    color: var(--cb-text);
 }
 
 .map-shell-button:hover {
-    background: #f3f4f6;
+    background: var(--cb-surface-2);
+}
+
+/* A map button with nothing to do yet (the geometry editor's Undo before the first edit). */
+.map-shell-button:disabled {
+    opacity: 0.4;
+    cursor: default;
 }
 
 .map-shell-button:focus-visible,
 #map-container .username-display:focus-visible,
 .map-sheet:focus-visible {
-    outline: 2px solid #2563eb;
+    outline: 2px solid var(--cb-primary);
     outline-offset: 2px;
 }
 
-.map-shell-button.is-active {
-    background: #1f2937;
-    border-color: #1f2937;
-    color: #fff;
+/* The open sheet's button (aria-expanded, js/ui/map-shell.js) and a map mode that is on
+   (aria-pressed: the walk's ground pick): the one selected look of the app (primary-soft fill,
+   primary border), the same as a pressed .btn, on every width. */
+.map-shell-button[aria-expanded="true"],
+.map-shell-button[aria-pressed="true"] {
+    background: var(--cb-primary-soft);
+    border-color: var(--cb-primary);
+    color: var(--cb-primary-soft-ink);
 }
 
-.map-shell-button.is-active i {
-    color: #fff;
+.map-shell-button[aria-expanded="true"] i,
+.map-shell-button[aria-pressed="true"] i {
+    color: var(--cb-primary);
 }
 
 .map-shell-badge {
@@ -273,8 +317,8 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     padding: 0 5px;
     box-sizing: border-box;
     border-radius: 9px;
-    background: #2563eb;
-    color: #fff;
+    background: var(--cb-primary);
+    color: var(--cb-primary-ink);
     font-size: 11px;
     font-weight: 700;
     line-height: 18px;
@@ -307,9 +351,9 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     width: 12px;
     height: 12px;
     box-sizing: border-box;
-    border: 2px solid #fff;
+    border: 2px solid var(--cb-surface);
     border-radius: 50%;
-    background: #16a34a;
+    background: var(--cb-success);
     animation: map-shell-running-pulse 1.6s ease-in-out infinite;
 }
 
@@ -369,17 +413,17 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     bottom: var(--sheet-bottom, auto);
     left: var(--sheet-left, auto);
     right: var(--sheet-right, auto);
-    z-index: 1600; /* over the docked parcel/road panels (1000-1510): the person just asked for it */
+    z-index: var(--cb-z-sheet); /* over the docked parcel/road panels: the person just asked for it */
     width: 340px;
     max-width: calc(100vw - 2 * var(--map-shell-edge));
     max-height: min(var(--sheet-max-height, 70vh), 80vh);
     box-sizing: border-box;
     flex-direction: column;
-    background: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line-glass);
     border-radius: 12px;
-    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.22);
-    color: #1f2937;
+    box-shadow: var(--cb-shadow-md);
+    color: var(--cb-text);
     overflow: hidden;
 }
 
@@ -398,7 +442,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     justify-content: space-between;
     gap: 8px;
     padding: 10px 12px 8px 16px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--cb-line);
     flex-shrink: 0;
 }
 
@@ -442,7 +486,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 .map-sheet-body > .accordion-section + .accordion-section {
     margin-top: 12px;
     padding-top: 12px;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--cb-line);
 }
 
 .sheet-section-title {
@@ -452,11 +496,11 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     margin: 0 0 10px;
     font-size: 14px;
     font-weight: 700;
-    color: #111827;
+    color: var(--cb-text-strong);
 }
 
 .sheet-section-title i {
-    color: #4b5563;
+    color: var(--cb-text-muted);
     width: 16px;
     text-align: center;
 }
@@ -474,8 +518,8 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     margin-bottom: 10px;
     padding: 8px 10px;
     border-radius: 8px;
-    background: #eff6ff;
-    color: #1e3a8a;
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary-soft-ink);
     font-size: 13px;
     font-weight: 600;
 }
@@ -484,8 +528,8 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     flex-shrink: 0;
     width: 14px;
     height: 14px;
-    border: 2px solid #bfdbfe;
-    border-top-color: #2563eb;
+    border: 2px solid var(--cb-primary-soft);
+    border-top-color: var(--cb-primary);
     border-radius: 50%;
     animation: sheet-section-busy-spin 0.8s linear infinite;
 }
@@ -507,23 +551,31 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     position: static;
     max-height: 40vh;
     margin-top: 8px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--cb-line);
     box-shadow: none;
 }
 
+/* Settings → Appearance: the theme choice under the shortcuts. */
+.settings-appearance {
+    margin: var(--cb-space-3) 0 var(--cb-space-4);
+}
+
+.settings-appearance .cb-kicker {
+    margin-bottom: var(--cb-space-2);
+}
+
 /* ---- Controls inside the sheets ----
-   One compact style for everything rehoused from the sidebar, whatever colour class the markup
-   still carries (.btn-info, .btn-warning, .btn-action…): white rows with an icon, a filled
-   primary for the one main action of a sheet, and red-outlined destructive actions. Scoped to
-   .map-sheet so the same classes elsewhere (modals, panels) keep their look. Rows are 36px on
+   One compact layout for everything rehoused from the sidebar: full-width rows with an icon,
+   whatever role the button carries (the roles keep their colours, css/primitives.css). Scoped to
+   .map-sheet so the same classes elsewhere (modals, panels) keep their layout. Rows are 36px on
    desktop and 44px touch targets on phones. */
 .map-sheet {
     --sheet-row-height: 36px;
-    --sheet-border: #d1d5db;
-    --sheet-muted: #6b7280;
-    --sheet-hover: #f3f4f6;
-    --sheet-focus: #2563eb;
-    --sheet-danger: #b91c1c;
+    --sheet-border: var(--cb-line-strong);
+    --sheet-muted: var(--cb-text-muted);
+    --sheet-hover: var(--cb-surface-2);
+    --sheet-focus: var(--cb-focus);
+    --sheet-danger: var(--cb-danger);
 }
 
 .control-group {
@@ -533,7 +585,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 
 .control-group-title {
     margin: 0 0 6px;
-    color: var(--sheet-muted, #495057);
+    color: var(--sheet-muted, var(--cb-text));
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.02em;
@@ -546,45 +598,21 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     gap: 6px;
 }
 
-.map-sheet .btn:not(.grain-score-button) {
-    align-items: center;
+/* Sheet rows: every button in a sheet is a full-width, left-aligned row of one height. Only the
+   layout lives here; the role classes keep their colours (css/utilities.css), so a primary, a
+   success or a danger button inside a sheet looks like one anywhere else. */
+.map-sheet .btn:not(.btn-sm):not(.btn-icon) {
     justify-content: flex-start;
     gap: 8px;
     width: 100%;
     min-height: var(--sheet-row-height);
     margin: 0;
     padding: 7px 12px;
-    border: 1px solid var(--sheet-border);
-    border-radius: 8px;
-    background: #fff;
-    box-shadow: none;
-    color: #1f2937;
-    font: inherit;
-    font-size: 13.5px;
-    font-weight: 500;
-    line-height: 1.3;
-    letter-spacing: normal;
     text-align: left;
-    text-transform: none;
-    transform: none;
-    opacity: 1;
 }
 
-/* Not on .btn-danger: those are hidden outside debug mode (css/utilities.css), shown below. */
-.map-sheet .btn:not(.grain-score-button):not(.btn-danger):not([hidden]) {
-    display: flex;
-}
-
-.map-sheet .btn:not(.grain-score-button):hover {
-    background: var(--sheet-hover);
-    box-shadow: none;
-    transform: none;
-    opacity: 1;
-}
-
-.map-sheet .btn:not(.grain-score-button) > i {
+.map-sheet .btn > i {
     flex: 0 0 16px;
-    color: #4b5563;
     text-align: center;
 }
 
@@ -594,59 +622,6 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 .map-sheet a:focus-visible {
     outline: 2px solid var(--sheet-focus);
     outline-offset: 2px;
-}
-
-.map-sheet .btn.disabled,
-.map-sheet .btn:disabled {
-    opacity: 0.5;
-}
-
-/* The one main action of a sheet (the proposals list). */
-.map-sheet .btn.sheet-action--primary,
-.map-sheet .btn.sheet-action--primary:hover {
-    border-color: #1d4ed8;
-    background: #2563eb;
-    color: #fff;
-    font-weight: 600;
-}
-
-.map-sheet .btn.sheet-action--primary:hover {
-    background: #1d4ed8;
-}
-
-/* Destructive: clearly red, but an outline, not a block in the main flow. */
-body.debug-mode .map-sheet .btn-danger,
-.map-sheet #wipeLocalDataButton {
-    display: flex;
-}
-
-.map-sheet .btn.btn-danger {
-    border-color: #fca5a5;
-    color: var(--sheet-danger);
-}
-
-.map-sheet .btn.btn-danger > i {
-    color: var(--sheet-danger);
-}
-
-.map-sheet .btn.btn-danger:hover {
-    background: #fef2f2;
-    border-color: var(--sheet-danger);
-}
-
-/* Toggled tools: the measuring tool (active-black-border), a station being placed (is-active). */
-.map-sheet .btn.active-black-border,
-.map-sheet .btn.active-black-border:hover,
-.map-sheet .btn[data-station-type].is-active,
-.map-sheet .btn[data-station-type].is-active:hover {
-    border-color: #1f2937;
-    background: #1f2937;
-    color: #fff;
-}
-
-.map-sheet .btn.active-black-border > i,
-.map-sheet .btn[data-station-type].is-active > i {
-    color: #fff;
 }
 
 /* Rows that carry a second line (share plan's "apply some first", the spinners) stay left-aligned. */
@@ -670,8 +645,8 @@ body.debug-mode .map-sheet .btn-danger,
     padding: 6px 10px;
     border: 1px solid var(--sheet-border);
     border-radius: 8px;
-    background: #fff;
-    color: #1f2937;
+    background: var(--cb-surface);
+    color: var(--cb-text);
     font: inherit;
     font-size: 13.5px;
 }
@@ -687,7 +662,7 @@ body.debug-mode .map-sheet .btn-danger,
     margin: 0;
     padding: 4px 6px;
     border-radius: 6px;
-    color: #1f2937;
+    color: var(--cb-text);
     font-size: 13.5px;
     line-height: 1.3;
     cursor: pointer;
@@ -696,7 +671,7 @@ body.debug-mode .map-sheet .btn-danger,
 /* A single checkbox row that is itself the group (the Simulation settings' Enable game mode). */
 .map-sheet label.checkbox-group {
     min-height: var(--sheet-row-height);
-    color: #1f2937;
+    color: var(--cb-text);
     font-size: 13.5px;
     cursor: pointer;
 }
@@ -715,7 +690,7 @@ body.debug-mode .map-sheet .btn-danger,
 /* A disabled row (3D lock, a section gated off, a control not built yet) reads as disabled. */
 .map-sheet .checkbox-group label:has(input:disabled),
 .map-sheet label.checkbox-group:has(input:disabled) {
-    color: #9ca3af;
+    color: var(--cb-text-faint);
     cursor: not-allowed;
 }
 
@@ -740,14 +715,11 @@ body.debug-mode .map-sheet .btn-danger,
 }
 
 /* The rooster keeps its own card look (css/grain-score.css), aligned with the rows around it. */
-.map-sheet .btn.grain-score-button {
-    margin: 0;
-}
 
 /* Settings → Information: sub-headings in the sheet's type scale. */
 .map-sheet .info-subsection h4 {
     margin: 0 0 6px;
-    color: #111827;
+    color: var(--cb-text-strong);
     font-size: 14px;
     font-weight: 600;
 }
@@ -759,7 +731,7 @@ body.debug-mode .map-sheet .btn-danger,
 .map-sheet .info-subsection + hr {
     margin: 12px 0;
     border: none;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--cb-line);
 }
 
 /* A label over its select (Settings: data source, base map). */
@@ -793,7 +765,7 @@ body.debug-mode .map-sheet .btn-danger,
 
 #station-placement-status {
     margin-top: 8px;
-    color: #64748b;
+    color: var(--cb-text-muted);
     font-size: 12px;
     line-height: 1.35;
 }
@@ -873,7 +845,7 @@ body.debug-mode .map-sheet .btn-danger,
 #activity-sheet .activity-simulation {
     margin-bottom: 12px;
     padding-top: 10px;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--cb-line);
 }
 
 .activity-simulation .sheet-section-title {
@@ -891,43 +863,10 @@ body.debug-mode .map-sheet .btn-danger,
     gap: 8px;
 }
 
-.activity-simulation-play {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 auto;
-    width: 28px;
-    height: 28px;
-    min-height: 0;
-    box-sizing: border-box;
-    padding: 0;
-    border: 1px solid var(--sheet-border);
-    border-radius: 50%;
-    background: #fff;
-    color: #374151;
-    font: inherit;
-    font-size: 11px;
-    cursor: pointer;
-}
-
-.activity-simulation-play:hover {
-    background: var(--sheet-hover);
-}
-
-.activity-simulation-play:focus-visible,
+/* Play / pause is a btn btn-icon btn-sm toggle (css/primitives.css): running is aria-pressed. */
 .activity-simulation-settings > summary:focus-visible {
     outline: 2px solid var(--sheet-focus);
     outline-offset: 2px;
-}
-
-.activity-simulation-play.is-running {
-    border-color: #16a34a;
-    color: #15803d;
-}
-
-.activity-simulation-play:disabled {
-    color: #9ca3af;
-    cursor: not-allowed;
 }
 
 .activity-simulation-metrics {
@@ -974,9 +913,11 @@ body.debug-mode .map-sheet .btn-danger,
 }
 
 @media (max-width: 767.98px) {
-    .activity-simulation-play {
-        width: 36px;
-        height: 36px;
+    /* A full-size tap target on a phone. */
+    .activity-simulation-play.btn-icon {
+        width: var(--cb-control-height);
+        min-width: var(--cb-control-height);
+        min-height: var(--cb-control-height);
     }
 
     .activity-simulation-settings > summary {
@@ -985,7 +926,7 @@ body.debug-mode .map-sheet .btn-danger,
 }
 
 #activity-sheet .status-bar {
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--cb-line);
     border-radius: 8px;
 }
 
@@ -997,7 +938,7 @@ body.debug-mode .map-sheet .btn-danger,
     position: static;
     max-height: 40vh;
     margin-top: 8px;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--cb-line);
     border-radius: 6px;
     box-shadow: none;
 }
@@ -1027,32 +968,22 @@ body.debug-mode .map-sheet .btn-danger,
     font-weight: 700;
 }
 
-.settings-brand .header-ai-badge {
-    display: inline-flex;
-    width: fit-content;
-    align-items: center;
-    gap: 5px;
-    background: linear-gradient(135deg, #ffc107, #17a2b8);
-    color: #1f2937;
-    border: 1px solid rgba(255, 193, 7, 0.7);
-}
-
+/* The environment badges (cb-badge tones) in a row, shown by environment.js updateBadgeVisibility
+   in debug mode (the hidden attribute). */
 .settings-badge-bar {
-    display: none; /* shown by environment.js updateBadgeVisibility in debug mode */
+    display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
     margin-bottom: 12px;
     padding: 6px 8px;
     border-radius: 8px;
-    background: rgba(220, 53, 69, 0.12);
-    border: 1px solid rgba(220, 53, 69, 0.25);
+    background: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
 }
 
-.settings-badge-bar .dev-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+.settings-badge-bar[hidden] {
+    display: none;
 }
 
 /* A panel docked on the right (parcel, proposal details, road, block) sits in the column between
@@ -1144,12 +1075,13 @@ body.app-loading .map-shell-cluster {
 
     /* The open sheet's button, in the tab-bar way. The dark pill fill does not reach this far (the
        rule above wins), which left its white label on the light veil, unreadable. */
-    .map-shell-cluster--bottom-right .map-shell-button--labelled.is-active {
+    .map-shell-cluster--bottom-right .map-shell-button--labelled[aria-expanded="true"] {
         background: var(--cb-primary-soft);
-        color: var(--cb-primary);
+        border-color: var(--cb-primary);
+        color: var(--cb-primary-soft-ink);
     }
 
-    .map-shell-cluster--bottom-right .map-shell-button--labelled.is-active i {
+    .map-shell-cluster--bottom-right .map-shell-button--labelled[aria-expanded="true"] i {
         color: var(--cb-primary);
     }
 

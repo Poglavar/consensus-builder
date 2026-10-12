@@ -263,9 +263,9 @@
         if (!node) return;
         node.textContent = text || '';
         if (url) {
-            const link = el('a', null, ` ${t('panel.proposal.market.explorerTx', 'View on the block explorer')} ↗`);
-            link.href = url; link.target = '_blank'; link.rel = 'noopener';
-            node.append(link);
+            const link = el('a', 'cb-link cb-link--external', t('panel.proposal.market.explorerTx', 'View on the block explorer'));
+            link.href = url; link.target = '_blank'; link.rel = 'noopener noreferrer';
+            node.append(' ', link);
         }
     }
 
@@ -315,10 +315,11 @@
                 + (positions[side].claimed ? ` (${t('panel.proposal.market.paidOut', 'paid out')})` : ''));
     }
 
+    // A link to the block explorer: it leaves the app, so cb-link--external carries the one ↗.
     function explorerLink(text, address) {
-        const link = el('a', 'bets-dialog__link', `${text} ↗`);
+        const link = el('a', 'cb-link cb-link--external', text);
         link.href = `${EXPLORER}/address/${encodeURIComponent(address)}?cluster=devnet`;
-        link.target = '_blank'; link.rel = 'noopener';
+        link.target = '_blank'; link.rel = 'noopener noreferrer';
         return link;
     }
 
@@ -342,7 +343,7 @@
             const counted = sheet() && typeof sheet().entriesText === 'function'
                 ? sheet().entriesText(contest).join(' · ')
                 : t('agentDialog.proposalCount', '{{count}} proposals', { count: contest.proposalCount });
-            const rivals = button('btn btn-quiet bets-dialog__contest', t('bets.dialog.onThisLandCount', '{{entries}} on this land', { entries: counted }), () => {
+            const rivals = button('cb-link bets-dialog__contest', t('bets.dialog.onThisLandCount', '{{entries}} on this land', { entries: counted }), () => {
                 const id = contest.id;
                 close();
                 if (typeof root.openBetsSheet === 'function') root.openBetsSheet({ contestId: id });
@@ -410,7 +411,7 @@
         const claimable = model() ? model().claimSides(row, positions) : [];
         if (claimable.length) {
             const collect = el('div', 'bets-dialog__collect');
-            claimable.forEach(side => collect.append(button('btn btn-success', t('panel.proposal.market.collect', 'Collect {{side}} winnings', { side: sideWord(side) }), event => transact('claim', side, event.currentTarget))));
+            claimable.forEach(side => collect.append(button('btn btn-success btn-sm', t('panel.proposal.market.collect', 'Collect {{side}} winnings', { side: sideWord(side) }), event => transact('claim', side, event.currentTarget))));
             p.body.append(collect);
         }
 
@@ -440,7 +441,7 @@
         note.setAttribute('aria-live', 'polite');
         p.body.append(note);
 
-        const links = el('p', 'bets-dialog__links');
+        const links = el('p', 'cb-link-row bets-dialog__links');
         if (row.marketAddress) links.append(explorerLink(t('panel.proposal.market.poolAccount', 'Pool account'), row.marketAddress));
         links.append(explorerLink(t('panel.proposal.pledge.proposalExplorer', 'Proposal account'), row.proposalAccount));
         p.body.append(links);
@@ -475,10 +476,12 @@
         }
     }
 
+    // The bet pair (btn-yes / btn-no, css/primitives.css); btn-market-yes / -no stay as the hooks the
+    // specs find them by.
     function betButton(row, side) {
         const yes = side === 1;
         const multiple = yes ? row.paysYes : row.paysNo;
-        const node = button(`btn ${yes ? 'btn-market-yes' : 'btn-market-no'} bets-dialog__bet`, null, () => {
+        const node = button(`btn ${yes ? 'btn-yes btn-market-yes' : 'btn-no btn-market-no'} bets-dialog__bet`, null, () => {
             if (!walletConnected()) { askForWallet(); return; }
             renderStake(side);
         });
@@ -560,9 +563,13 @@
         field.append(input, el('span', 'proposal-market-currency', 'USDC'));
         p.body.append(field);
 
-        const chips = el('div', 'bets-dialog__chips');
-        (m ? m.QUICK_STAKES : ['0.1', '1', '5']).forEach(amount => chips.append(button('btn btn-quiet bets-dialog__chip', amount, () => { input.value = amount; update(); input.focus(); })));
-        const max = button('btn btn-quiet bets-dialog__chip', t('bets.dialog.max', 'Max'), () => { if (max.dataset.amount) { input.value = max.dataset.amount; update(); input.focus(); } });
+        // Quick stakes: a cb-segmented row of amounts that fill the field (bets-dialog__chip stays as
+        // the hook the specs find them by).
+        const chips = el('div', 'cb-segmented bets-dialog__chips');
+        chips.setAttribute('role', 'group');
+        chips.setAttribute('aria-label', t('bets.dialog.amount', 'Amount'));
+        (m ? m.QUICK_STAKES : ['0.1', '1', '5']).forEach(amount => chips.append(button('cb-segmented__option bets-dialog__chip', amount, () => { input.value = amount; update(); input.focus(); })));
+        const max = button('cb-segmented__option bets-dialog__chip', t('bets.dialog.max', 'Max'), () => { if (max.dataset.amount) { input.value = max.dataset.amount; update(); input.focus(); } });
         max.hidden = true;
         chips.append(max);
         p.body.append(chips);
@@ -595,7 +602,7 @@
         input.addEventListener('keydown', event => { if (event.key !== 'Enter') return; event.preventDefault(); submitStake(side); });
 
         const back = button('btn', t('proposalDrafts.actions.back', 'Back'), () => renderOverview());
-        const submit = button(`btn ${yes ? 'btn-market-yes' : 'btn-market-no'}`, t('panel.proposal.market.dialogTitle', 'Bet {{side}}', { side: sideWord(side) }), () => submitStake(side));
+        const submit = button(`btn ${yes ? 'btn-yes btn-market-yes' : 'btn-no btn-market-no'}`, t('panel.proposal.market.dialogTitle', 'Bet {{side}}', { side: sideWord(side) }), () => submitStake(side));
         submit.setAttribute('data-market-submit', '');
         p.footer.append(back, submit);
         input.focus();

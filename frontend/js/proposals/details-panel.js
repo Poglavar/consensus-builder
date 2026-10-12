@@ -184,7 +184,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         if (ownerId && typeof agentStorage !== 'undefined') {
             const owner = agentStorage.getAgent(ownerId);
             if (owner && typeof getAvatarImagePath === 'function') {
-                ownerAvatarHtml = `<img src="${getAvatarImagePath(owner.avatarIndex)}" class="parcel-owner-avatar" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #007bff; margin-right: 8px;" title="Owner: ${owner.name}">`;
+                ownerAvatarHtml = `<img src="${getAvatarImagePath(owner.avatarIndex)}" class="parcel-owner-avatar" title="Owner: ${owner.name}">`;
             }
         }
 
@@ -201,9 +201,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         // (An applied readjustment lists its input parcels as "Removed": that is the case to compare.)
         const parcelCompareHtml = ((fullProposal || proposal).reparcellization && parcelCompare && proposalKeyForCompare
             && isProposalApplied(fullProposal || proposal) && parcelCompare.canCompare(fullProposal || proposal))
-            ? `<button type="button" class="btn btn-quiet btn-compare-parcel" data-focus-parcel="${safeAgentText(String(parcelId))}" aria-pressed="${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}"
+            ? `<button type="button" class="btn btn-quiet btn-sm btn-compare-parcel" data-focus-parcel="${safeAgentText(String(parcelId))}" aria-pressed="${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}"
                     title="${tProposal('mapCompare.sliderLabel', 'Before and after comparison')}"
-                    onclick="event.stopPropagation(); event.preventDefault(); toggleProposalBeforeAfter(${inlineJsArg(proposalKeyForCompare)}, { focusParcelId: ${inlineJsArg(String(parcelId))} });">↔ ${tProposal('mapCompare.toggle', 'Before / after')}</button>`
+                    onclick="event.stopPropagation(); event.preventDefault(); toggleProposalBeforeAfter(${inlineJsArg(proposalKeyForCompare)}, { focusParcelId: ${inlineJsArg(String(parcelId))} });"><i class="fas fa-left-right" aria-hidden="true"></i> ${tProposal('mapCompare.toggle', 'Before / after')}</button>`
             : '';
         const parcelTooltip = isRemoved
             ? tProposal('panel.proposal.parcels.tooltipRemoved', 'Click to focus on where this parcel was')
@@ -221,19 +221,21 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             : '';
         const removedDataAttr = isRemoved ? 'data-parcel-removed="true"' : '';
 
+        // The row and its status take their look from classes (css/proposal-details.css):
+        // execution.js toggles is-accepted and parcel-status-* when an owner accepts.
         return `
-            <div class="proposal-parcel-item" data-parcel-id="${parcelId}" ${removedDataAttr} ${geometryDataAttr} onclick="handleProposalParcelClick(${inlineJsArg(parcelId)}, event)" style="display: flex; flex-direction: column; gap:6px; padding: 8px; border: 1px solid #ddd; margin-bottom: 5px; border-radius: 4px; cursor: pointer; ${hasAccepted ? 'background-color: #f8fff8;' : ''} ${isRemoved ? 'opacity: 0.7;' : ''}" title="${parcelTooltip}">
-                <div class="parcel-info" style="display: flex; align-items: center; justify-content: space-between;">
-                    <div style="display:flex; align-items:center; gap:8px; min-width:0; width:100%;">
+            <div class="proposal-parcel-item proposal-parcel-row${hasAccepted ? ' is-accepted' : ''}${isRemoved ? ' is-removed' : ''}" data-parcel-id="${parcelId}" ${removedDataAttr} ${geometryDataAttr} onclick="handleProposalParcelClick(${inlineJsArg(parcelId)}, event)" title="${parcelTooltip}">
+                <div class="parcel-info proposal-parcel-row__info">
+                    <div class="proposal-parcel-row__main">
                         ${ownerAvatarHtml}
-                        <div style="min-width:0; flex:1;">
-                            <span class="parcel-number parcel-id-text" title="${safeAgentText(parcelId)}" style="font-weight: 500;">${safeAgentText(parcelLabelText)}</span>
+                        <div class="proposal-parcel-row__text">
+                            <span class="parcel-number parcel-id-text" title="${safeAgentText(parcelId)}">${safeAgentText(parcelLabelText)}</span>
                             ${parcelCompareHtml}
                             ${isRemoved
-                ? `<span class="parcel-status parcel-status-removed" style="color: #999; font-size: 12px; font-style: italic;">${removedLabel}</span>`
+                ? `<span class="parcel-status parcel-status-removed">${removedLabel}</span>`
                 : (hasAccepted ?
-                    `<span class="parcel-status parcel-status-accepted" style="color: #28a745; font-size: 12px; font-weight: 500;">✓ ${acceptedLabel}</span>` :
-                    `<span class="parcel-status parcel-status-pending" style="color: #666; font-size: 12px;">${pendingLabel}</span>`)
+                    `<span class="parcel-status parcel-status-accepted">${acceptedLabel}</span>` :
+                    `<span class="parcel-status parcel-status-pending">${pendingLabel}</span>`)
             }
                         </div>
                     </div>
@@ -460,7 +462,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         && canEditProposalGeometry(fullProposal || proposal);
     const editGeometryButtonHtml = geometryEditable
         ? `
-        <button type="button" class="btn btn-outline-secondary btn-edit-geometry"
+        <button type="button" class="btn btn-edit-geometry"
             onclick="editProposalGeometry(${inlineJsArg(proposalKey)})">
             <i class="fas fa-draw-polygon" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.editGeometry', 'Edit geometry')}
         </button>
@@ -477,7 +479,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const editApprovalButtonHtml = approvalEditable
         ? `
         <div class="approval-edit-action">
-            <button type="button" class="btn btn-outline-secondary btn-sm btn-edit-approval"
+            <button type="button" class="btn btn-sm btn-edit-approval"
                 title="${safeAgentText(tProposal('panel.proposal.actions.editApprovalHint', 'Opens the editor on its Approval tab. Saving creates a replacement proposal; acceptances of this one do not carry over.'))}"
                 onclick="editProposalApproval(${inlineJsArg(proposalKey)})">
                 <i class="fas fa-user-check" aria-hidden="true"></i> ${hasApprovalSetup
@@ -493,7 +495,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const beforeAfter = (typeof window !== 'undefined') ? window.ProposalBeforeAfter : null;
     const compareButtonHtml = (appliedState && proposalKey && beforeAfter && beforeAfter.canCompare(fullProposal || proposal))
         ? `
-        <button type="button" class="btn btn-outline-secondary btn-compare-proposal"
+        <button type="button" class="btn btn-compare-proposal"
             aria-pressed="${beforeAfter.isActive(proposalKey) ? 'true' : 'false'}"
             onclick="toggleProposalBeforeAfter(${inlineJsArg(proposalKey)})">
             <i class="fas fa-left-right" aria-hidden="true"></i> ${tProposal('mapCompare.toggle', 'Before / after')}
@@ -503,7 +505,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     const buyOfferProposal = fullProposal || proposal;
     const buyButtonHtml = (typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(buyOfferProposal))
-        ? `<button type="button" class="btn btn-success proposal-buy-btn" onclick="claimSaleOffer(${inlineJsArg(buyOfferProposal.proposalId || '')})">🤝 ${tProposal('panel.proposal.buy.button', 'Buy')}</button>`
+        ? `<button type="button" class="btn btn-success proposal-buy-btn" onclick="claimSaleOffer(${inlineJsArg(buyOfferProposal.proposalId || '')})"><i class="fas fa-handshake" aria-hidden="true"></i> ${tProposal('panel.proposal.buy.button', 'Buy')}</button>`
         : '';
 
     // "Drive this track" — opens the external 3D tram sim in a new tab with the
@@ -521,8 +523,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const isDrivableTrack = corridorIsTrack(drivePlan);
     const driveButtonHtml = (driveWalkConfig && driveWalkConfig.url && isDrivableTrack && driveSerialId && proposalKey)
         ? `
-        <button type="button" class="btn btn-outline-primary btn-drive-proposal" onclick="driveTrackProposalIn3DSim(${inlineJsArg(proposalKey)})">
-            🚋 ${tProposal('panel.proposal.actions.drive', 'Drive')}
+        <button type="button" class="btn btn-drive-proposal" onclick="driveTrackProposalIn3DSim(${inlineJsArg(proposalKey)})">
+            <i class="fas fa-train-tram" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.drive', 'Drive')}
         </button>
     `
         : '';
@@ -532,14 +534,14 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         && Array.isArray(supportWalletState.accounts) && supportWalletState.accounts.length > 0;
     const supportButtonHtml = (action) => {
         const supportButtons = {
-            connect: `<button type="button" class="btn btn-outline-primary btn-connect-proposal-support" onclick="handleWalletButtonClick()">${tProposal('panel.proposal.support.connect', 'Connect Solana wallet')}</button>`,
-            donate: `<button type="button" class="btn btn-outline-primary btn-donate-proposal" onclick="openProposalBoostDialog(${inlineJsArg(proposalKey)}, 'donate')">🎁 ${tProposal('panel.proposal.support.donate', 'Donate USDC')}</button>`,
-            pledge: `<button type="button" class="btn btn-outline-primary btn-pledge-proposal" onclick="openProposalBoostDialog(${inlineJsArg(proposalKey)}, 'pledge')">💪 ${tProposal('panel.proposal.boost.send', 'Pledge USDC')}</button>`,
-            revokePledge: `<button type="button" class="btn btn-outline-secondary" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'revokePledge')">${tProposal('panel.proposal.support.revoke', 'Revoke my pledge')}</button>`,
-            releaseDonations: `<button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'releaseDonations')">${tProposal('panel.proposal.support.release', 'Release donations')}</button>`,
-            fulfillPledge: `<button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'fulfillPledge')">${tProposal('panel.proposal.support.fulfill', 'Fulfill my pledge')}</button>`,
-            refundMyDonations: `<button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'refundMyDonations')">${tProposal('panel.proposal.support.refund', 'Refund my donations')}</button>`,
-            voidPledge: `<button type="button" class="btn btn-outline-secondary" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'voidPledge')">${tProposal('panel.proposal.support.void', 'Clear my pledge')}</button>`
+            connect: `<button type="button" class="btn btn-connect-proposal-support" onclick="handleWalletButtonClick()">${tProposal('panel.proposal.support.connect', 'Connect Solana wallet')}</button>`,
+            donate: `<button type="button" class="btn btn-donate-proposal" onclick="openProposalBoostDialog(${inlineJsArg(proposalKey)}, 'donate')"><i class="fas fa-gift" aria-hidden="true"></i> ${tProposal('panel.proposal.support.donate', 'Donate USDC')}</button>`,
+            pledge: `<button type="button" class="btn btn-pledge-proposal" onclick="openProposalBoostDialog(${inlineJsArg(proposalKey)}, 'pledge')"><i class="fas fa-hand-holding-dollar" aria-hidden="true"></i> ${tProposal('panel.proposal.boost.send', 'Pledge USDC')}</button>`,
+            revokePledge: `<button type="button" class="btn" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'revokePledge')">${tProposal('panel.proposal.support.revoke', 'Revoke my pledge')}</button>`,
+            releaseDonations: `<button type="button" class="btn" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'releaseDonations')">${tProposal('panel.proposal.support.release', 'Release donations')}</button>`,
+            fulfillPledge: `<button type="button" class="btn" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'fulfillPledge')">${tProposal('panel.proposal.support.fulfill', 'Fulfill my pledge')}</button>`,
+            refundMyDonations: `<button type="button" class="btn" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'refundMyDonations')">${tProposal('panel.proposal.support.refund', 'Refund my donations')}</button>`,
+            voidPledge: `<button type="button" class="btn" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'voidPledge')">${tProposal('panel.proposal.support.void', 'Clear my pledge')}</button>`
         };
         return supportButtons[action] || '';
     };
@@ -561,7 +563,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${mapActionButtonHtml}
             ${shareButtonHtml}
             ${forkButtonHtml}
-            <button type="button" class="btn btn-outline-primary btn-proposal-details" onclick="toggleProposalDetailsPanelMinimized(false)">
+            <button type="button" class="btn btn-proposal-details" onclick="toggleProposalDetailsPanelMinimized(false)">
                 <i class="fas fa-circle-info" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.details', 'Details')}
             </button>
         </div>
@@ -591,8 +593,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const safeLabel = typeof escapeHtml === 'function' ? escapeHtml(String(sourceLabel)) : String(sourceLabel);
         const safeId = typeof escapeHtml === 'function' ? escapeHtml(String(copiedFromId)) : String(copiedFromId);
         const basedOnLabel = tProposal('panel.proposal.basedOn', 'Based on');
+        // The source opens in this panel: a script link (button.cb-link), never an external mark.
         const inner = sourceExists
-            ? `<a href="#" class="proposal-based-on-link" onclick="event.preventDefault(); focusProposalDetails(${inlineJsArg(copiedFromId)});">${safeLabel} <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i></a>`
+            ? `<button type="button" class="cb-link proposal-based-on-link" onclick="focusProposalDetails(${inlineJsArg(copiedFromId)})">${safeLabel}</button>`
             : `<span class="proposal-based-on-name">${safeLabel}</span>`;
         copiedFromHtml = `<div class="proposal-based-on-row">${basedOnLabel}: ${inner}</div>`;
         // A land fork names how its parcels relate to the origin's, instead of a bare "Based on".
@@ -612,9 +615,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         : proposalDisplayId;
     const proposalLensEntries = getProposalLensEntries(fullProposal || proposal);
     const hasProposalLens = proposalLensEntries.length > 0;
-    const lensPatternUrl = hasProposalLens && typeof getLensPatternDataUrl === 'function'
-        ? getLensPatternDataUrl(proposalLensEntries)
-        : null;
     const translateLensKey = (key, fallback) => {
         if (i18nProposal && typeof i18nProposal.t === 'function') {
             const value = i18nProposal.t(key);
@@ -625,22 +625,15 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const lensButtonLabel = translateLensKey('modal.lens.proposalTriggerTitle', 'View proposal lens');
     const safeLensButtonLabel = typeof escapeHtml === 'function' ? escapeHtml(lensButtonLabel) : lensButtonLabel;
     const lensProposalId = fullProposal.proposalId || proposal.proposalId || '';
-    const lensButtonHtml = hasProposalLens ? `
+    // The proposal's lens: a square icon button beside Copy ID, disabled when the proposal names
+    // no lens. proposal-lens-button is the hook the lens loader finds it by.
+    const lensButtonHtml = `
         <button type="button"
-            class="lens-pattern-button proposal-lens-button"
-            onclick="openProposalLens(${inlineJsArg(lensProposalId)})"
+            class="btn btn-icon btn-sm proposal-lens-button"
+            ${hasProposalLens ? `onclick="openProposalLens(${inlineJsArg(lensProposalId)})"` : 'disabled'}
             title="${safeLensButtonLabel}"
-            aria-label="${safeLensButtonLabel}"
-            ${lensPatternUrl ? `style="background-image: url(&quot;${lensPatternUrl}&quot;);"` : ''}>
-            👓
-        </button>
-    ` : `
-        <button type="button"
-            class="lens-pattern-button proposal-lens-button proposal-lens-button--empty"
-            title="${safeLensButtonLabel}"
-            aria-label="${safeLensButtonLabel}"
-            disabled>
-            👓
+            aria-label="${safeLensButtonLabel}">
+            <i class="fas fa-glasses" aria-hidden="true"></i>
         </button>
     `;
 
@@ -699,13 +692,13 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 ? safeAgentText(getProposalLifecycleLabel(getProposalLifecycleKey(candidate)))
                 : '';
             return `
-                <button type="button" class="proposal-parcel-set-relation" data-related-proposal-id="${candidateId}">
-                    <span class="proposal-parcel-set-relation-main">
-                        <strong>${title}</strong>
-                        <small>${safeAgentText(relationLabels[relation.kind])} · ${shared}${author ? ` · ${author}` : ''}</small>
+                <button type="button" class="cb-option proposal-parcel-set-relation" data-related-proposal-id="${candidateId}">
+                    <span class="cb-option__text proposal-parcel-set-relation-main">
+                        <span class="cb-option__title">${title}</span>
+                        <span class="cb-option__desc">${safeAgentText(relationLabels[relation.kind])} · ${shared}${author ? ` · ${author}` : ''}</span>
                     </span>
-                    ${lifecycle ? `<span class="proposal-parcel-set-relation-state">${lifecycle}</span>` : ''}
-                    <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                    ${lifecycle ? `<span class="cb-badge proposal-parcel-set-relation-state">${lifecycle}</span>` : ''}
+                    <i class="cb-option__icon fas fa-chevron-right" aria-hidden="true"></i>
                 </button>`;
         }).join('');
 
@@ -716,14 +709,14 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                         <div class="proposal-funding-eyebrow">${safeAgentText(tProposal('panel.proposal.parcelSet.eyebrow', 'Canonical parcel set'))}</div>
                         <h3>${safeAgentText(tProposal('panel.proposal.parcelSet.title', 'Proposals on this land'))}</h3>
                     </div>
-                    <span class="proposal-parcel-set-count">${canonicalIds.length}</span>
+                    <span class="cb-badge cb-badge--applied proposal-parcel-set-count">${canonicalIds.length}</span>
                 </div>
                 <p>${safeAgentText(summary)}</p>
                 ${shortHash ? `<div class="proposal-parcel-set-hash" title="${safeAgentText(setHash)}"><span>${safeAgentText(tProposal('panel.proposal.parcelSet.hash', 'Set identity'))}</span><code>${safeAgentText(shortHash)}</code></div>` : ''}
                 ${rows ? `<div class="proposal-parcel-set-relations">${rows}</div>` : ''}
-                <div class="proposal-parcel-set-activity">
-                    <button type="button" class="activity-scope-link" data-activity-scope="proposalId" data-activity-value="${safeAgentText(relationApi.proposalKey(activeProposal))}">${safeAgentText(tProposal('panel.proposal.parcelSet.activityProposal', 'Activity on this proposal'))}</button>
-                    ${setHash ? `<button type="button" class="activity-scope-link" data-activity-scope="parcelSet" data-activity-value="${safeAgentText(setHash)}">${safeAgentText(tProposal('panel.proposal.parcelSet.activityLand', 'Activity on this land'))}</button>` : ''}
+                <div class="cb-link-row proposal-parcel-set-activity">
+                    <button type="button" class="cb-link activity-scope-link" data-activity-scope="proposalId" data-activity-value="${safeAgentText(relationApi.proposalKey(activeProposal))}">${safeAgentText(tProposal('panel.proposal.parcelSet.activityProposal', 'Activity on this proposal'))}</button>
+                    ${setHash ? `<button type="button" class="cb-link activity-scope-link" data-activity-scope="parcelSet" data-activity-value="${safeAgentText(setHash)}">${safeAgentText(tProposal('panel.proposal.parcelSet.activityLand', 'Activity on this land'))}</button>` : ''}
                 </div>
             </section>`;
     })();
@@ -735,19 +728,21 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const now = Date.now();
         const isExpired = expiresAt <= now;
 
+        // The look is the state's (css/proposal-details.css): warning while it runs, danger in the
+        // last minute (is-urgent, lifecycle.js) and once expired.
         if (isExpired) {
             expiryCountdownHtml = `
-                <div class="proposal-expiry-countdown expired" style="background: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 6px; margin-bottom: 10px; text-align: center;">
-                    <i class="fas fa-clock" style="margin-right: 6px;"></i>
-                    <span class="expiry-label" style="color: #721c24; font-weight: 600;">${tProposal('panel.proposal.expiry.expired', 'Proposal Expired')}</span>
+                <div class="proposal-expiry-countdown expired">
+                    <i class="fas fa-clock" aria-hidden="true"></i>
+                    <span class="expiry-label">${tProposal('panel.proposal.expiry.expired', 'Proposal expired')}</span>
                 </div>
             `;
         } else {
             expiryCountdownHtml = `
-                <div class="proposal-expiry-countdown" data-expires-at="${proposal.expiresAt}" data-proposal-id="${proposal.proposalId}" style="background: #fff3cd; border: 1px solid #ffeaa8; padding: 10px; border-radius: 6px; margin-bottom: 10px; text-align: center;">
-                    <i class="fas fa-hourglass-half" style="margin-right: 6px; color: #856404;"></i>
-                    <span class="expiry-label" style="color: #856404; font-weight: 500;">${tProposal('panel.proposal.expiry.countdown', 'Expires in:')} </span>
-                    <span class="expiry-timer" style="color: #856404; font-weight: 700; font-family: monospace;"></span>
+                <div class="proposal-expiry-countdown" data-expires-at="${proposal.expiresAt}" data-proposal-id="${proposal.proposalId}">
+                    <i class="fas fa-hourglass-half" aria-hidden="true"></i>
+                    <span class="expiry-label">${tProposal('panel.proposal.expiry.countdown', 'Expires in:')} </span>
+                    <span class="expiry-timer"></span>
                 </div>
             `;
         }
@@ -757,8 +752,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const parcelAcceptanceLabel = tProposalUI('panel.proposal.acceptance.parcelTitle', 'Parcel Acceptance Status:');
     const ownerAcceptanceLabel = tProposalUI('panel.proposal.acceptance.ownerTitle', 'Owner Acceptance Status:');
     const acceptanceSpinnerHtml = `
-        <div class="acceptance-loading" style="display: inline-flex; align-items: center; gap: 8px; color: #666; font-size: 12px; margin: 6px 0;">
-            <div class="spinner-circle" aria-hidden="true" style="width: 16px; height: 16px; border: 2px solid #ccc; border-top-color: #555; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+        <div class="acceptance-loading">
+            <div class="spinner-circle" aria-hidden="true"></div>
             <span>${acceptanceLoadingLabel}</span>
         </div>`;
     const parcelAcceptancePlaceholder = `
@@ -786,7 +781,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         ? ProposalAgentProvenance.read(fullProposal)
         : null;
     const agentBadgeHtml = agentProvenance
-        ? `<div class="proposal-agent-badge proposal-agent-badge--panel"><span aria-hidden="true">✦</span> ${safeAgentText(tProposal('panel.proposal.agent.badge', 'Agent proposal'))}</div>`
+        ? `<span class="cb-badge cb-badge--published proposal-agent-badge"><i class="fas fa-robot" aria-hidden="true"></i> ${safeAgentText(tProposal('panel.proposal.agent.badge', 'Agent proposal'))}</span>`
         : '';
     const agentProvenanceHtml = agentProvenance ? `
         <section class="proposal-agent-provenance" aria-label="${safeAgentText(tProposal('panel.proposal.agent.sectionLabel', 'Agent provenance'))}">
@@ -801,7 +796,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             <dl class="proposal-agent-facts">
                 <div><dt>${safeAgentText(tProposal('panel.proposal.agent.payer', 'Paying wallet'))}</dt><dd title="${safeAgentText(agentProvenance.wallet)}">${safeAgentText(agentProvenance.walletShort)}</dd></div>
                 ${agentProvenance.runId ? `<div><dt>${safeAgentText(tProposal('panel.proposal.agent.run', 'Agent run'))}</dt><dd title="${safeAgentText(agentProvenance.runId)}">${safeAgentText(agentProvenance.runId)}</dd></div>` : ''}
-                <div><dt>${safeAgentText(tProposal('panel.proposal.agent.settlement', 'Settlement'))}</dt><dd><a href="${safeAgentText(agentProvenance.explorerUrl)}" target="_blank" rel="noopener" title="${safeAgentText(agentProvenance.transaction)}">${safeAgentText(agentProvenance.transactionShort)} <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i></a></dd></div>
+                <div><dt>${safeAgentText(tProposal('panel.proposal.agent.settlement', 'Settlement'))}</dt><dd><a class="cb-link cb-link--external" href="${safeAgentText(agentProvenance.explorerUrl)}" target="_blank" rel="noopener noreferrer" title="${safeAgentText(agentProvenance.transaction)}">${safeAgentText(agentProvenance.transactionShort)}</a></dd></div>
             </dl>
             <div class="proposal-agent-flow" aria-label="${safeAgentText(tProposal('panel.proposal.agent.flowLabel', 'How this proposal was created'))}">
                 <span>${safeAgentText(tProposal('panel.proposal.agent.flowDiscover', 'Discoverable API'))}</span>
@@ -855,7 +850,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             const isFromMeProposal = resolveProposalGoalKey(proposal, null) === 'ownership-transfer-from-me';
             const acceptTransferLabel = tProposal('panel.proposal.acceptTransfer.buttonLabel', 'Accept ownership transfer');
             const acceptTransferButtonHtml = isFromMeProposal
-                ? `<button type="button" class="offer-boost-button" title="${acceptTransferLabel}" aria-label="${acceptTransferLabel}" onclick="openAcceptOwnershipTransferDialog(${inlineJsArg(proposal.proposalId || '')})">🤝</button>`
+                ? `<button type="button" class="btn btn-sm btn-icon offer-boost-button" title="${acceptTransferLabel}" aria-label="${acceptTransferLabel}" onclick="openAcceptOwnershipTransferDialog(${inlineJsArg(proposal.proposalId || '')})"><i class="fas fa-handshake" aria-hidden="true"></i></button>`
                 : '';
 
             if (hasDecay) {
@@ -907,7 +902,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                         : tProposal('common.lifecycle.draft', 'Draft');
             const ladderTitle = isMinted ? tProposal('panel.proposal.lifecycle.mintedHint', 'Minted on-chain') : '';
             const ladderBadge = (isMinted && mintedExplorerUrl)
-                ? `<a class="cb-badge cb-badge--minted" href="${mintedExplorerUrl}" target="_blank" rel="noopener" title="${ladderTitle}">${ladderLabel} ↗</a>`
+                ? `<a class="cb-badge cb-badge--minted cb-link--external" href="${mintedExplorerUrl}" target="_blank" rel="noopener noreferrer" title="${ladderTitle}">${ladderLabel}</a>`
                 : `<span class="cb-badge cb-badge--${ladder}" title="${ladderTitle}">${ladderLabel}</span>`;
             const MODIFIERS = ['expired', 'inactive', 'vote-open', 'vote-concluded', 'accepted-not-funded'];
             const modifier = MODIFIERS.includes(lifecycleKey)
@@ -939,7 +934,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 if (agent && typeof getAvatarImagePath === 'function') {
                     return `
                                         <img src="${getAvatarImagePath(agent.avatarIndex)}" class="author-avatar" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #007bff; margin-right: 8px; vertical-align: middle;">
-                                        <a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable" style="text-decoration: none; color: #007bff; font-weight: 500;">${formatAuthorForDisplay(proposal.author)}</a>
+                                        <button type="button" data-agent-id="${agent.id}" class="cb-link agent-link-clickable">${formatAuthorForDisplay(proposal.author)}</button>
                                     `;
                 }
             }
@@ -965,9 +960,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                     <div><strong>${tProposal('panel.proposal.pledge.pledgeMeaningTitle', 'Pledge')}</strong> ${tProposal('panel.proposal.pledge.pledgeMeaning', 'is a revocable public commitment; no USDC moves until you fulfil it after execution.')}</div>
                 </div>
                 <div class="proposal-funding-you" data-funding="you">${tProposal('panel.proposal.pledge.connect', 'Connect a Solana wallet to see your support.')}</div>
-                <div class="proposal-funding-links">
-                    <a href="https://explorer.solana.com/address/${nftInfo.tokenId}?cluster=devnet" target="_blank" rel="noopener">${tProposal('panel.proposal.pledge.proposalExplorer', 'Proposal account')} ↗</a>
-                    <a href="https://explorer.solana.com/address/${window.SolanaPledgeClient?.constants?.PROGRAM_ID || '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g'}?cluster=devnet" target="_blank" rel="noopener">${tProposal('panel.proposal.pledge.programExplorer', 'Funding program')} ↗</a>
+                <div class="cb-link-row proposal-funding-links">
+                    <a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${nftInfo.tokenId}?cluster=devnet" target="_blank" rel="noopener noreferrer">${tProposal('panel.proposal.pledge.proposalExplorer', 'Proposal account')}</a>
+                    <a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${window.SolanaPledgeClient?.constants?.PROGRAM_ID || '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g'}?cluster=devnet" target="_blank" rel="noopener noreferrer">${tProposal('panel.proposal.pledge.programExplorer', 'Funding program')}</a>
                 </div>
             </section>` : ''}
             ${(chainSettlesProposal || proposalOfferHtml.trim()) ? sectionEnd : ''}
@@ -991,19 +986,19 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <div class="proposal-market-oracle" data-market="oracle">
                     <strong>${tProposal('panel.proposal.market.oracleTitle', 'Oracle recipe')}</strong>
                     <span data-market="oracle-state">${tProposal('panel.proposal.market.oracleLoading', 'Loading proposal-lifecycle-v1…')}</span>
-                    <div class="proposal-funding-links">
-                        <a data-market="recipe-link" href="#" target="_blank" rel="noopener" hidden>${tProposal('panel.proposal.market.recipeLink', 'Recipe declaration ↗')}</a>
-                        <a data-market="event-link" href="#" target="_blank" rel="noopener" hidden>${tProposal('panel.proposal.market.eventLink', 'Source event ↗')}</a>
+                    <div class="cb-link-row proposal-funding-links">
+                        <a class="cb-link cb-link--external" data-market="recipe-link" target="_blank" rel="noopener noreferrer" hidden>${tProposal('panel.proposal.market.recipeLink', 'Recipe declaration')}</a>
+                        <a class="cb-link cb-link--external" data-market="event-link" target="_blank" rel="noopener noreferrer" hidden>${tProposal('panel.proposal.market.eventLink', 'Source event')}</a>
                     </div>
                 </div>
                 <div class="proposal-market-you" data-market="you">${tProposal('panel.proposal.market.connectPosition', 'Connect a Solana wallet to see your bets.')}</div>
                 <div class="proposal-market-controls" data-market="controls"></div>
                 <div class="proposal-market-status" data-market="status" aria-live="polite"></div>
                 <div class="proposal-market-history" data-market="history"><strong>${tProposal('panel.proposal.market.history', 'Recent bets')}</strong><span>${tProposal('world.activity.loading', 'Loading activity…')}</span></div>
-                <div class="proposal-funding-links">
-                    <a href="https://explorer.solana.com/address/${nftInfo.tokenId}?cluster=devnet" target="_blank" rel="noopener">${tProposal('panel.proposal.pledge.proposalExplorer', 'Proposal account')} ↗</a>
-                    <a data-market="account-link" href="#" target="_blank" rel="noopener" hidden>${tProposal('panel.proposal.market.poolAccount', 'Pool account')} ↗</a>
-                    <a href="https://explorer.solana.com/address/${window.SolanaMarketClient?.constants?.PROGRAM_ID || 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB'}?cluster=devnet" target="_blank" rel="noopener">${tProposal('panel.proposal.market.poolProgram', 'Pool program')} ↗</a>
+                <div class="cb-link-row proposal-funding-links">
+                    <a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${nftInfo.tokenId}?cluster=devnet" target="_blank" rel="noopener noreferrer">${tProposal('panel.proposal.pledge.proposalExplorer', 'Proposal account')}</a>
+                    <a class="cb-link cb-link--external" data-market="account-link" target="_blank" rel="noopener noreferrer" hidden>${tProposal('panel.proposal.market.poolAccount', 'Pool account')}</a>
+                    <a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${window.SolanaMarketClient?.constants?.PROGRAM_ID || 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB'}?cluster=devnet" target="_blank" rel="noopener noreferrer">${tProposal('panel.proposal.market.poolProgram', 'Pool program')}</a>
                 </div>
             </section>` : ''}
             ${chainSettlesProposal ? sectionEnd : ''}
@@ -1014,7 +1009,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${parcelAcceptancePlaceholder}
             ${ownerAcceptancePlaceholder}
 
-            <hr style="border: 0; height: 1px; background-color: #ddd; margin: 15px 0;">
+            <hr class="proposal-details-divider">
             <div class="metric-group">
                 <span class="metric-label">${tProposal('panel.proposal.metrics.parcels', 'Parcels in Proposal:')}</span> <span class="metric-value">${parcelIds.length}</span>
             </div>
@@ -1036,7 +1031,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             <div class="metric-group">
                 <span class="metric-label">${tProposal('panel.proposal.metrics.area', 'Total Area:')}</span> <span class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</span>
             </div>
-            <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
+            <hr class="proposal-details-divider proposal-details-divider--tight">
             ${cadastreParcelIds.length > 0 ? `
             <div class="metric-group">
                 <div class="metric-label-count-container">
@@ -1164,7 +1159,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             }
 
             return `
-            <hr style="border: 0; height: 1px; background-color: #ddd; margin: 15px 0;">
+            <hr class="proposal-details-divider">
             <div class="metric-group">
                 <div class="metric-label" style="font-weight: 600; margin-bottom: 10px;">${tProposal('panel.proposal.sections.ownershipStats', 'Ownership & Acquisition Stats')}</div>
             </div>
@@ -1193,10 +1188,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <span class="metric-label">${tProposal('panel.proposal.metrics.created', 'Created:')}</span> <span class="metric-value">${createdAtLabel}</span>
             </div>
             ${escapedProposalDisplayId ? `<div class="proposal-id-row">
-                    <button type="button" class="btn btn-quiet proposal-id-copy" title="${escapedProposalDisplayId}" onclick="copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})"><i class="fas fa-copy" aria-hidden="true"></i> ${tProposal('panel.proposal.copyId', 'Copy ID')}</button>
+                    <button type="button" class="btn btn-quiet btn-sm proposal-id-copy" title="${escapedProposalDisplayId}" onclick="copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})"><i class="fas fa-copy" aria-hidden="true"></i> ${tProposal('panel.proposal.copyId', 'Copy ID')}</button>
                     ${lensButtonHtml}
                 </div>` : ''}
-                ${proposalEnsHtml ? `<div class="proposal-ens-row" style="text-align: center; margin-top: 4px;">${proposalEnsHtml}</div>` : ''}
+                ${proposalEnsHtml ? `<div class="proposal-ens-row">${proposalEnsHtml}</div>` : ''}
             ${sectionEnd}
         </div>
     `;
@@ -1451,19 +1446,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         hydrateProposalMarketCard(nftInfo.tokenId, supportLifecycle);
     }
 
-    // Ensure lens pattern is applied after render when lens exists
-    try {
-        if (hasProposalLens) {
-            const btn = document.querySelector('#proposal-details-content .proposal-lens-button');
-            if (btn) {
-                applyLensPatternToButton(btn, proposalLensEntries);
-            }
-        }
-    } catch (err) {
-        console.warn('post-render lens pattern apply failed', err);
-    }
-
-    // If lens missing but on-chain, attempt a lazy fetch to hydrate and repaint the button
+    // If lens missing but on-chain, attempt a lazy fetch to hydrate and enable the button
     (async () => {
         try {
             if (!hasProposalLens && fullProposal && fullProposal.onchain && fullProposal.onchain.proposalId) {
@@ -1476,8 +1459,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                     }
                     const btn = document.querySelector('#proposal-details-content .proposal-lens-button');
                     if (btn) {
-                        applyLensPatternToButton(btn, fetchedLens);
-                        btn.classList.remove('proposal-lens-button--empty');
                         btn.disabled = false;
                         btn.onclick = () => openProposalLens(lensProposalId);
                     }
@@ -1762,7 +1743,8 @@ function renderProposalPossibilityTimeline(card, model) {
                 : null);
             if (href) {
                 const link = document.createElement('a');
-                link.href = href; link.target = '_blank'; link.rel = 'noopener'; link.textContent = 'Verify ↗';
+                link.className = 'cb-link cb-link--external';
+                link.href = href; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = 'Verify';
                 copy.append(link);
             }
         } else {
@@ -1821,11 +1803,12 @@ function setProposalMarketStatus(card, text = '', explorerUrl = '') {
     node.textContent = text;
     if (explorerUrl) {
         const link = document.createElement('a');
+        link.className = 'cb-link cb-link--external';
         link.href = explorerUrl;
         link.target = '_blank';
-        link.rel = 'noopener';
-        link.textContent = ' View on Solana Explorer ↗';
-        node.appendChild(link);
+        link.rel = 'noopener noreferrer';
+        link.textContent = getProposalI18nHelper()('panel.proposal.market.explorerTx', 'View on the block explorer');
+        node.append(' ', link);
     }
 }
 
@@ -1862,7 +1845,7 @@ function renderProposalOracleText(node, text, t) {
         code.title = part;
         const copy = document.createElement('button');
         copy.type = 'button';
-        copy.className = 'proposal-hash-copy';
+        copy.className = 'btn btn-quiet btn-sm btn-icon proposal-hash-copy';
         const copyLabel = t('panel.proposal.market.copyHash', 'Copy hash');
         copy.title = copyLabel;
         copy.setAttribute('aria-label', copyLabel);
@@ -1870,8 +1853,10 @@ function renderProposalOracleText(node, text, t) {
         copy.addEventListener('click', async () => {
             try {
                 await navigator.clipboard.writeText(part);
-                copy.title = t('panel.proposal.market.hashCopied', 'Copied');
-                copy.classList.add('is-copied');
+                const copied = t('panel.proposal.market.hashCopied', 'Copied');
+                copy.title = copied;
+                copy.setAttribute('aria-label', copied);
+                copy.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i>';
             } catch (error) {
                 console.error(`[${new Date().toISOString()}] [oracle] copy hash failed:`, error);
             }
@@ -1953,8 +1938,9 @@ async function hydrateProposalMarketHistory(card, proposalAccount, proposalId) {
         const actor = event.actor?.name ? `${event.actor.name} · ` : '';
         row.append(document.createTextNode(`${actor}${t(labelKey, labelFallback)} · `));
         const link = document.createElement('a');
+        link.className = 'cb-link cb-link--external';
         link.href = `https://explorer.solana.com/tx/${encodeURIComponent(event.transaction)}?cluster=devnet`;
-        link.target = '_blank'; link.rel = 'noopener'; link.textContent = `${t('gameDialogs.log.row.transaction', 'transaction')} ↗`;
+        link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = t('gameDialogs.log.row.transaction', 'transaction');
         row.append(link);
         container.append(row);
     });
@@ -1984,7 +1970,7 @@ function renderProposalMarketCard(card, proposalAccount, lifecycle, summary) {
     const chance = value => (value === null ? t('bets.row.noBets', 'No bets yet')
         : t('bets.row.chance', '{{percent}} chance', { percent: (typeof CbFormat !== 'undefined' && CbFormat.formatPercent
             ? CbFormat.formatPercent(value, { ofHundred: true, maxFractionDigits: 1 }) : `${value}%`) }));
-    const connectButton = `<button type="button" class="btn btn-outline-primary" onclick="handleWalletButtonClick()">${safeAgentText(t('panel.proposal.support.connect', 'Connect Solana wallet'))}</button>`;
+    const connectButton = `<button type="button" class="btn" onclick="handleWalletButtonClick()">${safeAgentText(t('panel.proposal.support.connect', 'Connect Solana wallet'))}</button>`;
     const muted = text => `<span class="proposal-market-muted">${safeAgentText(text)}</span>`;
     // The bet's own dialog (js/bets/bets-dialog.js): the whole bet on one surface, with its link.
     const openBet = model.exists
@@ -2007,7 +1993,7 @@ function renderProposalMarketCard(card, proposalAccount, lifecycle, summary) {
             ? (lifecycleModel.canOpen ? connectButton : muted(nextText))
             : !lifecycleModel.canOpen
                 ? muted(nextText)
-                : `<button type="button" class="btn btn-outline-primary" onclick="settleProposalMarket(${inlineJsArg(proposalAccount)}, 'createMarket')">${safeAgentText(t('bets.row.openMarket', 'Open the pool'))}</button>`;
+                : `<button type="button" class="btn" onclick="settleProposalMarket(${inlineJsArg(proposalAccount)}, 'createMarket')">${safeAgentText(t('bets.row.openMarket', 'Open the pool'))}</button>`;
         return;
     }
     if (yes) yes.textContent = money(model.yesPool);
@@ -2034,11 +2020,11 @@ function renderProposalMarketCard(card, proposalAccount, lifecycle, summary) {
         return;
     }
     if (lifecycleModel.canResolve) {
-        controls.innerHTML = `<button type="button" class="btn btn-outline-secondary" onclick="settleProposalMarket(${inlineJsArg(proposalAccount)}, 'resolve')">${safeAgentText(t('panel.proposal.market.settle', "Settle {{outcome}} from the proposal's status", { outcome: marketSideLabel(lifecycleModel.expectedOutcome === 'yes' ? 1 : 0) }))}</button>`;
+        controls.innerHTML = `<button type="button" class="btn" onclick="settleProposalMarket(${inlineJsArg(proposalAccount)}, 'resolve')">${safeAgentText(t('panel.proposal.market.settle', "Settle {{outcome}} from the proposal's status", { outcome: marketSideLabel(lifecycleModel.expectedOutcome === 'yes' ? 1 : 0) }))}</button>`;
     } else if (lifecycleModel.canStake) {
         controls.innerHTML = `
-            <button type="button" class="btn btn-market-yes" onclick="openProposalMarketStakeDialog(${inlineJsArg(proposalAccount)}, 1)">${safeAgentText(t('panel.proposal.market.betYes', 'Bet yes'))}</button>
-            <button type="button" class="btn btn-market-no" onclick="openProposalMarketStakeDialog(${inlineJsArg(proposalAccount)}, 0)">${safeAgentText(t('panel.proposal.market.betNo', 'Bet no'))}</button>`;
+            <button type="button" class="btn btn-yes btn-market-yes" onclick="openProposalMarketStakeDialog(${inlineJsArg(proposalAccount)}, 1)">${safeAgentText(t('panel.proposal.market.betYes', 'Bet yes'))}</button>
+            <button type="button" class="btn btn-no btn-market-no" onclick="openProposalMarketStakeDialog(${inlineJsArg(proposalAccount)}, 0)">${safeAgentText(t('panel.proposal.market.betNo', 'Bet no'))}</button>`;
     } else {
         controls.innerHTML = muted(nextText);
     }
@@ -2105,6 +2091,13 @@ async function recordHumanProposalSupport({ wallet, action, proposalId, amount =
     });
 }
 
+// The open pledge / donation box (a CbDialog), so a second open replaces it and Close ends it.
+let activeProposalBoostDialog = null;
+
+// Pledge to or donate to a proposal: one CbDialog (js/ui/dialogs.js) wearing the identity class
+// proposal-boost-modal. Its overlay keeps the id proposalBoostOverlay, carrying the support kind and
+// the retry-safe operation id, and the send button keeps data-support-submit: submitProposalBoost
+// and closeProposalBoostDialog find them by those.
 function openProposalBoostDialog(idOrHash = null, supportKind = 'pledge') {
     const tProposalUI = getProposalI18nHelper();
     const proposal = resolveProposalForBoost(idOrHash);
@@ -2113,21 +2106,9 @@ function openProposalBoostDialog(idOrHash = null, supportKind = 'pledge') {
         return;
     }
 
-    const existing = document.getElementById('proposalBoostOverlay');
-    if (existing && existing.parentNode) {
-        existing.parentNode.removeChild(existing);
-    }
+    closeProposalBoostDialog();
 
     const boostKey = proposal.proposalId || proposal.tokenId || idOrHash || '';
-    const overlay = document.createElement('div');
-    overlay.id = 'proposalBoostOverlay';
-    overlay.className = 'proposal-boost-overlay';
-    overlay.addEventListener('click', event => {
-        if (event.target === overlay) {
-            closeProposalBoostDialog();
-        }
-    });
-
     const isDonation = supportKind === 'donate';
     const modalTitle = isDonation ? 'Donate to this proposal' : tProposalUI('panel.proposal.boost.title', 'Pledge to this proposal');
     const modalCloseLabel = isDonation ? 'Close donation dialog' : tProposalUI('panel.proposal.boost.closeLabel', 'Close pledge dialog');
@@ -2135,35 +2116,36 @@ function openProposalBoostDialog(idOrHash = null, supportKind = 'pledge') {
         ? 'Donate devnet USDC now. It stays in proposal escrow until execution, and you can refund it if the proposal is cancelled or expires.'
         : 'Publish a revocable USDC commitment. No USDC leaves your wallet now; after execution, you choose whether to fulfil it.';
     const sendLabel = isDonation ? 'Donate' : tProposalUI('panel.proposal.boost.send', 'Pledge');
+    const amountLabel = tProposalUI('bets.dialog.amount', 'Amount');
+
+    const dialog = window.CbDialog.open({
+        title: modalTitle,
+        size: 'sm',
+        className: 'proposal-boost-modal',
+        closeLabel: modalCloseLabel,
+        autofocus: false,
+        body: `
+            <p class="proposal-boost-copy">${modalCopy}</p>
+            <div class="proposal-support-wallet-summary" data-support-wallet-summary aria-live="polite">Checking wallet balances…</div>
+            <div class="proposal-offer-row proposal-boost-row">
+                <input type="text" id="proposalBoostAmount" placeholder="1.00" inputmode="decimal" autocomplete="off" aria-label="${safeAgentText(amountLabel)}">
+                <select id="proposalBoostCurrency" aria-label="USDC">
+                    <option value="USDC">USDC</option>
+                </select>
+            </div>
+            <div class="proposal-boost-status" id="proposalBoostStatus" aria-live="polite"></div>
+        `,
+        actions: [{ id: 'send', label: sendLabel, role: 'primary', keepOpen: true, onClick: () => submitProposalBoost(boostKey) }],
+        onClose: () => { activeProposalBoostDialog = null; }
+    });
+    activeProposalBoostDialog = dialog;
+    const overlay = dialog.overlay;
+    overlay.id = 'proposalBoostOverlay';
     overlay.dataset.supportKind = isDonation ? 'donate' : 'pledge';
     overlay.dataset.pledgeOperationId = (globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function')
         ? globalThis.crypto.randomUUID()
         : `pledge-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-
-    overlay.innerHTML = `
-        <div class="proposal-boost-modal" role="dialog" aria-modal="true">
-            <div class="proposal-boost-header">
-                <h3>${modalTitle}</h3>
-                <button type="button" class="proposal-boost-close" aria-label="${modalCloseLabel}" onclick="closeProposalBoostDialog()">×</button>
-            </div>
-            <div class="proposal-boost-body">
-                <p class="proposal-boost-copy">${modalCopy}</p>
-                <div class="proposal-support-wallet-summary" data-support-wallet-summary aria-live="polite">Checking wallet balances…</div>
-                <div class="proposal-offer-row proposal-boost-row" style="display:flex; gap:8px; align-items:center;">
-                    <input type="text" id="proposalBoostAmount" placeholder="1.00" inputmode="decimal" autocomplete="off" style="flex:1 1 auto;">
-                    <select id="proposalBoostCurrency" style="flex:0 0 112px; max-width:112px; min-width:112px;">
-                        <option value="USDC">USDC</option>
-                    </select>
-                </div>
-                <div class="proposal-boost-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-                    <button type="button" class="btn proposal-boost-send" data-support-submit style="min-width:100px; width:120px;" onclick="submitProposalBoost(${inlineJsArg(boostKey)})">${sendLabel}</button>
-                    <div class="proposal-boost-status" id="proposalBoostStatus" aria-live="polite" style="font-size:12px; text-align:center; min-height:18px;"></div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(overlay);
+    dialog.getActionButton('send').setAttribute('data-support-submit', '');
 
     const walletSummary = overlay.querySelector('[data-support-wallet-summary]');
     if (window.SolanaPledgeBridge?.walletBalances) {
@@ -2188,10 +2170,7 @@ function openProposalBoostDialog(idOrHash = null, supportKind = 'pledge') {
 }
 
 function closeProposalBoostDialog() {
-    const overlay = document.getElementById('proposalBoostOverlay');
-    if (overlay && overlay.parentNode) {
-        overlay.parentNode.removeChild(overlay);
-    }
+    if (activeProposalBoostDialog) activeProposalBoostDialog.close(null);
 }
 
 async function submitProposalBoost(idOrHash = null) {
@@ -2416,16 +2395,16 @@ function returnToParcelInfo(parcelId, event) {
 function copyProposalIdToClipboard(id) {
     const text = String(id || '');
     if (!text) return;
+    const t = getProposalI18nHelper();
     const done = () => {
-        const t = getProposalI18nHelper();
         if (typeof showEphemeralMessage === 'function') showEphemeralMessage(t('common.copied', 'Copied'), 2000);
     };
+    // Without clipboard access the ID is shown in a prompt's field, to copy by hand.
+    const showToCopy = () => window.CbDialog.prompt(t('panel.proposal.copyId', 'Copy ID'), { defaultValue: text });
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done).catch(() => {
-            try { window.prompt('', text); } catch (_) { /* nothing to fall back to */ }
-        });
+        navigator.clipboard.writeText(text).then(done).catch(showToCopy);
     } else {
-        try { window.prompt('', text); } catch (_) { /* nothing to fall back to */ }
+        showToCopy();
     }
 }
 window.copyProposalIdToClipboard = copyProposalIdToClipboard;

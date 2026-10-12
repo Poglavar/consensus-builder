@@ -87,7 +87,10 @@
     function formatParcelBasedText(template, params = {}) {
         if (!template) return '';
         return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
-            return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+            if (!Object.prototype.hasOwnProperty.call(params, key)) return match;
+            const value = params[key];
+            // An i18n plural reference ({ key, count }) without i18n loaded: its count is the best fallback.
+            return value && typeof value === 'object' && 'count' in value ? value.count : value;
         });
     }
 
@@ -103,12 +106,7 @@
         const message = key
             ? translateParcelBasedText(`alerts.messages.${key}`, fallback, params)
             : translateParcelBasedText('', fallback, params);
-        const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
-            ? window.showStyledAlert
-            : window.alert;
-        if (typeof alertFn === 'function') {
-            alertFn(message);
-        }
+        window.CbDialog.alert(message);
         return message;
     }
 
@@ -515,14 +513,17 @@
             const doneButton = document.getElementById('btn-parcelbased-done');
             if (doneButton) doneButton.disabled = false;
 
+            // The counts are plural phrases of their own ("1 building", "3 buildings"; the Urban rule
+            // editor's keys), passed as i18n references so the line follows a language change.
+            const buildingsPhrase = { key: 'blockify.modal.messages.buildingCount', count: buildings.length };
             if (excluded.length) {
                 setParcelBasedInfo('parcelBased.modal.generatedSummaryExcluded',
-                    'Generated {{count}} building(s) · {{excluded}} parcel(s) excluded by the rule',
-                    { count: buildings.length, excluded: excluded.length });
+                    'Generated {{buildings}} · {{excluded}}',
+                    { buildings: buildingsPhrase, excluded: { key: 'blockify.modal.messages.parcelsLeftOut', count: excluded.length } });
             } else {
                 setParcelBasedInfo('parcelBased.modal.generatedSummary',
-                    'Generated {{count}} building(s)',
-                    { count: buildings.length });
+                    'Generated {{buildings}}',
+                    { buildings: buildingsPhrase });
             }
 
         } catch (error) {
@@ -797,32 +798,32 @@
 
         // Create modal if it doesn't exist
         if (!document.getElementById('parcelbased-modal')) {
+            // The editor wears the dialog primitive (css/primitives.css: overlay, card, header,
+            // body, footer, the phone bottom sheet); css/modals.css only lays out its map, 3D
+            // preview and sidebar inside it, the same as the Urban rule editor.
             const modalDiv = document.createElement('div');
             modalDiv.id = 'parcelbased-modal';
-            modalDiv.className = 'parcelbased-modal-overlay';
+            modalDiv.className = 'cb-dialog-overlay';
 
             const container = document.createElement('div');
             container.id = 'parcelbased-container';
+            container.className = 'cb-dialog cb-dialog--xl';
+            container.setAttribute('role', 'dialog');
+            container.setAttribute('aria-modal', 'true');
+            container.setAttribute('aria-labelledby', 'parcelbased-title');
 
             container.innerHTML = `
-                <div id="parcelbased-header">
-                    <h2 data-i18n-key="parcelBased.modal.title">Detached houses</h2>
+                <div id="parcelbased-header" class="cb-dialog__header">
+                    <h2 id="parcelbased-title" class="cb-dialog__title" data-i18n-key="parcelBased.modal.title">Detached houses</h2>
                     <button id="parcelbased-close" type="button" class="close-circle-btn close-circle-btn--lg" data-i18n-key="parcelBased.modal.closeAria" data-i18n-attr="aria-label" aria-label="Close parcel-based modal">×</button>
                 </div>
-                <div id="parcelbased-body">
+                <div id="parcelbased-body" class="cb-dialog__body">
                 <div id="parcelbased-main">
                     <div id="parcelbased-map"></div>
                     <div id="parcelbased-3d"></div>
-                    <div id="parcelbased-controls">
-                        <div id="parcelbased-info" data-i18n-attr="text"></div>
-                        <div id="parcelbased-buttons" style="display: flex; justify-content: center; gap: 10px;">
-                            <button class="btn btn-secondary" id="btn-parcelbased-regenerate" style="width: auto; padding: 8px 24px;" data-i18n-key="parcelBased.modal.regenerate" data-i18n-attr="text">Regenerate</button>
-                            <button class="btn btn-proposal" id="btn-parcelbased-done" style="width: auto; padding: 8px 24px;" data-i18n-key="parcelBased.modal.done" data-i18n-attr="text">Done</button>
-                        </div>
-                    </div>
                 </div>
                 <div id="parcelbased-sidebar">
-                    <h3 data-i18n-key="parcelBased.modal.parametersTitle">Parameters</h3>
+                    <h3 class="cb-kicker" data-i18n-key="parcelBased.modal.parametersTitle">Parameters</h3>
                     <div class="parameter-group">
                         <label for="parcelbased-ruletype-select" data-i18n-key="parcelBased.modal.labels.ruleType" data-i18n-attr="text">What the rule compels:</label>
                         <select id="parcelbased-ruletype-select">
@@ -896,6 +897,13 @@
                         </p>
                     </div>
                 </div>
+                </div>
+                <div id="parcelbased-controls" class="cb-dialog__footer">
+                    <div id="parcelbased-info" data-i18n-attr="text" role="status" aria-live="polite"></div>
+                    <div id="parcelbased-buttons">
+                        <button type="button" class="btn" id="btn-parcelbased-regenerate" data-i18n-key="parcelBased.modal.regenerate" data-i18n-attr="text">Regenerate</button>
+                        <button type="button" class="btn btn-primary" id="btn-parcelbased-done" data-i18n-key="parcelBased.modal.done" data-i18n-attr="text">Done</button>
+                    </div>
                 </div>
             `;
 

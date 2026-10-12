@@ -192,12 +192,7 @@
         const hits = detectPedestrianRoadCrossings(from, to, drawingProfile, proposals);
         if (!hits.length) return { action: 'none', hits: [], records: [] };
         const prompt = buildPedestrianCrossingPrompt(hits);
-        let answer = 'at-grade';
-        if (typeof global.showStyledChoice === 'function') {
-            answer = (await global.showStyledChoice(prompt.message, prompt.choices)) || 'cancel';
-        } else if (typeof global.confirm === 'function') {
-            answer = global.confirm(prompt.message) ? 'at-grade' : 'cancel';
-        }
+        const answer = (await global.showStyledChoice(prompt.message, prompt.choices)) || 'cancel';
         if (answer === 'cancel') return { action: 'cancel', hits, records: [] };
         return {
             action: answer,

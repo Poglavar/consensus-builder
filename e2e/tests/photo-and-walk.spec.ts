@@ -40,7 +40,7 @@ test('walk requires publishing local applied proposals and cancelling preserves 
   await page.locator('#mode-walk-toggle').click();
   await expect(page.locator('.share-modal-overlay')).toBeVisible();
   await expect(page.locator('.share-modal-overlay')).toContainText(/upload|publish/i);
-  await page.locator('.share-modal-close').click();
+  await page.locator('.share-modal .close-circle-btn').click();
   await expect(page.locator('.share-modal-overlay')).toBeHidden();
   await expect(page.locator('#three-container canvas')).toBeVisible();
   expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p: any) => p.applied).length)).toBe(1);

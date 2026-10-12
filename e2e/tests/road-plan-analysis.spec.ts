@@ -52,7 +52,7 @@ test.describe('Government plan and road analysis controls @features', () => {
     await expect(page.locator('#activity-sheet')).toBeVisible();
     await expect(page.locator('#areaMonitorFromPlanButton')).toBeEnabled();
     await page.locator('#areaMonitorFromPlanButton').click();
-    await expect(page.locator('#areaMonitorFromPlanButton')).toHaveClass(/active/);
+    await expect(page.locator('#areaMonitorFromPlanButton')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('#areaMonitorDrawButton')).toBeDisabled();
 
     // The visible green plan vertices are the polygon's real vertices; close by clicking the first.

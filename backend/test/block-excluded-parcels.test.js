@@ -91,7 +91,10 @@ describe('what the editor says about it', () => {
         ['rangeExactExcluded', 'rangeBetweenExcluded', 'rangeMaxExcluded'].forEach(key => {
             expect(report).toContain(key);
         });
-        expect(report).toContain('{{excluded}} parcel(s) left out');
+        // The count is a plural phrase of its own (i18n `blockify.modal.messages.parcelsLeftOut`),
+        // never a "parcel(s)" hedge.
+        expect(report).toContain('blockParcelsLeftOutPhrase(');
+        expect(report).not.toContain('parcel(s)');
     });
 
     it('draws every excluded parcel on the editor map', () => {

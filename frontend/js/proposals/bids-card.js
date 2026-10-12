@@ -232,16 +232,14 @@
         const wallet = currentWallet();
         if (ownerNode) {
             if (ownerWallet && wallet && wallet === ownerWallet) {
+                // "Say yes" scrolls to the lens card where the owner says it: a button, it runs script.
                 ownerNode.innerHTML = `
                     <div class="proposal-bids-owner">
-                        <a href="#" class="btn btn-action proposal-bids-say-yes" data-bids-say-yes>${escapeText(t('panel.proposal.ownerOffer.sayYes', 'Say yes to execute'))}</a>
+                        <button type="button" class="btn btn-success btn-block proposal-bids-say-yes" data-bids-say-yes>${escapeText(t('panel.proposal.ownerOffer.sayYes', 'Say yes to execute'))}</button>
                         <small>${escapeText(t('panel.proposal.ownerOffer.ownerHint', 'You own this offer. Saying yes on each of your parcels in the lens card executes it and releases the donations to you.'))}</small>
                     </div>`;
-                const link = ownerNode.querySelector('[data-bids-say-yes]');
-                link.addEventListener('click', event => {
-                    event.preventDefault();
-                    scrollToLensCard(proposalAccount);
-                });
+                const sayYes = ownerNode.querySelector('[data-bids-say-yes]');
+                sayYes.addEventListener('click', () => scrollToLensCard(proposalAccount));
             } else {
                 ownerNode.innerHTML = '';
             }
@@ -266,9 +264,9 @@
                         <span class="proposal-bids-kind">${escapeText(kindLabel)}</span>
                     </span>
                     <span class="proposal-bids-meta">
-                        ${walletUrl ? `<a href="${escapeText(walletUrl)}" target="_blank" rel="noopener" title="${escapeText(bid.wallet)}">${escapeText(shortKey(bid.wallet))}</a>` : ''}
+                        ${walletUrl ? `<a class="cb-link cb-link--quiet cb-link--external" href="${escapeText(walletUrl)}" target="_blank" rel="noopener noreferrer" title="${escapeText(bid.wallet)}">${escapeText(shortKey(bid.wallet))}</a>` : ''}
                         <span>${escapeText(formatTime(bid.time))}</span>
-                        ${txUrl ? `<a href="${escapeText(txUrl)}" target="_blank" rel="noopener">${escapeText(t('panel.proposal.ownerOffer.explorer', 'Explorer'))} ↗</a>` : ''}
+                        ${txUrl ? `<a class="cb-link cb-link--quiet cb-link--external" href="${escapeText(txUrl)}" target="_blank" rel="noopener noreferrer">${escapeText(t('panel.proposal.ownerOffer.explorer', 'Explorer'))}</a>` : ''}
                     </span>
                 </li>`;
         }).join('');

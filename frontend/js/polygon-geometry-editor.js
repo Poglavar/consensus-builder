@@ -291,7 +291,8 @@
             if (typeof this.map.on === 'function') this.map.on('click', this.boundMapClick);
         }
 
-        // A small control in the map corner, styled by .geom-undo-button (modals.css).
+        // A small control in the map corner: map chrome (.map-shell-button), placed by
+        // .geom-undo-button (modals.css).
         createFloatingUndoButton() {
             if (!this.document || !this.map || typeof this.map.getContainer !== 'function') return null;
             try {
@@ -299,10 +300,13 @@
                 if (!container) return null;
                 const button = this.document.createElement('button');
                 button.type = 'button';
-                button.className = 'geom-undo-button';
+                button.className = 'map-shell-button geom-undo-button';
                 button.title = this.options.undoTitle || 'Undo (Cmd/Ctrl+Z)';
                 button.setAttribute('aria-label', button.title);
-                button.textContent = '\u21B6';
+                const icon = this.document.createElement('i');
+                icon.className = 'fa-solid fa-rotate-left';
+                icon.setAttribute('aria-hidden', 'true');
+                button.appendChild(icon);
                 button.disabled = true;
                 // Keep map drag/zoom from eating the click.
                 if (this.L && this.L.DomEvent) {

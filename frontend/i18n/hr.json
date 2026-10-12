@@ -537,6 +537,7 @@
         "userFallback": "Korisnik",
         "close": "Zatvori",
         "cancel": "Odustani",
+        "seeTransaction": "Pogledaj transakciju",
         "ok": "U redu",
         "download": "Preuzmi",
         "busy": {
@@ -625,12 +626,12 @@
         "title": "Gradski token",
         "close": "Zatvori modal za gradski token",
         "explainerIntro": "Grad ima svoj token, naravno.",
-        "explainerBody": "Svaka registrirana adresa građanina ima pravo na 1 token po satu ⌛️, zauvijek. Možete koristiti te tokene za pojačavanje prijedloga. Shvatite to kao način glasanja za one koji vam se sviđaju.",
+        "explainerBody": "Svaka registrirana adresa građanina ima pravo na 1 token po satu, zauvijek. Te tokene možete obećati prijedlozima. Shvatite to kao način glasanja za one koji vam se sviđaju.",
         "currentBalance": "Trenutno stanje",
         "currentAllotment": "Trenutna dodjela",
         "register": "Registriraj se",
         "claim": "Preuzmi",
-        "registeredLabel": "🏅 Registriran",
+        "registeredLabel": "Registriran",
         "statusRegistered": "Uspješno! Sada ste registrirani građanin.",
         "statusClaimed": "Preuzeto {{amount}} tokena.",
         "statusNoWallet": "Povežite novčanik da biste vidjeli gradske tokene.",
@@ -1036,9 +1037,9 @@
             "telegramLabel": "Telegram",
             "xLabel": "X",
             "aboutTitle": "O projektu",
-            "aboutParagraph": "<strong>Consensus Builder</strong> besplatan je alat za urbanističko planiranje na karti koji je pokrenuo Urban Game Theory. Hyperstition: Markets for Possible Cities njegov je hackathon projekt. Istražite stvarne čestice, usporedite prijedloge zoniranja i razvoja te gradite podršku s ljudima na koje promjene utječu. Pročitajte o <a href=\"/urban-planning.html\">otvorenom planiranju grada</a>, otvorite <a href=\"/hackathon-demo.html\">demonstraciju uživo</a>, pročitajte <a href=\"/deck.html\">prezentaciju</a> ili pogledajte <a href=\"roadmap.html\" target=\"_blank\">plan razvoja</a>.",
+            "aboutParagraph": "<strong>Consensus Builder</strong> besplatan je alat za urbanističko planiranje na karti koji je pokrenuo Urban Game Theory. Hyperstition: Markets for Possible Cities njegov je hackathon projekt. Istražite stvarne čestice, usporedite prijedloge zoniranja i razvoja te gradite podršku s ljudima na koje promjene utječu. Pročitajte o <a class=\"cb-link\" href=\"/urban-planning.html\">otvorenom planiranju grada</a>, otvorite <a class=\"cb-link\" href=\"/hackathon-demo.html\">demonstraciju uživo</a>, pročitajte <a class=\"cb-link\" href=\"/deck.html\">prezentaciju</a> ili pogledajte <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">plan razvoja</a>.",
             "instructionsTitle": "Kreni odavde",
-            "instructionsParagraph": "<strong>Nacrtaj promjenu, zatim gradi konsenzus.</strong> Dovršeni dizajn stvara primijenjeni lokalni prijedlog. Pregledaj ga, makni s karte, podijeli ili izradi uređivu varijantu kada želiš promijeniti dizajn ili uvjete. Pročitaj <a href=\"kako-koristiti.html\" target=\"_blank\">vodič korak po korak</a> ili pogledaj što radi danas i što slijedi u <a href=\"roadmap.html\" target=\"_blank\">planu razvoja</a>.",
+            "instructionsParagraph": "<strong>Nacrtaj promjenu, zatim gradi konsenzus.</strong> Dovršeni dizajn stvara primijenjeni lokalni prijedlog. Pregledaj ga, makni s karte, podijeli ili izradi uređivu varijantu kada želiš promijeniti dizajn ili uvjete. Pročitaj <a class=\"cb-link\" href=\"kako-koristiti.html\" target=\"_blank\" rel=\"noopener noreferrer\">vodič korak po korak</a> ili pogledaj što radi danas i što slijedi u <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">planu razvoja</a>.",
             "advancedTitle": "Napredne opcije",
             "debugToggle": "Uključi debug način",
             "wipeDataButton": "Resetiraj sve (ovaj preglednik)",
@@ -1247,7 +1248,7 @@
             "actions": {
                 "measureAsRoad": "Izmjeri kao cestu",
                 "measurementsAdded": "Mjerenja dodana",
-                "measureLoading": "⏳ Računam…",
+                "measureLoading": "Računam…",
                 "measureLengthLabel": "Duljina kao cesta:",
                 "measureWidthLabel": "Širina kao cesta:",
                 "measureWidthAverage": "Prosjek:",
@@ -1438,10 +1439,10 @@
             "market": {
                 "oracleTitle": "Recept oraclea",
                 "oracleLoading": "Učitavanje proposal-lifecycle-v1…",
-                "recipeLink": "Deklaracija recepta ↗",
+                "recipeLink": "Deklaracija recepta",
                 "copyHash": "Kopiraj hash",
                 "hashCopied": "Kopirano",
-                "eventLink": "Izvorni događaj ↗",
+                "eventLink": "Izvorni događaj",
                 "finalVerifier": "Program na Solani ostaje konačni verifikator.",
                 "yesSide": "Da · bit će izgrađen",
                 "noSide": "Ne · odbačen",
@@ -1808,8 +1809,8 @@
             "segmentCancelledStatus": "Segment poništen — postavljeni segmenti ostaju. Esc ponovno gradi cestu.",
             "builtStatusTrack": "Pruga izgrađena — kliknite je za uređivanje ili prijedlog.",
             "nodeHint": "Povucite za pomicanje · ⌥-klik uklanja ovaj čvor",
-            "edgeActionsHint": "＋ Dodaj čvor · 🚜 Sruši ovu dionicu",
-            "edgeActionsProtectedHint": "Na rampi, tunelskoj ili deniveliranoj dionici nije moguće dodati čvor · 🚜 Sruši ovu dionicu",
+            "edgeActionsHint": "＋ Dodaj čvor · × Sruši ovu dionicu",
+            "edgeActionsProtectedHint": "Na rampi, tunelskoj ili deniveliranoj dionici nije moguće dodati čvor · × Sruši ovu dionicu",
             "addNodeProtectedStatus": "Na rampi, tunelskoj ili deniveliranoj dionici nije moguće dodati čvor.",
             "editRevertedStatus": "Tu promjenu ceste nije bilo moguće dovršiti — vraćeno.",
             "splitIntoStretches": "Uređivanje je prekinulo cestu — podijeljena je u {{count}} zasebnih prijedloga cesta.",
@@ -1870,6 +1871,7 @@
             "speedPickerTitle": "Odaberi brzinu pruge",
             "speedPickerDescription": "Odaberi maksimalnu brzinu za ovu prugu. Ovo određuje minimalni radijus zakrivljenosti. Pritisni Enter da počneš s zadanom selekcijom.",
             "startDrawing": "Počni crtanje",
+            "minRadius": "Minimalni radijus zakrivljenosti {{radius}} m",
             "cancel": "Odustani",
             "widthLabel": "Širina pruge:"
         },
@@ -1935,13 +1937,13 @@
             "deckLink": "Pročitaj prezentaciju",
             "subtitle": "Odaberite avatar i unesite korisničko ime:",
             "closeLabel": "Zatvori prozor dobrodošlice",
-            "avatarLabel": "Odaberite avatar:",
+            "avatarLabel": "Odaberite avatar",
             "avatarAlt": "Avatar",
             "avatarAltIndexed": "Avatar {{index}}",
             "avatarHint": "Klikni za odabir",
             "avatarUsed": "Avatar je već u upotrebi",
             "avatarSelected": "Avatar {{index}} odabran",
-            "languageLabel": "Jezik:",
+            "languageLabel": "Jezik",
             "usernamePlaceholder": "Vaše korisničko ime",
             "takeoverYes": "Da",
             "takeoverNo": "Ne",
@@ -1959,11 +1961,6 @@
             "subtitle": "Što bi se trebalo dogoditi s tvojim agentom?",
             "aiOption": "Neka AI vodi agenta",
             "inactiveOption": "Agent treba biti neaktivan",
-            "cancel": "Otkaži"
-        },
-        "locate": {
-            "title": "Potvrda lociranja čestice",
-            "confirm": "OK",
             "cancel": "Otkaži"
         },
         "singleBuilding": {
@@ -2017,8 +2014,11 @@
             "cancel": "Odustani",
             "confirm": "Upotrijebi ovu zgradu"
         },
+        "centerlineAnimation": {
+            "title": "Prikaz algoritma osi"
+        },
         "lens": {
-            "title": "Leća kroz koju vidim svijet 👓🏖️",
+            "title": "Leća kroz koju vidim svijet",
             "subtitle": "Ovo su pouzdane adrese čija će se svjedočanstva vjerovati pri određivanju vlasnika čestica.",
             "closeLabel": "Zatvori prozor leće",
             "patternCaption": "Uzorak se automatski ažurira kad uredite popis.",
@@ -2031,8 +2031,8 @@
             },
             "removeAddress": "Ukloni adresu",
             "links": {
-                "etherscan": "Etherscan ↗",
-                "attestify": "Attestify ↗"
+                "etherscan": "Etherscan",
+                "attestify": "Attestify"
             },
             "patternAria": "Pregled uzorka leće",
             "patternTitle": "Uzorak leće",
@@ -2815,11 +2815,11 @@
             "titlePark": "Kreiraj prijedlog parka",
             "titleSquare": "Kreiraj prijedlog trga",
             "closeAria": "Zatvori dijalog prijedloga",
-            "authorLabel": "Autor:",
+            "authorLabel": "Autor",
             "authorPlaceholder": "Tvoje ime",
             "authorAvatarAlt": "Avatar autora",
-            "proposalTypeLabel": "Tip prijedloga:",
-            "proposalGoalLabel": "Cilj prijedloga:",
+            "proposalTypeLabel": "Tip prijedloga",
+            "proposalGoalLabel": "Cilj prijedloga",
             "typologyLabel": "Tipologija",
             "acquisitionLabel": "Strategija stjecanja",
             "ownershipLabel": "Vlasništvo",
@@ -2865,7 +2865,7 @@
                 "any": "Bilo tko"
             },
             "ownershipTransfer": {
-                "label": "Smjer prijenosa:",
+                "label": "Smjer prijenosa",
                 "toMe": "Na mene",
                 "fromMe": "Od mene",
                 "nameToMe": "Prijenos vlasništva na mene",
@@ -2897,7 +2897,7 @@
                 },
                 "status": {
                     "noGeometry": "Nema geometrije: definiraj geometriju",
-                    "submitted": "✔️ geometrija predana",
+                    "submitted": "Geometrija predana",
                     "auto": "Algoritamska geometrija će se generirati",
                     "copied": "Geometrija kopirana iz \"{name}\"",
                     "copiedEditable": "Geometrija kopirana iz \"{name}\" — pritisnite Uredi za prilagodbu",
@@ -2905,7 +2905,7 @@
                 }
             },
             "reparcellization": {
-                "label": "Algoritam:",
+                "label": "Algoritam",
                 "options": {
                     "sweepLine": "Sweep line",
                     "centroidalVoronoi": "Centroidal Voronoi",
@@ -2914,12 +2914,12 @@
                 },
                 "hint": "Dodatni algoritmi vidljivi su za planiranje; Sweep line je trenutno dostupan."
             },
-            "descriptionLabel": "Opis:",
+            "descriptionLabel": "Opis",
             "descriptionPlaceholder": "Opiši svoj prijedlog…",
             "descriptionPlaceholderStructure": "Opiši svoju {{kind}}…",
-            "offerLabel": "Ponuda:",
+            "offerLabel": "Ponuda",
             "offerPlaceholder": "0",
-            "optionsLabel": "Opcije:",
+            "optionsLabel": "Opcije",
             "options": {
                 "conditional": "Uvjetno",
                 "conditionalHelperOn": "Plati nagradu samo ako/kada svi vlasnici prihvate",
@@ -2965,11 +2965,11 @@
             "creating": "Kreiram…",
             "waiting": "Čekam transakciju…",
             "rejected": "Transakcija odbijena",
-            "nameLabel": "Naziv:",
+            "nameLabel": "Naziv",
             "namePlaceholderProposal": "Naziv prijedloga",
             "defaultDescription": "{{type}} — novi prijedlog korisnika {{author}}",
             "namePlaceholder": "Nazovi svoju {{kind}}",
-            "typeLabel": "Tip:",
+            "typeLabel": "Tip",
             "typePark": "Park",
             "typeSquare": "Trg",
             "errors": {
@@ -3010,7 +3010,9 @@
                 "anchorExplainer": "Sidro čestice je identitet čestice na lancu. Nitko ga ne posjeduje i njegovo stvaranje ne daje vlasništvo; plaćate samo njegov najam. Vlasništvo dolazi na lanac zasebno, kao potvrda člana leće. Sidra možete stvoriti i u kartici Alati na ploči Informacije o čestici.",
                 "createAnchor": "Stvori sidro čestice",
                 "createAnchors": "Stvori sidra čestica",
-                "anchorThenCreate": "Stvorite sidra čestica, zatim ponovno kliknite Stvori."
+                "anchorThenCreate": "Stvorite sidra čestica, zatim ponovno kliknite Stvori.",
+                "title": "Čestice još nisu na lancu",
+                "anchorTitle": "Nedostaju sidra čestica"
             },
             "onchainMintFailed": {
                 "cancel": "Odustani",
@@ -3034,11 +3036,11 @@
                 "proof": {
                     "intro": "Za ponudu svoje zemlje treba dokaz da je tvoja:",
                     "wallet": "poveži svoj Solana novčanik",
-                    "attestation": "zamoli člana svoje leće (👓) da potvrdi tvoj novčanik kao vlasnika ovih čestica",
+                    "attestation": "zamoli člana svoje leće da potvrdi tvoj novčanik kao vlasnika ovih čestica",
                     "name": "odaberi ime profila (oblačić gore desno)"
                 },
                 "checking": "Provjeravam potvrde vlasništva…",
-                "needLens": "Najprije odaberi leću (👓): ponuda treba člana leće koji je potvrdio tvoje vlasništvo.",
+                "needLens": "Najprije odaberi leću: ponuda treba člana leće koji je potvrdio tvoje vlasništvo.",
                 "needParcels": "Odaberi čestice koje posjeduješ.",
                 "noService": "Nijedan član tvoje leće ne objavljuje adresu servisa, pa se vlasništvo ne može provjeriti.",
                 "unavailable": "Potvrde vlasništva trenutačno se ne mogu provjeriti.",
@@ -3202,14 +3204,24 @@
                 "multiParcelLabel": "{{count}} čestica",
                 "excludedBelowMinPlot": "Manja od najmanje površine čestice — treba je spojiti sa susjednom prije nego se ovdje išta može graditi.",
                 "excludedSliver": "Na ovu česticu pada samo krhotina bloka — premala da bude zgrada.",
-                "rangeExact": "{{buildings}} zgrada · donosi {{permitted}} m² GBP-a",
-                "rangeBetween": "{{buildings}} zgrada · jamči {{guaranteed}} – {{permitted}} m² GBP-a",
-                "rangeMax": "{{buildings}} zgrada · dopušta 0 – {{permitted}} m² GBP-a",
-                "rangeExactExcluded": "{{buildings}} zgrada · daje {{permitted}} m² GBP-a · {{excluded}} čestica izostavljeno",
-                "rangeBetweenExcluded": "{{buildings}} zgrada · jamči {{guaranteed}} – {{permitted}} m² GBP-a · {{excluded}} čestica izostavljeno",
-                "rangeMaxExcluded": "{{buildings}} zgrada · dopušta 0 – {{permitted}} m² GBP-a · {{excluded}} čestica izostavljeno",
+                "rangeExact": "{{buildings}} · donosi {{permitted}} m² GBP-a",
+                "rangeBetween": "{{buildings}} · jamči {{guaranteed}} – {{permitted}} m² GBP-a",
+                "rangeMax": "{{buildings}} · dopušta 0 – {{permitted}} m² GBP-a",
+                "rangeExactExcluded": "{{buildings}} · daje {{permitted}} m² GBP-a · {{excluded}}",
+                "rangeBetweenExcluded": "{{buildings}} · jamči {{guaranteed}} – {{permitted}} m² GBP-a · {{excluded}}",
+                "rangeMaxExcluded": "{{buildings}} · dopušta 0 – {{permitted}} m² GBP-a · {{excluded}}",
                 "excludedNoMassing": "Zgrada ne doseže ovu česticu — udaljenost od granice ili oblik bloka ostavljaju je izvan. Ovdje se ne gradi ništa.",
-                "rangeNoneExcluded": "Nema zgrada — {{excluded}} čestica izostavljeno"
+                "rangeNoneExcluded": "Nema zgrada · {{excluded}}",
+                "buildingCount": {
+                    "one": "{{count}} zgrada",
+                    "few": "{{count}} zgrade",
+                    "other": "{{count}} zgrada"
+                },
+                "parcelsLeftOut": {
+                    "one": "{{count}} čestica izostavljena",
+                    "few": "{{count}} čestice izostavljene",
+                    "other": "{{count}} čestica izostavljeno"
+                }
             },
             "handles": {
                 "gap": "Povucite za pomicanje otvora",
@@ -3313,7 +3325,7 @@
             "title": "Slobodnostojeće kuće",
             "closeAria": "Zatvori prozor pravila po čestici",
             "generating": "Generiram zgrade…",
-            "generatedSummary": "Generirano {{count}} zgrada",
+            "generatedSummary": "Generirano: {{buildings}}",
             "done": "Gotovo",
             "regenerate": "Regeneriraj",
             "parametersTitle": "Parametri",
@@ -3353,7 +3365,7 @@
                 "excludedNoRoom": "Nakon odmaka na ovoj čestici ne ostaje mjesta za gradnju.",
                 "excludedCannotMeet": "Premala da zadovolji minimum koji ovo pravilo obvezuje — pravilo si ovdje proturječi."
             },
-            "generatedSummaryExcluded": "Generirano zgrada: {{count}} · čestica isključenih pravilom: {{excluded}}"
+            "generatedSummaryExcluded": "Generirano: {{buildings}} · {{excluded}}"
         }
     },
     "reparcellization": {
@@ -4530,7 +4542,7 @@
             "proposal_boost_failed": "Transakcija pojačanja nije uspjela: {{reason}}",
             "proposal_boost_missing_token": "Adresa City Meme Tokena nije konfigurirana za povezanu mrežu.",
             "proposal_boost_not_minted": "Ovaj prijedlog još nije na lancu. Iskujte ga prije pojačanja.",
-            "proposal_boost_success": "Uspjeh! Hvala što ste pojačali ovaj prijedlog s {{amount}} {{currency}}. To bi moglo pomoći da se ostvari 🤞 Pogledajte transakciju {{txLink}}",
+            "proposal_boost_success": "Uspjeh! Hvala što ste podržali ovaj prijedlog s {{amount}} {{currency}}. Pogledajte transakciju {{txLink}}",
             "proposal_boost_switch_network": "Prebacite svoj novčanik na lanac {{chainId}} da biste pojačali ovaj prijedlog.",
             "proposal_boost_wallet_required": "Povežite novčanik da biste pojačali ovaj prijedlog.",
             "copy_proposal_parcels_unavailable": "Nije moguće učitati čestice ovog prijedloga. Prebacite se na grad u kojem je stvoren i pokušajte ponovno.",
@@ -4548,7 +4560,7 @@
             "activity_no_parcel_set": "Ovaj prijedlog nema učitan kanonski skup čestica.",
             "blockchain_mint_wallet_prompt": "Kovanje na blockchainu je dostupno, ali nijedan novčanik nije povezan. Želiš li povezati novčanik i iskovati ovaj prijedlog na blockchainu?",
             "failed_to_create_proposal": "Izrada prijedloga nije uspjela.",
-            "solana_lens_required": "Prije mintanja na Solani odaberite barem jednog člana leće (gumb 👓).",
+            "solana_lens_required": "Prije mintanja na Solani odaberite barem jednog člana leće (gumb leće).",
             "solana_accept_in_lens_card": "Na Solani vlasnici kažu da u kartici Leća prijedloga: član leće potvrdi vaše vlasništvo, zatim vaš novčanik potpiše.",
             "solana_acceptance_final": "Prihvaćanja na Solani su konačna: potpisani da ne može se povući.",
             "owner_offer_not_attested": "Ponuda vlasnika smije sadržavati samo čestice za koje je član tvoje leće potvrdio da ih tvoj novčanik posjeduje. {{detail}}"
@@ -4578,12 +4590,16 @@
             "scopeParcelSet": "Zemljište: {{id}}",
             "scopeRun": "Pokretanje: {{id}}",
             "sourceFailed": "Nije moguće učitati: {{sources}}",
-            "count": "Događaja: {{count}}",
+            "count": {
+                "one": "{{count}} događaj",
+                "few": "{{count}} događaja",
+                "other": "{{count}} događaja"
+            },
             "noMatch": "Još nema odgovarajućih aktivnosti.",
             "row": {
                 "turn": "Potez {{turn}}",
                 "openProposal": "Otvori prijedlog",
-                "transaction": "Transakcija ↗",
+                "transaction": "Transakcija",
                 "source": "Izvor: {{value}}",
                 "controller": "Upravljač: {{value}}",
                 "action": "Radnja: {{value}}",
@@ -5203,6 +5219,15 @@
         },
         "bets": "Oklade",
         "betsNew": "Novo",
+        "appearance": {
+            "label": "Izgled",
+            "system": "Prema uređaju",
+            "light": "Svijetlo",
+            "dark": "Tamno",
+            "commandSystem": "Tema prema uređaju",
+            "commandLight": "Svijetla tema",
+            "commandDark": "Tamna tema"
+        },
         "reorg": {
             "blockData": "Podaci i analiza blokova",
             "roadData": "Podaci i analiza cesta",
@@ -5368,8 +5393,8 @@
         "binding": {
             "previewPrefix": "Pregled",
             "serverPrefix": "Katastar",
-            "bound": "Vezane čestice ({{count}}):",
-            "more": "+ još {{count}}",
+            "bound": "Vezane čestice ({{count}})",
+            "drawingEmpty": "Zatvorite obris da vidite koje čestice veže.",
             "noParcels": "Ne veže nijednu česticu: može se izvršiti samo odlukom nadležnog tijela.",
             "openGround": "Šrafirano: otvoreno tlo za koje nitko ne može dati pristanak; za izvršenje treba odluka nadležnog tijela.",
             "touched": "Zadire {{width}} u {{parcel}} — ispod tolerancije, nije vezana.",

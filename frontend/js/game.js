@@ -21,12 +21,7 @@ function translateGameText(key, fallback, params = {}) {
 
 function showGameAlert(key, fallback, params = {}) {
     const message = translateGameText(`alerts.messages.${key}`, fallback, params);
-    const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
-        ? window.showStyledAlert
-        : window.alert;
-    if (typeof alertFn === 'function') {
-        alertFn(message);
-    }
+    window.CbDialog.alert(message);
     return message;
 }
 
@@ -214,7 +209,7 @@ function initializeGame() {
     const userAgent = getCurrentUserAgent();
     if (userAgent) {
         agents.push(userAgent);
-        gameState.addLogEntry(`User agent joined: <a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a>`);
+        gameState.addLogEntry(`User agent joined: <button type="button" data-agent-id="${userAgent.id}" class="cb-link agent-link-clickable">${userAgent.name}</button>`);
     }
 
     // Create AI agents to total 10 agents (including user if present)
@@ -223,7 +218,7 @@ function initializeGame() {
         const agent = createAgent();
         agentStorage.addAgent(agent);
         agents.push(agent);
-        gameState.addLogEntry(`Created agent: <a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a>`);
+        gameState.addLogEntry(`Created agent: <button type="button" data-agent-id="${agent.id}" class="cb-link agent-link-clickable">${agent.name}</button>`);
     }
 
     // Assign each parcel a random owner
@@ -649,7 +644,7 @@ gameState.updateGameUI = function () {
             }
         }
 
-        playPauseBtn.classList.toggle('is-running', this.isRunning);
+        // Running is the pressed state of the btn toggle (css/primitives.css).
         playPauseBtn.setAttribute('aria-pressed', this.isRunning ? 'true' : 'false');
     }
 
@@ -874,6 +869,10 @@ function refreshLiveActivity() {
     renderActivityExplorer();
 }
 
+// The open explorer: the shared dialog (js/ui/dialogs.js) whose card carries the game-log-modal
+// identity class that renderActivityExplorer and the tests address it by.
+let gameLogDialog = null;
+
 /**
  * Open the one activity explorer, optionally scoped (actor/proposal/run/parcel set) and on a view.
  * Every entry point — the Activity sheet's buttons, row drill-downs, proposal Details, ?activity= links — lands here.
@@ -882,7 +881,7 @@ function showGameLogDialog(options = {}) {
     const scope = options.filter || {};
     activityExplorerState.filter = { ...window.AgentActionEngine.EMPTY_ACTIVITY_FILTER, ...scope };
     activityExplorerState.view = options.view === 'actors' ? 'actors' : 'events';
-    if (document.querySelector('.game-log-modal')) {
+    if (gameLogDialog) {
         renderActivityExplorer();
         return;
     }
@@ -890,21 +889,11 @@ function showGameLogDialog(options = {}) {
     // One option per type in the shared action vocabulary, so every live and simulated action is filterable.
     const actionOptionsHtml = window.ActorExplorer.actionOptions(translateGameText)
         .map(option => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`).join('');
-    const modal = document.createElement('div');
-    modal.className = 'game-log-modal';
-    modal.innerHTML = `
-        <div class="game-log-modal-content">
-            <div class="game-log-modal-header">
-                <div><h2>${t('title', 'Activity')}</h2><div class="activity-live-status" data-activity-live-status aria-live="polite"></div></div>
-                <button type="button" class="game-log-modal-close close-circle-btn close-circle-btn--lg"
-                    data-i18n-key="gameDialogs.log.closeAria" data-i18n-attr="aria-label"
-                    aria-label="${t('closeAria', 'Close activity')}"
-                    onclick="closeGameLogDialog()">&times;</button>
-            </div>
-            <div class="game-log-modal-body">
-                <div class="activity-views" role="group" aria-label="${t('viewsAria', 'Activity view')}">
-                    <button type="button" data-activity-view="events" onclick="setActivityView('events')">${t('viewEvents', 'Events')}</button>
-                    <button type="button" data-activity-view="actors" onclick="setActivityView('actors')">${t('viewActors', 'Actors')}</button>
+    const body = `
+                <div class="activity-live-status" data-activity-live-status aria-live="polite"></div>
+                <div class="cb-segmented activity-views" role="group" aria-label="${t('viewsAria', 'Activity view')}">
+                    <button type="button" class="cb-segmented__option" data-activity-view="events" aria-pressed="true" onclick="setActivityView('events')">${t('viewEvents', 'Events')}</button>
+                    <button type="button" class="cb-segmented__option" data-activity-view="actors" aria-pressed="false" onclick="setActivityView('actors')">${t('viewActors', 'Actors')}</button>
                 </div>
                 <nav class="activity-filters" aria-label="${t('filtersAria', 'Filter activity')}">
                     <input type="search" data-activity-filter-field="query" aria-label="${t('searchAria', 'Search activity')}" placeholder="${t('searchPlaceholder', 'Actor, proposal or transaction')}" oninput="setActivityFilter('query', this.value)">
@@ -923,23 +912,31 @@ function showGameLogDialog(options = {}) {
                     <select data-activity-filter-field="status" aria-label="${t('statusAria', 'Activity result')}" onchange="setActivityFilter('status', this.value)">
                         <option value="all">${t('statusAll', 'Any result')}</option><option value="success">${t('statusSuccess', 'Succeeded')}</option><option value="failed">${t('statusFailed', 'Failed')}</option>
                     </select>
-                    <button type="button" onclick="setActivityFilter('reset')">${t('clearFilters', 'Clear')}</button>
-                    <button type="button" class="activity-refresh" onclick="refreshLiveActivity()">${t('refresh', 'Refresh')}</button>
+                    <button type="button" class="btn btn-sm" onclick="setActivityFilter('reset')">${t('clearFilters', 'Clear')}</button>
+                    <button type="button" class="btn btn-sm activity-refresh" onclick="refreshLiveActivity()">${t('refresh', 'Refresh')}</button>
                 </nav>
-                <div class="activity-scope-chip" data-activity-scope-chip hidden>
-                    <span></span><button type="button" onclick="clearActivityScope()" aria-label="${t('clearScope', 'Clear scope')}">&times;</button>
+                <div class="cb-badge cb-badge--primary activity-scope-chip" data-activity-scope-chip hidden>
+                    <span></span><button type="button" class="btn btn-quiet btn-sm btn-icon" onclick="clearActivityScope()" aria-label="${t('clearScope', 'Clear scope')}"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
                 </div>
                 <div id="game-log-content" class="game-log-content"></div>
-                <div class="activity-actors" data-activity-actors hidden></div>
-            </div>
-        </div>
-    `;
+                <div class="activity-actors" data-activity-actors hidden></div>`;
 
-    document.body.appendChild(modal);
-    modal.__unregisterEscape = window.ModalEscape?.register(modal, closeGameLogDialog);
-    if (window.i18n && typeof window.i18n.applyTranslations === 'function') {
-        try { window.i18n.applyTranslations(modal); } catch (_) { /* ignore */ }
-    }
+    const dialogApi = window.CbDialog.open({
+        title: translateGameText('gameDialogs.log.title', 'Activity'),
+        size: 'lg',
+        className: 'game-log-modal',
+        bodyClassName: 'game-log-modal-body',
+        closeLabel: translateGameText('gameDialogs.log.closeAria', 'Close activity'),
+        body,
+        onClose: () => {
+            if (gameLogDialog === dialogApi) gameLogDialog = null;
+            onGameLogDialogClosed();
+        }
+    });
+    if (!dialogApi) return;
+    gameLogDialog = dialogApi;
+    const closeButton = dialogApi.header && dialogApi.header.querySelector('.close-circle-btn');
+    if (closeButton) closeButton.classList.add('game-log-modal-close');
     renderActivityExplorer();
 }
 
@@ -947,11 +944,11 @@ function showGameLogDialog(options = {}) {
  * Close the game log dialog
  */
 function closeGameLogDialog() {
-    const modal = document.querySelector('.game-log-modal');
-    if (modal) {
-        modal.__unregisterEscape?.();
-        document.body.removeChild(modal);
-    }
+    if (gameLogDialog) gameLogDialog.close();   // its onClose finishes the job
+    else onGameLogDialogClosed();
+}
+
+function onGameLogDialogClosed() {
     actorExplorerController = null;
     // A ?activity= deep link has been followed once; left in the URL, every reload reopened the
     // explorer the user had just closed.
@@ -1339,8 +1336,8 @@ async function resetGameState(autoReinit = false) {
         ? translateGameText('gameDialogs.newGameConfirm', 'Are you sure you want to start a NEW game? This will delete all agents, game progress, and parcel ownership data.')
         : translateGameText('gameDialogs.resetConfirm', 'Are you sure you want to reset the game state? This will delete all agents, game progress, and parcel ownership data.');
 
-    // The app's own dialog, with the browser's as the last resort (ephemerals.md).
-    const confirmed = (typeof window.showStyledConfirm === 'function') ? await window.showStyledConfirm(message) : confirm(message);
+    // The app's own dialog (js/ui/dialogs.js), never the browser's.
+    const confirmed = await window.CbDialog.confirm(message);
     if (!confirmed) return;
 
     // Preserve the current user-controlled agent (if any) so the player keeps their identity.

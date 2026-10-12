@@ -131,8 +131,16 @@ let pendingBuildingProposalContext = null;
 function formatBuildingText(template, params = {}) {
     if (!template) return '';
     return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
-        return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+        if (!Object.prototype.hasOwnProperty.call(params, key)) return match;
+        const value = params[key];
+        // An i18n reference ({ key, count }) without i18n loaded: its count is the best fallback.
+        return value && typeof value === 'object' && 'count' in value ? value.count : value;
     });
+}
+
+// "1 parcel left out" / "3 parcels left out" as an i18n reference for a summary line's params.
+function blockParcelsLeftOutPhrase(count) {
+    return { key: 'blockify.modal.messages.parcelsLeftOut', count };
 }
 
 function translateBuildingText(key, fallback, params = {}) {
@@ -189,12 +197,7 @@ function showBuildingAlert(key, fallback, params = {}) {
     const message = key
         ? translateBuildingText(`alerts.messages.${key}`, fallback, params)
         : translateBuildingText('', fallback, params);
-    const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
-        ? window.showStyledAlert
-        : window.alert;
-    if (typeof alertFn === 'function') {
-        alertFn(message);
-    }
+    window.CbDialog.alert(message);
     return message;
 }
 
@@ -389,56 +392,10 @@ function updateBlockifyButton() {
     }
 }
 
-// Function to show error popup
+// A generation error over the open editor: the app's alert (js/ui/dialogs.js), whose confirm rung
+// sits above the editor dialog, so it is seen while the editor is still open.
 function showErrorPopup(message) {
-    // Create modal container
-    const modal = document.createElement('div');
-    modal.style.position = 'fixed';
-    modal.style.top = '0';
-    modal.style.left = '0';
-    modal.style.width = '100%';
-    modal.style.height = '100%';
-    modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
-    modal.style.display = 'flex';
-    modal.style.justifyContent = 'center';
-    modal.style.alignItems = 'center';
-    // Must sit ABOVE the blockify/urban-rule modal (z-index 12050) — at the old 2000 this "too
-    // complex" dialog rendered behind the editor, so the user only saw it after closing the editor.
-    modal.style.zIndex = '30050';
-
-    // Create modal content
-    const modalContent = document.createElement('div');
-    modalContent.style.backgroundColor = 'white';
-    modalContent.style.padding = '20px';
-    modalContent.style.borderRadius = '5px';
-    modalContent.style.maxWidth = '400px';
-    modalContent.style.textAlign = 'center';
-
-    // Add message
-    const messageElement = document.createElement('p');
-    messageElement.textContent = message;
-    messageElement.style.marginBottom = '20px';
-
-    // Add OK button
-    const okButton = document.createElement('button');
-    okButton.textContent = 'OK';
-    okButton.style.padding = '8px 16px';
-    okButton.style.backgroundColor = '#007bff';
-    okButton.style.color = 'white';
-    okButton.style.border = 'none';
-    okButton.style.borderRadius = '4px';
-    okButton.style.cursor = 'pointer';
-    okButton.onclick = function () {
-        document.body.removeChild(modal);
-    };
-
-    // Assemble modal
-    modalContent.appendChild(messageElement);
-    modalContent.appendChild(okButton);
-    modal.appendChild(modalContent);
-
-    // Add to document
-    document.body.appendChild(modal);
+    window.CbDialog.alert(message);
 }
 
 // Update the highlightBlock function to handle blockify button
@@ -1653,13 +1610,19 @@ function showBlockifyModal() {
 
     // Create modal elements
     if (!document.getElementById('blockify-modal')) {
+        // The editor wears the dialog primitive (css/primitives.css: overlay, card, header, body,
+        // footer, the phone bottom sheet); css/modals.css only lays out its map, 3D preview and
+        // sidebar inside it.
         const modalDiv = document.createElement('div');
         modalDiv.id = 'blockify-modal';
-        // Overlay box and look: #blockify-modal and the editor dialog chrome in css/modals.css.
+        modalDiv.className = 'cb-dialog-overlay';
 
         const container = document.createElement('div');
         container.id = 'blockify-container';
-        // Styles moved to CSS (frontend/css/modals.css)
+        container.className = 'cb-dialog cb-dialog--xl';
+        container.setAttribute('role', 'dialog');
+        container.setAttribute('aria-modal', 'true');
+        container.setAttribute('aria-labelledby', 'blockify-title');
 
         const algorithmKeys = Object.keys(BLOCKIFY_ALGORITHMS);
         const defaultAlgo = algorithmKeys[0];
@@ -1675,21 +1638,14 @@ function showBlockifyModal() {
         const defaultDesc = getBlockifyAlgorithmDescription(defaultAlgo);
 
         container.innerHTML = `
-            <div id="blockify-header">
-                <h2 data-i18n-key="blockify.modal.title">Urban Rule</h2>
+            <div id="blockify-header" class="cb-dialog__header">
+                <h2 id="blockify-title" class="cb-dialog__title" data-i18n-key="blockify.modal.title">Urban rule</h2>
                 <button id="blockify-close" type="button" class="close-circle-btn close-circle-btn--lg" data-i18n-key="blockify.modal.closeAria" data-i18n-attr="aria-label" aria-label="Close blockify modal">×</button>
             </div>
-            <div id="blockify-body">
+            <div id="blockify-body" class="cb-dialog__body">
             <div id="blockify-main">
                 <div id="blockify-map"></div>
                 <div id="blockify-3d"></div>
-                <div id="blockify-controls">
-                    <div id="blockify-info" data-i18n-attr="text"></div>
-                    <div id="blockify-buttons">
-                        <button class="btn btn-secondary" id="btn-blockify-regenerate" style="display: none;" data-i18n-key="blockify.modal.regenerate" data-i18n-attr="text">Regenerate</button>
-                        <button class="btn btn-proposal" id="btn-blockify-done" data-i18n-key="blockify.modal.done" data-i18n-attr="text">Done</button>
-                    </div>
-                </div>
             </div>
             <div id="blockify-sidebar">
                 <div class="parameter-group blockify-freeform-only">
@@ -1702,7 +1658,7 @@ function showBlockifyModal() {
                     </div>
                 </div>
                 <section id="blockify-density-stats" class="building-density-card" aria-live="polite">
-                    <h3 data-i18n-key="densityStats.title" data-i18n-attr="text">Geometry statistics</h3>
+                    <h3 class="cb-kicker" data-i18n-key="densityStats.title" data-i18n-attr="text">Geometry statistics</h3>
                     <dl class="building-density-grid">
                         <div><dt data-i18n-key="densityStats.parcelArea" data-i18n-attr="text">Parcel area</dt><dd id="blockify-density-parcel">\u2014</dd></div>
                         <div><dt data-i18n-key="densityStats.footprint" data-i18n-attr="text">Building footprint</dt><dd id="blockify-density-footprint">\u2014</dd></div>
@@ -1712,7 +1668,7 @@ function showBlockifyModal() {
                     </dl>
                     <p id="blockify-density-hint" class="building-density-hint"></p>
                 </section>
-                <h3 data-i18n-key="blockify.modal.parametersTitle">Parameters</h3>
+                <h3 class="cb-kicker" data-i18n-key="blockify.modal.parametersTitle">Parameters</h3>
                 <div class="parameter-group">
                     <label class="blockify-existing-toggle" for="blockify-existing-toggle">
                         <input type="checkbox" id="blockify-existing-toggle">
@@ -1835,9 +1791,9 @@ function showBlockifyModal() {
                     <input type="range" id="wing-length-slider" min="10" max="200" value="10" step="1" disabled>
                 </div>
                 <div class="parameter-group blockify-freeform-only">
-                    <button type="button" id="blockify-manual-toggle" class="btn btn-secondary" data-i18n-key="blockify.modal.manual.edit" data-i18n-attr="text">Edit shape manually</button>
-                    <button type="button" id="blockify-geojson-upload" class="btn btn-secondary" data-i18n-key="blockify.modal.manual.uploadGeojson" data-i18n-attr="text">Upload GeoJSON</button>
-                    <input type="file" id="blockify-geojson-input" accept=".geojson,.json,application/geo+json,application/json" style="display:none">
+                    <button type="button" id="blockify-manual-toggle" class="btn btn-block" aria-pressed="false" data-i18n-key="blockify.modal.manual.edit" data-i18n-attr="text">Edit shape manually</button>
+                    <button type="button" id="blockify-geojson-upload" class="btn btn-block" data-i18n-key="blockify.modal.manual.uploadGeojson" data-i18n-attr="text">Upload GeoJSON</button>
+                    <input type="file" id="blockify-geojson-input" accept=".geojson,.json,application/geo+json,application/json" hidden>
                 </div>
                 <div class="parameter-info">
                     <p class="blockify-freeform-only" data-i18n-key="blockify.modal.helper.adjust">Adjust parameters using the sliders to modify the building shape.</p>
@@ -1845,6 +1801,13 @@ function showBlockifyModal() {
                     <p class="blockify-freeform-only" data-i18n-key="blockify.modal.helper.width">Building width is the thickness of the building from outer to inner edge.</p>
                     <p class="blockify-existing-only" style="display:none" data-i18n-key="blockify.modal.existing.helper">Each existing building is raised by the additional floors, up to the maximum height. Buildings already at or above the maximum stay unchanged.</p>
                 </div>
+            </div>
+        </div>
+        <div id="blockify-controls" class="cb-dialog__footer">
+            <div id="blockify-info" data-i18n-attr="text" role="status" aria-live="polite"></div>
+            <div id="blockify-buttons">
+                <button type="button" class="btn" id="btn-blockify-regenerate" hidden data-i18n-key="blockify.modal.regenerate" data-i18n-attr="text">Regenerate</button>
+                <button type="button" class="btn btn-primary" id="btn-blockify-done" data-i18n-key="blockify.modal.done" data-i18n-attr="text">Done</button>
             </div>
         </div>
         `;
@@ -3448,7 +3411,7 @@ function reportBlockRuleRange() {
         // summary on screen, which then claims buildings that no longer exist.
         if (blockExcludedParcels.length) {
             setBlockifyInfo('blockify.modal.messages.rangeNoneExcluded',
-                'No buildings — {{excluded}} parcel(s) left out', { excluded: blockExcludedParcels.length });
+                'No buildings · {{excluded}}', { excluded: blockParcelsLeftOutPhrase(blockExcludedParcels.length) });
         }
         return;
     }
@@ -3459,23 +3422,30 @@ function reportBlockRuleRange() {
     // filtered out here AND skipped on the map, so a block authored on seven parcels could apply to
     // four with nothing anywhere saying which three got nothing, or why.
     const excluded = blockExcludedParcels.length;
-    const params = { buildings: blockMassingPieces.length, permitted, guaranteed, excluded };
+    // The counts are plural phrases of their own ("1 building", "3 buildings"), passed as i18n
+    // references so the line follows a language change.
+    const params = {
+        buildings: { key: 'blockify.modal.messages.buildingCount', count: blockMassingPieces.length },
+        permitted,
+        guaranteed,
+        excluded: blockParcelsLeftOutPhrase(excluded)
+    };
 
     if (range.kind === 'exact') {
         setBlockifyInfo(excluded ? 'blockify.modal.messages.rangeExactExcluded' : 'blockify.modal.messages.rangeExact',
             excluded
-                ? '{{buildings}} buildings · delivers {{permitted}} m² of floor area · {{excluded}} parcel(s) left out'
-                : '{{buildings}} buildings · delivers {{permitted}} m² of floor area', params);
+                ? '{{buildings}} · delivers {{permitted}} m² of floor area · {{excluded}}'
+                : '{{buildings}} · delivers {{permitted}} m² of floor area', params);
     } else if (range.kind === 'range') {
         setBlockifyInfo(excluded ? 'blockify.modal.messages.rangeBetweenExcluded' : 'blockify.modal.messages.rangeBetween',
             excluded
-                ? '{{buildings}} buildings · guarantees {{guaranteed}} – {{permitted}} m² of floor area · {{excluded}} parcel(s) left out'
-                : '{{buildings}} buildings · guarantees {{guaranteed}} – {{permitted}} m² of floor area', params);
+                ? '{{buildings}} · guarantees {{guaranteed}} – {{permitted}} m² of floor area · {{excluded}}'
+                : '{{buildings}} · guarantees {{guaranteed}} – {{permitted}} m² of floor area', params);
     } else {
         setBlockifyInfo(excluded ? 'blockify.modal.messages.rangeMaxExcluded' : 'blockify.modal.messages.rangeMax',
             excluded
-                ? '{{buildings}} buildings · permits 0 – {{permitted}} m² of floor area · {{excluded}} parcel(s) left out'
-                : '{{buildings}} buildings · permits 0 – {{permitted}} m² of floor area', params);
+                ? '{{buildings}} · permits 0 – {{permitted}} m² of floor area · {{excluded}}'
+                : '{{buildings}} · permits 0 – {{permitted}} m² of floor area', params);
     }
 }
 }
@@ -3488,7 +3458,7 @@ function syncBlockMinHeightSlider() {
     // Under "exactly this height" every building is the full envelope, so there is no variation to
     // roll — hide the button rather than leave a control that provably does nothing.
     const regenerate = document.getElementById('btn-blockify-regenerate');
-    if (regenerate) regenerate.style.display = blockRuleKind === 'exact' ? 'none' : '';
+    if (regenerate) regenerate.hidden = blockRuleKind === 'exact';
     const depthGroup = document.getElementById('blockify-mindepth-group');
     if (depthGroup) depthGroup.style.display = blockRuleKind === 'range' ? '' : 'none';
     const depthSlider = document.getElementById('blockify-mindepth-slider');
@@ -3624,13 +3594,14 @@ function setFootprintSlidersEnabled(enabled) {
 function updateManualToggleLabel() {
     const btn = document.getElementById('blockify-manual-toggle');
     if (!btn) return;
-    if (blockifyMode === 'manual') {
-        btn.textContent = translateBuildingText('blockify.modal.manual.back', 'Back to sliders');
-        btn.classList.add('active');
-    } else {
-        btn.textContent = translateBuildingText('blockify.modal.manual.edit', 'Edit shape manually');
-        btn.classList.remove('active');
-    }
+    // Manual mode is a toggle that is on: the pressed look comes from aria-pressed (primitives.css).
+    const manual = blockifyMode === 'manual';
+    const key = manual ? 'blockify.modal.manual.back' : 'blockify.modal.manual.edit';
+    btn.setAttribute('data-i18n-key', key);
+    btn.textContent = manual
+        ? translateBuildingText(key, 'Back to sliders')
+        : translateBuildingText(key, 'Edit shape manually');
+    btn.setAttribute('aria-pressed', manual ? 'true' : 'false');
 }
 
 function enterManualMode() {
@@ -3667,10 +3638,11 @@ function enterManualMode() {
 
 async function exitToParametricMode() {
     const question = translateBuildingText('blockify.modal.manual.confirmReset', 'Discard manual edits and go back to the sliders?');
-    // The app's own dialog, with the browser's as the last resort (ephemerals.md).
-    const proceed = (typeof window !== 'undefined' && typeof window.showStyledConfirm === 'function')
-        ? await window.showStyledConfirm(question)
-        : ((typeof window !== 'undefined' && typeof window.confirm === 'function') ? window.confirm(question) : true);
+    // The app's own confirm (js/ui/dialogs.js); throwing the edits away is the destructive answer.
+    const proceed = await window.CbDialog.confirm(question, {
+        destructive: true,
+        okText: translateBuildingText('proposalDrafts.discardDesign.confirm', 'Discard')
+    });
     if (!proceed) return;
     blockifyMode = 'parametric';
     blockifyPendingVertexActionIndex = null;

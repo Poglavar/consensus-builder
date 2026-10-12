@@ -493,7 +493,14 @@
             labelKey: 'sidebar.info.debugToggle', fallbackLabel: 'Enable debug mode', icon: 'fas fa-bug' }),
         { id: 'settings.siteIntro', group: 'settings', surfaces: ['settings'],
             run: ctx => ctx.clickSelector('[data-site-intro-open]'),
-            labelKey: 'modal.siteIntro.open', fallbackLabel: 'How Consensus Builder works', icon: 'fas fa-map' }
+            labelKey: 'modal.siteIntro.open', fallbackLabel: 'How Consensus Builder works', icon: 'fas fa-map' },
+        // Appearance: the theme tokens (js/ui/theme.js), chosen in Settings or from the palette.
+        control('theme-choice-system', { id: 'settings.theme.system', group: 'settings', surfaces: ['settings'],
+            labelKey: 'mapShell.appearance.commandSystem', fallbackLabel: 'Theme follows the device', icon: 'fas fa-circle-half-stroke' }),
+        control('theme-choice-light', { id: 'settings.theme.light', group: 'settings', surfaces: ['settings'],
+            labelKey: 'mapShell.appearance.commandLight', fallbackLabel: 'Light theme', icon: 'fas fa-sun' }),
+        control('theme-choice-dark', { id: 'settings.theme.dark', group: 'settings', surfaces: ['settings'],
+            labelKey: 'mapShell.appearance.commandDark', fallbackLabel: 'Dark theme', icon: 'fas fa-moon' })
     ];
 
     const COMMANDS = Object.freeze(DEFINITIONS.map(command));
@@ -628,8 +635,11 @@
         const doc = win.document;
         const element = id => doc.getElementById(id);
         // Hidden by the city config (inline display:none on the control or a section around it) or
-        // by the feature flags — not merely inside a closed sheet.
+        // by the feature flags — not merely inside a closed sheet. A control that hides itself with
+        // the hidden attribute (Clear measurements with nothing measured) is not shown either; an
+        // ancestor's hidden (a tab panel not selected) does not count, like a closed sheet.
         const hiddenByConfig = el => {
+            if (el && el.hidden === true) return true;
             for (let node = el; node && node !== doc.body; node = node.parentElement) {
                 if (node.classList && node.classList.contains('map-sheet')) return false;
                 if (node.style && node.style.display === 'none') return true;

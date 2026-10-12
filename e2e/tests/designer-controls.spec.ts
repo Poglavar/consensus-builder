@@ -156,7 +156,7 @@ test.describe('Designer controls persist their edits @features', () => {
       name: 'building.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(uploaded)),
     });
     await expect.poll(() => page.locator('#blockify-container .polygon-geometry-editor__vertex').count()).toBeGreaterThan(2);
-    await expect(page.locator('#blockify-manual-toggle')).toHaveClass(/active/);
+    await expect(page.locator('#blockify-manual-toggle')).toHaveAttribute('aria-pressed', 'true');
     await page.locator('#btn-blockify-done').click();
 
     const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((proposal: any) => proposal.applied && proposal.buildingProposal?.parameters?.mode === 'manual'));

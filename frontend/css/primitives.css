@@ -1,9 +1,10 @@
 /* ========== Shared primitives ==========
    The components every surface is built from: the dialog, the base form controls, the toast, the
-   status/lifecycle badge and the section kicker. Buttons are the `.btn` family in utilities.css
-   (kept there so its position in the cascade does not change); sheets are `.map-sheet`
-   (map-shell.css); right-dock panels are `.right-dock-panel` (panels.css). Rules and roles in
-   docs/design-language.md. Everything here takes its values from tokens.css. */
+   status/lifecycle badge, the section kicker, the button family and the close control, the link,
+   tabs, segmented control, switch, option row, choice tile and the shimmer. Sheets are
+   `.map-sheet` (map-shell.css); right-dock panels are `.right-dock-panel` (panels.css). Rules and
+   roles in docs/design-language.md. Everything here takes its values from tokens.css, so the
+   satellite pages load tokens.css and this file and have the same controls as the app. */
 
 /* ---- Dialog ----
    <div class="cb-dialog-overlay"><div class="cb-dialog cb-dialog--sm" role="dialog" aria-modal="true" aria-labelledby="…">
@@ -56,6 +57,14 @@
 .cb-dialog--sm { --cb-dialog-width: 420px; }
 .cb-dialog--lg { --cb-dialog-width: 760px; }
 .cb-dialog--xl { --cb-dialog-width: 1100px; }
+
+/* A dialog whose content changes while it is open (a list that loads, a row added, the next step,
+   a chooser that unfolds) keeps one box: the body scrolls instead of the dialog growing and moving.
+   CbDialog.open({ fixedHeight: true }); the surface may set --cb-dialog-height, the screen caps it. */
+.cb-dialog--fixed {
+    --cb-dialog-height: 640px;
+    height: min(var(--cb-dialog-height), calc(100dvh - 2 * var(--cb-space-4)));
+}
 
 .cb-dialog__header {
     display: flex;
@@ -117,9 +126,271 @@
         border-radius: var(--cb-radius-xl) var(--cb-radius-xl) 0 0;
     }
 
+    .cb-dialog--fixed {
+        height: min(var(--cb-dialog-height), 92dvh);
+    }
+
     .cb-dialog__footer {
         padding-bottom: calc(var(--cb-space-3) + env(safe-area-inset-bottom, 0px));
     }
+}
+
+/* ---- Buttons (docs/design-language.md): one component, five roles, three modifiers, one state.
+   .btn          secondary: outlined, on the surface (the default)
+   .btn-primary  the one main action of a surface (filled)
+   .btn-success  the filled affirmative (Accept, Apply to map)
+   .btn-quiet    text only, for inline and tertiary actions
+   .btn-danger   destructive: outlined red
+   .btn-sm       the small size · .btn-block the full-width row · .btn-icon a square icon-only button
+   [aria-pressed="true"]  the one selected look of every toggle: primary-soft fill, primary border.
+   No other class paints a button (backend/test/button-vocabulary.test.js); a surface may lay its
+   buttons out (width, grid, order) but takes the look from here. Sheets lay theirs out as rows
+   (css/map-shell.css). Everything is a token, so a theme changes the whole family at once. ---- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--cb-space-2);
+    min-height: var(--cb-control-height);
+    padding: var(--cb-space-1) var(--cb-space-3);
+    margin: 0;
+    box-sizing: border-box;
+    max-width: 100%;
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-md);
+    background-color: var(--cb-surface);
+    color: var(--cb-text);
+    font: inherit;
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-medium);
+    line-height: 1.3;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn:hover {
+    background-color: var(--cb-surface-2);
+}
+
+.btn:focus-visible {
+    outline: 2px solid var(--cb-focus);
+    outline-offset: 2px;
+}
+
+.btn:disabled,
+.btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.btn > i {
+    flex: 0 0 auto;
+}
+
+.btn-primary {
+    border-color: var(--cb-primary);
+    background-color: var(--cb-primary);
+    color: var(--cb-primary-ink);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.btn-primary:hover {
+    border-color: var(--cb-primary-hover);
+    background-color: var(--cb-primary-hover);
+}
+
+.btn-success {
+    border-color: var(--cb-success);
+    background-color: var(--cb-success);
+    color: var(--cb-success-ink);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.btn-success:hover {
+    border-color: var(--cb-success-hover);
+    background-color: var(--cb-success-hover);
+}
+
+.btn-quiet {
+    border-color: transparent;
+    background-color: transparent;
+}
+
+.btn-quiet:hover {
+    background-color: var(--cb-surface-2);
+}
+
+.btn-danger {
+    border-color: var(--cb-danger);
+    color: var(--cb-danger);
+}
+
+.btn-danger:hover {
+    background-color: var(--cb-danger-soft);
+}
+
+/* Modifiers: size, width and shape. Combine with a role. */
+.btn-sm {
+    min-height: var(--cb-control-height-sm);
+    padding: 0 var(--cb-space-2);
+    gap: var(--cb-space-1);
+    border-radius: var(--cb-radius-sm);
+    font-size: var(--cb-text-sm);
+}
+
+.btn-block {
+    display: flex;
+    width: 100%;
+}
+
+.btn-icon {
+    width: var(--cb-control-height);
+    min-width: var(--cb-control-height);
+    padding: 0;
+    flex: 0 0 auto;
+}
+
+.btn-icon.btn-sm {
+    width: var(--cb-control-height-sm);
+    min-width: var(--cb-control-height-sm);
+}
+
+/* The selected state of a toggle, a tool that is on, a filter that applies: one look everywhere.
+   A filled role keeps its fill; the attribute still carries the state for assistive technology. */
+.btn[aria-pressed="true"] {
+    border-color: var(--cb-primary);
+    background-color: var(--cb-primary-soft);
+    color: var(--cb-primary-soft-ink);
+}
+
+.btn-primary[aria-pressed="true"] {
+    background-color: var(--cb-primary-hover);
+    border-color: var(--cb-primary-hover);
+    color: var(--cb-primary-ink);
+}
+
+.btn-success[aria-pressed="true"] {
+    background-color: var(--cb-success-hover);
+    border-color: var(--cb-success-hover);
+    color: var(--cb-success-ink);
+}
+
+/* Controls for developers (the per-dataset clears in Settings): hidden unless debug mode is on. */
+.debug-only-control {
+    display: none;
+}
+
+body.env-development .debug-only-control,
+body.debug-mode .debug-only-control {
+    display: block;
+}
+
+body.env-development .btn.debug-only-control,
+body.debug-mode .btn.debug-only-control {
+    display: inline-flex;
+}
+
+.debug-only-control .btn,
+.debug-only-control button {
+    width: 100%;
+}
+
+/* The paired outcome buttons of a bet (yes / no): the only two-colour pair in the family, both
+   soft fills so neither reads as the one primary of the surface. */
+.btn-yes {
+    border-color: var(--cb-success);
+    background-color: var(--cb-success-soft);
+    color: var(--cb-success-soft-ink);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.btn-yes:hover {
+    background-color: var(--cb-success);
+    color: var(--cb-success-ink);
+}
+
+.btn-no {
+    border-color: var(--cb-danger);
+    background-color: var(--cb-danger-soft);
+    color: var(--cb-danger-soft-ink);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.btn-no:hover {
+    background-color: var(--cb-danger);
+    color: var(--cb-danger-ink);
+}
+
+@media (max-width: 767.98px) {
+    .btn:not(.btn-sm):not(.btn-icon) {
+        min-height: var(--cb-control-height-touch);
+        padding-inline: var(--cb-space-4);
+    }
+}
+
+/* The one close control: a circle at the top right of every dialog, sheet, panel and menu.
+   Components may add a hook class beside it for their scripts; the look comes from here alone. */
+.close-circle-btn {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+    padding: 0;
+    margin: 0;
+    aspect-ratio: 1 / 1;
+    border: 1px solid var(--cb-line-strong);
+    border-radius: 50%;
+    background: var(--cb-glass);
+    color: var(--cb-text);
+    font: inherit;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: var(--cb-shadow-sm);
+    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+}
+
+.close-circle-btn:hover {
+    background-color: var(--cb-surface-2);
+    color: var(--cb-text-strong);
+}
+
+.close-circle-btn:active {
+    transform: scale(0.97);
+}
+
+.close-circle-btn:focus-visible {
+    outline: 2px solid var(--cb-focus);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--cb-focus-ring);
+}
+
+.close-circle-btn--lg {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    font-size: 20px;
+}
+
+/* The hidden attribute wins over the components' own display. */
+.btn[hidden],
+.close-circle-btn[hidden],
+.cb-badge[hidden],
+.cb-tab[hidden],
+.cb-tile[hidden],
+.cb-option[hidden],
+.cb-segmented__option[hidden],
+.cb-link[hidden] {
+    display: none;
 }
 
 /* ---- Form controls ----
@@ -318,6 +589,16 @@ textarea {
 .cb-badge--expired,
 .cb-badge--withdrawn { background: var(--cb-danger-soft); color: var(--cb-danger-soft-ink); }
 
+/* Tones for badges that are not a lifecycle rung (a check's outcome, a count, an environment). */
+.cb-badge--neutral { background: var(--cb-surface-2); color: var(--cb-text-muted); }
+.cb-badge--primary { background: var(--cb-primary-soft); color: var(--cb-primary-soft-ink); }
+.cb-badge--success { background: var(--cb-success-soft); color: var(--cb-success-soft-ink); }
+.cb-badge--warning { background: var(--cb-warning-soft); color: var(--cb-warning-soft-ink); }
+.cb-badge--danger { background: var(--cb-danger-soft); color: var(--cb-danger-soft-ink); }
+.cb-badge--info { background: var(--cb-info-soft); color: var(--cb-info-soft-ink); }
+/* A count on a control (the dock's proposal count): filled, so it reads at a glance. */
+.cb-badge--count { background: var(--cb-primary); color: var(--cb-primary-ink); min-width: 20px; justify-content: center; padding: 0 var(--cb-space-1); }
+
 /* ---- Section kicker ----
    The small uppercase label above a group of controls (the sheets' "Highlight by ownership type"). */
 .cb-kicker {
@@ -327,4 +608,475 @@ textarea {
     letter-spacing: var(--cb-tracking-caps);
     text-transform: uppercase;
     color: var(--cb-text-muted);
+}
+
+/* ---- Link ----
+   The one text link, on <a> or on a <button class="cb-link"> that runs script. --external marks a
+   link that leaves the app (it goes with target="_blank" rel="noopener"); --quiet takes the colour
+   of the text around it, for links inside muted meta lines. */
+.cb-link {
+    color: var(--cb-link);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+    cursor: pointer;
+}
+
+button.cb-link {
+    appearance: none;
+    display: inline;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    line-height: inherit;
+    text-align: left;
+}
+
+.cb-link:hover {
+    color: var(--cb-link-hover);
+}
+
+.cb-link:focus-visible {
+    outline: 2px solid var(--cb-focus);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+.cb-link--quiet {
+    color: inherit;
+}
+
+.cb-link--external::after {
+    content: "\2197";
+    display: inline-block;
+    margin-left: 0.25em;
+    font-size: 0.8em;
+    line-height: 1;
+    text-decoration: none;
+}
+
+/* A row of related links (explorer links under a record, proof links): one gap, one size. */
+.cb-link-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cb-space-1) var(--cb-space-4);
+    font-size: var(--cb-text-sm);
+}
+
+/* ---- Tabs ----
+   <div class="cb-tabs" role="tablist"><button class="cb-tab" role="tab" aria-selected="true">…</button>…</div>
+   A text row with a primary underline on the selected tab. The strip scrolls sideways when the
+   tabs do not fit. */
+.cb-tabs {
+    display: flex;
+    align-items: stretch;
+    gap: var(--cb-space-1);
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--cb-line);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.cb-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.cb-tab {
+    appearance: none;
+    flex: 0 0 auto;
+    margin: 0 0 -1px;
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: var(--cb-text-muted);
+    font: inherit;
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-medium);
+    line-height: 1.3;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.cb-tabs--fill .cb-tab {
+    flex: 1 1 0;
+    text-align: center;
+}
+
+.cb-tab:hover {
+    color: var(--cb-text);
+}
+
+.cb-tab[aria-selected="true"] {
+    color: var(--cb-primary);
+    border-bottom-color: var(--cb-primary);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.cb-tab:focus-visible {
+    outline: 2px solid var(--cb-focus);
+    outline-offset: -2px;
+    border-radius: var(--cb-radius-sm);
+}
+
+.cb-tab:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ---- Segmented control ----
+   <div class="cb-segmented" role="group"><button class="cb-segmented__option" aria-pressed="true">All</button>…</div>
+   A row of pills; the chosen one takes the selected look. A form field can be built the same way
+   around native radios: <label class="cb-segmented__option"><input type="radio">…</label>. */
+.cb-segmented {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+    margin: 0;
+    padding: 0;
+}
+
+.cb-segmented__option {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--cb-space-1);
+    min-height: var(--cb-control-height-sm);
+    margin: 0;
+    padding: 0 var(--cb-space-3);
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-pill);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font: inherit;
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-medium);
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.cb-segmented__option input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.cb-segmented__option:hover {
+    background: var(--cb-surface-2);
+}
+
+.cb-segmented__option[aria-pressed="true"],
+.cb-segmented__option:has(input:checked) {
+    border-color: var(--cb-primary);
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary-soft-ink);
+}
+
+.cb-segmented__option:focus-visible,
+.cb-segmented__option:has(input:focus-visible) {
+    outline: 2px solid var(--cb-focus);
+    outline-offset: 2px;
+}
+
+.cb-segmented__option:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.cb-segmented--fill .cb-segmented__option {
+    flex: 1 1 0;
+}
+
+/* ---- Switch ----
+   <label class="cb-switch"><input type="checkbox" role="switch"><span>Label</span></label> */
+.cb-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    cursor: pointer;
+    font-size: var(--cb-text-base);
+    color: var(--cb-text);
+}
+
+.cb-switch input {
+    appearance: none;
+    position: relative;
+    flex: 0 0 auto;
+    width: 36px;
+    height: 20px;
+    margin: 0;
+    border-radius: var(--cb-radius-pill);
+    background: var(--cb-line-strong);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.cb-switch input::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--cb-surface);
+    box-shadow: var(--cb-shadow-sm);
+    transition: transform 0.15s ease;
+}
+
+.cb-switch input:checked {
+    background: var(--cb-primary);
+}
+
+.cb-switch input:checked::after {
+    transform: translateX(16px);
+}
+
+.cb-switch input:focus-visible {
+    outline: 2px solid var(--cb-focus);
+    outline-offset: 2px;
+}
+
+.cb-switch input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ---- Option row ----
+   A selectable card row in a list of choices (a parcel source, a wallet, a watched area, a profile):
+   <button class="cb-option" aria-pressed="false"><i class="cb-option__icon fa …"></i>
+   <span class="cb-option__text"><span class="cb-option__title">…</span><span class="cb-option__desc">…</span></span></button> */
+.cb-option {
+    appearance: none;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--cb-space-3);
+    width: 100%;
+    margin: 0;
+    padding: var(--cb-space-3) var(--cb-space-4);
+    box-sizing: border-box;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.cb-option + .cb-option {
+    margin-top: var(--cb-space-2);
+}
+
+.cb-option:hover {
+    background: var(--cb-surface-2);
+    border-color: var(--cb-line-strong);
+}
+
+.cb-option[aria-pressed="true"],
+.cb-option[aria-current] {
+    border-color: var(--cb-primary);
+    background: var(--cb-primary-soft);
+}
+
+.cb-option:focus-visible {
+    outline: 2px solid var(--cb-focus);
+    outline-offset: 2px;
+}
+
+.cb-option:disabled,
+.cb-option.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.cb-option__icon {
+    flex: 0 0 20px;
+    margin-top: 2px;
+    text-align: center;
+    color: var(--cb-text-muted);
+}
+
+.cb-option__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.cb-option__title {
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+}
+
+.cb-option__desc {
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
+    line-height: var(--cb-leading);
+}
+
+/* ---- Choice tile ----
+   A grid of things to pick with an icon and a short label (the proposal types on the Propose tab,
+   the goal and typology in the create dialog): <button class="cb-tile" aria-pressed="false">
+   <i class="cb-tile__icon fa …"></i><span class="cb-tile__label">Block</span></button> */
+.cb-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: var(--cb-space-2);
+}
+
+.cb-tile {
+    appearance: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--cb-space-1);
+    min-height: 60px;
+    margin: 0;
+    padding: var(--cb-space-2);
+    box-sizing: border-box;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font: inherit;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-medium);
+    line-height: 1.2;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.cb-tile__icon {
+    font-size: 18px;
+    color: var(--cb-primary);
+}
+
+.cb-tile__label {
+    overflow-wrap: anywhere;
+}
+
+.cb-tile:hover {
+    background: var(--cb-surface-2);
+    border-color: var(--cb-line-strong);
+}
+
+.cb-tile[aria-pressed="true"] {
+    border-color: var(--cb-primary);
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary-soft-ink);
+}
+
+.cb-tile:focus-visible {
+    outline: 2px solid var(--cb-focus);
+    outline-offset: 2px;
+}
+
+.cb-tile:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ---- Actions row ----
+   A line of buttons: one gap, wrapping on narrow widths. --end aligns them right (a dialog's own
+   footer does this already); --stack puts every button on its own full-width row. */
+.cb-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cb-space-2);
+}
+
+.cb-actions--end {
+    justify-content: flex-end;
+}
+
+.cb-actions--stack {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.cb-actions--stack .btn {
+    width: 100%;
+}
+
+/* ---- Dialog: message, choice and prompt forms (js/ui/dialogs.js) ----
+   A confirm or alert has no header: the message is the body, the buttons the footer. */
+.cb-dialog--message .cb-dialog__body {
+    padding: var(--cb-space-5) var(--cb-space-5) var(--cb-space-2);
+    font-size: var(--cb-text-lg);
+    color: var(--cb-text);
+    overflow-wrap: anywhere;
+}
+
+.cb-dialog--message .cb-dialog__footer {
+    border-top: 0;
+    padding-top: var(--cb-space-3);
+}
+
+/* Two answers share the width; three or more stack. */
+.cb-dialog__footer--split .btn {
+    flex: 1 1 0;
+}
+
+.cb-dialog__footer--stack {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.cb-dialog__footer--stack .btn {
+    width: 100%;
+}
+
+.cb-dialog__prompt {
+    display: block;
+    width: 100%;
+    margin-top: var(--cb-space-3);
+}
+
+.cb-dialog__header .close-circle-btn {
+    margin-left: auto;
+}
+
+/* ---- Shimmer ----
+   A soft highlight that sweeps across a featured control once in a while: the one main action a
+   newcomer should see (Get started), a badge that says "new". Never on more than one thing per
+   surface. Off under reduced motion. */
+.cb-shimmer {
+    position: relative;
+    overflow: hidden;
+}
+
+.cb-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 35%, var(--cb-shimmer) 50%, transparent 65%);
+    transform: translateX(-120%);
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .cb-shimmer::after {
+        animation: cb-shimmer 3.2s ease-in-out infinite;
+    }
+}
+
+@keyframes cb-shimmer {
+    0%, 55% { transform: translateX(-120%); }
+    100% { transform: translateX(120%); }
 }

@@ -3,6 +3,8 @@
     margin: 0 0 var(--cb-space-4);
 }
 
+/* The toolbar: the All · People · Agents filter (cb-segmented) and Refresh (btn btn-quiet btn-sm)
+   at the far end; the looks are css/primitives.css. */
 .activity-feed__filters {
     display: flex;
     align-items: center;
@@ -11,25 +13,7 @@
     margin-bottom: var(--cb-space-2);
 }
 
-.activity-feed__filters button {
-    min-height: var(--cb-control-height);
-    padding: var(--cb-space-1) var(--cb-space-3);
-    border: 1px solid var(--cb-line-strong);
-    border-radius: var(--cb-radius-pill);
-    background: var(--cb-surface);
-    color: var(--cb-text);
-    font: inherit;
-    font-size: var(--cb-text-sm);
-    cursor: pointer;
-}
-
-.activity-feed__filters button[aria-pressed="true"] {
-    border-color: var(--cb-primary);
-    background: var(--cb-primary-soft);
-    color: var(--cb-primary-hover);
-}
-
-.activity-feed__filters .activity-feed__refresh {
+.activity-feed__refresh {
     margin-left: auto;
 }
 
@@ -52,12 +36,3 @@
     margin: 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .activity-feed__filters button {
-        transition: background-color 120ms ease, border-color 120ms ease;
-    }
-}
-
-@media (pointer: coarse) {
-    .activity-feed__filters button { min-height: var(--cb-control-height-lg); }
-}

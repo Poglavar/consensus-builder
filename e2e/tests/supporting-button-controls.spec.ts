@@ -134,17 +134,17 @@ test.describe('Supporting page button controls @core', () => {
     ] }));
 
     await page.goto('/actor-explorer.html');
-    const profiles = page.locator('.ae-profile-card');
+    const profiles = page.locator('.ae-profile-grid .cb-option');
     await expect(profiles).toHaveCount(2);
     const planner = profiles.filter({ hasText: 'Block planner' });
     await planner.click();
-    await expect(planner).toHaveClass(/is-selected/);
+    await expect(planner).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('.ae-activity')).toContainText('Activity (1)');
     await expect(page.locator('.ae-event')).toContainText('Created a block plan');
     await expect(page.locator('.ae-event')).not.toContainText('Published a park plan');
 
     await planner.click();
-    await expect(planner).not.toHaveClass(/is-selected/);
+    await expect(planner).toHaveAttribute('aria-pressed', 'false');
     await expect(page.locator('.ae-activity')).toContainText('Activity (2)');
   });
 

@@ -256,7 +256,8 @@ describe('spinner na "podijeli cijeli plan"', () => {
         expect(handler).toContain('fa-spinner fa-spin');
         expect(handler).toContain("tShare('preparingPlan'");
         const spin = handler.indexOf('fa-spinner');
-        const close = handler.indexOf('share-modal-close');
+        // The share dialog's own close button: the shared dialog's header close (js/ui/dialogs.js).
+        const close = handler.indexOf('.cb-dialog__header .close-circle-btn');
         expect(spin).toBeGreaterThan(-1);
         expect(close).toBeGreaterThan(spin);
     });

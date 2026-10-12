@@ -78,7 +78,7 @@
         cardEl.innerHTML =
             '<div class="ai-scene-follow-head">'
             + '<span>' + label('threeMode.aiFollow.title', 'AI render') + '</span>'
-            + '<button type="button" class="ai-scene-follow-close" aria-label="'
+            + '<button type="button" class="close-circle-btn ai-scene-follow-close" aria-label="'
             + label('common.close', 'Close') + '">&times;</button>'
             + '</div>'
             + '<img class="ai-scene-follow-img" alt="AI photorealistic render" />'

@@ -171,7 +171,7 @@
 
     function renderParcels(draft) {
         const ids = Array.isArray(draft.fields?.selectedParcelIds) ? draft.fields.selectedParcelIds : [];
-        const chips = ids.map(id => `<span class="proposal-editor-parcel-chip" title="${escapeHtml(id)}">${escapeHtml(id)}</span>`).join('');
+        const chips = ids.map(id => `<span class="cb-badge proposal-editor-parcel-chip" title="${escapeHtml(id)}">${escapeHtml(id)}</span>`).join('');
         return `
             <section class="proposal-editor-section" data-editor-section="parcels">
                 <h3>${escapeHtml(tDraft('proposalDrafts.sections.parcelsTitle', 'Affected parcels'))}</h3>
@@ -181,7 +181,7 @@
                     <span>${escapeHtml(tDraft('proposalDrafts.fields.parcelIds', 'Parcel IDs'))}</span>
                     <textarea data-draft-path="fields.selectedParcelIds" data-draft-array="true">${escapeHtml(ids.join('\n'))}</textarea>
                 </label>
-                <button type="button" class="proposal-editor-secondary" data-editor-action="use-map-selection">${escapeHtml(tDraft('proposalDrafts.actions.useMapSelection', 'Use map selection'))}</button>
+                <button type="button" class="btn" data-editor-action="use-map-selection">${escapeHtml(tDraft('proposalDrafts.actions.useMapSelection', 'Use map selection'))}</button>
             </section>`;
     }
 
@@ -362,10 +362,10 @@
                         <label class="proposal-editor-field"><span>${escapeHtml(tDraft('proposalDrafts.approval.reference', 'Source reference or query'))}</span><input type="text" data-approval-reference value="${escapeHtml(config?.rights?.source?.reference || '')}" autocomplete="off"${selectedSource === 'upload' ? ' disabled' : ''}></label>
                     </div>
                     <label class="proposal-editor-field"><span>${escapeHtml(tDraft('proposalDrafts.approval.file', 'Rights JSON file (up to 1 MB)'))}</span><input type="file" accept="application/json,.json" data-approval-file${selectedSource !== 'upload' ? ' disabled' : ''}></label>
-                    <div class="proposal-editor-toolbar">
-                        <button type="button" class="proposal-editor-secondary" data-editor-action="approval-import">${escapeHtml(tDraft('proposalDrafts.approval.import', 'Import and preview'))}</button>
-                        <button type="button" class="proposal-editor-secondary" data-editor-action="approval-template">${escapeHtml(tDraft('proposalDrafts.approval.template', 'Download template'))}</button>
-                        <button type="button" class="proposal-editor-danger" data-editor-action="approval-remove"${config?.rights ? '' : ' disabled'}>${escapeHtml(tDraft('proposalDrafts.approval.remove', 'Remove rights'))}</button>
+                    <div class="cb-actions">
+                        <button type="button" class="btn btn-sm" data-editor-action="approval-import">${escapeHtml(tDraft('proposalDrafts.approval.import', 'Import and preview'))}</button>
+                        <button type="button" class="btn btn-sm" data-editor-action="approval-template">${escapeHtml(tDraft('proposalDrafts.approval.template', 'Download template'))}</button>
+                        <button type="button" class="btn btn-danger btn-sm" data-editor-action="approval-remove"${config?.rights ? '' : ' disabled'}>${escapeHtml(tDraft('proposalDrafts.approval.remove', 'Remove rights'))}</button>
                     </div>
                     ${message ? `<div class="proposal-editor-approval-error" role="alert">${escapeHtml(message)}</div>` : ''}
                     ${config ? renderApprovalPreview(config, draft) : `<div class="proposal-editor-approval-error">${escapeHtml(tDraft('proposalDrafts.approval.apiMissing', 'Ownership rights support is unavailable.'))}</div>`}
@@ -477,7 +477,7 @@
                 <div class="proposal-editor-card"><strong>${escapeHtml(proposalLabel(draft.adapterKey || draft.goal))}</strong><p>${escapeHtml(designSummary(draft))}</p></div>
                 ${draft.incompatibilityReason ? `<div class="proposal-editor-unsupported">${escapeHtml(draft.incompatibilityReason)}</div>` : ''}
                 ${canOpen && !draft.incompatibilityReason
-                    ? `<button type="button" class="proposal-editor-primary" data-editor-action="open-design">${escapeHtml(tDraft('proposalDrafts.actions.openDesign', 'Edit design on map'))}</button>`
+                    ? `<button type="button" class="btn btn-primary" data-editor-action="open-design">${escapeHtml(tDraft('proposalDrafts.actions.openDesign', 'Edit design on map'))}</button>`
                     : `<div class="proposal-editor-card"><p>${escapeHtml(tDraft('proposalDrafts.design.parcelOnly', 'This proposal has no separate design geometry. Parcel highlighting remains live while you edit its other facets.'))}</p></div>`}
             </section>`;
     }
@@ -541,7 +541,7 @@
         const list = (entries, offset, severity) => entries.length
             ? `<strong class="proposal-editor-validation-heading is-${severity}">${escapeHtml(severity === 'error'
                 ? tDraft('proposalDrafts.validation.errors', '{{count}} error(s)', { count: entries.length })
-                : tDraft('proposalDrafts.validation.warnings', '{{count}} warning(s)', { count: entries.length }))}</strong><ul>${entries.map((entry, index) => `<li class="is-${severity}"><button type="button" data-editor-action="focus-issue" data-issue-index="${offset + index}">${escapeHtml(issueMessage(entry))}</button></li>`).join('')}</ul>`
+                : tDraft('proposalDrafts.validation.warnings', '{{count}} warning(s)', { count: entries.length }))}</strong><ul>${entries.map((entry, index) => `<li class="is-${severity}"><button type="button" class="cb-link cb-link--quiet" data-editor-action="focus-issue" data-issue-index="${offset + index}">${escapeHtml(issueMessage(entry))}</button></li>`).join('')}</ul>`
             : '';
         return `<div class="proposal-editor-validation ${className}" role="status">${list(errors, 0, 'error')}${list(warnings, errors.length, 'warning')}</div>`;
     }
@@ -571,34 +571,37 @@
         const sourceText = draft.sourceProposalId
             ? tDraft('proposalDrafts.source', 'Source: {{id}}', { id: draft.sourceProposalId })
             : tDraft('proposalDrafts.newDraft', 'New proposal draft');
+        // The shell is built from the shared vocabulary (css/primitives.css): a close-circle-btn,
+        // icon buttons for undo/redo, a .cb-segmented comparison, .cb-tabs for the facets and the
+        // .btn roles in the footer; css/proposal-editor.css only lays them out.
         shell.innerHTML = `
             <header class="proposal-editor-header">
                 <div>
-                    <p class="proposal-editor-eyebrow">${escapeHtml(proposalLabel(draft.adapterKey || draft.goal))}</p>
+                    <p class="cb-kicker proposal-editor-eyebrow">${escapeHtml(proposalLabel(draft.adapterKey || draft.goal))}</p>
                     <h2 class="proposal-editor-title">${escapeHtml(draft.fields?.name || tDraft('proposalDrafts.untitled', 'Untitled draft'))}</h2>
                     <p class="proposal-editor-source">${escapeHtml(sourceText)} · ${escapeHtml(cityLabel(draft.cityId))}</p>
                 </div>
-                <button type="button" class="proposal-editor-close" data-editor-action="close" aria-label="${escapeHtml(tDraft('proposalDrafts.actions.close', 'Close editor'))}">&times;</button>
+                <button type="button" class="close-circle-btn" data-editor-action="close" aria-label="${escapeHtml(tDraft('proposalDrafts.actions.close', 'Close editor'))}">&times;</button>
             </header>
             <div class="proposal-editor-save-row">
                 <span class="proposal-editor-autosave">${escapeHtml(draft.state === 'error' ? tDraft('proposalDrafts.autosave.recoverableError', 'Saved · publishing failed') : tDraft('proposalDrafts.autosave.saved', 'Autosaved locally'))}</span>
                 <div class="proposal-editor-toolbar">
-                    <button type="button" data-editor-action="undo" aria-label="${escapeHtml(tDraft('proposalDrafts.actions.undo', 'Undo'))}"${draft.history?.past?.length ? '' : ' disabled'}>↶</button>
-                    <button type="button" data-editor-action="redo" aria-label="${escapeHtml(tDraft('proposalDrafts.actions.redo', 'Redo'))}"${draft.history?.future?.length ? '' : ' disabled'}>↷</button>
+                    <button type="button" class="btn btn-quiet btn-icon btn-sm" data-editor-action="undo" aria-label="${escapeHtml(tDraft('proposalDrafts.actions.undo', 'Undo'))}"${draft.history?.past?.length ? '' : ' disabled'}><i class="fa-solid fa-rotate-left" aria-hidden="true"></i></button>
+                    <button type="button" class="btn btn-quiet btn-icon btn-sm" data-editor-action="redo" aria-label="${escapeHtml(tDraft('proposalDrafts.actions.redo', 'Redo'))}"${draft.history?.future?.length ? '' : ' disabled'}><i class="fa-solid fa-rotate-right" aria-hidden="true"></i></button>
                 </div>
             </div>
-            <div class="proposal-editor-comparison" aria-label="${escapeHtml(tDraft('proposalDrafts.comparison.label', 'Comparison mode'))}">
+            <div class="cb-segmented proposal-editor-comparison" role="group" aria-label="${escapeHtml(tDraft('proposalDrafts.comparison.label', 'Comparison mode'))}">
                 ${comparisonButton('source-only', tDraft('proposalDrafts.comparison.source', 'Source only'))}
                 ${comparisonButton('draft-only', tDraft('proposalDrafts.comparison.draft', 'Draft only'))}
                 ${comparisonButton('overlay', tDraft('proposalDrafts.comparison.overlay', 'Overlay'))}
             </div>
-            ${reviewing ? '' : `<nav class="proposal-editor-tabs">${sections.map(section => `<button type="button" data-editor-action="tab" data-editor-tab="${escapeHtml(section)}" class="${editorState.tab === section ? 'is-active' : ''}">${escapeHtml(tDraft(TAB_LABELS[section]?.[0] || '', TAB_LABELS[section]?.[1] || section))}</button>`).join('')}</nav>`}
+            ${reviewing ? '' : `<div class="cb-tabs proposal-editor-tabs" role="tablist">${sections.map(section => `<button type="button" class="cb-tab" role="tab" aria-selected="${editorState.tab === section ? 'true' : 'false'}" data-editor-action="tab" data-editor-tab="${escapeHtml(section)}">${escapeHtml(tDraft(TAB_LABELS[section]?.[0] || '', TAB_LABELS[section]?.[1] || section))}</button>`).join('')}</div>`}
             <div class="proposal-editor-body">${body}${renderValidation(draft)}</div>
             <footer class="proposal-editor-footer">
-                <button type="button" class="proposal-editor-danger" data-editor-action="discard">${escapeHtml(tDraft('proposalDrafts.actions.discard', 'Discard draft'))}</button>
+                <button type="button" class="btn btn-danger" data-editor-action="discard">${escapeHtml(tDraft('proposalDrafts.actions.discard', 'Discard draft'))}</button>
                 ${reviewing
-                    ? `<div class="proposal-editor-grid"><button type="button" class="proposal-editor-secondary" data-editor-action="back-to-edit">${escapeHtml(tDraft('proposalDrafts.actions.back', 'Back'))}</button><button type="button" class="proposal-editor-primary" data-editor-action="publish"${draft.validation?.valid ? '' : ' disabled'}>${escapeHtml(draft.sourceProposalId ? tDraft('proposalDrafts.actions.createReplacement', 'Create replacement proposal') : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'))}</button></div>`
-                    : `<button type="button" class="proposal-editor-primary" data-editor-action="review">${escapeHtml(tDraft('proposalDrafts.actions.review', 'Review changes'))}</button>`}
+                    ? `<div class="proposal-editor-grid"><button type="button" class="btn" data-editor-action="back-to-edit">${escapeHtml(tDraft('proposalDrafts.actions.back', 'Back'))}</button><button type="button" class="btn btn-primary" data-editor-action="publish"${draft.validation?.valid ? '' : ' disabled'}>${escapeHtml(draft.sourceProposalId ? tDraft('proposalDrafts.actions.createReplacement', 'Create replacement proposal') : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'))}</button></div>`
+                    : `<button type="button" class="btn btn-primary" data-editor-action="review">${escapeHtml(tDraft('proposalDrafts.actions.review', 'Review changes'))}</button>`}
             </footer>`;
         shell.classList.add('is-open');
         global.document.body.classList.add('proposal-editor-open');
@@ -606,7 +609,7 @@
     }
 
     function comparisonButton(mode, label) {
-        return `<button type="button" data-editor-action="comparison" data-comparison-mode="${mode}" class="${editorState.comparison === mode ? 'is-active' : ''}">${escapeHtml(label)}</button>`;
+        return `<button type="button" class="cb-segmented__option" aria-pressed="${editorState.comparison === mode ? 'true' : 'false'}" data-editor-action="comparison" data-comparison-mode="${mode}">${escapeHtml(label)}</button>`;
     }
 
     function updateShellStatusOnly(draft) {
@@ -828,9 +831,10 @@
         global.setTimeout(() => global.URL.revokeObjectURL(url), 0);
     }
 
+    // The app's confirm (js/ui/dialogs.js): every question here throws work away, so the safe answer
+    // is the inviting one.
     async function confirmDestructive(message, options = {}) {
-        if (typeof global.showStyledConfirm === 'function') return global.showStyledConfirm(message, options);
-        return global.confirm ? global.confirm(message) : false;
+        return global.CbDialog.confirm(message, { ...options, destructive: true });
     }
 
     async function handleShellClick(event) {
@@ -848,7 +852,8 @@
             editorState.comparison = button.dataset.comparisonMode || 'overlay';
             renderShell();
         } else if (action === 'discard') {
-            const accepted = await confirmDestructive(tDraft('proposalDrafts.confirmDiscard', 'Discard this locally saved draft? This cannot be undone.'));
+            const accepted = await confirmDestructive(tDraft('proposalDrafts.confirmDiscard', 'Discard this locally saved draft? This cannot be undone.'),
+                { okText: tDraft('proposalDrafts.actions.discardShort', 'Discard') });
             if (!accepted) return;
             store.deleteDraft(draftId);
             closeProposalEditorShell();

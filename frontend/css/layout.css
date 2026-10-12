@@ -10,42 +10,30 @@ body {
     padding-bottom: var(--app-safe-area-bottom);
 }
 
-.road-analysis-modal {
+/* The road width analysis results (#osm-road-segment-list-popup): a right-dock panel (its width
+   from .right-dock-panel, its chrome from .info-panel and .panel-header) under the top-right
+   floating buttons (user bubble, Layers, Settings), which it used to cover. A flex column: the
+   header stays, the body scrolls. A fixed height: the histogram and the list arrive after it opens
+   and it no longer grows with them. Two classes, so the right-dock rung outranks .info-panel's. */
+.info-panel.road-analysis-modal {
     position: fixed;
-    /* Below the top-right floating buttons (user bubble, Layers, Settings), which it used to cover,
-       and never wider than a 320px phone. */
     top: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));
-    right: var(--map-shell-edge);
-    z-index: 1200;
-    min-width: min(360px, calc(100vw - 2 * var(--map-shell-edge)));
-    max-width: min(420px, calc(100vw - 2 * var(--map-shell-edge)));
+    right: var(--right-dock-gap);
+    z-index: var(--cb-z-panel);
     box-sizing: border-box;
-    max-height: 70vh;
-    display: flex;
+    height: 70vh;
     flex-direction: column;
-    padding: 18px 20px 22px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.24);
-    border-radius: 10px;
-}
-
-.road-analysis-modal__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-}
-
-.road-analysis-modal__header h3 {
-    font-size: 18px;
-    margin: 0;
-}
-
-.road-analysis-modal__body {
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-    margin-top: 12px;
+    padding: 0;
     overflow: hidden;
+    background: var(--cb-surface);
+}
+
+.road-analysis-modal .road-analysis-modal__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-5);
+    padding: var(--cb-space-3) var(--cb-space-4) var(--cb-space-4);
+    overflow-y: auto;
 }
 
 .road-histogram-section,
@@ -58,20 +46,20 @@ body {
 .road-histogram-header h4,
 .road-segment-list-header h4 {
     margin: 0;
-    font-size: 16px;
+    font-size: var(--cb-text-lg);
 }
 
 .road-histogram-subtitle,
 .road-segment-subtitle {
     margin: 0;
-    font-size: 13px;
-    color: #5f6368;
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
 }
 
 .road-analysis-empty {
     margin: 0;
-    font-size: 13px;
-    color: #5f6368;
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
 }
 
 .road-histogram {
@@ -88,28 +76,28 @@ body {
     grid-template-columns: 120px 1fr 60px;
     align-items: center;
     gap: 12px;
-    font-size: 13px;
+    font-size: var(--cb-text-md);
 }
 
 .road-histogram-label {
-    color: #3c4043;
+    color: var(--cb-text);
 }
 
 .road-histogram-bar {
-    background: #e8eaed;
-    border-radius: 999px;
+    background: var(--cb-surface-3);
+    border-radius: var(--cb-radius-pill);
     overflow: hidden;
     height: 12px;
 }
 
 .road-histogram-bar-fill {
-    background: linear-gradient(90deg, #1a73e8 0%, #4586e6 100%);
+    background: var(--cb-primary);
     height: 100%;
 }
 
 .road-histogram-value {
     text-align: right;
-    color: #202124;
+    color: var(--cb-text-strong);
 }
 
 .road-segment-list {
@@ -148,10 +136,9 @@ body {
     }
 }
 
-
 /* No text selection or tap highlight on buttons and list rows */
-.btn, .close-button, .parcel-tab-btn, .tab-btn,
-.block-item, .parcel-item, .proposal-item, .agent-link, .proposal-link {
+.btn, .close-button, .cb-tab,
+.block-item, .parcel-item, .proposal-item {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -195,17 +182,6 @@ body {
         height: 24px;
         appearance: none;
         -webkit-appearance: none;
-    }
-
-    /* Tab buttons in panels */
-    .parcel-tab-btn, .proposal-tab-btn {
-        padding: 14px 12px;
-        font-size: 15px;
-    }
-
-    .tab-btn:active {
-        transform: scale(0.98);
-        transition: transform 0.1s ease;
     }
 
     /* Leaflet control buttons larger for touch */

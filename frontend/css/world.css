@@ -17,10 +17,10 @@
     --world-accent: #6cb4ff;
     position: fixed;
     inset: 0;
-    z-index: 20000;
+    z-index: var(--cb-z-world);
     overflow: hidden;
     color: var(--world-ink);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--cb-font-sans);
     background: radial-gradient(ellipse at 50% 45%, #0d1d44 0%, #081231 45%, #030712 100%);
     user-select: none;
     -webkit-user-select: none;
@@ -36,7 +36,7 @@
     height: 170px;
     background: linear-gradient(180deg, rgba(3, 7, 18, 0.72), rgba(3, 7, 18, 0));
     pointer-events: none;
-    z-index: 1;
+    z-index: var(--cb-z-local-1);
     transition: opacity 0.35s ease;
 }
 
@@ -50,7 +50,7 @@
 .world-view__labels,
 .world-pin,
 .world-popup {
-    z-index: 2;
+    z-index: var(--cb-z-local-2);
 }
 
 .world-view__top,
@@ -242,33 +242,17 @@ body.world-view-open {
     color: var(--world-ink-dim);
 }
 
-/* ---- close ---- */
+/* ---- close ----
+   The close is the shared close-circle-btn (--lg) and "Back to the map" (opts.closeLabel) a btn;
+   both read the dark tokens the world view wears (css/tokens.css). This only places them. */
 
 .world-view__close {
     position: absolute;
     top: calc(20px + var(--app-safe-area-top, 0px));
     right: calc(20px + var(--app-safe-area-right, 0px));
-    width: 44px;
-    height: 44px;
-    border: 1px solid var(--world-edge);
-    border-radius: 50%;
-    background: var(--world-glass);
-    color: var(--world-ink);
-    font-size: 26px;
-    line-height: 1;
-    cursor: pointer;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
 }
 
 .world-view__close--back {
-    width: auto;
-    min-width: 44px;
-    height: 44px;
-    padding: 0 14px;
-    border-radius: 999px;
-    font-size: 14px;
-    font-weight: 600;
     white-space: nowrap;
 }
 
@@ -282,12 +266,6 @@ body.world-view-open {
     flex: none;
     align-self: center;
     pointer-events: auto;
-}
-
-.world-view__close:hover,
-.world-view__close:focus-visible {
-    border-color: var(--world-accent);
-    outline: none;
 }
 
 /* ---- legend ---- */
@@ -309,26 +287,9 @@ body.world-view-open {
     transition: opacity 0.35s ease;
 }
 
+/* The phone legend toggle is map chrome (map-shell-button, open = aria-expanded); phones only. */
 .world-legend__toggle {
     display: none;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: 1px solid var(--world-edge);
-    border-radius: 50%;
-    background: var(--world-glass);
-    color: var(--world-ink);
-    font-size: 18px;
-    cursor: pointer;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-}
-
-.world-legend__toggle:hover,
-.world-legend__toggle:focus-visible,
-.world-legend__toggle[aria-expanded="true"] {
-    border-color: var(--world-accent);
-    outline: none;
 }
 
 .world-legend__title {
@@ -399,6 +360,8 @@ body.world-view-open {
     transition: opacity 0.35s ease;
 }
 
+/* The live cities' labels are the globe's own map labels (placed per frame at each city, like map
+   markers), so they keep the globe's palette rather than a control's look. */
 .world-city-label {
     position: absolute;
     left: 0;
@@ -510,26 +473,11 @@ body.world-view-open {
 .world-popup--live { border-color: rgba(67, 230, 166, 0.45); }
 .world-popup--source { border-color: rgba(255, 194, 75, 0.4); }
 
+/* The popup's close is the shared close-circle-btn; this only pins it to the corner. */
 .world-popup__close {
     position: absolute;
     top: 8px;
     right: 8px;
-    width: 32px;
-    height: 32px;
-    border: none;
-    border-radius: 50%;
-    background: transparent;
-    color: var(--world-ink-dim);
-    font-size: 22px;
-    line-height: 1;
-    cursor: pointer;
-}
-
-.world-popup__close:hover,
-.world-popup__close:focus-visible {
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--world-ink);
-    outline: none;
 }
 
 .world-popup__tier {
@@ -610,61 +558,19 @@ body.world-view-open {
     margin-top: 12px;
 }
 
-.world-btn {
+/* The popup's actions are the shared btn / btn-primary (the dark tokens of the world view); they
+   share the row. */
+.world-popup__actions .btn {
     flex: 1 1 auto;
-    min-height: 42px;
-    padding: 0 16px;
-    border: 1px solid var(--world-edge);
-    border-radius: 21px;
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--world-ink);
-    font: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease;
 }
 
-.world-btn:hover,
-.world-btn:focus-visible {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: var(--world-accent);
-    outline: none;
-}
-
-.world-btn--primary {
-    border-color: transparent;
-    background: linear-gradient(180deg, #7cc0ff, #4b8ef0);
-    color: #061430;
-}
-
-.world-popup--live .world-btn--primary {
-    background: linear-gradient(180deg, #6ff0bd, #2fc98c);
-    color: #04261a;
-}
-
-.world-btn--primary:hover,
-.world-btn--primary:focus-visible {
-    background: linear-gradient(180deg, #98cfff, #5d9cf5);
-    border-color: transparent;
-}
-
-.world-popup--live .world-btn--primary:hover,
-.world-popup--live .world-btn--primary:focus-visible {
-    background: linear-gradient(180deg, #8af5cc, #3fd89b);
-}
-
-.world-btn:disabled {
-    cursor: default;
-    opacity: 0.75;
-}
-
-/* ---- diving: chrome steps aside while the camera plunges ---- */
+/* ---- diving: chrome steps aside while the camera plunges ----
+   The × close is the view's own close-circle-btn; "Back to the map" sits in the top bar. */
 
 .world-view--diving .world-view__top,
 .world-view--diving .world-legend,
 .world-view--diving .world-view__labels,
-.world-view--diving .world-view__close {
+.world-view--diving > .close-circle-btn {
     opacity: 0;
     pointer-events: none;
 }
@@ -706,8 +612,7 @@ body.world-view-open {
     }
 
     .world-view__close--back {
-        padding: 0 12px;
-        font-size: 12px;
+        padding-inline: var(--cb-space-3);
     }
 
     /* Share one compact row; expanded translated legend content floats above it. */
@@ -812,7 +717,7 @@ body.world-view-open {
 .world-handoff {
     position: fixed;
     inset: 0;
-    z-index: 25000;
+    z-index: var(--cb-z-world-handoff);
     background: #030712;
     cursor: pointer;
     transition: opacity 0.9s ease;
@@ -839,12 +744,13 @@ body.world-view-open {
 /* ---- In the app (js/ui/world-entry.js) ---- */
 
 /* First visit: a dark cover from the first paint until the globe's first frame, so the default
-   city underneath never flashes before the world view. */
+   city underneath never flashes before the world view. It stays a full-screen layer of its own (not
+   a dialog): it is the world view's backdrop before the world view exists. */
 body.world-view-pending::before {
     content: "";
     position: fixed;
     inset: 0;
-    z-index: 19999;
+    z-index: calc(var(--cb-z-world) - 1);
     background: radial-gradient(ellipse at 50% 45%, #0d1d44 0%, #081231 45%, #030712 100%);
 }
 
@@ -878,54 +784,17 @@ body.explore-city #mode-walk-toggle.map-mode-walk-btn {
     gap: 6px;
 }
 
-.explore-banner__btn {
-    min-height: 32px;
-    padding: 4px 12px;
-    border: 1px solid #d6b25e;
-    border-radius: 16px;
-    background: #fff;
-    color: #3f2d06;
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.explore-banner__btn--primary {
-    border-color: #b7791f;
-    background: #b7791f;
-    color: #fff;
-}
-
-.explore-banner__btn:disabled {
-    opacity: 0.7;
-    cursor: default;
-}
-
-.explore-banner__btn:focus-visible,
-.explore-banner__close:focus-visible {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
-}
-
 .explore-banner__error {
     flex-basis: 100%;
     margin: 0;
-    color: #b91c1c;
+    color: var(--cb-danger);
 }
 
+/* The banner's close is the shared close-circle-btn; this only pins it to the corner. */
 .explore-banner__close {
     position: absolute;
     top: 6px;
     right: 6px;
-    width: 28px;
-    height: 28px;
-    border: 0;
-    border-radius: 50%;
-    background: transparent;
-    color: #6b5a2e;
-    font-size: 18px;
-    line-height: 1;
-    cursor: pointer;
 }
 
 @media (max-width: 767.98px) {

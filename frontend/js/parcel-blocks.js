@@ -25,13 +25,11 @@ function tBlock(key, params = {}, fallback = '') {
 // path goes through here, so none of them can quietly do nothing. Returns true — the callers all
 // return this as "handled".
 function failBlockDetection(message) {
-    const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
-        ? window.showStyledAlert
-        : null;
-    if (alertFn) {
-        try { alertFn(message, { title: tBlock('panel.parcel.detectBlock', {}, 'Detect block') }); } catch (_) { }
-    } else if (typeof window !== 'undefined' && typeof window.alert === 'function') {
-        window.alert(message);
+    const alertOptions = { title: tBlock('panel.parcel.detectBlock', {}, 'Detect block') };
+    if (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') {
+        try { window.showStyledAlert(message, alertOptions); } catch (_) { }
+    } else if (typeof window !== 'undefined' && window.CbDialog) {
+        window.CbDialog.alert(message, alertOptions);
     }
     // The status line keeps the message too — the dialog is dismissed, the reason should still be
     // readable while the user acts on it.
@@ -1013,34 +1011,22 @@ let statsCalculationTimeout = null;
 let currentStatsBlockName = null;
 let activeBlockInfoName = null;
 
+// The block panel's tabs (cb-tabs in index.html): the tab for tabId is aria-selected, the other
+// panels are hidden.
 function switchBlockTab(button, tabId) {
     const panel = document.getElementById('block-info-panel');
     if (!panel) return;
 
-    const tabButtons = panel.querySelectorAll('.block-tab-btn');
-    tabButtons.forEach(btn => btn.classList.remove('active'));
-
-    if (button) {
-        button.classList.add('active');
-    } else {
-        const fallback = panel.querySelector(`.block-tab-btn[data-target="${tabId}"]`);
-        if (fallback) fallback.classList.add('active');
-    }
-
-    const tabContents = panel.querySelectorAll('.block-tab-content');
-    tabContents.forEach(content => content.classList.remove('active'));
-
-    const target = document.getElementById(tabId);
-    if (target) {
-        target.classList.add('active');
-    }
+    panel.querySelectorAll('.block-tabs [role="tab"]').forEach(tab => {
+        tab.setAttribute('aria-selected', tab.dataset.target === tabId ? 'true' : 'false');
+    });
+    panel.querySelectorAll('.block-tab-content').forEach(content => {
+        content.hidden = content.id !== tabId;
+    });
 }
 
 function setActiveBlockTab(tabId) {
-    const panel = document.getElementById('block-info-panel');
-    if (!panel) return;
-    const button = panel.querySelector(`.block-tab-btn[data-target="${tabId}"]`);
-    switchBlockTab(button, tabId);
+    switchBlockTab(null, tabId);
 }
 
 function handleBlockProposalClick(proposalId) {
@@ -1414,12 +1400,12 @@ function renderBlockInfoTools(blockName) {
     const hasBlock = blockStorage.blocks.has(blockName);
     const disabledAttr = hasBlock ? '' : ' disabled';
 
+    // Zoom is an action, Show vertices a toggle (aria-pressed); vertices-button stays as the hook
+    // the specs find it by.
     toolsContainer.innerHTML = `
-        <div class="parcel-info-buttons block-tools-buttons">
-            <div class="button-row">
-                <button id="block-zoom-button" class="parcel-info-btn visualize-button"${disabledAttr}>Zoom to block</button>
-                <button id="block-vertices-button" class="parcel-info-btn vertices-button"${disabledAttr}>Show vertices</button>
-            </div>
+        <div class="cb-actions block-tools-buttons">
+            <button type="button" id="block-zoom-button" class="btn"${disabledAttr}>Zoom to block</button>
+            <button type="button" id="block-vertices-button" class="btn vertices-button" aria-pressed="false"${disabledAttr}>Show vertices</button>
         </div>
         <div class="tools-hint">Use these tools to inspect the block geometry and focus the map.</div>
     `;
@@ -1444,7 +1430,7 @@ function renderBlockInfoTools(blockName) {
 
     const verticesBtn = document.getElementById('block-vertices-button');
     if (verticesBtn) {
-        verticesBtn.classList.remove('active', 'active-black-border');
+        verticesBtn.setAttribute('aria-pressed', 'false');
         verticesBtn.textContent = 'Show vertices';
         verticesBtn.addEventListener('click', () => toggleBlockVerticesDisplay(blockName));
     }
@@ -1489,51 +1475,23 @@ function buildBlockProposalListItem(proposal) {
     const buildingApplied = isBuildingProposal && isApplied(proposal, proposal.buildingProposal);
     const structureApplied = isStructureProposal && isApplied(proposal, proposal.structureProposal);
 
+    // The row's map action: Apply to map, or Remove from map once applied (btn btn-sm; the card's
+    // details hold the rest). proposal-action-btn stays as the hook the specs find it by.
+    const appliedOnMap = isRoadProposal ? roadApplied : isBuildingProposal ? buildingApplied : structureApplied;
+    const actionTitle = isRoadProposal
+        ? (appliedOnMap ? tBlock('panel.block.proposals.roadRemoveTooltip', {}, 'Unapply this road proposal') : tBlock('panel.block.proposals.roadApplyTooltip', {}, 'Apply this road proposal'))
+        : isBuildingProposal
+            ? (appliedOnMap ? tBlock('panel.block.proposals.buildingRemoveTooltip', {}, 'Unapply this building proposal') : tBlock('panel.block.proposals.buildingApplyTooltip', {}, 'Apply this building proposal'))
+            : (appliedOnMap ? tBlock('panel.block.proposals.structureRemoveTooltip', {}, 'Unapply this structure proposal') : tBlock('panel.block.proposals.structureApplyTooltip', {}, 'Apply this structure proposal'));
     let actionButtons = '';
-    if (typeof ProposalManager !== 'undefined') {
-        if (isRoadProposal) {
-            if (roadApplied) {
-                actionButtons = `
-                    <button id="proposal-action-btn-${proposalIdOrHash}" class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposalIdOrHash}')" title="Un-apply this road proposal">
-                        <i class="fas fa-eye-slash"></i> Remove from map
-                    </button>
-                `;
-            } else {
-                actionButtons = `
-                    <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposalIdOrHash}')" title="Apply this road proposal">
-                        <i class="fas fa-check"></i> Apply to map
-                    </button>
-                `;
-            }
-        } else if (isBuildingProposal) {
-            if (buildingApplied) {
-                actionButtons = `
-                    <button id="proposal-action-btn-${proposalIdOrHash}" class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposalIdOrHash}')" title="Un-apply this building proposal">
-                        <i class="fas fa-eye-slash"></i> Remove from map
-                    </button>
-                `;
-            } else {
-                actionButtons = `
-                    <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposalIdOrHash}')" title="Apply this building proposal">
-                        <i class="fas fa-check"></i> Apply to map
-                    </button>
-                `;
-            }
-        } else if (isStructureProposal) {
-            if (structureApplied) {
-                actionButtons = `
-                    <button id="proposal-action-btn-${proposalIdOrHash}" class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposalIdOrHash}')" title="Un-apply this structure proposal">
-                        <i class="fas fa-eye-slash"></i> Remove from map
-                    </button>
-                `;
-            } else {
-                actionButtons = `
-                    <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposalIdOrHash}')" title="Apply this structure proposal">
-                        <i class="fas fa-check"></i> Apply to map
-                    </button>
-                `;
-            }
-        }
+    if (typeof ProposalManager !== 'undefined' && (isRoadProposal || isBuildingProposal || isStructureProposal)) {
+        actionButtons = appliedOnMap
+            ? `<button type="button" id="proposal-action-btn-${proposalIdOrHash}" class="btn btn-sm proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposalIdOrHash}')" title="${actionTitle}">
+                    <i class="fas fa-eye-slash" aria-hidden="true"></i> ${tBlock('panel.block.proposals.removeButton', {}, 'Remove from map')}
+                </button>`
+            : `<button type="button" class="btn btn-sm proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposalIdOrHash}')" title="${actionTitle}">
+                    <i class="fas fa-check" aria-hidden="true"></i> ${tBlock('panel.block.proposals.applyButton', {}, 'Apply to map')}
+                </button>`;
     }
 
     const parcelCount = Array.isArray(proposal.cadastreParcelIds)
@@ -1564,25 +1522,21 @@ function buildBlockProposalListItem(proposal) {
     }
 
     const metaInfo = metaParts.join(' • ');
-    const lifecycleKey = (typeof getProposalLifecycleKey === 'function') ? getProposalLifecycleKey(proposal) : null;
-    const statusLabel = (typeof getProposalLifecycleLabel === 'function' && lifecycleKey)
-        ? getProposalLifecycleLabel(lifecycleKey)
-        : getLifecycleStatus(proposal);
-    const statusClass = (typeof getProposalLifecycleClass === 'function' && lifecycleKey)
-        ? getProposalLifecycleClass(lifecycleKey)
-        : 'active';
     const typeLabel = isRoadProposal ? 'Road' : isBuildingProposal ? 'Building' : isStructureProposal ? (proposal.structureProposal.kind ? proposal.structureProposal.kind.charAt(0).toUpperCase() + proposal.structureProposal.kind.slice(1) : 'Structure') : '';
+    const deleteLabel = tBlock('modal.roadWidth.proposalList.deleteTooltip', {}, 'Delete proposal');
 
+    // The lifecycle reads as the proposals list does (proposalLadderBadgesHtml, proposals/list-ui.js);
+    // "Applied" is the row's map action, so it is not repeated as a badge.
     return `
         <div class="proposal-list-item" data-proposal-id="${proposal.proposalId}" onclick="handleBlockProposalClick(${inlineJsArg(proposal.proposalId)})" style="border-left: 4px solid ${color};">
             <div class="proposal-list-header">
                 <div class="proposal-color-dot" style="background-color: ${color};"></div>
                 <div class="proposal-list-title">${safeTitle}${typeLabel ? ` (${typeLabel})` : ''}</div>
-                <div class="proposal-actions">
+                <div class="cb-actions proposal-actions">
                     ${actionButtons}
-                    <div class="proposal-status-indicator ${statusClass}">${statusLabel}</div>
-                    <button class="proposal-delete-btn" onclick="event.stopPropagation(); if (typeof deleteProposal === 'function') deleteProposal('${proposal.proposalId}')" title="Delete proposal">
-                        <i class="fas fa-trash"></i>
+                    ${proposalLadderBadgesHtml(proposal, { applied: false })}
+                    <button type="button" class="btn btn-sm btn-icon btn-danger proposal-delete-btn" onclick="event.stopPropagation(); if (typeof deleteProposal === 'function') deleteProposal('${proposal.proposalId}')" title="${deleteLabel}" aria-label="${deleteLabel}">
+                        <i class="fas fa-trash" aria-hidden="true"></i>
                     </button>
                 </div>
             </div>
@@ -1674,9 +1628,17 @@ function createProposalFromBlock(blockName) {
     }
 }
 
+// The block panel's Proposals tab carries its count as a badge (index.html), hidden at zero.
+function setBlockProposalsTabCount(count) {
+    const tab = document.getElementById('block-proposals-tab-button');
+    const badge = tab ? tab.querySelector('.block-tab-count') : null;
+    if (!badge) return;
+    badge.textContent = count > 0 ? String(count) : '';
+    badge.hidden = !(count > 0);
+}
+
 function renderBlockProposalsTab(blockName) {
     const proposalsContainer = document.getElementById('block-proposals-content');
-    const tabButton = document.getElementById('block-proposals-tab-button');
 
     if (!proposalsContainer) return;
 
@@ -1684,20 +1646,20 @@ function renderBlockProposalsTab(blockName) {
     const createButtonLabel = tBlock('panel.block.proposals.create', {}, 'Create Proposal');
     const createButtonHtml = blockName ? `
         <div class="block-proposals-actions">
-            <button type="button" class="btn btn-proposal" onclick="createProposalFromBlock(${inlineJsArg(blockName)})">
+            <button type="button" class="btn btn-primary btn-block" onclick="createProposalFromBlock(${inlineJsArg(blockName)})">
                 ${createButtonLabel}
             </button>
         </div>
     ` : '';
 
     if (!blockName) {
-        if (tabButton) tabButton.textContent = 'Proposals (0)';
+        setBlockProposalsTabCount(0);
         proposalsContainer.innerHTML = '<p class="block-proposals-empty">Select a block to see proposals.</p>';
         return;
     }
 
     if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') {
-        if (tabButton) tabButton.textContent = 'Proposals (0)';
+        setBlockProposalsTabCount(0);
         proposalsContainer.innerHTML = createButtonHtml + '<p class="block-proposals-empty">Proposal data is unavailable.</p>';
         return;
     }
@@ -1712,9 +1674,7 @@ function renderBlockProposalsTab(blockName) {
         return bDate - aDate;
     });
 
-    if (tabButton) {
-        tabButton.textContent = `Proposals (${proposals.length})`;
-    }
+    setBlockProposalsTabCount(proposals.length);
 
     if (proposals.length === 0) {
         proposalsContainer.innerHTML = createButtonHtml + `<p class="block-proposals-empty">${tBlock('panel.block.proposals.noProposals', {}, 'No proposals for this block yet.')}</p>`;
@@ -1753,10 +1713,7 @@ function hideBlockInfo() {
         titleEl.textContent = 'Block Info';
     }
 
-    const proposalsButton = document.getElementById('block-proposals-tab-button');
-    if (proposalsButton) {
-        proposalsButton.textContent = 'Proposals (0)';
-    }
+    setBlockProposalsTabCount(0);
 
     const infoContent = document.getElementById('block-info-content');
     if (infoContent) {
@@ -1798,7 +1755,7 @@ function clearBlockVerticesDisplay() {
 
     const verticesBtn = document.getElementById('block-vertices-button');
     if (verticesBtn) {
-        verticesBtn.classList.remove('active', 'active-black-border');
+        verticesBtn.setAttribute('aria-pressed', 'false');
         verticesBtn.textContent = 'Show vertices';
     }
 }
@@ -1846,7 +1803,7 @@ function toggleBlockVerticesDisplay(blockName) {
     blockVerticesShownFor = blockName;
     const verticesBtn = document.getElementById('block-vertices-button');
     if (verticesBtn) {
-        verticesBtn.classList.add('active', 'active-black-border');
+        verticesBtn.setAttribute('aria-pressed', 'true');
         verticesBtn.textContent = 'Hide vertices';
     }
 }
@@ -2278,9 +2235,9 @@ function toggleNeighborsHighlight() {
     const neighborBtn = document.getElementById('neighboursButton');
 
     if (!neighborHighlightActive) {
-        // Activate highlighting
+        // Activate highlighting; the Tools tab button reads as pressed while it is on.
         neighborHighlightActive = true;
-        neighborBtn.classList.add('active');
+        neighborBtn.setAttribute('aria-pressed', 'true');
 
         // Check if we have a selected parcel
         if (!currentParcel || !currentParcel.layer) {
@@ -2292,7 +2249,7 @@ function toggleNeighborsHighlight() {
     } else {
         // Deactivate highlighting
         neighborHighlightActive = false;
-        neighborBtn.classList.remove('active');
+        neighborBtn.setAttribute('aria-pressed', 'false');
 
         // Clear all highlighted neighbors
         clearHighlightedNeighbors();
@@ -2376,9 +2333,9 @@ function toggleVerticesDisplay() {
     const verticesBtn = document.getElementById('verticesButton');
 
     if (!verticesDisplayActive) {
-        // Activate vertices display
+        // Activate vertices display; the Tools tab button reads as pressed while it is on.
         verticesDisplayActive = true;
-        verticesBtn.classList.add('active');
+        verticesBtn.setAttribute('aria-pressed', 'true');
 
         // Check if we have a selected parcel
         if (!currentParcel || !currentParcel.layer) {
@@ -2390,7 +2347,7 @@ function toggleVerticesDisplay() {
     } else {
         // Deactivate vertices display
         verticesDisplayActive = false;
-        verticesBtn.classList.remove('active');
+        verticesBtn.setAttribute('aria-pressed', 'false');
 
         // Clear all vertex markers
         clearVertexMarkers();

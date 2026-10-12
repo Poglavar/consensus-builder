@@ -121,22 +121,55 @@
     --cb-control-height-sm: 28px;
     --cb-control-height: 36px;
     --cb-control-height-lg: 44px;
+    --cb-control-height-touch: 40px; /* the smallest tap target on a phone */
+
+    /* ---- Links ---- */
+    --cb-link: var(--cb-primary);
+    --cb-link-hover: var(--cb-primary-hover);
+
+    /* ---- Shimmer (css/primitives.css .cb-shimmer): the highlight that sweeps a featured control ---- */
+    --cb-shimmer: rgba(255, 255, 255, 0.45);
 
     /* ---- Stacking ladder (the only z-index values new CSS may use) ---- */
+    /* Local steps: they order the layers inside one component's own stacking context (a fill under
+       its label, a selected lane over its neighbours, a spinner over its button, the 3D view's own
+       overlays, a menu over its diagram). Only their order among siblings matters; they never meet
+       the page ladder below. */
+    --cb-z-local-0: 0;
+    --cb-z-local-1: 1;
+    --cb-z-local-2: 2;
+    --cb-z-local-3: 3;
+    --cb-z-local-4: 4;
+    --cb-z-local-6: 6;
+    --cb-z-local-10: 10;
+    --cb-z-local-50: 50;
     --cb-z-world-overview: 3;      /* legend and activity inside the globe stacking context */
     --cb-z-world-top: 4;           /* the globe's top bar and popups, over the overview panels */
     --cb-z-world-scrim: -1;        /* a panel's own backdrop, behind its content */
+    /* The page ladder. */
+    --cb-z-map-pane-site: 640;      /* the site tool's Leaflet pane: over the markers (600), under tooltips (650) */
     --cb-z-map-compare: 800;        /* before/after overlay inside a Leaflet container: above its panes (<= 700) */
+    --cb-z-three: 900;              /* the 3D view over the 2D map's panes, under the map chrome */
     --cb-z-map-chrome: 1000;        /* floating buttons, search, tray */
     --cb-z-popover: 1050;           /* parcel menu, dropdowns over the map */
+    --cb-z-map-raised: 1100;        /* over a map's own chrome: the expanded status log, a screenshot's goal badge */
+    --cb-z-dev-overlay: 1400;       /* developer readouts (the memory monitor), under the docked panels */
     --cb-z-panel: 1500;             /* right-dock panels (parcel, proposal, road) */
     --cb-z-sheet: 1600;             /* sheets go over the docked panels: the person just asked for one */
+    --cb-z-editor: 1650;            /* docked editors (proposal editor shell, cross-section, geometry): over sheets */
     --cb-z-notice: 1700;            /* source warnings: over map, panels and sheets, under dialogs */
+    --cb-z-open-menu: 1700;         /* an open menu or result list (the parcel menu on a phone, search results): over the dock */
+    --cb-z-floating-list: 2000;     /* the blocks list, floating over panels and sheets */
+    --cb-z-search-expanded: 4600;   /* the phone search box expanded over the whole shell */
     --cb-z-dialog: 12000;           /* dialogs */
+    --cb-z-palette: 12500;          /* the command palette: over the dialog plane, under a dialog opened from a dialog */
     --cb-z-dialog-top: 13000;       /* a dialog opened from a dialog */
     --cb-z-intro: 14500;           /* introduction above recovery dialogs */
+    --cb-z-world: 20000;            /* the world view (globe), over every dialog */
+    --cb-z-world-handoff: 25000;    /* the boot-time frame handing the world view over to the map */
     --cb-z-confirm: 30000;          /* confirm / alert over everything */
     --cb-z-banner: 100000;          /* multi-tab and explore banners */
+    --cb-z-preview: 100000;         /* a full-size image preview while hovering a thumbnail */
     --cb-z-toast: 100001;
 
     /* ---- Live layout ---- */
@@ -150,3 +183,62 @@
 
 /* The breakpoint cannot be a custom property; it is written once here for reference and asserted
    by backend/test/design-tokens.test.js: phones are (max-width: 767.98px), desktop (min-width: 768px). */
+
+/* ---- Dark theme ----
+   Opt-in through data-theme="dark" on <html> (js/ui/theme.js, Settings → Appearance). Only the
+   tokens change; every component reads them, so a surface that still carries a literal colour is
+   a bug this theme makes visible. The map tiles stay as they are. The world view (css/world.css,
+   a night globe) is dark whatever the theme, so the shared controls inside it read these too. */
+:root[data-theme="dark"],
+.world-view {
+    color-scheme: dark;
+    --cb-bg: #0f1419;
+    --cb-surface: #171c22;
+    --cb-surface-2: #1f262e;
+    --cb-surface-3: #2a333d;
+    --cb-glass: rgba(23, 28, 34, 0.96);
+    --cb-glass-veil: rgba(23, 28, 34, 0.74);
+    --cb-text: #e6e9ee;
+    --cb-text-strong: #f5f7fa;
+    --cb-text-muted: #9aa4b2;
+    --cb-text-faint: #6b7684;
+    --cb-line: #2a333d;
+    --cb-line-strong: #3a4652;
+    --cb-line-glass: rgba(255, 255, 255, 0.16);
+
+    --cb-primary: #60a5fa;
+    --cb-primary-hover: #93c5fd;
+    --cb-primary-ink: #0b1220;
+    --cb-primary-soft: #172554;
+    --cb-primary-soft-ink: #bfdbfe;
+
+    --cb-success: #4ade80;
+    --cb-success-hover: #86efac;
+    --cb-success-ink: #052e16;
+    --cb-success-soft: #0f2e1b;
+    --cb-success-soft-ink: #bbf7d0;
+
+    --cb-warning: #fbbf24;
+    --cb-warning-soft: #3b2a0a;
+    --cb-warning-soft-ink: #fde68a;
+
+    --cb-danger: #f87171;
+    --cb-danger-hover: #fca5a5;
+    --cb-danger-ink: #2a0a0a;
+    --cb-danger-soft: #3b0d0d;
+    --cb-danger-soft-ink: #fecaca;
+
+    --cb-info: #7dd3fc;
+    --cb-info-soft: #0c2a3a;
+    --cb-info-soft-ink: #bae6fd;
+
+    --cb-inverse: #e6e9ee;
+    --cb-inverse-ink: #0f1419;
+    --cb-focus: #60a5fa;
+    --cb-focus-ring: rgba(96, 165, 250, 0.3);
+    --cb-backdrop: rgba(0, 0, 0, 0.6);
+    --cb-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.45);
+    --cb-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.5);
+    --cb-shadow-lg: 0 16px 50px rgba(0, 0, 0, 0.65);
+    --cb-shimmer: rgba(255, 255, 255, 0.18);
+}

@@ -16,22 +16,6 @@ function ensureProposalListHostModal(host) {
     return modal;
 }
 
-function applyLensPatternToButton(button, entries) {
-    const normalized = normalizeLensEntries(entries || []).filter(e => e && e.address);
-    if (!normalized.length || typeof getLensPatternDataUrl !== 'function') return;
-    try {
-        const url = getLensPatternDataUrl(normalized);
-        if (url) {
-            button.style.backgroundImage = `url("${url}")`;
-            button.style.backgroundSize = 'cover';
-            button.style.backgroundRepeat = 'no-repeat';
-            button.style.backgroundPosition = 'center';
-        }
-    } catch (err) {
-        console.warn('applyLensPatternToButton failed', err);
-    }
-}
-
 async function ensureProposalListTranslations(lang) {
     const api = (typeof window !== 'undefined') ? window.i18n : null;
     if (!api || typeof api.registerTranslations !== 'function') return false;
@@ -200,8 +184,8 @@ function setProposalCreateButtonState(isCreating) {
     const modal = document.querySelector('.create-proposal-modal');
     if (!modal) return;
     const createButton = document.getElementById('createProposalSubmitButton')
-        || modal.querySelector('.proposal-actions-block .btn-proposal')
-        || modal.querySelector('.proposal-modal-footer .btn-proposal');
+        || modal.querySelector('.proposal-actions-block .btn-primary')
+        || modal.querySelector('.proposal-modal-footer .btn-primary');
     if (!createButton) return;
     const t = getProposalI18nHelper();
     const creatingLabel = t('modal.createProposal.creating', 'Creating...');
@@ -285,9 +269,9 @@ async function launchStructureToolForSelection(kind) {
     if (!contiguity.contiguous) {
         if (typeof showProposalAlertMessage === 'function') {
             showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
-        } else if (typeof alert === 'function') {
+        } else {
             const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-            alert(t ? t('modal.createProposal.errors.parcelsNotContiguous', 'Parcels not contiguous') : 'Parcels not contiguous');
+            window.CbDialog.alert(t ? t('modal.createProposal.errors.parcelsNotContiguous', 'Parcels not contiguous') : 'Parcels not contiguous');
         }
         return false;
     }
@@ -303,9 +287,9 @@ async function launchStructureToolForSelection(kind) {
     if (!oneArea) {
         if (typeof showProposalAlertMessage === 'function') {
             showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
-        } else if (typeof alert === 'function') {
+        } else {
             const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-            alert(t ? t('modal.createProposal.errors.parcelsNotContiguous', 'Parcels not contiguous') : 'Parcels not contiguous');
+            window.CbDialog.alert(t ? t('modal.createProposal.errors.parcelsNotContiguous', 'Parcels not contiguous') : 'Parcels not contiguous');
         }
         return false;
     }
@@ -678,6 +662,44 @@ function sortProposalDataset(dataset) {
     return sorted;
 }
 
+// The lifecycle rung of one proposal, the ladder every list shows (docs/design-language.md):
+// Draft → Published → Minted → Executed, and a modifier for an expired, concluded or unfunded
+// record. → { rung, label, modifier: { className, label } | null }. The proposals list, the parcel
+// and block panels and the parcel-set list all read it, so a proposal is named the same wherever
+// it is listed.
+function getProposalLadder(proposal) {
+    const t = getProposalI18nHelper();
+    const lifecycleKey = getProposalLifecycleKey(proposal);
+    const serial = typeof getSerialProposalId === 'function' ? getSerialProposalId(proposal) : null;
+    const rung = getLifecycleStatus(proposal) === 'Executed' ? 'executed'
+        : isProposalMinted(proposal) ? 'minted'
+            : serial ? 'published' : 'draft';
+    const label = rung === 'executed' ? t('panel.proposal.lifecycle.executed', 'Executed')
+        : rung === 'minted' ? t('panel.proposal.lifecycle.minted', 'Minted')
+            : rung === 'published' ? t('common.lifecycle.published', 'Published')
+                : t('common.lifecycle.draft', 'Draft');
+    const MODIFIER_KEYS = ['expired', 'inactive', 'vote-open', 'vote-concluded', 'accepted-not-funded'];
+    const modifier = MODIFIER_KEYS.includes(lifecycleKey)
+        ? { className: lifecycleKey === 'vote-open' ? 'cb-badge--published' : 'cb-badge--expired', label: getProposalLifecycleLabel(lifecycleKey) }
+        : null;
+    return { rung, label, modifier };
+}
+
+// The ladder as badges: the rung, "Applied" when the proposal is on this map (options.applied,
+// else read from the proposal) and the modifier.
+function proposalLadderBadgesHtml(proposal, options = {}) {
+    const t = getProposalI18nHelper();
+    const ladder = getProposalLadder(proposal);
+    const applied = typeof options.applied === 'boolean'
+        ? options.applied
+        : (typeof isProposalApplied === 'function' && isProposalApplied(proposal));
+    return [
+        `<span class="cb-badge cb-badge--${ladder.rung}">${escapeHtml(ladder.label)}</span>`,
+        applied ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${escapeHtml(t('common.lifecycle.applied', 'Applied'))}</span>` : '',
+        ladder.modifier ? `<span class="cb-badge ${ladder.modifier.className}">${escapeHtml(ladder.modifier.label)}</span>` : ''
+    ].join('');
+}
+
 function buildProposalActionButtons(proposal, isExecuted = false) {
     // Action buttons (Apply to map / Remove from map) are now only available in proposal details modal.
     // Exception: open sale offers (Ownership: Third party · Anyone) get a Buy button so a buyer can
@@ -687,7 +709,7 @@ function buildProposalActionButtons(proposal, isExecuted = false) {
     if (!isExecuted && typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(proposal)) {
         const buyLabel = t('panel.proposal.buy.button', 'Buy');
         const pid = proposal.proposalId || proposal.id || '';
-        buttons.push(`<button type="button" class="proposal-buy-btn" title="${buyLabel}" onclick="event.stopPropagation(); claimSaleOffer('${pid}');">🤝 ${buyLabel}</button>`);
+        buttons.push(`<button type="button" class="btn btn-success btn-sm proposal-buy-btn" title="${buyLabel}" onclick="event.stopPropagation(); claimSaleOffer('${pid}');"><i class="fas fa-handshake" aria-hidden="true"></i> ${buyLabel}</button>`);
     }
     // The list has no inline editor. Its row previews the proposal; the explicit Details button
     // opens the details panel with actions such as editing, creating a proposal, parking, or deletion.
@@ -725,9 +747,6 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         const proposalId = getProposalKey(proposal);
         const serialProposalId = typeof getSerialProposalId === 'function' ? getSerialProposalId(proposal) : null;
         const color = typeof getProposalColor === 'function' ? getProposalColor(proposalId || '') : '#007bff';
-        const lifecycleKey = getProposalLifecycleKey(proposal);
-        const statusLabel = escapeHtml(getProposalLifecycleLabel(lifecycleKey));
-        const statusClass = getProposalLifecycleClass(lifecycleKey);
         const typeLabel = escapeHtml(formatProposalTypeLabel(metrics.goalKey));
         const acceptanceText = metrics.parcelCount > 0
             ? `${metrics.acceptedCount}/${metrics.parcelCount} ${t('modal.roadWidth.proposalList.meta.acceptedWord', 'accepted')}`
@@ -763,7 +782,6 @@ function buildProposalListItemsHtml(dataset, options = {}) {
             : null;
         const appliedSubject = localCopy || proposal;
         const appliedState = typeof isProposalApplied === 'function' ? isProposalApplied(appliedSubject) : metrics.isApplied;
-        const appliedLabel = t('common.lifecycle.applied', 'Applied');
         if (appliedState) classes.push('is-applied');
         const classAttr = classes.join(' ');
 
@@ -774,28 +792,21 @@ function buildProposalListItemsHtml(dataset, options = {}) {
             ? t('modal.roadWidth.proposalList.labels.conditional', 'Conditional')
             : t('modal.roadWidth.proposalList.labels.partial', 'Partial payouts');
 
-        // One lifecycle badge from the ladder (docs/design-language.md): Draft → Published →
-        // Minted → Executed, plus "Applied" when the proposal is on this map and a modifier for an
-        // expired, concluded or unfunded record. Where the record is held (this browser, the
+        // The lifecycle badges from the ladder (proposalLadderBadgesHtml): the rung, "Applied" when
+        // the proposal is on this map and the modifier. Where the record is held (this browser, the
         // server) is what the tabs say; it is not repeated on every row.
         const downloadEligible = isServerSource && !!proposalId;
         const isDownloaded = downloadEligible && downloadedLookup(proposal);
-        const ladder = isExecuted ? 'executed' : isMinted ? 'minted' : serialProposalId ? 'published' : 'draft';
-        const ladderLabel = ladder === 'executed' ? t('panel.proposal.lifecycle.executed', 'Executed')
-            : ladder === 'minted' ? t('panel.proposal.lifecycle.minted', 'Minted')
-                : ladder === 'published' ? t('common.lifecycle.published', 'Published')
-                    : t('common.lifecycle.draft', 'Draft');
-        const MODIFIER_KEYS = ['expired', 'inactive', 'vote-open', 'vote-concluded', 'accepted-not-funded'];
-        const modifierLabel = MODIFIER_KEYS.includes(lifecycleKey) ? statusLabel : '';
-        const modifierClass = (lifecycleKey === 'vote-open') ? 'cb-badge--published' : 'cb-badge--expired';
+        // The card's buttons: Download (or Delete) beside the title, Details the card's one primary.
+        // The proposal-* classes are the hooks the list's delegated clicks and the specs use.
         const downloadButtonHtml = downloadEligible
-            ? `<button class="proposal-download-btn" data-proposal-id="${escapeHtml(proposalId)}" data-server-id="${escapeHtml(proposal.serverProposalId || proposal.id || '')}" ${isDownloaded ? 'disabled' : ''}>${escapeHtml(isDownloaded ? downloadedLabel : downloadLabel)}</button>`
+            ? `<button type="button" class="btn btn-sm proposal-download-btn" data-proposal-id="${escapeHtml(proposalId)}" data-server-id="${escapeHtml(proposal.serverProposalId || proposal.id || '')}" ${isDownloaded ? 'disabled' : ''}>${escapeHtml(isDownloaded ? downloadedLabel : downloadLabel)}</button>`
             : '';
         const deleteButtonHtml = isServerSource ? '' : `
-                    <button class="proposal-delete-btn" onclick="event.stopPropagation(); deleteProposal('${proposalId}')" title="${escapeHtml(deleteTooltip)}">
-                        <i class="fas fa-trash"></i>
+                    <button type="button" class="btn btn-sm btn-icon btn-danger proposal-delete-btn" onclick="event.stopPropagation(); deleteProposal('${proposalId}')" title="${escapeHtml(deleteTooltip)}" aria-label="${escapeHtml(deleteTooltip)}">
+                        <i class="fas fa-trash" aria-hidden="true"></i>
                     </button>`;
-        const detailsButtonHtml = `<button type="button" class="proposal-list-details-btn" data-proposal-details="${escapeHtml(proposalId)}">${escapeHtml(t('modal.roadWidth.proposalList.actions.details', 'Details'))}</button>`;
+        const detailsButtonHtml = `<button type="button" class="btn btn-sm btn-primary proposal-list-details-btn" data-proposal-details="${escapeHtml(proposalId)}">${escapeHtml(t('modal.roadWidth.proposalList.actions.details', 'Details'))}</button>`;
 
         // Compact card: a full-width title (no longer squeezed to an ellipsis by the pill + buttons),
         // one dim meta line, and just the state badges. The big thumbnail is dropped for a small
@@ -831,11 +842,9 @@ function buildProposalListItemsHtml(dataset, options = {}) {
                 <div class="proposal-card-sub">${metaBits}</div>
                 <div class="proposal-card-badges">
                     ${window.__proposalEpoch ? window.__proposalEpoch.cardEpochSelectHtml(proposal, proposalId) : ''}
-                    <span class="cb-badge cb-badge--${ladder}">${escapeHtml(ladderLabel)}</span>
-                    ${appliedState ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${escapeHtml(appliedLabel)}</span>` : ''}
-                    ${modifierLabel ? `<span class="cb-badge ${modifierClass}">${modifierLabel}</span>` : ''}
-                    ${agentProvenance ? `<span class="proposal-agent-badge" title="${escapeHtml(agentBadgeTitle)}"><span aria-hidden="true">✦</span> ${escapeHtml(agentBadgeLabel)}</span>` : ''}
-                    ${proposal && proposal.proposalRole === 'owner-offer' ? `<span class="proposal-owner-offer-badge" title="${escapeHtml(t('panel.proposal.ownerOffer.badgeTitle', 'The owner offers this land; bids are pledges and donations'))}">${escapeHtml(t('panel.proposal.ownerOffer.badge', 'Owner offer'))}</span>` : ''}
+                    ${proposalLadderBadgesHtml(proposal, { applied: appliedState })}
+                    ${agentProvenance ? `<span class="cb-badge cb-badge--published proposal-agent-badge" title="${escapeHtml(agentBadgeTitle)}"><i class="fas fa-robot" aria-hidden="true"></i> ${escapeHtml(agentBadgeLabel)}</span>` : ''}
+                    ${proposal && proposal.proposalRole === 'owner-offer' ? `<span class="cb-badge cb-badge--executed proposal-owner-offer-badge" title="${escapeHtml(t('panel.proposal.ownerOffer.badgeTitle', 'The owner offers this land; bids are pledges and donations'))}">${escapeHtml(t('panel.proposal.ownerOffer.badge', 'Owner offer'))}</span>` : ''}
                     ${buyButtonHtml}
                 </div>
                 <div class="proposal-card-actions">${detailsButtonHtml}</div>

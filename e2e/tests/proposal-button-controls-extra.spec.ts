@@ -197,7 +197,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await create.locator('#proposalCurrency').selectOption('EUR');
     await create.locator('#createProposalSubmitButton').click();
     await expectProposalMintRpc(page);
-    const failure = page.locator('.cb-confirm-overlay');
+    const failure = page.locator('.cb-dialog-overlay--confirm');
     await expect(failure).toContainText('On-chain mint failed for reason:', { timeout: 30000 });
     await expect(failure).toContainText(/insufficient funds/i);
     await failure.getByRole('button', { name: 'Cancel', exact: true }).click();
@@ -220,7 +220,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     const before = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length);
     await create.locator('#createProposalSubmitButton').click();
     await expectProposalMintRpc(page);
-    const failure = page.locator('.cb-confirm-overlay');
+    const failure = page.locator('.cb-dialog-overlay--confirm');
     await expect(failure).toContainText('On-chain mint failed for reason:', { timeout: 30000 });
     await expect(failure).toContainText(/insufficient funds/i);
     await failure.getByRole('button', { name: 'Create in memory', exact: true }).click();
@@ -239,7 +239,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     const mint = () => share.getByRole('button', { name: 'Mint', exact: true }).click();
 
     await mint();
-    const confirmation = page.locator('.cb-confirm-overlay');
+    const confirmation = page.locator('.cb-dialog-overlay--confirm');
     await expect(confirmation).toContainText('not represented as an NFT');
     await confirmation.getByRole('button', { name: 'Cancel', exact: true }).click();
     await expect(confirmation).toBeHidden();
@@ -360,10 +360,10 @@ test.describe('proposal button controls: modal and alternate states @features', 
     const timeline = list.locator('.proposal-epoch-timeline');
     await expect(timeline).toBeVisible();
     await timeline.getByRole('button', { name: '2035.', exact: true }).click();
-    await expect(timeline.getByRole('button', { name: '2035.', exact: true })).toHaveClass(/is-active/);
+    await expect(timeline.getByRole('button', { name: '2035.', exact: true })).toHaveAttribute('aria-pressed', 'true');
     await expect(timeline).toContainText(/Cumulative to 2035/);
     await timeline.getByRole('button', { name: '2045.', exact: true }).click();
-    await expect(timeline.getByRole('button', { name: '2045.', exact: true })).toHaveClass(/is-active/);
+    await expect(timeline.getByRole('button', { name: '2045.', exact: true })).toHaveAttribute('aria-pressed', 'true');
     await timeline.getByRole('button', { name: 'All', exact: true }).click();
     await expect(timeline.locator('.proposal-epoch-diff')).toHaveCount(0);
   });
@@ -444,7 +444,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await expect.poll(() => driftRequests).toBe(1);
     await expect(drift).toContainText('Now also reaches');
     await drift.getByRole('button', { name: 'Re-bind', exact: true }).click();
-    const confirm = page.locator('.cb-confirm-overlay');
+    const confirm = page.locator('.cb-dialog-overlay--confirm');
     await expect(confirm).toContainText('Publish a new record with the same site and design');
     await confirm.getByRole('button', { name: 'Re-bind', exact: true }).click();
     await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getAllProposals().some((p: any) => p.rebind?.sourceProposalId === id), sourceId)).toBe(true);

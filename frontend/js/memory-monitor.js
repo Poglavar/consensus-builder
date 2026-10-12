@@ -215,7 +215,7 @@
             <div class="memory-monitor-header">
                 <div class="memory-monitor-title">Memory Monitor</div>
                 <div class="memory-monitor-summary" data-memory="summary">--</div>
-                <button type="button" class="memory-monitor-toggle" aria-label="Toggle memory monitor">&minus;</button>
+                <button type="button" class="btn btn-quiet btn-sm btn-icon memory-monitor-toggle" aria-label="Toggle memory monitor">&minus;</button>
             </div>
             <div class="memory-monitor-body">
                 <div class="memory-monitor-row"><span>JS Heap Used</span><span data-memory="heap-used">--</span></div>

@@ -667,18 +667,8 @@
     async function promptBuildingObstacle(hits, corridorKind, options = {}) {
         const proposalImpacts = collectObstacleProposalImpacts(hits);
         const built = buildBuildingObstaclePrompt(hits, corridorKind, proposalImpacts, options);
-        if (typeof global.showStyledChoice === 'function') {
-            const answer = await global.showStyledChoice(built.message, built.choices);
-            return answer || 'cancel';
-        }
-        if (typeof global.showStyledConfirm === 'function') {
-            const ok = await global.showStyledConfirm(built.message, {
-                okText: tunnelText('modal.corridorTunnel.surface', 'Continue at surface level'),
-                cancelText: tunnelText('modal.corridorTunnel.cancel', 'Choose another route')
-            });
-            return ok ? 'surface' : 'cancel';
-        }
-        return global.confirm?.(built.message) ? 'surface' : 'cancel';
+        const answer = await global.showStyledChoice(built.message, built.choices);
+        return answer || 'cancel';
     }
 
     async function resolveBuildingObstacles(hits, corridorKind = 'road', options = {}) {

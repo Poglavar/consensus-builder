@@ -53,7 +53,7 @@ class FakeElement {
     getClientRects() { return this.hidden ? [] : [{}]; }
 }
 
-function bootMapShell({ phone = false } = {}) {
+function bootMapShell({ phone = false, editors = null } = {}) {
     const documentListeners = new Map();
     const body = new FakeElement();
     body.style = new FakeStyle();
@@ -80,6 +80,7 @@ function bootMapShell({ phone = false } = {}) {
             if (selector === '[data-sheet-close]') return [];
             if (selector === '[data-map-modes]') return [...modes, measureSheet];
             if (selector.startsWith('[data-sheet-target="')) return trigger.getAttribute('data-sheet-target') === selector.slice(20, -2) ? [trigger] : [];
+            if (editors && selector === '.map-editor-toolbar, .site-panel, .area-monitor-creation-panel') return editors;
             return [];
         },
         addEventListener(type, listener) {
@@ -112,6 +113,7 @@ function bootMapShell({ phone = false } = {}) {
             windowListeners.set(type, listeners);
         }
     };
+    if (editors) win.ResizeObserver = class { observe() {} unobserve() {} };
     vm.runInNewContext(fs.readFileSync(path.join(FRONTEND, 'js/ui/map-shell.js'), 'utf8'), { window: win, console });
     win.MapShell.initializeMapShell();
     return { win, doc, body, modes, measureSheet, activitySheet, trigger, nav, windowListeners };
@@ -171,6 +173,21 @@ describe('MapShell mode capabilities', () => {
         shell.closeSheets();
         expect(shell.coversMap()).toBe(false);
         expect(body.style.values.has('--map-visible-bottom')).toBe(false);
+    });
+
+    // A docked editor along the bottom lifts the credits above it; the site card standing in the
+    // right dock of a wide screen leaves them in their corners.
+    it('lifts the credits only for an editor docked along the bottom', () => {
+        const card = new FakeElement({ classes: ['site-panel'] });
+        card.isConnected = true;
+        card.getBoundingClientRect = () => ({ top: 58, bottom: 396, left: 870, right: 1270, width: 400, height: 338 });
+        const { win, body } = bootMapShell({ editors: [card] });
+        win.MapShell.syncModeAvailability();
+        expect(body.style.values.has('--map-visible-bottom')).toBe(false);
+
+        card.getBoundingClientRect = () => ({ top: 464, bottom: 800, left: 60, right: 390, width: 330, height: 336 });
+        win.MapShell.syncModeAvailability();
+        expect(body.style.values.get('--map-visible-bottom')).toBe('336px');
     });
 
     it('never reports a covering sheet on a wide map', () => {

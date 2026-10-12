@@ -1,22 +1,27 @@
+/* Parcel and building source settings (js/parcel-source-settings.js): a native <dialog>
+   (showModal) wearing the dialog primitive (css/primitives.css). Only what a native dialog needs
+   on top is here: no UA border or padding, centred when open (a bottom sheet on phones), the token
+   backdrop; then the inside's layout. */
 .parcel-source-settings {
-    width: min(32rem, calc(100vw - 2rem));
-    max-height: calc(100dvh - 2rem);
-    overflow: auto;
-    box-sizing: border-box;
-    padding: 1.5rem;
-    color: var(--cb-text);
-    background: var(--cb-surface);
-    border: 1px solid var(--cb-line-strong);
-    border-radius: var(--cb-radius-lg);
-    font: inherit;
+    max-width: none;
+    padding: 0;
+    border: 0;
+}
+.parcel-source-settings:not([open]) { display: none; }
+.parcel-source-settings[open] {
+    position: fixed;
+    inset: 50% auto auto 50%;
+    margin: 0;
+    transform: translate(-50%, -50%);
 }
 .parcel-source-settings::backdrop { background: var(--cb-backdrop); }
-.parcel-source-settings h2 { margin-top: 0; }
+@media (max-width: 767.98px) {
+    .parcel-source-settings[open] { inset: auto 0 0; transform: none; margin: 0 auto; }
+}
 .parcel-source-settings p, .parcel-source-settings li { line-height: 1.5; overflow-wrap: anywhere; }
-.parcel-source-settings label, .parcel-source-settings input { display: block; width: 100%; }
-.parcel-source-settings input { box-sizing: border-box; padding: .65rem; margin: .5rem 0 1rem; font: inherit; }
-.parcel-source-settings .btn, .source-status .btn { margin: .5rem .4rem 0 0; }
-.parcel-source-settings a { color: var(--cb-primary); }
+.parcel-source-settings__body label, .parcel-source-settings__body input { display: block; width: 100%; }
+.parcel-source-settings__body input { margin: var(--cb-space-2) 0 var(--cb-space-3); }
+.parcel-source-settings__body .btn { margin-top: var(--cb-space-2); }
 .parcel-source-settings [hidden] { display: none; }
 /* Compact warnings reopen recovery after dismissal; they are sections of the shared banner card
    (css/primitives.css .cb-banner). The dialog itself owns the full choices. */
@@ -29,4 +34,4 @@ body.ground-fallback-open #parcel-source-status {
 .parcel-source-formats main { max-width: 60rem; margin: auto; padding: var(--cb-space-6); }
 .parcel-source-formats table { width: 100%; border-collapse: collapse; font-size: var(--cb-text-base); }
 .parcel-source-formats th, .parcel-source-formats td { padding: var(--cb-space-3); text-align: left; vertical-align: top; border-bottom: 1px solid var(--cb-line-strong); overflow-wrap: anywhere; }
-.parcel-source-formats a { color: var(--cb-primary); }
+

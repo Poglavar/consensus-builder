@@ -91,37 +91,38 @@
                 const container = badge ? badge.closest('.settings-badge-bar') : (debugBadge ? debugBadge.closest('.settings-badge-bar') : null);
                 const isDebug = document.body.classList.contains('debug-mode');
 
+                // The badges (cb-badge) and their bar show and hide with the hidden attribute.
                 // If not in debug mode, hide entire bar and exit early
                 if (!isDebug) {
-                    if (badge) badge.style.display = 'none';
-                    if (debugBadge) debugBadge.style.display = 'none';
-                    if (versionBadge) versionBadge.style.display = 'none';
-                    if (container) container.style.display = 'none';
+                    if (badge) badge.hidden = true;
+                    if (debugBadge) debugBadge.hidden = true;
+                    if (versionBadge) versionBadge.hidden = true;
+                    if (container) container.hidden = true;
                     return;
                 }
 
                 const versionLabel = getBuildVersionLabel();
                 if (badge) {
                     // Show dev badge only in real development environment
-                    badge.style.display = isDevelopment ? 'inline-flex' : 'none';
+                    badge.hidden = !isDevelopment;
                 }
                 if (debugBadge) {
-                    debugBadge.style.display = 'inline-flex';
+                    debugBadge.hidden = false;
                 }
                 if (versionBadge) {
                     if (versionLabel) {
                         versionBadge.textContent = versionLabel;
                         versionBadge.title = versionLabel;
-                        versionBadge.style.display = 'inline-flex';
+                        versionBadge.hidden = false;
                     } else {
-                        versionBadge.style.display = 'none';
+                        versionBadge.hidden = true;
                     }
                 }
                 if (container) {
-                    const anyVisible = (badge && badge.style.display !== 'none')
-                        || (debugBadge && debugBadge.style.display !== 'none')
-                        || (versionBadge && versionBadge.style.display !== 'none');
-                    container.style.display = anyVisible ? 'flex' : 'none';
+                    const anyVisible = (badge && !badge.hidden)
+                        || (debugBadge && !debugBadge.hidden)
+                        || (versionBadge && !versionBadge.hidden);
+                    container.hidden = !anyVisible;
                 }
             } catch (_) { }
         }

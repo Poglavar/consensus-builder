@@ -190,11 +190,18 @@ describe('the renderer shows it in both tabs', () => {
     // One lifecycle badge per row (docs/design-language.md): Draft → Published → Minted → Executed,
     // plus "Applied" only when the proposal is on this map. Where the record is held is what the
     // tabs say, so the old "Local" / "On server" / "Unsaved" badges are gone.
+    // The ladder is one helper (getProposalLadder / proposalLadderBadgesHtml) that the parcel and
+    // block panels share with the cards.
     it('shows one ladder badge and Applied only when applied', () => {
-        expect(listSection).toMatch(/const ladder = isExecuted \? 'executed' : isMinted \? 'minted' : serialProposalId \? 'published' : 'draft';/);
+        const ladderSource = listUiSource.slice(
+            listUiSource.indexOf('function getProposalLadder('),
+            listUiSource.indexOf('function buildProposalActionButtons(')
+        );
+        expect(ladderSource).toMatch(/const rung = getLifecycleStatus\(proposal\) === 'Executed' \? 'executed'\s*: isProposalMinted\(proposal\) \? 'minted'\s*: serial \? 'published' : 'draft';/);
+        expect(ladderSource).toMatch(/<span class="cb-badge cb-badge--\$\{ladder\.rung\}">/);
+        expect(ladderSource).toMatch(/applied \? `<span class="cb-badge cb-badge--applied"/);
         const badgeRow = listSection.slice(listSection.indexOf('proposal-card-badges'));
-        expect(badgeRow).toMatch(/<span class="cb-badge cb-badge--\$\{ladder\}">/);
-        expect(badgeRow).toMatch(/\$\{appliedState \? `<span class="cb-badge cb-badge--applied"/);
+        expect(badgeRow).toMatch(/proposalLadderBadgesHtml\(proposal, \{ applied: appliedState \}\)/);
     });
 
     it('no longer repeats where the record is held', () => {

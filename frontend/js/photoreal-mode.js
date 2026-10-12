@@ -2387,9 +2387,10 @@
         setPhotorealLoading(true);
         if (!window.isThreeModeActive?.() || !isCurrent()) return false;
         const btn = toggleBtn();
-        if (btn) { btn.classList.add('active'); btn.disabled = true; }
+        // The selected view is aria-pressed (the strip's tiles take their look from it).
+        if (btn) { btn.setAttribute('aria-pressed', 'true'); btn.disabled = true; }
         try {
-            const b2 = document.getElementById('mode-2d-toggle'); if (b2) b2.classList.remove('active');
+            const b2 = document.getElementById('mode-2d-toggle'); if (b2) b2.setAttribute('aria-pressed', 'false');
         } catch (_) { }
         document.body.classList.add('realistic-mode-active');
         setStatus('');
@@ -2602,7 +2603,7 @@
         }
         document.body.classList.remove('realistic-mode-active');
         const btn = toggleBtn();
-        if (btn) btn.classList.remove('active');
+        if (btn) btn.setAttribute('aria-pressed', 'false');
         if (typeof window.updateModeButtonStates === 'function') window.updateModeButtonStates();
     }
 

@@ -52,9 +52,11 @@
         return { proposalsForParcel: lookup, publishedOnly: new Set(publishedOnly) };
     }
 
-    // describe(proposal) → { title, typeLabel, statusText, statusClass, thumbHtml } (thumbHtml is
-    // trusted markup from the app's thumbnail builder; everything else is escaped here). An entry
-    // with a serverId is published only: its row carries the id to import it from.
+    // describe(proposal) → { title, typeLabel, statusText, statusClass, modifierText?, modifierClass?,
+    // thumbHtml }: statusClass is the lifecycle rung (draft · published · minted · executed) and the
+    // modifier an expired or concluded record, both drawn as cb-badges (thumbHtml is trusted markup
+    // from the app's thumbnail builder; everything else is escaped here). An entry with a serverId is
+    // published only: its row carries the id to import it from.
     // published: { loading, error } — the state of the server lookup, shown as a line under the list.
     function listHtml(entries, { parcelCount = 0, describe, t = plainT, emptyText, summary = true, published = {} } = {}) {
         const status = published.loading
@@ -81,7 +83,8 @@
                     <div class="proposal-item-header">
                         <span class="proposal-item-title">${escapeText(info.title)}</span>
                         <div class="proposal-item-badges">
-                            <span class="proposal-item-status ${escapeText(info.statusClass)}">${escapeText(info.statusText)}</span>
+                            <span class="cb-badge cb-badge--${escapeText(info.statusClass)}">${escapeText(info.statusText)}</span>
+                            ${info.modifierText ? `<span class="cb-badge ${escapeText(info.modifierClass)}">${escapeText(info.modifierText)}</span>` : ''}
                         </div>
                     </div>
                     <div class="proposal-item-details">${escapeText([info.typeLabel, coverage].filter(Boolean).join(' · '))}</div>
@@ -109,15 +112,18 @@
         return (root.Proposals && root.Proposals.storage) || root.proposalStorage || null;
     }
 
+    // The ladder the proposals list shows (getProposalLadder, js/proposals/list-ui.js).
     function describe(proposal) {
-        const lifecycleKey = root.getProposalLifecycleKey(proposal);
+        const ladder = root.getProposalLadder(proposal);
         const typeLabel = root.getProposalDisplayTypeLabel(proposal) || '';
         const name = proposal.title || proposal.name || typeLabel || t('modal.roadWidth.proposalList.untitled', 'Untitled proposal');
         return {
             title: root.ProposalDisplayText.text(name, proposal),
             typeLabel,
-            statusText: root.getProposalLifecycleLabel(lifecycleKey),
-            statusClass: root.getProposalLifecycleClass(lifecycleKey),
+            statusText: ladder.label,
+            statusClass: ladder.rung,
+            modifierText: ladder.modifier ? ladder.modifier.label : '',
+            modifierClass: ladder.modifier ? ladder.modifier.className : '',
             thumbHtml: typeof root.buildProposalThumbHtml === 'function' ? root.buildProposalThumbHtml(proposal) : ''
         };
     }

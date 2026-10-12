@@ -117,15 +117,24 @@
             }
             return fallback.replace(/\{\{(\w+)\}\}/g, (_, key) => params[key] ?? '');
         };
+        // A native <dialog> (showModal) wearing the dialog primitive (css/primitives.css): header
+        // with the title and one close button, body, footer; css/parcel-sources.css adds what a
+        // native dialog needs (no UA border or padding, centring, the token backdrop).
         const dialog = global.document.createElement('dialog');
-        dialog.id = 'parcel-source-settings'; dialog.className = 'parcel-source-settings';
-        const element = (tag, text, parent = dialog) => {
+        dialog.id = 'parcel-source-settings'; dialog.className = 'cb-dialog cb-dialog--md parcel-source-settings';
+        const header = global.document.createElement('div'); header.className = 'cb-dialog__header'; dialog.append(header);
+        const body = global.document.createElement('div'); body.className = 'cb-dialog__body parcel-source-settings__body'; dialog.append(body);
+        const footer = global.document.createElement('div'); footer.className = 'cb-dialog__footer'; dialog.append(footer);
+        const element = (tag, text, parent = body) => {
             const node = global.document.createElement(tag); if (text) node.textContent = text; parent.append(node); return node;
         };
         const building = kind === 'building';
-        const title = element('h2', building ? t('title', 'Choose a building source') : t('title', 'Choose a parcel source'));
-        title.id = 'parcel-source-settings-title';
+        const title = element('h2', building ? t('title', 'Choose a building source') : t('title', 'Choose a parcel source'), header);
+        title.id = 'parcel-source-settings-title'; title.className = 'cb-dialog__title';
         dialog.setAttribute('aria-labelledby', title.id);
+        const close = element('button', '×', header); close.type = 'button'; close.className = 'close-circle-btn';
+        close.setAttribute('aria-label', t('close', 'Close'));
+        close.addEventListener('click', () => dialog.close());
         element('p', building
             ? t('intro', 'Add a public HTTPS URL of building footprints for this city, or of an OpenStreetMap mirror (an Overpass API address ending in /interpreter). We try each supported format and read a height or storey field when it has one; other heights are estimated.')
             : t('intro', 'Add a public HTTPS parcel URL for this city. We try each supported format and check that it can return complete parcel boundaries.'));
@@ -150,7 +159,7 @@
         // Building sources: the unit the person picked for the height field, sent with a re-check.
         let chosenUnit = null;
         input.addEventListener('input', () => { chosenUnit = null; });
-        const use = element('button', t('use', 'Use this source')); use.type = 'button'; use.className = 'btn btn-primary'; use.hidden = true;
+        const use = element('button', t('use', 'Use this source'), footer); use.type = 'button'; use.className = 'btn btn-primary'; use.hidden = true;
         use.addEventListener('click', () => {
             try { saveChoice(city.id, candidate, global, kind); reloadWithChoice(global, candidate.id, kind); }
             catch (_) { result.textContent = t('storageFailed', 'The source choice could not be saved in this browser.'); }
@@ -161,9 +170,11 @@
         const conform = element('li', t('conform', 'Conform your source so it can be read by one of the adapters. '), options);
         const formats = element('a', t('formats', 'See the source formats we understand'), conform);
         formats.href = 'parcel-source-formats.html'; formats.target = '_blank'; formats.rel = 'noopener noreferrer';
+        formats.className = 'cb-link cb-link--external';
         const request = element('li', t('request', 'Ask us to add another adapter, which we sometimes do. '), options);
         const telegram = element('a', t('telegram', 'Telegram group'), request);
         telegram.href = TELEGRAM_URL; telegram.target = '_blank'; telegram.rel = 'noopener noreferrer';
+        telegram.className = 'cb-link cb-link--external';
         form.addEventListener('submit', async event => {
             event.preventDefault(); candidate = null; use.hidden = true; alternatives.hidden = true;
             check.disabled = true; input.disabled = true; result.textContent = t('checking', 'Checking supported adapters…');
@@ -220,13 +231,12 @@
             unit.value = source.heightUnit || 'm';
             unit.addEventListener('change', () => { chosenUnit = unit.value; form.requestSubmit(); });
         }
-        const reset = element('button', t('default', 'Use the city default')); reset.type = 'button'; reset.className = 'btn btn-secondary';
+        const reset = global.document.createElement('button'); reset.textContent = t('default', 'Use the city default');
+        reset.type = 'button'; reset.className = 'btn'; footer.prepend(reset);
         reset.addEventListener('click', () => {
             try { global.localStorage.removeItem(storageKey(city.id, global, kind)); reloadWithChoice(global, null, kind); }
             catch (_) { result.textContent = t('storageFailed', 'The source choice could not be saved in this browser.'); }
         });
-        const close = element('button', t('close', 'Close')); close.type = 'button'; close.className = 'btn btn-secondary';
-        close.addEventListener('click', () => dialog.close());
         dialog.addEventListener('close', () => { controller?.abort(); dialog.remove(); });
         global.document.body.append(dialog); dialog.showModal(); input.focus();
         return dialog;
@@ -249,7 +259,7 @@
             banner.className = 'source-status cb-banner'; banner.setAttribute('role', 'status');
             const text = doc.createElement('p'); text.className = 'source-status__message'; banner.append(text);
             const button = ([key, fallback], action) => {
-                const node = doc.createElement('button'); node.type = 'button'; node.className = 'btn btn-secondary';
+                const node = doc.createElement('button'); node.type = 'button'; node.className = 'btn';
                 const value = global.i18n?.t?.(key); node.textContent = value && value !== key ? value : fallback;
                 node.addEventListener('click', action); banner.append(node);
             };

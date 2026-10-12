@@ -196,12 +196,12 @@ test('parcel block inspector tabs switch to their supported information and tool
   await expect(page.locator('#block-info-tab')).toBeVisible();
 
   await proposalsTab.click();
-  await expect(proposalsTab).toHaveClass(/active/);
+  await expect(proposalsTab).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('#block-proposals-tab')).toBeVisible();
   await expect(page.locator('#block-proposals-content')).toContainText(/No proposals for this block yet/i);
 
   await toolsTab.click();
-  await expect(toolsTab).toHaveClass(/active/);
+  await expect(toolsTab).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('#block-tools-tab')).toBeVisible();
   await expect(page.locator('#block-tools-content')).toContainText('Zoom to block');
   await expect(page.locator('#block-tools-content')).toContainText('Show vertices');
@@ -229,7 +229,7 @@ test('parcel block inspector tabs switch to their supported information and tool
   })).toBe(true);
 
   await infoTab.click();
-  await expect(infoTab).toHaveClass(/active/);
+  await expect(infoTab).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('#block-info-tab')).toBeVisible();
   await expect(page.locator('#block-info-content')).toContainText('Block name:');
   await panel.locator('.close-button').click();

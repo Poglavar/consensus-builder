@@ -129,13 +129,13 @@ test.describe('proposal button controls fifth pass @features', () => {
       const option = group.locator(`.proposal-typology-button[data-proposal-typology="${typology}"]`);
       await expect(option).toBeVisible();
       await option.click();
-      await expect(option).toHaveClass(/selected/);
-      await expect(group.locator('.proposal-typology-button.selected')).toHaveCount(1);
+      await expect(option).toHaveAttribute('aria-pressed', 'true');
+      await expect(group.locator('.proposal-typology-button[aria-pressed="true"]')).toHaveCount(1);
       await expect.poll(() => page.evaluate(() => (window as any).proposalFacets?.landUse)).toBe('urban-rule');
     }
   });
 
-  for (const target of ['.share-modal-close', '.share-modal-actions button']) test(`shared-link error ${target} dismisses an invalid link notice`, async ({ mockApi: page }) => {
+  for (const target of ['.share-modal .close-circle-btn', '.share-modal .cb-dialog__footer button']) test(`shared-link error ${target} dismisses an invalid link notice`, async ({ mockApi: page }) => {
     await page.goto('/?city=zg&proposalShare=not-valid-base64!!!', { waitUntil: 'domcontentloaded' });
     await waitForMapReady(page);
     const modal = page.locator('.share-modal-overlay');

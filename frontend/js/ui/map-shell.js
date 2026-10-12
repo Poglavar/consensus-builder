@@ -103,10 +103,10 @@
         sheet.style.setProperty('--sheet-max-height', `${place.maxHeight}px`);
     }
 
+    // The open sheet's buttons read as selected through aria-expanded alone (css/map-shell.css).
     function setExpanded(sheet, expanded) {
         triggersFor(sheet).forEach(button => {
             button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-            button.classList.toggle('is-active', expanded);
         });
     }
 
@@ -286,8 +286,12 @@
             const top = state.openSheet.getBoundingClientRect().top;
             inset = Math.max(0, win.innerHeight - top);
         }
+        // Only an editor docked along the bottom lifts the map's bottom corners: the site card
+        // stands in the right dock on a wide screen.
         if (currentMode() === '2d') observedEditors.forEach(editor => {
-            if (isVisible(editor)) inset = Math.max(inset, win.innerHeight - editor.getBoundingClientRect().top);
+            if (!isVisible(editor)) return;
+            const top = editor.getBoundingClientRect().top;
+            if (top > win.innerHeight / 2) inset = Math.max(inset, win.innerHeight - top);
         });
         if (inset) doc.body.style.setProperty('--map-visible-bottom', `${Math.round(inset)}px`);
         else doc.body.style.removeProperty('--map-visible-bottom');
@@ -379,7 +383,7 @@
     // palette — as opposed to the non-modal surfaces (sheets, the parcel menu, docked panels, the
     // cross-section editor). `except` leaves one out (the palette asking about everything else).
     // Keyboard shortcuts and Escape chains use it so they never act on what is underneath.
-    const BLOCKING_DIALOG_SELECTOR = '[aria-modal="true"], .cb-confirm-overlay, dialog[open], [role="dialog"]:not(.map-sheet)';
+    const BLOCKING_DIALOG_SELECTOR = '[aria-modal="true"], .cb-dialog-overlay:not([hidden]), dialog[open], [role="dialog"]:not(.map-sheet)';
 
     function isBlockingDialogOpen(except) {
         if (doc.body && doc.body.classList.contains('modal-open')) return true;

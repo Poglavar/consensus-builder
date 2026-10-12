@@ -12,7 +12,7 @@ async function startDrawing(page: import('@playwright/test').Page) {
   await page.locator('#activity-button').click();
   const draw = page.locator('#activity-sheet #areaMonitorDrawButton');
   await draw.click();
-  await expect(draw).toHaveClass(/active/);
+  await expect(draw).toHaveAttribute('aria-pressed', 'true');
   const sheet = page.locator('#activity-sheet');
   if (await sheet.isVisible()) await sheet.locator('[data-sheet-close]').click();
   await expect(sheet).toBeHidden();
@@ -90,7 +90,7 @@ test.describe('Area monitor authoring @features', () => {
     await page.keyboard.press('Escape');
     await expect(page.locator('#area-monitor-creation-panel')).toHaveCount(0);
     await page.locator('#activity-button').click();
-    await expect(page.locator('#areaMonitorDrawButton')).not.toHaveClass(/active/);
+    await expect(page.locator('#areaMonitorDrawButton')).not.toHaveAttribute('aria-pressed', 'true');
     // The unsupported GeoJSON upload placeholder was removed outright (fbe3758d): nothing offers it.
     await expect(page.locator('#areaMonitorUploadButton')).toHaveCount(0);
     // Plan painting becomes available only after the real road-plan layer has loaded.

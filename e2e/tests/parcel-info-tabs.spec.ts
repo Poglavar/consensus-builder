@@ -13,8 +13,8 @@ const tab = (page: any, id: string) => page.locator(`#parcel-info-panel .parcel-
 test.describe('Parcel info panel tabs @core', () => {
   test('Info tab is active by default and ends with the collapsed History section', async ({ mockApi: page }) => {
     await openDetails(page);
-    await expect(page.locator('#info-tab')).toHaveClass(/active/);
-    for (const id of ['propose-tab', 'proposals-tab', 'tools-tab']) await expect(page.locator(`#${id}`)).not.toHaveClass(/active/);
+    await expect(page.locator('#info-tab')).toBeVisible();
+    for (const id of ['propose-tab', 'proposals-tab', 'tools-tab']) await expect(page.locator(`#${id}`)).toBeHidden();
     const history = page.locator(`#parcel-history-section details[data-parcel-history="${PARCEL_ID}"]`);
     await expect(history).toBeVisible();
     await expect(history).not.toHaveAttribute('open', '');
@@ -23,10 +23,10 @@ test.describe('Parcel info panel tabs @core', () => {
   test('Propose holds the palette and Proposals the list, never both', async ({ mockApi: page }) => {
     await openDetails(page);
     await tab(page, 'propose-tab').click();
-    await expect(page.locator('#propose-tab')).toHaveClass(/active/);
+    await expect(page.locator('#propose-tab')).toBeVisible();
     await expect(page.locator('#propose-content .parcel-build-btn')).toHaveCount(15);
     await tab(page, 'proposals-tab').click();
-    await expect(page.locator('#proposals-tab')).toHaveClass(/active/);
+    await expect(page.locator('#proposals-tab')).toBeVisible();
     await expect(page.locator('#proposals-content .parcel-build-btn')).toHaveCount(0);
   });
 
@@ -36,7 +36,7 @@ test.describe('Parcel info panel tabs @core', () => {
     await expect(page.locator('#proposals-content .parcel-proposals-empty')).toContainText('No proposals on this parcel yet.');
     await expect(tab(page, 'proposals-tab').locator('.parcel-tab-count')).toBeHidden();
     await page.locator('#proposals-content .parcel-proposals-empty-btn').click();
-    await expect(page.locator('#propose-tab')).toHaveClass(/active/);
+    await expect(page.locator('#propose-tab')).toBeVisible();
     await expect(page.locator('#propose-content .parcel-build-palette')).toBeVisible();
   });
 
@@ -67,7 +67,7 @@ test.describe('Parcel info panel tabs @core', () => {
   test('the Tools icon tab shows claim controls', async ({ mockApi: page }) => {
     await openDetails(page);
     await page.locator('#parcel-info-panel').getByRole('button', { name: 'Tools', exact: true }).click();
-    await expect(page.locator('#tools-tab')).toHaveClass(/active/);
+    await expect(page.locator('#tools-tab')).toBeVisible();
     await expect(page.locator('#claimButton')).toBeDisabled();
     await expect(page.locator('#mintAndClaimButton')).toBeDisabled();
   });
@@ -75,9 +75,9 @@ test.describe('Parcel info panel tabs @core', () => {
   test('switching back restores Info content', async ({ mockApi: page }) => {
     await openDetails(page);
     await tab(page, 'proposals-tab').click();
-    await expect(page.locator('#proposals-tab')).toHaveClass(/active/);
+    await expect(page.locator('#proposals-tab')).toBeVisible();
     await tab(page, 'info-tab').click();
-    await expect(page.locator('#info-tab')).toHaveClass(/active/);
+    await expect(page.locator('#info-tab')).toBeVisible();
     await expect(page.locator('#info-content')).toBeVisible();
   });
 

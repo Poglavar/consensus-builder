@@ -59,7 +59,7 @@ describe('proposalEnsName', () => {
         expect(html).toContain(`>${compactEnsName(full)}</button>`);
         expect(html).toContain(`onclick="copyEnsName(&quot;${full}&quot;, this)"`);
         expect(html).not.toContain(`>${full}</button>`);
-        expect(html).toContain('<button type="button" class="ens-name-value"');
+        expect(html).toContain('<button type="button" class="cb-link cb-link--quiet ens-name-value"');
     });
 
     it('escapes display text and attribute values defensively', () => {

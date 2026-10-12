@@ -23,291 +23,14 @@
     margin: 0;
     font-weight: 600;
     font-size: 14px;
-    color: #1a73e8;
+    color: var(--cb-primary);
 }
 
 .road-segment-item__meta,
 .road-segment-item__details {
     margin: 4px 0 0;
     font-size: 12px;
-    color: #5f6368;
-}
-
-.cb-confirm-buttons .btn {
-    width: 100%;
-}
-
-/* Destructive OK in showStyledConfirm({ destructive: true }): a quiet red secondary, never the
-   blue primary — the safe choice carries the primary style instead. */
-.cb-confirm-buttons .cb-confirm-destructive {
-    color: #b42318;
-    border: 1px solid #f1b5ae;
-    background: #fff;
-}
-.cb-confirm-buttons .cb-confirm-destructive:hover {
-    background: #fef3f2;
-}
-
-.dev-badge {
-    display: none;
-    height: 20px;
-    min-height: 20px;
-    /* hidden by default, shown in development */
-    background: #f59e0b;
-    color: #fff;
-    border: none;
-    border-radius: 3px;
-    padding: 2px 6px;
-    font-size: 11px;
-    font-weight: 700;
-    align-self: flex-start;
-    cursor: default;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.debug-badge {
-    display: none;
-    height: 20px;
-    background: #dc3545;
-    color: #fff;
-    border: none;
-    border-radius: 3px;
-    padding: 2px 6px;
-    font-size: 11px;
-    font-weight: 700;
-    align-self: flex-start;
-    cursor: default;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.version-badge {
-    display: none;
-    height: 20px;
-    min-height: 20px;
-    background: #374151;
-    color: #f9fafb;
-    border: none;
-    border-radius: 3px;
-    padding: 2px 8px;
-    font-size: 11px;
-    font-weight: 700;
-    align-self: flex-start;
-    cursor: default;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-/* ---- Buttons (docs/design-language.md): one component, four roles.
-   .btn          secondary: outlined, white (the default)
-   .btn-primary  the one main action of a surface (filled)
-   .btn-quiet    text only, for inline and tertiary actions
-   .btn-danger   destructive: outlined red (the debug-only clears stay hidden outside debug mode)
-   .btn-success  the filled affirmative (Accept, Apply to map)
-   Legacy aliases keep existing markup working: .btn-action and .btn-proposal are primary;
-   .btn-info, .btn-secondary, .btn-outline, .btn-outline-primary and .btn-outline-secondary are
-   secondary; .btn-light is quiet; .btn-outline-danger is danger; .btn-warning is secondary with
-   warning ink. Sheets restyle .btn into rows (map-shell.css). ---- */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 6px 12px;
-    margin: 3px;
-    box-sizing: border-box;
-    max-width: 100%;
-    border: 1px solid var(--cb-line-strong);
-    border-radius: var(--cb-radius-md);
-    background-color: var(--cb-surface);
-    color: var(--cb-text);
-    font: inherit;
-    font-size: var(--cb-text-base);
-    font-weight: var(--cb-weight-medium);
-    line-height: 1.3;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-}
-
-.btn:hover {
-    background-color: var(--cb-surface-2);
-}
-
-.btn:focus-visible {
-    outline: 2px solid var(--cb-focus);
-    outline-offset: 2px;
-}
-
-.btn:disabled,
-.btn.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.btn > i {
-    flex: 0 0 auto;
-}
-
-.btn-primary,
-.btn-action,
-.btn-proposal {
-    border-color: var(--cb-primary);
-    background-color: var(--cb-primary);
-    color: var(--cb-primary-ink);
-    font-weight: var(--cb-weight-semibold);
-}
-
-.btn-primary:hover,
-.btn-action:hover,
-.btn-proposal:hover {
-    border-color: var(--cb-primary-hover);
-    background-color: var(--cb-primary-hover);
-}
-
-.btn-action {
-    width: 100%;
-}
-
-.btn-success,
-.btn-accept-proposal {
-    border-color: var(--cb-success);
-    background-color: var(--cb-success);
-    color: var(--cb-success-ink);
-    font-weight: var(--cb-weight-semibold);
-}
-
-.btn-success:hover,
-.btn-accept-proposal:hover:not(:disabled) {
-    border-color: var(--cb-success-hover);
-    background-color: var(--cb-success-hover);
-}
-
-.btn-quiet,
-.btn-light {
-    border-color: transparent;
-    background-color: transparent;
-}
-
-.btn-quiet:hover,
-.btn-light:hover {
-    background-color: var(--cb-surface-2);
-}
-
-.btn-warning {
-    border-color: var(--cb-warning);
-    color: var(--cb-warning);
-}
-
-.btn-warning:hover {
-    background-color: var(--cb-warning-soft);
-}
-
-.btn-danger,
-.btn-outline-danger,
-.btn-reject-proposal {
-    border-color: var(--cb-danger);
-    color: var(--cb-danger);
-}
-
-.btn-danger:hover,
-.btn-outline-danger:hover,
-.btn-reject-proposal:hover:not(:disabled) {
-    background-color: var(--cb-danger-soft);
-}
-
-/* The per-dataset clears: full width, hidden outside debug mode. */
-.btn-danger {
-    width: 100%;
-    display: none;
-}
-
-#wipeLocalDataButton {
-    display: inline-flex;
-}
-
-body.debug-mode .btn-danger {
-    display: inline-flex;
-}
-
-.debug-only-control {
-    display: none;
-}
-
-body.env-development .debug-only-control,
-body.debug-mode .debug-only-control {
-    display: block;
-}
-
-.debug-only-control .btn,
-.debug-only-control button {
-    width: 100%;
-}
-
-/* Legacy full-width generic actions (secondary look). */
-.btn-info {
-    width: 100%;
-}
-
-.btn-share-proposals {
-    width: 100%;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-    background-image: linear-gradient(135deg, #b8b438, #3024dd);
-    box-shadow: 0 8px 18px rgba(221, 36, 118, 0.35);
-    transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-    border-radius: 999px;
-}
-
-.btn-share-proposals:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 24px rgba(221, 36, 118, 0.45);
-    opacity: 0.92;
-}
-
-.btn-share-proposals:active {
-    transform: translateY(0);
-    box-shadow: 0 6px 14px rgba(221, 36, 118, 0.35);
-}
-
-.btn-detect-existing-roads {
-    width: 100%;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-    background-image: linear-gradient(135deg, #f4d03f, #3fb26b);
-    color: #1f2a16;
-    box-shadow: 0 8px 18px rgba(63, 178, 107, 0.35);
-    border-radius: 999px;
-    transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-}
-
-.btn-detect-existing-roads:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 24px rgba(63, 178, 107, 0.45);
-    opacity: 0.95;
-}
-
-.btn-detect-existing-roads:active {
-    transform: translateY(0);
-    box-shadow: 0 6px 14px rgba(63, 178, 107, 0.35);
-}
-
-@media (max-width: 640px) {
-    .btn-detect-existing-roads {
-        padding: 9px 14px;
-        font-size: 13px;
-        line-height: 1.2;
-    }
-
-    .btn-detect-existing-roads span {
-        line-height: 1.2;
-    }
-}
-
-.btn.disabled,
-.btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
+    color: var(--cb-text-muted);
 }
 
 .checkbox-group {
@@ -319,7 +42,7 @@ body.debug-mode .debug-only-control {
     margin-bottom: 3px;
     display: flex;
     align-items: center;
-    color: #333;
+    color: var(--cb-text);
 }
 
 .checkbox-group label:last-child {
@@ -349,22 +72,22 @@ body.debug-mode .debug-only-control {
 .info-subsection h4 {
     margin-top: 0;
     margin-bottom: 8px;
-    color: #495057;
+    color: var(--cb-text);
 }
 
 .info-subsection p {
     margin: 0;
     font-size: 14px;
     line-height: 1.5;
-    color: #6c757d;
+    color: var(--cb-text-muted);
 }
 
 .status-bar {
     padding: 8px 15px;
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
+    background-color: var(--cb-surface-2);
+    border-top: 1px solid var(--cb-line);
     font-size: 14px;
-    color: #495057;
+    color: var(--cb-text);
     flex-shrink: 0;
     cursor: pointer;
     position: relative;
@@ -390,7 +113,7 @@ body.debug-mode .debug-only-control {
 }
 
 .status-bar:hover {
-    background-color: #e9ecef;
+    background-color: var(--cb-surface-3);
 }
 
 .status-bar.expanded {
@@ -443,7 +166,7 @@ body.debug-mode .debug-only-control {
     bottom: 100%;
     right: 8px;
     margin-bottom: 6px;
-    z-index: 1101;
+    z-index: calc(var(--cb-z-map-raised) + 1);
     display: flex;
     gap: 6px;
 }
@@ -452,77 +175,17 @@ body.debug-mode .debug-only-control {
     display: none;
 }
 
-.status-log-copy-all {
-    padding: 3px 10px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #334155;
-    background: #f8fafc;
-    border: 1px solid #cbd5e1;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.status-log-copy-all:hover {
-    background: #e2e8f0;
-    border-color: #94a3b8;
-}
-
-/* The whole log, popped out: scrollable, selectable, and tall enough to read a run in. */
-.status-log-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.45);
-    z-index: 3000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-}
-
-.status-log-modal-content {
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-    width: min(900px, 100%);
-    max-height: min(80vh, 900px);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.status-log-modal-header {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    padding: 12px 16px;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.status-log-modal-header h2 {
-    margin: 0;
-    font-size: 16px;
-}
-
+/* The whole log, popped out (index.html #status-log-modal, js/ui-helpers.js openStatusLogDialog):
+   a cb-dialog--lg on the shared chrome whose body IS the list, so it scrolls, selects and copies
+   as one. The line count sits in the header beside the title. */
 .status-log-modal-count {
-    font-size: 12px;
-    color: #64748b;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
 }
 
 .status-log-modal-list {
     user-select: text;
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
     overflow-x: auto;
-}
-
-.status-log-modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    padding: 10px 16px;
-    border-top: 1px solid #e2e8f0;
 }
 
 /* The log exists to be read and copied out of. */
@@ -532,19 +195,19 @@ body.debug-mode .debug-only-control {
     bottom: 100%;
     left: 0;
     right: 0;
-    background-color: #ffffff;
-    border: 1px solid #dee2e6;
+    background-color: var(--cb-surface);
+    border: 1px solid var(--cb-line);
     border-bottom: none;
     border-radius: 4px 4px 0 0;
     max-height: 300px;
     overflow-y: auto;
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1100;
+    z-index: var(--cb-z-map-raised);
 }
 
 .status-log-entry {
     padding: 6px 12px;
-    border-bottom: 1px solid #f1f3f4;
+    border-bottom: 1px solid var(--cb-line);
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -557,12 +220,12 @@ body.debug-mode .debug-only-control {
 }
 
 .status-log-entry:hover {
-    background-color: #f8f9fa;
+    background-color: var(--cb-surface-2);
 }
 
 .status-log-entry.current-status {
-    background-color: #e3f2fd;
-    border-left: 3px solid #2196f3;
+    background-color: var(--cb-primary-soft);
+    border-left: 3px solid var(--cb-primary);
     padding-left: 9px;
 }
 
@@ -571,7 +234,7 @@ body.debug-mode .debug-only-control {
 }
 
 .status-log-time {
-    color: #6c757d;
+    color: var(--cb-text-muted);
     font-size: 12px;
     margin-right: 8px;
     flex-shrink: 0;
@@ -579,7 +242,7 @@ body.debug-mode .debug-only-control {
 }
 
 .status-log-message {
-    color: #495057;
+    color: var(--cb-text);
     flex-grow: 1;
     word-break: break-word;
 }
@@ -597,7 +260,7 @@ button.status-log-message {
 }
 
 .status-log-message.is-linked {
-    color: #1d4ed8;
+    color: var(--cb-primary-hover);
     cursor: pointer;
     text-decoration: underline;
     text-decoration-style: dotted;
@@ -610,7 +273,7 @@ button.status-log-message {
 
 @keyframes highlight-status {
     0% {
-        background-color: #f8f9fa;
+        background-color: var(--cb-surface-2);
         /* Original color */
     }
 
@@ -622,7 +285,7 @@ button.status-log-message {
     }
 
     100% {
-        background-color: #f8f9fa;
+        background-color: var(--cb-surface-2);
         /* Back to original */
     }
 }
@@ -653,15 +316,15 @@ button.status-log-message {
 .share-proposal-container {
     padding: 15px;
     text-align: center;
-    border-top: 1px solid #dee2e6;
+    border-top: 1px solid var(--cb-line);
     flex-shrink: 0;
 }
 
 .total-spent-container {
     display: flex;
     padding: 10px 15px;
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
+    background-color: var(--cb-surface-2);
+    border-top: 1px solid var(--cb-line);
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
@@ -669,12 +332,12 @@ button.status-log-message {
 
 .total-spent-label {
     font-weight: 600;
-    color: #495057;
+    color: var(--cb-text);
 }
 
 .total-spent-value {
     font-weight: 700;
-    color: #28a745;
+    color: var(--cb-success);
     /* Success/Money green color */
 }
 
@@ -686,21 +349,21 @@ button.status-log-message {
 
 .progress-bar {
     height: 8px;
-    background-color: #e9ecef;
+    background-color: var(--cb-surface-3);
     border-radius: 4px;
     overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
-    background-color: #007bff;
+    background-color: var(--cb-primary);
     width: 0%;
     transition: width 0.3s;
 }
 
 .progress-text {
     font-size: 12px;
-    color: #6c757d;
+    color: var(--cb-text-muted);
     margin-top: 5px;
 }
 
@@ -785,489 +448,92 @@ button.status-log-message {
     font-weight: 500;
 }
 
+/* ---- The create-proposal dialog's choices (proposals/dialog-create.js) ----
+   Land use, Parcels, Ownership, the recipient scope and the acquisition are native radios in
+   cb-segmented rows (the label is the pill; .proposal-radio is the hook core.js reads a choice's
+   label from); the hidden main type and transfer direction are cb-segmented buttons; the Urban Rule
+   typology is a cb-tiles grid. The selected look is the primitive's (:checked, aria-pressed). */
 
-.proposal-tool-grid .proposal-tool-button {
-    border: 2px solid transparent;
-    transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
-}
-
-.proposal-tool-grid .proposal-tool-button.selected {
-    box-shadow: 0 0 0 2px #0f5132 inset, 0 0 8px rgba(15, 81, 50, 0.4);
-    background: linear-gradient(135deg, #1a874d, #0d6e3d);
-    border: 2px solid #0f5132;
-    color: #fff;
-    transform: translateY(-1px);
-}
-
-.proposal-tool-hint {
-    margin-top: 6px;
-    font-size: 0.85em;
-    color: #4a4a4a;
-}
-
-/* Consistent styling for both Proposal Type and Proposal Goal sections */
-.form-group:has(.proposal-type-group) {
-    margin-bottom: 16px;
-}
-
-.form-group:has(.proposal-type-group) label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #333;
-}
-
-.proposal-type-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    width: 100%;
-}
-
-/* Collapsed proposal-goal grid: show only the chosen goal as a chevron bar so
-   the sections below rise into view. Click it to re-expand all goals. */
-#proposalGoalGroup.is-collapsed .proposal-type-group {
-    grid-template-columns: 1fr;
-}
-#proposalGoalGroup.is-collapsed .proposal-type-button[data-proposal-tool]:not(.selected) {
-    display: none;
-}
-#proposalGoalGroup.is-collapsed .proposal-type-button.selected {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-}
-#proposalGoalGroup.is-collapsed .proposal-type-button.selected::after {
-    content: '\25BE';
-    margin-left: 8px;
-    opacity: 0.6;
-    font-size: 12px;
-}
-
-/* Proposal-goal sub-sections: Land use / Parcels / Ownership, so the three
-   facets read as separate clusters instead of one undifferentiated grid. */
+/* Land use / Parcels / Ownership read as separate clusters, each under its cb-kicker. */
 .proposal-goal-section + .proposal-goal-section {
-    margin-top: 12px;
-}
-.proposal-goal-subhead {
-    display: block;
-    margin: 0 0 6px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: #6b7280;
-}
-/* A cluster with a single goal (e.g. Ownership) spans the full width. */
-.proposal-goal-section .proposal-type-group:has(> .proposal-type-button:only-child) {
-    grid-template-columns: 1fr;
-}
-/* Collapsed: drop the subheads and any section without the selected goal so
-   only the chosen goal's chevron bar remains (matches the existing collapse). */
-#proposalGoalGroup.is-collapsed .proposal-goal-subhead {
-    display: none;
-}
-#proposalGoalGroup.is-collapsed .proposal-goal-section + .proposal-goal-section {
-    margin-top: 0;
-}
-#proposalGoalGroup.is-collapsed .proposal-goal-section:not(:has(.proposal-type-button.selected)) {
-    display: none;
+    margin-top: var(--cb-space-3);
 }
 
-/* Segmented-pill choice controls — one visual vocabulary for every single-select
-   (Land use / Parcels / Ownership / Acquisition / Urban Rule typology). The native
-   radio is hidden but kept for state + keyboard a11y; the label is the pill. */
-.proposal-radio-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+/* A radio the dialog has locked (a preset goal, a derived acquisition) reads as inert. */
+.proposal-radio:has(input:disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
-.proposal-radio {
-    display: inline-flex;
-    align-items: center;
-    margin: 0;
-    padding: 10px 15px;
-    font-size: 14px;
-    line-height: 1.15;
-    color: #374151;
-    background: #f3f4f6;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    cursor: pointer;
-    user-select: none;
-    transition: background .12s ease, border-color .12s ease, color .12s ease;
-}
-.proposal-radio input {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-    pointer-events: none;
-}
-.proposal-radio:hover { border-color: #9ca3af; background: #eaeef3; }
-.proposal-radio:has(input:checked) {
-    background: #2563eb;
-    border-color: #2563eb;
-    color: #fff;
-    font-weight: 600;
-}
-.proposal-radio:has(input:disabled) { opacity: .4; cursor: not-allowed; }
-.proposal-radio:has(input:focus-visible) { outline: 2px solid #93c5fd; outline-offset: 2px; }
 
 /* A locked facet is shown as a quiet static line, not a row of dead/disabled pills. */
 .proposal-facet-static {
-    font-size: 13px;
-    color: #6b7280;
-    padding: 5px 0;
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
+    padding: var(--cb-space-1) 0;
 }
-.proposal-facet-static .lock-ico { margin-right: 6px; opacity: .7; }
-
-/* Urban Rule typology: same pills (kept as buttons, restyled to match). */
-#proposalTypologyGroup .proposal-type-group { display: flex; flex-wrap: wrap; gap: 6px; }
-#proposalTypologyGroup .proposal-type-button {
-    width: auto;
-    min-height: 0;
-    margin: 0;
-    padding: 10px 15px;
-    font-size: 14px;
-    line-height: 1.15;
-    background: #f3f4f6;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    color: #374151;
-}
-#proposalTypologyGroup .proposal-type-button.selected {
-    background: #2563eb;
-    border-color: #2563eb;
-    color: #fff;
-    font-weight: 600;
-}
+.proposal-facet-static .lock-ico { margin-right: var(--cb-space-2); opacity: .7; }
 
 /* Inset sub-panel: things that "open" from a choice (geometry Edit/Upload, the Urban
    Rule typology) sit visibly subordinate to it — indented, recessed, left accent. */
 .proposal-inset {
     margin: 8px 0 4px 14px;
     padding: 10px 12px;
-    background: #f8fafc;
-    border-left: 3px solid #cbd5e1;
+    background: var(--cb-surface-2);
+    border-left: 3px solid var(--cb-line-strong);
     border-radius: 0 8px 8px 0;
 }
-.proposal-inset > label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: #475569; }
-/* Inset action buttons (geometry Edit/Upload): outlined + auto-width so they read as
-   ACTIONS (do something), distinct from the filled-blue selected pills (which indicate
-   STATE), and sized to their label instead of stretching. */
-#proposalGeometryButtons { display: flex; flex-wrap: wrap; gap: 8px; }
-#proposalGeometryButtons .btn {
-    width: auto;
-    min-height: 0;
-    margin: 0;
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: 500;
-    color: #334155;
-    background: #ffffff;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-}
-#proposalGeometryButtons .btn:hover:not(:disabled) { background: #f1f5f9; border-color: #94a3b8; }
-#proposalGeometryButtons .btn.selected { color: #1d4ed8; border-color: #93c5fd; background: #eff6ff; }
-#proposalGeometryButtons .btn:disabled { opacity: .5; }
-#proposalGeometryButtons .btn[data-geometry-action="edit"]::before { content: "✏️"; margin-right: 5px; }
-#proposalGeometryButtons .btn[data-geometry-action="upload"]::before { content: "⬆️"; margin-right: 5px; }
 
+/* The geometry status and its Edit / Upload actions (rendered by proposals/geometry.js). A preset
+   geometry locks the row: buttons a later re-render puts there take no clicks either. */
+.proposal-geometry-status {
+    margin-bottom: var(--cb-space-2);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.proposal-geometry-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+}
+
+.proposal-geometry-buttons[data-locked="true"] {
+    pointer-events: none;
+}
+
+/* The third-party address field under its Anyone / Specific choice (base input look). */
 .proposal-recipient-input {
-    margin: 8px 0 0 0;
+    margin: var(--cb-space-2) 0 0 0;
     width: 100%;
     box-sizing: border-box;
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
 }
 
 /* Divides the proposal "intent" controls (Land use / Parcels / Ownership / …) from
    the details below (Name, Description, Offer, Options). */
 .proposal-section-divider {
     border: 0;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--cb-line);
     margin: 18px 0;
-}
-
-.proposal-type-button {
-    width: 100%;
-    min-width: 0;
-    min-height: 44px;
-    border: 1px solid #ccc;
-    background-color: #f8f9fa;
-    color: #333;
-    cursor: pointer;
-    padding: 10px 12px;
-    border-radius: 4px;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    box-sizing: border-box;
-    margin: 0;
-}
-
-.proposal-type-button:hover:not(:disabled) {
-    background-color: #e9ecef;
-    border-color: #999;
-}
-
-.proposal-type-button:active:not(:disabled) {
-    transform: translateY(1px);
-}
-
-.proposal-type-button.selected {
-    border-color: #0f5132;
-    background-color: #e6f4ea;
-    color: #0f5132;
-    font-weight: 600;
-}
-
-.proposal-type-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-.proposal-geometry-button {
-    background: linear-gradient(135deg, #0f62fe, #0d53d6);
-    border-color: #0d53d6;
-    color: #fff;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-}
-
-.proposal-geometry-button:hover:not(:disabled) {
-    background: linear-gradient(135deg, #0d53d6, #0b45b0);
-    border-color: #0b45b0;
-    color: #fff;
-}
-
-.proposal-geometry-button.selected {
-    background: #0b45b0;
-    border-color: #0a3f9f;
-    color: #fff;
-}
-
-.proposal-geometry-button:disabled {
-    background: #e5e7eb;
-    border-color: #d1d5db;
-    color: #6b7280;
-    box-shadow: none;
-    opacity: 1;
-}
-
-.proposal-secondary-locked .proposal-type-button,
-.proposal-selection-static {
-    opacity: 0.55;
-    cursor: not-allowed !important;
-    pointer-events: none;
-}
-
-.proposal-type-hint {
-    margin-top: 4px;
-    font-size: 0.8em;
-    color: #666;
 }
 
 /* Block item styling */
 .block-item {
     padding: 8px 10px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--cb-line);
     cursor: pointer;
     display: flex;
     justify-content: space-between;
 }
 
 .block-item:hover {
-    background-color: #f5f5f5;
+    background-color: var(--cb-surface-2);
 }
 
 .block-item.active {
-    background-color: #e3f2fd;
+    background-color: var(--cb-primary-soft);
 }
 
-/* Base class for all parcel info buttons */
-.parcel-info-btn {
-    font-size: 0.9em;
-    padding: 2px 8px;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-left: 5px;
-}
-
-.parcel-info-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.parcel-builder-button {
-    background: linear-gradient(135deg, #ffd76a 0%, #ff9f1c 100%);
-    color: #3b2c03;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-    box-shadow: none;
-    border: 1px solid #c26c0a;
-    text-transform: uppercase;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
-}
-
-.parcel-builder-button:hover {
-    filter: brightness(1.05);
-    box-shadow: none;
-}
-
-.parcel-builder-button:active {
-    transform: translateY(2px);
-    box-shadow: none;
-}
-
-.claim-button {
-    position: relative;
-    background: linear-gradient(120deg, #5b2be0 0%, #9d4edd 30%, #ffd700 50%, #9d4edd 70%, #5b2be0 100%);
-    background-size: 250% 250%;
-    animation: claimSparkle 3.2s linear infinite;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.45px;
-    padding: 10px 20px;
-    font-size: 13px;
-    border: 1px solid rgba(255, 255, 255, 0.55);
-    box-shadow: 0 12px 26px rgba(93, 45, 211, 0.45), inset 0 0 14px rgba(255, 255, 255, 0.35);
-    color: #fff;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
-    overflow: hidden;
-    border-radius: 6px;
-}
-
-.claim-button::after {
-    content: "";
-    position: absolute;
-    top: -140%;
-    left: -40%;
-    width: 60%;
-    height: 320%;
-    background: linear-gradient(120deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 45%, rgba(255, 255, 255, 0) 100%);
-    transform: rotate(25deg);
-    animation: claimGlint 4s ease-in-out infinite;
-    pointer-events: none;
-}
-
-.claim-button:hover {
-    filter: brightness(1.08);
-    box-shadow: 0 14px 30px rgba(93, 45, 211, 0.55), inset 0 0 16px rgba(255, 255, 255, 0.4);
-}
-
-.claim-button:active {
-    transform: translateY(2px);
-    box-shadow: 0 8px 20px rgba(93, 45, 211, 0.45), inset 0 0 12px rgba(255, 255, 255, 0.3);
-}
-
-.claim-button:disabled,
-.claim-button.disabled {
-    background: linear-gradient(120deg, #bfc3cc 0%, #c7ccd6 50%, #bfc3cc 100%);
-    background-size: 100% 100%;
-    animation: none;
-    color: #6b7280;
-    border: 1px solid #d1d5db;
-    box-shadow: none;
-    text-shadow: none;
-    cursor: not-allowed;
-    filter: none;
-}
-
-.claim-button:disabled::after,
-.claim-button.disabled::after {
-    display: none;
-    animation: none;
-}
-
-.claim-button:disabled:hover,
-.claim-button.disabled:hover,
-.claim-button:disabled:active,
-.claim-button.disabled:active {
-    filter: none;
-    transform: none;
-    box-shadow: none;
-}
-
-@keyframes claimSparkle {
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-@keyframes claimGlint {
-    0% {
-        transform: translateX(-140%) rotate(25deg);
-        opacity: 0;
-    }
-
-    20% {
-        opacity: 1;
-    }
-
-    50% {
-        transform: translateX(240%) rotate(25deg);
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 0;
-        transform: translateX(240%) rotate(25deg);
-    }
-}
-
-.parcel-builder-icon {
-    width: 20px;
-    height: 20px;
-    display: block;
-}
-
-.parcel-builder-label {
-    line-height: 1;
-}
-
-/* Individual button colors */
-.visualize-button {
-    background-color: #4CAF50;
-}
-
-.neighbors-button {
-    background-color: #2196F3;
-}
-
-.neighbors-button.active {
-    background-color: #f44336;
-}
-
-.vertices-button {
-    background-color: #9C27B0;
-}
-
-.vertices-button.active {
-    background-color: #f44336;
-}
-
-.measure-road-button {
-    background-color: #933513;
-}
+/* The parcel panel's Tools tab buttons are plain btn buttons now (index.html, css/panels.css). */
 
 .vertex-marker {
     fill: #9C27B0;
@@ -1283,11 +549,9 @@ button.status-log-message {
     r: 6;
 }
 
-
-
 .metric-label {
     font-weight: 600;
-    color: #495057;
+    color: var(--cb-text);
     margin-bottom: 3px;
 }
 
@@ -1297,7 +561,7 @@ button.status-log-message {
 }
 
 .metric-value {
-    color: #212529;
+    color: var(--cb-text-strong);
     font-weight: 500;
 }
 
@@ -1305,7 +569,7 @@ button.status-log-message {
     display: inline-block;
     width: 14px;
     height: 14px;
-    border: 2px solid #cbd5e1;
+    border: 2px solid var(--cb-line-strong);
     border-top-color: #3b82f6;
     border-radius: 50%;
     animation: metric-spin 0.8s linear infinite;
@@ -1320,12 +584,12 @@ button.status-log-message {
 
 .proposal-info .metric-label {
     font-weight: 600;
-    color: #6c757d;
+    color: var(--cb-text-muted);
 }
 
 .proposal-info .metric-value {
     font-weight: 600;
-    color: #212529;
+    color: var(--cb-text-strong);
 }
 
 /* New coordinates control */
@@ -1348,10 +612,10 @@ button.status-log-message {
     right: 30px;
     max-height: 70vh;
     overflow-y: auto;
-    background: white;
+    background: var(--cb-surface);
     border-radius: 8px;
     box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
-    z-index: 2000;
+    z-index: var(--cb-z-floating-list);
     /* Width intentionally not set to allow flexible sizing */
 }
 
@@ -1367,22 +631,6 @@ button.status-log-message {
     font-size: 1.1em;
 }
 
-#blocks-list-container .blocks-list-close {
-    background: none;
-    border: none;
-    font-size: 1.4em;
-    cursor: pointer;
-    color: #666;
-    padding: 4px;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-}
-
-#blocks-list-container .blocks-list-close:hover {
-    background-color: #f5f5f5;
-    color: #333;
-}
-
 #blocks-content {
     padding: 8px 12px 12px 12px;
 }
@@ -1396,7 +644,7 @@ button.status-log-message {
 }
 
 #animation-progress {
-    background-color: white;
+    background-color: var(--cb-surface);
     padding: 10px 20px;
     border-radius: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
@@ -1408,32 +656,13 @@ button.status-log-message {
 #animation-step {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 14px;
-    color: #333;
+    color: var(--cb-text);
     min-width: 300px;
 }
 
 #animation-buttons {
     display: flex;
     gap: 5px;
-}
-
-.animation-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.animation-button:hover {
-    background-color: #0069d9;
-}
-
-.animation-button:disabled {
-    background-color: #6c757d;
-    cursor: not-allowed;
 }
 
 /* Animation Elements */
@@ -1479,18 +708,10 @@ button.status-log-message {
     stroke-dasharray: 10, 5;
 }
 
-.visualize-button:hover {
-    background-color: #0056b3;
-}
-
-.visualize-button:active {
-    background-color: #004085;
-}
-
 .progress-container {
     display: none;
     margin-top: 10px;
-    background: #fff;
+    background: var(--cb-surface);
     padding: 10px;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -1499,14 +720,14 @@ button.status-log-message {
 .progress-bar {
     width: 100%;
     height: 20px;
-    background-color: #f0f0f0;
+    background-color: var(--cb-surface-3);
     border-radius: 10px;
     overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
-    background-color: #007bff;
+    background-color: var(--cb-primary);
     width: 0%;
     transition: width 0.3s ease;
 }
@@ -1514,7 +735,7 @@ button.status-log-message {
 .progress-text {
     margin-top: 5px;
     font-size: 12px;
-    color: #666;
+    color: var(--cb-text-muted);
 }
 
 .button-group {
@@ -1525,7 +746,7 @@ button.status-log-message {
 
 .button-group button {
     padding: 5px 10px;
-    background-color: #007bff;
+    background-color: var(--cb-primary);
     color: white;
     border: none;
     border-radius: 4px;
@@ -1534,7 +755,7 @@ button.status-log-message {
 }
 
 .button-group button:hover {
-    background-color: #0056b3;
+    background-color: var(--cb-primary-hover);
 }
 
 .button-group button:active {
@@ -1550,8 +771,8 @@ button.status-log-message {
 }
 
 .block-rectangle {
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
+    background-color: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
     border-radius: 4px;
     padding: 8px 12px;
     cursor: pointer;
@@ -1559,17 +780,17 @@ button.status-log-message {
     min-width: 60px;
     text-align: center;
     font-size: 14px;
-    color: #495057;
+    color: var(--cb-text);
 }
 
 .block-rectangle:hover {
-    background-color: #e9ecef;
-    border-color: #ced4da;
+    background-color: var(--cb-surface-3);
+    border-color: var(--cb-line-strong);
 }
 
 .block-rectangle.active {
-    background-color: #007bff;
-    border-color: #0056b3;
+    background-color: var(--cb-primary);
+    border-color: var(--cb-primary-hover);
     color: white;
 }
 
@@ -1577,13 +798,13 @@ button.status-log-message {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--cb-glass);
     border-radius: 4px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     padding: 15px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--cb-font-sans);
     font-size: 14px;
-    z-index: 1000;
+    z-index: var(--cb-z-map-chrome);
     max-height: 80vh;
     overflow-y: auto;
     min-width: 200px;
@@ -1592,9 +813,9 @@ button.status-log-message {
 .blocks-list h3 {
     margin: 0 0 10px 0;
     padding-bottom: 8px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--cb-line);
     font-size: 16px;
-    color: #333;
+    color: var(--cb-text);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1619,16 +840,16 @@ button.status-log-message {
 }
 
 .block-item:hover {
-    background-color: #f8f9fa;
+    background-color: var(--cb-surface-2);
 }
 
 .block-item.active {
-    background-color: #007bff;
+    background-color: var(--cb-primary);
     color: white;
 }
 
 .block-count {
-    color: #666;
+    color: var(--cb-text-muted);
     font-size: 12px;
 }
 
@@ -1680,7 +901,7 @@ button.status-log-message {
     display: flex;
     align-items: center;
     font-weight: 500;
-    color: #495057;
+    color: var(--cb-text);
     cursor: pointer;
 }
 
@@ -1691,7 +912,7 @@ button.status-log-message {
 .parameter-hint {
     margin-top: 5px;
     font-size: 12px;
-    color: #6c757d;
+    color: var(--cb-text-muted);
     font-style: italic;
 }
 
@@ -1713,35 +934,6 @@ button.status-log-message {
     margin-bottom: 0;
 }
 
-.btn.active-black-border,
-.parcel-info-btn.active-black-border {
-    background-color: #0056b3;
-    /* Slightly darker base */
-    box-shadow: inset 2px 2px 5px #003366,
-        /* Deeper, darker top-left shadow */
-        inset -2px -2px 4px #007fff;
-    /* Stronger, lighter bottom-right highlight */
-    border: none;
-    /* Ensures no border */
-    transform: translateY(1px);
-    /* Slight downward shift */
-    /* color: white; */
-}
-
-.btn-proposal {
-    width: 100%;
-    min-height: var(--cb-control-height-lg);
-}
-
-/* Accept / reject: the role rules near the top of this file colour them (success / danger). */
-.btn-accept-proposal,
-.btn-reject-proposal {
-    width: 100%;
-    padding: 10px 15px;
-    font-size: var(--cb-text-base);
-}
-
-
 .proposal-actions {
     margin-top: 15px;
 }
@@ -1757,7 +949,7 @@ button.status-log-message {
 .acceptance-label {
     font-size: 13px;
     font-weight: 600;
-    color: #333;
+    color: var(--cb-text);
     margin-bottom: 0;
     white-space: nowrap;
 }
@@ -1791,7 +983,7 @@ button.status-log-message {
 }
 
 .acceptance-circle.accepted {
-    background-color: #28a745;
+    background-color: var(--cb-success);
     border-color: #1e7e34;
 }
 
@@ -1806,7 +998,7 @@ button.status-log-message {
 
 .acceptance-summary {
     font-size: 12px;
-    color: #666;
+    color: var(--cb-text-muted);
     font-style: italic;
 }
 
@@ -1837,17 +1029,6 @@ button.status-log-message {
     margin-top: 6px;
 }
 
-.proposal-modal-footer .btn {
-    flex: 1 1 50%;
-    max-width: 50%;
-    margin: 0;
-}
-
-.proposal-modal-footer .btn-proposal {
-    flex: 1 1 100%;
-    max-width: 100%;
-}
-
 .form-group {
     margin-bottom: 15px;
 }
@@ -1856,21 +1037,21 @@ button.status-log-message {
     display: block;
     margin-bottom: 5px;
     font-weight: 600;
-    color: #333;
+    color: var(--cb-text);
 }
 
 /* Proposal Options Section */
 .proposal-options-section {
-    background: #f8f9fa;
+    background: var(--cb-surface-2);
     padding: 12px;
     border-radius: 6px;
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--cb-line);
 }
 
 .proposal-options-section>label {
     margin-bottom: 10px;
     font-size: 0.95em;
-    color: #495057;
+    color: var(--cb-text);
 }
 
 .proposal-option-row {
@@ -1887,20 +1068,20 @@ button.status-log-message {
 
 .proposal-option-row input[type="text"] {
     padding: 6px 10px;
-    border: 1px solid #ced4da;
+    border: 1px solid var(--cb-line-strong);
     border-radius: 4px;
     font-size: 14px;
     font-family: monospace;
 }
 
 .proposal-option-row input[type="text"]:disabled {
-    background-color: #e9ecef;
-    color: #6c757d;
+    background-color: var(--cb-surface-3);
+    color: var(--cb-text-muted);
 }
 
 .proposal-option-row input[type="text"]:not(:disabled) {
-    background-color: #fff;
-    color: #212529;
+    background-color: var(--cb-surface);
+    color: var(--cb-text-strong);
 }
 
 .proposal-author-row {
@@ -1924,33 +1105,28 @@ button.status-log-message {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: 2px solid #007bff;
+    border: 2px solid var(--cb-primary);
     object-fit: cover;
     display: none;
 }
 
-/* Author name shown as plain text next to the avatar (no input box / label). */
-.proposal-author-name {
+/* Author name shown as plain text next to the avatar (no input box / label). Keyed on the element
+   too, so it outranks the base input rules in css/primitives.css (input[type="text"], loaded first). */
+input.proposal-author-name {
     flex: 1;
     min-width: 0;
-    border: none;
+    border: 0;
     background: transparent;
     padding: 0;
     font-size: 16px;
     font-weight: 600;
-    color: #1f2937;
+    color: var(--cb-text);
 }
 .proposal-author-name:disabled {
-    color: #1f2937;
+    color: var(--cb-text);
     opacity: 1;
-    -webkit-text-fill-color: #1f2937; /* Safari otherwise greys out disabled inputs */
+    -webkit-text-fill-color: var(--cb-text); /* Safari otherwise greys out disabled inputs */
     cursor: default;
-}
-
-.btn.active {
-    background-color: #28a745 !important;
-    color: white !important;
-    border-color: #28a745 !important;
 }
 
 .proposal-summary .summary-stats {
@@ -1963,7 +1139,7 @@ button.status-log-message {
 
 .proposal-summary .parcel-list h4 {
     margin: 10px 0 8px 0;
-    color: #333;
+    color: var(--cb-text);
     font-size: 14px;
 }
 
@@ -1981,26 +1157,12 @@ button.status-log-message {
 
 .proposal-parcel-item .parcel-number {
     font-weight: 600;
-    color: #333;
+    color: var(--cb-text);
 }
 
 .proposal-parcel-item .parcel-area {
-    color: #666;
+    color: var(--cb-text-muted);
     font-size: 12px;
-}
-
-.welcome-modal .btn {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.welcome-modal .btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
 .turn-progress {
@@ -2009,7 +1171,7 @@ button.status-log-message {
 
 .turn-progress-label {
     font-size: 12px;
-    color: #666;
+    color: var(--cb-text-muted);
     margin-bottom: 4px;
 }
 
@@ -2031,7 +1193,7 @@ button.status-log-message {
 
 .turn-progress-time {
     font-size: 11px;
-    color: #666;
+    color: var(--cb-text-muted);
     text-align: center;
 }
 
@@ -2066,44 +1228,31 @@ button.status-log-message {
     flex: 1;
 }
 
-/* Logout modal styles */
-.logout-options {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.logout-options .btn {
-    width: 100%;
-    text-align: center;
-}
-
 /* Username display with avatar */
 .username-display {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid #ddd;
-    border-radius: 24px;
+    background: var(--cb-glass);
+    border: 1px solid var(--cb-line-glass);
+    border-radius: var(--cb-radius-pill);
     padding: 8px 15px 8px 12px;
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #333;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-medium);
+    color: var(--cb-text);
+    box-shadow: var(--cb-shadow-sm);
+    z-index: var(--cb-z-map-chrome);
     cursor: pointer;
     transition: all 0.3s;
     max-width: 260px;
 }
 
 .username-display:hover {
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: var(--cb-surface);
+    box-shadow: var(--cb-shadow-md);
     transform: translateY(-1px);
 }
 
@@ -2112,11 +1261,11 @@ button.status-log-message {
     height: 24px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid #ddd;
+    border: 1px solid var(--cb-line);
 }
 
 .username-display i.fas {
-    color: #666;
+    color: var(--cb-text-muted);
     font-size: 16px;
 }
 
@@ -2127,11 +1276,11 @@ button.status-log-message {
 }
 
 .wallet-status-icon.connected {
-    color: #198754;
+    color: var(--cb-success);
 }
 
 .wallet-status-icon.disconnected {
-    color: #dc3545;
+    color: var(--cb-danger);
 }
 
 .username-display span {
@@ -2140,100 +1289,13 @@ button.status-log-message {
     text-overflow: ellipsis;
 }
 
-/* Notification badge for username display */
+/* Notification badge for username display: the count of unseen proposals on the user's parcels
+   (a cb-badge cb-badge--count), pinned to the bubble's corner (it is the bubble's last child, so it
+   paints over the rest). */
 .notification-badge {
     position: absolute;
     top: -8px;
     right: -8px;
-    background: #dc3545;
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 600;
-    border: 2px solid white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    z-index: 10;
-}
-
-.parcel-proposals-list .btn-sm {
-    font-size: 11px;
-    padding: 2px 6px;
-    margin-right: 4px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.parcel-proposals-list .btn-sm:last-child {
-    margin-right: 0;
-}
-
-.parcel-proposals-list .btn-sm:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.parcel-proposals-list .btn-success {
-    background-color: #28a745;
-    color: white;
-}
-
-.parcel-proposals-list .btn-success:hover:not(:disabled) {
-    background-color: #218838;
-}
-
-.parcel-proposals-list .btn-danger {
-    background-color: #dc3545;
-    color: white;
-}
-
-.parcel-proposals-list .btn-danger:hover:not(:disabled) {
-    background-color: #c82333;
-}
-
-.parcel-proposals-list .btn-info {
-    background-color: #17a2b8;
-    color: white;
-}
-
-.parcel-proposals-list .btn-info:hover {
-    background-color: #138496;
-}
-
-.version-modal .btn {
-    padding: 10px 18px;
-    background: #2563eb;
-    color: #ffffff;
-    border-radius: 6px;
-    font-weight: 600;
-}
-
-.version-modal .btn:hover {
-    background: #1d4ed8;
-}
-
-@media (max-width: 600px) {
-    .version-modal {
-        padding: 12px;
-    }
-
-    .version-modal-content {
-        width: 100%;
-        max-height: 90vh;
-    }
-
-    .version-modal-header,
-    .version-modal-body,
-    .version-modal-footer {
-        padding-left: 18px;
-        padding-right: 18px;
-    }
 }
 
 /* Proposal Details Panel. Width comes from .right-dock-panel (css/panels.css) — it used to carry
@@ -2245,7 +1307,7 @@ button.status-log-message {
     right: 10px;
     bottom: var(--map-shell-bottom-clearance);
     backdrop-filter: blur(3px);
-    border: 1px solid #ccc;
+    border: 1px solid var(--cb-line-strong);
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     /* One step above the parcel panel it shares the dock with, under the sheets: panels no longer
@@ -2272,119 +1334,6 @@ button.status-log-message {
         min-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance));
         overflow-y: auto;
     }
-}
-
-#proposal-details-panel .btn-share-proposal {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    font-weight: 600;
-}
-
-/* Road drawing controls layout */
-@media (min-width: 768px) {
-    #road-drawing-controls > div {
-        display: flex;
-        gap: 8px;
-    }
-
-    #road-drawing-controls > div .btn {
-        flex: 1;
-        width: auto;
-    }
-}
-
-/* Unified close button */
-:is(.close-circle-btn,
-    .close-button,
-    .proposal-modal-close,
-    .proposal-list-modal-close,
-    .proposal-info-modal-close,
-    .share-modal-close,
-    .lens-close-btn,
-    .reparcel-close-btn,
-    .wallet-modal-close,
-    .version-modal-close,
-    .agent-dialog-modal-close,
-    .game-log-modal-close,
-    .descendants-close) {
-    appearance: none;
-    border: 1px solid #d4d7dd;
-    background: rgba(255, 255, 255, 0.92);
-    color: #1f2937;
-    width: auto;
-    height: 34px;
-    min-width: 34px;
-    min-height: 34px;
-    aspect-ratio: 1 / 1;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 18px;
-    line-height: 1;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
-}
-
-:is(.close-circle-btn,
-    .close-button,
-    .proposal-modal-close,
-    .proposal-list-modal-close,
-    .proposal-info-modal-close,
-    .share-modal-close,
-    .lens-close-btn,
-    .reparcel-close-btn,
-    .wallet-modal-close,
-    .version-modal-close,
-    .agent-dialog-modal-close,
-    .game-log-modal-close,
-    .descendants-close):hover {
-    background-color: #f3f4f6;
-    color: #0f172a;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
-}
-
-:is(.close-circle-btn,
-    .close-button,
-    .proposal-modal-close,
-    .proposal-list-modal-close,
-    .proposal-info-modal-close,
-    .share-modal-close,
-    .lens-close-btn,
-    .reparcel-close-btn,
-    .wallet-modal-close,
-    .version-modal-close,
-    .agent-dialog-modal-close,
-    .game-log-modal-close,
-    .descendants-close):active {
-    transform: scale(0.97);
-}
-
-:is(.close-circle-btn,
-    .close-button,
-    .proposal-modal-close,
-    .proposal-list-modal-close,
-    .proposal-info-modal-close,
-    .share-modal-close,
-    .lens-close-btn,
-    .reparcel-close-btn,
-    .wallet-modal-close,
-    .version-modal-close,
-    .agent-dialog-modal-close,
-    .game-log-modal-close,
-    .descendants-close):focus-visible {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-}
-
-.close-circle-btn--lg {
-    width: 42px;
-    height: 42px;
-    font-size: 20px;
 }
 
 /* Mobile panel as bottom sheet */
@@ -2447,13 +1396,6 @@ button.status-log-message {
 
 @media (max-width: 767.98px) {
     /* Panel header and body structure */
-    .btn,
-    .parcel-info-btn,
-    .parcel-tab-btn,
-    .tab-btn {
-        min-height: 40px;
-        padding: 12px 16px;
-    }
 
     .btn-group {
         flex-direction: column;
@@ -2505,15 +1447,10 @@ button.status-log-message {
         font-weight: 600;
     }
 
-
     /* Touch feedback for interactive elements */
-    .btn:active,
-    .close-button:active,
-    .parcel-tab-btn:active,
     .btn,
     .close-button,
-    .parcel-tab-btn,
-    .tab-btn {
+    .cb-tab {
         touch-action: manipulation;
     }
 
@@ -2531,7 +1468,7 @@ button.status-log-message {
     justify-content: space-between;
     align-items: center;
     padding: 8px 4px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--cb-line);
 }
 
 .proposal-manager-item span {
@@ -2592,7 +1529,7 @@ button.status-log-message {
     width: 18px;
     left: 3px;
     bottom: 3px;
-    background-color: white;
+    background-color: var(--cb-surface);
     -webkit-transition: .4s;
     transition: .4s;
 }
@@ -2620,19 +1557,21 @@ input:checked+.slider:before {
     border-radius: 50%;
 }
 
-/* Memory monitor overlay */
+/* Memory monitor overlay (a developer readout, js/memory-monitor.js): a glass card on the tokens,
+   its fold toggle a btn btn-quiet btn-sm btn-icon. */
 .memory-monitor-panel {
     position: fixed;
     top: 16px;
     right: 16px;
     width: 260px;
-    background: rgba(16, 22, 34, 0.92);
-    color: #f4f6fc;
-    border-radius: 10px;
-    box-shadow: 0 10px 24px rgba(9, 13, 20, 0.35);
+    background: var(--cb-glass);
+    color: var(--cb-text);
+    border: 1px solid var(--cb-line-glass);
+    border-radius: var(--cb-radius-lg);
+    box-shadow: var(--cb-shadow-md);
     font-size: 12px;
     line-height: 1.4;
-    z-index: 1400;
+    z-index: var(--cb-z-dev-overlay);
     backdrop-filter: blur(4px);
     pointer-events: auto;
 }
@@ -2643,7 +1582,7 @@ input:checked+.slider:before {
     gap: 8px;
     justify-content: space-between;
     padding: 10px 12px 8px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid var(--cb-line);
     font-weight: 600;
     letter-spacing: 0.01em;
 }
@@ -2656,26 +1595,7 @@ input:checked+.slider:before {
     flex: 1 1 auto;
     text-align: right;
     font-weight: 500;
-    color: rgba(244, 246, 252, 0.75);
-}
-
-.memory-monitor-toggle {
-    flex: 0 0 auto;
-    border: none;
-    background: rgba(255, 255, 255, 0.1);
-    color: #f4f6fc;
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.memory-monitor-toggle:hover {
-    background: rgba(255, 255, 255, 0.18);
+    color: var(--cb-text-muted);
 }
 
 .memory-monitor-body {
@@ -2690,7 +1610,7 @@ input:checked+.slider:before {
 }
 
 .memory-monitor-row span:first-child {
-    color: rgba(244, 246, 252, 0.75);
+    color: var(--cb-text-muted);
 }
 
 .memory-monitor-row:last-child {
@@ -2699,7 +1619,7 @@ input:checked+.slider:before {
 
 .memory-monitor-divider {
     height: 1px;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--cb-line);
     margin: 8px 0;
 }
 
@@ -2707,47 +1627,25 @@ input:checked+.slider:before {
     display: none;
 }
 
-/* ENS name line — compact (parcel panel + minted proposal cards): the "ENS"
-   chip links to the ENS app, the name value is click-to-copy. Value
-   ellipsis-truncates so the long name never overflows tight panels. */
+/* ENS name line — compact (parcel panel + minted proposal cards): the "ENS" badge (cb-badge)
+   links out to the ENS app, the name (a quiet cb-link) copies it. The name ellipsis-truncates so a
+   long one never overflows tight panels; the badge never shrinks. */
 .ens-name-line {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--cb-space-2);
     margin-top: 6px;
-    font-size: 11px;
-    color: #64748b;
-    cursor: pointer;
+    font-size: var(--cb-text-xs);
+    color: var(--cb-text-muted);
     min-width: 0;
     max-width: 100%;
 }
-.ens-name-line:hover { color: #334155; }
 .ens-name-chip {
     flex: 0 0 auto;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    color: #fff;
-    background: #6366f1;
-    border-radius: 4px;
-    padding: 1px 4px;
     text-decoration: none;
-    cursor: pointer;
-    white-space: nowrap;
 }
-.ens-name-chip:hover { background: #4f46e5; }
-.ens-name-chip:visited { color: #fff; }
 .ens-name-value {
-    border: 0;
-    background: transparent;
-    padding: 0;
-    color: inherit;
-    font-size: inherit;
-    text-align: left;
-    cursor: pointer;
     flex: 1 1 auto;
-    min-width: 0;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -2769,13 +1667,13 @@ input:checked+.slider:before {
     /* One row above the status toast (which sits one row above the bottom buttons): at a fixed
        56px the two overlapped, and the toast is where Pinpoint writes its hint and result. */
     bottom: calc(var(--map-shell-bottom) + 2 * (var(--map-shell-button-size) + var(--map-shell-gap)));
-    z-index: 1200;
+    z-index: var(--cb-z-popover);
     padding: 5px 12px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 13px;
-    color: #f8fafc;
-    background: rgba(15, 23, 42, 0.85);
-    border-radius: 6px;
+    font-family: var(--cb-font-mono);
+    font-size: var(--cb-text-md);
+    color: var(--cb-inverse-ink);
+    background: var(--cb-inverse);
+    border-radius: var(--cb-radius-sm);
     pointer-events: none;
     white-space: nowrap;
 }

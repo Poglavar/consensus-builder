@@ -15,9 +15,12 @@
         let requested = false;
         let mounted = true;
 
+        // The toolbar: the All · People · Agents filter (a cb-segmented group) and Refresh.
         const controls = document.createElement('div');
         controls.className = 'activity-feed__filters';
-        controls.setAttribute('role', 'group');
+        const filters = document.createElement('div');
+        filters.className = 'cb-segmented';
+        filters.setAttribute('role', 'group');
         const status = document.createElement('p');
         status.className = 'activity-feed__status';
         status.setAttribute('role', 'status');
@@ -26,13 +29,14 @@
         list.className = 'activity-feed__list';
         const refresh = document.createElement('button');
         refresh.type = 'button';
-        refresh.className = 'activity-feed__refresh';
+        refresh.className = 'btn btn-quiet btn-sm activity-feed__refresh';
         refresh.addEventListener('click', () => load(true));
 
         const buttons = new Map();
         for (const name of FILTERS) {
             const button = document.createElement('button');
             button.type = 'button';
+            button.className = 'cb-segmented__option';
             button.setAttribute('aria-pressed', String(filter === name));
             button.addEventListener('click', () => {
                 filter = name;
@@ -40,14 +44,14 @@
                 render();
             });
             buttons.set(name, button);
-            controls.append(button);
+            filters.append(button);
         }
         function relabel() {
-            global.ActivityFeedModel.relabelControls({ controls, buttons, refresh }, t);
+            global.ActivityFeedModel.relabelControls({ controls: filters, buttons, refresh }, t);
             render();
         }
         relabel();
-        controls.append(refresh);
+        controls.append(filters, refresh);
         root.replaceChildren(controls, status, list);
 
         function render() {

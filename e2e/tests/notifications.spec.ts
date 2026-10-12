@@ -25,9 +25,9 @@ test.describe('Notification and alert system @features', () => {
     await page.waitForTimeout(500);
 
     const dialog = await page.evaluate(() => {
-      const overlay = document.querySelector('.cb-confirm-overlay');
-      const dialogEl = document.querySelector('.cb-confirm-dialog');
-      const message = document.querySelector('.cb-confirm-message');
+      const overlay = document.querySelector('.cb-dialog-overlay--confirm');
+      const dialogEl = document.querySelector('.cb-dialog-overlay--confirm .cb-dialog');
+      const message = document.querySelector('.cb-dialog-overlay--confirm .cb-dialog__body');
       return {
         hasOverlay: !!overlay,
         hasDialog: !!dialogEl,
@@ -55,14 +55,14 @@ test.describe('Notification and alert system @features', () => {
 
     // Find and click the confirm/OK button inside the dialog
     await page.evaluate(() => {
-      const btn = document.querySelector('.cb-confirm-dialog button') ||
-        document.querySelector('.cb-confirm-overlay button');
+      const btn = document.querySelector('.cb-dialog-overlay--confirm .cb-dialog button') ||
+        document.querySelector('.cb-dialog-overlay--confirm button');
       if (btn) (btn as HTMLElement).click();
     });
     await page.waitForTimeout(500);
 
     const afterDismiss = await page.evaluate(() => {
-      const overlay = document.querySelector('.cb-confirm-overlay');
+      const overlay = document.querySelector('.cb-dialog-overlay--confirm');
       return { overlayGone: !overlay };
     });
 

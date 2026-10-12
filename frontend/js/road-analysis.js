@@ -1154,8 +1154,10 @@ function showRoadAnalysisPanel() {
         return;
     }
 
-    // Display the panel before running the analysis to show it's working
+    // Display the panel before running the analysis to show it's working; the Tools tab's
+    // "Analyze as road" stays pressed while it is open.
     document.getElementById('road-analysis-panel').classList.add('visible');
+    setAnalyzeRoadButtonPressed(true);
 
     // Clear any previous analysis visualization
     clearRoadAnalysisVisualization();
@@ -1194,7 +1196,7 @@ function showRoadAnalysisPanel() {
         // Update segments tab and make sure it's active
         updateSegmentsList(metrics.segments || []);
         const segmentsTab = document.querySelector('.tab-btn[onclick="switchTab(this, \'segments-tab\')"]');
-        if (segmentsTab && !segmentsTab.classList.contains('active')) {
+        if (segmentsTab && segmentsTab.getAttribute('aria-selected') !== 'true') {
             switchTab(segmentsTab, 'segments-tab');
         }
 
@@ -1202,13 +1204,14 @@ function showRoadAnalysisPanel() {
         // Indicate method used
         const panel = document.getElementById('road-analysis-panel');
         if (panel) {
-            let methodMsg = usedOSM ? '<span style="color: #007bff;">OSM centreline analysis</span>' : '<span style="color: #888;">Fallback (road centerline detection)</span>';
+            const methodMsg = usedOSM
+                ? '<span class="road-analysis-method__osm">OSM centreline analysis</span>'
+                : '<span class="road-analysis-method__fallback">Fallback (road centerline detection)</span>';
             let infoDiv = document.getElementById('road-analysis-method');
             if (!infoDiv) {
                 infoDiv = document.createElement('div');
                 infoDiv.id = 'road-analysis-method';
-                infoDiv.style.margin = '10px 0';
-                infoDiv.style.fontSize = '13px';
+                infoDiv.className = 'road-analysis-method';
                 panel.querySelector('.tabs').insertAdjacentElement('afterend', infoDiv);
             }
             infoDiv.innerHTML = `<b>Method:</b> ${methodMsg}`;
@@ -1219,7 +1222,14 @@ function showRoadAnalysisPanel() {
 // Hide the Road Analysis panel
 function hideRoadAnalysisPanel() {
     document.getElementById('road-analysis-panel').classList.remove('visible');
+    setAnalyzeRoadButtonPressed(false);
     clearRoadAnalysisVisualization();
+}
+
+// The parcel panel's "Analyze as road" (Tools tab) reads as on while its analysis panel is open.
+function setAnalyzeRoadButtonPressed(pressed) {
+    const button = document.getElementById('analyzeRoadButton');
+    if (button) button.setAttribute('aria-pressed', pressed ? 'true' : 'false');
 }
 
 // Clear all road analysis visualization layers
@@ -1555,20 +1565,17 @@ function toggleAnalysisLayer(layerType) {
     }
 }
 
-// Switch between tabs in the Road Analysis panel
+// Switch between tabs in the Road Analysis panel: the chosen tab is aria-selected, the other
+// panels are hidden.
 function switchTab(button, tabId) {
-    // Remove active class from all tab buttons and content
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
+    const panel = document.getElementById('road-analysis-panel');
+    if (!panel) return;
+    panel.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.setAttribute('aria-selected', btn === button ? 'true' : 'false');
     });
-
-    document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.remove('active');
+    panel.querySelectorAll('.tab-content').forEach(content => {
+        content.hidden = content.id !== tabId;
     });
-
-    // Add active class to selected tab button and content
-    button.classList.add('active');
-    document.getElementById(tabId).classList.add('active');
 }
 
 // Helper function to format numbers: one decimal, in the UI language (js/format.js).
@@ -2082,7 +2089,8 @@ function showOSMRoadSegmentListPopup(segments) {
 
     renderHistogram(histogramContainer, computeHistogram(segments || []), segments);
     renderSegmentList(listContainer, segments || []);
-    popup.style.display = 'block';
+    // A flex column, so the header stays put and the body scrolls (css/layout.css).
+    popup.style.display = 'flex';
     // The results panel opens where the Tools sheet sits; the run started from that sheet, and the
     // two stacked on each other.
     if (window.MapShell && typeof window.MapShell.closeSheets === 'function') window.MapShell.closeSheets();

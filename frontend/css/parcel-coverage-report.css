@@ -1,29 +1,23 @@
-/* Responsive editorial layout and accessible sortable tables for the global parcel report. */
-/* The page palette is the product one (css/tokens.css, loaded first): the old teal, mint and gold
-   read through these names. The sticky table needs three stacking steps of its own; they are
-   local custom properties, so no raw z-index sits in a rule. */
-:root { color-scheme: light; --ink: var(--cb-text-strong); --muted: var(--cb-text-muted); --paper: var(--cb-bg); --line: var(--cb-line); --teal: var(--cb-primary); --mint: var(--cb-primary-soft); --gold: var(--cb-warning); --slate: var(--cb-text-faint); --report-z-cell: 1; --report-z-head: 2; --report-z-corner: 3; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+/* Responsive editorial layout and accessible sortable tables for the global parcel report, under
+   the shared page header (css/page-chrome.css). The controls are the primitives (css/primitives.css:
+   btn, cb-link, cb-badge, the base inputs). */
+/* The page palette is the product one (css/tokens.css, loaded first): the report's teal accent and
+   its mint and gold read through these names. The sticky table needs three stacking steps of its
+   own; they are local custom properties, so no raw z-index sits in a rule. */
+:root { color-scheme: light; --ink: var(--cb-text-strong); --muted: var(--cb-text-muted); --paper: var(--cb-bg); --line: var(--cb-line); --teal: var(--cb-primary); --mint: var(--cb-primary-soft); --gold: var(--cb-warning); --slate: var(--cb-text-faint); --report-z-cell: 1; --report-z-head: 2; --report-z-corner: 3; }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 24px; }
-body { margin: 0; color: var(--ink); background: var(--paper); font-size: 15px; line-height: 1.55; }
-a { color: var(--teal); text-underline-offset: 3px; }
-button, input, select { font: inherit; }
+body { color: var(--ink); font-size: 15px; line-height: 1.55; }
+button { font: inherit; }
 button, select { cursor: pointer; }
 button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--cb-focus); outline-offset: 3px; }
-.masthead, main, footer { width: min(1400px, calc(100% - 80px)); margin-inline: auto; }
-.masthead { display: flex; justify-content: space-between; align-items: center; gap: 20px; border-bottom: 1px solid var(--line); padding-block: 24px; }
-.brand { font-size: 15px; font-weight: 740; text-decoration: none; color: var(--ink); }
-.brand span { color: var(--teal); padding-left: 6px; }
-.header-actions { display: flex; align-items: center; gap: 12px; font-size: 12px; }
-.header-actions select { background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 7px; color: var(--ink); }
-.quiet-button { border: 1px solid var(--line); border-radius: 6px; padding: 7px 12px; background: var(--cb-surface); color: var(--ink); }
+main, footer { width: min(1400px, calc(100% - 80px)); margin-inline: auto; }
 .intro { padding: 64px 0 34px; max-width: 950px; }
-.eyebrow { color: var(--teal); font-size: 11px; font-weight: 760; letter-spacing: .13em; text-transform: uppercase; margin: 0 0 16px; }
 h1 { font-family: Georgia, "Times New Roman", serif; font-weight: 500; font-size: clamp(35px, 4.4vw, 62px); letter-spacing: -.04em; line-height: 1.06; max-width: 870px; margin: 0 0 24px; }
 .lede { font-size: clamp(16px, 1.7vw, 19px); color: var(--cb-text); max-width: 780px; margin: 0 0 20px; }
-.dateline { font-size: 12px; color: var(--muted); }
+.intro-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.dateline { margin: 0; font-size: 12px; color: var(--muted); }
 .section-nav { display: flex; flex-wrap: wrap; gap: 12px 28px; margin-top: 24px; font-size: 13px; font-weight: 650; }
-.section-nav a { text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 3px; }
 .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); background: var(--cb-surface); border-radius: 10px; overflow: hidden; }
 .summary-card { padding: 24px; border-right: 1px solid var(--line); }
 .summary-card:last-child { border: 0; }
@@ -81,15 +75,9 @@ th.number button { justify-content: flex-end; text-align: right; }
 .city-table-wrap td:nth-child(6) { white-space: nowrap; }
 .country-table-wrap { max-height: 620px; }
 .country-table-wrap table { min-width: 660px; }
-.status { display: inline-block; border-radius: 20px; padding: 2px 8px; font-size: 11px; white-space: nowrap; }
-.status-yes { background: var(--cb-success-soft); color: var(--cb-success-soft-ink); }
-.status-no { background: var(--cb-surface-2); color: var(--cb-text-muted); }
-.status-unknown { background: var(--cb-warning-soft); color: var(--cb-warning-soft-ink); }
 .muted { color: var(--muted); }
-.cell-link { white-space: nowrap; text-decoration: none; }
-.cell-link:hover { text-decoration: underline; }
+.cell-link { white-space: nowrap; }
 .empty-row { text-align: center; color: var(--muted); padding: 30px; }
-.country-name { border: 0; background: transparent; font: inherit; color: var(--teal); text-decoration: underline; text-underline-offset: 3px; text-align: left; padding: 0; }
 .methods-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 50px; }
 .methods-grid h3, .sources-heading h3 { font-size: 15px; margin: 0 0 9px; }
 .methods-grid p { color: var(--muted); font-size: 13px; margin: 0; }
@@ -104,13 +92,10 @@ footer { display: flex; justify-content: space-between; gap: 20px; border-top: 1
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 [hidden] { display: none; }
 .load-error { padding: 20px; border-left: 3px solid var(--cb-danger); background: var(--cb-danger-soft); }
-@media (max-width: 900px) { .masthead, main, footer { width: calc(100% - 40px); } .metric-charts { gap: 16px; } .summary-card { padding: 20px 16px; } }
+@media (max-width: 900px) { main, footer { width: calc(100% - 40px); } .metric-charts { gap: 16px; } .summary-card { padding: 20px 16px; } }
 @media (max-width: 600px) {
-    .masthead, main, footer { width: calc(100% - 30px); }
-    .masthead { gap: 12px; align-items: flex-start; padding-block: 18px; }
-    .header-actions { gap: 7px; flex-wrap: wrap; justify-content: flex-end; }
-    .header-actions label, #print-report { display: none; }
-    .brand { font-size: 12px; }
+    main, footer { width: calc(100% - 32px); }
+    #print-report { display: none; }
     .intro { padding-top: 36px; }
     .section-nav { gap: 10px 18px; font-size: 12px; }
     .summary-grid { grid-template-columns: repeat(2, 1fr); }
@@ -138,8 +123,8 @@ footer { display: flex; justify-content: space-between; gap: 20px; border-top: 1
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 @media print {
     body { background: var(--cb-surface); font-size: 10px; }
-    .masthead, main, footer { width: 100%; }
-    .header-actions, .section-nav, .table-controls, .table-meta, .sources-heading a { display: none; }
+    main, footer { width: 100%; }
+    #print-report, .section-nav, .table-controls, .table-meta, .sources-heading a { display: none; }
     .intro { padding-top: 20px; }
     h1 { font-size: 34px; }
     .report-section { margin-top: 26px; }
@@ -149,9 +134,9 @@ footer { display: flex; justify-content: space-between; gap: 20px; border-top: 1
     th button { font-size: 7px; padding: 6px 4px; min-height: 0; gap: 3px; }
     td { padding: 6px 4px; }
     .city-table-wrap td:nth-child(4) { min-width: 0; }
-    .status, .cell-detail { font-size: 7px; }
+    .cb-badge, .cell-detail { font-size: 7px; }
     tr { break-inside: avoid; }
     thead { display: table-header-group; }
-    a { color: inherit; }
+    .cb-link { color: inherit; }
     .metric-charts { grid-template-columns: repeat(3, 1fr); }
 }

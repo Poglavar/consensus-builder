@@ -86,11 +86,8 @@ function flattenObject(node, prefix = '', out = {}) {
 function showProposalAlertMessage(key, fallback, params = {}, alertOptions = {}) {
     const translate = getProposalI18nHelper();
     const message = translate(`alerts.messages.${key}`, fallback, params);
-    if (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') {
-        window.showStyledAlert(message, alertOptions);
-    } else {
-        alert(message);
-    }
+    // The shared dialog (js/ui/dialogs.js via showStyledAlert), never the browser's.
+    window.showStyledAlert(message, alertOptions);
     return message;
 }
 
@@ -560,7 +557,7 @@ async function handleProposalDownloadClick(event) {
         try {
             updateStatus(message);
         } catch (_) {
-            alert(message);
+            window.CbDialog.alert(message);
         }
     }
 }
@@ -620,51 +617,13 @@ function formatAreaMetric(area) {
     return CbFormat.formatArea(Math.round(area));
 }
 
+// Resolves true when the person chose Download (js/ui/dialogs.js confirm).
 function showProposalDownloadConfirm() {
-    return new Promise((resolve) => {
-        const t = getProposalI18nHelper();
-
-        const overlay = document.createElement('div');
-        overlay.className = 'cb-confirm-overlay';
-
-        const dialog = document.createElement('div');
-        dialog.className = 'cb-confirm-dialog';
-
-        const message = document.createElement('div');
-        message.className = 'cb-confirm-message';
-        message.textContent = t('modal.roadWidth.proposalList.downloadConfirm', 'Proposal is not in local storage yet. Download?');
-
-        const buttons = document.createElement('div');
-        buttons.className = 'cb-confirm-buttons';
-
-        const cancelBtn = document.createElement('button');
-        cancelBtn.type = 'button';
-        cancelBtn.className = 'btn btn-secondary';
-        cancelBtn.textContent = t('common.cancel', 'Cancel');
-
-        const downloadBtn = document.createElement('button');
-        downloadBtn.type = 'button';
-        downloadBtn.className = 'btn btn-action';
-        downloadBtn.textContent = t('common.download', 'Download');
-
-        function cleanup(result) {
-            if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-            resolve(result);
-        }
-
-        cancelBtn.addEventListener('click', () => cleanup(false));
-        downloadBtn.addEventListener('click', () => cleanup(true));
-        overlay.addEventListener('click', (event) => {
-            if (event.target === overlay) cleanup(false);
-        });
-
-        buttons.appendChild(cancelBtn);
-        buttons.appendChild(downloadBtn);
-        dialog.appendChild(message);
-        dialog.appendChild(buttons);
-        overlay.appendChild(dialog);
-        document.body.appendChild(overlay);
-    });
+    const t = getProposalI18nHelper();
+    return window.CbDialog.confirm(
+        t('modal.roadWidth.proposalList.downloadConfirm', 'Proposal is not in local storage yet. Download?'),
+        { okText: t('common.download', 'Download'), cancelText: t('common.cancel', 'Cancel') }
+    );
 }
 
 function isProposalUIActive() {
@@ -869,17 +828,25 @@ function roadHasDeclaredCadastre(sharedProposal, normalized, cadastreIds) {
     return true;
 }
 
+// The progress card for opening shared proposals and plans: it wears the dialog primitive's
+// overlay and card (css/primitives.css) on the dialog-over-dialog rung, shown and hidden with the
+// `hidden` attribute. Its fixed text slots (css/modals.css .proposal-load-card) keep the card from
+// moving as the status lines change.
 function ensureProposalLoadOverlay() {
     if (proposalLoadOverlay) return proposalLoadOverlay;
 
     proposalLoadOverlay = document.createElement('div');
-    proposalLoadOverlay.className = 'proposal-load-overlay';
-    proposalLoadOverlay.style.display = 'none';
+    proposalLoadOverlay.className = 'cb-dialog-overlay cb-dialog-overlay--top proposal-load-overlay';
+    proposalLoadOverlay.hidden = true;
 
     const card = document.createElement('div');
-    card.className = 'proposal-load-card';
+    card.className = 'cb-dialog cb-dialog--sm proposal-load-card';
+    card.setAttribute('role', 'dialog');
+    card.setAttribute('aria-modal', 'true');
+    card.setAttribute('aria-labelledby', 'proposal-load-title');
 
     proposalLoadTitleEl = document.createElement('div');
+    proposalLoadTitleEl.id = 'proposal-load-title';
     proposalLoadTitleEl.className = 'proposal-load-title';
     const initialTitle = (typeof tShare === 'function')
         ? tShare('plan.fetchingPlanTitle', 'Fetching proposal')
@@ -944,7 +911,7 @@ function showProposalLoadOverlay(status, options = {}) {
     proposalLoadProgressDone = 0;
     renderProposalLoadProgress();
     startProposalLoadByteObserver();
-    if (proposalLoadOverlay) proposalLoadOverlay.style.display = 'flex';
+    if (proposalLoadOverlay) proposalLoadOverlay.hidden = false;
 }
 
 function updateProposalLoadOverlay(options = {}) {
@@ -975,7 +942,7 @@ function updateProposalLoadOverlay(options = {}) {
 function hideProposalLoadOverlay(finalStatus) {
     stopProposalLoadByteObserver();
     if (proposalLoadOverlay) {
-        proposalLoadOverlay.style.display = 'none';
+        proposalLoadOverlay.hidden = true;
     }
     if (finalStatus && typeof updateStatus === 'function') {
         updateStatus(finalStatus);
@@ -1397,11 +1364,13 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
     const proposalIdAttr = storedProposal && storedProposal.proposalId !== undefined && storedProposal.proposalId !== null
         ? String(storedProposal.proposalId)
         : String(proposalId);
-    const proposalLinkHtml = `<a href="#" data-proposal-id="${proposalIdAttr}" class="proposal-link proposal-link-clickable">${proposalIdForLog}</a>`;
+    // The log's links run script (game.js binds the -clickable hooks), so they are cb-link buttons.
+    const proposalLinkHtml = `<button type="button" data-proposal-id="${proposalIdAttr}" class="cb-link proposal-link-clickable">${proposalIdForLog}</button>`;
+    const agentLinkHtml = `<button type="button" data-agent-id="${userAgent.id}" class="cb-link agent-link-clickable">${userAgent.name}</button>`;
 
     if (result.proposalExecuted) {
         if (typeof addUserActionToGameLog === 'function') {
-            addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> executed proposal ${proposalLinkHtml} after confirming acceptance for ${ownerLabel}.`);
+            addUserActionToGameLog(`${agentLinkHtml} executed proposal ${proposalLinkHtml} after confirming acceptance for ${ownerLabel}.`);
         }
         if (!userAgent.proposalsExecuted) {
             userAgent.proposalsExecuted = [];
@@ -1413,8 +1382,8 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
     } else {
         if (typeof addUserActionToGameLog === 'function') {
             const logMsg = isVote
-                ? `<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> voted yes as ${ownerLabel} on proposal ${proposalLinkHtml}.`
-                : `<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> recorded acceptance from ${ownerLabel} for parcel ${result.parcelNumber || parcelId} (${proposalLinkHtml}).`;
+                ? `${agentLinkHtml} voted yes as ${ownerLabel} on proposal ${proposalLinkHtml}.`
+                : `${agentLinkHtml} recorded acceptance from ${ownerLabel} for parcel ${result.parcelNumber || parcelId} (${proposalLinkHtml}).`;
             addUserActionToGameLog(logMsg);
         }
         if (!userAgent.proposalsAccepted) {

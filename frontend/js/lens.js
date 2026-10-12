@@ -257,11 +257,16 @@
             if (el.tagName === 'IMG') {
                 el.src = patternUrl;
             } else {
+                // The lens's own colour stripes: data, so the one inline background a control
+                // (btn btn-icon btn-sm lens-pattern-button) may carry.
                 el.style.backgroundImage = `url("${patternUrl}")`;
                 el.style.backgroundSize = 'cover';
                 el.style.backgroundRepeat = 'no-repeat';
                 el.style.backgroundPosition = 'center';
             }
+            // A lens button keeps the name of what it does (open the lens); the bare preview chip
+            // in the lens dialog is named after the pattern.
+            if (el.tagName === 'BUTTON') return;
             el.setAttribute('aria-label', translateLens('modal.lens.patternAria', 'Lens pattern preview'));
             el.setAttribute('title', translateLens('modal.lens.patternTitle', 'Lens pattern'));
         });
@@ -290,8 +295,8 @@
             const placeholderAddress = translateLens('modal.lens.placeholders.address', '0x... address');
             const placeholderName = translateLens('modal.lens.placeholders.name', 'Friendly name');
             const removeLabel = translateLens('modal.lens.removeAddress', 'Remove address');
-            const etherscanLabel = translateLens('modal.lens.links.etherscan', 'Etherscan ↗');
-            const attestifyLabel = translateLens('modal.lens.links.attestify', 'Attestify ↗');
+            const etherscanLabel = translateLens('modal.lens.links.etherscan', 'Etherscan');
+            const attestifyLabel = translateLens('modal.lens.links.attestify', 'Attestify');
 
             const header = document.createElement('div');
             header.className = 'lens-row-header';
@@ -354,11 +359,12 @@
 
             const removeBtn = document.createElement('button');
             removeBtn.type = 'button';
-            removeBtn.className = 'lens-remove-btn';
-            removeBtn.textContent = '×';
+            removeBtn.className = 'btn btn-quiet btn-sm btn-icon lens-remove-btn';
+            removeBtn.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
             removeBtn.title = removeLabel;
+            removeBtn.setAttribute('aria-label', removeLabel);
             removeBtn.setAttribute('data-i18n-key', 'modal.lens.removeAddress');
-            removeBtn.setAttribute('data-i18n-attr', 'title');
+            removeBtn.setAttribute('data-i18n-attr', 'title,aria-label');
             if (!readOnly) {
                 removeBtn.addEventListener('click', () => {
                     const nextEntries = getActiveLensEntries();
@@ -369,40 +375,41 @@
             }
 
             const actions = document.createElement('div');
-            actions.className = 'lens-inline-actions';
+            actions.className = 'cb-link-row lens-inline-actions';
 
             const etherscanLink = document.createElement('a');
-            etherscanLink.className = 'lens-link-btn';
+            etherscanLink.className = 'cb-link cb-link--external';
             etherscanLink.textContent = etherscanLabel;
             etherscanLink.setAttribute('data-i18n-key', 'modal.lens.links.etherscan');
             etherscanLink.target = '_blank';
-            etherscanLink.rel = 'noreferrer noopener';
+            etherscanLink.rel = 'noopener noreferrer';
 
             const attestifyLink = document.createElement('a');
-            attestifyLink.className = 'lens-link-btn';
+            attestifyLink.className = 'cb-link cb-link--external';
             attestifyLink.textContent = attestifyLabel;
             attestifyLink.setAttribute('data-i18n-key', 'modal.lens.links.attestify');
             attestifyLink.target = '_blank';
-            attestifyLink.rel = 'noreferrer noopener';
+            attestifyLink.rel = 'noopener noreferrer';
 
+            // An address with no explorer or Attestify page keeps its link, dimmed and inert.
             function updateLinks(addressValue) {
                 const etherscanUrl = buildEtherscanAddressUrl(addressValue);
                 const attestifyUrl = buildAttestifyUrl(addressValue);
 
                 if (etherscanUrl) {
                     etherscanLink.href = etherscanUrl;
-                    etherscanLink.classList.remove('lens-link-btn--disabled');
+                    etherscanLink.classList.remove('lens-link--disabled');
                 } else {
                     etherscanLink.removeAttribute('href');
-                    etherscanLink.classList.add('lens-link-btn--disabled');
+                    etherscanLink.classList.add('lens-link--disabled');
                 }
 
                 if (attestifyUrl) {
                     attestifyLink.href = attestifyUrl;
-                    attestifyLink.classList.remove('lens-link-btn--disabled');
+                    attestifyLink.classList.remove('lens-link--disabled');
                 } else {
                     attestifyLink.removeAttribute('href');
-                    attestifyLink.classList.add('lens-link-btn--disabled');
+                    attestifyLink.classList.add('lens-link--disabled');
                 }
             }
 
@@ -429,6 +436,11 @@
         applyLensTranslations(container);
     }
 
+    // The lens dialog is the shared one (js/ui/dialogs.js); it opens from other dialogs (proposal
+    // create, agent), so it takes the dialog-over-dialog rung. `lens-modal-overlay` and
+    // `lens-close-btn` stay as hooks for scripts and tests; the look is the primitive's.
+    let lensDialog = null;
+
     function showLensModal(options = {}) {
         closeLensModal();
 
@@ -442,11 +454,13 @@
 
         const title = (typeof opts.title === 'string' && opts.title.trim())
             ? opts.title
-            : translateLens(readOnly ? 'modal.lens.readOnlyTitle' : 'modal.lens.title', 'The lens through which I see the world 👓🏖️');
-        const subtitle = (typeof opts.subtitle === 'string' && opts.subtitle.trim())
+            : translateLens(readOnly ? 'modal.lens.readOnlyTitle' : 'modal.lens.title', 'The lens through which I see the world');
+        const customSubtitle = typeof opts.subtitle === 'string' && opts.subtitle.trim();
+        const subtitleKey = readOnly ? 'modal.lens.readOnlySubtitle' : 'modal.lens.subtitle';
+        const subtitle = customSubtitle
             ? opts.subtitle
             : translateLens(
-                readOnly ? 'modal.lens.readOnlySubtitle' : 'modal.lens.subtitle',
+                subtitleKey,
                 'These are the trusted addresses, whose attestations will be trusted for the purposes of determining owners of the parcels.'
             );
         const note = (typeof opts.note === 'string' && opts.note.trim())
@@ -459,43 +473,40 @@
         const patternAria = translateLens('modal.lens.patternAria', 'Lens pattern preview');
         const patternTitle = translateLens('modal.lens.patternTitle', 'Lens pattern');
 
-        const overlay = document.createElement('div');
-        overlay.className = 'lens-modal-overlay';
-        overlay.innerHTML = `
-            <div class="lens-modal${readOnly ? ' lens-modal--readonly' : ''}" role="dialog" aria-modal="true">
-                <div class="lens-modal-header">
-                    <div class="lens-modal-title-group">
-                        <h2 class="lens-modal-title" data-i18n-key="modal.lens.title">${title}</h2>
-                        <p class="lens-modal-subtitle" data-i18n-key="modal.lens.subtitle">${subtitle}</p>
-                    </div>
-                    <button type="button" class="lens-close-btn close-circle-btn close-circle-btn--lg" aria-label="${closeLabel}" data-i18n-key="modal.lens.closeLabel" data-i18n-attr="aria-label">&times;</button>
+        let dialogApi = null;
+        dialogApi = window.CbDialog.open({
+            title,
+            size: 'lg',
+            top: true,
+            className: 'lens-modal' + (readOnly ? ' lens-modal--readonly' : ''),
+            // Addresses are added and removed in place: the box keeps its size, the list scrolls.
+            fixedHeight: !readOnly,
+            overlayClassName: 'lens-modal-overlay',
+            bodyClassName: 'lens-modal-body',
+            closeLabel,
+            body: `
+                <p class="lens-modal-subtitle"${customSubtitle ? '' : ` data-i18n-key="${subtitleKey}"`}>${subtitle}</p>
+                <div class="lens-pattern-card">
+                    <div class="lens-pattern-chip" data-lens-pattern aria-label="${patternAria}" title="${patternTitle}" data-i18n-key="modal.lens.patternAria" data-i18n-attr="aria-label"></div>
+                    <div class="lens-pattern-caption" data-i18n-key="modal.lens.patternCaption">${patternCaption}</div>
                 </div>
-                <div class="lens-modal-body">
-                    <div class="lens-pattern-card">
-                        <div class="lens-pattern-chip" data-lens-pattern aria-label="${patternAria}" title="${patternTitle}" data-i18n-key="modal.lens.patternAria" data-i18n-attr="aria-label"></div>
-                        <div class="lens-pattern-caption" data-i18n-key="modal.lens.patternCaption">${patternCaption}</div>
-                    </div>
-                    ${note ? `<div class="lens-readonly-note" data-lens-note data-i18n-key="modal.lens.readOnlyNote">${note}</div>` : ''}
-                    <div class="lens-list" id="lens-list"></div>
-                    <div class="lens-actions">
-                        <button type="button" class="lens-add-btn" id="lens-add-btn" title="${addButtonTitle}" data-i18n-key="modal.lens.addButton" data-i18n-attr="text">${addButtonLabel}</button>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(overlay);
-        applyLensTranslations(overlay);
-
-        const closeBtn = overlay.querySelector('.lens-close-btn');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', closeLensModal);
-        }
-        overlay.addEventListener('click', event => {
-            if (event.target === overlay) {
-                closeLensModal();
+                ${note ? `<div class="lens-readonly-note" data-lens-note data-i18n-key="modal.lens.readOnlyNote">${note}</div>` : ''}
+                <div class="lens-list" id="lens-list"></div>
+                <div class="lens-actions">
+                    <button type="button" class="btn btn-sm lens-add-btn" id="lens-add-btn" title="${addButtonTitle}" data-i18n-key="modal.lens.addButton" data-i18n-attr="text">${addButtonLabel}</button>
+                </div>`,
+            onClose: () => {
+                if (lensDialog === dialogApi) lensDialog = null;
+                removeEmptyLensEntries();
             }
         });
+        if (!dialogApi) return;
+        lensDialog = dialogApi;
+        const overlay = dialogApi.overlay;
+        const closeBtn = dialogApi.header && dialogApi.header.querySelector('.close-circle-btn');
+        if (closeBtn) closeBtn.classList.add('lens-close-btn');
+        applyLensTranslations(dialogApi.body);
+
         const listContainer = overlay.querySelector('#lens-list');
         renderLensList(listContainer, sourceEntries, { readOnly });
 
@@ -524,9 +535,9 @@
         const addBtn = overlay.querySelector('#lens-add-btn');
         if (addBtn) {
             if (readOnly) {
+                // Hidden by .lens-modal--readonly (css/modals.css).
                 addBtn.disabled = true;
                 addBtn.setAttribute('aria-disabled', 'true');
-                addBtn.style.display = 'none';
             } else {
                 addBtn.addEventListener('click', () => {
                     const nextEntries = getActiveLensEntries();
@@ -548,17 +559,21 @@
         }
     }
 
-    function closeLensModal() {
-        // Clean up empty entries before closing
+    // Empty rows exist only while editing; they are dropped when the dialog closes.
+    function removeEmptyLensEntries() {
         const currentEntries = getActiveLensEntries();
         const cleaned = sanitizeEntries(currentEntries);
         if (cleaned.length !== currentEntries.length) {
             updateLensEntries(cleaned);
         }
-        const overlay = document.querySelector('.lens-modal-overlay');
-        if (overlay && overlay.parentNode) {
-            overlay.parentNode.removeChild(overlay);
-        }
+    }
+
+    // Closes the lens dialog however it was opened; the dialog's onClose cleans the entries.
+    function closeLensModal() {
+        const dialog = lensDialog;
+        lensDialog = null;
+        if (dialog) dialog.close();
+        else removeEmptyLensEntries();
     }
 
     function hydrateFromStorage() {

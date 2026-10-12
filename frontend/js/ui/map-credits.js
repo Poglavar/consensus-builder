@@ -61,8 +61,11 @@
             const translated = root.i18n?.t?.('mapCredits.' + key, params);
             return translated && translated !== 'mapCredits.' + key ? translated : fallback;
         };
-        const makeLink = (text, url) => {
+        // Every credit leaves the app: cb-link cb-link--external (css/primitives.css); the on-map
+        // line adds --quiet so it keeps the haloed text colour around it.
+        const makeLink = (text, url, quiet = false) => {
             const link = doc.createElement('a');
+            link.className = 'cb-link cb-link--external' + (quiet ? ' cb-link--quiet' : '');
             link.textContent = text;
             link.href = url;
             link.target = '_blank';
@@ -109,7 +112,7 @@
             if (!container) return;
             container.replaceChildren();
             providerCredits(root.BasemapManager.getCurrentBasemapKey()).forEach(([name, url]) => {
-                container.appendChild(makeLink(name, url));
+                container.appendChild(makeLink(name, url, true));
             });
             renderDetails();
         }

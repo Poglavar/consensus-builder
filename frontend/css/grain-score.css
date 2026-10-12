@@ -7,53 +7,14 @@
     display: none !important;
 }
 
-/* `.btn.` — the button also carries .btn, whose blue background in utilities.css loads after this
-   file and won at equal specificity, turning the cream card blue with its brown hint unreadable. */
-.btn.grain-score-button {
-    display: grid;
-    grid-template-columns: 46px minmax(0, 1fr);
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    min-height: 58px;
-    padding: 7px 12px 7px 8px;
-    border: 1px solid #17232b;
-    border-radius: 8px;
-    background: #f4ead7;
-    color: #17232b;
-    box-shadow: 0 2px 0 rgba(23, 35, 43, .16);
-    text-align: left;
-}
-
-.btn.grain-score-button:hover:not(:disabled) {
-    background: #fff8e9;
-    border-color: #a3312a;
-    color: #17232b;
-    transform: translateY(-1px);
-}
-
-.grain-score-button:active:not(:disabled) {
-    transform: translateY(1px);
-    box-shadow: none;
-}
-
-.grain-score-button:focus-visible {
-    outline: 3px solid rgba(163, 49, 42, .25);
-    outline-offset: 2px;
-}
-
-.grain-score-button:disabled {
-    cursor: not-allowed;
-    filter: grayscale(.72);
-    opacity: .58;
-}
-
+/* The rooster's entry in the Proposals sheet is a plain .btn row (css/primitives.css; the sheet makes
+   it a full-width, left-aligned row, css/map-shell.css) whose icon is the critic's portrait; only its
+   inside is here: the portrait at icon size beside a two-line label. */
 .grain-score-button__portrait {
-    width: 44px;
-    height: 44px;
-    border: 1px solid rgba(23, 35, 43, .3);
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    background: #fff;
     object-fit: cover;
 }
 
@@ -66,15 +27,15 @@
 
 .grain-score-button__copy strong {
     overflow: hidden;
-    font-size: 13px;
+    font-weight: var(--cb-weight-medium);
     line-height: 1.2;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .grain-score-button__copy small {
-    color: #5b5145;
-    font-size: 11px;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-xs);
     line-height: 1.2;
 }
 
@@ -93,7 +54,7 @@
 .grain-score-overlay {
     position: absolute;
     inset: 0;
-    z-index: 1070;
+    z-index: var(--cb-z-popover);
     overflow: hidden;
     pointer-events: none;
 }
@@ -142,7 +103,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 4;
+    z-index: var(--cb-z-local-4);
     width: clamp(78px, 8vw, 112px);
     transform-origin: center bottom;
     will-change: transform;
@@ -211,7 +172,7 @@
 
 .grain-score-crumb {
     position: absolute;
-    z-index: 3;
+    z-index: var(--cb-z-local-3);
     width: 8px;
     height: 4px;
     border: 1px solid #6c481d;
@@ -224,7 +185,7 @@
     position: absolute;
     top: 18px;
     left: 50%;
-    z-index: 6;
+    z-index: var(--cb-z-local-6);
     display: flex;
     max-width: min(660px, calc(100% - 36px));
     align-items: center;
@@ -255,7 +216,7 @@
     position: absolute;
     top: 18px;
     right: 18px;
-    z-index: 1080;
+    z-index: var(--cb-z-panel);
     width: min(400px, calc(100% - 36px));
     max-height: calc(100% - 36px);
     overflow: auto;
@@ -271,7 +232,7 @@
 
 .grain-score-panel__header {
     display: grid;
-    grid-template-columns: 72px minmax(0, 1fr) 30px;
+    grid-template-columns: 72px minmax(0, 1fr) auto;
     align-items: center;
     gap: 10px;
 }
@@ -314,21 +275,9 @@
     line-height: 1.25;
 }
 
+/* The panel's close-circle-btn sits at the top of its header column. */
 .grain-score-close {
-    width: 30px;
-    height: 30px;
     align-self: start;
-    border: 0;
-    border-radius: 50%;
-    background: transparent;
-    color: #17232b;
-    cursor: pointer;
-    font-size: 25px;
-    line-height: 1;
-}
-
-.grain-score-close:hover {
-    background: #f4ead7;
 }
 
 .grain-score-route {
@@ -365,26 +314,9 @@
     font-weight: 650;
 }
 
+/* Start the inspection: the panel's one .btn .btn-primary, the full width of the card. */
 .grain-score-start {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
-    width: 100%;
-    margin-top: 6px;
-    padding: 11px 14px;
-    border: 2px solid #17232b;
-    border-radius: 8px;
-    background: #f1c84a;
-    box-shadow: 0 3px 0 #17232b;
-    color: #17232b;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 800;
-}
-
-.grain-score-start:hover {
-    background: #ffdc68;
+    margin-top: var(--cb-space-2);
 }
 
 .grain-score-hero {
@@ -554,7 +486,7 @@ body.grain-score-mode #block-info-panel {
     70%, 100% { box-shadow: 0 0 0 8px rgba(163, 49, 42, 0); }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 767.98px) {
     .grain-score-panel {
         top: auto;
         right: 10px;
@@ -566,7 +498,7 @@ body.grain-score-mode #block-info-panel {
     }
 
     .grain-score-panel__header {
-        grid-template-columns: 58px minmax(0, 1fr) 28px;
+        grid-template-columns: 58px minmax(0, 1fr) auto;
     }
 
     .grain-score-panel__header img {

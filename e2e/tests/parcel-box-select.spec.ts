@@ -34,7 +34,7 @@ test.describe('Shift+drag box selection @core', () => {
 
     // The selection's Proposals tab totals what stands on its parcels, published ones included.
     await page.locator('#selection-tray [data-command="selection.propose"]').click();
-    await expect(page.locator('#propose-tab')).toHaveClass(/active/);
+    await expect(page.locator('#propose-tab')).toBeVisible();
     await page.locator('#parcel-info-panel [data-parcel-tab-id="proposals-tab"]').click();
     await expect(page.locator('#proposals-content [data-server-id="41"]')).toContainText('Published park');
 

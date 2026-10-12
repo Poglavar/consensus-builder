@@ -9,13 +9,13 @@
     display: block;
     font-size: 13px;
     font-weight: 500;
-    color: #555;
+    color: var(--cb-text-muted);
     margin-bottom: 6px;
 }
 
 #turn-interval-value {
     font-weight: 600;
-    color: #007bff;
+    color: var(--cb-primary);
 }
 
 #turn-interval-slider {
@@ -34,7 +34,7 @@
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #007bff;
+    background: var(--cb-primary);
     cursor: pointer;
     border: 2px solid white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -44,74 +44,40 @@
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #007bff;
+    background: var(--cb-primary);
     cursor: pointer;
     border: 2px solid white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Turn progress bar */
-/* Game Log Modal */
+/* The activity explorer (game.js showGameLogDialog): the shared dialog (css/primitives.css) with
+   `game-log-modal` as its identity class. A steady height keeps the box still while filters
+   change; the body is a column whose list scrolls while the views and filters stay put. */
 .game-log-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* Above the docked proposal panels (12000): the explorer is opened from proposal Details, and
-       at 2000 the docked card covered its right side (all of it on phones). */
-    z-index: 12100;
-}
-
-.game-log-modal-content {
-    background: white;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 800px;
-    max-height: 80vh;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-}
-
-.game-log-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 24px 0 24px;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.game-log-modal-header h2 {
-    margin: 0;
-    color: #333;
+    height: min(80dvh, 760px);
 }
 
 .activity-live-status {
-    margin: 4px 0 10px;
-    color: #6b7785;
-    font-size: 12px;
+    margin: 0 0 var(--cb-space-2);
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
 }
 
 .game-log-modal-body {
-    padding: 20px 24px;
-    flex: 1;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .game-log-content {
-    flex: 1; /* Take up remaining space in the modal body */
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    padding: 12px;
-    background-color: #f8f9fa;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-sm);
+    padding: var(--cb-space-3);
+    background-color: var(--cb-surface-2);
     font-family: var(--cb-font-sans);
     font-size: var(--cb-text-base);
     line-height: var(--cb-leading);
@@ -123,95 +89,49 @@
     overflow-y: auto;
 }
 
+/* Events · Actors: a cb-segmented control (css/primitives.css). */
 .activity-views {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 10px;
+    flex: 0 0 auto;
+    margin-bottom: var(--cb-space-2);
 }
 
-.activity-views button {
-    border: 1px solid #cbd7e3;
-    border-radius: 999px;
-    padding: 5px 14px;
-    background: #fff;
-    color: #38536c;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.activity-views button[aria-pressed="true"] {
-    background: #1677c8;
-    border-color: #1677c8;
-    color: #fff;
-}
-
+/* The scope the explorer is narrowed to: a cb-badge cb-badge--primary (css/primitives.css) that
+   grows to hold its clear button and wraps a long id; the look is the badge's. */
 .activity-scope-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+    flex: 0 0 auto;
     align-self: flex-start;
-    margin-bottom: 10px;
-    padding: 4px 6px 4px 12px;
-    border-radius: 999px;
-    background: #e8f1fb;
-    color: #1f4f7a;
-    font-size: 12px;
-    font-weight: 600;
+    height: auto;
     max-width: 100%;
+    margin-bottom: var(--cb-space-2);
+    padding: 2px 2px 2px var(--cb-space-3);
+    line-height: var(--cb-leading);
+    white-space: normal;
     overflow-wrap: anywhere;
 }
 
-.activity-scope-chip[hidden] { display: none; }
-
-.activity-scope-chip button {
-    border: 0;
-    background: transparent;
-    color: inherit;
-    font-size: 16px;
-    line-height: 1;
-    cursor: pointer;
-}
-
+/* The drill-down links under a record are cb-link buttons; this only spaces them. */
 .activity-scope-link {
-    border: 0;
-    padding: 0;
     margin-right: 10px;
-    background: none;
-    color: #1677c8;
-    font: inherit;
-    text-decoration: underline;
-    cursor: pointer;
 }
 
+/* The filter row: base form controls and small buttons (css/primitives.css); this lays them out. */
 .activity-filters {
     display: flex;
+    flex: 0 0 auto;
     flex-wrap: wrap;
-    gap: 7px;
-    margin-bottom: 10px;
-}
-
-.activity-filters button,
-.activity-filters select,
-.activity-filters input {
-    appearance: none;
-    border: 1px solid #cbd7e3;
-    border-radius: 8px;
-    padding: 6px 10px;
-    color: #38536c;
-    background: #fff;
-    font-size: 12px;
-    font-weight: 600;
+    align-items: center;
+    gap: var(--cb-space-2);
+    margin-bottom: var(--cb-space-2);
 }
 
 .activity-filters input {
     flex: 1 1 220px;
-    min-width: 170px;
-    font-weight: 400;
+    min-width: 0;
 }
 
-.activity-filters button,
-.activity-filters select { cursor: pointer; }
+.activity-filters select {
+    max-width: 100%;
+}
 
 .activity-filters .activity-refresh {
     margin-left: auto;
@@ -220,15 +140,15 @@
 .activity-entry {
     margin: 0 0 8px;
     padding: 10px 11px;
-    border: 1px solid #e0e6ed;
-    border-radius: 8px;
-    background: #fff;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
     font-family: inherit;
 }
 
 .activity-entry.is-failed {
-    border-color: #e7a6a6;
-    background: #fff8f8;
+    border-color: var(--cb-danger);
+    background: var(--cb-danger-soft);
 }
 
 .activity-entry-main {
@@ -238,6 +158,7 @@
     overflow-wrap: anywhere;
 }
 
+/* The row's links are cb-link (css/primitives.css); this only spaces them. */
 .activity-entry-links {
     display: flex;
     flex-wrap: wrap;
@@ -245,11 +166,6 @@
     margin-top: 6px;
     color: var(--cb-text-muted);
     font-size: 12px;
-}
-
-.activity-entry-links a {
-    color: #1677c8;
-    text-decoration: none;
 }
 
 .activity-entry-meta {
@@ -264,125 +180,20 @@
 
 .log-entry {
     margin-bottom: 4px;
-    color: #333;
+    color: var(--cb-text);
 }
 
 .no-logs {
     text-align: center;
-    color: #666;
+    color: var(--cb-text-muted);
     font-style: italic;
     font-family: inherit;
 }
 
-/* Game log clickable links */
-.log-entry .agent-link {
-    color: #007bff;
-    text-decoration: none;
-    font-weight: 500;
-    border-bottom: 1px dotted #007bff;
-}
+/* Game log clickable links: agent, proposal and parcel names are button.cb-link
+   (css/primitives.css) with an -clickable hook class the log binds; no look of their own here. */
 
-.log-entry .agent-link:hover {
-    color: #0056b3;
-    text-decoration: none;
-    border-bottom: 1px solid #0056b3;
-}
-
-.log-entry .proposal-link {
-    color: var(--cb-primary);
-    text-decoration: none;
-    font-weight: 500;
-    font-family: inherit;
-    font-size: inherit;
-    border-bottom: 1px dotted currentColor;
-}
-
-.log-entry .proposal-link:hover {
-    color: var(--cb-primary-hover);
-    text-decoration: none;
-    border-bottom: 1px solid currentColor;
-}
-
-.log-entry .parcel-link {
-    color: #dc3545;
-    text-decoration: none;
-    font-weight: 500;
-    border-bottom: 1px dotted #dc3545;
-}
-
-.log-entry .parcel-link:hover {
-    color: #c82333;
-    text-decoration: none;
-    border-bottom: 1px solid #c82333;
-}
-
-.game-log-modal-footer {
-    padding: 16px 24px;
-    border-top: 1px solid #dee2e6;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.agent-link {
-    color: #007bff;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.agent-link:hover {
-    color: #0056b3;
-    text-decoration: underline;
-}
-
-
-/* Agent Dialog Modal */
-.agent-dialog-modal {
-    width: 100%;
-    height: 100%;
-}
-
-.agent-dialog-modal-content {
-    max-width: 600px;
-}
-
-.agent-dialog-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 16px;
-}
-
-.agent-header-info {
-    display: flex;
-    align-items: center;
-}
-
-.agent-name-row {
-    margin-bottom: 4px;
-}
-
-.agent-details h2 {
-    margin: 0;
-    color: #333;
-    line-height: 1.2;
-    display: flex;
-    align-items: center;
-}
-
-.agent-id {
-    font-size: 12px;
-    color: #666;
-    font-family: monospace;
-}
-
-.agent-dialog-modal-body {
-    flex: 1;
-}
-
-.agent-stats-grid {
-    margin-bottom: 24px;
-}
-
+/* Agent dialog contents (the chrome is the shared dialog's; layout in css/modals.css). */
 .stat-item {
     text-align: left;
 }
@@ -399,9 +210,9 @@
 .parcels-list {
     max-height: 120px;
     overflow-y: auto;
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--cb-line);
     border-radius: 4px;
-    background-color: #f8f9fa;
+    background-color: var(--cb-surface-2);
 }
 
 /* Avoid a line directly under headings in agent dialog */
@@ -446,26 +257,26 @@
 }
 
 .parcel-item:hover, .proposal-item:hover {
-    background: #e9ecef;
-    border-color: #007bff;
+    background: var(--cb-surface-3);
+    border-color: var(--cb-primary);
 }
 
 /* Simplified parcel styling - no colored borders or backgrounds */
 .parcel-proposal-count {
-    color: #666;
+    color: var(--cb-text-muted);
     font-size: 0.9em;
     font-weight: 500;
 }
 
 /* Proposal items can have colored left borders when proposal color is available (base rule in modals.css) */
 .proposal-item.has-color:hover {
-    border-left-color: var(--proposal-color, #007bff);
+    border-left-color: var(--proposal-color, var(--cb-primary));
 }
 
 /* Unseen proposal styling */
 .proposal-item.unseen-proposal {
     background-color: #f0f8ff;
-    border-left: 3px solid #007bff;
+    border-left: 3px solid var(--cb-primary);
     font-weight: 600;
 }
 
@@ -474,35 +285,12 @@
 }
 
 .unseen-indicator {
-    color: #007bff;
+    color: var(--cb-primary);
     font-weight: bold;
     margin-right: 6px;
     font-size: 12px;
 }
 
-.wallet-list {
-    max-height: 80px;
-    overflow-y: auto;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    background-color: #f8f9fa;
-}
-
-.wallet-address {
-    font-family: monospace;
-}
-
-.wallet-address:last-child {
-    border-bottom: none;
-}
-
-.more-items {
-    padding: 6px 12px;
-    text-align: center;
-    color: #666;
-    font-style: italic;
-    font-size: 13px;
-}
 
 
 
@@ -510,9 +298,9 @@
 .agent-log-container {
     max-height: 200px;
     overflow-y: auto;
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--cb-line);
     border-radius: 4px;
-    background-color: #f8f9fa;
+    background-color: var(--cb-surface-2);
 }
 
 .agent-log-content {
@@ -529,10 +317,10 @@
 .agent-log-more {
     padding: 8px 12px;
     text-align: center;
-    color: #666;
+    color: var(--cb-text-muted);
     font-style: italic;
     font-size: 12px;
-    border-top: 1px solid #dee2e6;
+    border-top: 1px solid var(--cb-line);
     background-color: #f1f3f4;
 }
 
@@ -541,29 +329,19 @@
 
 
 
-/* Avatar selection styles */
+/* Avatar selection (the welcome dialog, user-management.js): the chosen avatar is a cb-option row
+   that opens a grid of btn btn-icon toggles, the chosen one pressed (aria-pressed), the ones other
+   agents wear disabled. The looks are the primitives'; this sizes and places them. */
 .avatar-selection {
     margin-bottom: 15px;
 }
 
 .selected-avatar {
-    display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    cursor: pointer;
-    background: #f8f9fa;
-    transition: all 0.3s;
 }
 
-.selected-avatar:hover {
-    border-color: #007bff;
-    background: #e3f2fd;
-}
-
-.selected-avatar img {
+#selected-avatar-img,
+.avatar-options img {
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -572,87 +350,46 @@
 
 .avatar-selection-hint {
     font-size: 13px;
-    color: #666;
+    color: var(--cb-text-muted);
 }
 
 .avatar-options {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(var(--cb-control-height-lg), 1fr));
+    justify-items: center;
     gap: 8px;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: white;
     margin-top: 8px;
+    padding: 12px;
     max-height: 200px;
     overflow-y: auto;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
 }
 
-.avatar-option {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px;
-    border: 2px solid transparent;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
+.avatar-options[hidden] {
+    display: none;
 }
 
-.avatar-option:hover {
-    border-color: #007bff;
-    background: #f0f8ff;
+.avatar-options .avatar-option {
+    width: var(--cb-control-height-lg);
+    min-width: var(--cb-control-height-lg);
+    height: var(--cb-control-height-lg);
 }
 
-.avatar-option.selected {
-    border-color: #007bff;
-    background: #e3f2fd;
-}
-
-.avatar-option img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.avatar-option.used {
-    opacity: 0.5;
-    cursor: not-allowed;
-    position: relative;
-}
-
-.avatar-option.used::after {
-    content: "In Use";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    font-size: 8px;
-    padding: 2px 4px;
-    border-radius: 2px;
-    pointer-events: none;
-}
-
-.avatar-option.used:hover {
-    border-color: #ccc;
-    background: #f5f5f5;
-}
-
-/* Takeover section styles */
+/* Takeover section styles (the welcome dialog's "take over this agent?" question): the warning tone,
+   from tokens so the dark theme follows. */
 .takeover-section {
     margin: 15px 0;
     padding: 15px;
-    background: #fff3cd;
-    border: 1px solid #ffeaa7;
-    border-radius: 8px;
+    background: var(--cb-warning-soft);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
 }
 
 .takeover-section p {
-    margin-bottom: 12px;
-    color: #856404;
+    margin: 0 0 12px;
+    color: var(--cb-warning-soft-ink);
 }
 
 .takeover-buttons {
@@ -660,296 +397,46 @@
     gap: 10px;
 }
 
-/* Agent dialog user-specific styles */
-.agent-header-user-info {
-    margin-top: 5px;
-    flex-wrap: wrap;
-}
-
-.wallet-chain-info {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border-radius: 12px;
-    background: rgba(25, 135, 84, 0.1);
-    color: #198754;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    user-select: none;
-    border: 1px solid transparent;
-    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.wallet-chain-info:hover,
-.wallet-chain-info:focus,
-.wallet-chain-info:focus-visible {
-    background: rgba(25, 135, 84, 0.15);
-    border-color: rgba(25, 135, 84, 0.35);
-    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.12);
-    outline: none;
-}
-
-.wallet-chain-info i {
-    font-size: 14px;
-}
-
-.wallet-chain-label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.wallet-chain-caret {
-    font-size: 10px;
-    color: #198754;
-}
-
-.wallet-attest-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    line-height: 1;
-    text-decoration: none;
-    padding: 2px 4px;
-    border-radius: 6px;
-    color: #198754;
-    transition: background 0.2s ease, color 0.2s ease;
-    margin-left: 6px;
-}
-
-.wallet-attest-link:hover,
-.wallet-attest-link:focus,
-.wallet-attest-link:focus-visible {
-    background: rgba(25, 135, 84, 0.15);
-    color: #146c43;
-    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.12);
-}
-
-.wallet-city-token-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    line-height: 1;
-    padding: 0 8px;
-    height: 28px;
-    min-width: 32px;
-    border-radius: 6px;
-    border: 1px solid #fbbf24;
-    background: #fff7ed;
-    color: #b45309;
-    margin-left: 6px;
-    cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.wallet-city-token-button:hover,
-.wallet-city-token-button:focus,
-.wallet-city-token-button:focus-visible {
-    background: #fffbeb;
-    color: #92400e;
-    border-color: #f59e0b;
-    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
-    outline: none;
-}
-
-.user-label {
-    line-height: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 22px;
-    align-self: center;
-}
-
-.logout-button:hover {
-    transform: translateY(-1px);
-}
-
-.wallet-network-indicator {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-    background: rgba(108, 117, 125, 0.15);
-    color: #6c757d;
-    margin-right: 8px;
-    white-space: nowrap;
-    transition: background 0.3s, color 0.3s;
-}
-
-.wallet-network-indicator.connected {
-    background: rgba(25, 135, 84, 0.15);
-    color: #198754;
-}
-
-.wallet-network-indicator.unknown-network {
-    background: rgba(255, 193, 7, 0.18);
-    color: #d39e00;
-}
-
-.wallet-network-indicator.disconnected {
-    background: rgba(108, 117, 125, 0.15);
-    color: #6c757d;
-}
-
-.wallet-connect-toggle {
-    background: #0d6efd;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
-}
-
-.wallet-connect-toggle.connected {
-    background: #198754;
-}
-
-.wallet-connect-toggle:hover {
-    transform: none;
-}
-
-.wallet-connect-button:disabled,
-.wallet-connect-toggle:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-/* Wallet button, chain chip and attest link inside the agent dialog are styled in modals.css */
-.agent-dialog-modal .wallet-city-token-button {
-    height: 26px;
-    min-height: 26px;
-    width: 32px;
-    padding: 0;
-}
-
-.agent-dialog-modal .wallet-attest-link,
-.agent-dialog-modal .wallet-city-token-button {
-    border: 1px solid #d4af37;
-    box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.12);
-    background: #fffaf0;
-}
-
-.agent-dialog-modal .wallet-attest-link:hover,
-.agent-dialog-modal .wallet-attest-link:focus,
-.agent-dialog-modal .wallet-attest-link:focus-visible,
-.agent-dialog-modal .wallet-city-token-button:hover,
-.agent-dialog-modal .wallet-city-token-button:focus,
-.agent-dialog-modal .wallet-city-token-button:focus-visible {
-    border-color: #c29200;
-    box-shadow: 0 0 0 3px rgba(194, 146, 0, 0.18);
-}
+/* The agent dialog's wallet row (Connect wallet, network chip, Attestify, city token) is btn btn-sm
+   in the shared button family; its layout is in css/modals.css. */
 
 /* Agent list item user indicator */
 .agent-stats-table .user-agent-row {
     background: #f8f9ff;
-    border-left: 3px solid #007bff;
+    border-left: 3px solid var(--cb-primary);
 }
 
 .agent-stats-table .user-agent-indicator {
-    color: #007bff;
+    color: var(--cb-primary);
     font-weight: 600;
     font-size: 11px;
 }
 
 /* -------------------- Mobile modal improvements -------------------- */
 @media (max-width: 767.98px) {
-    /* Full-screen modals on mobile */
-    .create-proposal-modal, .proposal-list-modal, .game-log-modal, 
-    .agent-dialog-modal, .proposal-info-modal {
+    /* Full-screen modals on mobile (the activity explorer is a shared dialog: a bottom sheet) */
+    .proposal-list-modal {
         padding: 0;
     }
-    
-    .proposal-modal-content {
-        width: 98% !important;
-        max-width: 98% !important;
-        margin: 1% auto !important;
-    }
 
-    /* .proposal-list-modal-content intentionally excluded: the proposals list docks to the lower
-       half on mobile (see proposals.css) instead of going full-screen, keeping the map visible. */
-    .game-log-modal-content, 
-    .agent-dialog-modal-content, .proposal-info-modal-content {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        width: 100vw;
-        height: var(--app-viewport-height);
-        max-width: 100vw;
-        max-height: var(--app-viewport-height);
-        margin: 0;
-        border-radius: 0;
-        display: flex;
-        flex-direction: column;
-        /* Use safe area insets for proper positioning */
-        padding-top: env(safe-area-inset-top);
-        padding-bottom: env(safe-area-inset-bottom);
-        padding-left: env(safe-area-inset-left);
-        padding-right: env(safe-area-inset-right);
-    }
-    
     /* Modal bodies should scroll */
-    .proposal-modal-body, .proposal-list-modal-body, 
-    .game-log-modal-body, 
-    .agent-dialog-modal-body, .proposal-info-modal-body {
+    .proposal-list-modal-body {
         flex: 1;
         overflow-y: auto;
         padding: 15px;
     }
-    
+
     /* Modal headers fixed */
-    .proposal-modal-header, .proposal-list-modal-header, 
-    .game-log-modal-header, 
-    .agent-dialog-modal-header, .proposal-info-modal-header {
+    .proposal-list-modal-header {
         flex-shrink: 0;
         padding: 15px 20px;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid var(--cb-line);
         /* Adjust for safe area padding - reduce top padding since container handles it */
         padding-top: 10px;
     }
-    
+
     /* Remove specific modal adjustments - now handled by safe area insets above */
-    
-    .agent-dialog-modal-header {
-        padding: 10px 15px 15px 15px; /* Consistent with other modal headers */
-    }
-    
-    .agent-dialog-modal-header .agent-header-info {
-        flex: 1;
-        min-width: 0; /* Allow text to wrap */
-    }
-    
-    .agent-dialog-modal-header .agent-avatar-large {
-        width: var(--agent-avatar-size) !important;
-        height: var(--agent-avatar-size) !important;
-        margin-right: 0 !important;
-    }
-    
-    .agent-dialog-modal-header h2 {
-        font-size: 1.3rem;
-        line-height: 1.3;
-        margin: 0 0 4px 0;
-    }
-    
-    /* Modal footers fixed */
-    .proposal-modal-footer, .game-log-modal-footer, 
-    .proposal-info-modal-footer {
-        flex-shrink: 0;
-        padding: 15px 20px;
-        border-top: 1px solid #eee;
-    }
-    
+
     /* Leaflet control buttons larger for touch */
     .leaflet-control-zoom a {
         width: 44px !important;

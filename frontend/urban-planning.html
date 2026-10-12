@@ -18,23 +18,27 @@
     <meta name="twitter:description" content="Consensus Builder is a free map-based urban planning tool for real parcels, community zoning proposals, and collaborative city planning." />
     <meta name="twitter:image" content="https://urbangametheory.xyz/images/consensus-builder-logo-2.png" />
     <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
+    <link rel="stylesheet" href="css/tokens.css?v=2" />
+    <link rel="stylesheet" href="css/primitives.css?v=2" />
+    <link rel="stylesheet" href="css/page-chrome.css?v=1" />
     <link rel="stylesheet" href="vendor/fontawesome-6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="index.css" />
-    <link rel="stylesheet" href="css/howto.css" />
+    <link rel="stylesheet" href="css/howto.css?v=2" />
     <link rel="stylesheet" href="css/urban-planning.css" />
 </head>
-<body class="urban-planning-page">
-    <aside class="sidebar">
-        <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo" />
-        <h1>Consensus Builder: free urban planning software</h1>
-        <nav class="sidebar-links" aria-label="Page navigation">
-            <a class="back-link" href="/">Open the map</a>
-            <a class="back-link" href="#community-planning">Community planning</a>
-            <a class="back-link" href="#planning-focus">Planning focus</a>
-            <a class="back-link" href="#how-it-works">How it works</a>
-            <a class="back-link" href="/how-to-use.html">Step-by-step guide</a>
-        </nav>
-    </aside>
+<body class="cb-page urban-planning-page">
+    <header class="cb-page-header">
+        <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo.png" alt="" width="28" height="28"><span>Consensus Builder</span></span>
+        <div class="cb-page-header__title"><h1>Consensus Builder: free urban planning software</h1></div>
+        <a class="cb-link cb-back-link" href="/"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>Back to the map</a>
+    </header>
+    <nav class="sidebar" aria-label="Page navigation">
+        <div class="sidebar-links">
+            <a class="btn btn-quiet" href="#community-planning">Community planning</a>
+            <a class="btn btn-quiet" href="#planning-focus">Planning focus</a>
+            <a class="btn btn-quiet" href="#how-it-works">How it works</a>
+            <a class="btn btn-quiet" href="/how-to-use.html">Step-by-step guide</a>
+        </div>
+    </nav>
 
     <main class="main-content">
         <div class="container">
@@ -52,7 +56,7 @@
                         The map and local drafting are free to explore. Some agent publishing, funding, or optional
                         blockchain actions may involve fees.
                     </p>
-                    <a class="primary-link" href="/">Explore the urban planning map</a>
+                    <a class="btn btn-primary" href="/">Explore the urban planning map</a>
                 </div>
                 <img src="images/site-intro-parcels.webp"
                     alt="Existing land parcels alongside a proposed urban block" width="1400" height="700" />
@@ -81,7 +85,7 @@
                     process.
                 </p>
                 <p>
-                    Use the <a href="/how-to-use.html">planning workflow guide</a> to see how to select land, create a
+                    Use the <a class="cb-link" href="/how-to-use.html">planning workflow guide</a> to see how to select land, create a
                     design, revise a proposal, and share the result.
                 </p>
             </section>
@@ -107,12 +111,12 @@
             <section class="guide-section">
                 <h2>Learn more</h2>
                 <ul>
-                    <li><a href="/how-to-use.html">How to use the urban planning tools</a></li>
-                    <li><a href="/hackathon-demo.html">See the Hyperstition hackathon demo</a></li>
-                    <li><a href="/deck.html">Read the Hyperstition pitch deck</a></li>
-                    <li><a href="/roadmap.html">See the product roadmap</a></li>
+                    <li><a class="cb-link" href="/how-to-use.html">How to use the urban planning tools</a></li>
+                    <li><a class="cb-link" href="/hackathon-demo.html">See the Hyperstition hackathon demo</a></li>
+                    <li><a class="cb-link" href="/deck.html">Read the Hyperstition pitch deck</a></li>
+                    <li><a class="cb-link" href="/roadmap.html">See the product roadmap</a></li>
                 </ul>
-                <p><a class="primary-link" href="/">Open Consensus Builder and explore the map</a></p>
+                <p><a class="btn btn-primary" href="/">Open Consensus Builder and explore the map</a></p>
             </section>
         </div>
     </main>

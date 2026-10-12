@@ -259,13 +259,15 @@
         return entry.kind === 'proposal' ? `p:${entry.key}` : `c:${entry.id}`;
     }
 
+    // A row's kind as a cb-badge: an applied proposal's goal in the applied tone, a formed or a
+    // cadastral parcel in the neutral one.
     function chipFor(entry) {
         if (entry.kind === 'proposal') {
             const goal = String(entry.proposal.goal || '').trim() || 'other';
-            return { text: t(`modal.roadWidth.proposalList.goalLabels.${goal}`, goal), cls: `drill-chip-goal-${goal}` };
+            return { text: t(`modal.roadWidth.proposalList.goalLabels.${goal}`, goal), cls: 'cb-badge--applied' };
         }
-        if (entry.depth > 0) return { text: t('panel.drill.slice', 'Formed parcel'), cls: 'drill-chip-slice' };
-        return { text: t('panel.drill.baseParcel', 'Cadastral parcel'), cls: 'drill-chip-base' };
+        if (entry.depth > 0) return { text: t('panel.drill.slice', 'Formed parcel'), cls: '' };
+        return { text: t('panel.drill.baseParcel', 'Cadastral parcel'), cls: '' };
     }
 
     function labelFor(entry) {
@@ -342,11 +344,13 @@
         return String(id).replace(/^HR-\d+-/, '');
     }
 
+    // The base row of a multi-parcel formation: not itself a choice (a framed row, not a cb-option),
+    // holding a strip of small parcel buttons that are; the chosen one is aria-pressed.
     function renderBaseGroupRow(groupIds, currentEntry, selectedRef) {
         const row = document.createElement('div');
-        row.className = 'drill-stack-row drill-stack-row--multi';
+        row.className = 'drill-stack-row--multi';
         const chipEl = document.createElement('span');
-        chipEl.className = 'drill-stack-chip drill-chip-base';
+        chipEl.className = 'cb-badge';
         chipEl.textContent = t('panel.drill.baseParcelCount', 'Cadastral parcel ({{count}})', { count: groupIds.length });
         row.appendChild(chipEl);
         const strip = document.createElement('div');
@@ -356,10 +360,10 @@
             const parcelEntry = { kind: 'parcel', id: String(id), feature, depth: 0 };
             const btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = 'drill-stack-parcel-btn';
+            btn.className = 'btn btn-sm drill-stack-parcel-btn';
             btn.dataset.ref = entryRef(parcelEntry);
             btn.textContent = baseParcelButtonLabel(id, feature);
-            if (selectedRef && entryRef(parcelEntry) === selectedRef) btn.classList.add('selected');
+            btn.setAttribute('aria-pressed', selectedRef && entryRef(parcelEntry) === selectedRef ? 'true' : 'false');
             btn.addEventListener('click', () => selectEntry(parcelEntry));
             if (feature) {
                 btn.addEventListener('mouseenter', () => hoverEntry(parcelEntry));
@@ -392,28 +396,32 @@
 
         stack.forEach((entry, i) => {
             if (i > 0) {
-                // The derivation arrow: the lower row is the ground the upper one stands on.
-                const link = document.createElement('div');
-                link.className = 'drill-stack-link';
-                link.textContent = '↑';
-                el.appendChild(link);
+                // The derivation connector between rows: the lower row is the ground the upper one
+                // stands on.
+                const connector = document.createElement('div');
+                connector.className = 'drill-stack-connector';
+                connector.setAttribute('aria-hidden', 'true');
+                connector.innerHTML = '<i class="fas fa-arrow-up"></i>';
+                el.appendChild(connector);
             }
             const groupIds = baseGroupIdsFor(stack, i, entry);
             if (groupIds && groupIds.length > 1) {
                 el.appendChild(renderBaseGroupRow(groupIds, entry, selectedRef));
                 return;
             }
+            // One row per level: a cb-option whose badge says the kind and whose title names it; the
+            // selected level is aria-pressed. drill-stack-row stays as the hook the specs use.
             const row = document.createElement('button');
             row.type = 'button';
-            row.className = 'drill-stack-row';
+            row.className = 'cb-option drill-stack-row';
             row.dataset.ref = entryRef(entry);
-            if (selectedRef && entryRef(entry) === selectedRef) row.classList.add('selected');
+            row.setAttribute('aria-pressed', selectedRef && entryRef(entry) === selectedRef ? 'true' : 'false');
             const chip = chipFor(entry);
             const chipEl = document.createElement('span');
-            chipEl.className = `drill-stack-chip ${chip.cls}`;
+            chipEl.className = chip.cls ? `cb-badge ${chip.cls}` : 'cb-badge';
             chipEl.textContent = chip.text;
             const labelEl = document.createElement('span');
-            labelEl.className = 'drill-stack-label';
+            labelEl.className = 'cb-option__title drill-stack-label';
             labelEl.textContent = labelFor(entry);
             row.appendChild(chipEl);
             row.appendChild(labelEl);
@@ -430,7 +438,7 @@
         if (proposalEntries.length >= 2 && baseParcel && global.ParcelCompare) {
             const compare = document.createElement('button');
             compare.type = 'button';
-            compare.className = 'drill-stack-compare btn btn-sm btn-outline-primary';
+            compare.className = 'btn btn-sm btn-block drill-stack-compare';
             compare.textContent = t('parcelMenu.actions.compare', 'Compare proposals here');
             compare.addEventListener('click', () => global.ParcelCompare.open(baseParcel.id,
                 proposalEntries.slice(0, 2).map(entry => entry.proposal.proposalId)));
@@ -460,7 +468,7 @@
         if (!panelEl) return;
         const ref = entryRef(entry);
         panelEl.querySelectorAll('.drill-stack-row, .drill-stack-parcel-btn').forEach(row => {
-            row.classList.toggle('selected', row.dataset.ref === ref);
+            row.setAttribute('aria-pressed', row.dataset.ref === ref ? 'true' : 'false');
         });
     }
 

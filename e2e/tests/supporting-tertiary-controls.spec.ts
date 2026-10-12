@@ -19,7 +19,7 @@ test.describe('Supporting tertiary controls @core', () => {
     await expect(banner).toBeVisible({ timeout: 15_000 });
     expect(await isSecondary(secondary)).toBe(true);
 
-    await banner.getByRole('button', { name: 'Dismiss' }).click();
+    await banner.getByRole('button', { name: 'Close' }).click();
     await expect(banner).toHaveCount(0);
     expect(await isSecondary(secondary)).toBe(true);
 

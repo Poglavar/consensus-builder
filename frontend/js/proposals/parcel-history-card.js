@@ -87,7 +87,7 @@
 
     function buildAnchorHtml(anchor, t = plainT) {
         if (!anchor || !anchor.account) return `<p class="parcel-history-anchor">${escapeText(t('panel.proposal.parcelHistory.noAnchor', 'This parcel id cannot have an on-chain anchor.'))}</p>`;
-        const link = `<a href="https://explorer.solana.com/address/${encodeURIComponent(anchor.account)}?cluster=devnet" target="_blank" rel="noopener">${escapeText(shortKey(anchor.account))} ↗</a>`;
+        const link = `<a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${encodeURIComponent(anchor.account)}?cluster=devnet" target="_blank" rel="noopener noreferrer">${escapeText(shortKey(anchor.account))}</a>`;
         const state = anchor.exists
             ? (formatAt(anchor.mintedAt)
                 ? t('panel.proposal.parcelHistory.anchorMinted', 'Anchored on chain since {{at}}', { at: formatAt(anchor.mintedAt) })
@@ -104,7 +104,7 @@
             const { title, details } = describeEvent(event, t);
             const when = formatAt(event.at) || t('panel.proposal.parcelHistory.untimed', 'time unknown');
             const href = resolveLink(event.link, base);
-            const link = href ? `<a href="${escapeText(href)}" target="_blank" rel="noopener">${escapeText(t('panel.proposal.parcelHistory.view', 'View'))} ↗</a>` : '';
+            const link = href ? `<a class="cb-link cb-link--external" href="${escapeText(href)}" target="_blank" rel="noopener noreferrer">${escapeText(t('panel.proposal.parcelHistory.view', 'View'))}</a>` : '';
             const hash = event.hash ? `<code class="parcel-history-hash" title="${escapeText(event.hash)}">${escapeText(shortKey(event.hash.replace(/^sha256:/, '')))}</code>` : '';
             return `
                 <li class="parcel-history-event" data-history-type="${escapeText(event.type)}">
@@ -112,7 +112,7 @@
                     <div class="parcel-history-body">
                         <strong>${escapeText(title)}</strong>
                         ${details.length ? `<span class="parcel-history-details">${details.map(escapeText).join(' · ')}</span>` : ''}
-                        <span class="parcel-history-links">${link}${hash}</span>
+                        <span class="cb-link-row parcel-history-links">${link}${hash}</span>
                     </div>
                 </li>`;
         }).join('');

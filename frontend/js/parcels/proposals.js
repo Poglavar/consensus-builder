@@ -137,21 +137,18 @@
             return;
         }
 
-        // Remove active class from all tab buttons
+        // The selected tab is an ARIA state (cb-tabs, css/primitives.css), never a class.
         const tabButtons = panel.querySelectorAll('.parcel-tab-btn');
-        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tabButtons.forEach(btn => btn.setAttribute('aria-selected', String(btn === activeButton)));
 
-        // Add active class to clicked button
-        activeButton.classList.add('active');
-
-        // Hide all tab contents
+        // Hide all tab contents (the hidden attribute, css/panels.css)
         const tabContents = panel.querySelectorAll('.parcel-tab-content');
-        tabContents.forEach(content => content.classList.remove('active'));
+        tabContents.forEach(content => { content.hidden = true; });
 
         // Show selected tab content
         const selectedTab = document.getElementById(tabId);
         if (selectedTab) {
-            selectedTab.classList.add('active');
+            selectedTab.hidden = false;
         }
 
         if (tabId === 'tools-tab') {

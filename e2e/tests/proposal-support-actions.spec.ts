@@ -139,8 +139,8 @@ test.describe('Proposal support settlement @features', () => {
         await compactAction.click();
       }
 
-      const alert = page.locator('.cb-confirm-overlay');
-      await expect(alert.locator('.cb-confirm-message')).toContainText(row.success, { timeout: 10000 });
+      const alert = page.locator('.cb-dialog-overlay--confirm');
+      await expect(alert.locator('.cb-dialog-overlay--confirm .cb-dialog__body')).toContainText(row.success, { timeout: 10000 });
       expect(await page.evaluate(() => (window as any).__proposalSupportRpcEvents)).toEqual(['send', 'confirm']);
       const instructionData = await page.evaluate((name) => {
         const w = window as any;

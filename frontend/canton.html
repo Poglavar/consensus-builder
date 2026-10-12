@@ -6,18 +6,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Canton integration · Consensus Builder</title>
-    <link rel="stylesheet" href="css/tokens.css?v=1" />
-    <link rel="stylesheet" href="css/canton.css?v=8" />
+    <link rel="stylesheet" href="css/tokens.css?v=2" />
+    <link rel="stylesheet" href="css/primitives.css?v=2" />
+    <link rel="stylesheet" href="css/page-chrome.css?v=1" />
+    <link rel="stylesheet" href="vendor/fontawesome-6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/canton.css?v=9" />
 </head>
-<body>
+<body class="cb-page">
+    <header class="cb-page-header">
+        <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo.png" alt="" width="28" height="28"><span>Consensus Builder</span></span>
+        <div class="cb-page-header__title"><h1>Canton integration</h1></div>
+        <a class="cb-link cb-back-link" href="/"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>Back to the map</a>
+    </header>
     <main class="canton-wrap">
-        <h1>Canton integration</h1>
         <p class="canton-sub">Enter a party ID to see every proposal it's part of — whether as buyer, owner, or lens — plus its completed sales.</p>
-        <p class="canton-nav"><a href="/">Back to the map</a></p>
 
         <div class="canton-controls">
             <input id="canton-party" type="text" placeholder="party id (hint::fingerprint)" autocomplete="off" list="party-options" />
-            <button id="canton-load" type="button">Load</button>
+            <button id="canton-load" type="button" class="btn btn-primary">Load</button>
         </div>
         <div id="canton-status" class="canton-status"></div>
         <div id="canton-perspective" class="canton-perspective"></div>
@@ -26,8 +32,8 @@
             <div class="canton-parties-head">
                 <h2>Test parties</h2>
                 <div class="canton-parties-actions">
-                    <button id="gen-party-btn" type="button">New test party</button>
-                    <button id="clear-parties-btn" type="button" class="canton-ghost">Clear</button>
+                    <button id="gen-party-btn" type="button" class="btn btn-sm">New test party</button>
+                    <button id="clear-parties-btn" type="button" class="btn btn-quiet btn-sm">Clear</button>
                 </div>
             </div>
             <p class="canton-hint">Parties you generate (creates, the perspective switcher, or "New test party") are remembered here and offered as suggestions in every party field below. The <code>::</code> suffix is the participant's namespace — shared by all parties; the name before it is what's unique.</p>
@@ -44,7 +50,7 @@
                 <label>Owner (optional)<input id="create-owner" type="text" placeholder="auto" autocomplete="off" list="party-options" /></label>
                 <label>Lens (optional)<input id="create-lens" type="text" placeholder="auto" autocomplete="off" list="party-options" /></label>
             </div>
-            <button id="create-btn" type="button">Create proposal</button>
+            <button id="create-btn" type="button" class="btn btn-primary">Create proposal</button>
             <div id="create-result" class="canton-result"></div>
         </section>
 
@@ -62,6 +68,6 @@
     <!-- Shared suggestion list for all party fields; filled from generated test parties. -->
     <datalist id="party-options"></datalist>
 
-    <script src="js/canton/canton-read.js?v=8" defer></script>
+    <script src="js/canton/canton-read.js?v=9" defer></script>
 </body>
 </html>

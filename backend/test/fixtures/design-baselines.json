@@ -1,38 +1,53 @@
 {
   "css": {
+    "css/activity-feed.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
     "css/actor-explorer.css": {
-      "colourLiterals": 11,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
     },
     "css/ai-scene.css": {
-      "colourLiterals": 46,
-      "zIndexLiterals": 3,
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/area-monitor-list.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
       "important": 0
     },
     "css/base.css": {
-      "colourLiterals": 3,
-      "zIndexLiterals": 1,
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/bets-sheet.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
       "important": 0
     },
     "css/canton-mode.css": {
-      "colourLiterals": 41,
+      "colourLiterals": 3,
       "zIndexLiterals": 0,
       "important": 3
     },
     "css/canton.css": {
-      "colourLiterals": 69,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
     },
     "css/command-palette.css": {
-      "colourLiterals": 19,
-      "zIndexLiterals": 1,
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
       "important": 0
     },
     "css/corridor-editor.css": {
-      "colourLiterals": 113,
-      "zIndexLiterals": 7,
+      "colourLiterals": 7,
+      "zIndexLiterals": 0,
       "important": 0
     },
     "css/corridor-render.css": {
@@ -40,15 +55,25 @@
       "zIndexLiterals": 0,
       "important": 0
     },
+    "css/floor-plan-archive.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
     "css/game.css": {
-      "colourLiterals": 125,
-      "zIndexLiterals": 1,
-      "important": 17
+      "colourLiterals": 7,
+      "zIndexLiterals": 0,
+      "important": 6
     },
     "css/grain-score.css": {
-      "colourLiterals": 71,
-      "zIndexLiterals": 5,
+      "colourLiterals": 53,
+      "zIndexLiterals": 0,
       "important": 1
+    },
+    "css/ground-fallback.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
     },
     "css/hackathon-deck.css": {
       "colourLiterals": 65,
@@ -61,48 +86,63 @@
       "important": 0
     },
     "css/howto.css": {
-      "colourLiterals": 69,
+      "colourLiterals": 0,
       "zIndexLiterals": 2,
       "important": 0
     },
     "css/layout.css": {
-      "colourLiterals": 8,
-      "zIndexLiterals": 1,
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
       "important": 6
     },
     "css/lens-console.css": {
-      "colourLiterals": 10,
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/map-credits.css": {
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
     },
     "css/map-search.css": {
-      "colourLiterals": 34,
-      "zIndexLiterals": 2,
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
       "important": 0
     },
     "css/map-shell.css": {
-      "colourLiterals": 73,
-      "zIndexLiterals": 4,
+      "colourLiterals": 4,
+      "zIndexLiterals": 0,
       "important": 0
     },
     "css/map.css": {
-      "colourLiterals": 142,
-      "zIndexLiterals": 10,
-      "important": 22
+      "colourLiterals": 18,
+      "zIndexLiterals": 0,
+      "important": 18
     },
     "css/modals.css": {
-      "colourLiterals": 517,
-      "zIndexLiterals": 35,
-      "important": 16
-    },
-    "css/panels.css": {
-      "colourLiterals": 214,
-      "zIndexLiterals": 6,
+      "colourLiterals": 52,
+      "zIndexLiterals": 0,
       "important": 6
     },
+    "css/page-chrome.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/panels.css": {
+      "colourLiterals": 19,
+      "zIndexLiterals": 0,
+      "important": 2
+    },
+    "css/parcel-coverage-report.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
     "css/parcel-menu.css": {
-      "colourLiterals": 12,
-      "zIndexLiterals": 2,
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
       "important": 0
     },
     "css/parcel-sources.css": {
@@ -111,53 +151,68 @@
       "important": 0
     },
     "css/photoreal-mode.css": {
-      "colourLiterals": 23,
-      "zIndexLiterals": 6,
+      "colourLiterals": 12,
+      "zIndexLiterals": 0,
       "important": 1
+    },
+    "css/pitch-variants.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
     },
     "css/primitives.css": {
       "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
     },
+    "css/proposal-approval.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/proposal-details.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
     "css/proposal-editor.css": {
-      "colourLiterals": 76,
-      "zIndexLiterals": 1,
+      "colourLiterals": 3,
+      "zIndexLiterals": 0,
       "important": 0
     },
     "css/proposals.css": {
-      "colourLiterals": 391,
-      "zIndexLiterals": 14,
-      "important": 17
+      "colourLiterals": 108,
+      "zIndexLiterals": 0,
+      "important": 6
     },
     "css/road-analysis.css": {
-      "colourLiterals": 11,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
     },
     "css/roadmap.css": {
-      "colourLiterals": 7,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
     },
     "css/selection-tray.css": {
-      "colourLiterals": 12,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
     },
     "css/site-tool.css": {
-      "colourLiterals": 42,
-      "zIndexLiterals": 3,
+      "colourLiterals": 8,
+      "zIndexLiterals": 0,
       "important": 0
     },
     "css/station-geometry-editor.css": {
-      "colourLiterals": 18,
-      "zIndexLiterals": 1,
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
       "important": 0
     },
     "css/structure-geometry-editor.css": {
-      "colourLiterals": 21,
-      "zIndexLiterals": 1,
+      "colourLiterals": 5,
+      "zIndexLiterals": 0,
       "important": 0
     },
     "css/tokens.css": {
@@ -166,7 +221,17 @@
       "important": 0
     },
     "css/tx-explorer.css": {
-      "colourLiterals": 20,
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/urban-blocks-playground.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/urban-blocks.css": {
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
     },
@@ -176,44 +241,24 @@
       "important": 0
     },
     "css/utilities.css": {
-      "colourLiterals": 326,
-      "zIndexLiterals": 12,
-      "important": 14
+      "colourLiterals": 44,
+      "zIndexLiterals": 0,
+      "important": 10
     },
     "css/world.css": {
-      "colourLiterals": 74,
-      "zIndexLiterals": 8,
+      "colourLiterals": 48,
+      "zIndexLiterals": 0,
       "important": 0
     }
   },
   "conflicts": [
     "#road-analysis-panel | css/panels.css > css/road-analysis.css | width",
-    ".agent-dialog-modal-close | css/modals.css > css/utilities.css | background",
-    ".agent-dialog-modal-close | css/modals.css > css/utilities.css | border",
-    ".agent-dialog-modal-close | css/modals.css > css/utilities.css | color",
-    ".agent-dialog-modal-close | css/modals.css > css/utilities.css | display",
-    ".agent-dialog-modal-close | css/modals.css > css/utilities.css | font-size",
-    ".agent-dialog-modal-close | css/modals.css > css/utilities.css | height",
-    ".agent-dialog-modal-close | css/modals.css > css/utilities.css | width",
-    ".lens-close-btn | css/modals.css > css/utilities.css | background",
-    ".lens-close-btn | css/modals.css > css/utilities.css | border",
-    ".lens-close-btn | css/modals.css > css/utilities.css | color",
-    ".lens-close-btn | css/modals.css > css/utilities.css | display",
-    ".lens-close-btn | css/modals.css > css/utilities.css | font-size",
-    ".lens-close-btn | css/modals.css > css/utilities.css | height",
-    ".lens-close-btn | css/modals.css > css/utilities.css | width",
     ".map-shell-slot--tray | css/map-shell.css > css/selection-tray.css | bottom",
     ".parcel-item | css/panels.css > css/game.css | transition",
-    ".parcel-item | css/panels.css > css/modals.css | background",
     ".parcel-item | css/panels.css > css/modals.css | border-radius",
-    ".parcel-tab-btn @(max-width: 767.98px) | css/layout.css > css/panels.css | padding",
-    ".parcel-tab-btn @(max-width: 767.98px) | css/layout.css > css/utilities.css | padding",
-    ".parcel-tab-btn @(max-width: 767.98px) | css/panels.css > css/utilities.css | padding",
-    ".proposal-item | css/modals.css > css/proposals.css | border",
     ".proposal-item | css/modals.css > css/proposals.css | border-radius",
     ".proposal-item | css/modals.css > css/proposals.css | padding",
     ".proposal-item | css/panels.css > css/game.css | transition",
-    ".proposal-item | css/panels.css > css/modals.css | background",
     ".proposal-item | css/panels.css > css/modals.css | border-radius",
     ".proposal-item | css/panels.css > css/proposals.css | margin-bottom",
     ".proposal-item | css/panels.css > css/proposals.css | padding",
@@ -221,26 +266,16 @@
     ".proposal-item | css/proposals.css > css/game.css | margin-bottom",
     ".proposal-item | css/proposals.css > css/game.css | padding",
     ".proposal-item | css/proposals.css > css/game.css | transition",
-    ".proposal-modal-footer .btn-proposal | css/proposals.css > css/utilities.css | flex",
     ".proposal-parcel-item .parcel-number | css/proposals.css > css/utilities.css | font-weight",
     ".proposal-parcel-item | css/proposals.css > css/utilities.css | border-bottom",
     ".proposal-parcel-item | css/proposals.css > css/utilities.css | padding",
-    ".username-display | css/proposals.css > css/utilities.css | border",
-    ".username-display | css/proposals.css > css/utilities.css | border-radius",
-    ".username-display | css/proposals.css > css/utilities.css | box-shadow",
-    ".username-display | css/proposals.css > css/utilities.css | color",
-    ".username-display | css/proposals.css > css/utilities.css | gap",
-    ".username-display | css/proposals.css > css/utilities.css | max-width",
-    ".username-display | css/proposals.css > css/utilities.css | padding",
-    ".username-display | css/proposals.css > css/utilities.css | right",
-    ".username-display | css/proposals.css > css/utilities.css | top",
     "body | css/base.css > css/layout.css | width"
   ],
   "i18n": {
     "titleCaseLabels": 32,
-    "caseConflicts": 78,
+    "caseConflicts": 72,
     "threeDots": 0,
-    "duplicateGroups": 349
+    "duplicateGroups": 348
   },
   "js": {
     "js/blockchain-sync.js": 2,
@@ -260,7 +295,6 @@
     "js/proposals/core.js": 4,
     "js/proposals/create.js": 19,
     "js/proposals/dialog-create.js": 1,
-    "js/proposals/dialog-upload.js": 1,
     "js/proposals/geometry.js": 2,
     "js/proposals/list-ui.js": 4,
     "js/proposals/urban-rules.js": 2,

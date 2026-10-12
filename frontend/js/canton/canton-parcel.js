@@ -54,13 +54,14 @@
     function cardHtml(it, party, kind) {
         const isSale = kind === 'sale';
         const roles = ['buyer', 'owner', 'lens'].filter((r) => it[r] && it[r] === party);
-        const youTag = roles.length ? `<span class="canton-you">you: ${roles.join(', ')}</span>` : '';
+        // The status and the viewer's roles are cb-badge tones (css/primitives.css).
+        const youTag = roles.length ? `<span class="cb-badge cb-badge--primary canton-you">you: ${roles.join(', ')}</span>` : '';
         const canAccept = !isSale && it.owner && it.owner === party;
         return `
             <div class="canton-card">
                 <div class="canton-card-top">
                     <span class="canton-parcel">${it.parcelId || '—'}</span>
-                    <span class="canton-status ${isSale ? 'canton-status-accepted' : 'canton-status-open'}">${isSale ? 'Accepted' : 'Open'}</span>
+                    <span class="cb-badge ${isSale ? 'cb-badge--success' : 'cb-badge--warning'}">${isSale ? 'Accepted' : 'Open'}</span>
                     ${youTag}
                     <span class="canton-price">${price(it.price)}</span>
                 </div>
@@ -74,7 +75,7 @@
     }
 
     const section = (inner, total) =>
-        `<div class="canton-panel-section"><h4 class="canton-panel-title">Canton proposals${total ? ` <span class="canton-badge">${total}</span>` : ''}</h4>${inner}</div>`;
+        `<div class="canton-panel-section"><h4 class="canton-panel-title">Canton proposals${total ? ` <span class="cb-badge cb-badge--count">${total}</span>` : ''}</h4>${inner}</div>`;
 
     let currentParcelId = null;
 

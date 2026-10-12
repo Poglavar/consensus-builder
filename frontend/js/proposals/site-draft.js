@@ -419,6 +419,31 @@
             .filter(w => w.kind === 'small' && !accepted.has(w.parcelId));
     }
 
+    // How far to move a site's screen box so it clears the panels over the map, a margin away from
+    // each. The free box is the view less the side each panel docks to: a panel right of the view's
+    // centre takes the right, one below its middle the bottom. Boxes are { left, top, right, bottom }
+    // in pixels. Returns { fits, dx, dy, free }: the shift that brings the site inside the free box
+    // (0, 0 when it is already clear), or fits false when the site is larger than the free box.
+    function panToClear(siteBox, viewBox, panelBoxes, marginPx) {
+        const margin = finite(marginPx) ? marginPx : 0;
+        const free = { left: viewBox.left + margin, top: viewBox.top + margin, right: viewBox.right - margin, bottom: viewBox.bottom - margin };
+        const midX = (viewBox.left + viewBox.right) / 2;
+        const midY = (viewBox.top + viewBox.bottom) / 2;
+        (panelBoxes || []).forEach(panel => {
+            if (!panel || !(panel.right > panel.left) || !(panel.bottom > panel.top)) return;
+            if (panel.left >= midX) free.right = Math.min(free.right, panel.left - margin);
+            else if (panel.top >= midY) free.bottom = Math.min(free.bottom, panel.top - margin);
+        });
+        const shift = (low, high, freeLow, freeHigh) => (low < freeLow ? freeLow - low : (high > freeHigh ? freeHigh - high : 0));
+        const fits = siteBox.right - siteBox.left <= free.right - free.left && siteBox.bottom - siteBox.top <= free.bottom - free.top;
+        return {
+            fits,
+            dx: fits ? shift(siteBox.left, siteBox.right, free.left, free.right) : 0,
+            dy: fits ? shift(siteBox.top, siteBox.bottom, free.top, free.bottom) : 0,
+            free
+        };
+    }
+
     return {
         SMALL_INTRUSION_M,
         MIN_SITE_AREA_M2,
@@ -440,6 +465,7 @@
         openGroundOf,
         formatWidth,
         bindingSummary,
-        unconfirmedSmallIntrusions
+        unconfirmedSmallIntrusions,
+        panToClear
     };
 });

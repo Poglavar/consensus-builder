@@ -1,26 +1,28 @@
-/* The corridor cross-section editor: a scale diagram of the street plus one row per lane. */
+/* The corridor cross-section editor: a scale diagram of the street plus one row per lane. Its
+   controls are the shared vocabulary (css/primitives.css): .cb-tabs, .cb-segmented limit and
+   survey toggles, .btn .btn-icon lane buttons, .cb-badge obstacle chips; this file lays them out. */
 
 /* Docked beside a live map, not a blocking modal: the road being edited stays visible in the
-   remaining viewport and every edit previews on it as it is made. The overlay itself is
-   click-transparent — only the panel takes pointer events, so the map underneath keeps panning
-   and zooming. Desktop docks the panel to the right edge, mobile to the bottom (media query). */
+   remaining viewport and every edit previews on it as it is made. The dock takes only the panel's
+   own box, so the map beside it keeps panning and zooming. Desktop docks the panel to the right
+   edge, mobile to the bottom (media query). */
 .corridor-editor-overlay {
     position: fixed;
-    inset: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
     align-items: stretch;
-    justify-content: flex-end;
-    z-index: 16000;
-    pointer-events: none;
+    width: min(480px, 42vw);
+    z-index: var(--cb-z-editor);
 }
 
 .corridor-editor {
-    pointer-events: auto;
-    background: #fff;
-    width: min(480px, 42vw);
+    background: var(--cb-surface);
+    width: 100%;
     display: flex;
     flex-direction: column;
-    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--cb-shadow-lg);
 }
 
 /* While the editor is open the map is a viewport, not a control surface: panning and zooming
@@ -44,13 +46,16 @@ body.corridor-editor-open .leaflet-interactive {
 }
 
 .corridor-editor-title {
-    font-weight: 600;
-    font-size: 1.05rem;
+    margin: 0;
+    font-weight: var(--cb-weight-semibold);
+    font-size: var(--cb-text-xl);
+    line-height: 1.25;
+    color: var(--cb-text-strong);
 }
 
 .corridor-editor-subtitle {
     font-size: 0.78rem;
-    color: #666;
+    color: var(--cb-text-muted);
     margin-top: 2px;
 }
 
@@ -60,7 +65,7 @@ body.corridor-editor-open .leaflet-interactive {
     justify-content: space-between;
     padding: 0 16px 10px;
     font-size: 0.85rem;
-    color: #555;
+    color: var(--cb-text-muted);
 }
 
 /* The total width is a READOUT, not a control: it is the sum of the lanes. Sized like a headline
@@ -77,7 +82,7 @@ body.corridor-editor-open .leaflet-interactive {
     text-align: right;
     font-size: 1.35rem;
     font-weight: 700;
-    color: #111;
+    color: var(--cb-text-strong);
     font-variant-numeric: tabular-nums;
 }
 
@@ -87,74 +92,50 @@ body.corridor-editor-open .leaflet-interactive {
 .corridor-editor-ceiling {
     font-size: 1.05rem;
     font-weight: 600;
-    color: #777;
+    color: var(--cb-text-muted);
     font-variant-numeric: tabular-nums;
     cursor: help;
 }
 
 .corridor-editor-ceiling--over {
-    color: #b3261e;
+    color: var(--cb-danger);
 }
 
-/* Obstacle chips for post-placement widening: buildings block Apply, structures just inform. */
+/* Obstacle chips for post-placement widening (.cb-badge): buildings block Apply, structures just
+   inform. Their sentences wrap rather than run past the panel. Beside them sit two .btn .btn-sm:
+   the way out of a blocked widening (a jump to the Corridor tab, where the fit computation and the
+   move button live) and the Before / after toggle (js/proposals/before-after.js, dividers.md M4),
+   pressed (aria-pressed) while comparing. */
 .corridor-editor-indicators {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 6px;
     padding: 0 16px 8px;
 }
 
 .corridor-editor-indicator {
-    font-size: 0.74rem;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 10px;
-}
-
-/* Before / after (js/proposals/before-after.js, dividers.md M4): a chip that stays, pressed while comparing. */
-.corridor-editor-compare {
-    cursor: pointer;
-}
-
-.corridor-editor-compare[aria-pressed="true"] {
-    background: var(--cb-success-soft);
-    border-color: var(--cb-success);
-    color: var(--cb-success-soft-ink);
+    height: auto;
+    min-height: 20px;
+    padding-block: 2px;
+    line-height: 1.35;
+    white-space: normal;
 }
 
 .corridor-editor-indicator--buildings {
-    background: #fdecea;
-    color: #b3261e;
-    border: 1px solid #f2b8b5;
+    background: var(--cb-danger-soft);
+    color: var(--cb-danger-soft-ink);
 }
 
 .corridor-editor-indicator--structures {
-    background: #fef3e2;
-    color: #9a5b13;
-    border: 1px solid #f5d9a8;
-}
-
-/* The way out of a blocked widening: a clickable chip that jumps to the Corridor tab, where the
-   fit computation and the move button live. Blue (an action), unlike the red/amber status chips. */
-.corridor-editor-indicator--fit {
-    appearance: none;
-    background: #e8f0fe;
-    color: #1a56c4;
-    border: 1px solid #a8c3f5;
-    cursor: pointer;
-    font: inherit;
-    font-size: 0.74rem;
-    font-weight: 600;
-}
-
-.corridor-editor-indicator--fit:hover {
-    background: #d7e5fd;
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
 }
 
 /* Flash the total when an edit is refused — a lane below its minimum, or the 80 m cap. */
 .corridor-editor-total--refused {
     animation: corridor-refuse 0.4s ease;
-    color: #b3261e;
+    color: var(--cb-danger);
 }
 
 @keyframes corridor-refuse {
@@ -179,7 +160,7 @@ body.corridor-editor-open .leaflet-interactive {
     height: 46px;
     border-radius: 4px;
     overflow: hidden;
-    border: 1px solid #ccc;
+    border: 1px solid var(--cb-line-strong);
     margin-bottom: 12px;
 }
 
@@ -203,8 +184,8 @@ body.corridor-editor-open .leaflet-interactive {
     justify-content: center;
     width: 18px;
     height: 18px;
-    background: #1a73e8;
-    color: #fff;
+    background: var(--cb-primary);
+    color: var(--cb-primary-ink);
     font-size: 13px;
     font-weight: 800;
     line-height: 1;
@@ -220,14 +201,14 @@ body.corridor-editor-open .leaflet-interactive {
 .corridor-section-lane[draggable="true"] { cursor: grab; }
 .corridor-section--band-dragging .corridor-section-lane { transition: width 0.14s ease, margin 0.14s ease; }
 .corridor-section-lane--dragging { opacity: 0.4; cursor: grabbing; min-width: 0; }
-.corridor-section-lane--slot-left { box-shadow: inset 3px 0 0 0 #1a73e8; z-index: 3; }
-.corridor-section-lane--slot-right { box-shadow: inset -3px 0 0 0 #1a73e8; z-index: 3; }
+.corridor-section-lane--slot-left { box-shadow: inset 3px 0 0 0 var(--cb-primary); z-index: var(--cb-z-local-3); }
+.corridor-section-lane--slot-right { box-shadow: inset -3px 0 0 0 var(--cb-primary); z-index: var(--cb-z-local-3); }
 
 /* The selected lane has to be findable at a glance in BOTH places — the diagram and the row list are
    one selection seen twice, so they get the same blue. */
 .corridor-section-lane--selected {
-    box-shadow: inset 0 0 0 3px #1a73e8, inset 0 0 0 5px rgba(255, 255, 255, 0.9);
-    z-index: 1;
+    box-shadow: inset 0 0 0 3px var(--cb-primary), inset 0 0 0 5px var(--cb-glass);
+    z-index: var(--cb-z-local-1);
 }
 
 /* Flex, not grid: at 400 px the action buttons drop to a second line instead of crushing the
@@ -244,9 +225,8 @@ body.corridor-editor-open .leaflet-interactive {
 }
 
 .corridor-lane-row--selected {
-    background: #e8f0fe;
-    border-left-color: #1a73e8;
-    box-shadow: inset 0 0 0 1px rgba(26, 115, 232, 0.35);
+    background: var(--cb-primary-soft);
+    border-left-color: var(--cb-primary);
 }
 
 /* The ↑/↓ reorder arrows live at the FRONT of each row (side by side), kept clear of the direction
@@ -266,15 +246,14 @@ body.corridor-editor-open .leaflet-interactive {
     border: 1px solid rgba(0, 0, 0, 0.25);
 }
 
+/* The row's fields take their look from the base form controls (css/primitives.css); only their
+   compact size is set here. */
 .corridor-lane-type,
 .corridor-lane-width,
 .corridor-lane-landscape,
 .corridor-lane-gauge {
     height: 32px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
     padding: 0 6px;
-    font-size: 0.85rem;
     min-width: 0;
 }
 
@@ -303,96 +282,43 @@ body.corridor-editor-open .leaflet-interactive {
     align-items: center;
     gap: 6px;
     font-size: 0.8rem;
-    color: #5f6368;
+    color: var(--cb-text-muted);
 }
 
 .corridor-lane-tree-every {
     width: 56px;
     height: 30px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
     padding: 0 6px;
-    font-size: 0.85rem;
     text-align: center;
 }
 
-/* The direction arrow sits with the row actions but reads as a state, not a nudge: a touch of colour
-   so a click-to-flip control is distinct from the ↑/↓ reorder buttons beside it. */
-.corridor-lane-btn.corridor-lane-direction {
-    color: #1a73e8;
-    font-weight: 700;
-}
-
-.corridor-lane-btn.corridor-lane-direction:hover {
-    background: #e8f0fe;
-}
-
 .corridor-lane-unit {
-    font-size: 0.78rem;
-    color: #777;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
 }
 
-/* The type's standard width: a hint while the lane is at it, a one-click way back once it is not. */
+/* The type's standard width: a hint while the lane is at it, a one-click way back (a .btn .btn-sm)
+   once it is not. */
 .corridor-lane-standard {
     flex: 0 0 auto;
-    font-size: 0.72rem;
-    color: #9aa0a6;
+    font-size: var(--cb-text-xs);
+    color: var(--cb-text-faint);
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
 }
 
-button.corridor-lane-standard--reset {
-    border: 1px solid #cfd8e3;
-    border-radius: 4px;
-    background: #f5f8ff;
-    color: #1a73e8;
-    cursor: pointer;
-    padding: 3px 5px;
-    line-height: 1;
+.corridor-lane-standard--reset {
+    flex: 0 0 auto;
+    font-variant-numeric: tabular-nums;
 }
 
-button.corridor-lane-standard--reset:hover {
-    background: #e8f0fe;
-}
-
+/* The row's buttons are .btn .btn-icon .btn-sm: the ↑/↓ reorder pair at the front (the touch and
+   keyboard path, HTML5 drag does not exist on a finger), the direction flip and Remove at the back. */
 .corridor-lane-actions {
     flex: 0 0 auto;
     display: inline-flex;
     gap: 4px;
     margin-left: auto;
-}
-
-.corridor-lane-btn {
-    width: 30px;
-    height: 30px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background: #fff;
-    cursor: pointer;
-    line-height: 1;
-}
-
-.corridor-lane-btn:disabled {
-    opacity: 0.35;
-    cursor: default;
-}
-
-.corridor-lane-btn--remove {
-    color: #b3261e;
-}
-
-/* The two reorder arrows sit side by side at the front, a touch narrower than a normal square button
-   so the pair does not crowd the row. On mobile the media-query .corridor-lane-btn size wins (defined
-   later), enlarging them for touch — which matters more now that these arrows are the only reorder
-   path on a phone. */
-.corridor-lane-move-btn {
-    width: 24px;
-    height: 30px;
-    padding: 0;
-    font-size: 0.8rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
 }
 
 /* Presets and palette: the two "make the road" controls. The presets stamp a whole standard
@@ -402,7 +328,7 @@ button.corridor-lane-standard--reset:hover {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: #6b7280;
+    color: var(--cb-text-muted);
     margin-bottom: 5px;
 }
 
@@ -414,25 +340,17 @@ button.corridor-lane-standard--reset:hover {
     margin-bottom: 12px;
 }
 
+/* The preset select takes its look from the base form controls (css/primitives.css). */
 .corridor-editor-pickers select,
 .corridor-editor-pickers > .corridor-editor-add-lane {
     flex: 1 1 0;
     min-width: 0;
 }
 
-.corridor-editor-pickers select {
-    border: 1px solid #cfd8e3;
-    border-radius: 6px;
-    background: #f7f9fc;
-    color: #1f2937;
-    font-size: 0.8rem;
-    padding: 6px 8px;
-    cursor: pointer;
-}
-
 /* Add-lane is a custom dropdown (native <option> backgrounds are ignored by the platform popup, and
-   the point is to show each lane's surface colour). The toggle mimics the sibling <select>; the menu
-   is a coloured list — each row IS its lane's surface, with contrast-picked text. */
+   the point is to show each lane's surface colour). The toggle mimics the sibling <select> (the
+   base form control's tokens); the menu is a coloured list — each row IS its lane's surface, with
+   contrast-picked text. */
 .cb-lane-dropdown { position: relative; }
 
 .cb-lane-dropdown-toggle {
@@ -441,30 +359,31 @@ button.corridor-lane-standard--reset:hover {
     justify-content: space-between;
     gap: 6px;
     width: 100%;
-    border: 1px solid #cfd8e3;
-    border-radius: 6px;
-    background: #f7f9fc;
-    color: #1f2937;
-    font-size: 0.8rem;
-    padding: 6px 8px;
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-sm);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font: inherit;
+    font-size: var(--cb-text-base);
+    padding: 6px 10px;
     cursor: pointer;
 }
 
 .cb-lane-dropdown-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cb-lane-dropdown-caret { color: #6b7280; font-size: 0.7rem; flex: none; }
+.cb-lane-dropdown-caret { color: var(--cb-text-muted); font-size: 0.7rem; flex: none; }
 
 .cb-lane-dropdown-menu {
     position: absolute;
     top: calc(100% + 4px);
     left: 0;
     right: 0;
-    z-index: 50;
+    z-index: var(--cb-z-local-50);
     max-height: 340px;
     overflow-y: auto;
-    border: 1px solid #cfd8e3;
-    border-radius: 8px;
-    background: #fff;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+    box-shadow: var(--cb-shadow-md);
     padding: 4px;
 }
 
@@ -483,24 +402,23 @@ button.corridor-lane-standard--reset:hover {
 
 .cb-lane-option:hover,
 .cb-lane-option:focus {
-    box-shadow: inset 0 0 0 2px #1a73e8;
+    box-shadow: inset 0 0 0 2px var(--cb-focus);
     outline: none;
 }
 
 /* Said out loud rather than silently refused: the one edit the editor can still turn down. */
 .corridor-editor-notice {
-    background: #fef3e2;
-    color: #9a5b13;
-    border: 1px solid #f5d9a8;
-    border-radius: 6px;
-    font-size: 0.78rem;
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
+    border-radius: var(--cb-radius-sm);
+    font-size: var(--cb-text-sm);
     padding: 6px 8px;
     margin-bottom: 10px;
 }
 
 .corridor-editor-hint {
-    font-size: 0.72rem;
-    color: #9aa0a6;
+    font-size: var(--cb-text-xs);
+    color: var(--cb-text-faint);
     margin: 8px 0 4px;
 }
 
@@ -509,14 +427,16 @@ button.corridor-lane-standard--reset:hover {
     gap: 8px;
     justify-content: flex-end;
     padding: 10px 16px 14px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--cb-line);
 }
 
 /* Mobile: the editor takes the lower half of the screen and the map keeps the upper half —
    the same docked-beside-a-live-map arrangement as desktop, rotated 90°. */
 @media (max-width: 767.98px) {
     .corridor-editor-overlay {
-        align-items: flex-end;
+        top: auto;
+        left: 0;
+        width: 100%;
     }
 
     .corridor-editor {
@@ -525,7 +445,7 @@ button.corridor-lane-standard--reset:hover {
         /* Half of the VISIBLE viewport where supported — 50vh overshoots under mobile Safari's
            dynamic toolbar and would hide the footer buttons. */
         height: 50dvh;
-        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+        border-radius: var(--cb-radius-xl) var(--cb-radius-xl) 0 0;
     }
 }
 
@@ -537,11 +457,6 @@ button.corridor-lane-standard--reset:hover {
 
     .corridor-lane-type {
         flex: 1 1 90px;
-    }
-
-    .corridor-lane-btn {
-        width: 26px;
-        height: 26px;
     }
 
     .corridor-editor-total {
@@ -577,7 +492,7 @@ button.corridor-lane-standard--reset:hover {
     margin-left: -7px;
     cursor: col-resize;
     touch-action: none;
-    z-index: 2;
+    z-index: var(--cb-z-local-2);
 }
 
 .corridor-section-seam::after {
@@ -611,9 +526,11 @@ button.corridor-lane-standard--reset:hover {
         height: 38px;
     }
 
-    .corridor-lane-btn {
+    /* Finger-sized lane buttons. */
+    .corridor-lane-row .btn-icon {
         width: 38px;
-        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
     }
 
     /* Finger-sized targets for the two dropdowns that build the road. */
@@ -624,7 +541,7 @@ button.corridor-lane-standard--reset:hover {
 }
 
 .corridor-section-seam:hover::after {
-    background: #f59e0b;
+    background: var(--cb-warning);
 }
 
 /* A seam against a fixed-width parking lane cannot be dragged: no resize cursor, and the handle line
@@ -641,12 +558,8 @@ button.corridor-lane-standard--reset:hover {
     background: rgba(255, 255, 255, 0.45);
 }
 
-/* A parking lane's depth is a fixed standard: its width field is read-only, styled to say so. */
-.corridor-lane-width--fixed {
-    background: #f1f3f4;
-    color: #5f6368;
-    cursor: not-allowed;
-}
+/* A parking lane's depth is a fixed standard: its width field is disabled, and the base disabled
+   input (css/primitives.css) says so. */
 
 /* The apply itself is said by the status line (ephemerals.md); only the busy pointer stays here. */
 
@@ -662,29 +575,11 @@ body.corridor-busy .leaflet-interactive {
 
 /* --- Corridor tab: clearance stats, width-profile chart, move-to-fit --- */
 
+/* Cross-section · Corridor are .cb-tabs. The strip scrolls sideways (overflow), which would let the
+   panel's flex column squeeze it to nothing; it keeps its height. */
 .corridor-editor-tabs {
-    display: flex;
-    gap: 2px;
+    flex-shrink: 0;
     padding: 0 16px;
-    border-bottom: 1px solid #e5e5e5;
-}
-
-.corridor-editor-tab {
-    appearance: none;
-    border: none;
-    background: none;
-    padding: 8px 12px;
-    font-size: 0.85rem;
-    color: #666;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-}
-
-.corridor-editor-tab--active {
-    color: #111;
-    font-weight: 600;
-    border-bottom-color: #2563eb;
 }
 
 .corridor-stats {
@@ -692,7 +587,7 @@ body.corridor-busy .leaflet-interactive {
     flex-direction: column;
     gap: 12px;
     font-size: 0.85rem;
-    color: #333;
+    color: var(--cb-text);
 }
 
 /* The header's limit rows stay put across both tabs: they govern the Corridor tab's buildable width
@@ -708,50 +603,51 @@ body.corridor-busy .leaflet-interactive {
     gap: 8px;
     flex-wrap: wrap;
     font-size: 0.85rem;
-    color: #555;
+    color: var(--cb-text-muted);
     min-height: 30px;
 }
 
 .corridor-limit-current {
     font-weight: 600;
-    color: #333;
+    color: var(--cb-text);
 }
 
 .corridor-limit-note {
-    color: #8a6d1a;
+    color: var(--cb-warning-soft-ink);
 }
 
-/* The building-layers picker (B). Three checkboxes, because the surveys stack. */
+/* The building-layers picker (B, js/building-layers-dialog.js): the shared dialog with
+   `building-layers-dialog` as its identity class. Three checkboxes, because the surveys stack. */
 .building-layers-dialog .building-layers-options {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin: 12px 0 4px;
+    gap: var(--cb-space-3);
+    margin: 0;
     text-align: left;
 }
 
 .building-layers-option {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
+    gap: var(--cb-space-2);
     cursor: pointer;
 }
 
 .building-layers-option input {
     margin-top: 3px;
-    accent-color: #7c3aed;
+    accent-color: var(--cb-primary);
 }
 
 .building-layers-option strong {
     display: block;
-    font-weight: 600;
+    font-weight: var(--cb-weight-semibold);
 }
 
 .building-layers-option small {
     display: block;
-    color: #666;
-    font-size: 0.78rem;
-    line-height: 1.35;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    line-height: var(--cb-leading);
 }
 
 /* Which limit the road answers to. A segmented pair rather than a checkbox: the two are exclusive
@@ -761,60 +657,29 @@ body.corridor-busy .leaflet-interactive {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #555;
+    color: var(--cb-text-muted);
 }
 
 .corridor-limit-label {
-    font-size: 0.8rem;
-    color: #666;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
 }
 
-.corridor-limit-toggle {
-    display: inline-flex;
-    border: 1px solid #cfd4dc;
-    border-radius: 6px;
-    overflow: hidden;
-}
-
+/* The limit pair and the survey toggles are .cb-segmented rows; the chosen ones are aria-pressed.
+   Tall enough to be a comfortable tap target on a phone, where there is no B key to press. */
 .corridor-limit-option {
-    appearance: none;
-    border: 0;
-    background: #fff;
-    color: #444;
-    font: inherit;
-    font-size: 0.82rem;
-    /* Tall enough to be a comfortable tap target on a phone, where there is no B key to press. */
     min-height: 30px;
-    padding: 4px 12px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
 }
 
 .corridor-limit-option svg {
     display: block;
 }
 
-.corridor-limit-option + .corridor-limit-option {
-    border-left: 1px solid #cfd4dc;
-}
-
-.corridor-limit-option:hover {
-    background: #f1f3f7;
-}
-
-.corridor-limit-option--on,
-.corridor-limit-option--on:hover {
-    background: #2563eb;
-    color: #fff;
-}
-
 .corridor-stats-note {
-    font-size: 0.8rem;
-    color: #8a6d1a;
-    background: #fdf6e3;
-    border-radius: 6px;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-warning-soft-ink);
+    background: var(--cb-warning-soft);
+    border-radius: var(--cb-radius-sm);
     padding: 6px 10px;
 }
 
@@ -827,29 +692,29 @@ body.corridor-busy .leaflet-interactive {
 .corridor-stats-value {
     font-size: 1.6rem;
     font-weight: 700;
-    color: #111;
+    color: var(--cb-text-strong);
     margin-right: 8px;
 }
 
 .corridor-stats-label {
     font-size: 0.78rem;
-    color: #666;
+    color: var(--cb-text-muted);
 }
 
 .corridor-stats-current {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
-    color: #555;
+    color: var(--cb-text-muted);
 }
 
 .corridor-stats-delta--ok {
-    color: #15803d;
+    color: var(--cb-success-hover);
     font-weight: 600;
 }
 
 .corridor-stats-delta--over {
-    color: #b3261e;
+    color: var(--cb-danger);
     font-weight: 600;
 }
 
@@ -860,11 +725,11 @@ body.corridor-busy .leaflet-interactive {
 }
 
 .corridor-stats-fit-ok {
-    color: #15803d;
+    color: var(--cb-success-hover);
 }
 
 .corridor-stats-fit-none {
-    color: #b3261e;
+    color: var(--cb-danger);
 }
 
 .corridor-stats-side-buttons {
@@ -875,7 +740,7 @@ body.corridor-busy .leaflet-interactive {
 
 .corridor-chart-title {
     font-size: 0.78rem;
-    color: #666;
+    color: var(--cb-text-muted);
 }
 
 .corridor-chart {
@@ -885,7 +750,7 @@ body.corridor-busy .leaflet-interactive {
 }
 
 .corridor-chart-grid {
-    stroke: #ececec;
+    stroke: var(--cb-line);
     stroke-width: 1;
 }
 
@@ -893,11 +758,11 @@ body.corridor-busy .leaflet-interactive {
 .corridor-chart-road-label,
 .corridor-chart-min-label {
     font-size: 9px;
-    fill: #777;
+    fill: var(--cb-text-muted);
 }
 
 .corridor-chart-min-label {
-    fill: #111;
+    fill: var(--cb-text-strong);
     font-weight: 600;
 }
 
@@ -908,36 +773,36 @@ body.corridor-busy .leaflet-interactive {
 
 .corridor-chart-line {
     fill: none;
-    stroke: #2563eb;
+    stroke: var(--cb-primary);
     stroke-width: 2;
     stroke-linejoin: round;
 }
 
 .corridor-chart-road {
-    stroke: #666;
+    stroke: var(--cb-text-muted);
     stroke-width: 1;
     stroke-dasharray: 4 3;
 }
 
 .corridor-chart-min {
-    fill: #111827;
+    fill: var(--cb-text-strong);
 }
 
 .corridor-chart-cursor {
-    stroke: #999;
+    stroke: var(--cb-text-faint);
     stroke-width: 1;
     stroke-dasharray: 2 2;
 }
 
 .corridor-chart-readout {
     font-size: 0.78rem;
-    color: #555;
+    color: var(--cb-text-muted);
     min-height: 1.2em;
 }
 
 .corridor-stats-pinch {
     font-size: 0.8rem;
-    color: #555;
+    color: var(--cb-text-muted);
     display: flex;
     flex-direction: column;
     gap: 3px;

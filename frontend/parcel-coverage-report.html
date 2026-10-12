@@ -6,25 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="A sourced report on global parcel-registry research, population growth, and country-level coverage evidence.">
     <title>Global parcel registry report · Consensus Builder</title>
-    <link rel="stylesheet" href="css/tokens.css">
-    <link rel="stylesheet" href="css/parcel-coverage-report.css?v=2">
+    <link rel="stylesheet" href="css/tokens.css?v=2">
+    <link rel="stylesheet" href="css/primitives.css?v=2">
+    <link rel="stylesheet" href="css/page-chrome.css?v=1">
+    <link rel="stylesheet" href="vendor/fontawesome-6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/parcel-coverage-report.css?v=3">
 </head>
-<body>
-    <header class="masthead">
-        <a class="brand" href="/">Consensus Builder <span>↗</span></a>
-        <div class="header-actions">
-            <label for="report-language" data-t="language">Language</label>
-            <select id="report-language" aria-label="Language"><option value="en">English</option><option value="es">Español</option><option value="hr">Hrvatski</option><option value="sr">Srpski</option></select>
-            <button id="print-report" class="quiet-button" type="button" data-t="print">Print report</button>
-        </div>
+<body class="cb-page">
+    <header class="cb-page-header">
+        <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo.png" alt="" width="28" height="28"><span>Consensus Builder</span></span>
+        <div class="cb-page-header__title"><p data-t="eyebrow">Global land data · Research report</p></div>
+        <a class="cb-link cb-back-link" href="/"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span data-page-header-key="backToMap">Back to the map</span></a>
+        <select id="report-language" class="cb-page-header__lang" aria-label="Language"><option value="en">English</option><option value="es">Español</option><option value="hr">Hrvatski</option><option value="sr">Srpski</option></select>
     </header>
     <main>
         <section class="intro" aria-labelledby="report-title">
-            <p class="eyebrow" data-t="eyebrow">Global land data · Research report</p>
             <h1 id="report-title" data-t="title">Where can we find parcel registries?</h1>
             <p class="lede" data-t="lede">An evidence-based view of the registries we have found, the cities we have checked, and the places still to investigate.</p>
-            <p class="dateline" id="snapshot-date"></p>
-            <nav class="section-nav" aria-label="Report sections" data-aria-t="reportSections"><a href="#coverage" data-t="coverage">Coverage</a><a href="#cities" data-t="cities">Cities</a><a href="#countries" data-t="countries">Countries & territories</a><a href="#methodology" data-t="methodology">Methods & sources</a></nav>
+            <div class="intro-meta"><p class="dateline" id="snapshot-date"></p><button id="print-report" class="btn btn-sm" type="button" data-t="print">Print report</button></div>
+            <nav class="section-nav" aria-label="Report sections" data-aria-t="reportSections"><a class="cb-link cb-link--quiet" href="#coverage" data-t="coverage">Coverage</a><a class="cb-link cb-link--quiet" href="#cities" data-t="cities">Cities</a><a class="cb-link cb-link--quiet" href="#countries" data-t="countries">Countries & territories</a><a class="cb-link cb-link--quiet" href="#methodology" data-t="methodology">Methods & sources</a></nav>
         </section>
         <p id="load-status" role="status" data-t="loading">Loading report…</p>
         <div id="report-content" hidden>
@@ -70,12 +70,13 @@
                     <article><h3 data-t="methodLimits">What does this leave unanswered?</h3><p data-t="methodLimitsText">The actual extent, completeness and freshness of cadastral polygons. Registry discovery cannot establish that every parcel is registered, downloadable, publicly accessible or supported by the app.</p></article>
                 </div>
                 <details><summary data-t="dataQuality">Data quality & matching details</summary><div id="quality-details"></div></details>
-                <div class="sources-heading"><h3 data-t="sources">Sources</h3><a href="data/parcel-coverage-report.json" download data-t="download">Download report data (JSON)</a></div>
+                <div class="sources-heading"><h3 data-t="sources">Sources</h3><a class="cb-link" href="data/parcel-coverage-report.json" download data-t="download">Download report data (JSON)</a></div>
                 <ol id="report-sources" class="source-list"></ol>
             </section>
         </div>
     </main>
     <footer><span>Consensus Builder</span><span data-t="footer">A research inventory. Every conclusion retains its scope.</span></footer>
-    <script type="module" src="js/parcel-coverage-report.js?v=3"></script>
+    <script src="js/ui/page-header.js?v=1"></script>
+    <script type="module" src="js/parcel-coverage-report.js?v=4"></script>
 </body>
 </html>

@@ -198,21 +198,13 @@
 
     const showSingleBuildingAlert = (key, fallback, params = {}) => {
         const message = translateSingleBuildingText(`alerts.messages.${key}`, fallback, params);
-        const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
-            ? window.showStyledAlert
-            : window.alert;
-        if (typeof alertFn === 'function') {
-            alertFn(message);
-        }
+        window.CbDialog.alert(message);
         return message;
     };
 
     const showSingleBuildingEditorAlert = (key, fallback) => {
         const message = translateSingleBuildingText(`modal.singleBuilding.${key}`, fallback);
-        const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
-            ? window.showStyledAlert
-            : window.alert;
-        if (typeof alertFn === 'function') alertFn(message);
+        window.CbDialog.alert(message);
         return message;
     };
 
@@ -1990,42 +1982,46 @@
         };
 
         if (!singleModal) {
+            // The editor wears the dialog primitive (css/primitives.css: overlay, card, header,
+            // body, footer, the phone bottom sheet); css/modals.css only lays out its map, 3D
+            // preview and sidebar inside it.
             const modal = document.createElement('div');
             modal.id = 'single-building-modal';
-            // Overlay box and look: #single-building-modal and the editor dialog chrome in css/modals.css.
+            modal.className = 'cb-dialog-overlay';
 
             const container = document.createElement('div');
             container.id = 'single-building-container';
+            container.className = 'cb-dialog cb-dialog--xl';
+            container.setAttribute('role', 'dialog');
+            container.setAttribute('aria-modal', 'true');
+            container.setAttribute('aria-labelledby', 'single-building-title');
 
             container.innerHTML = `
-                <div id="single-building-header">
-                    <h2>${modalText.title}</h2>
+                <div id="single-building-header" class="cb-dialog__header">
+                    <h2 id="single-building-title" class="cb-dialog__title">${modalText.title}</h2>
                     <button id="single-building-close" type="button" class="close-circle-btn close-circle-btn--lg" aria-label="${modalText.closeLabel}">×</button>
                 </div>
-                <div id="single-building-body">
+                <div id="single-building-body" class="cb-dialog__body">
                 <div id="single-building-main">
                     <div id="single-building-map-wrap">
                         <div id="single-building-map"></div>
                     </div>
                     <div class="single-building-3d-wrapper">
-                        <div class="single-building-3d-label">${modalText.previewLabel}</div>
+                        <div class="single-building-3d-label cb-kicker">${modalText.previewLabel}</div>
                         <div id="single-building-3d"></div>
-                    </div>
-                    <div id="single-building-controls">
-                        <button id="single-building-confirm" class="btn btn-proposal">${modalText.confirm}</button>
                     </div>
                 </div>
                 <div id="single-building-sidebar">
-                    <h3>${modalText.buildingsTitle}</h3>
-                    <div class="building-picker-row" style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
-                        <select id="single-building-selector" aria-label="${modalText.buildingsTitle}" style="flex:1 1 auto;"></select>
-                        <input type="text" id="single-building-name-input" maxlength="20" style="display:none; flex:1 1 auto;" placeholder="Building Name">
-                        <button id="single-building-rename" class="btn btn-light" type="button" title="${modalText.renameLabel}" aria-label="${modalText.renameLabel}" style="flex:0 0 auto; padding:0; width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; line-height:1; font-weight:bold;">T</button>
-                        <button id="single-building-delete" class="btn btn-light" type="button" title="${modalText.deleteLabel}" aria-label="${modalText.deleteLabel}" style="flex:0 0 auto; padding:0; width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; line-height:1;">&#128465;</button>
-                        <button id="single-building-add" class="btn btn-light" type="button" title="${modalText.addLabel}" aria-label="${modalText.addLabel}" style="flex:0 0 auto; padding:0; width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; line-height:1;">+</button>
+                    <h3 class="cb-kicker">${modalText.buildingsTitle}</h3>
+                    <div class="building-picker-row">
+                        <select id="single-building-selector" aria-label="${modalText.buildingsTitle}"></select>
+                        <input type="text" id="single-building-name-input" maxlength="20" hidden placeholder="Building Name">
+                        <button id="single-building-rename" class="btn btn-quiet btn-icon" type="button" title="${modalText.renameLabel}" aria-label="${modalText.renameLabel}"><i class="fa-solid fa-pen" aria-hidden="true"></i></button>
+                        <button id="single-building-delete" class="btn btn-quiet btn-icon" type="button" title="${modalText.deleteLabel}" aria-label="${modalText.deleteLabel}"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button>
+                        <button id="single-building-add" class="btn btn-quiet btn-icon" type="button" title="${modalText.addLabel}" aria-label="${modalText.addLabel}"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
                     </div>
                     <section id="single-building-density-stats" class="building-density-card" aria-live="polite">
-                        <h3>${modalText.densityTitle}</h3>
+                        <h3 class="cb-kicker">${modalText.densityTitle}</h3>
                         <dl class="building-density-grid">
                             <div><dt>${modalText.densityParcelArea}</dt><dd id="single-building-density-parcel">\u2014</dd></div>
                             <div><dt>${modalText.densityFootprint}</dt><dd id="single-building-density-footprint">\u2014</dd></div>
@@ -2035,7 +2031,7 @@
                         </dl>
                         <p id="single-building-density-hint" class="building-density-hint"></p>
                     </section>
-                    <h3>${modalText.parametersTitle}</h3>
+                    <h3 class="cb-kicker">${modalText.parametersTitle}</h3>
                     <div class="parameter-group">
                         <label>${modalText.heightLabel} <span id="single-height-value">${DEFAULT_HEIGHT_M}</span></label>
                         <input type="range" id="single-height-slider" min="3" max="250" step="1" value="${DEFAULT_HEIGHT_M}">
@@ -2043,13 +2039,13 @@
                     <div class="parameter-group">
                         <label>${modalText.rotationLabel}</label>
                         <div class="single-building-rotation-buttons">
-                            <button id="single-rotate-counterclockwise" class="btn btn-light" type="button" title="${modalText.rotateCounterclockwiseLabel}" aria-label="${modalText.rotateCounterclockwiseLabel}">&#8634; 5°</button>
-                            <button id="single-rotate-clockwise" class="btn btn-light" type="button" title="${modalText.rotateClockwiseLabel}" aria-label="${modalText.rotateClockwiseLabel}">&#8635; 5°</button>
+                            <button id="single-rotate-counterclockwise" class="btn" type="button" title="${modalText.rotateCounterclockwiseLabel}" aria-label="${modalText.rotateCounterclockwiseLabel}"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> 5°</button>
+                            <button id="single-rotate-clockwise" class="btn" type="button" title="${modalText.rotateClockwiseLabel}" aria-label="${modalText.rotateClockwiseLabel}"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i> 5°</button>
                         </div>
                     </div>
                     <div class="parameter-group">
                         <label for="single-ground-treatment">${modalText.surroundingsLabel}</label>
-                        <select id="single-ground-treatment" style="width:100%;">
+                        <select id="single-ground-treatment">
                             <option value="none">${modalText.surroundingsNone}</option>
                             <option value="paved">${modalText.surroundingsPaved}</option>
                             <option value="green">${modalText.surroundingsGreen}</option>
@@ -2058,18 +2054,21 @@
                     </div>
                     <div class="parameter-group">
                         <label for="single-parcel-mode">${modalText.parcelLabel}</label>
-                        <select id="single-parcel-mode" style="width:100%;">
+                        <select id="single-parcel-mode">
                             <option value="footprint">${modalText.parcelFootprint}</option>
                             <option value="whole">${modalText.parcelWhole}</option>
                         </select>
                         <p class="parameter-info-text">${modalText.parcelInfo}</p>
                     </div>
                     <div class="parameter-group">
-                        <button id="single-building-geojson-upload" class="btn btn-secondary" type="button" style="width:100%; margin-left:0; margin-right:0; box-sizing:border-box;">${modalText.uploadGeojsonLabel}</button>
+                        <button id="single-building-geojson-upload" class="btn btn-block" type="button">${modalText.uploadGeojsonLabel}</button>
                         <input id="single-building-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
                     </div>
                     <p class="parameter-info-text">${modalText.infoText}</p>
                 </div>
+            </div>
+            <div id="single-building-controls" class="cb-dialog__footer">
+                <button id="single-building-confirm" type="button" class="btn btn-primary">${modalText.confirm}</button>
             </div>
         `;
 
@@ -2139,10 +2138,10 @@
 
             if (renameBtn && nameInput && selector) {
                 renameBtn.addEventListener('click', () => {
-                    const isInputVisible = nameInput.style.display !== 'none';
+                    const isInputVisible = !nameInput.hidden;
                     if (isInputVisible) {
-                        nameInput.style.display = 'none';
-                        selector.style.display = 'block';
+                        nameInput.hidden = true;
+                        selector.hidden = false;
                         const newName = nameInput.value.trim().substring(0, 20);
                         const active = getActiveBuilding();
                         if (active && newName && newName !== active.name) {
@@ -2158,8 +2157,8 @@
                         const active = getActiveBuilding();
                         if (active) {
                             nameInput.value = active.name;
-                            selector.style.display = 'none';
-                            nameInput.style.display = 'block';
+                            selector.hidden = true;
+                            nameInput.hidden = false;
                             nameInput.focus();
                         }
                     }
@@ -2183,8 +2182,8 @@
                 nameInput.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
                         commitNameChange();
-                        nameInput.style.display = 'none';
-                        selector.style.display = 'block';
+                        nameInput.hidden = true;
+                        selector.hidden = false;
                     }
                 });
             }

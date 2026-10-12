@@ -124,7 +124,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     const copy = modal.getByRole('button', { name: 'Copy URL', exact: true }).last();
     await copy.click();
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(explorerUrl);
-    await modal.locator('.share-modal-close').click();
+    await modal.locator('.share-modal .close-circle-btn').click();
     await expect(modal).toBeHidden();
   });
 
@@ -223,7 +223,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     await create.locator('#proposalOptionsSection > .collapsible-header').click();
     await create.locator('#proposalOffer').fill('100');
     await create.locator('#createProposalSubmitButton').click();
-    const prerequisite = page.locator('.cb-confirm-overlay');
+    const prerequisite = page.locator('.cb-dialog-overlay--confirm');
     await expect(prerequisite).toContainText('no parcel anchor');
     await prerequisite.getByRole('button', { name: 'Create the parcel anchors', exact: true }).click();
     const anchorModal = page.locator('#parcel-mint-modal-overlay');
@@ -522,7 +522,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     await resubmitted.locator('#proposalOptionsSection > .collapsible-header').click();
     await resubmitted.locator('#proposalOffer').fill('0');
     await resubmitted.locator('#createProposalSubmitButton').click();
-    await expect(page.locator('.cb-confirm-overlay')).toContainText('Please enter a valid offer amount.');
+    await expect(page.locator('.cb-dialog-overlay--confirm')).toContainText('Please enter a valid offer amount.');
     await expect(resubmitted).toBeVisible();
   });
 
@@ -531,7 +531,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     await page.locator('.leaflet-container').waitFor();
     const modal = page.locator('.share-modal-overlay');
     await expect(modal).toContainText(/Invalid share link/i);
-    await modal.locator('.share-modal-actions .share-modal-primary').click();
+    await modal.locator('.share-modal .cb-dialog__footer .btn-primary').click();
     await expect(modal).toBeHidden();
   });
 
@@ -592,7 +592,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     const url = await modal.locator('.share-modal-link').first().inputValue();
     await modal.getByRole('button', { name: 'Copy URL', exact: true }).click();
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(url);
-    await modal.locator('.share-modal-close').click();
+    await modal.locator('.share-modal .close-circle-btn').click();
     await expect(modal).toBeHidden();
   });
 });

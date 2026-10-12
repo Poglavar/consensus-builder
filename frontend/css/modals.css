@@ -227,32 +227,15 @@ body.site-intro-open { overflow: hidden; }
     }
 }
 
-/* Fixed text slots keep fetching/applying progress from moving the centered card. */
-.proposal-load-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.35);
-    z-index: 12050;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-}
-
+/* The "Fetching proposal" progress card (proposals/core.js): it wears the dialog primitive's
+   overlay and card (on the dialog-over-dialog rung); fixed text slots keep fetching/applying
+   progress from moving the card. */
 .proposal-load-card {
-    box-sizing: border-box;
-    width: 360px;
-    max-width: 100%;
-    max-height: 100%;
-    overflow: auto;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: 44px 40px 54px 18px 18px 8px;
     gap: 6px;
-    padding: 20px 22px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-    font-family: var(--cb-font-sans);
+    padding: var(--cb-space-5);
     text-align: center;
 }
 
@@ -263,9 +246,10 @@ body.site-intro-open { overflow: hidden; }
 }
 
 .proposal-load-title {
-    font-weight: 700;
-    font-size: 16px;
+    font-weight: var(--cb-weight-bold);
+    font-size: var(--cb-text-lg);
     line-height: 22px;
+    color: var(--cb-text-strong);
 }
 
 .proposal-load-spinner {
@@ -273,10 +257,15 @@ body.site-intro-open { overflow: hidden; }
     width: 34px;
     height: 34px;
     place-self: center;
-    border: 3px solid #d0d7de;
-    border-top-color: #0d3b66;
+    border: 3px solid var(--cb-line-strong);
+    border-top-color: var(--cb-primary);
     border-radius: 50%;
-    animation: proposal-load-spin 0.9s linear infinite;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .proposal-load-spinner {
+        animation: proposal-load-spin 0.9s linear infinite;
+    }
 }
 
 @keyframes proposal-load-spin {
@@ -285,261 +274,232 @@ body.site-intro-open { overflow: hidden; }
 }
 
 .proposal-load-status {
-    font-size: 13px;
+    font-size: var(--cb-text-md);
     line-height: 18px;
-    color: #334155;
+    color: var(--cb-text);
 }
 
 .proposal-load-bytes,
 .proposal-load-progress-text {
-    font-size: 12px;
+    font-size: var(--cb-text-sm);
     line-height: 18px;
-    color: #334155;
+    color: var(--cb-text);
 }
 
 .proposal-load-bytes {
-    color: #64748b;
+    color: var(--cb-text-muted);
 }
 
 .proposal-load-progress-bar {
-    background: #e5e7eb;
-    border-radius: 999px;
+    background: var(--cb-surface-3);
+    border-radius: var(--cb-radius-pill);
     overflow: hidden;
 }
 
 .proposal-load-progress-fill {
     height: 100%;
-    background: #0d3b66;
+    background: var(--cb-primary);
     transition: width 0.2s ease;
 }
 
-/* Parcel mint modal */
-.parcel-mint-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 14000; /* above share modal (13000) */
-    overflow-y: auto;
-}
-
-.parcel-mint-modal {
-    width: min(480px, 96vw);
-    background: #ffffff;
-    border-radius: 14px;
-    box-shadow: 0 16px 50px rgba(15, 23, 42, 0.35);
+/* Plan Stats (proposals/plan-stats.js): wears the dialog primitive with `plan-stats-card` as its
+   identity class; these rules lay out the figures, the assumptions and the period table. */
+.plan-stats-body {
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    gap: var(--cb-space-4);
 }
 
-/* City token modal */
-.city-token-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    z-index: 12080;
-}
-
-.city-token-modal {
-    width: min(440px, 95vw);
-    background: #ffffff;
-    border-radius: 14px;
-    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.35);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-.city-token-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 14px 18px 10px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.city-token-header h2 {
+.plan-stats-scope {
     margin: 0;
-    font-size: 19px;
-    color: #0f172a;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
 }
 
-.city-token-body {
-    padding: 12px 18px 18px;
+.plan-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--cb-space-3) var(--cb-space-4);
+}
+
+.plan-stats-figure {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 2px;
+    min-width: 0;
+}
+
+.plan-stats-figure__label {
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
+}
+
+.plan-stats-figure__value {
+    font-size: var(--cb-text-xl);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+    overflow-wrap: anywhere;
+}
+
+.plan-stats-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+}
+
+.plan-stats-section[hidden] {
+    display: none;
+}
+
+.plan-stats-heading {
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text);
+}
+
+.plan-stats-assumptions {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr) 90px minmax(0, 1fr);
+    align-items: center;
+    gap: var(--cb-space-2) var(--cb-space-3);
+}
+
+.plan-stats-input {
+    width: 100%;
+}
+
+.plan-stats-suffix {
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
+}
+
+.plan-stats-epoch-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--cb-space-2);
+}
+
+.plan-stats-epoch-table {
+    overflow-x: auto;
+}
+
+.plan-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--cb-text-md);
+}
+
+.plan-stats-table th,
+.plan-stats-table td {
+    padding: var(--cb-space-1) var(--cb-space-2);
+    border-bottom: 1px solid var(--cb-line);
+    text-align: left;
+}
+
+.plan-stats-table th {
+    color: var(--cb-text-muted);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.plan-stats-table .plan-stats-table__number {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.plan-stats-notes {
+    font-size: var(--cb-text-sm);
+    color: var(--cb-warning);
+}
+
+.plan-stats-notes:empty {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    .plan-stats-assumptions {
+        grid-template-columns: 90px minmax(0, 1fr);
+    }
+}
+
+/* City token dialog (CbDialog, js/user-management.js renderCityTokenModal): the explainer, the two
+   amounts and the status line under them. The chrome, Register and Claim are the shared dialog's;
+   the Attestify explainer next to it is a plain CbDialog with no rules of its own. */
+.city-token-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-3);
 }
 
 .city-token-explainer {
     margin: 0;
-    color: #475569;
-    line-height: 1.5;
-    font-size: 14px;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-base);
+    line-height: var(--cb-leading);
 }
 
 .city-token-metrics {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    background: #f8fafc;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 10px 12px;
+    gap: var(--cb-space-2);
+    padding: var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface-2);
 }
 
 .city-token-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: var(--cb-space-2);
 }
 
 .city-token-label {
-    font-size: 13px;
-    color: #475569;
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
 }
 
 .city-token-value {
-    font-size: 16px;
-    font-weight: 700;
-    color: #0f172a;
-}
-
-.city-token-actions {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    width: 100%;
-}
-
-.city-token-actions .btn {
-    flex: 1;
-    min-width: 0;
-}
-
-.city-token-registered-label {
-    background: #f8fafc;
-    color: #475569;
-    border: 1px solid #e2e8f0;
-    cursor: default;
-    font-weight: 600;
-}
-
-/* Attestify explainer */
-.attestify-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    z-index: 12070;
-}
-
-.attestify-modal {
-    width: min(420px, 95vw);
-    background: #ffffff;
-    border-radius: 14px;
-    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.35);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-.attestify-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 14px 18px 10px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.attestify-header h2 {
-    margin: 0;
-    font-size: 18px;
-    color: #0f172a;
-}
-
-
-.attestify-body {
-    padding: 14px 18px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    color: #475569;
-    line-height: 1.5;
-}
-
-.attestify-actions {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-bold);
+    color: var(--cb-text-strong);
 }
 
 .city-token-status {
     min-height: 18px;
-    font-size: 13px;
-    color: #475569;
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
 }
 
 .city-token-status.is-error {
-    color: #b91c1c;
+    color: var(--cb-danger);
 }
 
-.city-token-status a {
-    color: #0f172a;
-    text-decoration: underline;
-    font-weight: 600;
-}
-
-.parcel-mint-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 18px 20px 12px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.parcel-mint-header__text h2 {
-    margin: 0;
-    font-size: 20px;
-    color: #0f172a;
-}
-
+/* Parcel mint dialog (parcels/ui/claim.js): the shared dialog with `parcel-mint-modal` as its
+   identity class; these rules lay out its inside. The overlay's parcel-mint-overlay class carries
+   only the busy cursor while a mint transaction is in flight. */
 .parcel-mint-subtitle {
-    margin: 6px 0 0;
-    color: #6b7280;
-    font-size: 14px;
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-base);
 }
 
 .parcel-mint-body {
-    padding: 12px 20px 18px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: var(--cb-space-3);
 }
 
 .parcel-mint-meta {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 10px 12px;
-    background: #f8fafc;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--cb-space-2) var(--cb-space-3);
+    background: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    padding: var(--cb-space-3);
 }
 
 .parcel-mint-meta__row {
@@ -550,28 +510,19 @@ body.site-intro-open { overflow: hidden; }
 
 .parcel-mint-meta__label {
     font-size: 12px;
-    color: #6b7280;
+    color: var(--cb-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.02em;
 }
 
 .parcel-mint-meta__value {
-    font-size: 14px;
-    color: #0f172a;
+    font-size: var(--cb-text-base);
+    color: var(--cb-text-strong);
     word-break: break-all;
 }
 
-.parcel-mint-meta__value a {
-    color: #0f172a;
-    text-decoration: none;
-}
-
-.parcel-mint-meta__value a:hover {
-    text-decoration: underline;
-}
-
 .parcel-mint-meta__value.is-monospace {
-    font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+    font-family: var(--cb-font-mono);
 }
 
 .parcel-mint-list {
@@ -589,9 +540,9 @@ body.site-intro-open { overflow: hidden; }
     gap: 12px;
     align-items: center;
     padding: 12px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--cb-line);
     border-radius: 12px;
-    background: #ffffff;
+    background: var(--cb-surface);
 }
 
 .parcel-mint-row__main {
@@ -608,11 +559,11 @@ body.site-intro-open { overflow: hidden; }
 
 .parcel-mint-row__title {
     font-weight: 600;
-    color: #0f172a;
+    color: var(--cb-text-strong);
 }
 
 .parcel-mint-row__meta {
-    color: #6b7280;
+    color: var(--cb-text-muted);
     font-size: 13px;
 }
 
@@ -625,99 +576,45 @@ body.site-intro-open { overflow: hidden; }
     height: 120px;
     object-fit: cover;
     border-radius: 10px;
-    background: #f3f4f6;
-    border: 1px solid #e5e7eb;
-}
-
-.parcel-mint-footer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding-top: 4px;
+    background: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
 }
 
 .parcel-mint-status {
-    flex: 1;
-    font-size: 13px;
-    color: #334155;
+    font-size: var(--cb-text-md);
+    color: var(--cb-text);
     min-height: 20px;
-    text-align: center;
 }
 
-.parcel-mint-actions {
+.parcel-mint-status:empty {
+    display: none;
+}
+
+/* The receipt's explorer links, one per minted parcel. */
+.parcel-mint-success__links {
     display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-.parcel-mint-actions .btn.btn-primary {
-    min-width: 100px;
-    justify-content: center;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+    font-size: var(--cb-text-md);
 }
 
 .parcel-mint-overlay.is-busy {
     cursor: progress;
 }
 
-/* Minted proposals modal */
-.minted-proposals-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 12060;
-    overflow-y: auto;
-}
-
-.minted-proposals-modal {
-    width: min(960px, 96vw);
-    max-height: 90vh;
-    background: #ffffff;
-    border-radius: 14px;
-    box-shadow: 0 16px 50px rgba(15, 23, 42, 0.35);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.minted-proposals-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 14px 16px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.minted-proposals-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: #0f172a;
-}
-
-.minted-proposals-actions {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
+/* Minted proposals (js/minted-proposals.js): the shared dialog with `minted-proposals-modal` as its
+   identity class and Refresh in its footer; the metadata view is a second dialog over it
+   (`minted-metadata-modal`). These rules lay out what is inside them. */
 .minted-proposals-body {
-    padding: 12px 16px 16px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    overflow-y: auto;
-    min-height: 420px;
+    gap: var(--cb-space-3);
+    min-height: min(420px, 50dvh);
 }
 
 .minted-proposals-status {
     font-size: 14px;
-    color: #475569;
+    color: var(--cb-text-muted);
     min-height: 32px;
     display: flex;
     align-items: center;
@@ -725,7 +622,7 @@ body.site-intro-open { overflow: hidden; }
 }
 
 .minted-proposals-status.is-error {
-    color: #b91c1c;
+    color: var(--cb-danger);
 }
 
 .minted-proposals-status.is-loading {
@@ -748,8 +645,8 @@ body.site-intro-open { overflow: hidden; }
 .minted-proposals-spinner {
     width: 18px;
     height: 18px;
-    border: 3px solid #e2e8f0;
-    border-top-color: #0ea5e9;
+    border: 3px solid var(--cb-line);
+    border-top-color: var(--cb-primary);
     border-radius: 50%;
     animation: minted-proposals-spin 0.9s linear infinite;
     flex-shrink: 0;
@@ -771,19 +668,19 @@ body.site-intro-open { overflow: hidden; }
     display: grid;
     grid-template-columns: 140px 1fr;
     gap: 14px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--cb-line);
     border-radius: 12px;
     padding: 12px;
-    background: #fff;
+    background: var(--cb-surface);
 }
 
 .minted-proposal-thumb {
     width: 140px;
     height: 120px;
-    border-radius: 10px;
+    border-radius: var(--cb-radius-md);
     overflow: hidden;
-    background: linear-gradient(135deg, #e5e7eb, #f8fafc);
-    border: 1px solid #e5e7eb;
+    background: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -799,7 +696,7 @@ body.site-intro-open { overflow: hidden; }
 .minted-proposal-thumb__placeholder {
     font-size: 22px;
     font-weight: 700;
-    color: #94a3b8;
+    color: var(--cb-text-faint);
 }
 
 .minted-proposal-main {
@@ -818,12 +715,12 @@ body.site-intro-open { overflow: hidden; }
 .minted-proposal-title {
     font-size: 16px;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--cb-text-strong);
 }
 
 .minted-proposal-status {
     font-size: 13px;
-    color: #2563eb;
+    color: var(--cb-primary);
     white-space: nowrap;
 }
 
@@ -832,107 +729,191 @@ body.site-intro-open { overflow: hidden; }
     flex-wrap: wrap;
     gap: 8px 12px;
     font-size: 13px;
-    color: #475569;
+    color: var(--cb-text-muted);
 }
 
 .minted-proposal-description {
     font-size: 13px;
-    color: #334155;
+    color: var(--cb-text);
 }
 
 .minted-proposal-actions {
     display: flex;
-    gap: 8px;
+    gap: var(--cb-space-2);
     flex-wrap: wrap;
-    margin-top: 4px;
-}
-
-.minted-proposal-actions .btn {
-    margin: 0;
-    width: auto;
-}
-
-.minted-proposal-actions .btn-action {
-    width: auto;
-    max-width: none;
-    display: inline-flex;
     align-items: center;
-    justify-content: center;
-}
-
-.minted-proposal-details-btn {
-    min-width: 110px;
-    flex: 0 0 auto;
+    margin-top: var(--cb-space-1);
 }
 
 .minted-proposal-lens-btn {
     width: 48px;
     height: 28px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--cb-line-strong);
     border-radius: 6px;
-    background: #f8fafc;
+    background: var(--cb-surface-2);
     cursor: default;
     padding: 0;
     flex: 0 0 auto;
 }
 
-.minted-metadata-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 12070;
-}
-
-.minted-metadata-modal {
-    width: min(720px, 94vw);
-    max-height: 90vh;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 14px 40px rgba(15, 23, 42, 0.3);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.minted-metadata-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 14px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
 .minted-metadata-body {
-    padding: 12px 14px 14px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    overflow: auto;
+    gap: var(--cb-space-2);
 }
 
 .minted-metadata-source {
-    font-size: 12px;
-    color: #475569;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
     word-break: break-all;
 }
 
 .minted-metadata-body pre {
-    background: #0f172a;
-    color: #e2e8f0;
-    padding: 12px;
-    border-radius: 10px;
-    font-size: 12px;
-    line-height: 1.45;
+    margin: 0;
+    background: var(--cb-inverse);
+    color: var(--cb-inverse-ink);
+    padding: var(--cb-space-3);
+    border-radius: var(--cb-radius-md);
+    font-family: var(--cb-font-mono);
+    font-size: var(--cb-text-sm);
+    line-height: var(--cb-leading);
     overflow: auto;
 }
 
-.minted-metadata-footer {
+/* "Share one proposal" for a minted proposal (proposals/chain.js showMintedShareModal): the link
+   in a read-only field beside Copy URL and the explorer button. */
+.minted-share-body {
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
+    gap: var(--cb-space-3);
+}
+
+.minted-share-body p {
+    margin: 0;
+}
+
+.minted-share-link-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cb-space-2);
+}
+
+.minted-share-link {
+    flex: 1 1 220px;
+    min-width: 0;
+}
+
+.minted-share-link-row .btn {
+    white-space: nowrap;
+}
+
+/* "Share one proposal" (proposals/dialog-upload.js showUploadProposalModal): one row per step
+   (upload, mint, download, share via), each a main button or, once done, its link and Copy URL.
+   The state code shows and hides the parts. */
+.share-proposal-rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-3);
+    margin-bottom: var(--cb-space-5);
+}
+
+.share-proposal-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cb-space-2);
+    width: 100%;
+}
+
+.share-proposal-row__main {
+    flex: 1 1 0;
+}
+
+.share-proposal-link-group {
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--cb-space-2);
+    min-width: 0;
+    width: 100%;
+}
+
+/* A one-line link field (the shared .share-modal-link is the multi-line one). */
+.share-modal-link.share-proposal-link {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: var(--cb-control-height);
+    padding: var(--cb-space-1) var(--cb-space-3);
+}
+
+.share-proposal-copy {
+    white-space: nowrap;
+}
+
+.share-modal-plan-btn {
+    margin-bottom: var(--cb-space-3);
+}
+
+.share-proposal-status {
+    margin-bottom: var(--cb-space-3);
+    font-size: var(--cb-text-sm);
+    line-height: var(--cb-leading);
+    color: var(--cb-text);
+}
+
+.share-proposal-status.is-error {
+    color: var(--cb-danger);
+}
+
+.share-proposal-status:empty {
+    display: none;
+}
+
+.share-modal-share-actions {
+    margin-top: var(--cb-space-4);
+    width: 100%;
+}
+
+.share-proposal-label {
+    margin-bottom: var(--cb-space-2);
+    font-weight: var(--cb-weight-semibold);
+}
+
+/* The mint prompts asked over the create dialog (proposals/chain.js, proposals/dialog-upload.js):
+   the failure reason and the missing parcels set apart from the message around them. */
+.onchain-mint-failed__reason,
+.missing-parcels-list {
+    margin: var(--cb-space-3) 0;
+    padding: var(--cb-space-3);
+    max-height: 200px;
+    overflow: auto;
+    border-radius: var(--cb-radius-sm);
+    font-family: var(--cb-font-mono);
+    font-size: var(--cb-text-sm);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.onchain-mint-failed__reason {
+    border: 1px solid var(--cb-warning);
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
+}
+
+.missing-parcels-list {
+    background: var(--cb-surface-2);
+}
+
+.missing-parcels-message p {
+    margin: 0 0 var(--cb-space-3);
+}
+
+.missing-parcels-explainer {
+    padding: var(--cb-space-3);
+    border-left: 4px solid var(--cb-info);
+    border-radius: var(--cb-radius-sm);
+    background: var(--cb-info-soft);
+    color: var(--cb-info-soft-ink);
 }
 
 @media (max-width: 767.98px) {
@@ -944,9 +925,7 @@ body.site-intro-open { overflow: hidden; }
         width: 100%;
         height: 180px;
     }
-}
 
-@media (max-width: 720px) {
     .parcel-mint-row {
         grid-template-columns: 1fr;
     }
@@ -957,31 +936,13 @@ body.site-intro-open { overflow: hidden; }
     }
 }
 
-/* Reparcellization modal
-   Layout only: the backdrop, card, header, title, stacking and phone sheet are the shared
-   "Editor dialog chrome" block after the parcel-based editor. */
-.reparcel-modal-overlay {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--cb-space-6) var(--cb-space-4);
-    overflow-y: auto;
-}
-
-.reparcel-modal {
-    width: min(1100px, 96vw);
-    max-height: 94vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.reparcel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+/* Land readjustment editor (reparcellization.js)
+   .reparcel-modal is a .cb-dialog--xl: the overlay, card, header, title, close, footer (Cancel and
+   Done), stacking and phone bottom sheet are the primitive's (css/primitives.css). These rules lay
+   out what is inside: the subtitle under the title, the tools, the map and the ledger. */
+.reparcel-header__text {
+    flex: 1;
+    min-width: 0;
 }
 
 .reparcel-subtitle {
@@ -995,16 +956,12 @@ body.site-intro-open { overflow: hidden; }
     flex-direction: column;
     gap: 18px;
     padding: var(--cb-space-4) var(--cb-space-5) var(--cb-space-5);
-    flex: 1 1 auto;
-    overflow-y: auto;
 }
 
 .reparcel-layout {
     display: grid;
     grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
-    grid-template-areas:
-        "map legend"
-        "actions legend";
+    grid-template-areas: "map legend";
     grid-auto-rows: auto;
     gap: 16px;
     align-items: stretch;
@@ -1013,8 +970,7 @@ body.site-intro-open { overflow: hidden; }
 /* Grid items default to min-width:auto, so a wide child (the 5-col ledger table)
    would blow the track past the viewport. Let items shrink; tables scroll inside. */
 .reparcel-map-panel,
-.reparcel-legend-panel,
-.reparcel-actions {
+.reparcel-legend-panel {
     min-width: 0;
 }
 
@@ -1031,26 +987,13 @@ body.site-intro-open { overflow: hidden; }
     position: relative;
 }
 
-/* Before/After swipe comparison */
+/* Before/After swipe comparison: a .btn .btn-sm over the map's corner, pressed (aria-pressed)
+   while the comparison runs. */
 .reparcel-compare-btn {
     position: absolute;
     top: 18px;
     right: 18px;
-    z-index: 1000;
-    padding: 6px 10px;
-    border: 1px solid var(--cb-line-strong);
-    border-radius: var(--cb-radius-md);
-    background: var(--cb-surface);
-    color: var(--cb-text);
-    font-size: var(--cb-text-sm);
-    cursor: pointer;
-    box-shadow: var(--cb-shadow-sm);
-}
-/* Pressed like the drawing-tool toggles, not a filled button competing with Done. */
-.reparcel-compare-btn.active {
-    background: var(--cb-success-soft);
-    border-color: var(--cb-success);
-    color: var(--cb-success-soft-ink);
+    z-index: var(--cb-z-map-chrome);
 }
 .reparcel-map {
     width: 100%;
@@ -1088,11 +1031,9 @@ body.site-intro-open { overflow: hidden; }
     flex-shrink: 0;
 }
 
-.reparcel-actions {
-    grid-area: actions;
-    display: flex;
-    justify-content: center;
-    padding: 4px 0 0;
+/* Public land's swatch is pale; an outline keeps it visible on the popup. */
+.legend-color--public {
+    border: 1px solid var(--cb-text-faint);
 }
 
 .single-owner-slider {
@@ -1105,33 +1046,11 @@ body.site-intro-open { overflow: hidden; }
     width: 100%;
 }
 
-/* Action row: the destructive-ish shortcut sits small on the left, the two decisions
-   (Cancel, Done) together on the right — closing is a decision, not a shortcut, so it
-   belongs beside Done rather than as an X the user has to hunt for. */
-.reparcel-actions {
-    justify-content: flex-start;
-    align-items: center;
-    gap: 8px;
-}
-
-.reparcel-actions-spacer {
-    flex: 1 1 auto;
-}
-
-.reparcel-actions .btn {
-    min-width: 0;
-    width: auto;
-}
-
+/* The two decisions (Cancel, Done) are the dialog footer; closing is a decision, not a shortcut,
+   so it sits beside Done rather than only as the X. */
 .reparcel-actions [data-reparcel-cancel],
 .reparcel-actions [data-reparcel-commit] {
     min-width: 120px;
-}
-
-/* Cancel and Done are the only things on this row, and they are a pair of decisions — centring
-   them reads as a choice rather than as one button tucked in a corner. */
-.reparcel-actions--commit {
-    justify-content: center;
 }
 
 /* Ownership tools sit on their own row, above the decisions. Assigning is a MODE, not a one-off
@@ -1139,23 +1058,11 @@ body.site-intro-open { overflow: hidden; }
    Done keep a row to themselves, where a decision is not competing with a tool. */
 /* Assigning is not editing: the drawing tools stand down so the mode is unmistakable, the same
    way the old-plots view does it. */
-.reparcel-assign-mode .reparcel-legend-actions > *:not(.reparcel-assign-btn):not(.reparcel-allpublic-btn),
+.reparcel-assign-mode .reparcel-legend-actions > *:not([data-reparcel-assign]):not([data-reparcel-all-public]),
 .reparcel-assign-mode .reparcel-draw-toolbar,
 .reparcel-assign-mode .reparcel-alg-options {
     opacity: 0.4;
     pointer-events: none;
-}
-
-
-/* "All public" is a one-click convenience, not a primary action — it used to be a 240px
-   slab competing with Done. */
-.reparcel-actions .reparcel-allpublic-btn {
-    font-size: var(--cb-text-sm);
-    padding: 5px 10px;
-    min-width: 0;
-    width: auto;
-    color: var(--cb-text-muted);
-    border-color: var(--cb-line-strong);
 }
 
 @media (max-width: 1024px) {
@@ -1163,8 +1070,7 @@ body.site-intro-open { overflow: hidden; }
         grid-template-columns: 1fr;
         grid-template-areas:
             "map"
-            "legend"
-            "actions";
+            "legend";
     }
 
     .reparcel-map {
@@ -1185,8 +1091,7 @@ body.site-intro-open { overflow: hidden; }
         grid-template-columns: 1fr;
         grid-template-areas:
             "map"
-            "legend"
-            "actions";
+            "legend";
     }
 
     .reparcel-map-panel {
@@ -1197,19 +1102,7 @@ body.site-intro-open { overflow: hidden; }
         height: 320px;
     }
 
-    .reparcel-actions {
-        padding-top: 8px;
-    }
-
-    /* Phones: the two decisions stay side by side and take the row; All public wraps above. */
-    .reparcel-actions {
-        flex-wrap: wrap;
-    }
-
-    .reparcel-actions-spacer {
-        display: none;
-    }
-
+    /* Phones: the two decisions stay side by side and share the footer row. */
     .reparcel-actions [data-reparcel-cancel],
     .reparcel-actions [data-reparcel-commit] {
         flex: 1 1 40%;
@@ -1248,15 +1141,6 @@ body.site-intro-open { overflow: hidden; }
     }
     .cash-offer-cell input.cash-offer-input {
         width: 54px;
-    }
-    .btn-draw-tool {
-        font-size: 12px;
-        padding: 6px 8px;
-    }
-    .reparcel-legend-actions .btn-icon,
-    .reparcel-legend-actions .btn-upload-label {
-        width: 36px;
-        height: 36px;
     }
 }
 
@@ -1339,35 +1223,8 @@ body.site-intro-open { overflow: hidden; }
     border-top: none;
 }
 
-/* Inputs vs outputs, as two tabs at the head of the panel: what was pooled, and what the plan
-   makes of it. Old plots is a reading view — see .reparcel-old-plots-view below. */
-.reparcel-plots-tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 10px;
-    border-bottom: 1px solid var(--cb-line);
-}
-
-.reparcel-plots-tab {
-    appearance: none;
-    background: none;
-    border: none;
-    border-bottom: 2px solid transparent;
-    padding: 6px 10px;
-    margin-bottom: -1px;
-    font-size: 15px;
-    font-weight: var(--cb-weight-semibold);
-    color: var(--cb-text-muted);
-    cursor: pointer;
-}
-
-.reparcel-plots-tab:hover { color: var(--cb-text); }
-
-.reparcel-plots-tab.is-active {
-    color: var(--cb-text-strong);
-    border-bottom-color: var(--cb-primary);
-}
-
+/* Inputs vs outputs are the two .cb-tabs at the head of the panel: what was pooled, and what the
+   plan makes of it. Old plots is a reading view — see .reparcel-old-plots-view below. */
 .reparcel-oldplots-empty {
     margin: 8px 0 0;
     font-size: var(--cb-text-sm);
@@ -1445,34 +1302,10 @@ body.site-intro-open { overflow: hidden; }
 .reparcel-draw-toolbar[hidden] {
     display: none;
 }
-.btn-draw-tool {
+/* Undo point / Finish plot / Cancel share the row. */
+.reparcel-draw-toolbar .btn {
     flex: 1 1 auto;
-    padding: 6px 10px;
-    border: 1px solid var(--cb-line-strong);
-    border-radius: var(--cb-radius-md);
-    background: var(--cb-surface);
-    color: var(--cb-text);
-    cursor: pointer;
-    font-size: var(--cb-text-md);
     white-space: nowrap;
-    transition: background 0.15s, border-color 0.15s, opacity 0.15s;
-}
-.btn-draw-tool:hover:not(:disabled) {
-    background: var(--cb-surface-2);
-}
-.btn-draw-tool:disabled {
-    opacity: 0.5;
-    cursor: default;
-}
-.btn-draw-finish {
-    background: var(--cb-success);
-    border-color: var(--cb-success);
-    color: var(--cb-success-ink);
-    font-weight: var(--cb-weight-semibold);
-}
-.btn-draw-finish:hover:not(:disabled) {
-    background: var(--cb-success-hover);
-    border-color: var(--cb-success-hover);
 }
 
 /* Reparcellization: sweep-line orientation point (drag to rotate the cut lines) */
@@ -1495,7 +1328,7 @@ body.site-intro-open { overflow: hidden; }
 .reparcel-vertex-handle {
     width: 14px;
     height: 14px;
-    background: #fff;
+    background: var(--cb-surface);
     border: 2px solid #137547;
     border-radius: 50%;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
@@ -1521,61 +1354,8 @@ body.site-intro-open { overflow: hidden; }
     flex-wrap: wrap;
 }
 
-/* Algorithm radios wrap on narrow screens */
-.reparcel-alg-options {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-    align-items: stretch;
-}
-
-.reparcel-alg-option {
-    position: relative;
-    display: flex;
-    align-items: center;
-    box-sizing: border-box;
-    min-height: 44px;
-    padding: 8px 12px;
-    border: 1px solid var(--cb-line-strong);
-    border-radius: 8px;
-    background: var(--cb-surface);
-    color: var(--cb-text);
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
-}
-
-.reparcel-alg-option:hover {
-    border-color: var(--cb-text-muted);
-    background: var(--cb-surface-2);
-}
-
-.reparcel-alg-option input[type="radio"] {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    clip-path: inset(50%);
-    white-space: nowrap;
-}
-
-.reparcel-alg-option:has(input[type="radio"]:checked) {
-    border-color: var(--cb-primary);
-    background: var(--cb-primary-soft);
-    color: var(--cb-primary-soft-ink);
-    box-shadow: inset 0 0 0 1px var(--cb-primary);
-}
-
-.reparcel-alg-option:has(input[type="radio"]:focus-visible) {
-    outline: 3px solid rgba(27, 153, 139, 0.35);
-    outline-offset: 2px;
-}
-
-.reparcel-alg-option span {
-    display: block;
-    line-height: 1.25;
-}
+/* The starting layout (Automatic · Draw freely · Keep existing parcels) is a .cb-segmented row of
+   native radios (css/primitives.css), wrapping on narrow screens. */
 
 .reparcel-courtyard-tools {
     display: flex;
@@ -1660,9 +1440,6 @@ body.site-intro-open { overflow: hidden; }
 }
 
 @media (max-width: 520px) {
-    .reparcel-alg-options {
-        grid-template-columns: 1fr;
-    }
     .reparcel-courtyard-label {
         flex-basis: 100%;
     }
@@ -1671,50 +1448,15 @@ body.site-intro-open { overflow: hidden; }
 .reparcel-alg-option:has(input:disabled),
 .reparcel-agreement-options label:has(input:disabled) { opacity: 0.5; cursor: not-allowed; }
 
-/* Drawing icons are greyed out until Manual is selected */
-.reparcel-legend-actions .btn-icon:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    filter: grayscale(1);
-}
-.reparcel-legend-actions .btn-icon:disabled:hover {
-    background: var(--cb-surface);
-    border-color: var(--cb-line-strong);
-}
-
-.reparcel-legend-actions .btn-icon,
-.reparcel-legend-actions .btn-upload-label {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border: 1px solid var(--cb-line-strong);
-    border-radius: var(--cb-radius-md);
-    background: var(--cb-surface);
-    cursor: pointer;
-    font-size: 15px;
-    padding: 0;
-    transition: background 0.15s, border-color 0.15s;
-}
-
-.reparcel-legend-actions .btn-icon:hover,
-.reparcel-legend-actions .btn-upload-label:hover {
-    background: var(--cb-surface-2);
-}
-
-/* The assign toggle sits with the other tools — it is one of them — and "All public" unfolds to
-   its right only while assigning, so the shortcut appears where the mode that needs it was turned
-   on. The spacer keeps the row left-packed. */
+/* The drawing tools are .btn .btn-icon (the primitive): greyed out (disabled) until Manual is
+   selected, pressed (aria-pressed) while their mode runs. The assign toggle sits with them — it is
+   one of them — and "All public" unfolds to its right only while assigning, so the shortcut
+   appears where the mode that needs it was turned on. The spacer keeps the row left-packed. */
 .reparcel-tools-spacer {
     flex: 1 1 auto;
 }
 
 .reparcel-legend-actions .reparcel-allpublic-btn {
-    font-size: var(--cb-text-sm);
-    padding: 5px 10px;
-    min-width: 0;
-    width: auto;
     white-space: nowrap;
 }
 
@@ -1733,14 +1475,6 @@ body.site-intro-open { overflow: hidden; }
 }
 .reparcel-ledger-table tr.reparcel-ledger-row--unresolved td {
     border-top-style: dashed;
-}
-
-/* Reparcellization: active "Draw plot" toggle */
-.reparcel-legend-actions .btn-icon[aria-pressed="true"],
-.reparcel-legend-actions .btn-icon.active {
-    background: var(--cb-success-soft);
-    border-color: var(--cb-success);
-    box-shadow: inset 0 0 0 1px var(--cb-success);
 }
 
 /* Reparcellization: owner ledger balance cells */
@@ -1852,24 +1586,14 @@ body.site-intro-open { overflow: hidden; }
     font-size: var(--cb-text-md);
     margin-bottom: 8px;
     color: var(--cb-text-strong);
-    padding-right: 20px;
+    padding-right: var(--cb-space-8);
 }
 
+/* The popup's close-circle-btn, in its corner. */
 .reparcel-owner-popup__close {
     position: absolute;
-    top: 6px;
-    right: 8px;
-    background: none;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    color: var(--cb-text-muted);
-    line-height: 1;
-    padding: 2px 4px;
-}
-
-.reparcel-owner-popup__close:hover {
-    color: var(--cb-text-strong);
+    top: var(--cb-space-1);
+    right: var(--cb-space-1);
 }
 
 .reparcel-owner-popup__list {
@@ -1925,7 +1649,7 @@ body.site-intro-open { overflow: hidden; }
 .reparcel-share-row > span:first-child { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .reparcel-share-row input { width: 78px; min-height: 36px; padding: 4px; }
 .reparcel-apply-shares { width: 100%; min-height: 40px; }
-.reparcel-edit-shares { display: block; font-size: 12px; margin-top: 4px; padding: 4px 8px; min-height: 30px; }
+.reparcel-edit-shares { display: flex; width: fit-content; margin-top: var(--cb-space-1); }
 
 .reparcel-owner-review { border-top: 1px solid var(--cb-line); padding-top: 10px; font-size: 13px; }
 .reparcel-owner-review > label { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-weight: var(--cb-weight-semibold); }
@@ -1942,402 +1666,123 @@ body.site-intro-open { overflow: hidden; }
     padding: 4px 8px;
 }
 
-/* Wallet choice modal (road/track) */
-.wallet-choice-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.35);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 12000;
-}
-
-.wallet-choice-content {
-    width: min(460px, 96vw);
-    max-height: 80vh;
-    background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-}
-
-.wallet-choice-content .proposal-modal-body {
-    padding-bottom: 22px;
-}
-
-.wallet-choice-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-}
-
-.wallet-choice-actions .btn {
-    flex: 1 1 180px;
-    min-width: 0;
-}
-
-@media (max-width: 520px) {
-    .wallet-choice-actions {
-        flex-direction: column;
-    }
-    .wallet-choice-actions .btn {
-        width: 100%;
-    }
-}
-
-    /* Constrained corridor modal */
-    .constrained-corridor-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(15, 23, 42, 0.55);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 18px;
-        z-index: 12060;
-        overflow-y: auto;
-    }
-
-    .constrained-corridor-modal {
-        width: min(1200px, 98vw);
-        height: min(92vh, 980px);
-        background: #ffffff;
-        border-radius: 14px;
-        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.35);
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-    }
-
-    .corridor-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 16px 18px;
-        border-bottom: 1px solid #e5e7eb;
-    }
-
-    .corridor-title {
-        font-size: 18px;
-        font-weight: 700;
-        color: #0f172a;
-    }
-
-    .corridor-layout {
-        flex: 1 1 auto;
-        min-height: 0;
-        display: grid;
-        grid-template-columns: minmax(0, 2fr) 400px;
-        gap: 12px;
-        padding: 12px;
-    }
-
-    .corridor-map-panel {
-        background: #f8fafc;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 10px;
-        min-height: 0;
-    }
-
-    .corridor-map {
-        width: 100%;
-        height: 100%;
-        min-height: 420px;
-        border-radius: 10px;
-        overflow: hidden;
-        background: #e5e7eb;
-    }
-
-    .corridor-map.corridor-draw-mode,
-    .corridor-map.corridor-draw-mode .leaflet-interactive {
-        cursor: crosshair !important;
-    }
-
-    .corridor-sidebar {
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 12px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        min-height: 0;
-    }
-
-    .corridor-toggle-row {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
-    }
-
-    .corridor-draw-controls {
-        display: none;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .corridor-panel {
-        background: #ffffff;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 12px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .corridor-panel__header {
-        font-weight: 600;
-        color: #111827;
-        font-size: 14px;
-    }
-
-    .corridor-undo-row {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
-    }
-
-    .corridor-metrics {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-    }
-
-    .corridor-metric {
-        padding: 10px;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        background: #f9fafb;
-    }
-
-    .corridor-metric__label {
-        font-size: 12px;
-        color: #6b7280;
-        margin-bottom: 4px;
-    }
-
-    .corridor-metric__value {
-        font-size: 15px;
-        font-weight: 700;
-        color: #0f172a;
-    }
-
-    .corridor-hint {
-        font-size: 12px;
-        color: #4b5563;
-        background: #eef2ff;
-        border: 1px solid #e0e7ff;
-        border-radius: 10px;
-        padding: 10px 12px;
-        line-height: 1.5;
-    }
-
-    .corridor-actions {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: auto;
-    }
-
-    .corridor-actions .btn {
-        min-width: 160px;
-    }
-
-    @media (max-width: 900px) {
-        .corridor-layout {
-            grid-template-columns: 1fr;
-            grid-template-rows: auto auto;
-        }
-        .corridor-map {
-            min-height: 360px;
-        }
-        .corridor-sidebar {
-            border-top: 1px solid #e5e7eb;
-        }
-        .corridor-actions {
-            justify-content: stretch;
-        }
-        .corridor-actions .btn {
-            width: 100%;
-        }
-    }
-
-/* Lens modal */
-.lens-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 13000; /* above proposal details panel */
-}
-
-.lens-modal {
-    width: min(720px, 94vw);
-    max-height: 92vh;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 16px 50px rgba(15, 23, 42, 0.35);
+/* Road designation (proposals/dialog-create.js openRoadDesignationModal): a CbDialog over the create
+   dialog, with .constrained-corridor-overlay / -modal as its identity. The body is the hint over a
+   map of the selected parcels and their merged outline; Done is the footer's primary action. */
+.constrained-corridor-modal .cb-dialog__body {
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    gap: var(--cb-space-3);
 }
 
-.lens-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 20px 22px 16px;
-    border-bottom: 1px solid #e5e7eb;
-    gap: 12px;
-}
-
-.lens-modal-title {
+.corridor-hint {
     margin: 0;
-    font-size: 20px;
-    color: #111827;
+    padding: var(--cb-space-3);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary-soft-ink);
+    font-size: var(--cb-text-sm);
+    line-height: 1.5;
 }
 
+.corridor-map {
+    flex: 0 0 auto;
+    width: 100%;
+    height: min(60dvh, 640px);
+    min-height: 280px;
+    overflow: hidden;
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface-3);
+}
+
+/* Lens dialog (js/lens.js) and the Solana lens picker (js/lens-picker.js): the shared dialog
+   (css/primitives.css) with `lens-modal` as its identity class; the rules here lay out its inside.
+   `.lens-modal-overlay` and `.lens-close-btn` are script and test hooks with no look of their own. */
 .lens-modal-subtitle {
-    margin: 6px 0 0;
-    color: #4b5563;
-    font-size: 14px;
-    line-height: 1.45;
-}
-
-.lens-close-btn {
-    border: none;
-    background: transparent;
-    font-size: 26px;
-    line-height: 1;
-    cursor: pointer;
-    color: #4b5563;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    aspect-ratio: 1 / 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.lens-close-btn:hover {
-    background: #f3f4f6;
-    color: #111827;
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-base);
+    line-height: var(--cb-leading);
 }
 
 .lens-modal-body {
-    padding: 16px 22px 22px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    overflow-y: auto;
+    gap: var(--cb-space-3);
 }
 
 .lens-pattern-card {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    background: #f8fafc;
+    gap: var(--cb-space-3);
+    padding: var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface-2);
 }
 
 .lens-pattern-chip {
     width: 96px;
     height: 24px;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
-    background: #0b0b0b;
+    border-radius: var(--cb-radius-sm);
+    border: 1px solid var(--cb-line-strong);
+    background: var(--cb-inverse);
     flex-shrink: 0;
 }
 
 .lens-pattern-caption {
-    color: #4b5563;
-    font-size: 13px;
-    line-height: 1.4;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-md);
+    line-height: var(--cb-leading);
 }
 
 .lens-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--cb-space-2);
 }
 
 .lens-row {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 12px;
-    row-gap: 10px;
+    gap: var(--cb-space-2) var(--cb-space-3);
     width: 100%;
     box-sizing: border-box;
     overflow: hidden;
     align-items: stretch;
-    padding: 12px;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    background: #fff;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    padding: var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-surface);
 }
 
 .lens-row-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: var(--cb-space-2);
     grid-column: 1 / -1;
 }
 
 .lens-row-label {
-    font-weight: 600;
-    color: #111827;
-    font-size: 14px;
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+    font-size: var(--cb-text-base);
 }
 
+/* Inputs take the base form-control look (css/primitives.css); this only sizes them. */
 .lens-input {
     width: 100%;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    font-size: 14px;
+    min-width: 0;
+    box-sizing: border-box;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-width: 0;
-    box-sizing: border-box;
-}
-
-.lens-input:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
 }
 
 .lens-actions {
     display: flex;
     justify-content: flex-start;
-}
-
-.lens-add-btn {
-    border: 1px dashed #9ca3af;
-    background: #f8fafc;
-    color: #111827;
-    border-radius: 8px;
-    padding: 10px 14px;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.lens-add-btn:hover {
-    border-color: #111827;
-    background: #e5e7eb;
 }
 
 .lens-inline-control {
@@ -2348,132 +1793,35 @@ body.site-intro-open { overflow: hidden; }
 }
 
 .lens-inline-actions {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 12px;
-    width: 100%;
     grid-column: 1 / -1;
 }
 
-.lens-link-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    background: #ffffff;
-    color: #111827;
-    font-size: 13px;
-    text-decoration: none;
-    white-space: normal;
-    transition: background 0.15s ease, border-color 0.15s ease;
-    width: auto;
-    min-width: 0;
-    flex: 1 1 50%;
-    max-width: 50%;
-}
-
-.lens-link-btn:hover {
-    background: #f3f4f6;
-    border-color: #9ca3af;
-}
-
-.lens-link-btn--disabled {
+/* An address without an explorer or Attestify page: the link stays, dimmed and inert. */
+.lens-link--disabled {
     pointer-events: none;
     opacity: 0.5;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767.98px) {
     .lens-row {
         grid-template-columns: 1fr;
     }
-
-    .lens-inline-actions {
-        flex-direction: column;
-        flex-wrap: nowrap;
-        gap: 8px;
-        align-items: stretch;
-        width: 100%;
-    }
-
-    .lens-link-btn {
-        max-width: 100%;
-        width: 100%;
-        flex: 1 1 100%;
-        box-sizing: border-box;
-    }
 }
+
 .lens-footer-control {
     margin-right: auto;
 }
 
-.lens-icon-button {
-    border: 1px solid #d1d5db;
-    background: #ffffff;
-    border-radius: 8px;
-    padding: 8px 10px;
-    font-size: 16px;
-    cursor: pointer;
-    line-height: 1;
+/* The lens button: btn btn-icon btn-sm lens-pattern-button, the active lens's colour stripes painted
+   inline by js/lens.js (data, not a look). First in a dialog footer it sits left of the actions; in
+   the agent dialog it is centred under the avatar. */
+.cb-dialog__footer > .lens-pattern-button {
+    align-self: center;
+    margin-right: auto;
 }
 
-.lens-icon-button:hover {
-    background: #f3f4f6;
-}
-
-.lens-pattern-button {
-    border: 1px solid #d1d5db;
-    background: #ffffff;
-    color: #111827;
-    border-radius: 10px;
-    padding: 6px 10px;
-    font-size: 18px;
-    cursor: pointer;
-    line-height: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 100px;
-    height: 26px;
-    min-height: 26px;
-    max-height: 26px;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    transition: transform 0.05s ease;
-}
-
-.lens-pattern-button:hover {
-    transform: translateY(-1px);
-    background: #f8fafc;
-}
-
-.lens-pattern-button:active {
-    transform: translateY(0);
-}
-
-.agent-lens-control {
-    margin-top: 6px;
-}
-
-.lens-remove-btn {
-    border: 1px solid #d1d5db;
-    background: #ffffff;
-    color: #6b7280;
-    border-radius: 8px;
-    padding: 8px 10px;
-    font-size: 16px;
-    cursor: pointer;
-    line-height: 1;
-    width: 38px;
-    height: 38px;
-    justify-self: end;
-}
-
-.lens-remove-btn:hover {
-    background: #f3f4f6;
-    color: #111827;
+.agent-header-bottom > .lens-pattern-button {
+    justify-self: center;
 }
 
 .lens-modal--readonly .lens-add-btn,
@@ -2481,57 +1829,13 @@ body.site-intro-open { overflow: hidden; }
     display: none;
 }
 
-.lens-modal--readonly .lens-input {
-    background: #f8fafc;
-    cursor: not-allowed;
-}
-
 .lens-readonly-note {
-    border: 1px dashed #d1d5db;
-    background: #f9fafb;
-    color: #4b5563;
-    padding: 10px 12px;
-    border-radius: 8px;
-    font-size: 13px;
-}
-
-.lens-modal-footer {
-    padding: 14px 22px 18px;
-    border-top: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: center;
-}
-
-.lens-close-footer-btn {
-    min-width: 160px;
-}
-
-@media (max-width: 767.98px) {
-    .lens-modal-footer {
-        padding: 14px 16px 18px;
-    }
-
-    .lens-close-footer-btn {
-        width: 100%;
-    }
-}
-
-@media (max-width: 767.98px) {
-    .lens-modal-overlay {
-        display: block;
-        padding: 0;
-    }
-
-    .lens-modal {
-        width: 100%;
-        height: 100%;
-        max-height: none;
-        border-radius: 0;
-    }
-
-    .lens-modal-body {
-        flex: 1 1 auto;
-    }
+    border: 1px dashed var(--cb-line-strong);
+    background: var(--cb-surface-2);
+    color: var(--cb-text-muted);
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border-radius: var(--cb-radius-md);
+    font-size: var(--cb-text-md);
 }
 
 /* Solana lens picker (lens-picker.js) and the proposal Details lens card (proposals/lens-card.js) */
@@ -2553,7 +1857,7 @@ body.site-intro-open { overflow: hidden; }
     gap: 10px;
     align-items: flex-start;
     padding: 10px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--cb-line);
     border-radius: 8px;
     cursor: pointer;
 }
@@ -2574,20 +1878,15 @@ body.site-intro-open { overflow: hidden; }
     font-weight: 600;
 }
 
+/* The member's kind is a cb-badge (css/primitives.css); this only keeps it to its own width. */
 .lens-picker-kind {
-    display: inline-block;
     width: max-content;
-    padding: 1px 7px;
-    border-radius: 999px;
-    background: #eef2ff;
-    color: #3730a3;
-    font-size: 12px;
 }
 
 .lens-picker-desc,
 .lens-picker-coverage,
 .lens-picker-note {
-    color: #4b5563;
+    color: var(--cb-text-muted);
     font-size: 13px;
 }
 
@@ -2599,7 +1898,7 @@ body.site-intro-open { overflow: hidden; }
 }
 
 .lens-picker-error {
-    color: #b91c1c;
+    color: var(--cb-danger);
     font-size: 13px;
 }
 
@@ -2627,7 +1926,7 @@ body.site-intro-open { overflow: hidden; }
     align-items: center;
     gap: 4px 10px;
     padding: 6px 8px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--cb-line);
     border-radius: 6px;
 }
 
@@ -2637,12 +1936,12 @@ body.site-intro-open { overflow: hidden; }
 }
 
 .lens-picker-parcels li.is-covered {
-    border-color: #16a34a;
-    background: #f0fdf4;
+    border-color: var(--cb-success);
+    background: var(--cb-success-soft);
 }
 
 .lens-picker-parcels small {
-    color: #4b5563;
+    color: var(--cb-text-muted);
 }
 
 .lens-picker-filter {
@@ -2700,26 +1999,26 @@ body.site-intro-open { overflow: hidden; }
 }
 
 .proposal-lens-result.is-ok {
-    color: #166534;
+    color: var(--cb-success-soft-ink);
 }
 
 .proposal-lens-result.is-warn {
-    color: #92400e;
+    color: var(--cb-warning-soft-ink);
 }
 
 .proposal-lens-result.is-error {
-    color: #b91c1c;
+    color: var(--cb-danger);
 }
 
 .proposal-lens-consent {
     width: 100%;
     font-size: 13px;
-    color: #4b5563;
+    color: var(--cb-text-muted);
 }
 
 .proposal-lens-parcel.is-complete {
-    border-color: #16a34a;
-    background: #f0fdf4;
+    border-color: var(--cb-success);
+    background: var(--cb-success-soft);
 }
 
 .proposal-lens-parcel-actions .lens-input {
@@ -2733,103 +2032,66 @@ body.site-intro-open { overflow: hidden; }
 
 .owner-acceptance-lens-hint {
     font-size: 11px;
-    color: #666;
+    color: var(--cb-text-muted);
 }
 
-/* Agent Dialog Modal */
+/* Agent dialog (js/agents.js showAgentDialog). It wears the shared dialog: cb-dialog-overlay
+   (--top when opened over another dialog) > cb-dialog cb-dialog--lg agent-dialog-modal with
+   cb-dialog__header / __body / __footer and one close-circle-btn. Only the profile's own layout
+   lives here: the avatar and name, the wallet row under them, the stats and lists in the body and
+   the language row in the footer. */
 .agent-dialog-modal {
     --agent-avatar-size: 64px;
     --agent-avatar-outer: calc(var(--agent-avatar-size) + 6px);
-    --agent-header-actions-space: 96px;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 7000;
 }
 
-/* Opened over the activity explorer (12100), e.g. from an agent link in one of its rows. */
-.agent-dialog-modal.agent-dialog-elevated {
-    z-index: 12150;
-}
-
-.agent-dialog-modal-content {
-    width: min(680px, 92vw);
-    max-height: 90vh;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 16px 50px rgba(15, 23, 42, 0.35);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.agent-dialog-modal.agent-dialog-readonly .agent-dialog-modal-content {
-    position: relative;
-}
-
-.agent-dialog-modal.agent-dialog-readonly .agent-dialog-modal-content::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(255, 255, 255, 0.4);
-    pointer-events: none;
-}
-
-.agent-dialog-modal.agent-dialog-readonly .is-readonly-disabled {
-    cursor: not-allowed !important;
+/* Read-only (the welcome dialog's takeover preview): every control but Close is inert and dimmed. */
+.agent-dialog-readonly .is-readonly-disabled {
     opacity: 0.65;
 }
 
-.agent-dialog-modal.agent-dialog-readonly .agent-dialog-modal-close {
-    pointer-events: auto;
-    position: relative;
-    z-index: 1;
-}
-
 .agent-dialog-modal-header {
-    position: relative;
-    padding: 20px 24px;
-    border-bottom: 1px solid #e5e7eb;
-    min-width: 0;
+    align-items: flex-start;
 }
 
 .agent-header-main {
-    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    min-width: 0;
-    width: 100%;
-    max-width: 100%;
+    gap: var(--cb-space-2);
     flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* Avatar column, then the name (and Log out); the lens button sits under the avatar in the second
+   row, the wallet controls beside it. */
+.agent-header-top,
+.agent-header-bottom {
+    display: grid;
+    grid-template-columns: var(--agent-avatar-outer) minmax(0, 1fr);
+    column-gap: var(--cb-space-4);
+    min-width: 0;
 }
 
 .agent-header-top {
-    display: grid;
-    grid-template-columns: var(--agent-avatar-outer) minmax(0, 1fr);
-    column-gap: 16px;
     align-items: stretch;
-    min-width: 0;
-    padding-right: var(--agent-header-actions-space);
+}
+
+.agent-header-bottom {
+    align-items: start;
 }
 
 .agent-avatar-stack {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0;
-    position: relative;
 }
 
 .agent-avatar-large {
     width: var(--agent-avatar-size);
     height: var(--agent-avatar-size);
-    border-radius: 12px;
-    border: 3px solid #fff;
-    box-shadow: 0 0 0 1px #d1d5db, 0 2px 4px rgba(0,0,0,0.08);
+    border-radius: var(--cb-radius-lg);
+    border: 3px solid var(--cb-surface);
+    box-shadow: 0 0 0 1px var(--cb-line-strong), var(--cb-shadow-sm);
     object-fit: cover;
     flex-shrink: 0;
 }
@@ -2838,7 +2100,7 @@ body.site-intro-open { overflow: hidden; }
     display: grid;
     grid-template-rows: repeat(2, minmax(0, 1fr));
     align-content: space-between;
-    gap: 8px;
+    gap: var(--cb-space-2);
     min-width: 0;
     height: var(--agent-avatar-size);
 }
@@ -2846,390 +2108,105 @@ body.site-intro-open { overflow: hidden; }
 .agent-name-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+    min-width: 0;
 }
 
-.agent-name-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-    flex-wrap: wrap;
+/* One line, cut with an ellipsis: the name shares its row with the "You" badge, which follows it. */
+.agent-name-row .cb-dialog__title {
+    flex: 0 1 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .agent-user-identity {
     display: flex;
     align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
+    gap: var(--cb-space-2);
     flex-wrap: wrap;
-}
-
-.agent-header-bottom {
-    display: grid;
-    grid-template-columns: var(--agent-avatar-outer) minmax(0, 1fr);
-    column-gap: 16px;
-    align-items: start;
 }
 
 .agent-wallet-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
-    flex-wrap: nowrap;
-    width: 100%;
-    max-width: 100%;
+    gap: var(--cb-space-2);
     min-width: 0;
-    justify-self: stretch;
 }
 
-.agent-lens-button {
-    width: var(--agent-avatar-outer); /* match avatar outer width (borders) */
-    min-width: var(--agent-avatar-outer);
-    height: 26px;
-    box-sizing: border-box;
-    align-self: start;
-}
-
-.agent-name-row h2 {
-    margin: 0;
-    font-size: 22px;
-    color: #111827;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.user-label {
-    background: #f8fafc;
-    color: #334155;
-    padding: 4px 9px;
-    border-radius: 10px;
-    border: 1px solid #e2e8f0;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-}
-
-.agent-dialog-modal .user-label {
-    background: transparent;
-    color: #0b3b8c;
-    padding: 0;
-    border: none;
-    border-radius: 0;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.2px;
-    line-height: 1;
-    height: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.user-label-overlay {
-    position: absolute;
-    left: 3px;
-    right: 3px;
-    top: 3px;
-    bottom: auto;
-    height: calc(var(--agent-avatar-outer) / 18 + 5px) !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px 10px 6px 6px !important;
-    background: rgba(59, 130, 246, 0.2) !important;
-    color: #0b3b8c !important;
-    border: 1px solid rgba(59, 130, 246, 0.2) !important;
-    backdrop-filter: blur(0.3px);
-    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.18);
-    pointer-events: none;
-    padding: 0 3px !important;
-    font-size: 9px !important;
-    line-height: 1 !important;
-}
-
-.agent-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 2px; /* Align with agent name baseline */
-}
-
-.agent-dialog-modal .wallet-connect-button {
-    height: 26px;
-    min-height: 26px;
-    padding: 0 12px;
-    margin-left: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-}
-
-.agent-dialog-modal .wallet-chain-info {
-    display: inline-flex;
-    height: 26px;
-    min-height: 26px;
-    padding: 0 10px;
-    align-items: center;
-    max-width: 100%;
-    min-width: 0;
-    overflow: hidden;
-}
-
-.agent-dialog-modal .wallet-attest-link {
-    height: 26px;
-    width: 26px;
-    padding: 0;
-}
-
-.agent-dialog-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 1;
-}
-
-.agent-dialog-modal .wallet-chain-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    min-width: 0;
-    max-width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-}
-
-.agent-dialog-modal .wallet-chain-label span {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.agent-dialog-modal .wallet-chain-label i,
-.agent-dialog-modal .wallet-chain-label svg,
-.agent-dialog-modal .wallet-chain-caret {
+/* The wallet row: Connect wallet (btn btn-sm), the network chip (btn btn-sm with the chain icon and a
+   caret), Attestify and the city token (btn btn-sm btn-icon). The buttons keep their size; the
+   network chip gives way first and cuts its label. */
+.agent-wallet-actions > .btn {
     flex-shrink: 0;
 }
 
-.agent-language-switcher {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    height: 34px;
-}
-
-.agent-language-switcher .language-toggle {
-    min-width: 44px;
-    height: 34px;
-    padding: 0 10px;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
-    background: #f8fafc;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    line-height: 1;
-    cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.agent-language-switcher .language-toggle:hover {
-    background: #f1f5f9;
-}
-
-.agent-language-switcher .language-toggle:focus-visible {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
-}
-
-.agent-language-switcher .language-menu {
-    position: absolute;
-    top: 38px;
-    right: 0;
-    display: none;
-    flex-direction: column;
-    gap: 6px;
-    padding: 8px;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
-    z-index: 5;
-    min-width: 68px;
-}
-
-.agent-language-switcher.is-open .language-menu {
-    display: flex;
-}
-
-.agent-language-switcher .language-option {
-    width: 100%;
-    height: 38px;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    background: transparent;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    line-height: 1;
-    cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.agent-language-switcher .language-option:hover {
-    background: #f1f5f9;
-}
-
-.agent-language-switcher .language-option.is-active {
-    background: #e0f2fe;
-    border-color: #bae6fd;
-    box-shadow: 0 0 0 1px #bae6fd;
-}
-
-.agent-language-switcher .language-option:focus-visible {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
-}
-
-.agent-header-user-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.wallet-connect-button,
-.logout-button {
-    padding: 6px 12px;
-    font-size: 13px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s, box-shadow 0.2s;
-}
-
-.agent-dialog-modal .wallet-connect-button,
-.agent-dialog-modal .logout-button {
-    width: 128px;
-    text-align: center;
-    justify-content: center;
-}
-
-.agent-dialog-modal .logout-button {
-    height: 26px;
-    min-height: 26px;
-    box-sizing: border-box;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px 12px;
-    line-height: 1;
-}
-
-.wallet-connect-button {
-    background-color: #eef2ff;
-    color: #3730a3;
-    border: 1px solid #c7d2fe;
-}
-.wallet-connect-button:hover {
-    background-color: #eef2ff;
-    transform: none;
-}
-
-.logout-button {
-    background-color: #f1f5f9;
-    color: #475569;
-    border: 1px solid #e2e8f0;
-}
-.logout-button:hover {
-    background-color: #e2e8f0;
-}
-
-.agent-dialog-modal-close {
-    border: none;
-    background: transparent;
-    font-size: 28px;
-    line-height: 1;
-    cursor: pointer;
-    color: #6b7280;
-    padding: 4px;
-    border-radius: 50%;
-    width: 38px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.agent-dialog-modal-close:hover {
-    background: #f3f4f6;
-    color: #111827;
-}
-
-.agent-header-top,
-.agent-header-bottom {
-    min-width: 0;
-}
-
-.agent-wallet-actions .wallet-chain-info,
-.agent-wallet-actions .wallet-attest-link,
-.agent-wallet-actions .wallet-city-token-button,
-.agent-wallet-actions .wallet-connect-button {
-    flex-shrink: 0;
-}
-
-.agent-wallet-actions .wallet-chain-info {
+.agent-wallet-actions > .wallet-chain-info {
     flex: 0 1 auto;
-    flex-shrink: 1;
     min-width: 0;
+    overflow: hidden;
+}
+
+.wallet-chain-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--cb-space-1);
+    min-width: 0;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.wallet-chain-label span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wallet-chain-label i,
+.wallet-chain-label svg {
+    flex-shrink: 0;
+}
+
+.wallet-chain-caret {
+    font-size: var(--cb-text-xs);
+}
+
+.agent-dialog-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-4);
+}
+
+/* The footer holds the language row only, so it starts on the left like a setting, not like actions. */
+.agent-dialog-footer {
+    justify-content: flex-start;
 }
 
 @media (max-width: 767.98px) {
     .agent-dialog-modal {
         --agent-avatar-size: 50px;
         --agent-avatar-outer: calc(var(--agent-avatar-size) + 6px);
-        --agent-header-actions-space: 88px;
     }
 
     .agent-header-top,
     .agent-header-bottom {
-        column-gap: 12px;
-    }
-
-    .agent-header-main {
-        gap: 10px;
+        column-gap: var(--cb-space-3);
     }
 
     .agent-wallet-actions {
         flex-wrap: wrap;
-        row-gap: 8px;
     }
-}
-
-.agent-dialog-modal-body {
-    padding: 16px 24px 24px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
 }
 
 .agent-stats-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
-    background: #f8fafc;
+    background: var(--cb-surface-2);
     padding: 12px;
     border-radius: 12px;
-    border: 1px solid #f1f5f9;
+    border: 1px solid var(--cb-line);
 }
 
 .stat-item {
@@ -3238,44 +2215,44 @@ body.site-intro-open { overflow: hidden; }
     gap: 4px;
     padding: 10px 12px;
     border-radius: 10px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line);
 }
 
 .stat-label {
     font-size: 12px;
-    color: #64748b;
+    color: var(--cb-text-muted);
 }
 
 .stat-value {
     font-size: 16px;
     font-weight: 600;
-    color: #1e293b;
+    color: var(--cb-text-strong);
     line-height: 1.25;
 }
 
 .info-section h4 {
     font-size: 16px;
     font-weight: 600;
-    color: #334155;
+    color: var(--cb-text);
     margin-top: 0;
     margin-bottom: 10px;
     padding-bottom: 6px;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--cb-line);
 }
 
-.parcels-list, .wallet-list, .agent-log-container {
+.parcels-list, .agent-log-container {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-.wallet-address, .parcel-item, .proposal-item {
+.parcel-item, .proposal-item {
     font-size: 14px;
     padding: 8px 12px;
     border-radius: 8px;
-    background: #f8fafc;
-    border: 1px solid #f1f5f9;
+    background: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
 }
 
 .agent-dialog-proposal-item {
@@ -3314,29 +2291,34 @@ body.site-intro-open { overflow: hidden; }
     border-left: 4px solid var(--proposal-color, #a5b4fc);
 }
 
-
 .loader-spinner {
     padding: 20px;
     text-align: center;
-    color: #64748b;
+    color: var(--cb-text-muted);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
 }
 
+/* A list that could not load (the agent dialog's chain-backed lists): the message in place of the spinner. */
+.loader-spinner.is-error {
+    color: var(--cb-danger);
+    font-weight: var(--cb-weight-semibold);
+}
+
 .loader-spinner .spinner-circle {
     width: 16px;
     height: 16px;
-    border: 2px solid #cbd5e1;
-    border-top-color: #3b82f6;
+    border: 2px solid var(--cb-line-strong);
+    border-top-color: var(--cb-primary);
     border-radius: 50%;
     animation: loader-spin 0.8s linear infinite;
 }
 
 .loader-spinner .loader-text {
     font-size: 13px;
-    color: #94a3b8;
+    color: var(--cb-text-faint);
 }
 
 @keyframes loader-spin {
@@ -3348,79 +2330,33 @@ body.site-intro-open { overflow: hidden; }
 .empty-list, .empty-log {
     padding: 16px;
     text-align: center;
-    color: #64748b;
+    color: var(--cb-text-muted);
     font-style: italic;
-    background: #f8fafc;
+    background: var(--cb-surface-2);
     border-radius: 8px;
 }
 
-/* Animation Modal Styles */
-#animation-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 2000;
-    display: none;
-    justify-content: center;
-    align-items: center;
-}
-
-#animation-container {
-    position: relative;
-    width: 80%;
-    height: 80%;
-    background-color: white;
-    border-radius: 8px;
-    overflow: hidden;
+/* Centerline algorithm visualization (js/centerline-animation.js): the shared dialog with
+   `animation-modal` as its identity class; its own Leaflet map above the step controls. */
+.animation-body {
     display: flex;
     flex-direction: column;
-}
-
-#animation-header {
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#animation-header h2 {
-    margin: 0;
-    font-size: 18px;
-    color: #333;
+    gap: var(--cb-space-3);
 }
 
 #animation-map {
-    flex-grow: 1;
     width: 100%;
+    height: min(60dvh, 560px);
+    min-height: 240px;
+    border-radius: var(--cb-radius-md);
 }
 
 #animation-controls {
-    position: absolute;
-    bottom: 20px;
-    left: 0;
-    width: 100%;
     display: flex;
-    justify-content: center;
-    z-index: 1001;
-}
-
-/* Blockify Modal Styles
-   Layout only: the backdrop, card, header, title, footer, section labels, stacking and phone sheet
-   are the shared "Editor dialog chrome" block after the parcel-based editor. */
-#blockify-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    gap: var(--cb-space-3);
+    text-align: center;
 }
 
 /* Cosmetic only: the dimmed modal is darkened/blurred for depth while a tx is
@@ -3433,62 +2369,45 @@ body.site-intro-open { overflow: hidden; }
     opacity: 0.65;
 }
 
-/* Proposal "waiting for transaction" overlay — mirrors .parcel-mint-overlay so
-   both flows block interaction the same way while a transaction is pending. */
-.proposal-waiting-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 12050; /* above the create-proposal modal (11000) */
-    cursor: progress;
-}
+/* Proposal "waiting for transaction" overlay (proposals/dialog-share.js): blocks interaction
+   while a transaction is pending, over any dialog it was opened from. */
 
+/* Inside the dialog body (js/ui/dialogs.js gives the box its chrome): the spinner beside the words. */
 .proposal-waiting-card {
     display: flex;
     align-items: center;
-    gap: 10px;
-    background: #ffffff;
-    color: #334155;
-    padding: 14px 18px;
-    border-radius: 14px;
-    box-shadow: 0 16px 50px rgba(15, 23, 42, 0.35);
-    font-size: 14px;
-    font-family: var(--cb-font-sans);
+    gap: var(--cb-space-3);
 }
 
 .proposal-waiting-spinner {
     flex: none;
     width: 18px;
     height: 18px;
-    border: 2px solid rgba(13, 59, 102, 0.25);
-    border-top-color: #0d3b66;
+    border: 2px solid var(--cb-line-strong);
+    border-top-color: var(--cb-primary);
     border-radius: 50%;
-    animation: proposal-waiting-spin 0.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .proposal-waiting-spinner {
+        animation: proposal-waiting-spin 0.8s linear infinite;
+    }
 }
 
 @keyframes proposal-waiting-spin {
     to { transform: rotate(360deg); }
 }
 
-#blockify-container {
-    position: relative;
-    width: 90%;
-    height: 90%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Header on top spanning the full width; main | sidebar side by side below it. */
+/* Urban rule editor (#blockify-container, a .cb-dialog--xl): main | sidebar side by side in the
+   dialog body, the map edge to edge. The card, header, footer and phone sheet are the primitive's;
+   the workspace height and the footer row are the "Editor workspaces" block after the parcel-based
+   editor. */
 #blockify-body {
     flex: 1;
     display: flex;
     flex-direction: row;
     min-height: 0;
+    padding: 0;
 }
 
 #blockify-main {
@@ -3510,12 +2429,6 @@ body.site-intro-open { overflow: hidden; }
     box-sizing: border-box;
 }
 
-#blockify-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 #blockify-map {
     flex: 1 1 auto;
     width: 100%;
@@ -3528,7 +2441,7 @@ body.site-intro-open { overflow: hidden; }
     height: 300px;
     background: var(--cb-surface-2);
     position: relative;
-    z-index: 1;
+    z-index: var(--cb-z-local-1);
 }
 
 #blockify-3d canvas {
@@ -3565,73 +2478,20 @@ body.site-intro-open { overflow: hidden; }
     display: block;
 }
 
-#blockify-close {
-    align-self: flex-start;
-}
-
-#blockify-controls {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-#blockify-info {
-    font-size: var(--cb-text-base);
-    color: var(--cb-text-muted);
-    margin-bottom: 15px;
-    text-align: center;
-    min-height: 20px;
-}
-
-#blockify-buttons {
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    align-items: center;
-}
-
-#blockify-buttons .btn-proposal,
-#single-building-controls .btn-proposal {
-    width: auto;
-    min-width: 200px;
-    max-width: 260px;
-}
-
 /* ============================================
-   Single Building Modal
-   Layout only: the chrome is the shared "Editor dialog chrome" block after the parcel-based
-   editor.
+   Freeform editor (#single-building-container, a .cb-dialog--xl): main | sidebar side by side in
+   the dialog body. The card, header, footer (the Done row) and phone sheet are the primitive's.
    ============================================ */
-
-/* The overlay box (it used to be inline styles in single-building.js). */
-#single-building-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 #single-building-container {
-    position: relative;
-    width: 1000px;
-    height: 720px;
-    max-width: 90%;
-    max-height: 90%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    --cb-dialog-width: 1000px;
 }
 
-/* Header on top spanning the full width; main | sidebar side by side below it. */
 #single-building-body {
     flex: 1;
     display: flex;
     flex-direction: row;
     min-height: 0;
+    padding: 0;
 }
 
 #single-building-main {
@@ -3640,16 +2500,6 @@ body.site-intro-open { overflow: hidden; }
     flex-direction: column;
     min-width: 0;
     border-right: 1px solid var(--cb-line);
-}
-
-#single-building-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#single-building-close {
-    align-self: flex-start;
 }
 
 #single-building-map-wrap {
@@ -3662,13 +2512,6 @@ body.site-intro-open { overflow: hidden; }
 #single-building-map {
     width: 100%;
     height: 100%;
-}
-
-#single-building-controls {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    align-items: center;
 }
 
 #single-building-sidebar {
@@ -3735,18 +2578,22 @@ body.site-intro-open { overflow: hidden; }
     margin-top: 6px;
 }
 
-.single-building-rotation-buttons .btn {
-    min-height: 40px;
-    font-size: 15px;
-    font-weight: 600;
+/* The Freeform building picker: the select (or the rename field) and its three icon buttons. */
+.building-picker-row {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    margin-bottom: var(--cb-space-3);
 }
 
-/* Building upload (building-upload.js): a plain .cb-dialog; these rules are only its contents,
+.building-picker-row select,
+.building-picker-row input {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* Building upload (building-upload.js): a plain .cb-dialog--md; these rules are only its contents,
    which used to be inline styles. */
-.building-upload-dialog {
-    --cb-dialog-width: 560px;
-}
-
 .building-upload-file {
     display: inline-flex;
     align-items: center;
@@ -3776,45 +2623,11 @@ body.site-intro-open { overflow: hidden; }
     color: var(--cb-text-muted);
 }
 
+.building-upload-status[data-tone="error"] {
+    color: var(--cb-danger);
+}
+
 /* Share proposals modal */
-.share-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(14, 19, 33, 0.55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 13000; /* above proposal details panel */
-    backdrop-filter: blur(2px);
-}
-
-.share-modal {
-    width: min(520px, 90vw);
-    max-height: 85vh;
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 24px 45px rgba(14, 19, 33, 0.25);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    animation: fadeInUp 0.18s ease-out;
-}
-
-.share-modal-header {
-    padding: 18px 24px;
-    background: #f8f9fd;
-    color: #2f3142;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #e0e1eb;
-}
-
-.share-modal-title {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-}
 
 .share-modal-body {
     padding: 22px 24px;
@@ -3837,7 +2650,7 @@ body.site-intro-open { overflow: hidden; }
 .share-modal-link {
     width: 100%;
     padding: 12px 14px;
-    background: #f7f8fb;
+    background: var(--cb-surface-2);
     border: 1px solid #d8ddf0;
     border-radius: 8px;
     font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -3851,41 +2664,8 @@ body.site-intro-open { overflow: hidden; }
 
 .share-modal-link:focus {
     outline: none;
-    border-color: #007bff;
+    border-color: var(--cb-primary);
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
-}
-
-.share-modal-actions {
-    padding: 18px 24px;
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    background: #f8f9fd;
-}
-
-.share-modal-actions button {
-    min-width: 130px;
-    flex: 0 1 auto;
-}
-
-@media (min-width: 768px) {
-    .share-modal-actions {
-        flex-wrap: nowrap;
-    }
-    
-    .share-modal-actions button {
-        flex: 1 1 0;
-    }
-}
-
-.share-modal-actions .share-modal-secondary {
-    background-color: #6c757d;
-    color: white;
-}
-
-.share-modal-actions .share-modal-secondary:hover {
-    background-color: #5a6268;
 }
 
 .share-modal .share-plan-action {
@@ -3905,132 +2685,6 @@ body.site-intro-open { overflow: hidden; }
     box-sizing: border-box;
 }
 
-/* Informational modal styles (white/blue) */
-.info-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(14, 19, 33, 0.55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 13000;
-    backdrop-filter: blur(2px);
-}
-
-.info-modal {
-    width: min(520px, 90vw);
-    max-height: 85vh;
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 24px 45px rgba(14, 19, 33, 0.25);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    animation: fadeInUp 0.18s ease-out;
-}
-
-.info-modal-header {
-    padding: 18px 24px;
-    background: linear-gradient(135deg, #4a90e2, #357abd);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.info-modal-title {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-}
-
-.info-modal-body {
-    padding: 22px 24px;
-    overflow-y: auto;
-    color: #2f3142;
-    line-height: 1.5;
-}
-
-.info-modal-body p {
-    margin-top: 0;
-    margin-bottom: 12px;
-}
-
-.info-modal-body ul {
-    padding-left: 20px;
-    margin-top: 8px;
-    margin-bottom: 16px;
-}
-
-.info-modal-actions {
-    padding: 18px 24px;
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    background: #f8f9fd;
-}
-
-.info-modal-actions button {
-    min-width: 130px;
-    flex: 1 1 50%;
-}
-
-.info-modal-actions .info-modal-primary {
-    background: linear-gradient(135deg, #4a90e2, #357abd);
-    color: #fff;
-    font-weight: 600;
-    box-shadow: 0 6px 16px rgba(74, 144, 226, 0.35);
-}
-
-.info-modal-actions .info-modal-primary:hover {
-    box-shadow: 0 9px 20px rgba(74, 144, 226, 0.45);
-}
-
-.info-modal-close {
-    background: transparent;
-    border: none;
-    color: #fff;
-    font-size: 24px;
-    line-height: 1;
-    cursor: pointer;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: background-color 0.2s ease;
-}
-
-.info-modal-close:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-.share-modal-actions .share-modal-primary {
-    background-color: #007bff;
-    color: white;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
-}
-
-.share-modal-actions .share-modal-primary:hover {
-    background-color: #0069d9;
-    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 .proposal-list-header {
     display: flex;
     align-items: center;
@@ -4048,7 +2702,7 @@ body.site-intro-open { overflow: hidden; }
 
 .proposal-list-title {
     font-weight: 600;
-    color: #333;
+    color: var(--cb-text);
     flex: 1;
     white-space: nowrap;
     overflow: hidden;
@@ -4056,115 +2710,10 @@ body.site-intro-open { overflow: hidden; }
     min-width: 0;
 }
 
-.proposal-type-pill {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    background-color: #eef2ff;
-    color: #3949ab;
-    text-transform: uppercase;
-    flex-shrink: 0;
-}
-
-.proposal-tampered-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    background-color: #f8d7da;
-    color: #721c24;
-    text-transform: uppercase;
-}
-
+/* A row's actions (the block panel's Apply / Remove from map, its lifecycle cb-badges and the
+   square delete) are btn and cb-badge; .proposal-actions is the cb-actions row that holds them. */
 .proposal-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.proposal-action-btn {
-    border: none;
-    background-color: rgba(0, 123, 255, 0.08);
-    color: #0d47a1;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.proposal-action-btn:hover {
-    background-color: rgba(13, 71, 161, 0.15);
-    color: #0a2f6b;
-}
-
-.proposal-delete-btn {
-    background: none;
-    border: none;
-    color: #dc3545;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 3px;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    transition: background-color 0.2s;
-}
-
-.proposal-delete-btn:hover {
-    background-color: rgba(220, 53, 69, 0.1);
-    color: #b02a37;
-}
-
-.proposal-status-indicator {
-    font-size: 11px;
-    padding: 2px 6px;
-    border-radius: 10px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: inline-flex;
-    align-items: center;
     flex-shrink: 0;
-}
-
-.proposal-status-indicator.active {
-    background-color: #e3f2fd;
-    color: #1976d2;
-    border: 1px solid #bbdefb;
-}
-
-.proposal-status-indicator.executed {
-    background-color: #e8f5e8;
-    color: #2e7d32;
-    border: 1px solid #c8e6c9;
-}
-
-.proposal-status-indicator.inactive {
-    background-color: #fff3e0;
-    color: #f57c00;
-    border: 1px solid #ffe0b2;
-}
-
-.proposal-status-indicator.expired {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
 }
 
 .proposal-list-meta {
@@ -4201,15 +2750,15 @@ body.site-intro-open { overflow: hidden; }
 
 .proposal-list-meta .proposal-meta-number {
     font-weight: 600;
-    color: #333;
+    color: var(--cb-text);
 }
 
 .proposal-list-description {
     margin-top: 8px;
     font-size: 13px;
     line-height: 1.45;
-    color: #555;
-    background-color: #fafafa;
+    color: var(--cb-text-muted);
+    background-color: var(--cb-surface-2);
     border-radius: 4px;
     padding: 8px;
 }
@@ -4236,7 +2785,7 @@ body.site-intro-open { overflow: hidden; }
     flex: 1;
     font-weight: 600;
     font-size: 14px;
-    color: #222;
+    color: var(--cb-text-strong);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -4255,7 +2804,7 @@ body.site-intro-open { overflow: hidden; }
 
 .proposal-card-offer {
     font-weight: 700;
-    color: #1f2937;
+    color: var(--cb-text);
 }
 
 .proposal-card-dot {
@@ -4270,33 +2819,12 @@ body.site-intro-open { overflow: hidden; }
     margin-top: 5px;
 }
 
-/* Shrink the reused state badges inside the compact card. */
-.proposal-list-item--compact .proposal-status-indicator,
-.proposal-list-item--compact .proposal-application-status,
+/* The reused mint-state badge, shrunk inside the compact card. */
 .proposal-mint-state--compact {
     font-size: 10px;
     padding: 1px 6px;
     border-radius: 9px;
     line-height: 1.5;
-}
-
-.proposal-agent-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 1px 7px;
-    border: 1px solid #c4b5fd;
-    border-radius: 9px;
-    background: #f5f3ff;
-    color: #5b21b6;
-    font-size: 10px;
-    font-weight: 700;
-    line-height: 1.5;
-    letter-spacing: 0.35px;
-    text-transform: uppercase;
-}
-
-.proposal-mint-state--compact {
     display: inline-flex;
     align-items: center;
     font-weight: 600;
@@ -4408,7 +2936,7 @@ body.site-intro-open { overflow: hidden; }
     max-width: 100%;
     margin-bottom: 4px;
     font-weight: 500;
-    color: #333;
+    color: var(--cb-text);
 }
 
 .selected-parcels-list {
@@ -4418,14 +2946,14 @@ body.site-intro-open { overflow: hidden; }
     max-height: 200px;
     overflow-y: auto;
     overflow-x: hidden;
-    border: 1px solid #ddd;
+    border: 1px solid var(--cb-line);
     border-radius: 4px;
     margin-top: 0;
 }
 
 .selected-parcel-item {
     padding: 8px 12px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--cb-line);
     font-size: 13px;
 }
 
@@ -4435,204 +2963,115 @@ body.site-intro-open { overflow: hidden; }
 
 .selected-parcel-item .parcel-number {
     font-weight: 600;
-    color: #333;
+    color: var(--cb-text);
     margin-bottom: 2px;
 }
 
 .selected-parcel-item .parcel-details {
-    color: #666;
+    color: var(--cb-text-muted);
     font-size: 12px;
 }
 
-/* Welcome modal styles */
-.welcome-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.45); /* slightly less dark */
-    z-index: 9999;
-    display: none; /* hidden by default; toggle to flex when visible */
-    align-items: center;
-    justify-content: center;
-}
-
-.welcome-modal-content {
-    background-color: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    max-width: 560px;
-    max-height: min(92vh, 760px);
-    overflow-y: auto;
-    width: 90%;
-    position: relative;
-    text-align: center;
-}
-
-.welcome-product-kicker {
-    display: block;
-    margin-bottom: 8px;
-    color: #087f5b;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
-}
-
-.welcome-modal-content .welcome-product-statement {
-    max-width: 470px;
-    margin: 0 auto 16px;
-    color: #4a5568;
-}
-
-.welcome-product-flow {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px;
-    margin-bottom: 14px;
-}
-
-.welcome-product-flow span {
-    padding: 8px 4px;
-    border: 1px solid #cfe8dc;
-    border-radius: 999px;
-    background: #f0faf5;
-    color: #176a4b;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.welcome-demo-link {
-    display: inline-block;
-    color: #176a4b;
-    font-size: 14px;
-    font-weight: 700;
-    text-underline-offset: 3px;
-}
-
-.welcome-hackathon-links {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px 18px;
-    margin-bottom: 18px;
-}
-
-.welcome-modal-content .welcome-identity-prompt {
-    margin-bottom: 14px;
-    padding-top: 14px;
-    border-top: 1px solid #e5e7eb;
-    font-size: 14px;
-}
-
-.welcome-modal-close {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    z-index: 1;
-}
-
-.parcel-coverage-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.45);
-    z-index: 9999;
-    display: none;
-    align-items: center;
-    justify-content: center;
-}
-
-.parcel-coverage-modal-content {
-    max-width: 520px;
-    width: min(520px, 92vw);
-    text-align: left;
-    padding: 28px 28px 24px;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-.parcel-coverage-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-}
-
-.parcel-coverage-header h2 {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 600;
-    color: #2c3e50;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+/* Welcome dialog (index.html #welcome-modal, js/user-management.js showWelcomeModal): a
+   cb-dialog--md on the shared chrome. The kicker sits over the title in the header; the body holds
+   the statement, the six flow words (cb-badge), the demo links (cb-link-row) and the profile form:
+   avatar, the one language picker (cb-segmented, shared with the agent dialog), the username and
+   Get started (btn-primary btn-block cb-shimmer). */
+.welcome-modal__heading {
     flex: 1;
     min-width: 0;
 }
 
-.parcel-coverage-close {
-    background: none;
-    border: none;
-    font-size: 22px;
-    line-height: 1;
-    cursor: pointer;
-    color: #6c757d;
+.welcome-modal__heading .cb-kicker {
+    margin-bottom: var(--cb-space-1);
 }
 
-.parcel-coverage-close:hover,
-.parcel-coverage-close:focus {
-    color: #212529;
+.welcome-product-statement {
+    margin: 0 0 var(--cb-space-3);
+    color: var(--cb-text-muted);
 }
 
+.welcome-product-flow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+    margin-bottom: var(--cb-space-3);
+}
+
+.welcome-hackathon-links {
+    margin-bottom: var(--cb-space-4);
+}
+
+.welcome-identity-prompt {
+    margin: 0 0 var(--cb-space-3);
+    padding-top: var(--cb-space-4);
+    border-top: 1px solid var(--cb-line);
+    color: var(--cb-text-muted);
+}
+
+.welcome-modal .form-group {
+    margin-bottom: var(--cb-space-4);
+}
+
+.welcome-field-label {
+    display: block;
+    margin-bottom: var(--cb-space-2);
+    font-weight: var(--cb-weight-medium);
+    color: var(--cb-text-strong);
+}
+
+.welcome-modal .form-group input {
+    width: 100%;
+}
+
+/* Track speed picker (index.html #track-speed-modal, js/road-drawing.js showTrackSpeedPicker): the
+   speeds are cb-option rows under the description; picking one starts drawing at once. */
+.track-speed-description {
+    margin: 0 0 var(--cb-space-3);
+    color: var(--cb-text-muted);
+}
+
+/* Loaded parcels coverage (index.html #parcel-coverage-modal, js/parcel-coverage-debug.js): a
+   cb-dialog--md whose body is the legend, a small map of the cached grid cells and the summary. */
 .parcel-coverage-body {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: var(--cb-space-3);
 }
 
 #parcel-coverage-map {
     width: 100%;
     height: 260px;
     min-height: 220px;
-    border-radius: 10px;
+    border-radius: var(--cb-radius-md);
     overflow: hidden;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    background: #f1f3f5;
-}
-
-.parcel-coverage-stats {
-    font-size: 14px;
-    color: #4a5568;
-    line-height: 1.5;
+    border: 1px solid var(--cb-line);
+    background: var(--cb-surface-2);
 }
 
 .parcel-coverage-legend {
     display: flex;
-    gap: 16px;
+    gap: var(--cb-space-4);
     flex-wrap: wrap;
-    font-size: 13px;
-    color: #4a5568;
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
 }
 
 .parcel-coverage-legend-item {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--cb-space-1);
 }
 
 .parcel-coverage-swatch {
     width: 16px;
     height: 16px;
-    border-radius: 4px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: var(--cb-radius-sm);
+    border: 1px solid var(--cb-line-strong);
 }
 
+/* The swatches are the map's own layer colours (CELL_STYLE / VIEWPORT_STYLE in
+   js/parcel-coverage-debug.js), so they stay literal. */
 .parcel-coverage-swatch.coverage {
     background: rgba(245, 158, 11, 0.35);
     border-color: rgba(217, 119, 6, 0.9);
@@ -4643,670 +3082,156 @@ body.site-intro-open { overflow: hidden; }
     border-color: rgba(37, 99, 235, 0.9);
 }
 
-.parcel-coverage-footer {
-    margin-top: 18px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
 .parcel-coverage-summary {
-    font-size: 13px;
-    color: #495057;
-    line-height: 1.4;
+    font-size: var(--cb-text-md);
+    color: var(--cb-text);
+    line-height: var(--cb-leading);
 }
 
-.parcel-coverage-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.welcome-modal-content h2 {
-    margin: 0 0 12px 0;
-    color: #333;
-    font-size: 24px;
-    font-weight: 600;
-}
-
-@media (max-width: 520px) {
-    .welcome-modal-content {
-        padding: 26px 20px 22px;
-    }
-
-    .welcome-product-flow {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
-.welcome-modal-content p {
-    margin: 0 0 20px 0;
-    color: #666;
-    font-size: 16px;
-    line-height: 1.5;
-}
-
-.welcome-modal .form-group {
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-.welcome-modal .form-group input {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #dee2e6;
-    border-radius: 6px;
-    font-size: 16px;
-    transition: border-color 0.2s ease;
-}
-
-.welcome-modal .form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #2c3e50;
-    text-align: left;
-}
-
-.welcome-language-picker {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    height: 40px;
-    width: 100%;
-    justify-content: flex-start;
-}
-
-.welcome-language-picker .language-toggle {
-    min-width: 50px;
-    height: 40px;
-    padding: 0 12px;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
-    background: #f8fafc;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    line-height: 1;
-    cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.welcome-language-picker .language-toggle:hover {
-    background: #f1f5f9;
-}
-
-.welcome-language-picker .language-toggle:focus-visible {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
-}
-
-/* The options open as an in-flow row beside the toggle, not a dropdown below it: the picker sits
-   near the bottom of a scrolling modal, and on phones (375x740) an absolutely positioned list was
-   clipped by the modal, so the last option (Croatian) could not be tapped. In flow, nothing clips. */
-.welcome-language-picker .language-menu {
-    position: static;
-    display: none;
-    flex-direction: row;
-    gap: 4px;
-    margin-left: 8px;
-    padding: 3px;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
-}
-
-.welcome-language-picker.is-open .language-menu {
-    display: flex;
-}
-
-.welcome-language-picker .language-option {
-    width: 44px;
-    height: 32px;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    background: transparent;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    line-height: 1;
-    cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.welcome-language-picker .language-option:hover {
-    background: #f1f5f9;
-}
-
-.welcome-language-picker .language-option.is-active {
-    background: #e0f2fe;
-    border-color: #bae6fd;
-    box-shadow: 0 0 0 1px #bae6fd;
-}
-
-.welcome-language-picker .language-option:focus-visible {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
-}
-
-.welcome-modal .form-group input:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-}
-
-/* Wallet connector modal */
-.wallet-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 14000; /* Above proposal/wallet-choice overlays */
-}
-
-.wallet-modal {
-    background: #ffffff;
-    color: #212529;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    width: min(420px, 90vw);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    z-index: 14050;
-}
-
-.wallet-modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.wallet-modal-header h2 {
-    margin: 0;
-    font-size: 18px;
-}
-
-.wallet-modal-body {
-    padding: 16px 20px 20px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
+/* Wallet dialogs (CbDialog): the connector (js/wallet-connection.js), the network choice
+   (js/user-management.js openChainSelectionModal) and the Canton identity picker and explorer
+   (js/canton/, css/canton-mode.css). The chrome is the shared dialog's; wallet-modal,
+   wallet-modal-overlay and wallet-modal-close stay on it as script and test hooks and paint
+   nothing. Wallets and networks are cb-option rows; a wallet that speaks both chains is one row
+   with an Ethereum / Solana button pair. */
 .wallet-modal-description {
-    font-size: 14px;
-    color: #495057;
+    margin: 0 0 var(--cb-space-3);
+    color: var(--cb-text-muted);
 }
 
-.wallet-options {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.wallet-option {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: #f8f9fa;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 12px 14px;
-    color: #212529;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.2s, border-color 0.2s;
-}
-
-.wallet-option:hover {
-    transform: translateY(-1px);
-    background: #e9f5ef;
-    border-color: rgba(25, 135, 84, 0.5);
-}
-
-.wallet-option:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.wallet-options > * + * {
+    margin-top: var(--cb-space-2);
 }
 
 .wallet-option-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--cb-radius-sm);
     object-fit: cover;
 }
 
-.wallet-option-placeholder {
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    background: #e9f5ef;
-    border: 1px solid rgba(25, 135, 84, 0.2);
-}
-
-.wallet-option-meta {
+.wallet-option-dual {
     display: flex;
-    flex-direction: column;
-    text-align: left;
+    align-items: center;
+    gap: var(--cb-space-3);
+    padding: var(--cb-space-3) var(--cb-space-4);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
 }
 
-.wallet-option-name {
-    font-weight: 600;
-    font-size: 14px;
-    color: #212529;
+.wallet-option-dual .cb-option__text {
+    flex: 1 1 auto;
 }
 
-.wallet-option-origin {
-    font-size: 12px;
-    color: #6c757d;
-}
-
-.wallet-option--dual {
-    cursor: default;
-}
-
-.wallet-option--dual:hover {
-    transform: none;
-    background: #f8f9fa;
-    border-color: #e5e7eb;
-}
-
-.wallet-option-chains {
-    display: flex;
-    gap: 6px;
-    margin-top: 4px;
-}
-
-.wallet-chain-btn {
-    font-size: 12px;
-    font-weight: 500;
-    padding: 3px 10px;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
-    background: #fff;
-    color: #374151;
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
-}
-
-.wallet-chain-btn:hover {
-    background: #e9f5ef;
-    border-color: rgba(25, 135, 84, 0.5);
-}
-
-.wallet-chain-btn--solana:hover {
-    background: #f3eeff;
-    border-color: rgba(153, 69, 255, 0.5);
-}
-
+/* The status line under the list: connecting…, connected, or what went wrong. */
 .wallet-modal-error {
-    min-height: 18px;
-    font-size: 12px;
-    color: #212529;
-    opacity: 0;
-    transition: opacity 0.2s;
+    margin-top: var(--cb-space-3);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
 }
 
-.wallet-modal-error.visible {
-    opacity: 1;
+.wallet-modal-error:empty {
+    display: none;
 }
 
 .wallet-modal-error.error {
-    color: #ff6b6b;
+    color: var(--cb-danger);
 }
 
 .wallet-modal-empty {
-    font-size: 13px;
-    color: #495057;
-    padding: 12px;
-    background: #f1f3f5;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
+    padding: var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface-2);
+    font-size: var(--cb-text-md);
+    color: var(--cb-text);
 }
 
-.chain-modal-overlay {
-    z-index: 10000;
-}
-
-.wallet-modal.chain-modal {
-    width: min(440px, 92vw);
-}
-
-.chain-options-list {
-    max-height: 360px;
-    overflow-y: auto;
-}
-
-.chain-option-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #198754;
-}
-
-.chain-option--current {
-    border-color: rgba(25, 135, 84, 0.6);
-    background: rgba(25, 135, 84, 0.16);
-    box-shadow: inset 0 0 0 1px rgba(25, 135, 84, 0.25);
-}
-
-.chain-current-badge {
-    background: #198754;
-    color: #fff;
-    border-radius: 999px;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 7px;
-    line-height: 1.4;
-    letter-spacing: 0.02em;
-}
-
-.chain-modal-error {
-    min-height: 18px;
-}
-
-/* Light theme overrides for chain modal to match app style */
-.wallet-modal.chain-modal {
-    background: #ffffff;
-    color: #212529;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
-}
-
-.wallet-modal.chain-modal .wallet-modal-header {
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.wallet-modal.chain-modal .wallet-modal-description {
-    color: #495057;
-}
-
-.wallet-modal.chain-modal .wallet-option {
-    background: #f8f9fa;
-    color: #212529;
-    border: 1px solid #e5e7eb;
-}
-
-.wallet-modal.chain-modal .wallet-option:hover {
-    background: #e9f5ef;
-    border-color: rgba(25, 135, 84, 0.5);
-}
-
-.wallet-modal.chain-modal .wallet-option-name {
-    color: #212529;
-}
-
-.wallet-modal.chain-modal .wallet-option-origin {
-    color: #6c757d;
-}
-
-.wallet-modal.chain-modal .wallet-option-placeholder.chain-option-icon {
-    background: #e9f5ef;
-    border: 1px solid rgba(25, 135, 84, 0.2);
-}
-
-.wallet-modal.chain-modal .chain-option--current {
-    background: #e9f5ef;
-    border-color: rgba(25, 135, 84, 0.7);
-    box-shadow: inset 0 0 0 1px rgba(25, 135, 84, 0.25);
-}
-
-.wallet-modal.chain-modal .wallet-modal-error.chain-modal-error {
-    color: #d9534f;
-}
-
-/* Version history modal */
-.version-modal {
-    position: fixed;
-    inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.45);
-    z-index: 2600;
-    padding: 20px;
-}
-
-.version-modal.visible {
-    display: flex;
-}
-
-.version-modal-content {
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-    max-width: 500px;
-    width: min(500px, 100%);
-    max-height: 80vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.version-modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 24px 12px;
-    border-bottom: 1px solid #ececec;
-}
-
-.version-modal-header h2 {
-    margin: 0;
-    font-size: 20px;
-    color: #1f2933;
-}
-
-.version-modal-body {
-    padding: 20px 24px;
-    overflow-y: auto;
-}
-
+/* What's new (index.html #version-modal, js/version-history.js): the version and its date over
+   the release text, Next / Close in the footer. */
 .version-modal-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 12px;
-    font-size: 13px;
-    color: #52606d;
+    gap: var(--cb-space-2);
+    margin-bottom: var(--cb-space-3);
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
 }
 
 .version-number {
-    font-weight: 600;
-    color: #1f2933;
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
 }
 
 .version-text {
-    font-size: 14px;
+    font-size: var(--cb-text-base);
     line-height: 1.6;
-    color: #334155;
+    color: var(--cb-text);
     white-space: pre-wrap;
 }
 
-.version-modal-footer {
-    padding: 16px 24px 24px;
-    border-top: 1px solid #ececec;
-    display: flex;
-    justify-content: flex-end;
-}
-
-/* Mobile layout for blockify modal (the bottom-sheet size and corners are the shared
-   "Editor dialog chrome" block) */
+/* Urban rule and Freeform editors on phones: the dialog is the primitive's bottom sheet, whose
+   body scrolls the map, the 3D preview and the sidebar in one column between the fixed header and
+   the Done row. The 2D map and 3D preview both capture touch (pan/zoom), so the body can only be
+   scrolled by dragging on a non-map area: they are sized so the top of the slider section peeks
+   below them, and that peek is the scroll grip. */
 @media (max-width: 767.98px) {
-    #blockify-container {
-        flex-direction: column;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-    
     #blockify-body,
-    #blockify-main {
-        display: contents;
+    #single-building-body {
+        flex-direction: column;
     }
-    
-    /* The container is the scroller here (~2500px of content), so the header — title and × —
-       sticks to its top instead of scrolling away and leaving only "Done" at the bottom. Above the
-       Leaflet map's panes/controls (z 400–1000), which share this stacking context. */
-    #blockify-header {
-        order: 1;
+
+    #blockify-main,
+    #single-building-main {
         flex: 0 0 auto;
-        position: sticky;
-        top: 0;
-        z-index: 1100;
+        border-right: 0;
     }
-    
-    /* The 2D map and 3D preview both capture touch (pan/zoom), so the page can only be scrolled by
-       dragging on a non-map area. Size them so header + map + 3D leave the top of the slider section
-       peeking below the fold: that peek is the scroll grip. No margin "strip" between them — the strip
-       was the old, fiddly scroll handle this replaces. */
+
     #blockify-map {
-        order: 2;
         flex: 0 0 auto;
         height: 36vh;
         min-height: 180px;
     }
 
     #blockify-3d {
-        order: 3;
         flex: 0 0 auto;
         height: 28vh;
         min-height: 160px;
     }
-    
-    #blockify-sidebar {
-        order: 4;
-        width: 100%;
-        max-width: 100%;
-        flex: 0 0 auto;
-        min-height: fit-content;
-        max-height: none;
-        overflow-y: visible;
-        box-sizing: border-box;
-    }
-    
-    #blockify-controls {
-        order: 5;
-        width: 100%;
-        max-width: 100%;
-        flex: 0 0 auto;
-        box-sizing: border-box;
-    }
-    
-    #blockify-buttons {
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
-    }
-    
-    #blockify-buttons .btn-proposal,
-    #single-building-controls .btn-proposal {
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
-    }
-    
-    #btn-blockify-done {
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
-    }
-    
-    /* Single Building Modal - Mobile */
-    #single-building-container {
-        flex-direction: column;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-    
-    #single-building-body,
-    #single-building-main {
-        display: contents;
-        border-right: none;
-    }
-    
-    #single-building-header {
-        order: 1;
-        flex: 0 0 auto;
-        position: sticky; /* same as #blockify-header: × stays reachable while scrolling */
-        top: 0;
-        z-index: 1100;
-    }
-    
+
     #single-building-map-wrap {
-        order: 2;
         flex: 0 0 auto;
         height: 40vh;
         min-height: 200px;
-        margin-bottom: 40px; /* Space for scrolling */
     }
 
     #single-building-map {
         height: 100%;
     }
-    
-    .single-building-3d-wrapper {
-        order: 3;
-        flex: 0 0 auto;
-    }
-    
+
+    #blockify-sidebar,
     #single-building-sidebar {
-        order: 4;
         width: 100%;
         max-width: 100%;
         flex: 0 0 auto;
         min-height: fit-content;
         max-height: none;
         overflow-y: visible;
-        box-sizing: border-box;
-    }
-    
-    #single-building-controls {
-        order: 5;
-        width: 100%;
-        max-width: 100%;
-        flex: 0 0 auto;
-        box-sizing: border-box;
-        justify-content: center;
-    }
-    
-    #single-building-confirm {
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
+        border-top: 1px solid var(--cb-line);
     }
 }
 
-/* ========== Row Houses Modal Styles ==========
-   Layout only: the chrome is the shared "Editor dialog chrome" block after the parcel-based
-   editor. */
-.rowhouse-modal-overlay,
-#rowhouse-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#rowhouse-container {
-    position: relative;
-    width: 90%;
-    height: 90%;
-    overflow: hidden;
+/* ========== Row houses editor ==========
+   #rowhouse-container is a .cb-dialog--xl: main | sidebar side by side in the dialog body, the map
+   edge to edge. The card, header, footer and phone sheet are the primitive's; the workspace height
+   and the footer row are the "Editor workspaces" block after the parcel-based editor. */
+#rowhouse-body {
+    flex: 1;
     display: flex;
     flex-direction: row;
+    min-height: 0;
+    padding: 0;
 }
 
 #rowhouse-main {
@@ -5379,12 +3304,6 @@ body.site-intro-open { overflow: hidden; }
     line-height: 1.4;
 }
 
-#rowhouse-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 #rowhouse-map {
     flex: 1 1 auto;
     width: 100%;
@@ -5396,7 +3315,7 @@ body.site-intro-open { overflow: hidden; }
     height: 300px;
     background: var(--cb-surface-2);
     position: relative;
-    z-index: 1;
+    z-index: var(--cb-z-local-1);
 }
 
 #rowhouse-3d canvas {
@@ -5406,22 +3325,6 @@ body.site-intro-open { overflow: hidden; }
     width: 100%;
     height: 100%;
     display: block;
-}
-
-#rowhouse-info {
-    margin-bottom: 10px;
-    font-size: var(--cb-text-base);
-    color: var(--cb-text-muted);
-}
-
-#rowhouse-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-#rowhouse-buttons .btn {
-    min-width: 120px;
 }
 
 /* Row Houses Interaction Styles */
@@ -5437,85 +3340,50 @@ body.site-intro-open { overflow: hidden; }
     cursor: grabbing;
 }
 
-/* Row Houses Modal Mobile Styles (the bottom-sheet size and corners are the shared
-   "Editor dialog chrome" block) */
+/* Row houses on phones: the primitive's bottom sheet, its body scrolling map, 3D and sidebar in
+   one column. Same as the Urban rule editor: map + 3D are sized so the slider section peeks below
+   them and becomes the scroll grip. */
 @media (max-width: 767.98px) {
-    #rowhouse-container {
+    #rowhouse-body {
         flex-direction: column;
-        overflow-y: auto;
-        overflow-x: hidden;
     }
 
     #rowhouse-main {
-        display: contents;
-    }
-
-    #rowhouse-header {
-        order: 1;
         flex: 0 0 auto;
+        border-right: 0;
     }
 
-    /* Same as blockify: size map + 3D so the slider section peeks below the fold and becomes the
-       scroll grip, rather than relying on a margin "strip" between two touch-capturing views. */
     #rowhouse-map {
-        order: 2;
         flex: 0 0 auto;
         height: 36vh;
         min-height: 180px;
     }
 
     #rowhouse-3d {
-        order: 3;
         flex: 0 0 auto;
         height: 26vh;
         min-height: 150px;
     }
 
     #rowhouse-sidebar {
-        order: 4;
         width: 100%;
         max-height: none;
         overflow-y: visible;
         border-top: 1px solid var(--cb-line);
         flex: 0 0 auto;
     }
-
-    #rowhouse-controls {
-        order: 5;
-        width: 100%;
-        flex: 0 0 auto;
-    }
 }
 
-/* ========== Parcel-based Urban Rules Modal Styles ==========
-   Layout only: the chrome is the shared "Editor dialog chrome" block right after this editor. */
-.parcelbased-modal-overlay,
-#parcelbased-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#parcelbased-container {
-    position: relative;
-    width: 90%;
-    height: 90%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Header on top spanning the full width; main | sidebar side by side below it. */
+/* ========== Detached houses editor ==========
+   #parcelbased-container is a .cb-dialog--xl: main | sidebar side by side in the dialog body, the
+   map edge to edge. The card, header, footer and phone sheet are the primitive's; the workspace
+   height and the footer row are the "Editor workspaces" block right after this editor. */
 #parcelbased-body {
     flex: 1;
     display: flex;
     flex-direction: row;
     min-height: 0;
+    padding: 0;
 }
 
 #parcelbased-main {
@@ -5588,12 +3456,6 @@ body.site-intro-open { overflow: hidden; }
     line-height: 1.4;
 }
 
-#parcelbased-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 #parcelbased-map {
     flex: 1 1 auto;
     width: 100%;
@@ -5605,7 +3467,7 @@ body.site-intro-open { overflow: hidden; }
     height: 300px;
     background: var(--cb-surface-2);
     position: relative;
-    z-index: 1;
+    z-index: var(--cb-z-local-1);
 }
 
 #parcelbased-3d canvas {
@@ -5617,188 +3479,111 @@ body.site-intro-open { overflow: hidden; }
     display: block;
 }
 
-#parcelbased-info {
-    margin-bottom: 10px;
-    font-size: var(--cb-text-base);
-    color: var(--cb-text-muted);
-    text-align: center;
-}
-
-#parcelbased-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-#parcelbased-buttons .btn {
-    min-width: 120px;
-}
-
-/* Parcel-based Modal Mobile Styles (the bottom-sheet size and corners are the shared
-   "Editor dialog chrome" block) */
+/* Detached houses on phones: the primitive's bottom sheet, its body scrolling map, 3D and sidebar
+   in one column. */
 @media (max-width: 767.98px) {
-    #parcelbased-container {
+    #parcelbased-body {
         flex-direction: column;
-        overflow-y: auto;
-        overflow-x: hidden;
     }
 
-    #parcelbased-body,
     #parcelbased-main {
-        display: contents;
-    }
-
-    #parcelbased-header {
-        order: 1;
         flex: 0 0 auto;
+        border-right: 0;
     }
 
     #parcelbased-map {
-        order: 2;
         flex: 0 0 auto;
+        height: 36vh;
         min-height: 180px;
-        margin-bottom: 40px; /* Space for scrolling */
     }
 
     #parcelbased-3d {
-        order: 3;
         flex: 0 0 auto;
         height: 200px;
     }
 
     #parcelbased-sidebar {
-        order: 4;
         width: 100%;
         max-height: none;
         overflow-y: visible;
         border-top: 1px solid var(--cb-line);
         flex: 0 0 auto;
     }
+}
 
-    #parcelbased-controls {
-        order: 5;
-        width: 100%;
-        flex: 0 0 auto;
+/* ========== Editor workspaces ==========
+   The building editors (Urban rule, Row houses, Detached houses, Freeform) wear the dialog
+   primitive (css/primitives.css: overlay, card, header, body, footer, the phone bottom sheet) and
+   keep their ids for their scripts. What is theirs is laid out here: on a wide screen the card
+   takes the height the dialog allows so the map and 3D preview fill it, and the footer is the
+   decision row, what the design delivers on the left and the decisions on the right. On a phone
+   the line takes the width and the buttons share the row under it. */
+@media (min-width: 768px) {
+    #blockify-container,
+    #rowhouse-container,
+    #parcelbased-container {
+        height: calc(100dvh - 2 * var(--cb-space-4));
+    }
+
+    #single-building-container {
+        height: min(720px, calc(100dvh - 2 * var(--cb-space-4)));
     }
 }
 
-/* ========== Editor dialog chrome ==========
-   The proposal editors (Urban Rule, Row houses, Detached houses, Freeform, Land readjustment) keep
-   their own markup, ids and layout, and take the .cb-dialog look (primitives.css) from here: one
-   backdrop and stacking plane, the card, a header with a hairline under it, the title, a footer
-   with a hairline over it, .cb-kicker section labels and, on phones, the bottom sheet. It comes
-   after every editor's own rules so the phone sheet wins over their desktop sizes. The building
-   upload dialog is a plain .cb-dialog (building-upload.js). */
-#blockify-modal,
-#rowhouse-modal,
-#parcelbased-modal,
-#single-building-modal,
-.reparcel-modal-overlay {
-    z-index: var(--cb-z-dialog);
-    background: var(--cb-backdrop);
-}
-
-#blockify-container,
-#rowhouse-container,
-#parcelbased-container,
-#single-building-container,
-.reparcel-modal {
-    background: var(--cb-surface);
-    border-radius: var(--cb-radius-xl);
-    box-shadow: var(--cb-shadow-lg);
-    color: var(--cb-text);
-    font-size: var(--cb-text-base);
-    line-height: var(--cb-leading);
-}
-
-/* Opaque: the Urban Rule and Freeform headers stick to the top of the scrolling sheet on phones. */
-#blockify-header,
-#rowhouse-header,
-#parcelbased-header,
-#single-building-header,
-.reparcel-header {
-    gap: var(--cb-space-3);
-    padding: var(--cb-space-4) var(--cb-space-5);
-    border-bottom: 1px solid var(--cb-line);
-    background: var(--cb-surface);
-}
-
-#blockify-header h2,
-#rowhouse-header h2,
-#parcelbased-header h2,
-#single-building-header h2,
-.reparcel-header__text h2 {
-    margin: 0;
-    font-size: var(--cb-text-xl);
-    font-weight: var(--cb-weight-semibold);
-    line-height: 1.25;
-    color: var(--cb-text-strong);
-}
-
-/* The decision row under the map and 3D preview is the footer. */
 #blockify-controls,
 #rowhouse-controls,
-#parcelbased-controls,
-#single-building-controls {
-    padding: var(--cb-space-3) var(--cb-space-5);
-    border-top: 1px solid var(--cb-line);
+#parcelbased-controls {
+    align-items: center;
 }
 
-/* Section labels read as .cb-kicker. */
-#blockify-sidebar h3,
-#rowhouse-sidebar h3,
-#parcelbased-sidebar h3,
-#single-building-sidebar h3,
-.building-density-card h3,
-.single-building-3d-label,
-.reparcel-legend-header h3 {
-    margin: 0 0 var(--cb-space-2);
-    font-size: var(--cb-text-xs);
-    font-weight: var(--cb-weight-semibold);
-    letter-spacing: var(--cb-tracking-caps);
-    text-transform: uppercase;
+#blockify-info,
+#rowhouse-info,
+#parcelbased-info {
+    flex: 1 1 240px;
+    min-width: 0;
+    margin: 0;
+    font-size: var(--cb-text-md);
     color: var(--cb-text-muted);
 }
 
+#blockify-buttons,
+#rowhouse-buttons,
+#parcelbased-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--cb-space-2);
+}
+
 @media (max-width: 767.98px) {
-    #blockify-modal,
-    #rowhouse-modal,
-    #parcelbased-modal,
-    #single-building-modal,
-    .reparcel-modal-overlay {
-        align-items: flex-end;
-        padding: 0;
+    #blockify-info,
+    #rowhouse-info,
+    #parcelbased-info {
+        flex-basis: 100%;
     }
 
-    #blockify-container,
-    #rowhouse-container,
-    #parcelbased-container,
-    #single-building-container,
-    .reparcel-modal {
-        width: 100%;
-        max-width: 100%;
-        height: auto;
-        max-height: 92dvh;
-        border-radius: var(--cb-radius-xl) var(--cb-radius-xl) 0 0;
+    #blockify-buttons,
+    #rowhouse-buttons,
+    #parcelbased-buttons {
+        flex: 1 1 100%;
     }
 
-    /* Extra room under the decisions at the bottom of the screen. */
-    #blockify-controls,
-    #rowhouse-controls,
-    #parcelbased-controls,
-    #single-building-controls {
-        padding-bottom: 30px;
+    #rowhouse-buttons .btn,
+    #parcelbased-buttons .btn,
+    #single-building-controls .btn {
+        flex: 1 1 0;
     }
 }
 
+/* The building's name set straight on the editor map: text with a surface-coloured halo. */
 .single-building-label-tooltip {
     background: transparent;
     border: none;
     box-shadow: none;
-    color: #000;
-    font-weight: bold;
-    font-size: 14px;
-    text-shadow: 0 0 2px #fff;
+    color: var(--cb-text-strong);
+    font-weight: var(--cb-weight-bold);
+    font-size: var(--cb-text-base);
+    text-shadow: var(--cb-text-halo);
 }
 
 /* Draggable gap/wing handles on the Urban Rule modal map (see building-blocks.js renderGapWingHandles). */
@@ -5834,7 +3619,7 @@ body.site-intro-open { overflow: hidden; }
     touch-action: none;
 }
 .polygon-geometry-editor__vertex.is-selected span {
-    background: #fff;
+    background: var(--cb-surface);
     border-color: #0d6efd;
     box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.22), 0 2px 7px rgba(0, 0, 0, 0.5);
 }
@@ -5851,7 +3636,7 @@ body.site-intro-open { overflow: hidden; }
     height: 26px;
     border: 1px solid #ef9a9a;
     border-radius: 50%;
-    background: #fff;
+    background: var(--cb-surface);
     color: #c62828;
     box-shadow: 0 2px 7px rgba(18, 32, 51, 0.28);
     cursor: pointer;
@@ -5878,17 +3663,6 @@ body.site-intro-open { overflow: hidden; }
 }
 .single-building-fill--selectable {
     cursor: pointer;
-}
-#blockify-manual-toggle,
-#blockify-geojson-upload {
-    width: 100%;
-}
-/* Manual mode on ("Back to sliders"): a pressed toggle, amber like the outline vertices it lets you
-   drag, not a second filled button beside Done. */
-#blockify-manual-toggle.active {
-    background: var(--cb-warning-soft);
-    border-color: var(--cb-warning);
-    color: var(--cb-warning-soft-ink);
 }
 /* "Based on existing buildings" mode toggle (urban-rule modal) */
 .blockify-existing-toggle {
@@ -5924,8 +3698,8 @@ body.site-intro-open { overflow: hidden; }
     height: 12px;
     margin: -6px 0 0 -6px;
     border-radius: 50%;
-    background: #fff;
-    border: 2px solid #1d4ed8;
+    background: var(--cb-surface);
+    border: 2px solid var(--cb-primary-hover);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
     cursor: grab;
     box-sizing: border-box;
@@ -5934,12 +3708,12 @@ body.site-intro-open { overflow: hidden; }
 .reparcel-node-handle:active,
 .reparcel-node-handle.dragging {
     cursor: grabbing;
-    background: #1d4ed8;
+    background: var(--cb-primary-hover);
 }
 
 /* A node shared by several plots is the interesting one — moving it re-shapes all of them. */
 .reparcel-node-handle.shared {
-    border-color: #b45309;
+    border-color: var(--cb-warning);
     width: 14px;
     height: 14px;
     margin: -7px 0 0 -7px;
@@ -5952,7 +3726,7 @@ body.site-intro-open { overflow: hidden; }
     margin: -4.5px 0 0 -4.5px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.85);
-    border: 1.5px dashed #1d4ed8;
+    border: 1.5px dashed var(--cb-primary-hover);
     cursor: copy;
     box-sizing: border-box;
 }
@@ -6005,12 +3779,11 @@ body.site-intro-open { overflow: hidden; }
     line-height: 1.35;
     color: var(--cb-warning-soft-ink);
     background: var(--cb-warning-soft);
-    border: 1px solid #fcd34d;
+    border: 1px solid var(--cb-warning);
     border-radius: var(--cb-radius-sm);
     padding: 6px 8px;
     max-width: 230px;
 }
-.reparcel-node-popup .btn-sm { font-size: var(--cb-text-sm); padding: 4px 10px; }
 .leaflet-popup.reparcel-node-popup-wrap .leaflet-popup-content { margin: 10px 12px; min-width: 150px; }
 
 /* ── Shared geometry-edit handles ────────────────────────────────────────────────────────────
@@ -6020,8 +3793,8 @@ body.site-intro-open { overflow: hidden; }
 .geom-handle {
     box-sizing: border-box;
     border-radius: 50%;
-    background: #fff;
-    border: 2px solid #1d4ed8;
+    background: var(--cb-surface);
+    border: 2px solid var(--cb-primary-hover);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
     cursor: grab;
 }
@@ -6029,18 +3802,18 @@ body.site-intro-open { overflow: hidden; }
 .geom-handle--vertex { width: 12px; height: 12px; margin: -6px 0 0 -6px; }
 
 /* A vertex shared by several shapes is the interesting one — moving it re-shapes all of them. */
-.geom-handle--shared { border-color: #b45309; width: 14px; height: 14px; margin: -7px 0 0 -7px; }
+.geom-handle--shared { border-color: var(--cb-warning); width: 14px; height: 14px; margin: -7px 0 0 -7px; }
 
 /* Midpoint "insert a vertex here" targets, deliberately fainter than real vertices. */
 .geom-handle--mid {
     width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px;
     background: rgba(255, 255, 255, 0.85);
-    border: 1.5px dashed #1d4ed8;
+    border: 1.5px dashed var(--cb-primary-hover);
     cursor: copy;
 }
 
 .geom-handle.is-dragging,
-.geom-handle:active { cursor: grabbing; background: #1d4ed8; }
+.geom-handle:active { cursor: grabbing; background: var(--cb-primary-hover); }
 
 /* A node the host has pinned: it sits on geometry this editor is not allowed to reshape (in a land
    readjustment, the pooled outline, which belongs to the neighbours). Hollow, grey and explicitly
@@ -6069,99 +3842,79 @@ body.site-intro-open { overflow: hidden; }
 .geom-handle--slide:active { cursor: ew-resize; background: #0f766e; }
 
 /* Undo control the shared polygon editor adds to its map when the host supplies none — so every
-   geometry tool has a visible undo, not just the keyboard shortcut. */
+   geometry tool has a visible undo, not just the keyboard shortcut. It is map chrome
+   (.map-shell-button); only its place is set here. */
 .geom-undo-button {
     position: absolute;
     /* The map search occupies that corner (10px + 44px), making this visible button impossible
        to click during polygon edits. Keep it just below the shell's top row on desktop and mobile. */
     top: calc(var(--map-shell-top-clearance, 58px) + 4px);
     left: 12px;
-    z-index: 1000;
-    width: 34px;
-    height: 34px;
-    padding: 0;
-    font-size: 17px;
-    line-height: 1;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
-    cursor: pointer;
+    z-index: var(--cb-z-map-chrome);
 }
 
-.geom-undo-button:disabled { opacity: 0.4; cursor: default; }
-.geom-undo-button:not(:disabled):hover { background: #eef3fd; border-color: #9db8e8; }
+/* The icon is not a hit target of its own: a tap anywhere on the control lands on the button. */
+.geom-undo-button i { pointer-events: none; }
 
 /* --- Epoch buckets (vremenska crta plana) ------------------------------- */
 /* Epoha na kartici u listi: chip koji je ujedno izbornik — pokazuje godinu i
    postavlja je, pa kartici ne treba i značka, a prijedlog se ne mora otvoriti
-   da bi mu se epoha promijenila. Bez epohe je siv, sa epohom ljubičast. */
+   da bi mu se epoha promijenila. Bez epohe je siv, sa epohom u primarnoj boji (tokeni). */
 .proposal-epoch-card-select {
     font-size: 10px;
     line-height: 1.5;
     padding: 1px 4px;
     max-width: 110px;
     border-radius: 9px;
-    color: #5b21b6;
-    background: #ede9fe;
-    border: 1px solid #c4b5fd;
+    color: var(--cb-primary-soft-ink);
+    background: var(--cb-primary-soft);
+    border: 1px solid var(--cb-primary);
     font-variant-numeric: tabular-nums;
     cursor: pointer;
 }
 .proposal-epoch-card-select.is-empty {
-    color: #6b7280;
-    background: #f3f4f6;
-    border-color: #d1d5db;
+    color: var(--cb-text-muted);
+    background: var(--cb-surface-2);
+    border-color: var(--cb-line-strong);
 }
 .proposal-epoch-card-select:disabled {
     opacity: 0.6;
     cursor: progress;
 }
 
+/* Vremenska crta: oznaka, godine kao cb-segmented (css/primitives.css) i razlika prema karti. */
 .proposal-epoch-timeline {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    border-bottom: 1px solid #e5e9f0;
-    background: #f8f7ff;
+    gap: var(--cb-space-2);
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border-bottom: 1px solid var(--cb-line);
+    background: var(--cb-surface-2);
 }
 .proposal-epoch-timeline-label {
-    font-size: 11px;
+    font-size: var(--cb-text-xs);
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #6b7280;
-    margin-right: 2px;
+    letter-spacing: var(--cb-tracking-caps);
+    color: var(--cb-text-muted);
 }
-.proposal-epoch-year {
-    font-size: 12px;
-    padding: 2px 10px;
-    border-radius: 12px;
-    border: 1px solid #c4b5fd;
-    background: #fff;
-    color: #5b21b6;
-    cursor: pointer;
-}
-.proposal-epoch-year.is-active {
-    background: #5b21b6;
-    border-color: #5b21b6;
-    color: #fff;
+.proposal-epoch-years {
+    gap: var(--cb-space-1);
 }
 .proposal-epoch-diff {
     font-size: 11px;
-    color: #6b7280;
+    color: var(--cb-text-muted);
     margin-left: auto;
 }
 
 /* What removing a node will cost, said in the popup before the button is pressed. A junction
    removal moves thousands of square metres between owners; it used to do so in silence. */
 .reparcel-node-popup__consequence {
-    font-size: 11px;
+    font-size: var(--cb-text-xs);
     line-height: 1.35;
-    color: #7c2d12;
-    background: #fef3c7;
-    border-left: 3px solid #d97706;
+    color: var(--cb-warning-soft-ink);
+    background: var(--cb-warning-soft);
+    border-left: 3px solid var(--cb-warning);
     padding: 5px 7px;
     margin: 0 0 8px;
     border-radius: 3px;
@@ -6177,12 +3930,12 @@ body.site-intro-open { overflow: hidden; }
     height: 100%;
     min-height: 200px;
     font-size: 28px;
-    color: #94a3b8;
+    color: var(--cb-text-faint);
 }
 
 /* Proposal Details "Parcel history" card (js/proposals/parcel-history-card.js). */
 .parcel-history-parcel {
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--cb-line);
     border-radius: 6px;
     padding: 6px 8px;
     margin-top: 6px;
@@ -6197,7 +3950,7 @@ body.site-intro-open { overflow: hidden; }
 
 .parcel-history-anchor,
 .parcel-history-empty {
-    color: #4b5563;
+    color: var(--cb-text-muted);
     font-size: 13px;
     margin: 6px 0;
     overflow-wrap: anywhere;
@@ -6233,7 +3986,7 @@ body.site-intro-open { overflow: hidden; }
 
 .parcel-history-time {
     flex: 0 0 auto;
-    color: #6b7280;
+    color: var(--cb-text-muted);
     font-variant-numeric: tabular-nums;
 }
 
@@ -6245,37 +3998,22 @@ body.site-intro-open { overflow: hidden; }
 }
 
 .parcel-history-details {
-    color: #374151;
+    color: var(--cb-text);
     overflow-wrap: anywhere;
 }
 
+/* An event's links: a cb-link-row (the View link, then the record's hash). */
 .parcel-history-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 10px;
     align-items: center;
 }
 
 .parcel-history-hash {
     font-size: 12px;
-    color: #6b7280;
+    color: var(--cb-text-muted);
 }
 
-/* Owner offers: list badge, "Offer my land" group in the create dialog, Details bids card. */
-.proposal-owner-offer-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 1px 7px;
-    border: 1px solid #86efac;
-    border-radius: 9px;
-    background: #f0fdf4;
-    color: #166534;
-    font-size: 10px;
-    font-weight: 700;
-    line-height: 1.5;
-    letter-spacing: 0.35px;
-    text-transform: uppercase;
-}
+/* Owner offers: the list badge is a cb-badge; the "Offer my land" group in the create dialog and
+   the Details bids card follow. */
 
 .proposal-owner-offer[hidden],
 .proposal-owner-offer-explain[hidden] {
@@ -6299,30 +4037,25 @@ body.site-intro-open { overflow: hidden; }
     cursor: pointer;
 }
 
-.proposal-owner-offer-recheck {
-    padding: 2px 10px;
-    font-size: 12px;
-}
-
 .proposal-owner-offer-status,
 .proposal-owner-offer-explain {
     margin: 6px 0 0;
     font-size: 12px;
-    color: #4b5563;
+    color: var(--cb-text-muted);
     overflow-wrap: anywhere;
 }
 
 .proposal-owner-offer-explain {
     padding: 8px 10px;
     border-left: 3px solid #22c55e;
-    background: #f0fdf4;
+    background: var(--cb-success-soft);
     color: #14532d;
 }
 
 .proposal-bids-explainer {
     margin: 8px 0;
     font-size: 12px;
-    color: #4b5563;
+    color: var(--cb-text-muted);
 }
 
 .proposal-bids-owner {
@@ -6331,12 +4064,6 @@ body.site-intro-open { overflow: hidden; }
     align-items: flex-start;
     gap: 4px;
     margin: 8px 0 10px;
-}
-
-.proposal-bids-say-yes {
-    font-size: 15px;
-    font-weight: 700;
-    text-decoration: none;
 }
 
 .proposal-bids-list {
@@ -6355,14 +4082,14 @@ body.site-intro-open { overflow: hidden; }
 }
 
 .proposal-bids-row.is-mine {
-    background: #f0f9ff;
+    background: var(--cb-info-soft);
 }
 
 .proposal-bids-rank {
     grid-row: span 2;
     align-self: center;
     font-weight: 700;
-    color: #64748b;
+    color: var(--cb-text-muted);
 }
 
 .proposal-bids-main {
@@ -6374,7 +4101,7 @@ body.site-intro-open { overflow: hidden; }
 
 .proposal-bids-kind {
     font-size: 11px;
-    color: #64748b;
+    color: var(--cb-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.3px;
 }
@@ -6384,7 +4111,7 @@ body.site-intro-open { overflow: hidden; }
     flex-wrap: wrap;
     gap: 4px 10px;
     font-size: 11px;
-    color: #64748b;
+    color: var(--cb-text-muted);
     min-width: 0;
     overflow-wrap: anywhere;
 }
@@ -6392,70 +4119,6 @@ body.site-intro-open { overflow: hidden; }
 .proposal-bids-empty {
     padding: 6px 0;
     font-size: 12px;
-    color: #64748b;
+    color: var(--cb-text-muted);
 }
 
-
-/* Styled confirm/alert/choice dialogs (showStyledConfirm & co. in js/city-config.js) */
-.cb-confirm-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.45);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 30000; /* Above create-proposal and waiting modals */
-    pointer-events: all;
-}
-
-.cb-confirm-dialog {
-    position: relative;
-    z-index: 30001;
-}
-
-.cb-confirm-dialog {
-    background: #ffffff;
-    border-radius: 14px;
-    padding: 24px 28px;
-    width: min(420px, calc(100% - 40px));
-    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.25);
-}
-
-.cb-confirm-message {
-    font-size: 15px;
-    color: #1f2937;
-    line-height: 1.5;
-}
-
-/* Source information can be longer than the viewport; keep its manual alert scrollable. */
-.cb-alert-dialog {
-    max-height: calc(100dvh - 40px);
-    overflow-y: auto;
-    box-sizing: border-box;
-    overflow-wrap: anywhere;
-}
-
-.cb-confirm-buttons {
-    margin-top: 20px;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-}
-
-/* Multi-choice dialogs (showStyledChoice) stack buttons vertically so 3+ options stay readable. */
-.cb-confirm-buttons-stacked {
-    grid-template-columns: 1fr;
-}
-
-/* Cross-city proposal prompt: a headline above the usual confirm body. */
-.city-switch-dialog {
-    width: min(520px, calc(100% - 40px));
-}
-
-.city-switch-dialog .city-switch-title {
-    margin: 0 0 12px 0;
-    font-size: 17px;
-    font-weight: 700;
-    color: #111827;
-    line-height: 1.35;
-}

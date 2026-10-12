@@ -19,7 +19,7 @@ test.describe('proposal button controls fourth pass @features', () => {
 
     const search = page.getByRole('combobox', { name: 'Search the map' });
     const results = page.locator('.map-search__results [role="option"]');
-    const confirm = page.locator('.cb-confirm-overlay');
+    const confirm = page.locator('.cb-dialog-overlay--confirm');
     const chooseRemoteProposal = async () => {
       if (await search.isHidden()) await page.locator('.map-search__icon-button').click();
       await search.fill('Remote proposal');

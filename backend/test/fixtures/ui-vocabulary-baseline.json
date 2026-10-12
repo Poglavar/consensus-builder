@@ -1,0 +1,22 @@
+{
+  "paintingButtonClasses": [
+    "world-city-label (js/world/globe.js)"
+  ],
+  "overlays": [
+    ".map-search.is-expanded (css/map-search.css)",
+    "body.world-view-pending::before (css/world.css)"
+  ],
+  "zIndexLiterals": [],
+  "bareLinkColours": [
+    ".leaflet-bar a (css/map.css)",
+    ".leaflet-bar a:hover (css/map.css)"
+  ],
+  "hashHrefs": [],
+  "blankWithoutNoopener": [],
+  "typedExternalMarks": [],
+  "classSelected": [],
+  "nativeDialogs": [],
+  "inlineStyledControls": [
+    "js/corridor-editor.js: 2"
+  ]
+}

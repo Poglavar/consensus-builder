@@ -9,34 +9,32 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
+    <link rel="stylesheet" href="css/tokens.css?v=2" />
+    <link rel="stylesheet" href="css/primitives.css?v=2" />
+    <link rel="stylesheet" href="css/page-chrome.css?v=1" />
     <link rel="stylesheet" href="vendor/fontawesome-6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="index.css" />
-    <link rel="stylesheet" href="css/howto.css" />
+    <link rel="stylesheet" href="css/howto.css?v=2" />
 </head>
 
-<body>
-    <div class="sidebar">
-        <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo">
-        <h1>Buildings</h1>
+<body class="cb-page">
+    <header class="cb-page-header">
+        <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo.png" alt="" width="28" height="28"><span>Consensus Builder</span></span>
+        <div class="cb-page-header__title"><h1>Buildings</h1></div>
+        <a class="cb-link cb-back-link" href="/?lang=en"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>Back to the map</a>
+        <nav class="cb-page-header__lang cb-segmented" aria-label="Language">
+            <a class="cb-segmented__option" href="kako-koristiti-zgrade.html" hreflang="hr" lang="hr">HR</a>
+            <a class="cb-segmented__option" href="how-to-use-buildings.html" hreflang="en" lang="en" aria-current="page">EN</a>
+        </nav>
+    </header>
+    <nav class="sidebar" aria-label="Guide navigation">
         <div class="sidebar-links">
-            <a href="how-to-use.html" class="back-link">
-                <i class="fas fa-arrow-left"></i>
-                All guides
-            </a>
-            <a href="index.html?lang=en" class="back-link">
-                <i class="fas fa-map"></i>
-                Back to the app
-            </a>
-            <a href="#block" class="back-link"><i class="fas fa-city"></i> Block</a>
-            <a href="#row" class="back-link"><i class="fas fa-grip-horizontal"></i> Row houses</a>
-            <a href="#detached" class="back-link"><i class="fas fa-home"></i> Detached</a>
-            <a href="#freeform" class="back-link"><i class="fas fa-ruler-combined"></i> Freeform</a>
+            <a class="btn btn-quiet" href="how-to-use.html"><i class="fa-solid fa-book-open" aria-hidden="true"></i>All guides</a>
+            <a class="btn btn-quiet" href="#block"><i class="fa-solid fa-city" aria-hidden="true"></i>Block</a>
+            <a class="btn btn-quiet" href="#row"><i class="fa-solid fa-grip-horizontal" aria-hidden="true"></i>Row houses</a>
+            <a class="btn btn-quiet" href="#detached"><i class="fa-solid fa-home" aria-hidden="true"></i>Detached</a>
+            <a class="btn btn-quiet" href="#freeform"><i class="fa-solid fa-ruler-combined" aria-hidden="true"></i>Freeform</a>
         </div>
-        <div class="lang-switch">
-            <a href="kako-koristiti-zgrade.html">HR</a>
-            <a href="how-to-use-buildings.html" class="is-current">EN</a>
-        </div>
-    </div>
+    </nav>
 
     <main class="main-content">
         <div class="container">
@@ -65,7 +63,7 @@
             </div>
 
             <section id="block" class="guide-section">
-                <h2><i class="fas fa-city"></i> Block — <span style="font-weight:400">“Urban Rule”</span></h2>
+                <h2><i class="fas fa-city"></i> Block — <span class="heading-note">“Urban Rule”</span></h2>
                 <p>
                     Fills a whole block with perimeter development — buildings along the edge, courtyard in the middle.
                     The tool opens the <span class="ui-label">Urban Rule</span> window with a map, a 3D preview and a

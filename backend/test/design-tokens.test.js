@@ -6,7 +6,8 @@
 // next regression at the current level and records progress. After reducing a file, rerun
 // `node backend/test/helpers/design-audit.mjs --write` so the ceiling drops with it.
 //
-// The non-ratchet rules here are the ones that produced verified bugs: tokens must load first, no
+// The non-ratchet rules here are the ones that produced verified bugs: tokens must load first
+// (the satellite pages load tokens, primitives and page-chrome themselves; page-header.test.js), no
 // `#id` inside an `:is()` list (it gave the whole close-button rule ID specificity, so its large
 // variant never applied anywhere), and one spelling of the phone/desktop edge (767/768/769 used to
 // coexist, so the shell and the panels disagreed at exactly 768px).
@@ -27,15 +28,6 @@ describe('design tokens load first', () => {
     it('index.html loads tokens.css and primitives.css before every other stylesheet', () => {
         const list = coLoadedCssFiles(readFileSync(path.join(FRONTEND, 'index.html'), 'utf8'));
         expect(list.slice(0, 2)).toEqual(['css/tokens.css', 'css/primitives.css']);
-    });
-
-    it('index.css (the static pages) imports them first and nothing that does not exist', () => {
-        const css = readFileSync(path.join(FRONTEND, 'index.css'), 'utf8');
-        const imports = [...css.matchAll(/@import url\('([^']+)'\)/g)].map(m => m[1]);
-        expect(imports.slice(0, 2)).toEqual(['css/tokens.css', 'css/primitives.css']);
-        imports.forEach(file => {
-            expect({ file, exists: cssFiles.includes(file) }).toEqual({ file, exists: true });
-        });
     });
 
     it('every --cb-* token used anywhere is defined in tokens.css', () => {

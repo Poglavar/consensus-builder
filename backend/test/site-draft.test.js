@@ -236,3 +236,48 @@ describe('a site wholly inside an unsurveyed hole', () => {
         expect(siteDraft.bindingSummary(siteBinding.bindingFromParcels(rect(-20, 0, 20, 30), parcels, { turf })).allOpen).toBe(false);
     });
 });
+
+// Editing a site starts with it in view, a margin away from the site card (the right dock on a
+// wide screen, the bottom sheet on a phone): js/site-drawing.js keepSiteClear pans by this.
+describe('panToClear', () => {
+    const view = { left: 60, top: 58, right: 1280, bottom: 740 };
+    const card = { left: 870, top: 58, right: 1270, bottom: 394 };
+    const sheet = { left: 60, top: 464, right: 390, bottom: 844 };
+    const phone = { left: 60, top: 58, right: 390, bottom: 844 };
+
+    it('leaves a site that is already clear where it is', () => {
+        const plan = siteDraft.panToClear({ left: 300, top: 200, right: 500, bottom: 400 }, view, [card], 32);
+        expect(plan).toMatchObject({ fits: true, dx: 0, dy: 0 });
+    });
+
+    it('moves a site out from under the right-hand card, a margin away from it', () => {
+        const plan = siteDraft.panToClear({ left: 700, top: 200, right: 900, bottom: 400 }, view, [card], 32);
+        expect(plan.fits).toBe(true);
+        expect(plan.dx).toBe(870 - 32 - 900);
+        expect(plan.dy).toBe(0);
+        expect(plan.free.right).toBe(838);
+    });
+
+    it('moves a site up out of a phone sheet', () => {
+        const plan = siteDraft.panToClear({ left: 120, top: 420, right: 300, bottom: 600 }, phone, [sheet], 32);
+        expect(plan.fits).toBe(true);
+        expect(plan.dx).toBe(0);
+        expect(plan.dy).toBe(464 - 32 - 600);
+    });
+
+    it('moves a site out from under the top bar and the view strip', () => {
+        const plan = siteDraft.panToClear({ left: 20, top: 10, right: 120, bottom: 110 }, view, [card], 32);
+        expect(plan).toMatchObject({ fits: true, dx: 92 - 20, dy: 90 - 10 });
+    });
+
+    it('says when a site is larger than the free part of the map', () => {
+        const plan = siteDraft.panToClear({ left: 100, top: 100, right: 1000, bottom: 300 }, view, [card], 32);
+        expect(plan.fits).toBe(false);
+        expect(plan).toMatchObject({ dx: 0, dy: 0 });
+    });
+
+    it('ignores a missing or empty panel box', () => {
+        const plan = siteDraft.panToClear({ left: 900, top: 200, right: 1000, bottom: 300 }, view, [null, { left: 0, top: 0, right: 0, bottom: 0 }], 32);
+        expect(plan).toMatchObject({ fits: true, dx: 0, dy: 0 });
+    });
+});

@@ -531,9 +531,7 @@ const PREPARED_LAND_SHIFT_CONFIRM_M = 0.05;
 // noticeably off the map's preview are said out loud, and the author decides.
 // Resolves { ok: true } or a cancelled upload result.
 async function confirmPreparedPublish(prepared) {
-    const ask = async (question, okText, cancelText) => (typeof window.showStyledConfirm === 'function'
-        ? window.showStyledConfirm(question, { okText, cancelText })
-        : window.confirm(question));
+    const ask = (question, okText, cancelText) => window.CbDialog.confirm(question, { okText, cancelText });
     if (prepared.smallIntrusions && prepared.smallIntrusions.length) {
         const list = window.__publishBinding.describeHits(prepared.smallIntrusions.map(hit => ({ id: hit.parcelId, intrusionM: hit.intrusionM })));
         const include = await ask(publishBindingText('modal.createProposal.smallIntrusions.question',

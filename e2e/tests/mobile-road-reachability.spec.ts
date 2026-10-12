@@ -152,7 +152,7 @@ test('2D, model, and aerial mode buttons receive real clicks during a 320px road
   await clickMapPoint(page, 15.9824, 45.8001);
 
   await page.locator('#road-drawing-controls').getByRole('button', { name: 'Cancel' }).click();
-  const choice = page.locator('.cb-confirm-dialog');
+  const choice = page.locator('.cb-dialog-overlay--confirm .cb-dialog');
   await expect(choice).toBeVisible();
   await choice.getByRole('button', { name: 'Discard the drawing', exact: true }).click();
   await expect(choice).toBeHidden();

@@ -232,9 +232,12 @@
     const toggleBtn = document.getElementById('mode-3d-toggle');
     const toggle2dBtn = document.getElementById('mode-2d-toggle');
     const walkBtn = document.getElementById('mode-walk-toggle');
+    // The walk launcher is map chrome: the shell's floating button (css/map-shell.css); map.css
+    // only gives it its slot in the mode strip.
+    if (walkBtn) walkBtn.classList.add('map-shell-button');
 
     // Sync the always-visible map / model / aerial buttons so exactly one reads
-    // as "pressed" (.active): map when neither 3D mode is on, model for authored geometry,
+    // as "pressed" (aria-pressed): map when neither 3D mode is on, model for authored geometry,
     // aerial when the photoreal mesh is up. Called on every mode transition (here and
     // from photoreal-mode.js). Exposed globally so photoreal can reuse it.
     function updateModeButtonStates() {
@@ -257,7 +260,6 @@
             const btnRw = document.getElementById('mode-realistic-toggle');
             for (const [button, active, loading] of [[btn2d, !modelSelected && !photoSelected, false], [btn3d, modelSelected, modelLoading], [btnRw, photoSelected, photoLoading]]) {
                 if (!button) continue;
-                button.classList.toggle('active', active);
                 button.classList.toggle('mode-btn-loading', loading);
                 button.setAttribute('aria-pressed', String(active));
             }
@@ -884,7 +886,7 @@
         return `
             <div class="parcel-panel-title-row">
                 <div class="parcel-panel-title">${titleHtml}</div>
-                <button type="button" class="parcel-panel-close" data-role="close-panel" aria-label="${aria}" title="${aria}">&times;</button>
+                <button type="button" class="close-circle-btn parcel-panel-close" data-role="close-panel" aria-label="${aria}" title="${aria}">&times;</button>
             </div>`;
     }
 
@@ -935,7 +937,7 @@
         const proposalRow = proposal ? `
             <div class="parcel-panel-proposal">
                 <span class="parcel-panel-proposal-label">${L.proposalLabel}:</span>
-                <button type="button" class="parcel-panel-proposal-show" data-role="show-proposal">${escapeHtml(proposalDisplayTitle(proposal))} <span class="show-tag">[${L.show}]</span></button>
+                <button type="button" class="cb-link parcel-panel-proposal-show" data-role="show-proposal">${escapeHtml(proposalDisplayTitle(proposal))} <span class="show-tag">[${L.show}]</span></button>
             </div>` : '';
 
         const suggestedText = suggestedParcelPanelText(parcelId);
@@ -1254,7 +1256,7 @@
         isolationBannerEl.appendChild(label);
         const close = document.createElement('button');
         close.type = 'button';
-        close.className = 'isolation-banner-close';
+        close.className = 'close-circle-btn isolation-banner-close';
         close.innerHTML = '&times;';
         close.setAttribute('aria-label', threeI18n('threeMode.isolation.exitAria', 'Exit this view'));
         close.addEventListener('click', () => clearIsolation());
@@ -1431,9 +1433,9 @@
 
         rerollBtn = document.createElement('button');
         rerollBtn.type = 'button';
-        rerollBtn.className = 'three-mode-reroll-btn';
-        // The die sits in its own span so only the glyph spins, not the button's border.
-        rerollBtn.innerHTML = '<span class="three-mode-reroll-die" aria-hidden="true">🎲</span>';
+        rerollBtn.className = 'btn btn-icon three-mode-reroll-btn';
+        // The die is its own icon so only the glyph spins, not the button's border.
+        rerollBtn.innerHTML = '<i class="fa-solid fa-dice three-mode-reroll-die" aria-hidden="true"></i>';
         rerollBtn.title = threeI18n('threeMode.controls.reroll',
             'Randomize every example build-out (changes nothing in the proposals)');
         rerollBtn.setAttribute('aria-label', rerollBtn.title);
@@ -1484,7 +1486,7 @@
         xrayButton = document.createElement('button');
         xrayButton.type = 'button';
         xrayButton.id = 'three-mode-xray';
-        xrayButton.className = 'three-mode-xray-button';
+        xrayButton.className = 'btn three-mode-xray-button';
         xrayButton.textContent = threeI18n('threeMode.controls.xray', 'X-ray');
         xrayButton.title = threeI18n('threeMode.controls.xrayTooltip',
             'Show modelled floors, walls, doors and windows.');
@@ -1496,7 +1498,7 @@
         suggestedPlansButton = document.createElement('button');
         suggestedPlansButton.type = 'button';
         suggestedPlansButton.id = 'three-mode-suggested-layouts';
-        suggestedPlansButton.className = 'three-mode-xray-button';
+        suggestedPlansButton.className = 'btn three-mode-xray-button';
         suggestedPlansButton.textContent = threeI18n('threeMode.controls.suggestedLayouts', 'Suggested layouts');
         suggestedPlansButton.title = threeI18n('threeMode.controls.suggestedLayoutsTooltip',
             'Generate a default layout for proposed buildings without a modelled interior: a stair and lift core entered from the street side, two apartments per core. A suggestion, not part of the proposal.');
@@ -7193,14 +7195,17 @@
             if (blockifyModal && typeof closeBlockifyModal === 'function') closeBlockifyModal();
         } catch (_) { }
         // Close share modals (e.g., shared proposal inspector/summary) so they don't block 3D controls.
+        // They are CbDialogs (js/proposals/dialog-share.js): their header close-circle-btn is the
+        // dialog's own close.
         try {
-            document.querySelectorAll('.share-modal-overlay .share-modal-close').forEach(btn => {
+            document.querySelectorAll('.share-modal-overlay .share-modal > .cb-dialog__header .close-circle-btn').forEach(btn => {
                 try { btn.click(); } catch (_) { }
             });
         } catch (_) { }
-        // Ensure built-in static modals are hidden
-        ['welcome-modal', 'logout-modal', 'locate-parcel-modal', 'osm-road-segment-list-popup']
-            .forEach(id => { try { const el = document.getElementById(id); if (el) el.style.display = 'none'; } catch (_) { } });
+        // Ensure built-in static modals are hidden: they show and hide with the hidden attribute,
+        // through their own helpers (user-management.js), never an inline display.
+        try { window.hideWelcomeModal?.(); } catch (_) { }
+        try { window.hideLogoutModal?.(); } catch (_) { }
     }
 
     // How to tilt the camera is the one control nothing on screen advertises: left-drag pans, and
@@ -7676,7 +7681,7 @@
     function startWalkPick() {
         if (!isActive || walkPickActive) return;
         walkPickActive = true;
-        if (walkBtn) walkBtn.classList.add('active');
+        if (walkBtn) walkBtn.setAttribute('aria-pressed', 'true');
         if (threeContainer) threeContainer.classList.add('three-mode-walk-pick');
         // The pick is a second step; only the cursor said so, and the button looked like it did
         // nothing. Say what to do next (cancelWalkPick takes the hint off the toast again).
@@ -7707,7 +7712,7 @@
         // A stale "click the ground" on the toast after the pick ended read as still picking.
         const toast = document.getElementById('floating-status-text');
         if (toast && toast.textContent === walkPickHintText()) toast.textContent = '';
-        if (walkBtn) walkBtn.classList.remove('active');
+        if (walkBtn) walkBtn.setAttribute('aria-pressed', 'false');
         if (threeContainer) threeContainer.classList.remove('three-mode-walk-pick');
         if (renderer && renderer.domElement && walkPickClickHandler) {
             renderer.domElement.removeEventListener('click', walkPickClickHandler);

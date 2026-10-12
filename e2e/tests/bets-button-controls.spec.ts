@@ -118,7 +118,7 @@ test.describe('Bets shared button variants @features', () => {
     expect(serverId).toBeTruthy();
     // Upload leaves its success screen open. Dismiss that real share dialog before opening Bets,
     // otherwise its full-screen overlay intercepts the shell button click.
-    await share.locator('.share-modal-close').click();
+    await share.locator('.share-modal .close-circle-btn').click();
     await expect(share).toBeHidden();
 
     await routeMarkets(page, payload({
