@@ -4,7 +4,7 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-13. Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-13 (round 2 running). Status values: todo · running · done · dropped (with the reason).
 
 ## Where we stand (2026-10-13)
 
@@ -39,11 +39,11 @@ in three lanes, two Split runs about 40 minutes; a 1,600-tile 30-epoch run is ab
 
 | # | Step | Where | Status |
 |---|---|---|---|
-| 1 | Bootstrap confidence intervals in the scorer | laptop | todo |
-| 2 | Transfer table with three seeds | GPU | todo |
-| 3 | Split learning curve and Zagreb-donor fine-tune curve | GPU | todo |
-| 4 | Per-city reconstruction settings | laptop | todo |
-| 5 | Visibility audit (the ceiling) | laptop + labelling | todo |
+| 1 | Bootstrap confidence intervals in the scorer | laptop | done 2026-10-13 (`bootstrap.py`) |
+| 2 | Transfer table with three seeds | GPU | running (round 2) |
+| 3 | Split learning curve and Zagreb-donor fine-tune curve | GPU | running (round 2) |
+| 4 | Per-city reconstruction settings | laptop | done on one seed; confirm on round-2 maps |
+| 5 | Visibility audit (the ceiling) | laptop + labelling | tooling ready; labeller to choose |
 | 6 | Zagreb model levers, one at a time | GPU | todo |
 | 7 | Milestone 4 on both final splits | GPU or laptop | todo |
 | 8 | Ljubljana and a Spanish Csa city | laptop + GPU | todo |
@@ -110,5 +110,17 @@ clears a bar the user sets.
 Vast.ai credit on 2026-10-13: $8.58 (spent $1.40 on 2026-10-12); top up before step 8.
 
 ## Learned (newest first)
+
+- 2026-10-13, step 4: on Split's selection maps (split-only seed 1) the frozen watershed recipe with its per-run
+  threshold choice (0.5 for Split, 0.3 for Zagreb) is within 0.004 of the best of 61 per-city variants
+  (threshold × small-region merge × seed size); the best (20 m² seeds) is ahead in every replicate but by
+  +0.004, far under the +0.02 bar. The threshold the trainer already picks per run is the per-city setting.
+- 2026-10-13, step 1: tile-bootstrap intervals (`bootstrap.py`, 2,000 replicates, paired across arms). A single
+  arm's selection F1 is uncertain by about ±0.08 (16 tiles); a paired difference by about ±0.04, so arms are
+  compared by their paired difference, never by overlapping single intervals. Split, one seed: Split-only
+  beats the Zagreb model zero-shot by +0.086 (+0.032 to +0.152); Split-only vs joint is a tie (+0.004,
+  −0.039 to +0.042). Zagreb curve, three seeds: n1600 vs n200 +0.014 (−0.008 to +0.029), ahead in 90%.
+  Intervals are tile-level only: tiles sit in four 2×2 blocks per split, so they understate uncertainty about
+  the whole city; more held-out blocks (a v2 of each benchmark) is the remedy if decisions hinge on it.
 
 - 2026-10-13: plan written from the results through Split milestone 1; see README.md "Status".
