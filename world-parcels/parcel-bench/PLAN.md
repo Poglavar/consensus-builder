@@ -4,7 +4,7 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-13 (round 2 running). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-13 (round 2 done). Status values: todo · running · done · dropped (with the reason).
 
 ## Where we stand (2026-10-13)
 
@@ -44,16 +44,17 @@ in three lanes, two Split runs about 40 minutes; a 1,600-tile 30-epoch run is ab
 | # | Step | Where | Status |
 |---|---|---|---|
 | 1 | Bootstrap confidence intervals in the scorer | laptop | done 2026-10-13 (`bootstrap.py`) |
-| 2 | Transfer table with three seeds | GPU | running (round 2) |
-| 3 | Split learning curve and Zagreb-donor fine-tune curve | GPU | running (round 2) |
-| 4 | Per-city reconstruction settings | laptop | done on one seed; confirm on round-2 maps |
-| 5 | Visibility audit (the ceiling) | laptop + labelling | tooling ready; labeller to choose |
+| 2 | Transfer table with three seeds | GPU | done 2026-10-13 (round 2) |
+| 3 | Split learning curve and Zagreb-donor fine-tune curve | GPU | done 2026-10-13 (round 2) |
+| 4 | Per-city reconstruction settings | laptop | done 2026-10-13: no lever |
+| 5 | Visibility audit (the ceiling) | laptop + labelling | tooling ready; labeller to choose (now the most informative next step) |
 | 6 | Zagreb model levers, one at a time | GPU | todo |
 | 7 | Milestone 4 on both final splits | GPU or laptop | todo |
 | 8 | Ljubljana and a Spanish Csa city | laptop + GPU | todo |
 | 9 | Serving check (CPU inference) | laptop | todo |
 | 10 | Product decision: show guesses where the score clears a bar | the user | todo |
 | 11 | Satellite domain: score and train for satellite-like input | laptop + GPU | todo |
+| 12 | Nearby same-climate donor: a Dalmatian (Csa) city's tiles scored zero-shot and few-shot on Split | laptop + GPU | todo |
 
 **1. Bootstrap confidence intervals.** Resample tiles to give every pooled score a 95% interval and the
 minimum detectable effect per benchmark. Success: every comparison in the ledger reads as a difference
@@ -113,6 +114,14 @@ bulk download, caching, tracing and ML training without one; see `IMAGERY.md`). 
 clean-to-satellite gap and an augmentation that narrows it without costing the clean score. ETA about 1 day,
 about 2 GPU-h, about $1.
 
+**12. Nearby same-climate donor.** The direct test of the practice-region thesis that round 2 could not
+make (Zagreb and Split differ in climate as well as distance): export a Dalmatian Csa city 60–120 km from Split
+(Šibenik or Zadar; same national parcel table and DGU imagery, so `export_city.py` covers it), train on it, and
+score on Split's selection split zero-shot and as a fine-tune donor at 50 tiles. Success: a paired difference
+against the Zagreb donor (0.122 zero-shot) whose interval excludes zero says a nearby same-climate city
+substitutes for the target's own labels; no difference says local labels are needed wherever we go. ETA about
+half a day (export) plus 1 GPU-h, about $0.50.
+
 ## ETA and spend
 
 | Steps | Wall time | GPU | Spend |
@@ -122,9 +131,24 @@ about 2 GPU-h, about $1.
 | 8–9 | 2–3 days | about 2.5 h | about $1.20 |
 | Total | 4–5 working days | about 8–11 h with overhead | about $4–7 |
 
-Vast.ai credit on 2026-10-13: $8.58 (spent $1.40 on 2026-10-12); top up before step 8.
+Spend log: 2026-10-12 $1.40; 2026-10-13 round 2 (36 runs, 105 min of queue, about 2.4 h of box) $1.20.
+Vast.ai credit after round 2: $7.38; top up before step 8.
 
 ## Learned (newest first)
+
+- 2026-10-13, round 2 (36 runs, three seeds each, recipe a7936b17; tables in
+  `output/runs/round2/*curve*.md`, intervals in `output/runs/round2/reports/`), Split selection F1:
+  - Zagreb model zero-shot 0.122 (0.104–0.141 over seeds); Split-only with 50 tiles 0.197, 896 tiles 0.210;
+    joint Zagreb + Split 0.214. Fifty labelled target tiles close most of the gap (+0.075, interval +0.023 to
+    +0.115); 18× more Split tiles add only +0.013 (−0.030 to +0.044). Split plateaus near 0.21, so its limit is
+    not label count: resolution (0.5 m), sparse OSM seeds, density and visibility are the suspects (steps 5, 11).
+  - Starting from the Zagreb model instead of ImageNet gains nothing at any Split size (50 to 896 tiles:
+    −0.001 to +0.004, every interval about ±0.025). A distant same-country donor does not substitute for
+    local labels at all; step 12 tests a nearby same-climate one.
+  - On Zagreb selection: Zagreb-only 0.287, joint 0.253 (−0.035, interval −0.065 to −0.010), the fine-tuned
+    model keeps 0.236, Split-only 0.201. Mixing cities in one model costs the city with more data.
+  - Step 4 confirmed on all three Split seeds: the frozen recipe at the per-run threshold wins or ties every
+    alternative; the 20 m² seed variant that led by 0.004 on one seed loses on another.
 
 - 2026-10-13: imagery sources vetted (`IMAGERY.md`). All free web basemaps (Google, Esri, Mapbox, Bing, MapTiler,
   HERE) bar bulk download, caching and ML training in their current terms; open national aerial programmes
