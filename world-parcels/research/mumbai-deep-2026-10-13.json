@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Deep source research for Mumbai (WUP 7945) after three shallow passes ended with no verified open endpoint.",
+  "checkedAt": "2026-10-13",
+  "wupCityCode": 7945,
+  "cityId": "geonames:1275339",
+  "name": "Mumbai",
+  "status": "candidate_live_source_found_not_qualified",
+  "summary": "NCSCM's Coastal Zone Management Plan 2019 ArcGIS service publishes Mumbai's City Survey (CTS) and Town Planning Scheme (TPS) plots as a queryable layer. It answers browsers directly (CORS allows urbangametheory.xyz), is reachable from India, Germany, Singapore and the US, and covers all eleven Mumbai City Survey Offices. The state BhuNaksha viewer and MCGM's own GIS are geo-fenced and could not be tested.",
+  "candidate": {
+    "operator": "National Centre for Sustainable Coastal Management (NCSCM), Ministry of Environment, Forest and Climate Change",
+    "portal": "https://czmp.ncscm.res.in/",
+    "layerUrl": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES_2019/CZMP_Maharashtra19/MapServer/5",
+    "layerName": "Survey Plots",
+    "serviceType": "ArcGIS Server 11.5 MapServer layer, capabilities Map,Query,Data",
+    "nativeCrs": "EPSG:32643",
+    "maxRecordCount": 2000,
+    "supportsPagination": true,
+    "fields": ["OBJECTID", "VILLAGE", "TYPE", "WARD", "lable", "Shape_Length", "Shape_Area"],
+    "typeValues": ["CTS (city survey plot)", "TPS (town planning scheme final plot)"],
+    "browserAccess": "Direct. Access-Control-Allow-Origin reflects https://urbangametheory.xyz on the service directory and layer; no relay needed.",
+    "reachability": "check-host.net HTTP checks returned 200 from India, Germany, Singapore and the US; also reachable from the laptop.",
+    "vintage": "CZMP 2019 (Coastal Regulation Zone Notification 2019 plans); exact cadastral source date not stated by the service.",
+    "licence": "Not stated by the service or portal. Public government plan published for viewing; reuse terms unverified."
+  },
+  "measurements": [
+    {
+      "what": "Live count, Mumbai bbox 72.77,18.89,73.00,19.30 (includes some Thane and Navi Mumbai fringe)",
+      "result": 145700
+    },
+    {
+      "what": "Live sample, Dadar cell 72.840,19.015,72.845,19.020",
+      "result": "129 plots (74 CTS, 55 TPS) in villages Mahim, Matunga, Dadar-Naigaon, Dharavi; wards G/N, F/N, F/S; no transfer-limit flag",
+      "overlaps": "No pair overlapping by more than 0.01 m², including CTS against TPS",
+      "identity": "(VILLAGE, TYPE, lable) repeats three times in 129: DADAR-NAIGAON CTS 54, MATUNGA CTS 2/9, MATUNGA CTS 9, on polygons 100-900 m apart, so the label triple is not a unique key. OBJECTID is a transport field."
+    },
+    {
+      "what": "Snapshot coverage: ramSeraph indian_cadastrals NCSCM_MH_Cadastrals (scraped 2024, older CZMP field schema), rows tagged with a Mumbai City Survey Office",
+      "result": "123,536 plots, 130 survey villages, 196.5 km² of plot area across all 11 CSOs (City 28,404; Bandra 16,514; Borivli 13,808; Goregaon 13,013; Chembur 12,413; Vile Parle 10,342; Mulund 9,335; Andheri 8,767; Malad 5,821; Kurla 4,265; Ghatkopar 852); plot centroids fall in 1,192 cells of 0.005°"
+    }
+  ],
+  "otherRoutes": [
+    {
+      "source": "Maharashtra MahaBhunakasha (NIC BhuNaksha), https://mahabhunakasha.mahabhumi.gov.in/27/",
+      "finding": "Archived client code shows rest/VillageMapService/getSurveyList (all plots in a village), rest/MapInfo/getPlotsGeoJSon (GeoJSON for listed plots) and ScalarDatahandler OP=4/5 (plot by point or number); Mumbai is the Urban category with CTS-office levels.",
+      "access": "Geo-fenced: answers India and a US node, times out from Germany, Singapore, Finland and the laptop. CORS, terms and whether Mumbai urban plots are digitised are untested."
+    },
+    {
+      "source": "MCGM ArcGIS, https://agsmaps.mcgm.gov.in/server/rest/services (Development_Plan_2034)",
+      "finding": "Reported to host the DP 2034 map service; a 2010s Datameet thread says the land-use plan is an image and MCGM declined to share vector data.",
+      "access": "India only (check-host: India 200; Germany, Singapore, US time out)."
+    },
+    {
+      "source": "MRSAC village cadastrals (ramSeraph indian_cadastrals MRSAC_Cadastrals)",
+      "finding": "Excludes Mumbai City and Mumbai Suburban (GVMP covered the other 33 districts); inside the Mumbai bbox only Thane, Uran, Bhiwandi, Panvel and Vasai villages appear."
+    }
+  ],
+  "sideFindings": [
+    "ramSeraph/indian_cadastrals (GitHub releases, labelled CC0 by the repackager, filed under indianopenmaps 'not-so-open') holds scraped cadastral maps for 27 Indian states and UTs. Release assets send no CORS headers, so a browser cannot read them directly.",
+    "NCSCM's CZMP_STATES and CZMP_STATES_2019 folders publish the same kind of layer for other coastal states (Andhra Pradesh, Gujarat, Karnataka, Kerala, Odisha, Tamil Nadu, Puducherry, Diu, Karaikal, Mahe, Yanam)."
+  ],
+  "openQuestions": [
+    "Identity: choose a stable key, since the label triple repeats; a canonical-geometry identity under the geometry-reference policy (as for Nairobi) is one option.",
+    "Positional accuracy against imagery is not yet checked.",
+    "Reuse terms of the CZMP layer.",
+    "Whether CTS and TPS plots should both be shown, or one type only."
+  ],
+  "nextStep": "Add a catalog entry for the CZMP_Maharashtra19 Survey Plots layer on the existing ArcGIS adapter and run the qualifier for Mumbai (reachable from the laptop, no relay)."
+}
