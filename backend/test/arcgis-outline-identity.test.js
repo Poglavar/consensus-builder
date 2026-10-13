@@ -60,6 +60,35 @@ describe('ArcGIS outline identity', () => {
         expect((await source.queryIds([parcel.id])).absentIds).toEqual([parcel.id]);
     });
 
+    it('reads outlines through object-ID lists in Esri JSON for servers without GeoJSON or offsets', async () => {
+        const shape = square(72.8401, 19.0151);
+        const esri = { features: [{ attributes: { OBJECTID: 7, VILLAGE: 'MATUNGA', TYPE: 'CTS', WARD: 'F/N', lable: '12' },
+            geometry: { rings: shape.coordinates.map(ring => [...ring].reverse()) } }], geometryType: 'esriGeometryPolygon', spatialReference: { wkid: 4326 } };
+        const calls = [];
+        const fetchImpl = vi.fn(async url => {
+            const u = new URL(url); calls.push(u);
+            if (u.searchParams.get('returnCountOnly')) return { ok: true, status: 200, json: async () => ({ count: 1 }) };
+            if (u.searchParams.get('returnIdsOnly')) return { ok: true, status: 200, json: async () => ({ objectIdFieldName: 'OBJECTID', objectIds: [esri.features[0].attributes.OBJECTID] }) };
+            return { ok: true, status: 200, json: async () => esri };
+        });
+        const source = createArcgisParcelSource({ ...descriptor, queryFormat: 'esri-json', boundsQueryMode: 'object-ids' }, { fetchImpl });
+        const result = await source.queryBounds([72.840, 19.015, 72.845, 19.020]);
+        expect(result.features.map(feature => feature.properties.parcelNumber)).toEqual(['12']);
+        expect(result.features[0].id).toMatch(/^IN-MH-CZMP-g1~/);
+        expect(calls.at(-1).searchParams.get('objectIds')).toBe('7');
+        expect(calls.every(u => !u.searchParams.get('where') || u.searchParams.get('where') === '1=1')).toBe(true);
+        // Transport IDs may change without changing the outline's saved reference.
+        const parcelId = result.features[0].id;
+        esri.features[0].attributes.OBJECTID = 81;
+        const exact = await source.queryIds([parcelId]);
+        expect(exact.features.map(feature => feature.id)).toEqual([parcelId]);
+        expect(exact.absentIds).toEqual([]);
+        expect(exact.complete).toBe(true);
+        expect(calls.at(-1).searchParams.get('objectIds')).toBe('81');
+        esri.features[0].geometry.rings = square(72.8401, 19.0151, 0.00021).coordinates.map(ring => [...ring].reverse());
+        expect((await source.queryIds([parcelId])).absentIds).toEqual([parcelId]);
+    });
+
     it('rejects a native ID field or query modes alongside outline identity', () => {
         const fetchImpl = async () => answer([]);
         expect(() => createArcgisParcelSource({ ...descriptor, idField: 'OBJECTID' }, { fetchImpl })).toThrow(/Invalid ArcGIS/);

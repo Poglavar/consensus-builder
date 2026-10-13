@@ -26,7 +26,7 @@ const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const WUP = 'tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz';
 const GATES = ['classification', 'exactIds', 'stableGeometry', 'explicitAbsence', 'sampling', 'completeness', 'binding', 'metric'];
 const BLOCKERS = ['invalidCount', 'duplicateIdCount', 'conflictingSameIdGeometryCount', 'exactGeometryDuplicateCount', 'overlapPairCount', 'operationErrorCount'];
-const CONTRACT = ['identityKind', 'lookupCellSize', 'attributeFilters', 'attributeExclusions', 'attributeNotNull', 'attributeNull', 'featureType', 'boundsQueryMode', 'idsQueryMode', 'boundsSrid', 'boundsProjection'];
+const CONTRACT = ['identityKind', 'lookupCellSize', 'attributeFilters', 'attributeExclusions', 'attributeNotNull', 'attributeNull', 'featureType', 'boundsQueryMode', 'idsQueryMode', 'boundsSrid', 'boundsProjection', 'queryFormat', 'nativeGeometryMode', 'disjointParts'];
 const POINT_ADAPTERS = new Set(['pl-uldk-point', 'tkgm-point', 'msda-point']);
 // Country display names for labels; the rest come from existing labels of the same country.
 const COUNTRY_NAMES = {

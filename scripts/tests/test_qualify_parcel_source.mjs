@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { addCanonicalFeature, assessForcedQueryEvidence, assessHmlrBrowserCompletenessEvidence,
+import { addCanonicalFeature, assessForcedQueryEvidence, forcedEvidenceMode, assessHmlrBrowserCompletenessEvidence,
     canonicalSafeFeature, cellsForPoint, exactReadCost, footprintBbox, makeSafeFetch, shouldShrinkCell } from '../qualify-parcel-source.mjs';
 
 const geometry = { type:'Polygon', coordinates:[[[0,0],[1,0],[1,1],[0,1],[0,0]]] };
@@ -180,4 +180,11 @@ test('dense cities shrink the cell only for sources that read one parcel per req
     assert.equal(shouldShrinkCell({ footprintFeatures: 150, perIdCost: 3, step: 0.001 }), true);
     assert.equal(shouldShrinkCell({ footprintFeatures: 400, perIdCost: 0, step: 0.001 }), false);
     assert.equal(shouldShrinkCell({ footprintFeatures: 900, perIdCost: 3, step: 0.00025 }), false);
+});
+
+test('an outline source paging by object-ID lists is judged by its singleton object-ID reads', () => {
+    assert.equal(forcedEvidenceMode({ identityKind:'geometry-sha256-v1', boundsQueryMode:'object-ids' }), 'object-ids');
+    assert.equal(forcedEvidenceMode({ identityKind:'geometry-sha256-v1' }), undefined);
+    assert.equal(forcedEvidenceMode({ idsQueryMode:'single-equality' }), 'single-equality');
+    assert.equal(forcedEvidenceMode({ boundsQueryMode:'object-ids' }), undefined);
 });

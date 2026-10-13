@@ -17049,6 +17049,354 @@
       "appCityIds": [
         "mumbai"
       ]
+    },
+    {
+      "sourceId": "in-hr-hsac-sirsa",
+      "name": "HSAC Haryana cadastral map — Sirsa district",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Khasra (field) parcels of Sirsa district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/17",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/6392/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:6392"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "sirsa"
+        ],
+        "additionalCityEvidence": {
+          "sirsa": "world-parcels/research/qualification-2026-10-13-india-live/6392/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "sirsa"
+      ]
+    },
+    {
+      "sourceId": "in-hr-hsac-hisar",
+      "name": "HSAC Haryana cadastral map — Hisar district",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Khasra (field) parcels of Hisar district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/6",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/7285/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:7285"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "hisar"
+        ],
+        "additionalCityEvidence": {
+          "hisar": "world-parcels/research/qualification-2026-10-13-india-live/7285/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "hisar"
+      ]
+    },
+    {
+      "sourceId": "in-hr-hsac-kaithal",
+      "name": "HSAC Haryana cadastral map — Kaithal district",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Khasra (field) parcels of Kaithal district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/9",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/7670/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:7670"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "kaithal"
+        ],
+        "additionalCityEvidence": {
+          "kaithal": "world-parcels/research/qualification-2026-10-13-india-live/7670/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "kaithal"
+      ]
+    },
+    {
+      "sourceId": "in-hr-hsac-ambala",
+      "name": "HSAC Haryana cadastral map — Ambala district",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Khasra (field) parcels of Ambala district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/1",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/7788/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:7788"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "ambala"
+        ],
+        "additionalCityEvidence": {
+          "ambala": "world-parcels/research/qualification-2026-10-13-india-live/7788/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "ambala"
+      ]
+    },
+    {
+      "sourceId": "in-hr-hsac-jind",
+      "name": "HSAC Haryana cadastral map — Jind district",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Khasra (field) parcels of Jind district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/8",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/7797/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:7797"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "jind"
+        ],
+        "additionalCityEvidence": {
+          "jind": "world-parcels/research/qualification-2026-10-13-india-live/7797/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "jind"
+      ]
+    },
+    {
+      "sourceId": "in-hr-hsac-bhiwani",
+      "name": "HSAC Haryana cadastral map — Bhiwani district",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Khasra (field) parcels of Bhiwani district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/2",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/7878/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:7878"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "bhiwani"
+        ],
+        "additionalCityEvidence": {
+          "bhiwani": "world-parcels/research/qualification-2026-10-13-india-live/7878/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "bhiwani"
+      ]
+    },
+    {
+      "sourceId": "in-hr-hsac-kurukshetra",
+      "name": "HSAC Haryana cadastral map — Kurukshetra district",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Khasra (field) parcels of Kurukshetra district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/11",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/7952/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:7952"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "kurukshetra"
+        ],
+        "additionalCityEvidence": {
+          "kurukshetra": "world-parcels/research/qualification-2026-10-13-india-live/7952/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "kurukshetra"
+      ]
+    },
+    {
+      "sourceId": "in-hr-hsac-rohtak",
+      "name": "HSAC Haryana cadastral map — Rohtak district",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Khasra (field) parcels of Rohtak district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/16",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/8085/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:8085"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "rohtak"
+        ],
+        "additionalCityEvidence": {
+          "rohtak": "world-parcels/research/qualification-2026-10-13-india-live/8085/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "rohtak"
+      ]
+    },
+    {
+      "sourceId": "in-hr-hsac-panipat",
+      "name": "HSAC Haryana cadastral map — Panipat district",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Khasra (field) parcels of Panipat district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/14",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/8162/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:8162"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "panipat"
+        ],
+        "additionalCityEvidence": {
+          "panipat": "world-parcels/research/qualification-2026-10-13-india-live/8162/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "panipat"
+      ]
+    },
+    {
+      "sourceId": "in-hr-hsac-sonipat",
+      "name": "HSAC Haryana cadastral map — Sonipat district",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Khasra (field) parcels of Sonipat district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/18",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/8337/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:8337"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "sonipat"
+        ],
+        "additionalCityEvidence": {
+          "sonipat": "world-parcels/research/qualification-2026-10-13-india-live/8337/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "sonipat"
+      ]
+    },
+    {
+      "sourceId": "in-hr-hsac-palwal",
+      "name": "HSAC Haryana cadastral map — Palwal district",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Khasra (field) parcels of Palwal district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/21",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/8691/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:8691"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "palwal"
+        ],
+        "additionalCityEvidence": {
+          "palwal": "world-parcels/research/qualification-2026-10-13-india-live/8691/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "palwal"
+      ]
+    },
+    {
+      "sourceId": "in-br-matribhoomi-chapra",
+      "name": "Matribhoomi (Survey of India) — Chapra tehsil cadastral map, Bihar",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Khesra parcels of Chapra tehsil (Bihar) on the national Matribhoomi cadastral map service, keyed by the village map code (BHUCODE), khesra number and part. Parcel types include agricultural plots, settlement (abadi), roads and water.",
+      "endpoint": "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/72",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/10969/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:10969"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "chirand"
+        ],
+        "additionalCityEvidence": {
+          "chirand": "world-parcels/research/qualification-2026-10-13-india-live/10969/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "chirand"
+      ]
     }
   ],
   "countryCoverage": [
@@ -26912,14 +27260,16 @@
       ],
       "largestRank": null,
       "growthRank": 67,
-      "sourceIds": [],
-      "researchFile": "research/india-africa-2026-10-08/india-city-10969.json",
+      "sourceIds": [
+        "in-br-matribhoomi-chapra"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-13-india-live/10969/qualification.json",
       "aliases": [
         "wup2025:10969",
         "Chirand"
       ],
       "latestAssessmentFile": "research/india-africa-2026-10-08/india-city-10969.json",
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "verified_sample_partial_coverage",
       "dataFindings": {
         "registryFound": null,
         "registryBasis": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
@@ -26933,7 +27283,13 @@
         "freshVerifiedSample": false,
         "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
         "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/10969/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-13-india-live/10969/metric-report.json",
+      "population2025": 169348,
+      "population2015": 87247,
+      "appCityId": "chirand",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:3617",
@@ -56024,9 +56380,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 826,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-8162-panipat.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-hr-hsac-panipat"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-13-india-live/8162/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-8162-panipat.json",
       "aliases": [
         "wup2025:8162",
@@ -56057,7 +56415,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-8162-panipat.json",
         "checkedAt": "2026-10-09T03:45:00Z",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/8162/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-13-india-live/8162/metric-report.json",
+      "population2025": 710363,
+      "population2015": 644338,
+      "appCityId": "panipat",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:4547",
@@ -61357,9 +61721,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 939,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-7788-ambala.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-hr-hsac-ambala"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-13-india-live/7788/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-7788-ambala.json",
       "aliases": [
         "wup2025:7788",
@@ -61388,7 +61754,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-7788-ambala.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/7788/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-13-india-live/7788/metric-report.json",
+      "population2025": 615565,
+      "population2015": 568919,
+      "appCityId": "ambala",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:6724",
@@ -68333,13 +68705,15 @@
       "checked": true,
       "checkedAt": "2026-10-09",
       "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "parcelStatus": "verified_sample_partial_coverage",
       "registryFound": true,
       "verifiedSample": false,
       "publicParcelGeometryFound": false,
       "registryGeometryFound": false,
-      "sourceIds": [],
-      "researchFile": "research/overnight-followon-2026-10-09/city-7285-hisar.json",
+      "sourceIds": [
+        "in-hr-hsac-hisar"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-13-india-live/7285/qualification.json",
       "latestAssessmentFile": "research/overnight-followon-2026-10-09/city-7285-hisar.json",
       "aliases": [
         "wup2025:7285",
@@ -68397,7 +68771,12 @@
           "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
           "pointBasis": "UN WUP 2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim."
         }
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/7285/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-13-india-live/7285/metric-report.json",
+      "population2015": 471392,
+      "appCityId": "hisar",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:9632",
@@ -71227,10 +71606,12 @@
       "checked": true,
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "registryGeometryFound": false,
-      "researchFile": "research/overnight-followon-2026-10-09/city-8085-rohtak.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-13-india-live/8085/qualification.json",
       "latestAssessmentFile": "research/overnight-followon-2026-10-09/city-8085-rohtak.json",
-      "parcelStatus": "no_open_geometry_found",
-      "sourceIds": [],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-hr-hsac-rohtak"
+      ],
       "aliases": [
         "wup2025:8085",
         "Rohtak"
@@ -71273,7 +71654,12 @@
           "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
           "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim."
         }
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/8085/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-13-india-live/8085/metric-report.json",
+      "population2015": 488181,
+      "appCityId": "rohtak",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:6791",
@@ -89684,6 +90070,181 @@
       "population2025": 51141,
       "population2015": 51803,
       "appCityId": "belchatow",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:6392",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 6392,
+      "name": "Sirsa",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        29.536704378771,
+        75.035515266935
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-hr-hsac-sirsa"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-13-india-live/6392/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/6392/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-13-india-live/6392/metric-report.json",
+      "population2025": 300414,
+      "population2015": 288565,
+      "appCityId": "sirsa",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:7670",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 7670,
+      "name": "Kaithal",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        29.7995897199337,
+        76.4055225188099
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-hr-hsac-kaithal"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-13-india-live/7670/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/7670/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-13-india-live/7670/metric-report.json",
+      "population2025": 265502,
+      "population2015": 240214,
+      "appCityId": "kaithal",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:7797",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 7797,
+      "name": "Jind",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        29.3176729893746,
+        76.3185369205235
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-hr-hsac-jind"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-13-india-live/7797/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/7797/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-13-india-live/7797/metric-report.json",
+      "population2025": 270881,
+      "population2015": 241491,
+      "appCityId": "jind",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:7878",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 7878,
+      "name": "Bhiwani",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        28.7971298761814,
+        76.1384878765419
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-hr-hsac-bhiwani"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-13-india-live/7878/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/7878/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-13-india-live/7878/metric-report.json",
+      "population2025": 288360,
+      "population2015": 269930,
+      "appCityId": "bhiwani",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:7952",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 7952,
+      "name": "Kurukshetra",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        29.9674026272771,
+        76.8569110935626
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-hr-hsac-kurukshetra"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-13-india-live/7952/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/7952/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-13-india-live/7952/metric-report.json",
+      "population2025": 353119,
+      "population2015": 318311,
+      "appCityId": "kurukshetra",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:8337",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 8337,
+      "name": "Sonipat",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        28.9827143736227,
+        77.03440734666691
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-hr-hsac-sonipat"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-13-india-live/8337/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/8337/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-13-india-live/8337/metric-report.json",
+      "population2025": 394583,
+      "population2015": 365677,
+      "appCityId": "sonipat",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:8691",
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": null,
+      "historicalSourceIds": [],
+      "wupCityCode": 8691,
+      "name": "Palwal",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        28.141468469378,
+        77.3328111663979
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-hr-hsac-palwal"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-13-india-live/8691/qualification.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/8691/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-13-india-live/8691/metric-report.json",
+      "population2025": 262399,
+      "population2015": 249647,
+      "appCityId": "palwal",
       "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
     }
   ],

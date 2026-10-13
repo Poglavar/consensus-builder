@@ -13,7 +13,9 @@ const manifests = [
     json('world-parcels/research/qualification-admission-2026-10-11.json'),
     json('world-parcels/research/qualification-admission-2026-10-11-round2.json'),
     json('world-parcels/research/qualification-admission-2026-10-12-round2.json'),
-    json('world-parcels/research/qualification-admission-2026-10-12-pl-egib.json')
+    json('world-parcels/research/qualification-admission-2026-10-12-pl-egib.json'),
+    json('world-parcels/research/qualification-admission-2026-10-13-mumbai.json'),
+    json('world-parcels/research/qualification-admission-2026-10-13-india-live.json')
 ];
 // A later admission that switched a live city to a newly qualified source (switchedFrom) replaces
 // its earlier binding; the earlier one stays in its manifest as history.
@@ -75,8 +77,8 @@ describe('qualified city production admission', () => {
         expect(config.parcels.idPrefix).toBe(candidate.descriptor.idPrefix);
         // Reused-provider admissions must execute the same query contract that was qualified.
         if (city.primaryReview) {
-            for (const field of ['attributeFilters', 'attributeExclusions', 'attributeNotNull', 'attributeNull',
-                'featureType', 'boundsQueryMode', 'idsQueryMode', 'boundsSrid', 'boundsProjection']) {
+            for (const field of ['identityKind', 'lookupCellSize', 'attributeFilters', 'attributeExclusions', 'attributeNotNull', 'attributeNull',
+                'featureType', 'boundsQueryMode', 'idsQueryMode', 'boundsSrid', 'boundsProjection', 'queryFormat', 'nativeGeometryMode', 'disjointParts']) {
                 expect(source.descriptor[field] ?? null).toEqual(candidate.descriptor[field] ?? null);
             }
         }

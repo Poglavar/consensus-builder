@@ -11569,6 +11569,1372 @@
         "The service answers browsers directly (CORS allows this site); no relay is used.",
         "The plan dates from the CRZ Notification 2019; the survey date of the underlying plot maps is not stated."
       ]
+    },
+    {
+      "id": "in-hr-hsac-ambala",
+      "name": "HSAC Haryana cadastral map — Ambala district",
+      "adapter": "arcgis",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/1",
+      "idField": "uq",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-HR-HSAC-AMBALA-",
+      "parcelNumberField": "n_khas_no",
+      "outFields": [
+        "OBJECTID",
+        "n_d_name",
+        "n_t_name",
+        "n_v_name",
+        "n_murr_no",
+        "n_khas_no",
+        "uq"
+      ],
+      "attributeExclusions": {
+        "n_khas_no": [
+          "0"
+        ]
+      },
+      "pageSize": 1000,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "HR",
+      "metricSrid": 32643,
+      "cityIds": [
+        "ambala"
+      ],
+      "scope": "Khasra (field) parcels of Ambala district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+      "catalogueUrl": "https://hsacggm.in/map/",
+      "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+      "caveats": [
+        "Rural field-survey parcels: not proof of current title or ownership.",
+        "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+        "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true
+    },
+    {
+      "id": "in-hr-hsac-bhiwani",
+      "name": "HSAC Haryana cadastral map — Bhiwani district",
+      "adapter": "arcgis",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/2",
+      "idField": "uq",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-HR-HSAC-BHIWANI-",
+      "parcelNumberField": "n_khas_no",
+      "outFields": [
+        "OBJECTID",
+        "n_d_name",
+        "n_t_name",
+        "n_v_name",
+        "n_murr_no",
+        "n_khas_no",
+        "uq"
+      ],
+      "attributeExclusions": {
+        "n_khas_no": [
+          "0"
+        ]
+      },
+      "pageSize": 1000,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "HR",
+      "metricSrid": 32643,
+      "cityIds": [
+        "bhiwani"
+      ],
+      "scope": "Khasra (field) parcels of Bhiwani district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+      "catalogueUrl": "https://hsacggm.in/map/",
+      "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+      "caveats": [
+        "Rural field-survey parcels: not proof of current title or ownership.",
+        "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+        "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true
+    },
+    {
+      "id": "in-hr-hsac-faridabad",
+      "name": "HSAC Haryana cadastral map — Faridabad district",
+      "adapter": "arcgis",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/3",
+      "idField": "uq",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-HR-HSAC-FARIDABAD-",
+      "parcelNumberField": "n_khas_no",
+      "outFields": [
+        "OBJECTID",
+        "n_d_name",
+        "n_t_name",
+        "n_v_name",
+        "n_murr_no",
+        "n_khas_no",
+        "uq"
+      ],
+      "attributeExclusions": {
+        "n_khas_no": [
+          "0"
+        ]
+      },
+      "pageSize": 1000,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "HR",
+      "metricSrid": 32643,
+      "cityIds": [],
+      "scope": "Khasra (field) parcels of Faridabad district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+      "catalogueUrl": "https://hsacggm.in/map/",
+      "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+      "caveats": [
+        "Rural field-survey parcels: not proof of current title or ownership.",
+        "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+        "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true
+    },
+    {
+      "id": "in-hr-hsac-gurugram",
+      "name": "HSAC Haryana cadastral map — Gurugram district",
+      "adapter": "arcgis",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/5",
+      "idField": "uq",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-HR-HSAC-GURUGRAM-",
+      "parcelNumberField": "n_khas_no",
+      "outFields": [
+        "OBJECTID",
+        "n_d_name",
+        "n_t_name",
+        "n_v_name",
+        "n_murr_no",
+        "n_khas_no",
+        "uq"
+      ],
+      "attributeExclusions": {
+        "n_khas_no": [
+          "0"
+        ]
+      },
+      "pageSize": 1000,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "HR",
+      "metricSrid": 32643,
+      "cityIds": [],
+      "scope": "Khasra (field) parcels of Gurugram district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+      "catalogueUrl": "https://hsacggm.in/map/",
+      "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+      "caveats": [
+        "Rural field-survey parcels: not proof of current title or ownership.",
+        "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+        "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true
+    },
+    {
+      "id": "in-hr-hsac-hisar",
+      "name": "HSAC Haryana cadastral map — Hisar district",
+      "adapter": "arcgis",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/6",
+      "idField": "uq",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-HR-HSAC-HISAR-",
+      "parcelNumberField": "n_khas_no",
+      "outFields": [
+        "OBJECTID",
+        "n_d_name",
+        "n_t_name",
+        "n_v_name",
+        "n_murr_no",
+        "n_khas_no",
+        "uq"
+      ],
+      "attributeExclusions": {
+        "n_khas_no": [
+          "0"
+        ]
+      },
+      "pageSize": 1000,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "HR",
+      "metricSrid": 32643,
+      "cityIds": [
+        "hisar"
+      ],
+      "scope": "Khasra (field) parcels of Hisar district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+      "catalogueUrl": "https://hsacggm.in/map/",
+      "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+      "caveats": [
+        "Rural field-survey parcels: not proof of current title or ownership.",
+        "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+        "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true
+    },
+    {
+      "id": "in-hr-hsac-jind",
+      "name": "HSAC Haryana cadastral map — Jind district",
+      "adapter": "arcgis",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/8",
+      "idField": "uq",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-HR-HSAC-JIND-",
+      "parcelNumberField": "n_khas_no",
+      "outFields": [
+        "OBJECTID",
+        "n_d_name",
+        "n_t_name",
+        "n_v_name",
+        "n_murr_no",
+        "n_khas_no",
+        "uq"
+      ],
+      "attributeExclusions": {
+        "n_khas_no": [
+          "0"
+        ]
+      },
+      "pageSize": 1000,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "HR",
+      "metricSrid": 32643,
+      "cityIds": [
+        "jind"
+      ],
+      "scope": "Khasra (field) parcels of Jind district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+      "catalogueUrl": "https://hsacggm.in/map/",
+      "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+      "caveats": [
+        "Rural field-survey parcels: not proof of current title or ownership.",
+        "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+        "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true
+    },
+    {
+      "id": "in-hr-hsac-kaithal",
+      "name": "HSAC Haryana cadastral map — Kaithal district",
+      "adapter": "arcgis",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/9",
+      "idField": "uq",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-HR-HSAC-KAITHAL-",
+      "parcelNumberField": "n_khas_no",
+      "outFields": [
+        "OBJECTID",
+        "n_d_name",
+        "n_t_name",
+        "n_v_name",
+        "n_murr_no",
+        "n_khas_no",
+        "uq"
+      ],
+      "attributeExclusions": {
+        "n_khas_no": [
+          "0"
+        ]
+      },
+      "pageSize": 1000,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "HR",
+      "metricSrid": 32643,
+      "cityIds": [
+        "kaithal"
+      ],
+      "scope": "Khasra (field) parcels of Kaithal district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+      "catalogueUrl": "https://hsacggm.in/map/",
+      "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+      "caveats": [
+        "Rural field-survey parcels: not proof of current title or ownership.",
+        "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+        "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true
+    },
+    {
+      "id": "in-hr-hsac-karnal",
+      "name": "HSAC Haryana cadastral map — Karnal district",
+      "adapter": "arcgis",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/10",
+      "idField": "uq",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-HR-HSAC-KARNAL-",
+      "parcelNumberField": "n_khas_no",
+      "outFields": [
+        "OBJECTID",
+        "n_d_name",
+        "n_t_name",
+        "n_v_name",
+        "n_murr_no",
+        "n_khas_no",
+        "uq"
+      ],
+      "attributeExclusions": {
+        "n_khas_no": [
+          "0"
+        ]
+      },
+      "pageSize": 1000,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "HR",
+      "metricSrid": 32643,
+      "cityIds": [],
+      "scope": "Khasra (field) parcels of Karnal district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+      "catalogueUrl": "https://hsacggm.in/map/",
+      "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+      "caveats": [
+        "Rural field-survey parcels: not proof of current title or ownership.",
+        "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+        "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true
+    },
+    {
+      "id": "in-hr-hsac-kurukshetra",
+      "name": "HSAC Haryana cadastral map — Kurukshetra district",
+      "adapter": "arcgis",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/11",
+      "idField": "uq",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-HR-HSAC-KURUKSHETRA-",
+      "parcelNumberField": "n_khas_no",
+      "outFields": [
+        "OBJECTID",
+        "n_d_name",
+        "n_t_name",
+        "n_v_name",
+        "n_murr_no",
+        "n_khas_no",
+        "uq"
+      ],
+      "attributeExclusions": {
+        "n_khas_no": [
+          "0"
+        ]
+      },
+      "pageSize": 1000,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "HR",
+      "metricSrid": 32643,
+      "cityIds": [
+        "kurukshetra"
+      ],
+      "scope": "Khasra (field) parcels of Kurukshetra district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+      "catalogueUrl": "https://hsacggm.in/map/",
+      "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+      "caveats": [
+        "Rural field-survey parcels: not proof of current title or ownership.",
+        "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+        "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true
+    },
+    {
+      "id": "in-hr-hsac-panchkula",
+      "name": "HSAC Haryana cadastral map — Panchkula district",
+      "adapter": "arcgis",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/13",
+      "idField": "uq",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-HR-HSAC-PANCHKULA-",
+      "parcelNumberField": "n_khas_no",
+      "outFields": [
+        "OBJECTID",
+        "n_d_name",
+        "n_t_name",
+        "n_v_name",
+        "n_murr_no",
+        "n_khas_no",
+        "uq"
+      ],
+      "attributeExclusions": {
+        "n_khas_no": [
+          "0"
+        ]
+      },
+      "pageSize": 1000,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "HR",
+      "metricSrid": 32643,
+      "cityIds": [],
+      "scope": "Khasra (field) parcels of Panchkula district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+      "catalogueUrl": "https://hsacggm.in/map/",
+      "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+      "caveats": [
+        "Rural field-survey parcels: not proof of current title or ownership.",
+        "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+        "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true
+    },
+    {
+      "id": "in-hr-hsac-panipat",
+      "name": "HSAC Haryana cadastral map — Panipat district",
+      "adapter": "arcgis",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/14",
+      "idField": "uq",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-HR-HSAC-PANIPAT-",
+      "parcelNumberField": "n_khas_no",
+      "outFields": [
+        "OBJECTID",
+        "n_d_name",
+        "n_t_name",
+        "n_v_name",
+        "n_murr_no",
+        "n_khas_no",
+        "uq"
+      ],
+      "attributeExclusions": {
+        "n_khas_no": [
+          "0"
+        ]
+      },
+      "pageSize": 1000,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "HR",
+      "metricSrid": 32643,
+      "cityIds": [
+        "panipat"
+      ],
+      "scope": "Khasra (field) parcels of Panipat district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+      "catalogueUrl": "https://hsacggm.in/map/",
+      "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+      "caveats": [
+        "Rural field-survey parcels: not proof of current title or ownership.",
+        "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+        "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true
+    },
+    {
+      "id": "in-hr-hsac-rewari",
+      "name": "HSAC Haryana cadastral map — Rewari district",
+      "adapter": "arcgis",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/15",
+      "idField": "uq",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-HR-HSAC-REWARI-",
+      "parcelNumberField": "n_khas_no",
+      "outFields": [
+        "OBJECTID",
+        "n_d_name",
+        "n_t_name",
+        "n_v_name",
+        "n_murr_no",
+        "n_khas_no",
+        "uq"
+      ],
+      "attributeExclusions": {
+        "n_khas_no": [
+          "0"
+        ]
+      },
+      "pageSize": 1000,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "HR",
+      "metricSrid": 32643,
+      "cityIds": [],
+      "scope": "Khasra (field) parcels of Rewari district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+      "catalogueUrl": "https://hsacggm.in/map/",
+      "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+      "caveats": [
+        "Rural field-survey parcels: not proof of current title or ownership.",
+        "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+        "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true
+    },
+    {
+      "id": "in-hr-hsac-rohtak",
+      "name": "HSAC Haryana cadastral map — Rohtak district",
+      "adapter": "arcgis",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/16",
+      "idField": "uq",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-HR-HSAC-ROHTAK-",
+      "parcelNumberField": "n_khas_no",
+      "outFields": [
+        "OBJECTID",
+        "n_d_name",
+        "n_t_name",
+        "n_v_name",
+        "n_murr_no",
+        "n_khas_no",
+        "uq"
+      ],
+      "attributeExclusions": {
+        "n_khas_no": [
+          "0"
+        ]
+      },
+      "pageSize": 1000,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "HR",
+      "metricSrid": 32643,
+      "cityIds": [
+        "rohtak"
+      ],
+      "scope": "Khasra (field) parcels of Rohtak district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+      "catalogueUrl": "https://hsacggm.in/map/",
+      "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+      "caveats": [
+        "Rural field-survey parcels: not proof of current title or ownership.",
+        "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+        "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true
+    },
+    {
+      "id": "in-hr-hsac-sirsa",
+      "name": "HSAC Haryana cadastral map — Sirsa district",
+      "adapter": "arcgis",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/17",
+      "idField": "uq",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-HR-HSAC-SIRSA-",
+      "parcelNumberField": "n_khas_no",
+      "outFields": [
+        "OBJECTID",
+        "n_d_name",
+        "n_t_name",
+        "n_v_name",
+        "n_murr_no",
+        "n_khas_no",
+        "uq"
+      ],
+      "attributeExclusions": {
+        "n_khas_no": [
+          "0"
+        ]
+      },
+      "pageSize": 1000,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "HR",
+      "metricSrid": 32643,
+      "cityIds": [
+        "sirsa"
+      ],
+      "scope": "Khasra (field) parcels of Sirsa district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+      "catalogueUrl": "https://hsacggm.in/map/",
+      "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+      "caveats": [
+        "Rural field-survey parcels: not proof of current title or ownership.",
+        "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+        "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true
+    },
+    {
+      "id": "in-hr-hsac-sonipat",
+      "name": "HSAC Haryana cadastral map — Sonipat district",
+      "adapter": "arcgis",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/18",
+      "idField": "uq",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-HR-HSAC-SONIPAT-",
+      "parcelNumberField": "n_khas_no",
+      "outFields": [
+        "OBJECTID",
+        "n_d_name",
+        "n_t_name",
+        "n_v_name",
+        "n_murr_no",
+        "n_khas_no",
+        "uq"
+      ],
+      "attributeExclusions": {
+        "n_khas_no": [
+          "0"
+        ]
+      },
+      "pageSize": 1000,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "HR",
+      "metricSrid": 32643,
+      "cityIds": [
+        "sonipat"
+      ],
+      "scope": "Khasra (field) parcels of Sonipat district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+      "catalogueUrl": "https://hsacggm.in/map/",
+      "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+      "caveats": [
+        "Rural field-survey parcels: not proof of current title or ownership.",
+        "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+        "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true
+    },
+    {
+      "id": "in-hr-hsac-yamunanagar",
+      "name": "HSAC Haryana cadastral map — Yamunanagar district",
+      "adapter": "arcgis",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/19",
+      "idField": "uq",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-HR-HSAC-YAMUNANAGAR-",
+      "parcelNumberField": "n_khas_no",
+      "outFields": [
+        "OBJECTID",
+        "n_d_name",
+        "n_t_name",
+        "n_v_name",
+        "n_murr_no",
+        "n_khas_no",
+        "uq"
+      ],
+      "attributeExclusions": {
+        "n_khas_no": [
+          "0"
+        ]
+      },
+      "pageSize": 1000,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "HR",
+      "metricSrid": 32643,
+      "cityIds": [],
+      "scope": "Khasra (field) parcels of Yamunanagar district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+      "catalogueUrl": "https://hsacggm.in/map/",
+      "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+      "caveats": [
+        "Rural field-survey parcels: not proof of current title or ownership.",
+        "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+        "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true
+    },
+    {
+      "id": "in-hr-hsac-palwal",
+      "name": "HSAC Haryana cadastral map — Palwal district",
+      "adapter": "arcgis",
+      "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/21",
+      "idField": "uq",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-HR-HSAC-PALWAL-",
+      "parcelNumberField": "n_khas_no",
+      "outFields": [
+        "OBJECTID",
+        "n_d_name",
+        "n_t_name",
+        "n_v_name",
+        "n_murr_no",
+        "n_khas_no",
+        "uq"
+      ],
+      "attributeExclusions": {
+        "n_khas_no": [
+          "0"
+        ]
+      },
+      "pageSize": 1000,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "HR",
+      "metricSrid": 32643,
+      "cityIds": [
+        "palwal"
+      ],
+      "scope": "Khasra (field) parcels of Palwal district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+      "catalogueUrl": "https://hsacggm.in/map/",
+      "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+      "caveats": [
+        "Rural field-survey parcels: not proof of current title or ownership.",
+        "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+        "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true
+    },
+    {
+      "id": "in-br-matribhoomi-chapra",
+      "name": "Matribhoomi (Survey of India) — Chapra tehsil cadastral map, Bihar",
+      "adapter": "arcgis",
+      "endpoint": "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/72",
+      "idFields": [
+        "BHUCODE",
+        "KID",
+        "KPARTH"
+      ],
+      "idFieldTypes": {
+        "BHUCODE": "string",
+        "KID": "string",
+        "KPARTH": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-BR-MB-CHAPRA-",
+      "parcelNumberField": "KID",
+      "outFields": [
+        "OBJECTID",
+        "BHUCODE",
+        "KID",
+        "KPARTH",
+        "PAR_TYPE",
+        "VIL_LGD",
+        "dtname",
+        "sdtname"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "BR",
+      "metricSrid": 32645,
+      "cityIds": [
+        "chirand"
+      ],
+      "scope": "Khesra parcels of Chapra tehsil (Bihar) on the national Matribhoomi cadastral map service, keyed by the village map code (BHUCODE), khesra number and part. Parcel types include agricultural plots, settlement (abadi), roads and water.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.",
+      "catalogueUrl": "https://mapservice.gov.in/",
+      "licenceNote": "No reuse licence is stated on the public Matribhoomi map service.",
+      "caveats": [
+        "Village cadastral maps: not proof of current title or ownership.",
+        "OBJECTID is a transport field; identity is BHUCODE + KID + KPARTH (a blank part is kept as published).",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals); the map is read live from mapservice.gov.in.",
+        "The service answers browsers directly (CORS allows this site); no relay is used.",
+        "The server's certificate chains to Let's Encrypt's ISRG Root YR, which current Chrome trusts but older systems and Node's bundled store may not."
+      ]
+    },
+    {
+      "id": "in-br-matribhoomi-munger",
+      "name": "Matribhoomi (Survey of India) — Munger tehsil cadastral map, Bihar",
+      "adapter": "arcgis",
+      "endpoint": "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/65",
+      "idFields": [
+        "BHUCODE",
+        "KID",
+        "KPARTH"
+      ],
+      "idFieldTypes": {
+        "BHUCODE": "string",
+        "KID": "string",
+        "KPARTH": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-BR-MB-MUNGER-",
+      "parcelNumberField": "KID",
+      "outFields": [
+        "OBJECTID",
+        "BHUCODE",
+        "KID",
+        "KPARTH",
+        "PAR_TYPE",
+        "VIL_LGD",
+        "dtname",
+        "sdtname"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "BR",
+      "metricSrid": 32645,
+      "cityIds": [],
+      "scope": "Khesra parcels of Munger tehsil (Bihar) on the national Matribhoomi cadastral map service, keyed by the village map code (BHUCODE), khesra number and part. Parcel types include agricultural plots, settlement (abadi), roads and water.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.",
+      "catalogueUrl": "https://mapservice.gov.in/",
+      "licenceNote": "No reuse licence is stated on the public Matribhoomi map service.",
+      "caveats": [
+        "Village cadastral maps: not proof of current title or ownership.",
+        "OBJECTID is a transport field; identity is BHUCODE + KID + KPARTH (a blank part is kept as published).",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals); the map is read live from mapservice.gov.in.",
+        "The service answers browsers directly (CORS allows this site); no relay is used.",
+        "The server's certificate chains to Let's Encrypt's ISRG Root YR, which current Chrome trusts but older systems and Node's bundled store may not."
+      ]
+    },
+    {
+      "id": "in-br-matribhoomi-goradih",
+      "name": "Matribhoomi (Survey of India) — Goradih tehsil cadastral map, Bihar",
+      "adapter": "arcgis",
+      "endpoint": "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/12",
+      "idFields": [
+        "BHUCODE",
+        "KID",
+        "KPARTH"
+      ],
+      "idFieldTypes": {
+        "BHUCODE": "string",
+        "KID": "string",
+        "KPARTH": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-BR-MB-GORADIH-",
+      "parcelNumberField": "KID",
+      "outFields": [
+        "OBJECTID",
+        "BHUCODE",
+        "KID",
+        "KPARTH",
+        "PAR_TYPE",
+        "VIL_LGD",
+        "dtname",
+        "sdtname"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "BR",
+      "metricSrid": 32645,
+      "cityIds": [],
+      "scope": "Khesra parcels of Goradih tehsil (Bihar) on the national Matribhoomi cadastral map service, keyed by the village map code (BHUCODE), khesra number and part. Parcel types include agricultural plots, settlement (abadi), roads and water.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.",
+      "catalogueUrl": "https://mapservice.gov.in/",
+      "licenceNote": "No reuse licence is stated on the public Matribhoomi map service.",
+      "caveats": [
+        "Village cadastral maps: not proof of current title or ownership.",
+        "OBJECTID is a transport field; identity is BHUCODE + KID + KPARTH (a blank part is kept as published).",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals); the map is read live from mapservice.gov.in.",
+        "The service answers browsers directly (CORS allows this site); no relay is used.",
+        "The server's certificate chains to Let's Encrypt's ISRG Root YR, which current Chrome trusts but older systems and Node's bundled store may not."
+      ]
+    },
+    {
+      "id": "in-br-matribhoomi-manjha",
+      "name": "Matribhoomi (Survey of India) — Manjha tehsil cadastral map, Bihar",
+      "adapter": "arcgis",
+      "endpoint": "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/53",
+      "idFields": [
+        "BHUCODE",
+        "KID",
+        "KPARTH"
+      ],
+      "idFieldTypes": {
+        "BHUCODE": "string",
+        "KID": "string",
+        "KPARTH": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-BR-MB-MANJHA-",
+      "parcelNumberField": "KID",
+      "outFields": [
+        "OBJECTID",
+        "BHUCODE",
+        "KID",
+        "KPARTH",
+        "PAR_TYPE",
+        "VIL_LGD",
+        "dtname",
+        "sdtname"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "BR",
+      "metricSrid": 32645,
+      "cityIds": [],
+      "scope": "Khesra parcels of Manjha tehsil (Bihar) on the national Matribhoomi cadastral map service, keyed by the village map code (BHUCODE), khesra number and part. Parcel types include agricultural plots, settlement (abadi), roads and water.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.",
+      "catalogueUrl": "https://mapservice.gov.in/",
+      "licenceNote": "No reuse licence is stated on the public Matribhoomi map service.",
+      "caveats": [
+        "Village cadastral maps: not proof of current title or ownership.",
+        "OBJECTID is a transport field; identity is BHUCODE + KID + KPARTH (a blank part is kept as published).",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals); the map is read live from mapservice.gov.in.",
+        "The service answers browsers directly (CORS allows this site); no relay is used.",
+        "The server's certificate chains to Let's Encrypt's ISRG Root YR, which current Chrome trusts but older systems and Node's bundled store may not."
+      ]
+    },
+    {
+      "id": "in-br-matribhoomi-masrakh",
+      "name": "Matribhoomi (Survey of India) — Masrakh tehsil cadastral map, Bihar",
+      "adapter": "arcgis",
+      "endpoint": "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/83",
+      "idFields": [
+        "BHUCODE",
+        "KID",
+        "KPARTH"
+      ],
+      "idFieldTypes": {
+        "BHUCODE": "string",
+        "KID": "string",
+        "KPARTH": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-BR-MB-MASRAKH-",
+      "parcelNumberField": "KID",
+      "outFields": [
+        "OBJECTID",
+        "BHUCODE",
+        "KID",
+        "KPARTH",
+        "PAR_TYPE",
+        "VIL_LGD",
+        "dtname",
+        "sdtname"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "BR",
+      "metricSrid": 32645,
+      "cityIds": [],
+      "scope": "Khesra parcels of Masrakh tehsil (Bihar) on the national Matribhoomi cadastral map service, keyed by the village map code (BHUCODE), khesra number and part. Parcel types include agricultural plots, settlement (abadi), roads and water.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.",
+      "catalogueUrl": "https://mapservice.gov.in/",
+      "licenceNote": "No reuse licence is stated on the public Matribhoomi map service.",
+      "caveats": [
+        "Village cadastral maps: not proof of current title or ownership.",
+        "OBJECTID is a transport field; identity is BHUCODE + KID + KPARTH (a blank part is kept as published).",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals); the map is read live from mapservice.gov.in.",
+        "The service answers browsers directly (CORS allows this site); no relay is used.",
+        "The server's certificate chains to Let's Encrypt's ISRG Root YR, which current Chrome trusts but older systems and Node's bundled store may not."
+      ]
+    },
+    {
+      "id": "in-tg-tgrac-cadastral",
+      "name": "TGRAC Telangana — full cadastral map",
+      "adapter": "arcgis",
+      "endpoint": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0",
+      "objectIdField": "OBJECTID_12",
+      "idPrefix": "IN-TG-TGRAC-",
+      "parcelNumberField": "Parcel_num",
+      "outFields": [
+        "OBJECTID_12",
+        "DMV_Code",
+        "Parcel_num",
+        "V_Name",
+        "M_Name",
+        "D_Name"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "pageSize": 500,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 9,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "TG",
+      "metricSrid": 32644,
+      "cityIds": [],
+      "scope": "Survey parcels of Telangana's village cadastral maps (TGRAC's Bhunaksha query layer). The district-mandal-village code and survey number are shown; references are derived from each outline, because a survey number can be drawn as several pieces and the statewide layer answers attribute queries too slowly to join them. Rural survey maps: Hyderabad's urban core is not covered.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Telangana Remote Sensing Applications Centre (TGRAC) — village cadastral maps. Adapted to WGS84.",
+      "catalogueUrl": "https://tgrac.telangana.gov.in/",
+      "licenceNote": "No reuse licence is stated on the public TGRAC map service.",
+      "caveats": [
+        "Village survey maps: not proof of current title or ownership.",
+        "ArcGIS 10.22 without GeoJSON output or working offsets: reads go through object-ID lists in Esri JSON. References are outline hashes (geometry-sha256-v1), as for Mumbai.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals); the map is read live from TGRAC.",
+        "The service answers browsers directly (CORS allows this site); no relay is used."
+      ],
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.001
+    },
+    {
+      "adapter": "arcgis",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.001,
+      "objectIdField": "OBJECTID",
+      "maxFeatures": 2000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "catalogueUrl": "https://czmp.ncscm.res.in/",
+      "licenceNote": "No reuse licence is stated on the CZMP portal or the ArcGIS service; the plan is published for public viewing.",
+      "id": "in-tn-ncscm-czmp-survey-plots",
+      "name": "NCSCM CZMP — Tamil Nadu survey plots",
+      "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_TamilNadu/MapServer/6",
+      "idPrefix": "IN-TN-CZMP-",
+      "parcelNumberField": "Survey_Number",
+      "outFields": [
+        "OBJECTID",
+        "Survey_Number",
+        "Village",
+        "Taluk",
+        "District"
+      ],
+      "pageSize": 1000,
+      "maxBboxKm2": 4,
+      "metricSrid": 32644,
+      "cityIds": [],
+      "scope": "Survey-plot outlines on the Tamil Nadu Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+      "evidenceFile": "research/ncscm-czmp-cities-2026-10-13.json",
+      "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Tamil Nadu. Plot labels shown as published; references derived from geometry. Adapted to WGS84.",
+      "caveats": [
+        "Coastal-zone planning maps, not the land-records register: plot outlines are a geometry reference, not proof of current title or ownership.",
+        "Survey labels can be repeated, blank or zero. They are shown as published, never used as identity; OBJECTID is a transport field.",
+        "Application identity uses the source namespace plus canonical geometry SHA-256 at 1e-7-degree precision and a spatial locator. A changed outline gets a new reference; absence means that outline version was not returned.",
+        "The service answers browsers directly (CORS allows this site); no relay is used.",
+        "The service does not state the plan version or the survey date of the underlying plot maps."
+      ]
+    },
+    {
+      "adapter": "arcgis",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.001,
+      "objectIdField": "OBJECTID",
+      "maxFeatures": 2000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "catalogueUrl": "https://czmp.ncscm.res.in/",
+      "licenceNote": "No reuse licence is stated on the CZMP portal or the ArcGIS service; the plan is published for public viewing.",
+      "id": "in-kl-ncscm-czmp-survey-plots",
+      "name": "NCSCM CZMP — Kerala survey plots",
+      "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Kerala/MapServer/6",
+      "idPrefix": "IN-KL-CZMP-",
+      "parcelNumberField": "Plot",
+      "outFields": [
+        "OBJECTID",
+        "Plot",
+        "Village_Name",
+        "District_Name",
+        "State_Name"
+      ],
+      "pageSize": 1000,
+      "maxBboxKm2": 4,
+      "metricSrid": 32643,
+      "cityIds": [],
+      "scope": "Survey-plot outlines on the Kerala Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+      "evidenceFile": "research/ncscm-czmp-cities-2026-10-13.json",
+      "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.",
+      "caveats": [
+        "Coastal-zone planning maps, not the land-records register: plot outlines are a geometry reference, not proof of current title or ownership.",
+        "Survey labels can be repeated, blank or zero. They are shown as published, never used as identity; OBJECTID is a transport field.",
+        "Application identity uses the source namespace plus canonical geometry SHA-256 at 1e-7-degree precision and a spatial locator. A changed outline gets a new reference; absence means that outline version was not returned.",
+        "The service answers browsers directly (CORS allows this site); no relay is used.",
+        "The service does not state the plan version or the survey date of the underlying plot maps."
+      ]
+    },
+    {
+      "adapter": "arcgis",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.001,
+      "objectIdField": "OBJECTID",
+      "maxFeatures": 2000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "catalogueUrl": "https://czmp.ncscm.res.in/",
+      "licenceNote": "No reuse licence is stated on the CZMP portal or the ArcGIS service; the plan is published for public viewing.",
+      "id": "in-ap-ncscm-czmp-survey-plots",
+      "name": "NCSCM CZMP — Andhra Pradesh survey plots",
+      "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_AndhraPradesh/MapServer/5",
+      "idPrefix": "IN-AP-CZMP-",
+      "parcelNumberField": "Parcel_num",
+      "outFields": [
+        "OBJECTID",
+        "Parcel_num",
+        "Mandal",
+        "District_Name",
+        "State_Name",
+        "Village_Name"
+      ],
+      "pageSize": 1000,
+      "maxBboxKm2": 4,
+      "metricSrid": 32644,
+      "cityIds": [],
+      "scope": "Survey-plot outlines on the Andhra Pradesh Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+      "evidenceFile": "research/ncscm-czmp-cities-2026-10-13.json",
+      "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Andhra Pradesh. Plot labels shown as published; references derived from geometry. Adapted to WGS84.",
+      "caveats": [
+        "Coastal-zone planning maps, not the land-records register: plot outlines are a geometry reference, not proof of current title or ownership.",
+        "Survey labels can be repeated, blank or zero. They are shown as published, never used as identity; OBJECTID is a transport field.",
+        "Application identity uses the source namespace plus canonical geometry SHA-256 at 1e-7-degree precision and a spatial locator. A changed outline gets a new reference; absence means that outline version was not returned.",
+        "The service answers browsers directly (CORS allows this site); no relay is used.",
+        "The service does not state the plan version or the survey date of the underlying plot maps."
+      ]
+    },
+    {
+      "adapter": "arcgis",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.001,
+      "objectIdField": "OBJECTID",
+      "maxFeatures": 2000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "catalogueUrl": "https://czmp.ncscm.res.in/",
+      "licenceNote": "No reuse licence is stated on the CZMP portal or the ArcGIS service; the plan is published for public viewing.",
+      "id": "in-py-ncscm-czmp-survey-plots",
+      "name": "NCSCM CZMP — Puducherry survey plots",
+      "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Puducherry/MapServer/5",
+      "idPrefix": "IN-PY-CZMP-",
+      "parcelNumberField": "Survey_No",
+      "outFields": [
+        "OBJECTID",
+        "Survey_No",
+        "Village_Name",
+        "District"
+      ],
+      "pageSize": 1000,
+      "maxBboxKm2": 4,
+      "metricSrid": 32644,
+      "cityIds": [],
+      "scope": "Survey-plot outlines on the Puducherry Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+      "evidenceFile": "research/ncscm-czmp-cities-2026-10-13.json",
+      "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Puducherry. Plot labels shown as published; references derived from geometry. Adapted to WGS84.",
+      "caveats": [
+        "Coastal-zone planning maps, not the land-records register: plot outlines are a geometry reference, not proof of current title or ownership.",
+        "Survey labels can be repeated, blank or zero. They are shown as published, never used as identity; OBJECTID is a transport field.",
+        "Application identity uses the source namespace plus canonical geometry SHA-256 at 1e-7-degree precision and a spatial locator. A changed outline gets a new reference; absence means that outline version was not returned.",
+        "The service answers browsers directly (CORS allows this site); no relay is used.",
+        "The service does not state the plan version or the survey date of the underlying plot maps."
+      ]
+    },
+    {
+      "adapter": "arcgis",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.001,
+      "objectIdField": "OBJECTID",
+      "maxFeatures": 2000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "catalogueUrl": "https://czmp.ncscm.res.in/",
+      "licenceNote": "No reuse licence is stated on the CZMP portal or the ArcGIS service; the plan is published for public viewing.",
+      "id": "in-gj-ncscm-czmp-survey-plots",
+      "name": "NCSCM CZMP — Gujarat survey plots",
+      "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Gujarat/MapServer/6",
+      "idPrefix": "IN-GJ-CZMP-",
+      "parcelNumberField": "Sno",
+      "outFields": [
+        "OBJECTID",
+        "Sno",
+        "District",
+        "Taluka",
+        "Village"
+      ],
+      "pageSize": 1000,
+      "maxBboxKm2": 4,
+      "metricSrid": 32642,
+      "cityIds": [],
+      "scope": "Survey-plot outlines on the Gujarat Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+      "evidenceFile": "research/ncscm-czmp-cities-2026-10-13.json",
+      "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Gujarat. Plot labels shown as published; references derived from geometry. Adapted to WGS84.",
+      "caveats": [
+        "Coastal-zone planning maps, not the land-records register: plot outlines are a geometry reference, not proof of current title or ownership.",
+        "Survey labels can be repeated, blank or zero. They are shown as published, never used as identity; OBJECTID is a transport field.",
+        "Application identity uses the source namespace plus canonical geometry SHA-256 at 1e-7-degree precision and a spatial locator. A changed outline gets a new reference; absence means that outline version was not returned.",
+        "The service answers browsers directly (CORS allows this site); no relay is used.",
+        "The service does not state the plan version or the survey date of the underlying plot maps."
+      ]
+    },
+    {
+      "adapter": "arcgis",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.001,
+      "objectIdField": "OBJECTID",
+      "maxFeatures": 2000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "catalogueUrl": "https://czmp.ncscm.res.in/",
+      "licenceNote": "No reuse licence is stated on the CZMP portal or the ArcGIS service; the plan is published for public viewing.",
+      "id": "in-ka-ncscm-czmp-survey-plots",
+      "name": "NCSCM CZMP 2019 — Karnataka survey plots",
+      "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES_2019/CZMP_Karnataka19/MapServer/5",
+      "idPrefix": "IN-KA-CZMP-",
+      "parcelNumberField": "SurveyNumb",
+      "outFields": [
+        "OBJECTID",
+        "SurveyNumb",
+        "VillageNam",
+        "Taluk_name",
+        "Taluk",
+        "Hobli",
+        "District"
+      ],
+      "pageSize": 1000,
+      "maxBboxKm2": 4,
+      "metricSrid": 32643,
+      "cityIds": [],
+      "scope": "Survey-plot outlines on the Karnataka Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+      "evidenceFile": "research/ncscm-czmp-cities-2026-10-13.json",
+      "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP 2019 survey plots, Karnataka. Plot labels shown as published; references derived from geometry. Adapted to WGS84.",
+      "caveats": [
+        "Coastal-zone planning maps, not the land-records register: plot outlines are a geometry reference, not proof of current title or ownership.",
+        "Survey labels can be repeated, blank or zero. They are shown as published, never used as identity; OBJECTID is a transport field.",
+        "Application identity uses the source namespace plus canonical geometry SHA-256 at 1e-7-degree precision and a spatial locator. A changed outline gets a new reference; absence means that outline version was not returned.",
+        "The service answers browsers directly (CORS allows this site); no relay is used.",
+        "The service identifies this as CZMP 2019; the survey date of the underlying plot maps is not stated."
+      ]
     }
   ]
 }

@@ -5,20 +5,20 @@
     "asOf": "2026-10-12",
     "demographicSnapshotDate": "2026-10-12",
     "statisticsYear": 2025,
-    "cityCount": 1802,
+    "cityCount": 1809,
     "countryCount": 255,
     "statisticalJurisdictions": 237,
-    "checkedCityCount": 1725,
+    "checkedCityCount": 1732,
     "uncheckedCityCount": 77,
-    "cityRegistryFoundCount": 1378,
-    "verifiedCitySampleCount": 637,
+    "cityRegistryFoundCount": 1386,
+    "verifiedCitySampleCount": 649,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
-    "populationMatchedCount": 1528,
-    "growthMatchedCount": 646,
-    "checkedCitiesMissingDate": 74,
+    "populationMatchedCount": 1535,
+    "growthMatchedCount": 653,
+    "checkedCitiesMissingDate": 81,
     "wikiCityCount": 282,
-    "configuredAppCityCount": 562,
+    "configuredAppCityCount": 574,
     "unmatchedStatisticalAmounts": {
       "landAreaKm2": 0,
       "builtUpAreaKm2": 0.003000000084284693,
@@ -3967,10 +3967,13 @@
       "registryCityIds": [
         "wup2025:7788"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "ambala"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 7788,
       "wupName": "Ambala",
@@ -3997,16 +4000,21 @@
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": "The district-linked Haryana Jamabandi service and state Urban Local Bodies mapping program document local land records/property GIS. The statewide descriptions do not establish a no-login public parcel geometry layer at the Ambala WUP point.",
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
+      "sourceIds": [
+        "in-hr-hsac-ambala"
+      ],
       "evidenceUrls": [
         "https://ambala.gov.in/service/jamabandi-portal/",
         "https://gis.ulbharyana.gov.in/",
-        "https://hsac.in/eodb/"
+        "https://hsac.in/eodb/",
+        "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/1"
       ],
       "evidenceFiles": [
-        "research/overnight-cities-2026-10-08/city-7788-ambala.json"
+        "world-parcels/research/qualification-2026-10-13-india-live/7788/qualification.json",
+        "research/overnight-cities-2026-10-08/city-7788-ambala.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=30.36023&mlon=76.81412#map=12/30.36023/76.81412",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=30.36023%2C76.81412",
@@ -12451,6 +12459,60 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:7878",
+      "name": "Bhiwani",
+      "country": "India",
+      "countryCode": "IN",
+      "latitude": 28.7971298761814,
+      "longitude": 76.1384878765419,
+      "registryCityIds": [
+        "wup2025:7878"
+      ],
+      "appCityIds": [
+        "bhiwani"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 7878,
+      "wupName": "Bhiwani",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 269930,
+      "population2025": 288360,
+      "annualGrowthPct2015To2025": 0.66047,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "in-hr-hsac-bhiwani"
+      ],
+      "evidenceUrls": [
+        "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-13-india-live/7878/qualification.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=28.79713&mlon=76.13849#map=12/28.79713/76.13849",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=28.79713%2C76.13849",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:9213",
       "name": "Bhopal",
       "country": "India",
@@ -20539,9 +20601,12 @@
       "registryCityIds": [
         "wup2025:10969"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "chirand"
+      ],
       "cohorts": [
         "growth200",
+        "app",
         "registry"
       ],
       "wupCityCode": 10969,
@@ -20566,15 +20631,21 @@
         "path": "research/india-africa-2026-10-08/india-city-10969.json",
         "field": "$.checkedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "in-br-matribhoomi-chapra"
+      ],
+      "evidenceUrls": [
+        "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/72"
+      ],
       "evidenceFiles": [
-        "research/india-africa-2026-10-08/india-city-10969.json"
+        "world-parcels/research/qualification-2026-10-13-india-live/10969/qualification.json",
+        "research/india-africa-2026-10-08/india-city-10969.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=25.74899&mlon=84.88764#map=12/25.74899/84.88764",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=25.74899%2C84.88764",
@@ -38457,10 +38528,13 @@
       "registryCityIds": [
         "wup2025:7285"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "hisar"
+      ],
       "cohorts": [
         "registry",
-        "overnight-followon-1001-1100"
+        "overnight-followon-1001-1100",
+        "app"
       ],
       "wupCityCode": 7285,
       "wupName": "Hisar",
@@ -38487,16 +38561,21 @@
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": "The official Hisar district Land Records service directs local land-record access to Haryana Jamabandi. The divisional commissioner site additionally lists Hisar jurisdiction. Its BhuNaksha-labelled Google iframe is not a verified native cadastral feature service; no WUP-point village or safe full-polygon response was established.",
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
+      "sourceIds": [
+        "in-hr-hsac-hisar"
+      ],
       "evidenceUrls": [
         "https://hisar.gov.in/service/land-records/",
         "https://commhsr.haryana.gov.in/hi/",
-        "https://jamabandi.nic.in/"
+        "https://jamabandi.nic.in/",
+        "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/6"
       ],
       "evidenceFiles": [
-        "research/overnight-followon-2026-10-09/city-7285-hisar.json"
+        "world-parcels/research/qualification-2026-10-13-india-live/7285/qualification.json",
+        "research/overnight-followon-2026-10-09/city-7285-hisar.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=29.14078&mlon=75.74212#map=12/29.14078/75.74212",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=29.14078%2C75.74212",
@@ -43980,6 +44059,60 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:7797",
+      "name": "Jind",
+      "country": "India",
+      "countryCode": "IN",
+      "latitude": 29.3176729893746,
+      "longitude": 76.3185369205235,
+      "registryCityIds": [
+        "wup2025:7797"
+      ],
+      "appCityIds": [
+        "jind"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 7797,
+      "wupName": "Jind",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 241491,
+      "population2025": 270881,
+      "annualGrowthPct2015To2025": 1.148474,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "in-hr-hsac-jind"
+      ],
+      "evidenceUrls": [
+        "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/8"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-13-india-live/7797/qualification.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=29.31767&mlon=76.31854#map=12/29.31767/76.31854",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=29.31767%2C76.31854",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:11536",
       "name": "Jingjiang",
       "country": "China",
@@ -45694,6 +45827,60 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=34.80072&mlon=114.34195#map=12/34.80072/114.34195",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=34.80072%2C114.34195",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:7670",
+      "name": "Kaithal",
+      "country": "India",
+      "countryCode": "IN",
+      "latitude": 29.7995897199337,
+      "longitude": 76.4055225188099,
+      "registryCityIds": [
+        "wup2025:7670"
+      ],
+      "appCityIds": [
+        "kaithal"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 7670,
+      "wupName": "Kaithal",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 240214,
+      "population2025": 265502,
+      "annualGrowthPct2015To2025": 1.000922,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "in-hr-hsac-kaithal"
+      ],
+      "evidenceUrls": [
+        "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/9"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-13-india-live/7670/qualification.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=29.79959&mlon=76.40552#map=12/29.79959/76.40552",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=29.79959%2C76.40552",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -51389,6 +51576,60 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-10.16880&mlon=123.62032#map=12/-10.16880/123.62032",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-10.16880%2C123.62032",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:7952",
+      "name": "Kurukshetra",
+      "country": "India",
+      "countryCode": "IN",
+      "latitude": 29.9674026272771,
+      "longitude": 76.8569110935626,
+      "registryCityIds": [
+        "wup2025:7952"
+      ],
+      "appCityIds": [
+        "kurukshetra"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 7952,
+      "wupName": "Kurukshetra",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 318311,
+      "population2025": 353119,
+      "annualGrowthPct2015To2025": 1.037762,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "in-hr-hsac-kurukshetra"
+      ],
+      "evidenceUrls": [
+        "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/11"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-13-india-live/7952/qualification.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=29.96740&mlon=76.85691#map=12/29.96740/76.85691",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=29.96740%2C76.85691",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -73008,6 +73249,60 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:8691",
+      "name": "Palwal",
+      "country": "India",
+      "countryCode": "IN",
+      "latitude": 28.141468469378,
+      "longitude": 77.3328111663979,
+      "registryCityIds": [
+        "wup2025:8691"
+      ],
+      "appCityIds": [
+        "palwal"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 8691,
+      "wupName": "Palwal",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 249647,
+      "population2025": 262399,
+      "annualGrowthPct2015To2025": 0.498183,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "in-hr-hsac-palwal"
+      ],
+      "evidenceUrls": [
+        "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/21"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-13-india-live/8691/qualification.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=28.14147&mlon=77.33281#map=12/28.14147/77.33281",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=28.14147%2C77.33281",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:5873",
       "name": "Panabo",
       "country": "Philippines",
@@ -73180,10 +73475,13 @@
       "registryCityIds": [
         "wup2025:8162"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "panipat"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 8162,
       "wupName": "Panipat",
@@ -73210,18 +73508,23 @@
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": "Panipat District Administration documents property registration, mutation and land-record services through Haryana HARIS/HALRIS at tehsil and sub-tehsil level. The official DILRMP table for Panipat reports cadastral-map digitization status by tehsil, with zero entries in the georeferenced/RoR-linked columns at time of the table.",
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
+      "sourceIds": [
+        "in-hr-hsac-panipat"
+      ],
       "evidenceUrls": [
         "https://panipat.gov.in/dynamic-integration-of-property-registration-and-land-records-administration/",
         "https://panipat.gov.in/maps-of-panipat/",
         "https://jamabandi.nic.in/",
         "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/75",
-        "https://haryanait.gov.in/web-halris/"
+        "https://haryanait.gov.in/web-halris/",
+        "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/14"
       ],
       "evidenceFiles": [
-        "research/overnight-cities-2026-10-08/city-8162-panipat.json"
+        "world-parcels/research/qualification-2026-10-13-india-live/8162/qualification.json",
+        "research/overnight-cities-2026-10-08/city-8162-panipat.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=29.39096&mlon=76.97282#map=12/29.39096/76.97282",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=29.39096%2C76.97282",
@@ -79995,10 +80298,13 @@
       "registryCityIds": [
         "wup2025:8085"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "rohtak"
+      ],
       "cohorts": [
         "registry",
-        "overnight-followon-1001-1100"
+        "overnight-followon-1001-1100",
+        "app"
       ],
       "wupCityCode": 8085,
       "wupName": "Rohtak",
@@ -80025,17 +80331,22 @@
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": "The official Rohtak district portal exposes land-records access and current collector-rate materials for Rohtak tehsil; Haryana Revenue provides the state land-record framework and an official map-download page. This confirms relevant local revenue administration, but no anonymous full parcel geometry at the unchanged point was verified.",
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
+      "sourceIds": [
+        "in-hr-hsac-rohtak"
+      ],
       "evidenceUrls": [
         "https://rohtak.gov.in/",
         "https://rohtak.gov.in/hi/",
         "https://revenueharyana.gov.in/citizens/",
-        "https://revenueharyana.gov.in/document/map/"
+        "https://revenueharyana.gov.in/document/map/",
+        "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/16"
       ],
       "evidenceFiles": [
-        "research/overnight-followon-2026-10-09/city-8085-rohtak.json"
+        "world-parcels/research/qualification-2026-10-13-india-live/8085/qualification.json",
+        "research/overnight-followon-2026-10-09/city-8085-rohtak.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=28.89304&mlon=76.59541#map=12/28.89304/76.59541",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=28.89304%2C76.59541",
@@ -87907,6 +88218,60 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:6392",
+      "name": "Sirsa",
+      "country": "India",
+      "countryCode": "IN",
+      "latitude": 29.536704378771,
+      "longitude": 75.035515266935,
+      "registryCityIds": [
+        "wup2025:6392"
+      ],
+      "appCityIds": [
+        "sirsa"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 6392,
+      "wupName": "Sirsa",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 288565,
+      "population2025": 300414,
+      "annualGrowthPct2015To2025": 0.402412,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "in-hr-hsac-sirsa"
+      ],
+      "evidenceUrls": [
+        "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/17"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-13-india-live/6392/qualification.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=29.53670&mlon=75.03552#map=12/29.53670/75.03552",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=29.53670%2C75.03552",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:11033",
       "name": "Sitamarhi",
       "country": "India",
@@ -88352,6 +88717,60 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=17.65880&mlon=75.91606#map=12/17.65880/75.91606",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=17.65880%2C75.91606",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:8337",
+      "name": "Sonipat",
+      "country": "India",
+      "countryCode": "IN",
+      "latitude": 28.9827143736227,
+      "longitude": 77.03440734666691,
+      "registryCityIds": [
+        "wup2025:8337"
+      ],
+      "appCityIds": [
+        "sonipat"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 8337,
+      "wupName": "Sonipat",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 365677,
+      "population2025": 394583,
+      "annualGrowthPct2015To2025": 0.760791,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "in-hr-hsac-sonipat"
+      ],
+      "evidenceUrls": [
+        "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/18"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-13-india-live/8337/qualification.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=28.98271&mlon=77.03441#map=12/28.98271/77.03441",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=28.98271%2C77.03441",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -109003,8 +109422,8 @@
       "population": 1463865524,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 223,
-      "citiesWithRegistry": 169,
+      "citiesChecked": 230,
+      "citiesWithRegistry": 177,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,

@@ -37,9 +37,10 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
     // A layer whose labels do not identify one polygon gets references derived from each outline.
     const geometryIdentity = descriptor.identityKind === GEOMETRY_IDENTITY_KIND;
     const lookupCellSize = descriptor.lookupCellSize ?? 0.0025;
+    // Old servers without GeoJSON output or working offsets read outlines through object-ID lists in Esri JSON.
     if (geometryIdentity && (idField !== undefined || composite || descriptor.idType !== undefined || idPattern || idQueryBraces
-        || descriptor.boundsQueryMode !== undefined || descriptor.idsQueryMode !== undefined
-        || descriptor.nativeGeometryMode !== undefined || ![undefined, 'geojson'].includes(descriptor.queryFormat)
+        || ![undefined, 'object-ids'].includes(descriptor.boundsQueryMode) || descriptor.idsQueryMode !== undefined
+        || descriptor.nativeGeometryMode !== undefined
         || !Number.isFinite(lookupCellSize) || lookupCellSize < 0.0001 || lookupCellSize > 0.005)) {
         throw new Error('Invalid ArcGIS parcel source descriptor.');
     }

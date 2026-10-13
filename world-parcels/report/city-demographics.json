@@ -19715,10 +19715,13 @@
       "latitude": 25.7489853409713,
       "longitude": 84.887639805399,
       "registryCityIds": [],
-      "appCityIds": [],
+      "appCityIds": [
+        "chirand"
+      ],
       "wupCityCode": 10969,
       "cohorts": [
-        "growth200"
+        "growth200",
+        "app"
       ],
       "population2015": 87247,
       "population2025": 169348,
@@ -19770,7 +19773,10 @@
           "distanceKm": 0
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "parcelSourceId": "in-br-matribhoomi-chapra",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/10969/qualification.json"
     },
     {
       "id": "wup2025:2793",
@@ -46953,10 +46959,13 @@
       "registryCityIds": [
         "wup2025:8162"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "panipat"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -46974,7 +46983,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-hr-hsac-panipat",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/8162/qualification.json"
     },
     {
       "id": "wup2025:4547",
@@ -50605,10 +50617,13 @@
       "registryCityIds": [
         "wup2025:7788"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "ambala"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -50626,7 +50641,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-hr-hsac-ambala",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/7788/qualification.json"
     },
     {
       "id": "wup2025:6724",
@@ -55076,10 +55094,13 @@
       "registryCityIds": [
         "wup2025:7285"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "hisar"
+      ],
       "cohorts": [
         "registry",
-        "overnight-followon-1001-1100"
+        "overnight-followon-1001-1100",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -55099,7 +55120,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-followon-2026-10-09/ranked-population.json"
-      }
+      },
+      "parcelSourceId": "in-hr-hsac-hisar",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/7285/qualification.json"
     },
     {
       "id": "wup2025:9632",
@@ -56303,11 +56327,17 @@
       "registryCityIds": [
         "wup2025:8085"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "rohtak"
+      ],
       "cohorts": [
         "registry",
-        "overnight-followon-1001-1100"
-      ]
+        "overnight-followon-1001-1100",
+        "app"
+      ],
+      "parcelSourceId": "in-hr-hsac-rohtak",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/8085/qualification.json"
     },
     {
       "id": "wup2025:6791",
@@ -67886,6 +67916,230 @@
       "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
       "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3344/qualification.json"
+    },
+    {
+      "id": "wup2025:6392",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Sirsa",
+      "countryCode": "IN",
+      "latitude": 29.536704378771,
+      "longitude": 75.035515266935,
+      "wupLatitude": 29.536704378771,
+      "wupLongitude": 75.035515266935,
+      "wupName": "Sirsa",
+      "wupCityCode": 6392,
+      "appCityIds": [
+        "sirsa"
+      ],
+      "population2025": 300414,
+      "population2015": 288565,
+      "annualGrowthPct2015To2025": 0.402412,
+      "registryCityIds": [
+        "wup2025:6392"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "in-hr-hsac-sirsa",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/6392/qualification.json"
+    },
+    {
+      "id": "wup2025:7670",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Kaithal",
+      "countryCode": "IN",
+      "latitude": 29.7995897199337,
+      "longitude": 76.4055225188099,
+      "wupLatitude": 29.7995897199337,
+      "wupLongitude": 76.4055225188099,
+      "wupName": "Kaithal",
+      "wupCityCode": 7670,
+      "appCityIds": [
+        "kaithal"
+      ],
+      "population2025": 265502,
+      "population2015": 240214,
+      "annualGrowthPct2015To2025": 1.000922,
+      "registryCityIds": [
+        "wup2025:7670"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "in-hr-hsac-kaithal",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/7670/qualification.json"
+    },
+    {
+      "id": "wup2025:7797",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Jind",
+      "countryCode": "IN",
+      "latitude": 29.3176729893746,
+      "longitude": 76.3185369205235,
+      "wupLatitude": 29.3176729893746,
+      "wupLongitude": 76.3185369205235,
+      "wupName": "Jind",
+      "wupCityCode": 7797,
+      "appCityIds": [
+        "jind"
+      ],
+      "population2025": 270881,
+      "population2015": 241491,
+      "annualGrowthPct2015To2025": 1.148474,
+      "registryCityIds": [
+        "wup2025:7797"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "in-hr-hsac-jind",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/7797/qualification.json"
+    },
+    {
+      "id": "wup2025:7878",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Bhiwani",
+      "countryCode": "IN",
+      "latitude": 28.7971298761814,
+      "longitude": 76.1384878765419,
+      "wupLatitude": 28.7971298761814,
+      "wupLongitude": 76.1384878765419,
+      "wupName": "Bhiwani",
+      "wupCityCode": 7878,
+      "appCityIds": [
+        "bhiwani"
+      ],
+      "population2025": 288360,
+      "population2015": 269930,
+      "annualGrowthPct2015To2025": 0.66047,
+      "registryCityIds": [
+        "wup2025:7878"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "in-hr-hsac-bhiwani",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/7878/qualification.json"
+    },
+    {
+      "id": "wup2025:7952",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Kurukshetra",
+      "countryCode": "IN",
+      "latitude": 29.9674026272771,
+      "longitude": 76.8569110935626,
+      "wupLatitude": 29.9674026272771,
+      "wupLongitude": 76.8569110935626,
+      "wupName": "Kurukshetra",
+      "wupCityCode": 7952,
+      "appCityIds": [
+        "kurukshetra"
+      ],
+      "population2025": 353119,
+      "population2015": 318311,
+      "annualGrowthPct2015To2025": 1.037762,
+      "registryCityIds": [
+        "wup2025:7952"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "in-hr-hsac-kurukshetra",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/7952/qualification.json"
+    },
+    {
+      "id": "wup2025:8337",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Sonipat",
+      "countryCode": "IN",
+      "latitude": 28.9827143736227,
+      "longitude": 77.03440734666691,
+      "wupLatitude": 28.9827143736227,
+      "wupLongitude": 77.03440734666691,
+      "wupName": "Sonipat",
+      "wupCityCode": 8337,
+      "appCityIds": [
+        "sonipat"
+      ],
+      "population2025": 394583,
+      "population2015": 365677,
+      "annualGrowthPct2015To2025": 0.760791,
+      "registryCityIds": [
+        "wup2025:8337"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "in-hr-hsac-sonipat",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/8337/qualification.json"
+    },
+    {
+      "id": "wup2025:8691",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Palwal",
+      "countryCode": "IN",
+      "latitude": 28.141468469378,
+      "longitude": 77.3328111663979,
+      "wupLatitude": 28.141468469378,
+      "wupLongitude": 77.3328111663979,
+      "wupName": "Palwal",
+      "wupCityCode": 8691,
+      "appCityIds": [
+        "palwal"
+      ],
+      "population2025": 262399,
+      "population2015": 249647,
+      "annualGrowthPct2015To2025": 0.498183,
+      "registryCityIds": [
+        "wup2025:8691"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "in-hr-hsac-palwal",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/8691/qualification.json"
     }
   ],
   "wikipediaLookupErrors": [

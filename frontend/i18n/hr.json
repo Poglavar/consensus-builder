@@ -3905,6 +3905,18 @@
     },
     "city": {
         "labels": {
+            "sirsa": "Sirsa, Indija",
+            "hisar": "Hisar, Indija",
+            "kaithal": "Kaithal, Indija",
+            "ambala": "Ambala, Indija",
+            "jind": "Jind, Indija",
+            "bhiwani": "Bhiwani, Indija",
+            "kurukshetra": "Kurukshetra, Indija",
+            "rohtak": "Rohtak, Indija",
+            "panipat": "Panipat, Indija",
+            "sonipat": "Sonipat, Indija",
+            "palwal": "Palwal, Indija",
+            "chirand": "Chirand, Indija",
             "mumbai": "Mumbai, Indija",
             "czestochowa": "Częstochowa, Poljska",
             "belchatow": "Bełchatów, Poljska",
