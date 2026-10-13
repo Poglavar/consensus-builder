@@ -943,11 +943,14 @@
       "registryCityIds": [
         "geonames:1275339"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "mumbai"
+      ],
       "wupCityCode": 7945,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 18336779,
       "population2025": 20203056,
@@ -1011,7 +1014,10 @@
           "distanceKm": 5.521
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "parcelSourceId": "in-mh-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-mumbai/7945/qualification.json"
     },
     {
       "id": "wup2025:7303",

@@ -10,15 +10,15 @@
     "statisticalJurisdictions": 237,
     "checkedCityCount": 1725,
     "uncheckedCityCount": 77,
-    "cityRegistryFoundCount": 1377,
-    "verifiedCitySampleCount": 636,
+    "cityRegistryFoundCount": 1378,
+    "verifiedCitySampleCount": 637,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
     "populationMatchedCount": 1528,
     "growthMatchedCount": 646,
     "checkedCitiesMissingDate": 74,
     "wikiCityCount": 282,
-    "configuredAppCityCount": 561,
+    "configuredAppCityCount": 562,
     "unmatchedStatisticalAmounts": {
       "landAreaKm2": 0,
       "builtUpAreaKm2": 0.003000000084284693,
@@ -65581,10 +65581,13 @@
       "registryCityIds": [
         "geonames:1275339"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "mumbai"
+      ],
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "wupCityCode": 7945,
       "wupName": "Mumbai",
@@ -65608,16 +65611,21 @@
         "path": "research/india-africa-batch3-2026-10-08/city-7945.json",
         "field": "$.checkedAt"
       },
-      "registryFound": false,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": "Official Maharashtra service pages and the public BhuNaksha viewer are discoverable, but this fetch could not retrieve the map page or any Mumbai City/Mumbai Suburban plot geometry. The target city-survey/village identity remains unverified.",
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "in-mh-ncscm-czmp-survey-plots"
+      ],
+      "evidenceUrls": [
+        "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES_2019/CZMP_Maharashtra19/MapServer/5"
+      ],
       "evidenceFiles": [
-        "research/mumbai.json",
-        "research/india-africa-batch3-2026-10-08/city-7945.json"
+        "world-parcels/research/qualification-2026-10-13-mumbai/7945/qualification.json",
+        "research/india-africa-batch3-2026-10-08/city-7945.json",
+        "research/mumbai-deep-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=19.07283&mlon=72.88261#map=12/19.07283/72.88261",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=19.07283%2C72.88261",
@@ -108996,7 +109004,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 223,
-      "citiesWithRegistry": 168,
+      "citiesWithRegistry": 169,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,

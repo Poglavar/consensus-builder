@@ -14,6 +14,7 @@ self.addEventListener('message', async ({ data }) => {
             relayBase = data.relayBase;
             runtime = createBrowserParcelRuntime({ relayBase });
         }
+        if (method === 'describe') { self.postMessage({ id, result: runtime.describe(sourceId, customDescriptor) }); return; }
         const onProgress = data.trackProgress ? progress => { if (!controller.signal.aborted) self.postMessage({ id, progress }); } : undefined;
         self.postMessage({ id, result: await runtime.query(sourceId, method, args, customDescriptor, { onProgress, signal: controller.signal }) });
     } catch (error) {

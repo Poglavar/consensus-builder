@@ -1,5 +1,6 @@
 // Compact provider attribution on the map (the basemap licences require it), with the city's data
-// and software credits under Settings → Information → "Sources & software".
+// and software credits under Settings → Information → "Sources & software", including the parcel
+// source that last answered for the map in view.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -54,6 +55,36 @@
         return [...new Set([parcels.attribution, parcels.raster?.attribution].filter(Boolean))];
     }
     function providerCredits(key) { return providers[key] || providers.openstreetmap; }
+    // The source behind the parcels in view as display lines ({ text, label?, url?, html?, strong? }),
+    // built without the DOM. latest comes from ParcelSourceInView; info is the catalog's public
+    // description of a browser source; credits are the configured city's attribution, used for
+    // server-side sources that the browser catalog does not describe.
+    function inViewLines({ latest, info = null, credits = [], recordCityLabel = null, time = '', tr }) {
+        if (!latest) return null;
+        const lines = [];
+        if (latest.sourceKey === 'ground-custom-url') {
+            lines.push({ text: tr('customFile', 'Your parcel file from {{host}}', { host: latest.detail?.host || '?' }), strong: true });
+        } else if (latest.sourceKey.startsWith('ground-')) {
+            lines.push({ text: tr('generated', 'Generated parcels: no parcel register is used here.'), strong: true });
+        } else if (info) {
+            lines.push({ text: info.name, strong: true });
+            if (info.attribution && info.attribution !== info.name) lines.push({ text: info.attribution });
+            if (info.host) lines.push({ text: info.viaRelay
+                ? tr('viaRelay', "Read from {{host}} through this site's server", { host: info.host })
+                : tr('direct', 'Read by your browser directly from {{host}}', { host: info.host }) });
+            if (info.scope) lines.push({ label: tr('coverage', 'Area covered'), text: info.scope });
+            if (info.licenceNote) lines.push({ label: tr('terms', 'Terms'), text: info.licenceNote });
+            if (info.catalogueUrl) lines.push({ text: tr('sourcePage', 'Source page'), url: info.catalogueUrl });
+            if (info.licenceUrl && info.licenceUrl !== info.catalogueUrl) lines.push({ text: tr('licence', 'Licence'), url: info.licenceUrl });
+        } else {
+            credits.forEach(html => lines.push({ html }));
+            if (!credits.length) lines.push({ text: latest.sourceKey, strong: true });
+        }
+        lines.push({ text: recordCityLabel
+            ? tr('loadedAtCity', 'Last loaded at {{time}} for {{city}}', { time, city: recordCityLabel })
+            : tr('loadedAt', 'Last loaded at {{time}}', { time }) });
+        return lines;
+    }
     function install(map) {
         const doc = root.document;
         const target = doc.getElementById('map-credits-details');
@@ -78,8 +109,43 @@
                 parent.appendChild(part.url ? makeLink(part.text, part.url) : doc.createTextNode(part.text));
             });
         }
+        let renderGeneration = 0;
+        // Fills "Parcels in view" from the last source that answered; a browser source's catalog
+        // details come from the parcel worker's bundled catalog, never from this site's server.
+        function renderInView(latest, city) {
+            const title = doc.createElement('dt');
+            title.textContent = tr('inView', 'Parcels in view');
+            const body = doc.createElement('dd');
+            body.className = 'map-credits-in-view';
+            target.append(title, body);
+            const generation = renderGeneration;
+            const manager = root.CityConfigManager;
+            const recordCity = latest.cityId && latest.cityId !== manager.getCurrentCityId?.()
+                ? manager.getCityConfig?.(latest.cityId)?.label || latest.cityId : null;
+            const time = new Date(latest.at).toLocaleTimeString(root.i18n?.getLanguage?.() || undefined, { hour: '2-digit', minute: '2-digit' });
+            const fill = info => {
+                if (generation !== renderGeneration) return;
+                body.replaceChildren();
+                const recordConfig = latest.cityId ? manager.getCityConfig?.(latest.cityId) : null;
+                inViewLines({ latest, info, credits: parcelCredits(recordConfig || city), recordCityLabel: recordCity, time, tr })
+                    .forEach(line => {
+                        const block = doc.createElement('div');
+                        if (line.label) { const label = doc.createElement('span'); label.className = 'map-credits-in-view__label'; label.textContent = line.label + ': '; block.append(label); }
+                        if (line.html) appendCredit(block, line.html);
+                        else if (line.url) block.append(makeLink(line.text, line.url));
+                        else if (line.strong) { const strong = doc.createElement('strong'); strong.textContent = line.text; block.append(strong); }
+                        else block.append(doc.createTextNode(line.text));
+                        body.append(block);
+                    });
+            };
+            fill(null);
+            if (latest.browserSource && root.BrowserParcelSources?.describe) {
+                root.BrowserParcelSources.describe(latest.sourceKey, { city: latest.cityId }).then(fill, () => { /* The configured attribution stays. */ });
+            }
+        }
         function renderDetails() {
             if (!target) return;
+            renderGeneration += 1;
             target.replaceChildren();
             const city = root.CityConfigManager.getCurrentCityConfig();
             const basemap = root.BasemapManager.getCurrentBasemapKey();
@@ -94,9 +160,13 @@
                 target.append(title, body);
             }
             row(tr('basemap', 'Map'), [root.BasemapManager.BASEMAPS[basemap].options.attribution]);
-            const credits = parcelCredits(city);
-            row(tr('parcel', 'Parcel source for ' + city.label, { city: city.label }),
-                credits.length ? credits : [tr('none', 'No parcel source configured for this city.')]);
+            const latest = root.ParcelSourceInView?.latest?.();
+            if (latest) renderInView(latest, city);
+            else {
+                const credits = parcelCredits(city);
+                row(tr('parcel', 'Parcel source for ' + city.label, { city: city.label }),
+                    credits.length ? credits : [tr('none', 'No parcel source configured for this city.')]);
+            }
             const buildings = doc.querySelector('.three-mode-source-note:not([hidden])');
             if (buildings?.textContent) row(tr('buildings', '3D buildings'), [buildings.textContent]);
             const photo = doc.querySelector('.photoreal-attribution.visible');
@@ -130,7 +200,9 @@
         doc.addEventListener('mapshell:sheetopened', event => {
             if (event.detail?.id === 'settings-sheet') renderDetails();
         });
+        // A pan into another source's city updates an open Settings sheet too.
+        root.ParcelSourceInView?.subscribe?.(() => renderDetails());
         return { refresh: renderControl };
     }
-    return Object.freeze({ install, creditParts, parcelCredits, providerCredits });
+    return Object.freeze({ install, creditParts, parcelCredits, providerCredits, inViewLines });
 });

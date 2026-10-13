@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-13",
+  "cityCount": 1,
+  "scope": "1 technically qualified city/source bindings admitted to the app. Qualification is bounded: it does not establish citywide completeness, legal title, survey accuracy or currentness.",
+  "refused": [],
+  "cities": [
+    {
+      "cityCode": "7945",
+      "appCityId": "mumbai",
+      "cityName": "Mumbai",
+      "qualificationCityName": "Mumbai",
+      "cityId": "geonames:1275339",
+      "countryCode": "IN",
+      "country": "India",
+      "sourceId": "in-mh-ncscm-czmp-survey-plots",
+      "appCenterLatLon": [
+        19.12248075999,
+        72.8833426320986
+      ],
+      "wupPointLatLon": [
+        19.12248075999,
+        72.8833426320986
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "6ae7a7b2c944f277dc209a8eb0975ae31abab60867485bdda5a95f353465dadb",
+        "evidenceOriginalSha256": "6ae7a7b2c944f277dc209a8eb0975ae31abab60867485bdda5a95f353465dadb",
+        "evidenceExportSha256": "6ae7a7b2c944f277dc209a8eb0975ae31abab60867485bdda5a95f353465dadb"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "714bdfc19c260b61fc77f381ee615d4221a1acba91b1022f06d636a6058706b8",
+        "evidenceExportSha256": "b217a1845f0c1fcaa09d93e844021c80ff21a939bef41d29127860f9853828bf",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "featureCount": 52,
+        "sampleIds": [
+          "IN-MH-CZMP-g1~728830973~191227139~dc2b23f60b9e5fd1fbacd7e7b844cadee2a4c08ee11e102c3ec3144827963fd2",
+          "IN-MH-CZMP-g1~728822197~191216673~36a7fd9c127eca2f4225c3996d5b9fd6e97aa64b1231a26a9313a41c1c0601b4",
+          "IN-MH-CZMP-g1~728824984~191223415~2c84fe0249bfa79c4bea4e0639dbfecda565b1efdc6b5f373465af18b5c14936"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "17c13d679ac35c16a079d546ad3d8958a706176aa364cae6090021e05bf1e502",
+        "evidenceExportSha256": "bdb81d51a0d18ece1792911397cac093b3768a61e9db70f4151858da9cad24ea",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32643",
+        "inputSha256": "d180fc0991b12d212b8c4712578ae008384365a8f1251b2001af82c940cfc07a",
+        "featureCount": 52,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-13-mumbai/7945/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-13-mumbai/7945/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-13-mumbai/7945/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-13-mumbai/7945/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "sha256": "bdb81d51a0d18ece1792911397cac093b3768a61e9db70f4151858da9cad24ea",
+        "method": "Independent GEOS recomputation by the qualification runner from the unchanged full-safe cache.",
+        "inputSha256": "d180fc0991b12d212b8c4712578ae008384365a8f1251b2001af82c940cfc07a",
+        "metricCrs": "EPSG:32643",
+        "featureCount": 52,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "adapter": "arcgis",
+        "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES_2019/CZMP_Maharashtra19/MapServer/5",
+        "idField": null,
+        "idFields": null,
+        "idPrefix": "IN-MH-CZMP-",
+        "metricSrid": 32643,
+        "evidence": []
+      },
+      "verifiedAt": "2026-10-13",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Qualification evidence re-verified offline: eight gates, metric and independent metric audit, production descriptor identity and query contract."
+      }
+    }
+  ]
+}

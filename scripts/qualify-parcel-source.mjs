@@ -56,7 +56,10 @@ export function canonicalSafeFeature(feature, sourceId) {
     const properties = feature?.properties || {};
     const id = typeof properties.parcelId === 'string' ? properties.parcelId : feature?.id;
     const featureSourceId = properties.sourceId || feature?.sourceId;
-    const sourceParcelId = typeof properties.sourceParcelId === 'string' ? properties.sourceParcelId : null;
+    // An outline-derived reference has no published parcel key; its geometry hash stands in for one.
+    const geometryHash = properties.parcelIdentityKind === 'geometry-sha256-v1'
+        && /^[0-9a-f]{64}$/.test(properties.sourceGeometryHash || '') ? properties.sourceGeometryHash : null;
+    const sourceParcelId = typeof properties.sourceParcelId === 'string' ? properties.sourceParcelId : geometryHash;
     if (typeof id !== 'string' || !id || featureSourceId !== sourceId || !sourceParcelId
         || !feature?.geometry || !['Polygon', 'MultiPolygon'].includes(feature.geometry.type)) {
         throw new Error('Malformed, foreign, or non-polygon source feature.');
@@ -220,12 +223,12 @@ export function makeSafeFetch({ state, stage, timeoutMs = MAX_RESPONSE_MS }) {
                 try {
                     const body = JSON.parse(init.body);
                     if (body && typeof body === 'object' && !Array.isArray(body)) {
-                        for (const [key, value] of Object.entries(body)) if (/^(where|cql_filter|filter|featureID|resourceId|resultRecordCount|maxRecordCount|pageSize|limit|count|maxFeatures|resultOffset|startIndex|offset|cursor|objectIds|ids)$/i.test(key)
+                        for (const [key, value] of Object.entries(body)) if (/^(where|cql_filter|filter|featureID|resourceId|resultRecordCount|maxRecordCount|pageSize|limit|count|maxFeatures|resultOffset|startIndex|offset|cursor|objectIds|ids|geometry|bbox)$/i.test(key)
                             && (typeof value === 'string' || typeof value === 'number')) values.set(key, String(value));
                     }
                 } catch {
                     try { for (const [key, value] of new URLSearchParams(init.body)) {
-                        if (/^(where|cql_filter|filter|featureID|resourceId|resultRecordCount|maxRecordCount|pageSize|limit|count|maxFeatures|resultOffset|startIndex|offset|cursor|objectIds|ids)$/i.test(key)) values.set(key, value);
+                        if (/^(where|cql_filter|filter|featureID|resourceId|resultRecordCount|maxRecordCount|pageSize|limit|count|maxFeatures|resultOffset|startIndex|offset|cursor|objectIds|ids|geometry|bbox)$/i.test(key)) values.set(key, value);
                     } } catch { /* Do not inspect arbitrary request bodies. */ }
                 }
             }
@@ -233,7 +236,9 @@ export function makeSafeFetch({ state, stage, timeoutMs = MAX_RESPONSE_MS }) {
             const offsetKey = ['resultOffset', 'startIndex', 'offset'].find(key => values.has(key));
             const idsKey = ['objectIds', 'ids'].find(key => values.has(key));
             const queryIdentityParams = [...values.entries()]
-                .filter(([key]) => /^(where|cql_filter|filter|featureID|resourceId|objectIds|ids|resultRecordCount|maxRecordCount|pageSize|limit|count|maxFeatures|resultOffset|startIndex|offset|cursor)$/i.test(key))
+                // A spatial filter is part of the question asked: an outline-derived reference is read back
+                // from the cell around its vertex, so two cells at one offset are two pages, not one repeated.
+                .filter(([key]) => /^(where|cql_filter|filter|featureID|resourceId|objectIds|ids|resultRecordCount|maxRecordCount|pageSize|limit|count|maxFeatures|resultOffset|startIndex|offset|cursor|geometry|bbox)$/i.test(key))
                 .sort(([a, av], [b, bv]) => a.localeCompare(b) || av.localeCompare(bv));
             const queryHash = sha256(JSON.stringify({ host, pathname: url.pathname, params: queryIdentityParams }));
             const requestRecord = { stage, host, method, startedAt: new Date(started).toISOString(),

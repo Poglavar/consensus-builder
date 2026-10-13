@@ -10071,6 +10071,15 @@
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'pl-gugik-egib-wfs', idPrefix: 'PL-EGIB-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GUGiK collective EGiB WFS · county cadastral parcels · adapted' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        mumbai: {
+            id: 'mumbai', wupCityCode: '7945',
+            label: translateCityText('city.labels.mumbai', 'Mumbai, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [19.12248075999, 72.8833426320986], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [19.12248075999, 72.8833426320986], fallbackDataset: [72.8833426320986, 19.12248075999] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mh-ncscm-czmp-survey-plots', idPrefix: 'IN-MH-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 26, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP 2019 survey plots, Maharashtra. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
     };
 
     function ensureProjectionDefinitions() {

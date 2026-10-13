@@ -81,6 +81,7 @@ const SAFE_GROUPS = [
         "paths": [
             "js/data-source.js",
             "js/basemap.js",
+            "js/parcels/source-in-view.js",
             "js/ui/map-credits.js",
             "js/parcels/utils/fetch-config.js",
             "js/parcels/controller.js",

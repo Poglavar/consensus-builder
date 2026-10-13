@@ -151,7 +151,18 @@
         "photo": "Fotografski prikaz",
         "buildings": "3D zgrade",
         "none": "Za ovaj grad nije konfiguriran izvor čestica.",
-        "description": "Zasluge za kartu i podatke trenutačnog grada te softver koji ova aplikacija koristi."
+        "description": "Zasluge za kartu i podatke trenutačnog grada te softver koji ova aplikacija koristi.",
+        "inView": "Čestice u prikazu",
+        "customFile": "Tvoja datoteka čestica s {{host}}",
+        "generated": "Generirane čestice: ovdje se ne koristi nijedan registar čestica.",
+        "viaRelay": "Učitano s {{host}} preko poslužitelja ove stranice",
+        "direct": "Tvoj preglednik učitava izravno s {{host}}",
+        "coverage": "Obuhvaćeno područje",
+        "terms": "Uvjeti",
+        "sourcePage": "Stranica izvora",
+        "licence": "Licenca",
+        "loadedAt": "Zadnje učitano u {{time}}",
+        "loadedAtCity": "Zadnje učitano u {{time}} za {{city}}"
     },
     "densityStats": {
         "title": "Pokazatelji geometrije",
@@ -3894,6 +3905,7 @@
     },
     "city": {
         "labels": {
+            "mumbai": "Mumbai, Indija",
             "czestochowa": "Częstochowa, Poljska",
             "belchatow": "Bełchatów, Poljska",
             "aachen": "Aachen, Njemačka",

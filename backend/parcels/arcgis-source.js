@@ -5,6 +5,7 @@ import proj4 from 'proj4';
 import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
 import { retainParcel } from './parcel-components.js';
 import { parseEsriParcelCollection } from './esri-parcel-reader.js';
+import { geometryParcelFeature, parseGeometryParcelId, geometryLookupBounds, GEOMETRY_IDENTITY_KIND } from './geometry-identity.js';
 export { validateBounds } from './source-contract.js';
 
 const MAX_DISTINCT_MANIFEST_PAGES = 128;
@@ -33,9 +34,21 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
     const composite = idFields !== undefined;
     const responseSrid = descriptor.responseSrid;
     const geometryPrecision = descriptor.geometryPrecision;
+    // A layer whose labels do not identify one polygon gets references derived from each outline.
+    const geometryIdentity = descriptor.identityKind === GEOMETRY_IDENTITY_KIND;
+    const lookupCellSize = descriptor.lookupCellSize ?? 0.0025;
+    if (geometryIdentity && (idField !== undefined || composite || descriptor.idType !== undefined || idPattern || idQueryBraces
+        || descriptor.boundsQueryMode !== undefined || descriptor.idsQueryMode !== undefined
+        || descriptor.nativeGeometryMode !== undefined || ![undefined, 'geojson'].includes(descriptor.queryFormat)
+        || !Number.isFinite(lookupCellSize) || lookupCellSize < 0.0001 || lookupCellSize > 0.005)) {
+        throw new Error('Invalid ArcGIS parcel source descriptor.');
+    }
+    if (!geometryIdentity && (descriptor.identityKind !== undefined || descriptor.lookupCellSize !== undefined)) {
+        throw new Error('Invalid ArcGIS parcel source descriptor.');
+    }
     if (!id || !idPrefix || !Array.isArray(outFields) || !outFields.length
         || outFields.some(field => !columnName(field))
-        || (!composite && (!columnName(idField) || !outFields.includes(idField)))
+        || (!composite && !geometryIdentity && (!columnName(idField) || !outFields.includes(idField)))
         || !columnName(objectIdField) || !outFields.includes(objectIdField)
         || (composite && (!Array.isArray(idFields) || idFields.length < 2 || idFields.length > 8
             || new Set(idFields).size !== idFields.length
@@ -210,7 +223,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
                 const props = feature.properties || {};
                 if (!attributeFilter.matches(props)) throw upstreamError('Parcel provider returned a record outside the configured ground status.');
                 if (descriptor.partMatchFields?.some(field => !Object.hasOwn(props, field))) throw upstreamError('Parcel provider omitted parcel administrative references.');
-                const nativeId = nativeIdFromProperties(props);
+                const nativeId = geometryIdentity ? null : nativeIdFromProperties(props);
                 const geometry = responseGeometry(feature.geometry);
                 if (!validateGeometry(geometry)) throw upstreamError('Parcel provider returned invalid polygon geometry.');
                 const objectId = props[objectIdField];
@@ -219,6 +232,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
                     throw upstreamError('Parcel provider pagination repeated or omitted an object ID.');
                 }
                 seenObjects.add(String(objectId));
+                if (geometryIdentity) { retainOutline(byId, outlineFeature(props, geometry)); continue; }
                 const canonical = canonicalParcelFeature(descriptor, { ...feature, geometry }, nativeId);
                 if (descriptor.partsCoordinatePrecision !== undefined) {
                     const factor = 10 ** descriptor.partsCoordinatePrecision;
@@ -246,7 +260,26 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             offset += page.length;
         }
         return { type: 'FeatureCollection', features: [...byId.values()], complete: true, sourceId: id, returnsWGS84: true,
+            ...(geometryIdentity ? { identityKind: GEOMETRY_IDENTITY_KIND } : {}),
             ...(descriptor.nativeGeometryMode === 'parts' ? { sourceRows: seenObjects.size } : {}) };
+    }
+
+    function outlineFeature(props, geometry) {
+        const canonical = geometryParcelFeature(descriptor, { type: 'Feature', properties: {}, geometry });
+        const label = props[descriptor.parcelNumberField];
+        // The published label is shown, never used as identity: it can repeat within a village.
+        canonical.properties.parcelNumber = typeof label === 'string' && label.trim() ? label.trim()
+            : Number.isSafeInteger(label) ? String(label) : canonical.properties.geometryDisplayId;
+        canonical.properties.sourceProperties = Object.fromEntries(outFields.filter(field => field in props).map(field => [field, props[field]]));
+        return canonical;
+    }
+
+    // Two rows with the same outline are one application parcel; keep every label they carry.
+    function retainOutline(byId, canonical) {
+        const previous = byId.get(canonical.id);
+        if (!previous) { byId.set(canonical.id, canonical); return; }
+        const labels = new Set([...previous.properties.parcelNumber.split(' / '), canonical.properties.parcelNumber]);
+        previous.properties.parcelNumber = [...labels].join(' / ');
     }
 
     async function queryBounds(bbox) {
@@ -454,9 +487,28 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             returnsWGS84: true, sourceRows: rows.sourceRows };
     }
 
+    // An outline reference carries one of its vertices: re-read the small cell around it and
+    // keep only the outline whose complete hash matches. A changed outline is absent, not renamed.
+    async function queryOutlineIds(unique) {
+        const groups = new Map();
+        for (const parcelId of unique) {
+            const bbox = geometryLookupBounds(parseGeometryParcelId(descriptor, parcelId), lookupCellSize);
+            validateBounds(bbox, maxBboxKm2);
+            groups.set(bbox.join(','), bbox);
+        }
+        const found = new Map();
+        for (const bbox of groups.values()) {
+            const read = await queryBounds(bbox);
+            for (const feature of read.features) if (unique.includes(feature.id)) found.set(feature.id, feature);
+        }
+        return { type: 'FeatureCollection', features: [...found.values()], complete: true, sourceId: id, returnsWGS84: true,
+            identityKind: GEOMETRY_IDENTITY_KIND, absentIds: unique.filter(parcelId => !found.has(parcelId)) };
+    }
+
     async function queryIds(ids) {
         if (!Array.isArray(ids) || !ids.length || ids.length > 80) throw new HttpError(400, 'Provide between 1 and 80 parcel IDs.');
         const unique = [...new Set(ids)];
+        if (geometryIdentity) return queryOutlineIds(unique);
         const native = unique.map(value => {
             if (typeof value !== 'string' || !value.startsWith(idPrefix)) throw new HttpError(400, 'Parcel ID belongs to a different source.');
             const tail = value.slice(idPrefix.length);

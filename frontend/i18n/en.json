@@ -151,7 +151,18 @@
         "photo": "Photo view",
         "buildings": "3D buildings",
         "none": "No parcel source configured for this city.",
-        "description": "Map and data credits for the current city, plus the software used by this app."
+        "description": "Map and data credits for the current city, plus the software used by this app.",
+        "inView": "Parcels in view",
+        "customFile": "Your parcel file from {{host}}",
+        "generated": "Generated parcels: no parcel register is used here.",
+        "viaRelay": "Read from {{host}} through this site's server",
+        "direct": "Read by your browser directly from {{host}}",
+        "coverage": "Area covered",
+        "terms": "Terms",
+        "sourcePage": "Source page",
+        "licence": "Licence",
+        "loadedAt": "Last loaded at {{time}}",
+        "loadedAtCity": "Last loaded at {{time}} for {{city}}"
     },
     "densityStats": {
         "title": "Geometry statistics",
@@ -3852,6 +3863,7 @@
     },
     "city": {
         "labels": {
+            "mumbai": "Mumbai, India",
             "czestochowa": "Częstochowa, Poland",
             "belchatow": "Bełchatów, Poland",
             "aachen": "Aachen, Germany",

@@ -17020,6 +17020,35 @@
         "zamosc",
         "chelm"
       ]
+    },
+    {
+      "sourceId": "in-mh-ncscm-czmp-survey-plots",
+      "name": "NCSCM CZMP 2019 — Maharashtra survey plots (Mumbai)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "City survey (CTS) and town-planning-scheme (TPS) plots drawn on Maharashtra's Coastal Zone Management Plan 2019 maps, which cover Greater Mumbai's eleven City Survey Offices. Labels repeat within a village, so application references are derived from each outline and change when an outline changes.",
+      "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES_2019/CZMP_Maharashtra19/MapServer/5",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-13-mumbai/7945/qualification.json",
+      "verifiedCityIds": [
+        "geonames:1275339"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "mumbai"
+        ],
+        "additionalCityEvidence": {
+          "mumbai": "world-parcels/research/qualification-2026-10-13-mumbai/7945/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "mumbai"
+      ]
     }
   ],
   "countryCoverage": [
@@ -17839,9 +17868,11 @@
       ],
       "citySource": "https://www.geonames.org/1275339/mumbai.html",
       "researchOrder": 12,
-      "parcelStatus": "no_verified_sample_candidate_citywide",
-      "sourceIds": [],
-      "researchFile": "research/mumbai.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-mh-ncscm-czmp-survey-plots"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-13-mumbai/7945/qualification.json",
       "wupCityCode": 7945,
       "aliases": [
         "wup2025:7945",
@@ -17885,7 +17916,13 @@
       ],
       "latestResearchFiles": [
         "research/india-africa-batch3-2026-10-08/city-7945.json"
-      ]
+      ],
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-13-mumbai/7945/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-13-mumbai/7945/metric-report.json",
+      "population2025": 20203056,
+      "population2015": 18336779,
+      "appCityId": "mumbai",
+      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "geonames:3448439",

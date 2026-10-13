@@ -151,7 +151,18 @@
         "photo": "Vista fotográfica",
         "buildings": "Edificios 3D",
         "none": "No hay una fuente de parcelas configurada para esta ciudad.",
-        "description": "Créditos del mapa y los datos de la ciudad actual, además del software utilizado por esta aplicación."
+        "description": "Créditos del mapa y los datos de la ciudad actual, además del software utilizado por esta aplicación.",
+        "inView": "Parcelas en vista",
+        "customFile": "Tu archivo de parcelas de {{host}}",
+        "generated": "Parcelas generadas: aquí no se usa ningún registro de parcelas.",
+        "viaRelay": "Leído de {{host}} a través del servidor de este sitio",
+        "direct": "Leído por tu navegador directamente de {{host}}",
+        "coverage": "Zona cubierta",
+        "terms": "Condiciones",
+        "sourcePage": "Página de la fuente",
+        "licence": "Licencia",
+        "loadedAt": "Última carga a las {{time}}",
+        "loadedAtCity": "Última carga a las {{time}} para {{city}}"
     },
     "densityStats": {
         "title": "Estadísticas geométricas",
@@ -3903,6 +3914,7 @@
     },
     "city": {
         "labels": {
+            "mumbai": "Mumbai, India",
             "czestochowa": "Częstochowa, Polonia",
             "belchatow": "Bełchatów, Polonia",
             "aachen": "Aachen, Alemania",

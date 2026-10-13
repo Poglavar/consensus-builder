@@ -57,6 +57,8 @@
         queryBounds: (sourceId, bounds, options) => query(sourceId, 'queryBounds', [bounds], options),
         queryIds: (sourceId, ids, options) => query(sourceId, 'queryIds', [ids], options),
         queryGeometry: (sourceId, geometry, options) => query(sourceId, 'queryGeometry', [geometry], options),
-        queryPoint: (sourceId, point, options) => query(sourceId, 'queryPoint', [point], options) });
+        queryPoint: (sourceId, point, options) => query(sourceId, 'queryPoint', [point], options),
+        // The source's catalog wording and links, read from the bundled catalog (no server request).
+        describe: (sourceId, options) => query(sourceId, 'describe', [], options) });
     global.addEventListener?.('pagehide', () => reset(new Error('Parcel page closed.')));
 })(typeof window !== 'undefined' ? window : globalThis);

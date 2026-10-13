@@ -76,6 +76,20 @@
         }
     }
 
+    // Settings → Information names the source behind the parcels in view: the last one that answered.
+    function noteSourceInView(city, override = null) {
+        try {
+            const tracker = global.ParcelSourceInView;
+            if (!tracker) return;
+            if (override) {
+                const described = typeof override.describe === 'function' ? override.describe() : null;
+                let host = null;
+                try { host = described?.url ? new URL(described.url).hostname : null; } catch (_) { /* An unreadable URL keeps the kind. */ }
+                tracker.record(city, { source: 'ground-' + (described?.kind || 'fallback') }, host ? { host } : null);
+            } else tracker.record(city, cityConfig(city)?.parcels);
+        } catch (_) { /* Naming the source must never fail a parcel read. */ }
+    }
+
     // A city whose config says there is no register on record. Distinct from a failed request on
     // purpose: the fallback screen must never call an outage "no register", or the reverse.
     function noRegisterError(city) {
@@ -270,6 +284,7 @@
         if (payload.complete !== true || payload.queryType !== 'point' || payload.sourceId !== provider.sourceId || !Array.isArray(payload.features)) {
             throw new Error('Parcel source returned an incomplete point response.');
         }
+        noteSourceInView(city);
         return { status: 'ready', complete: true, queryType: 'point', features: payload.features, absentIds: [], returnsWGS84: true };
     }
 
@@ -308,6 +323,7 @@
         if (override) {
             const answer = await override.fetchCell({ cell: String(cell), bbox, latLonBbox, city: context.city });
             const features = Array.isArray(answer?.features) ? answer.features : [];
+            noteSourceInView(context.city || currentCity(), override);
             return { features, returnsWGS84: answer?.returnsWGS84 !== false };
         }
         const absent = noRegisterError(context.city);
@@ -320,6 +336,7 @@
                 ...(typeof context.onProgress === 'function' ? { onProgress: context.onProgress } : {})
             });
             if (payload.complete !== true || !Array.isArray(payload.features)) throw new Error('Parcel source returned an incomplete viewport response.');
+            noteSourceInView(context.city || currentCity());
             return { features: payload.features, returnsWGS84: true };
         }
         const builder = context.builder;
@@ -357,6 +374,7 @@
             else more = returned === count && returned > 0;
             startIndex += returned;
         }
+        noteSourceInView(context.city || currentCity());
         return { features, returnsWGS84 };
     }
 
@@ -406,6 +424,7 @@
             ...(typeof options.onProgress === 'function' ? { onProgress: options.onProgress } : {})
         });
         if (payload.complete !== true || !Array.isArray(payload.features)) throw new Error('Parcel source returned an incomplete viewport response.');
+        noteSourceInView(city);
         const boxes = payload.features.map(feature => geometryBox(feature.geometry));
         const meets = (a, b) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
         return { cells: cells.map(({ key, box }) => ({ key, result: { status: 'ready', returnsWGS84: true, absentIds: [],

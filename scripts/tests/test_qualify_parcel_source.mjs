@@ -18,6 +18,15 @@ test('retains only canonical safe identity properties', () => {
     assert.equal(clean.geometry, geometry);
 });
 
+test('an outline-derived reference stands on its geometry hash; a bare missing source key still fails', () => {
+    const hash = 'a'.repeat(64);
+    const outline = { type:'Feature', id:'SRC-g1~1~2~' + hash, geometry, properties:{ parcelId:'SRC-g1~1~2~' + hash, sourceId:'public-test',
+        sourceParcelId:null, parcelIdentityKind:'geometry-sha256-v1', sourceGeometryHash:hash } };
+    assert.equal(canonicalSafeFeature(outline, 'public-test').properties.sourceParcelId, hash);
+    assert.throws(() => canonicalSafeFeature({ ...outline, properties:{ ...outline.properties, parcelIdentityKind:undefined } }, 'public-test'), /Malformed/);
+    assert.throws(() => canonicalSafeFeature({ ...outline, properties:{ ...outline.properties, sourceGeometryHash:'short' } }, 'public-test'), /Malformed/);
+});
+
 test('collapses repeat IDs with the same geometry and rejects changed geometry', () => {
     const cache = new Map();
     addCanonicalFeature(cache, feature('SRC-123'), 'public-test');
@@ -131,6 +140,20 @@ test('a cursor-paged request is a distinct query identity', async () => {
     assert.equal(new Set(state.requests.map(request => request.queryHash)).size, 3);
     const evidence = assessForcedQueryEvidence({ requests: state.requests, expectedIds:['A','B','C'], returnedIds:['A','B','C'], complete:true });
     assert.equal(evidence.passed, true);
+});
+
+test('page-size-one reads of two different cells at one offset are distinct queries', async () => {
+    const state = { requests: [] };
+    globalThis.__qualificationOriginalFetch = async () => new Response('{}');
+    const fetch = makeSafeFetch({ state, stage: 'forced-page-size-one' });
+    const cell = box => `https://gis.example/arcgis/rest/services/x/MapServer/5/query?where=1%3D1&geometry=${box}&resultRecordCount=1&resultOffset=0`;
+    await fetch(cell('72.84,19.01,72.85,19.02'));
+    await fetch(cell('72.86,19.03,72.87,19.04'));
+    await fetch(cell('72.86,19.03,72.87,19.04'));
+    delete globalThis.__qualificationOriginalFetch;
+    const evidence = assessForcedQueryEvidence({ requests: state.requests.slice(0, 2), expectedIds:['A','B'], returnedIds:['A','B'], complete:true });
+    assert.equal(evidence.passed, true);
+    assert.equal(assessForcedQueryEvidence({ requests: state.requests, expectedIds:['A','B'], returnedIds:['A','B'], complete:true }).duplicatePageRequests, 1);
 });
 
 test('a network failure records the cause code Node\'s fetch hides behind "fetch failed"', async () => {

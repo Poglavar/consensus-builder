@@ -124,6 +124,17 @@ export function createBrowserProviderFetch(descriptor, { fetchImpl = globalThis.
     };
 }
 
+// What the map tells a visitor about a source: catalog wording and links only, never request details.
+export function publicSourceInfo(source) {
+    const link = value => { try { const url = new URL(value); return url.protocol === 'https:' ? url.href : null; } catch { return null; } };
+    let host = null;
+    try { host = new URL(source.endpoint || source.manifestUrl).hostname; } catch { /* A source without a URL keeps its name. */ }
+    const text = value => typeof value === 'string' && value.trim() ? value.trim() : null;
+    return { id: source.id, name: text(source.name) || source.id, attribution: text(source.attribution), scope: text(source.scope),
+        licenceNote: text(source.licenceNote), licenceUrl: link(source.licenceUrl), catalogueUrl: link(source.catalogueUrl),
+        host, viaRelay: source.browserTransport === 'relay' };
+}
+
 export function createBrowserParcelRuntime(options = {}) {
     const { factories = browserParcelFactories, ...fetchOptions } = options;
     const adapters = new Map();
@@ -176,6 +187,7 @@ export function createBrowserParcelRuntime(options = {}) {
         return instancePromise;
     }
     return Object.freeze({
+        describe(sourceId, customDescriptor) { return publicSourceInfo(descriptor(sourceId, customDescriptor)); },
         async query(sourceId, method, args, customDescriptor, { onProgress, signal } = {}) {
             if (!['queryBounds', 'queryIds', 'queryGeometry', 'queryPoint'].includes(method)) throw upstreamError('Unknown browser parcel operation.', 400);
             // Cached adapters can serve several viewport cells. Subscribe for each query's

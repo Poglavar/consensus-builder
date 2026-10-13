@@ -26,7 +26,7 @@ const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const WUP = 'tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz';
 const GATES = ['classification', 'exactIds', 'stableGeometry', 'explicitAbsence', 'sampling', 'completeness', 'binding', 'metric'];
 const BLOCKERS = ['invalidCount', 'duplicateIdCount', 'conflictingSameIdGeometryCount', 'exactGeometryDuplicateCount', 'overlapPairCount', 'operationErrorCount'];
-const CONTRACT = ['attributeFilters', 'attributeExclusions', 'attributeNotNull', 'attributeNull', 'featureType', 'boundsQueryMode', 'idsQueryMode', 'boundsSrid', 'boundsProjection'];
+const CONTRACT = ['identityKind', 'lookupCellSize', 'attributeFilters', 'attributeExclusions', 'attributeNotNull', 'attributeNull', 'featureType', 'boundsQueryMode', 'idsQueryMode', 'boundsSrid', 'boundsProjection'];
 const POINT_ADAPTERS = new Set(['pl-uldk-point', 'tkgm-point', 'msda-point']);
 // Country display names for labels; the rest come from existing labels of the same country.
 const COUNTRY_NAMES = {
@@ -41,7 +41,7 @@ const CURRENCY = {
     US: ['en-US', 'USD'], DE: ['de-DE', 'EUR'], NL: ['nl-NL', 'EUR'], PL: ['pl-PL', 'PLN'], BE: ['nl-BE', 'EUR'],
     FR: ['fr-FR', 'EUR'], GR: ['el-GR', 'EUR'], IL: ['he-IL', 'ILS'], NZ: ['en-NZ', 'NZD'], LV: ['lv-LV', 'EUR'],
     LT: ['lt-LT', 'EUR'], EE: ['et-EE', 'EUR'], BR: ['pt-BR', 'BRL'], AU: ['en-AU', 'AUD'], ZM: ['en-ZM', 'ZMW'],
-    ES: ['es-ES', 'EUR'], UA: ['uk-UA', 'UAH'], SI: ['sl-SI', 'EUR'], IT: ['it-IT', 'EUR'], GB: ['en-GB', 'GBP']
+    ES: ['es-ES', 'EUR'], UA: ['uk-UA', 'UAH'], SI: ['sl-SI', 'EUR'], IT: ['it-IT', 'EUR'], GB: ['en-GB', 'GBP'], IN: ['en-IN', 'INR']
 };
 const LOCALES = ['en', 'es', 'hr', 'sr'];
 const TWIN_KM = 5;
