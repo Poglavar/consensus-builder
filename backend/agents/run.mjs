@@ -26,7 +26,7 @@
 //      AGENT_RETIRE_AFTER_DAYS (7), AGENT_RETIRE_MAX_PER_RUN (3),
 //      AGENT_LIFECYCLE_LENS_SERVICE_URL + AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN (optional expiry verdicts),
 //      AGENT_DAILY_USDC_CAP (0.35), AGENT_API_BASE (default http://localhost:$API_PORT),
-//      SOLANA_RPC_URL, TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID (optional, one summary per run).
+//      SOLANA_RPC_URL, TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID for failure alerts; TELEGRAM_ACTIVITY_* for activity topics.
 //      ANTHROPIC_API_KEY/AGENT_LLM_DAILY_CAP_USD are read only with explicit --controller llm; the model
 //      is the shared LLM layer's default (agents/lib/llm-cost/defaults.json), never set here.
 
@@ -754,7 +754,7 @@ async function main() {
     if (failures.length) {
         const text = `${headline}\n${failures.length} FAILURE(S):\n- ${failures.join('\n- ')}`;
         console.error(text);
-        await sendTelegram(text);
+        await sendTelegram(text, { alert: true });
         process.exit(1);
     }
     // This exact line is the external monitor's success sentinel. It is emitted only after every
@@ -765,6 +765,6 @@ async function main() {
 
 main().catch(async (err) => {
     console.error(`[${new Date().toISOString()}] FAILED:`, safeFailureDiagnostic(err));
-    await sendTelegram(`Agents runner FAILED: ${safeFailureDiagnostic(err)}`);
+    await sendTelegram(`Agents runner FAILED: ${safeFailureDiagnostic(err)}`, { alert: true });
     process.exit(1);
 });
