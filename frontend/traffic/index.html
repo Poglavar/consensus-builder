@@ -1,0 +1,85 @@
+<!doctype html>
+<!-- A small OSM traffic playground using exported lane topology and saved junction answers. -->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f4ef">
+    <title>Zagreb, in motion · Lane Lab</title>
+    <link rel="stylesheet" href="../vendor/leaflet-1.9.4/leaflet.css">
+    <link rel="stylesheet" href="traffic.css?v=20261014a">
+    <script defer src="../vendor/leaflet-1.9.4/leaflet.js"></script>
+    <script defer src="../js/reduced-motion.js"></script>
+    <script defer src="../js/i18n.js"></script>
+    <script defer src="copy.js?v=20261014a"></script>
+    <script defer src="simulation.js?v=20261014a"></script>
+    <script defer src="traffic.js?v=20261014a"></script>
+</head>
+<body>
+    <main class="app">
+        <aside class="controls">
+            <header>
+                <div class="eyebrow"><span class="brand-mark" aria-hidden="true">↗</span><span data-i18n-key="traffic.eyebrow"></span><span class="edition">01 / ZG</span></div>
+                <h1 data-i18n-key="traffic.title"></h1>
+                <p class="intro" data-i18n-key="traffic.intro"></p>
+                <span class="source-badge"><span aria-hidden="true"></span><span data-i18n-key="traffic.candidate"></span></span>
+            </header>
+
+            <section class="playback">
+                <div class="play-buttons">
+                    <button id="play" class="primary" disabled><span id="play-icon" aria-hidden="true">Ⅱ</span><span id="play-label" data-i18n-key="traffic.pause"></span></button>
+                    <button id="reset" class="secondary" disabled><span aria-hidden="true">↻</span><span data-i18n-key="traffic.reset"></span></button>
+                </div>
+                <div class="field"><label for="speed" data-i18n-key="traffic.speed"></label><output id="speed-value" for="speed">2×</output></div>
+                <input id="speed" type="range" min="0.5" max="6" value="2" step="0.5">
+                <div class="field"><label for="density" data-i18n-key="traffic.cars"></label><output id="density-value" for="density">440</output></div>
+                <input id="density" type="range" min="40" max="600" value="440" step="20">
+                <label class="toggle"><span data-i18n-key="traffic.lights"></span><input id="lights" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+                <label class="toggle"><span data-i18n-key="traffic.lanes"></span><input id="lanes" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+            </section>
+
+            <section class="explore">
+                <h2 data-i18n-key="traffic.areas"></h2>
+                <div class="places">
+                    <button class="place active" data-place="miramarska" data-i18n-key="traffic.miramarska"></button>
+                    <button class="place" data-place="center" data-i18n-key="traffic.center"></button>
+                    <button class="place" data-place="west" data-i18n-key="traffic.west"></button>
+                    <button class="place" data-place="overview" data-i18n-key="traffic.overview"></button>
+                </div>
+            </section>
+
+            <section class="inspector" aria-live="polite">
+                <div class="inspector-top"><span class="car-swatch" aria-hidden="true"></span><h2 id="selected-title" data-i18n-key="traffic.follow"></h2></div>
+                <p id="selected-detail" data-i18n-key="traffic.selectHint"></p>
+                <button id="follow" class="text-button" data-i18n-key="traffic.follow" disabled></button>
+            </section>
+
+            <details class="about">
+                <summary data-i18n-key="traffic.dataDetails"></summary>
+                <p data-i18n-key="traffic.explanation"></p>
+                <p data-i18n-key="traffic.signalNote"></p>
+                <p data-i18n-key="traffic.dataNote"></p>
+                <p id="source-detail"></p>
+                <a href="https://wiki.openstreetmap.org/wiki/Key:change" target="_blank" rel="noopener" data-i18n-key="traffic.sourceLink"></a>
+            </details>
+            <footer><span class="footer-brand">CONSENSUS BUILDER</span><select id="language" aria-label="Language"><option value="en">EN</option><option value="hr">HR</option><option value="sr">SR</option><option value="es">ES</option></select></footer>
+        </aside>
+
+        <section class="map-stage">
+            <div id="map" data-i18n-key="traffic.mapLabel" data-i18n-attr="aria-label"></div>
+            <canvas id="guides" aria-hidden="true"></canvas>
+            <canvas id="cars" aria-hidden="true"></canvas>
+            <div class="map-topline"><span class="live-dot" aria-hidden="true"></span><span id="network-label" data-i18n-key="traffic.loading"></span></div>
+            <div id="status" class="status" role="status"><span data-i18n-key="traffic.loading"></span></div>
+            <div class="stats-bar">
+                <div><strong id="moving">—</strong><span data-i18n-key="traffic.moving"></span></div>
+                <div><strong id="waiting">—</strong><span data-i18n-key="traffic.waiting"></span></div>
+                <div><strong id="crossings">—</strong><span data-i18n-key="traffic.turns"></span></div>
+                <div><strong id="changes">—</strong><span data-i18n-key="traffic.changes"></span></div>
+                <div class="clock"><strong id="clock">00:00</strong><span data-i18n-key="traffic.elapsed"></span></div>
+            </div>
+            <div class="map-legend"><span class="legend-line" aria-hidden="true"></span><span data-i18n-key="traffic.lanes"></span><span class="legend-light" aria-hidden="true"></span><span data-i18n-key="traffic.lightLegend"></span></div>
+        </section>
+    </main>
+</body>
+</html>

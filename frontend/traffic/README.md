@@ -1,0 +1,78 @@
+<!-- Documents the local traffic preview and its reproducible, read-only data export. -->
+# Zagreb traffic preview
+
+Open `/traffic/` on the frontend server. This is a separate, buildless Leaflet/canvas page.
+For a new local server, run from the repository root:
+
+```sh
+npx http-server frontend -a localhost -p 8192 -c-1
+```
+
+The playback controls set speed, car count, lane guides and illustrative traffic lights.
+Click a car to highlight its current lane and available exits; **Follow a car** keeps it in view.
+The place buttons jump to Miramarska × Vukovarska, the city centre, Trešnjevka or the entire loaded area.
+Reduced-motion preferences start the animation paused. Hidden tabs stop the animation clock.
+
+## Data and limits
+
+`data/central.json.gz` is a derived central-Zagreb preview, bounded by its recorded `bbox`.
+The browser decompresses it with `DecompressionStream`; no running topology API or database is
+needed to play the exported scene. OSM map tiles still require internet access.
+
+The export uses the shared OSM snapshot, deterministic lane rules, and saved candidate junction
+graphs from the existing topology pipeline. It reuses that pipeline's builder, junction curves,
+parent-regression checks and OSM restriction validator. Candidates are not promoted or modified.
+Its metadata records the OSM timestamp/hash and each selected saved solution's ID, status and date.
+Exporter timestamps describe the export, not the age of the OSM evidence.
+
+A saved junction replaces a current node atomically only when every directed lane incidence can
+be matched uniquely and the saved node is complete. Lane matching uses source way, direction,
+ordinal, access and turn/change rules, because section split IDs vary with viewport extent.
+An omitted `centreLane` flag means false; actual shared centre lanes are excluded from car traffic.
+Rejected, incomplete, incompatible and regressing candidates are excluded. Live manual decisions
+take precedence. Unsupported restriction approaches and movements that contradict mapped OSM
+restrictions are blocked. Bus/private/destination-only lanes are excluded.
+
+The simulation chooses only exported lane connections. Lane changes cross one adjacent driving
+lane in the same section/direction, respect `change:lanes`, and reserve space in both lanes during
+the manoeuvre. Drivers queue behind each other. Junction reservations serialize crossings at an
+OSM node, and cars check that their receiving lane has room before entering.
+
+Traffic demand, speeds without a mapped limit, and **all signal placement and phase timings are
+illustrative**. These are not live traffic, observed signal plans or a calibrated traffic model.
+Some junctions remain incomplete; missing turns are never filled in with guesses. A car with no
+known exit stops, ends its trip after three simulated seconds and respawns elsewhere. Boundary
+exits behave the same way. The last recorded whole-city survey (2026-09-28) had 57 open junction
+groups out of 21,806; this smaller export is not a new citywide coverage survey.
+
+Lane-change semantics: [OSM `change` documentation](https://wiki.openstreetmap.org/wiki/Key:change).
+Map data: [OpenStreetMap contributors, ODbL](https://www.openstreetmap.org/copyright).
+
+## Refresh the snapshot
+
+The existing pipeline currently lives in the `clickable-legacy-streets` checkout. From this
+repository's root, with the shared roads API and the local database available:
+
+```sh
+node backend/scripts/export-traffic-preview.mjs \
+  --topology-root ../consensus-builder-clickable-legacy-streets
+```
+
+Optional arguments: `--bbox west,south,east,north`, `--roads-api http://localhost:3001/api`,
+`--city zagreb`, `--output frontend/traffic/data/central.json.gz`.
+The exporter reads the topology checkout's `backend/.env`; a Docker hostname `db` maps to
+`localhost` when run on the host. PostgreSQL sessions are read-only, with bounded statement times.
+It creates only the compressed preview artifact, with no model calls or database writes.
+Do not copy raw API payloads into the frontend: source metadata may contain local paths.
+
+## Verify
+
+```sh
+cd backend
+npx vitest run test/traffic-simulation.test.js test/traffic-snapshot.test.js test/traffic-preview-data.test.js
+```
+
+`simulation.js` has no DOM, canvas or Leaflet dependencies. Headless tests exercise actual
+movement/queue/signal behavior and the saved-answer merge. The data test also runs traffic over
+the exported graph, checking every entry against the source lane's allowed connections and lights.
+Desktop/mobile appearance and canvas animation are checked manually in a headed browser.
