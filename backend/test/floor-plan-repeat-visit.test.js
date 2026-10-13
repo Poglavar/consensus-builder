@@ -104,6 +104,6 @@ describe('repeat visits', () => {
         expect(sql).toContain('t.current_sha256 IS NOT NULL');
         expect(sql).toContain('floor_plan.exclusion');
         await createTargetSelector({ site: 'source.test', knownFirst: true })(db);
-        expect(db.query.mock.calls.some(([query]) => query.includes('ORDER BY (t.last_fetched_at IS NULL) ASC'))).toBe(true);
+        expect(db.query.mock.calls.some(([query]) => query.includes('ORDER BY t.priority DESC, (t.last_fetched_at IS NULL) ASC'))).toBe(true);
     });
 });

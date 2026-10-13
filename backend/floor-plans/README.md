@@ -18,6 +18,10 @@ A completion forecast is labeled separately; absent or conflicting years remain
 unknown. Advertised apartment area and physical net plan area remain separate.
 Translated aliases of one posting contribute evidence without multiplying its
 apartments or source links. Commercial-only projects are omitted from this catalogue.
+Search, map and sitemap include only projects with at least one apartment record.
+Located leads without apartments stay in the collection backlog; existing deep links
+explain the missing inventory, link to the source and remain `noindex,follow`.
+The building viewer requires a supported footprint and storey height/elevation.
 
 The source roster reconciles every known agency domain and the 20 evidenced studio
 seeds. Unverified architecture leads remain leads. Discovery still spans the broad
@@ -41,6 +45,34 @@ deadline and reports unfinished cleanup as partial. A repeated apply
 resumes interrupted file pruning. Compacted raw HTML cannot be reparsed as HTML;
 that command reports skipped compacted sources rather than treating them as empty.
 Models, revisions, processing results and cost records are retained.
+
+Collection now also compacts completed sources every 50 changed responses and at
+the end of each bounded crawl chunk. The file writer checks actual archive usage,
+including temporary and orphaned files, before a new allocation. Defaults are a
+**2 GiB archive cap** (`FLOOR_PLAN_MAX_ARCHIVE_BYTES`) and **5 GiB free-space reserve**
+(`FLOOR_PLAN_MIN_FREE_BYTES`). Both require positive integer byte values. Optional
+`FLOOR_PLAN_STORAGE_PATHS` is a JSON array of database/log filesystem paths to check
+alongside the archive. Capacity exhaustion stops the pass as partial; it does not
+mark the selected source gone or discard pending plans. URL/hash evidence remains
+after compaction so later visits can reuse completed work. Retained plans, metadata
+and logs still consume space: this is a bounded collector, not unlimited storage.
+
+For broad coverage, use a host manifest in an ignored run directory:
+
+```sh
+node backend/scripts/floor-plan-coverage-crawl.mjs --run \
+  --hosts backend/logs/coverage/hosts.json --run-dir backend/logs/coverage/run \
+  --max-total-pages 10000 --max-total-minutes 360 \
+  --max-site-pages 150 --max-site-minutes 3
+```
+
+The manifest is a JSON array of hostnames. Per-host and total budgets survive
+restarts; rerun the same command to resume a capacity/interruption stop. Each host
+gets a short turn, pages and eligible assets interleave, and known pages are checked
+again with validators/hash reuse. Explicit new-build project members receive higher
+priority, including previously queued children. Ordinary property pages labeled
+“Tlocrt” remain pages until their actual plan assets are discovered. This command
+does not schedule future runs, submit AI batches or publish models.
 For a large existing archive, use `--apply --until-complete --limit 250` after
 reviewing a sample audit. Each batch commits and verifies its evidence before file
 removal, reports cumulative reclaimed bytes, and is skipped on restart. Exact

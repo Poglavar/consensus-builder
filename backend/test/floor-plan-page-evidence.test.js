@@ -28,6 +28,23 @@ describe('retention audit evidence', () => {
     });
 });
 
+describe('property-detail page links', () => {
+    it('keeps a “Tlocrt” unit-detail link as a page and reserves plan assets for actual file endpoints', () => {
+        const pageUrl='https://eurovilla.hr/projekt/zagreb-kuniscak-residence/945/';
+        const childUrl='https://eurovilla.hr/nekretnina/zagreb-kuniscak-stan-001/144012/';
+        const page=extractPageEvidence(`<script type="application/ld+json">{"@type":"Residence","name":"Kuniščak Residence - stambena novogradnja","address":{"streetAddress":"Kuniščak 14, Zagreb"}}</script>
+            <main><table id="property-project-items-table"><tr><td><a href="/nekretnina/zagreb-kuniscak-stan-001/144012/">Tlocrt</a></td></tr></table>
+            <a href="/files/stan-001-tlocrt.pdf">Tlocrt PDF</a></main>`,pageUrl);
+
+        expect(page.projectListings).toEqual([{url:childUrl}]);
+        expect(page.links).toContainEqual(expect.objectContaining({url:childUrl,kind:'listing'}));
+        expect(page.assets.map(asset=>asset.url)).not.toContain(childUrl);
+        expect(page.assets).toContainEqual(expect.objectContaining({
+            url:'https://eurovilla.hr/files/stan-001-tlocrt.pdf',kind:'floor-plan',listingOwned:true,
+        }));
+    });
+});
+
 describe('architecture project evidence', () => {
     const url = 'https://3lhd.com/en/project/campus-infobip/';
     it('creates a project listing from an own detail page and owns only main assets', () => {

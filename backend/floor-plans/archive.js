@@ -15,8 +15,12 @@ export async function enqueue(db,rawUrl,{agencyId=null,kind='page',priority=0,fr
   SELECT $1,$2,$3,$4,$5,$6,$7 WHERE NOT EXISTS(SELECT 1 FROM floor_plan.exclusion WHERE identity=$6 OR url=$1)
   AND ($3<>'asset' OR EXISTS(SELECT 1 FROM floor_plan.listing l WHERE ${eligibleListingSql()}
    AND l.asset_urls @> jsonb_build_array(jsonb_build_object('url',$1::text,'listingOwned',true))))
-  ON CONFLICT(url) DO NOTHING`,[url,agencyId,kind,priority,from,identity,sourceKind]);
- return r.rowCount===1;
+  ON CONFLICT(url) DO UPDATE SET priority=EXCLUDED.priority,updated_at=now()
+   WHERE floor_plan.target.kind=EXCLUDED.kind AND floor_plan.target.exclusion_reason IS NULL
+    AND floor_plan.target.priority<EXCLUDED.priority
+  RETURNING (xmax=0) AS inserted`,[url,agencyId,kind,priority,from,identity,sourceKind]);
+ // Promoting an existing page is useful work, but it is not a newly discovered URL.
+ return r.rows[0]?.inserted===true;
 }
 export async function importAgencies(db,document,matches=[]) {
  const records=document.records;

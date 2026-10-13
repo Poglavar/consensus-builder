@@ -293,6 +293,15 @@ export function extractPageEvidence(html, pageUrl, { sourceKind = null, discover
         const url = normalizeUrl(raw, pageUrl), element = $(el);
         if (!url) return;
         const label = `${element.attr('alt') || ''} ${element.text()}`.trim();
+        const parsedAssetUrl = new URL(url), parsedPageUrl = new URL(pageUrl);
+        const sameSitePropertyPage = element.is('a[href]')
+            && parsedAssetUrl.hostname.replace(/^www\./i, '') === parsedPageUrl.hostname.replace(/^www\./i, '')
+            && /^\/(?:[a-z]{2}\/)?(?:nekretnina|property)(?:\/|$)/i.test(parsedAssetUrl.pathname)
+            && !/\.(?:pdf|png|jpe?g|webp|avif)(?:$|[?#])/i.test(url);
+        // Unit/detail pages are navigable HTML even when their anchor says “Tlocrt”.
+        // Their actual drawings are discovered from the child page itself; the
+        // Eurovilla blueprint handler below still enters through forcedKind.
+        if (!forcedKind && sameSitePropertyPage) return;
         if (!forcedKind && !/\.(?:pdf|png|jpe?g|webp|avif)(?:$|[?#])/i.test(url) && !PLAN_WORD.test(`${url} ${label}`)) return;
         const pdf = /\.pdf(?:$|[?#])/i.test(url);
         const { gallery } = galleryMembership(element, mainCarousel);

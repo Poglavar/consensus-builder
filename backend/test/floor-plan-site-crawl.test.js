@@ -82,6 +82,28 @@ function harness(queues, { statuses = [], recoveryCounters = null } = {}) {
 const options = runDir => ({ site: 'opereta.hr', runDir, assetMode: 'plans', maxPages: 20, maxMinutes: 30 });
 
 describe('Opereta durable site crawler runner', () => {
+  it('stops the durable run at archive capacity without advancing to the assets stage', async () => {
+    const runDir = await tempDir();
+    const queues = { discovery: [{ url: 'https://opereta.hr/listing/1', kind: 'page' }], assets: [{ url: 'https://cdn.example/plan.pdf', kind: 'asset' }] };
+    const h = harness(queues);
+    h.crawlFn = vi.fn(async () => ({ id: 'capacity-run', status: 'partial', stopReason: 'archive-capacity', counters: { requestsAttempted: 1, failed: 0, blocked: 0 } }));
+    const result = await runSiteCrawl(options(runDir), h);
+    expect(result).toMatchObject({ status: 'partial', stopReason: 'archive-capacity', stage: 'discovery' });
+    expect(h.crawlFn).toHaveBeenCalledTimes(1);
+    expect(h.crawlFn.mock.calls[0][1]).toMatchObject({ discoveryOnly: true, assetOnly: false });
+  });
+
+  it('keeps the durable result partial when cleanup deferred work after the queue drained', async () => {
+    const runDir = await tempDir();
+    const queues = { discovery: [{ url: 'https://opereta.hr/listing/1', kind: 'page' }], assets: [] };
+    const h = harness(queues), crawl = h.crawlFn;
+    h.crawlFn = async (...args) => ({ ...await crawl(...args), status: 'partial', cleanup: { deferred: 1, errors: [{ reason: 'deferred-sources', count: 1 }] } });
+    const result = await runSiteCrawl(options(runDir), h);
+    expect(result).toMatchObject({ status: 'partial', counters: { cleanupIssues: true } });
+    expect(result.after.discovery.pending).toBe(0);
+    expect(result.stage).toBe('done');
+  });
+
   it('prints help without loading a client and validates the explicit scope and caps', async () => {
     const output = vi.fn(), clientFactory = vi.fn();
     expect(await runCli([], { output, clientFactory })).toBe(0);
