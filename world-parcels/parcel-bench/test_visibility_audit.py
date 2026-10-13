@@ -48,6 +48,15 @@ class PureTests(unittest.TestCase):
         self.assertEqual(classes['weak'], {'references': 1, 'matched': 0, 'recall': 0.0})
         self.assertNotIn('partial', classes)
 
+    def test_a_human_label_wins_over_the_model_label(self):
+        self.assertEqual(audit.item_label({'label': 'weak', 'model_label': {'label': 'strong'}}), 'weak')
+        self.assertEqual(audit.item_label({'model_label': {'label': 'strong'}}), 'strong')
+        self.assertIsNone(audit.item_label({}))
+        sample = {'sample': [{'tile': 'a', 'reference': '1', 'model_label': {'label': 'partial'}}]}
+        with tempfile.TemporaryDirectory() as directory:
+            (Path(directory) / 'a.score.json').write_text(json.dumps({'tile': 'a', 'matches': [{'reference': '1'}]}))
+            self.assertEqual(audit.per_class_recall(sample, [directory])[directory]['partial']['recall'], 1.0)
+
 
 @unittest.skipUnless((DATASET / 'manifest.json').exists(), 'merged HR dataset not present')
 class ServerTests(unittest.TestCase):

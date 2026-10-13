@@ -72,10 +72,15 @@ def outline_pixels(geom, bbox, size):
             for polygon in polygons for ring in [polygon.exterior, *polygon.interiors]]
 
 
+def item_label(item):
+    """A human label wins over the vision model's (visibility_label.py); None when neither exists."""
+    return item.get('label') or (item.get('model_label') or {}).get('label')
+
+
 def per_class_recall(audit, evaluations):
     """For each evaluation directory: matched share of the labelled references in each class, from the
     `matches` list of every <tile>.score.json. Unlabelled references do not count anywhere."""
-    labels = {(item['tile'], item['reference']): item.get('label') for item in audit['sample'] if item.get('label')}
+    labels = {(item['tile'], item['reference']): item_label(item) for item in audit['sample'] if item_label(item)}
     report = {}
     for directory in evaluations:
         matched = set()
@@ -197,10 +202,13 @@ def serve_command(args):
 
 def report_command(args):
     audit = read_json(args.audit)
-    labelled = [i for i in audit['sample'] if i.get('label')]
-    shares = {c: sum(i['label'] == c for i in labelled) for c in CLASSES}
+    labelled = [i for i in audit['sample'] if item_label(i)]
+    shares = {c: sum(item_label(i) == c for i in labelled) for c in CLASSES}
     print(f"{audit['benchmark']}: {len(labelled)}/{len(audit['sample'])} labelled; "
           + ', '.join(f"{c} {n} ({n / max(len(labelled), 1):.0%})" for c, n in shares.items()))
+    ratios = {c: [i['edge']['ratio'] for i in labelled if item_label(i) == c and i.get('edge')] for c in CLASSES}
+    print('image edge on the line vs beside it (visibility_label.py), median ratio per class: '
+          + ', '.join(f"{c} {sorted(r)[len(r) // 2]:.2f} (n={len(r)})" for c, r in ratios.items() if r))
     for directory, classes in per_class_recall(audit, args.eval_dir).items():
         print(directory + ': ' + ', '.join(f"{c} recall {classes[c]['recall']:.2f} ({classes[c]['matched']}/{classes[c]['references']})"
                                            for c in CLASSES if c in classes))
