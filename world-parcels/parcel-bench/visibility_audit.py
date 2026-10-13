@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Visibility audit of a frozen benchmark's selection references: how much of each reference parcel's outline can
-be seen in the imagery at all, which bounds what any imagery model can recover. Three steps:
+"""Visibility audit of a frozen benchmark's selection references: how much of each reference parcel's outline
+appears supported by the imagery. Labels describe evidence, not an accuracy ceiling. Three steps:
   sample  draws a seeded random sample of selection references into manifests/<benchmark>-visibility.json
   serve   a local labelling page (127.0.0.1 only) that writes labels into that file as you go
   report  per-class recall of finished evaluations, from the matches their per-tile score files record
@@ -13,6 +13,7 @@ import argparse
 import json
 import os
 import random
+import statistics
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -83,11 +84,17 @@ def per_class_recall(audit, evaluations):
     labels = {(item['tile'], item['reference']): item_label(item) for item in audit['sample'] if item_label(item)}
     report = {}
     for directory in evaluations:
-        matched = set()
+        matched, evaluated = set(), set()
         for path in Path(directory).glob('*.score.json'):
             result = read_json(path)
             tile = result.get('tile') or path.name.removesuffix('.score.json')
+            if tile in evaluated:
+                raise ValueError(f'duplicate scored tile: {tile}')
+            evaluated.add(tile)
             matched |= {(tile, match['reference']) for match in result.get('matches', [])}
+        missing = {tile for tile, _ in labels} - evaluated
+        if missing:
+            raise ValueError(f'evaluation is missing {len(missing)} sampled tiles: {directory}')
         classes = {}
         for key, label in labels.items():
             entry = classes.setdefault(label, {'references': 0, 'matched': 0})
@@ -206,9 +213,14 @@ def report_command(args):
     shares = {c: sum(item_label(i) == c for i in labelled) for c in CLASSES}
     print(f"{audit['benchmark']}: {len(labelled)}/{len(audit['sample'])} labelled; "
           + ', '.join(f"{c} {n} ({n / max(len(labelled), 1):.0%})" for c, n in shares.items()))
+    human = sum(bool(i.get('label')) for i in labelled)
+    print(f"label sources: {human} human, {len(labelled) - human} model; "
+          f"sampled from {audit.get('population', 'unknown')} selection reference instances (including clipped parcels)")
+    print('Visibility classes are judgments about this imagery, not a measured accuracy ceiling. '
+          'Aggregate image-edge differences do not validate individual labels.')
     ratios = {c: [i['edge']['ratio'] for i in labelled if item_label(i) == c and i.get('edge')] for c in CLASSES}
     print('image edge on the line vs beside it (visibility_label.py), median ratio per class: '
-          + ', '.join(f"{c} {sorted(r)[len(r) // 2]:.2f} (n={len(r)})" for c, r in ratios.items() if r))
+          + ', '.join(f"{c} {statistics.median(r):.2f} (n={len(r)})" for c, r in ratios.items() if r))
     for directory, classes in per_class_recall(audit, args.eval_dir).items():
         print(directory + ': ' + ', '.join(f"{c} recall {classes[c]['recall']:.2f} ({classes[c]['matched']}/{classes[c]['references']})"
                                            for c in CLASSES if c in classes))

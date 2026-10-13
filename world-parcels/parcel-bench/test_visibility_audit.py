@@ -57,6 +57,22 @@ class PureTests(unittest.TestCase):
             (Path(directory) / 'a.score.json').write_text(json.dumps({'tile': 'a', 'matches': [{'reference': '1'}]}))
             self.assertEqual(audit.per_class_recall(sample, [directory])[directory]['partial']['recall'], 1.0)
 
+    def test_missing_evaluations_are_not_counted_as_missed_parcels(self):
+        sample = {'sample': [{'tile': 'a', 'reference': '1', 'label': 'strong'},
+                             {'tile': 'b', 'reference': '2', 'label': 'weak'}]}
+        with tempfile.TemporaryDirectory() as directory:
+            (Path(directory) / 'a.score.json').write_text(json.dumps({'tile': 'a', 'matches': [{'reference': '1'}]}))
+            with self.assertRaisesRegex(ValueError, 'missing 1 sampled tiles'):
+                audit.per_class_recall(sample, [directory])
+
+    def test_duplicate_tile_outputs_cannot_mix_two_evaluations(self):
+        sample = {'sample': [{'tile': 'a', 'reference': '1', 'label': 'strong'}]}
+        with tempfile.TemporaryDirectory() as directory:
+            for name in ('a', 'copy'):
+                (Path(directory) / f'{name}.score.json').write_text(json.dumps({'tile': 'a', 'matches': []}))
+            with self.assertRaisesRegex(ValueError, 'duplicate scored tile'):
+                audit.per_class_recall(sample, [directory])
+
 
 @unittest.skipUnless((DATASET / 'manifest.json').exists(), 'merged HR dataset not present')
 class ServerTests(unittest.TestCase):

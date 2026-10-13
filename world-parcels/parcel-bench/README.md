@@ -193,6 +193,23 @@ gpu/sync.sh pull <ssh-url> curve && $PY $B/layered/curve_summary.py --ledger-add
 $PY $B/layered/train.py --run --evaluate-only --split selection --osm-mode none --dataset $DS --output <run>   # or model-blank
 ```
 
+Saved-checkpoint imagery sensitivity (nine RGB conditions, both frozen selection sets; no training):
+
+```sh
+$PY $B/layered/imagery_study.py \
+  --arm source $B/output/runs/round2/zagreb-n1600-s1 $B/output/runs/round2/zagreb-n1600-s2 $B/output/runs/round2/zagreb-n1600-s3 \
+  --arm coastal $B/output/runs/split/split-only-s1 \
+  --manifest $B/manifests/zagreb-v1.json --manifest $B/manifests/split-v1.json \
+  --dataset $B/output/pool/hr-pool-v1/dataset --output $B/output/imagery-study-20261013 \
+  --device mps --run
+```
+
+The study freezes input, checkpoint and code hashes, verifies completed cases before resuming, and writes
+`report.json` / `report.md` with paired geographic-block intervals. Choose a new output directory if the
+code or inputs change. `--cases` can restrict conditions; a fresh clean baseline is always included.
+The source arm has three checkpoints and the coastal arm one; synthetic perturbations are a sensitivity
+diagnosis, not a measurement of real satellite performance. See `PLAN.md` step 11.
+
 ## Status
 
 Done 2026-10-12: scorer with 19 behavioural tests, ledger, Zagreb manifest frozen, rules baseline recorded on both splits, practice-region donors computed for all researched cities, GPU kit written, layered model v0 built with OSM sidecars for all 96 training tiles and an end-to-end CPU smoke test (train, resume, evaluate-only).
@@ -211,7 +228,7 @@ Learning curve (2026-10-12): `gpu/curve.sh` runs the v0 recipe unchanged (convne
 | 800 | 3 | 0.209 (0.200–0.222) | 0.246 | 0.181 | 0.224 | 0.427 | 24, 20, 28 |
 | 1600 | 3 | 0.224 (0.219–0.231) | 0.267 | 0.192 | 0.240 | 0.440 | 26, 20, 22 |
 
-The curve rises, but slowly: 16× the data lifts parcel F1 by 0.03 (0.196 → 0.224) with a flat stretch from 200 to 800 tiles, while boundary F1 rises at every doubling (0.384 → 0.440) and recall with it. The pixel model keeps learning from more Zagreb tiles; the instance metric lags because reconstruction turns better boundary maps into whole parcels inefficiently, and because part of the reference boundary is invisible in imagery (the visibility audit of the selection references, still to do, would put a number on that ceiling). Seed spread is about 0.02 on this split, so single runs cannot be compared: the first milestone's 0.196 sits inside the 96-tile spread.
+The curve rises, but slowly: 16× the data lifts parcel F1 by 0.03 (0.196 → 0.224) with a flat stretch from 200 to 800 tiles, while boundary F1 rises at every doubling (0.384 → 0.440) and recall with it. The pixel model keeps learning from more Zagreb tiles while the instance metric lags. Reconstruction and image support were candidate explanations; the reconstruction study below subsequently measured an improvement. The completed visibility audit describes support in this imagery but cannot establish a recoverability ceiling. Seed spread is about 0.02 on this split, so single runs cannot be compared: the first milestone's 0.196 sits inside the 96-tile spread.
 
 Milestone 2 (2026-10-12, final split scored once, for the best selection run only: 1,600 tiles, seed 2, recipe ca0f60e2): parcel F1 0.302 versus 0.253 (milestone 1) and 0.176 (baseline); precision 0.331, recall 0.277, area-weighted recall 0.344 versus 0.227, interior recall 0.403 versus 0.299, boundary F1 0.523 versus 0.458; 478 predictions for 570 references. Weights in the ignored `output/runs/curve/n1600-s2/best.pt`.
 
@@ -227,11 +244,11 @@ Reconstruction study (2026-10-12, `layered/recon_study.py` on the saved selectio
 
 Milestone 3 (2026-10-12, same weights as milestone 2, reconstruction frozen to the watershed before one final scoring, recipe a87fb45b): final parcel F1 0.347 versus 0.302 (milestone 2), 0.253 (milestone 1) and 0.176 (baseline); precision 0.410, recall 0.302, area-weighted recall 0.361, interior recall 0.436, boundary F1 0.587; 420 predictions for 570 references. Run dir `output/runs/n1600-s2-watershed` (weights hard-linked from the curve run).
 
-Resolution control (2026-10-12, selection split, ledger row `…-n1600-watershed-gsd0.5`): the same weights and recipe with the Zagreb imagery box-downsampled to 0.5 m and back score parcel F1 0.239 against 0.294, precision 0.334, boundary F1 0.474. The model's own input grid is 0.3 m, so a city served at 0.5 m (the DGU DOF5) starts about 0.055 lower for resolution alone, and a transfer result on such a city is read against 0.239, not 0.294.
+Resolution control (2026-10-12, selection split, ledger row `…-n1600-watershed-gsd0.5`): the same weights and recipe with the Zagreb imagery box-downsampled to 0.5 m and back score parcel F1 0.239 against 0.294, precision 0.334, boundary F1 0.474. The model's own input grid is 0.3 m. This measures sensitivity to additional resampling of these images; it does not isolate how much of another city's performance gap comes from its native resolution, sensor or processing.
 
 Split, `manifests/split-v1.json` (2026-10-12): `export_city.py --city split` pre-screened a 64 × 41-tile core grid (2,624 tiles) in the parcel table, fetched the 1,361 tiles that passed through 348 watermark-free 3×3 block requests to the DGU DOF 2023/24 WMS, and all 1,361 passed the full screens (strata low 95 / medium 184 / high 441 / dense 641; Split is denser than Zagreb). Held out: 8 blocks of 2×2 tiles, one per stratum per split, 500 m apart with disjoint parcel ids (16 selection tiles with 379 references, 16 final with 587); training pool 896 tiles with 45,898 instances. The merged pool `manifests/hr-pool-v1.json` (3,039 tiles, Zagreb 2,143 + Split 896, `merge_datasets.py`) serves joint training against either city's frozen manifest.
 
-Split rows (ledger, benchmark `split-v1`): the OSM rules baseline collapses here, parcel F1 0.038 on selection and 0.029 on final with 97 predictions for 379 and 587 references, because OSM building footprints are sparse in Split (coverage 0.57 and 0.67). The milestone-3 Zagreb weights and recipe, zero-shot, reach selection parcel F1 0.134 (precision 0.243, recall 0.092, area-weighted recall 0.365, boundary F1 0.398, 144 predictions): large parcels are found at Zagreb's rate, small ones are missed, and the OSM-seed shortage is now the binding constraint rather than the imagery. Read against Zagreb's 0.294 and the 0.5 m resolution control's 0.239, roughly 0.1 of the gap is transfer, the rest resolution. With no OSM at all (ledger row `…-osm-none`) the same weights fall to 0.053 on Split, so even the sparse footprints are worth keeping; what Split lacks is seeds, which training on Split tiles must supply through the interior map.
+Split rows (ledger, benchmark `split-v1`): the OSM rules baseline reaches parcel F1 0.038 on selection and 0.029 on final with 97 predictions for 379 and 587 references; OSM building footprints are sparse in Split (coverage 0.57 and 0.67). The milestone-3 Zagreb weights and recipe, zero-shot, reach selection parcel F1 0.134 (precision 0.243, recall 0.092, area-weighted recall 0.365, boundary F1 0.398, 144 predictions). Area-weighted recall is similar to Zagreb's while many small parcels are missed. Sparse seeds and imagery are candidate explanations; the resolution control cannot causally divide the cross-city gap between them. With no OSM at all (ledger row `…-osm-none`) the same weights fall to 0.053 on Split, establishing the value of those footprints for this checkpoint, without identifying the remaining performance limit.
 
 Within-country transfer (2026-10-12, one seed each, v0 recipe with the watershed, 30 epochs, checkpoint chosen on Split's selection split; about 40 minutes of one RTX 4090):
 
@@ -244,6 +261,23 @@ Within-country transfer (2026-10-12, one seed each, v0 recipe with the watershed
 
 Training on the target city's own tiles is what moves Split (0.134 → 0.220); adding 2,143 Zagreb tiles to Split's 896 adds nothing on Split at this seed and costs Zagreb 0.03 against the Zagreb-only model, while a Split-only model transfers to Zagreb at 0.207, about the same loss as the other direction. So within one country and legal tradition, the model still learns the local fabric (parcel sizes, building density, 0.5 m imagery) more than a shared delineation practice, at least at this data scale and with a shared recipe. Split milestone 1 (final split, scored once for the Split-only run): parcel F1 0.139, precision 0.259, recall 0.095, area-weighted recall 0.195, boundary F1 0.419, against the baseline's 0.029; Split's final blocks are denser than its selection blocks (mean 11 / 22 / 39 / 76 parcels per tile against 5 / 15 / 28 / 47), which is why both numbers sit below selection. Run dirs `output/runs/split/{split-only-s1,joint-s1}`, ledger benchmark `split-v1`.
 
-Round 2 (2026-10-13, 36 runs on one RTX 4090 through `gpu/queue_runner.py` and `gpu/plans/round2.json`, three seeds per arm, recipe a7936b17, paired tile-bootstrap intervals from `bootstrap.py`). On Split's selection split: Zagreb model zero-shot 0.122; Split-only 0.197 with 50 tiles, 0.210 with 896; fine-tuning the Zagreb model instead of ImageNet weights changes nothing at any size (within ±0.004); joint Zagreb + Split 0.214. Fifty target tiles buy +0.075 (interval +0.023 to +0.115); the next 846 buy +0.013 (−0.030 to +0.044), so Split's limit is not label count. On Zagreb's selection split joint training costs 0.035 (interval 0.010 to 0.065) against Zagreb-only 0.287. Per-city reconstruction settings are not a lever (61 variants, three seeds). Ledger methods `layered-v0-convnext_tiny-30ep-r2-*`.
+Round 2 (2026-10-13, 36 runs on one RTX 4090 through `gpu/queue_runner.py` and `gpu/plans/round2.json`, three seeds per arm, recipe a7936b17, paired tile-bootstrap intervals from `bootstrap.py`). On Split's selection split: Zagreb model zero-shot 0.122; Split-only 0.197 with 50 tiles, 0.210 with 896; fine-tuning the Zagreb model instead of ImageNet weights changes the mean by at most 0.004, without a resolved gain; joint Zagreb + Split 0.214. Fifty target tiles buy +0.075 (interval +0.023 to +0.115); the next 846 buy +0.013 (−0.030 to +0.044). That comparison does not resolve a gain from additional labels with this recipe; it does not rule one out. On Zagreb's selection split joint training costs 0.035 (interval 0.010 to 0.065) against Zagreb-only 0.287. The tested per-city reconstruction changes did not clear the improvement bar (61 variants, three seeds). Both selection sets have only four geographic blocks, so tile-bootstrap intervals understate geographic uncertainty. Ledger methods `layered-v0-convnext_tiny-30ep-r2-*`.
 
-Next (the living plan with status, success checks, ETA and spend is `PLAN.md`): the visibility audit (`visibility_audit.py`) to find what bounds Split, the satellite-domain step, a nearby same-climate donor for Split, then Ljubljana and a Spanish Csa city.
+The visibility audit is complete (`visibility_audit.py`, 150 sampled selection reference instances per city, all machine-labelled). Strong / partial / weak image support is associated with recall, but the small classes and aggregate edge statistic do not establish an accuracy ceiling or verify individual labels.
+
+Imagery sensitivity (2026-10-13, 72 frozen-checkpoint evaluations, selection only, local MPS inference):
+
+| Model on its own city's selection set | Seeds | Clean F1 | Resample to 0.5 m | Resample to 1 m |
+|---|---:|---:|---:|---:|
+| Source-city model | 3 | 0.287 | 0.234 | 0.193 |
+| Coastal-city model | 1 | 0.220 | 0.197 | 0.167 |
+
+The source model loses 0.053 at 0.5 m (95% paired geographic-block interval −0.088 to −0.002) and
+0.094 at 1 m (−0.136 to −0.026). Blur and all tested shifts also hurt both models on their own cities.
+Coastal haze and several cross-city changes are unresolved. Only four blocks per city and one coastal
+checkpoint limit generalization; intervals average fixed seeds and are unadjusted for multiple comparisons.
+The study changes RGB alone at model input and cannot measure accuracy on a different sensor or imagery
+provider. Full metrics, per-block differences and hashes: `output/imagery-study-20261013/`; ledger methods
+`layered-imagery-*`. No final split was scored.
+
+Next (the living plan with status, success checks, ETA and spend is `PLAN.md`): broader geographic selection coverage, satellite-domain augmentation, a nearby same-climate donor for Split, then Ljubljana and a Spanish Csa city.
