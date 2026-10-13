@@ -47,7 +47,7 @@ in three lanes, two Split runs about 40 minutes; a 1,600-tile 30-epoch run is ab
 | 2 | Transfer table with three seeds | GPU | done 2026-10-13 (round 2) |
 | 3 | Split learning curve and Zagreb-donor fine-tune curve | GPU | done 2026-10-13 (round 2) |
 | 4 | Per-city reconstruction settings | laptop | done 2026-10-13: no lever |
-| 5 | Visibility audit (the ceiling) | laptop + labelling | tooling ready; labeller to choose (now the most informative next step) |
+| 5 | Visibility audit (the ceiling) | laptop + vision model | done 2026-10-13 (machine labels) |
 | 6 | Zagreb model levers, one at a time | GPU | todo |
 | 7 | Milestone 4 on both final splits | GPU or laptop | todo |
 | 8 | Ljubljana and a Spanish Csa city | laptop + GPU | todo |
@@ -135,6 +135,18 @@ Spend log: 2026-10-12 $1.40; 2026-10-13 round 2 (36 runs, 105 min of queue, abou
 Vast.ai credit after round 2: $7.38; top up before step 8.
 
 ## Learned (newest first)
+
+- 2026-10-13, step 5 (visibility audit, 150 sampled selection references per city, labelled by GPT-6.1 Sol through
+  Codex CLI on the ChatGPT plan: $0 billed, $7.05 metered equivalent; `visibility_label.py`). Only 7–8% of parcels
+  have a fully visible outline; partly visible: Split 59%, Zagreb 49%; essentially invisible (open ground, canopy,
+  through buildings): Split 33%, Zagreb 42%. The free image measure agrees without a human: the median photo edge
+  on the cadastral line versus beside it is 1.31 / 1.17 / 0.99 for strong / partial / weak (Split) and 1.21 / 1.16 /
+  0.98 (Zagreb), weak sitting at 1.0 = no edge at all. Recall by class, three seeds: Zagreb model on Zagreb strong
+  0.50–0.58, partial 0.33–0.36, weak 0.02–0.05; Split model on Split strong 0.27–0.45, partial 0.25–0.26, weak
+  0.04–0.06. Reading: (1) an imagery model cannot recover the invisible third or more, so a recall ceiling near
+  0.6 (Split 0.66, Zagreb 0.57) applies to any imagery-only approach; those parcels need priors from elsewhere
+  (address points, building footprints, typical lot shapes of the practice region); (2) on the visible parcels we
+  are at roughly a third (Split) to a half (Zagreb) of what is there, so model and reconstruction work still pays.
 
 - 2026-10-13, round 2 (36 runs, three seeds each, recipe a7936b17; tables in
   `output/runs/round2/*curve*.md`, intervals in `output/runs/round2/reports/`), Split selection F1:

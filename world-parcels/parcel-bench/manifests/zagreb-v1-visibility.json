@@ -17,751 +17,2851 @@
  "sample": [
   {
    "area_m2": 444.8,
+   "edge": {
+    "beside": 18.28,
+    "on_line": 26.58,
+    "ratio": 1.454,
+    "samples": 125
+   },
+   "model_label": {
+    "equivalent_usd": 0.0218236,
+    "evidence": "Most of the outline runs through dark tree canopy without a visible boundary, with only a short portion near a paved edge.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T11:58:25+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.1
+   },
    "reference": "41101527",
    "tile": "tile_2954_33028"
   },
   {
    "area_m2": 136.5,
+   "edge": {
+    "beside": 25.15,
+    "on_line": 27.7,
+    "ratio": 1.101,
+    "samples": 94
+   },
+   "model_label": {
+    "equivalent_usd": 0.045954,
+    "evidence": "The outline cuts across roof surfaces, paving and tree canopy, with almost no alignment to visible ground edges.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T11:58:23+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "41101812",
    "tile": "tile_2954_33028"
   },
   {
    "area_m2": 35.0,
+   "edge": {
+    "beside": 10.54,
+    "on_line": 4.67,
+    "ratio": 0.443,
+    "samples": 48
+   },
+   "model_label": {
+    "equivalent_usd": 0.043824,
+    "evidence": "Deep shadow and blur obscure the ground along the outline, leaving no boundary clearly discernible.",
+    "label": "uncertain",
+    "labelled_at": "2026-10-13T11:58:11+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0
+   },
    "reference": "41103540",
    "tile": "tile_2954_33028"
   },
   {
    "area_m2": 106.6,
+   "edge": {
+    "beside": 28.14,
+    "on_line": 47.72,
+    "ratio": 1.696,
+    "samples": 60
+   },
+   "model_label": {
+    "equivalent_usd": 0.0134996,
+    "evidence": "One side follows the long building edge, while much of the diagonal side crosses the roof and adjoining paving.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T11:58:32+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.55
+   },
    "reference": "41103599",
    "tile": "tile_2954_33028"
   },
   {
    "area_m2": 254.9,
+   "edge": {
+    "beside": 25.0,
+    "on_line": 33.27,
+    "ratio": 1.33,
+    "samples": 142
+   },
+   "model_label": {
+    "equivalent_usd": 0.045982,
+    "evidence": "Most of the outline crosses roof, tree canopy and shadowed pavement without following clear ground features.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T11:58:42+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.1
+   },
    "reference": "41103774",
    "tile": "tile_2954_33028"
   },
   {
    "area_m2": 840.9,
+   "edge": {
+    "beside": 23.18,
+    "on_line": 42.83,
+    "ratio": 1.847,
+    "samples": 197
+   },
+   "model_label": {
+    "equivalent_usd": 0.045842,
+    "evidence": "The long diagonal follows the building-side paved edge, while the upper segments cross less clearly marked pavement and shadow.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T11:59:10+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.65
+   },
    "reference": "41101658",
    "tile": "tile_2954_33029"
   },
   {
    "area_m2": 902.3,
+   "edge": {
+    "beside": 31.97,
+    "on_line": 38.7,
+    "ratio": 1.21,
+    "samples": 291
+   },
+   "model_label": {
+    "equivalent_usd": 0.0087396,
+    "evidence": "The outline closely follows the rectangular building\u2019s roof edges, with slight tree cover near one corner.",
+    "label": "strong",
+    "labelled_at": "2026-10-13T11:58:50+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.95
+   },
    "reference": "41101733",
    "tile": "tile_2954_33029"
   },
   {
    "area_m2": 114.9,
+   "edge": {
+    "beside": 33.58,
+    "on_line": 25.53,
+    "ratio": 0.76,
+    "samples": 61
+   },
+   "model_label": {
+    "equivalent_usd": 0.010289600000000001,
+    "evidence": "The long diagonal follows the parking-area kerb, while the other side crosses asphalt without a clear continuous boundary.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T11:59:03+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.6
+   },
    "reference": "41103489",
    "tile": "tile_2954_33029"
   },
   {
    "area_m2": 150.8,
+   "edge": {
+    "beside": 6.79,
+    "on_line": 11.63,
+    "ratio": 1.712,
+    "samples": 50
+   },
+   "model_label": {
+    "equivalent_usd": 0.014379600000000001,
+    "evidence": "The diagonal outline lies in deep shadow, where no continuous wall, kerb, or surface boundary can be distinguished.",
+    "label": "uncertain",
+    "labelled_at": "2026-10-13T11:59:30+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.15
+   },
    "reference": "41103506",
    "tile": "tile_2954_33029"
   },
   {
    "area_m2": 1053.5,
+   "edge": {
+    "beside": 35.78,
+    "on_line": 42.27,
+    "ratio": 1.181,
+    "samples": 273
+   },
+   "model_label": {
+    "equivalent_usd": 0.041092,
+    "evidence": "The outline closely follows the building\u2019s visible roof edges, bordered by paved parking areas and a hedge.",
+    "label": "strong",
+    "labelled_at": "2026-10-13T11:59:15+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.95
+   },
    "reference": "41103771",
    "tile": "tile_2954_33029"
   },
   {
    "area_m2": 14.7,
+   "edge": {
+    "beside": 64.29,
+    "on_line": 54.6,
+    "ratio": 0.849,
+    "samples": 16
+   },
+   "model_label": {
+    "equivalent_usd": 0.044472,
+    "evidence": "The diagonal outline crosses parked vehicles and shaded paved ground without following a visible kerb, fence, or surface boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T11:59:41+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "41103821",
    "tile": "tile_2954_33029"
   },
   {
    "area_m2": 636.6,
+   "edge": {
+    "beside": 26.05,
+    "on_line": 23.8,
+    "ratio": 0.914,
+    "samples": 270
+   },
+   "model_label": {
+    "equivalent_usd": 0.0285528,
+    "evidence": "The long sides follow a building edge and a paving colour change, but the left end crosses uniform paving and trees obscure some sections.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:00:07+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.8
+   },
    "reference": "41103834",
    "tile": "tile_2954_33029"
   },
   {
    "area_m2": 174.3,
+   "edge": {
+    "beside": 32.22,
+    "on_line": 21.07,
+    "ratio": 0.654,
+    "samples": 76
+   },
+   "model_label": {
+    "equivalent_usd": 0.0111796,
+    "evidence": "The outline cuts diagonally across paved parking areas without following clear kerbs or other visible boundaries.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T11:59:56+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "41101564",
    "tile": "tile_2955_33028"
   },
   {
    "area_m2": 1855.2,
+   "edge": {
+    "beside": 22.21,
+    "on_line": 21.62,
+    "ratio": 0.973,
+    "samples": 406
+   },
+   "model_label": {
+    "equivalent_usd": 0.0118596,
+    "evidence": "The long sides follow building and garden edges, while the short sides run beneath trees without a clear visible boundary.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:00:12+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.55
+   },
    "reference": "41101712",
    "tile": "tile_2955_33028"
   },
   {
    "area_m2": 463.6,
+   "edge": {
+    "beside": 26.21,
+    "on_line": 26.17,
+    "ratio": 0.998,
+    "samples": 132
+   },
+   "model_label": {
+    "equivalent_usd": 0.0097296,
+    "evidence": "The drawn sides follow the building perimeter where it meets the surrounding pavement.",
+    "label": "strong",
+    "labelled_at": "2026-10-13T12:00:12+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.95
+   },
    "reference": "41103391",
    "tile": "tile_2955_33028"
   },
   {
    "area_m2": 938.0,
+   "edge": {
+    "beside": 39.12,
+    "on_line": 40.11,
+    "ratio": 1.026,
+    "samples": 125
+   },
+   "model_label": {
+    "equivalent_usd": 0.010419600000000001,
+    "evidence": "The outline follows the visible edge of the paved strip alongside the building, including its corner at the lower end.",
+    "label": "strong",
+    "labelled_at": "2026-10-13T12:00:28+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.9
+   },
    "reference": "41103506",
    "tile": "tile_2955_33028"
   },
   {
    "area_m2": 35.0,
+   "edge": {
+    "beside": 18.78,
+    "on_line": 13.94,
+    "ratio": 0.742,
+    "samples": 48
+   },
+   "model_label": {
+    "equivalent_usd": 0.0083196,
+    "evidence": "The outline crosses shaded vegetation and mottled ground without following clear edges or surface boundaries.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:00:33+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "41103986",
    "tile": "tile_2955_33028"
   },
   {
    "area_m2": 13.6,
+   "edge": {
+    "beside": 38.15,
+    "on_line": 87.59,
+    "ratio": 2.296,
+    "samples": 15
+   },
+   "model_label": {
+    "equivalent_usd": 0.0103596,
+    "evidence": "The diagonal outline follows a visible boundary between lighter and darker ground surfaces.",
+    "label": "strong",
+    "labelled_at": "2026-10-13T12:00:44+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.95
+   },
    "reference": "41100239",
    "tile": "tile_2955_33029"
   },
   {
    "area_m2": 819.8,
+   "edge": {
+    "beside": 21.65,
+    "on_line": 19.29,
+    "ratio": 0.891,
+    "samples": 303
+   },
+   "model_label": {
+    "equivalent_usd": 0.0147296,
+    "evidence": "Most of the outline follows kerbs and grass\u2013pavement edges, while short stretches run through shaded vegetation.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:01:08+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.75
+   },
    "reference": "41101489",
    "tile": "tile_2955_33029"
   },
   {
    "area_m2": 3703.2,
+   "edge": {
+    "beside": 23.0,
+    "on_line": 18.68,
+    "ratio": 0.812,
+    "samples": 529
+   },
+   "model_label": {
+    "equivalent_usd": 0.0154596,
+    "evidence": "The upper and right sides follow the street kerb and building edge, while the left side runs through shadow and the lower side crosses roofs.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:01:32+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.5
+   },
    "reference": "41103884",
    "tile": "tile_2955_33029"
   },
   {
    "area_m2": 1879.1,
+   "edge": {
+    "beside": 16.27,
+    "on_line": 12.64,
+    "ratio": 0.777,
+    "samples": 397
+   },
+   "model_label": {
+    "equivalent_usd": 0.0136296,
+    "evidence": "The upper end and parts of the long sides follow pavement edges, while trees and deep shadow obscure other sections and the lower end.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:01:31+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.55
+   },
    "reference": "41103963",
    "tile": "tile_2955_33029"
   },
   {
    "area_m2": 1596.6,
+   "edge": {
+    "beside": 28.98,
+    "on_line": 48.25,
+    "ratio": 1.665,
+    "samples": 305
+   },
+   "model_label": {
+    "equivalent_usd": 0.0140096,
+    "evidence": "The stepped western side follows the building edge, while the other sides cross lawns, tree canopy and paved parking areas.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:01:35+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.35
+   },
    "reference": "41104026",
    "tile": "tile_2955_33029"
   },
   {
    "area_m2": 64.1,
+   "edge": {
+    "beside": 30.56,
+    "on_line": 27.64,
+    "ratio": 0.904,
+    "samples": 29
+   },
+   "model_label": {
+    "equivalent_usd": 0.0103096,
+    "evidence": "The diagonal section follows the road\u2013grass edge, while the lower bend is obscured by tree canopy and shadow.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:01:45+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.65
+   },
    "reference": "21350587",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 7.5,
+   "edge": {
+    "beside": 22.44,
+    "on_line": 46.86,
+    "ratio": 2.088,
+    "samples": 48
+   },
+   "model_label": {
+    "equivalent_usd": 0.0092796,
+    "evidence": "The outline crosses a roof and tree canopy without following a visible boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:02:05+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0
+   },
    "reference": "21350622",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 126.2,
+   "edge": {
+    "beside": 34.52,
+    "on_line": 41.24,
+    "ratio": 1.195,
+    "samples": 60
+   },
+   "model_label": {
+    "equivalent_usd": 0.014809600000000001,
+    "evidence": "The long eastern side follows the vegetation\u2013pavement edge, while the upper segments cross canopy and the lower diagonal cuts across a roof.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:02:25+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.35
+   },
    "reference": "21350640",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 235.2,
+   "edge": {
+    "beside": 34.73,
+    "on_line": 50.64,
+    "ratio": 1.458,
+    "samples": 124
+   },
+   "model_label": {
+    "equivalent_usd": 0.0113196,
+    "evidence": "The top and bottom roughly follow roof and paved-area edges, while the sides cross roof surfaces, shadows and vegetation.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:02:15+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.45
+   },
    "reference": "21350641",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 365.9,
+   "edge": {
+    "beside": 34.65,
+    "on_line": 56.32,
+    "ratio": 1.625,
+    "samples": 160
+   },
+   "model_label": {
+    "equivalent_usd": 0.0100196,
+    "evidence": "The lower and right sides follow the road edge, and part of the left side follows vegetation, while the upper diagonal crosses roofs and shadow.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:02:20+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.6
+   },
    "reference": "21350650",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 639.5,
+   "edge": {
+    "beside": 27.59,
+    "on_line": 51.15,
+    "ratio": 1.854,
+    "samples": 204
+   },
+   "model_label": {
+    "equivalent_usd": 0.0114296,
+    "evidence": "The left and right sides follow road and vegetation edges, while the top cuts across a roof and the bottom crosses lawn.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:02:46+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.55
+   },
    "reference": "21350653",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 60.9,
+   "edge": {
+    "beside": 37.59,
+    "on_line": 56.17,
+    "ratio": 1.494,
+    "samples": 84
+   },
+   "model_label": {
+    "equivalent_usd": 0.057481199999999996,
+    "evidence": "The upper edge follows the roadside kerb and the short sides follow surface edges, while the lower edge crosses roofs and tree canopy.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:02:56+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.6
+   },
    "reference": "21350696",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 464.7,
+   "edge": {
+    "beside": 31.91,
+    "on_line": 36.61,
+    "ratio": 1.147,
+    "samples": 210
+   },
+   "model_label": {
+    "equivalent_usd": 0.0111296,
+    "evidence": "The long sides largely follow yard and driveway edges, while the top crosses grass and the bottom runs across paving without a clear boundary.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:02:56+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.6
+   },
    "reference": "21350698",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 423.0,
+   "edge": {
+    "beside": 35.17,
+    "on_line": 33.35,
+    "ratio": 0.948,
+    "samples": 178
+   },
+   "model_label": {
+    "equivalent_usd": 0.0259988,
+    "evidence": "Parts of the sides follow garden and paving edges, while the top and bottom cross surfaces and a small roof without a matching boundary.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:03:10+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.45
+   },
    "reference": "21350699",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 51.3,
+   "edge": {
+    "beside": 32.68,
+    "on_line": 52.28,
+    "ratio": 1.6,
+    "samples": 79
+   },
+   "model_label": {
+    "equivalent_usd": 0.028436799999999998,
+    "evidence": "The upper side follows the roadside kerb, while the lower side crosses paved yards and the right end lies in tree shadow.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:03:36+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.45
+   },
    "reference": "21350700",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 28.0,
+   "edge": {
+    "beside": 33.1,
+    "on_line": 31.74,
+    "ratio": 0.959,
+    "samples": 93
+   },
+   "model_label": {
+    "equivalent_usd": 0.010339600000000001,
+    "evidence": "The outline mostly runs through tree canopy, a dark roof and shadowed ground without matching clear edges.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:03:24+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.1
+   },
    "reference": "21350709",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 679.9,
+   "edge": {
+    "beside": 39.19,
+    "on_line": 80.12,
+    "ratio": 2.044,
+    "samples": 227
+   },
+   "model_label": {
+    "equivalent_usd": 0.042932,
+    "evidence": "The outline follows building and yard edges on the west, a wall along the north, the lane edge on the east, and the roadside kerb on the south.",
+    "label": "strong",
+    "labelled_at": "2026-10-13T12:03:31+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.9
+   },
    "reference": "21350714",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 313.7,
+   "edge": {
+    "beside": 33.29,
+    "on_line": 35.53,
+    "ratio": 1.067,
+    "samples": 145
+   },
+   "model_label": {
+    "equivalent_usd": 0.0118996,
+    "evidence": "The top follows part of the roof edge and the left partly follows vegetation, while the right and bottom lack clear continuous ground boundaries.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:03:54+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.35
+   },
    "reference": "21350718",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 388.5,
+   "edge": {
+    "beside": 36.58,
+    "on_line": 41.51,
+    "ratio": 1.135,
+    "samples": 159
+   },
+   "model_label": {
+    "equivalent_usd": 0.0107396,
+    "evidence": "The outline follows road and path edges on the north, east and south, and a building edge continuing into a narrow fence line on the west.",
+    "label": "strong",
+    "labelled_at": "2026-10-13T12:04:04+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.94
+   },
    "reference": "21350719",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 309.3,
+   "edge": {
+    "beside": 30.93,
+    "on_line": 34.1,
+    "ratio": 1.102,
+    "samples": 145
+   },
+   "model_label": {
+    "equivalent_usd": 0.0104796,
+    "evidence": "The sides roughly follow the driveway and neighboring property edge, but the bottom crosses lawn and canopy without a clear boundary.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:04:04+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.6
+   },
    "reference": "21350720",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 242.5,
+   "edge": {
+    "beside": 30.48,
+    "on_line": 34.68,
+    "ratio": 1.138,
+    "samples": 124
+   },
+   "model_label": {
+    "equivalent_usd": 0.043722,
+    "evidence": "The left side roughly follows a garden boundary, but the other sides cross roof, canopy, and pavement without clear matching edges.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:04:14+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.25
+   },
    "reference": "21350721",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 356.6,
+   "edge": {
+    "beside": 25.99,
+    "on_line": 26.29,
+    "ratio": 1.012,
+    "samples": 172
+   },
+   "model_label": {
+    "equivalent_usd": 0.0108396,
+    "evidence": "The upper side follows the roadside grass edge, but the lower side cuts through roofs and the left side runs under tree canopy.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:04:31+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.4
+   },
    "reference": "21350725",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 782.5,
+   "edge": {
+    "beside": 32.74,
+    "on_line": 25.57,
+    "ratio": 0.781,
+    "samples": 182
+   },
+   "model_label": {
+    "equivalent_usd": 0.0103196,
+    "evidence": "The upper outline follows the road edge and the left side a vegetation boundary, but the lower side cuts across roofs and yards.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:04:45+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.6
+   },
    "reference": "21350726",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 4.7,
+   "edge": {
+    "beside": 33.69,
+    "on_line": 36.26,
+    "ratio": 1.077,
+    "samples": 14
+   },
+   "model_label": {
+    "equivalent_usd": 0.0104896,
+    "evidence": "The outline mostly crosses the paved yard and tree canopy without following a distinct visible boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:04:45+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.1
+   },
    "reference": "21350727",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 94.1,
+   "edge": {
+    "beside": 32.12,
+    "on_line": 24.58,
+    "ratio": 0.765,
+    "samples": 52
+   },
+   "model_label": {
+    "equivalent_usd": 0.042582,
+    "evidence": "The outline mostly runs through tree canopy, with no clear wall, fence, or surface boundary following it.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:04:52+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "21350729",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 0.2,
+   "edge": {
+    "beside": 38.87,
+    "on_line": 21.27,
+    "ratio": 0.547,
+    "samples": 4
+   },
+   "model_label": {
+    "equivalent_usd": 0.0089496,
+    "evidence": "The small yellow outline crosses grass with no matching fence, kerb, or surface boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:05:04+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0
+   },
    "reference": "21350739",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 1842.3,
+   "edge": {
+    "beside": 30.58,
+    "on_line": 43.13,
+    "ratio": 1.41,
+    "samples": 1340
+   },
+   "model_label": {
+    "equivalent_usd": 0.0139496,
+    "evidence": "Most of the outline follows road and access-lane edges against yards and grass, while some sections run beneath tree canopy.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:05:56+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.85
+   },
    "reference": "21351475",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 494.9,
+   "edge": {
+    "beside": 28.81,
+    "on_line": 37.6,
+    "ratio": 1.305,
+    "samples": 181
+   },
+   "model_label": {
+    "equivalent_usd": 0.0105396,
+    "evidence": "The top follows the lawn\u2013road edge and parts of the right side follow paving, while the left side crosses lawn and a roof and the bottom runs under canopy.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:05:33+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.4
+   },
    "reference": "21351476",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 130.3,
+   "edge": {
+    "beside": 18.21,
+    "on_line": 28.64,
+    "ratio": 1.573,
+    "samples": 59
+   },
+   "model_label": {
+    "equivalent_usd": 0.010719600000000001,
+    "evidence": "The long diagonal follows the lawn\u2013pavement boundary, while the other segments cross paved ground without clear edges.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:05:36+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.6
+   },
    "reference": "21351480",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 422.0,
+   "edge": {
+    "beside": 25.3,
+    "on_line": 32.19,
+    "ratio": 1.272,
+    "samples": 176
+   },
+   "model_label": {
+    "equivalent_usd": 0.0115796,
+    "evidence": "The right side follows the driveway edge and the bottom follows the road kerb, while the left crosses lawn and the top crosses the roof.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:05:57+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.5
+   },
    "reference": "28001521",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 1122.9,
+   "edge": {
+    "beside": 32.73,
+    "on_line": 45.26,
+    "ratio": 1.383,
+    "samples": 1068
+   },
+   "model_label": {
+    "equivalent_usd": 0.0167496,
+    "evidence": "Most of the outline follows visible road edges, but the short upper segment crosses vegetation and rooftops.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:07:03+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.85
+   },
    "reference": "36093305",
    "tile": "tile_2990_33074"
   },
   {
    "area_m2": 19.5,
+   "edge": {
+    "beside": 18.69,
+    "on_line": 31.87,
+    "ratio": 1.705,
+    "samples": 50
+   },
+   "model_label": {
+    "equivalent_usd": 0.04045,
+    "evidence": "The outline runs through tree canopy and scrub without a consistent visible boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:06:38+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "21350602",
    "tile": "tile_2990_33075"
   },
   {
    "area_m2": 253.9,
+   "edge": {
+    "beside": 30.21,
+    "on_line": 44.77,
+    "ratio": 1.482,
+    "samples": 133
+   },
+   "model_label": {
+    "equivalent_usd": 0.0105296,
+    "evidence": "Parts follow the paved yard boundary and building edges, while the right side runs beneath tree canopy.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:07:03+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.45
+   },
    "reference": "21350618",
    "tile": "tile_2990_33075"
   },
   {
    "area_m2": 344.7,
+   "edge": {
+    "beside": 28.36,
+    "on_line": 32.76,
+    "ratio": 1.155,
+    "samples": 105
+   },
+   "model_label": {
+    "equivalent_usd": 0.0094896,
+    "evidence": "The right side follows a narrow fence or hedge line, while the top crosses the roof and the left runs through shadowed vegetation.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:06:58+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.3
+   },
    "reference": "21350622",
    "tile": "tile_2990_33075"
   },
   {
    "area_m2": 859.4,
+   "edge": {
+    "beside": 22.2,
+    "on_line": 27.62,
+    "ratio": 1.244,
+    "samples": 264
+   },
+   "model_label": {
+    "equivalent_usd": 0.011739600000000001,
+    "evidence": "Parts of the left side follow a hedge or fence and the bottom follows the driveway edge, while the upper and right sides cross lawn and a roof.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:07:21+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.35
+   },
    "reference": "21350626",
    "tile": "tile_2990_33075"
   },
   {
    "area_m2": 6.7,
+   "edge": {
+    "beside": 29.86,
+    "on_line": 43.95,
+    "ratio": 1.472,
+    "samples": 23
+   },
+   "model_label": {
+    "equivalent_usd": 0.0119196,
+    "evidence": "Most of the outline crosses dark vegetation, with only the short right-hand end near a visible pavement edge.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:07:36+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.15
+   },
    "reference": "21350645",
    "tile": "tile_2990_33075"
   },
   {
    "area_m2": 38.1,
+   "edge": {
+    "beside": 44.59,
+    "on_line": 81.28,
+    "ratio": 1.823,
+    "samples": 76
+   },
+   "model_label": {
+    "equivalent_usd": 0.044758400000000004,
+    "evidence": "The road-facing edge follows a visible kerb, but the opposite edge crosses garden and paved driveway without a continuous boundary.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:08:12+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.6
+   },
    "reference": "21817911",
    "tile": "tile_2990_33075"
   },
   {
    "area_m2": 574.2,
+   "edge": {
+    "beside": 38.71,
+    "on_line": 46.02,
+    "ratio": 1.189,
+    "samples": 173
+   },
+   "model_label": {
+    "equivalent_usd": 0.011439600000000001,
+    "evidence": "The top and much of the right side follow roof and garden edges, while the left side cuts across driveway pavement and shadow.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:07:48+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.6
+   },
    "reference": "21349788",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 66.2,
+   "edge": {
+    "beside": 32.6,
+    "on_line": 30.83,
+    "ratio": 0.946,
+    "samples": 56
+   },
+   "model_label": {
+    "equivalent_usd": 0.013739600000000001,
+    "evidence": "The outline mostly crosses dark ground and the pale driveway without following a clear surface edge or fence.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:08:08+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.1
+   },
    "reference": "21350726",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 147.6,
+   "edge": {
+    "beside": 22.3,
+    "on_line": 22.87,
+    "ratio": 1.026,
+    "samples": 69
+   },
+   "model_label": {
+    "equivalent_usd": 0.008039600000000001,
+    "evidence": "The outline crosses continuous tree canopy with no clear fence, wall, hedge edge, or surface change following it.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:07:59+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "21350729",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 571.1,
+   "edge": {
+    "beside": 28.04,
+    "on_line": 40.87,
+    "ratio": 1.458,
+    "samples": 173
+   },
+   "model_label": {
+    "equivalent_usd": 0.0100196,
+    "evidence": "Much of the long diagonal edge follows vegetation beside paving and a building, while the upper edges run through tree canopy.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:08:18+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.5
+   },
    "reference": "21350730",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 48.0,
+   "edge": {
+    "beside": 21.87,
+    "on_line": 22.26,
+    "ratio": 1.018,
+    "samples": 74
+   },
+   "model_label": {
+    "equivalent_usd": 0.007809600000000001,
+    "evidence": "The short bottom edge follows a hedge or surface boundary, while both long diagonal sides cross grass and tree canopy without visible boundaries.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:08:23+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.1
+   },
    "reference": "21350745",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 1572.4,
+   "edge": {
+    "beside": 20.89,
+    "on_line": 21.63,
+    "ratio": 1.036,
+    "samples": 488
+   },
+   "model_label": {
+    "equivalent_usd": 0.0107696,
+    "evidence": "The lower edge follows a crop boundary and the upper-left edge follows a dirt strip, while the upper-right edge crosses trees and vegetation.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:08:51+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.55
+   },
    "reference": "21350761",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 675.7,
+   "edge": {
+    "beside": 18.19,
+    "on_line": 20.18,
+    "ratio": 1.109,
+    "samples": 275
+   },
+   "model_label": {
+    "equivalent_usd": 0.0102296,
+    "evidence": "The long sides mostly follow crop and vegetation changes, but the short left side crosses uniform grass and parts of the lower edge blend into trees.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:08:46+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.65
+   },
    "reference": "21350762",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 338.6,
+   "edge": {
+    "beside": 24.67,
+    "on_line": 27.73,
+    "ratio": 1.124,
+    "samples": 185
+   },
+   "model_label": {
+    "equivalent_usd": 0.0112196,
+    "evidence": "The upper and short left edges roughly follow the cultivated strip, while the lower edge runs under trees and the right edge cuts across bare soil.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:09:04+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.45
+   },
    "reference": "21350764",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 310.7,
+   "edge": {
+    "beside": 34.72,
+    "on_line": 56.99,
+    "ratio": 1.641,
+    "samples": 168
+   },
+   "model_label": {
+    "equivalent_usd": 0.015099600000000001,
+    "evidence": "The outline follows courtyard walls, building and roof edges, and the kerb along the street.",
+    "label": "strong",
+    "labelled_at": "2026-10-13T12:09:23+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.9
+   },
    "reference": "21350773",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 100.3,
+   "edge": {
+    "beside": 48.14,
+    "on_line": 62.86,
+    "ratio": 1.306,
+    "samples": 80
+   },
+   "model_label": {
+    "equivalent_usd": 0.026982799999999998,
+    "evidence": "The left side follows the roadside edge and the right side roughly follows the paving\u2013grass boundary, while the top and bottom lack clear continuous features.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:09:47+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.5
+   },
    "reference": "21350777",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 367.2,
+   "edge": {
+    "beside": 31.02,
+    "on_line": 53.16,
+    "ratio": 1.714,
+    "samples": 169
+   },
+   "model_label": {
+    "equivalent_usd": 0.010459600000000001,
+    "evidence": "Parts of the long sides follow building edges and garden boundaries, while the top and bottom cross roofs and other stretches disappear under vegetation.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:09:32+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.45
+   },
    "reference": "21351420",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 362.8,
+   "edge": {
+    "beside": 27.91,
+    "on_line": 60.67,
+    "ratio": 2.174,
+    "samples": 162
+   },
+   "model_label": {
+    "equivalent_usd": 0.019997599999999997,
+    "evidence": "The sides largely follow building and driveway edges and the bottom follows the road kerb, but the top crosses open lawn.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:09:46+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.7
+   },
    "reference": "21351421",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 421.6,
+   "edge": {
+    "beside": 23.81,
+    "on_line": 28.85,
+    "ratio": 1.212,
+    "samples": 201
+   },
+   "model_label": {
+    "equivalent_usd": 0.0096596,
+    "evidence": "Parts of the right side follow building edges and the lower left follows a driveway edge, while the rest crosses grass or tree canopy.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:10:04+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.25
+   },
    "reference": "21351422",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 136.7,
+   "edge": {
+    "beside": 24.4,
+    "on_line": 32.54,
+    "ratio": 1.333,
+    "samples": 119
+   },
+   "model_label": {
+    "equivalent_usd": 0.0103596,
+    "evidence": "Most of the outline runs through tree canopy and vegetation without a clear fence, hedge, or surface boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:10:11+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "21351423",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 117.7,
+   "edge": {
+    "beside": 43.59,
+    "on_line": 41.57,
+    "ratio": 0.954,
+    "samples": 64
+   },
+   "model_label": {
+    "equivalent_usd": 0.0107796,
+    "evidence": "The left side roughly follows a building edge, while the top crosses roof and canopy and the right side crosses paving.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:10:32+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.3
+   },
    "reference": "21351433",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 255.4,
+   "edge": {
+    "beside": 30.12,
+    "on_line": 51.61,
+    "ratio": 1.713,
+    "samples": 142
+   },
+   "model_label": {
+    "equivalent_usd": 0.0118796,
+    "evidence": "Parts of the sides follow building and courtyard edges, but the top crosses roof and paving and the bottom cuts through vegetation.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:10:35+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.5
+   },
    "reference": "21351435",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 182.1,
+   "edge": {
+    "beside": 40.73,
+    "on_line": 34.06,
+    "ratio": 0.836,
+    "samples": 110
+   },
+   "model_label": {
+    "equivalent_usd": 0.0114296,
+    "evidence": "Most of the outline crosses tree canopy and the grey roof; only a short stretch on the right follows a visible building edge.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:10:47+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.15
+   },
    "reference": "21351437",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 115.6,
+   "edge": {
+    "beside": 35.89,
+    "on_line": 35.12,
+    "ratio": 0.979,
+    "samples": 139
+   },
+   "model_label": {
+    "equivalent_usd": 0.0098196,
+    "evidence": "The western side follows the edge of a pale access path, while much of the eastern side runs beneath tree canopy without a clear visible boundary.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:10:49+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.5
+   },
    "reference": "21351440",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 28.3,
+   "edge": {
+    "beside": 41.58,
+    "on_line": 46.98,
+    "ratio": 1.13,
+    "samples": 59
+   },
+   "model_label": {
+    "equivalent_usd": 0.0140596,
+    "evidence": "Most of the outline runs across dark roofing and vegetation, with little continuous visible boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:11:21+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.15
+   },
    "reference": "39844249",
    "tile": "tile_2991_33074"
   },
   {
    "area_m2": 480.0,
+   "edge": {
+    "beside": 27.09,
+    "on_line": 22.1,
+    "ratio": 0.816,
+    "samples": 139
+   },
+   "model_label": {
+    "equivalent_usd": 0.0082296,
+    "evidence": "The outline mostly crosses dense tree canopy, with no clear fence, hedge, or surface boundary following its sides.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:11:00+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "21349929",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 350.0,
+   "edge": {
+    "beside": 25.97,
+    "on_line": 29.41,
+    "ratio": 1.132,
+    "samples": 151
+   },
+   "model_label": {
+    "equivalent_usd": 0.0072396000000000005,
+    "evidence": "The outline runs through continuous tree canopy with no visible fence, wall, or consistent surface boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:11:06+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0
+   },
    "reference": "21350570",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 481.6,
+   "edge": {
+    "beside": 26.83,
+    "on_line": 28.43,
+    "ratio": 1.059,
+    "samples": 196
+   },
+   "model_label": {
+    "equivalent_usd": 0.0100196,
+    "evidence": "Most of the outline crosses continuous tree canopy; only a short southern section roughly follows the woodland-to-grass transition.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:11:26+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.12
+   },
    "reference": "21350572",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 361.5,
+   "edge": {
+    "beside": 24.4,
+    "on_line": 23.86,
+    "ratio": 0.978,
+    "samples": 188
+   },
+   "model_label": {
+    "equivalent_usd": 0.0087796,
+    "evidence": "The outline runs through tree canopy and patchy grass without a clear boundary feature.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:11:32+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "21350576",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 392.8,
+   "edge": {
+    "beside": 24.08,
+    "on_line": 24.93,
+    "ratio": 1.035,
+    "samples": 188
+   },
+   "model_label": {
+    "equivalent_usd": 0.040852,
+    "evidence": "Most of the outline runs through tree canopy, with only a short lower section near a visible clearing edge.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:11:49+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.1
+   },
    "reference": "21350577",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 528.8,
+   "edge": {
+    "beside": 28.4,
+    "on_line": 26.92,
+    "ratio": 0.948,
+    "samples": 252
+   },
+   "model_label": {
+    "equivalent_usd": 0.041984,
+    "evidence": "The outline runs through dense tree canopy with no visible fence, wall, or distinct surface boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:11:56+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0
+   },
    "reference": "21350581",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 163.0,
+   "edge": {
+    "beside": 18.0,
+    "on_line": 18.14,
+    "ratio": 1.008,
+    "samples": 112
+   },
+   "model_label": {
+    "equivalent_usd": 0.044954,
+    "evidence": "Most of the outline runs through tree canopy, with only a short lower-left section roughly following the clearing edge.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:12:07+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.15
+   },
    "reference": "21350584",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 142.5,
+   "edge": {
+    "beside": 21.68,
+    "on_line": 22.07,
+    "ratio": 1.018,
+    "samples": 431
+   },
+   "model_label": {
+    "equivalent_usd": 0.039173599999999996,
+    "evidence": "The outline mostly crosses grass, tree canopy and shadows without a matching fence, hedge or surface boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:12:38+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.1
+   },
    "reference": "21350586",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 1438.6,
+   "edge": {
+    "beside": 25.5,
+    "on_line": 36.44,
+    "ratio": 1.429,
+    "samples": 304
+   },
+   "model_label": {
+    "equivalent_usd": 0.0104396,
+    "evidence": "The long upper and lower edges follow the cultivated field margins, while the angled right edges run partly beneath tree canopy.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:12:25+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.75
+   },
    "reference": "21350590",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 136.0,
+   "edge": {
+    "beside": 23.91,
+    "on_line": 29.06,
+    "ratio": 1.215,
+    "samples": 132
+   },
+   "model_label": {
+    "equivalent_usd": 0.0106896,
+    "evidence": "The long edges mostly follow the brown strip\u2019s vegetation margins, but parts of the lower edge and short ends cross indistinct bare ground.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:12:27+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.65
+   },
    "reference": "21350594",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 239.4,
+   "edge": {
+    "beside": 28.88,
+    "on_line": 31.46,
+    "ratio": 1.089,
+    "samples": 179
+   },
+   "model_label": {
+    "equivalent_usd": 0.0091796,
+    "evidence": "The long sides follow a cultivated strip beside vegetation, and the bottom meets a dirt track, but the top boundary is obscured by canopy.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:12:35+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.85
+   },
    "reference": "21350597",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 140.1,
+   "edge": {
+    "beside": 33.38,
+    "on_line": 26.29,
+    "ratio": 0.788,
+    "samples": 174
+   },
+   "model_label": {
+    "equivalent_usd": 0.041772,
+    "evidence": "The right long edge follows the garden\u2019s surface boundary, while the left edge and short top edge cross patchy bare ground without a clear boundary.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:12:51+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.5
+   },
    "reference": "21350599",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 800.5,
+   "edge": {
+    "beside": 33.85,
+    "on_line": 31.06,
+    "ratio": 0.918,
+    "samples": 158
+   },
+   "model_label": {
+    "equivalent_usd": 0.017069599999999997,
+    "evidence": "The upper edge crosses tree cover, while the long side and lower edge run within dirt tracks rather than following clear surface boundaries.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:13:26+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.1
+   },
    "reference": "21350600",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 370.8,
+   "edge": {
+    "beside": 24.45,
+    "on_line": 29.92,
+    "ratio": 1.224,
+    "samples": 229
+   },
+   "model_label": {
+    "equivalent_usd": 0.0096596,
+    "evidence": "The curved western side partly follows a vegetation edge, while the straight eastern side and lower end cut through tree canopy.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:13:11+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.4
+   },
    "reference": "21350741",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 550.8,
+   "edge": {
+    "beside": 23.83,
+    "on_line": 26.14,
+    "ratio": 1.097,
+    "samples": 187
+   },
+   "model_label": {
+    "equivalent_usd": 0.008849600000000001,
+    "evidence": "Most sides cross grass and tree canopy without clear boundaries; only a short section of the right side follows a vegetation edge.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:13:05+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.15
+   },
    "reference": "21350749",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 78.3,
+   "edge": {
+    "beside": 27.36,
+    "on_line": 29.53,
+    "ratio": 1.079,
+    "samples": 56
+   },
+   "model_label": {
+    "equivalent_usd": 0.0095196,
+    "evidence": "The outline runs through tree canopy and cuts across roof areas without following clear ground boundaries.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:13:23+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "21350751",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 338.4,
+   "edge": {
+    "beside": 25.31,
+    "on_line": 26.63,
+    "ratio": 1.052,
+    "samples": 76
+   },
+   "model_label": {
+    "equivalent_usd": 0.0098596,
+    "evidence": "The outline mostly crosses grass and scattered tree canopy without following a clear fence, hedge, or surface boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:13:39+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.1
+   },
    "reference": "21350755",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 649.0,
+   "edge": {
+    "beside": 26.49,
+    "on_line": 30.06,
+    "ratio": 1.134,
+    "samples": 653
+   },
+   "model_label": {
+    "equivalent_usd": 0.0095396,
+    "evidence": "The lower-left section follows a grass\u2013tree boundary, while most of the remaining outline runs beneath tree canopy.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:13:44+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.25
+   },
    "reference": "36093305",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 137.3,
+   "edge": {
+    "beside": 25.75,
+    "on_line": 25.49,
+    "ratio": 0.99,
+    "samples": 266
+   },
+   "model_label": {
+    "equivalent_usd": 0.007949600000000001,
+    "evidence": "The narrow outline runs mostly beneath tree canopy, with no clear continuous fence, hedge, or surface boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:13:51+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.1
+   },
    "reference": "36093307",
    "tile": "tile_2991_33075"
   },
   {
    "area_m2": 7382.3,
+   "edge": {
+    "beside": 17.85,
+    "on_line": 23.84,
+    "ratio": 1.336,
+    "samples": 577
+   },
+   "model_label": {
+    "equivalent_usd": 0.043952,
+    "evidence": "The left edge follows a clear vegetation boundary, while the top and much of the bottom cross continuous grass.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:14:05+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.35
+   },
    "reference": "21496499",
    "tile": "tile_3008_33024"
   },
   {
    "area_m2": 3361.3,
+   "edge": {
+    "beside": 17.2,
+    "on_line": 28.4,
+    "ratio": 1.651,
+    "samples": 610
+   },
+   "model_label": {
+    "equivalent_usd": 0.0106496,
+    "evidence": "The outline follows the road kerb, curved driveway and lawn edges, but some stretches cross grass or are obscured by trees.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:14:20+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.75
+   },
    "reference": "21496501",
    "tile": "tile_3008_33024"
   },
   {
    "area_m2": 51.2,
+   "edge": {
+    "beside": 21.76,
+    "on_line": 16.06,
+    "ratio": 0.738,
+    "samples": 62
+   },
+   "model_label": {
+    "equivalent_usd": 0.011699600000000001,
+    "evidence": "The outline follows the boundary between the darker vegetated strip and the lighter ground to its right.",
+    "label": "strong",
+    "labelled_at": "2026-10-13T12:14:25+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.9
+   },
    "reference": "21496505",
    "tile": "tile_3008_33024"
   },
   {
    "area_m2": 42.9,
+   "edge": {
+    "beside": 18.23,
+    "on_line": 17.61,
+    "ratio": 0.966,
+    "samples": 25
+   },
+   "model_label": {
+    "equivalent_usd": 0.0078796,
+    "evidence": "The outline crosses a largely uniform dark roof surface without following a visible edge or boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:14:14+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.02
+   },
    "reference": "21663166",
    "tile": "tile_3008_33024"
   },
   {
    "area_m2": 35.1,
+   "edge": {
+    "beside": 23.77,
+    "on_line": 13.97,
+    "ratio": 0.588,
+    "samples": 62
+   },
+   "model_label": {
+    "equivalent_usd": 0.0085596,
+    "evidence": "The outline crosses grass and paved surfaces without following any visible wall, kerb, or surface boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:14:37+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0
+   },
    "reference": "29350225",
    "tile": "tile_3008_33024"
   },
   {
    "area_m2": 2318.6,
+   "edge": {
+    "beside": 20.48,
+    "on_line": 24.39,
+    "ratio": 1.191,
+    "samples": 219
+   },
+   "model_label": {
+    "equivalent_usd": 0.0215636,
+    "evidence": "The short left edge roughly follows a fence or vegetation boundary, while the long sloping edge crosses grass without a clear visible boundary.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:14:55+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.2
+   },
    "reference": "39163675",
    "tile": "tile_3008_33024"
   },
   {
    "area_m2": 6665.6,
+   "edge": {
+    "beside": 22.85,
+    "on_line": 22.44,
+    "ratio": 0.982,
+    "samples": 635
+   },
+   "model_label": {
+    "equivalent_usd": 0.0108296,
+    "evidence": "Much of the outline follows yard\u2013field boundaries and the roadside verge, but parts of the upper and right sides cross grass without a clear boundary.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:14:59+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.7
+   },
    "reference": "21496505",
    "tile": "tile_3009_33023"
   },
   {
    "area_m2": 81.7,
+   "edge": {
+    "beside": 26.73,
+    "on_line": 23.69,
+    "ratio": 0.886,
+    "samples": 121
+   },
+   "model_label": {
+    "equivalent_usd": 0.0107096,
+    "evidence": "Most of the outline runs through tree canopy and shadow, with the slanted side crossing a small roof rather than following its edge.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:14:57+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.1
+   },
    "reference": "35744694",
    "tile": "tile_3009_33023"
   },
   {
    "area_m2": 142.5,
+   "edge": {
+    "beside": 27.1,
+    "on_line": 23.37,
+    "ratio": 0.862,
+    "samples": 194
+   },
+   "model_label": {
+    "equivalent_usd": 0.0097496,
+    "evidence": "Only a short upper stretch follows the track edge; most of the outline crosses grass and tree canopy.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:15:12+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.15
+   },
    "reference": "35744695",
    "tile": "tile_3009_33023"
   },
   {
    "area_m2": 1414.3,
+   "edge": {
+    "beside": 26.57,
+    "on_line": 26.25,
+    "ratio": 0.988,
+    "samples": 249
+   },
+   "model_label": {
+    "equivalent_usd": 0.0098996,
+    "evidence": "The outline runs through scrub and tree canopy without following a clear fence, hedge, or surface boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:15:36+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "35341808",
    "tile": "tile_3009_33024"
   },
   {
    "area_m2": 47.2,
+   "edge": {
+    "beside": 27.91,
+    "on_line": 40.07,
+    "ratio": 1.436,
+    "samples": 55
+   },
+   "model_label": {
+    "equivalent_usd": 0.0196316,
+    "evidence": "The upper and long edges mostly follow the building\u2013pavement boundary, but the lower section disappears into tree canopy and shadow.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:15:49+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.65
+   },
    "reference": "30395748",
    "tile": "tile_3022_33074"
   },
   {
    "area_m2": 60.8,
+   "edge": {
+    "beside": 35.47,
+    "on_line": 35.65,
+    "ratio": 1.005,
+    "samples": 63
+   },
+   "model_label": {
+    "equivalent_usd": 0.009439600000000001,
+    "evidence": "The lower diagonal side follows the paved path edge, while the upper diagonal and short end cross grass.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:15:35+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.4
+   },
    "reference": "30396170",
    "tile": "tile_3022_33074"
   },
   {
    "area_m2": 1261.0,
+   "edge": {
+    "beside": 29.89,
+    "on_line": 26.71,
+    "ratio": 0.894,
+    "samples": 346
+   },
+   "model_label": {
+    "equivalent_usd": 0.0123196,
+    "evidence": "Most of the outline follows the hedge\u2013grass transition and yard or roadside edges, while the short left side crosses open grass.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:15:56+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.75
+   },
    "reference": "30397470",
    "tile": "tile_3022_33074"
   },
   {
    "area_m2": 630.9,
+   "edge": {
+    "beside": 27.42,
+    "on_line": 26.62,
+    "ratio": 0.971,
+    "samples": 171
+   },
+   "model_label": {
+    "equivalent_usd": 0.0081096,
+    "evidence": "The outline crosses grass and tree canopy without a clear fence, hedge, or surface boundary along its sides.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:16:11+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "30397654",
    "tile": "tile_3022_33074"
   },
   {
    "area_m2": 720.2,
+   "edge": {
+    "beside": 21.92,
+    "on_line": 38.97,
+    "ratio": 1.778,
+    "samples": 343
+   },
+   "model_label": {
+    "equivalent_usd": 0.042362,
+    "evidence": "One long side follows the dirt track, while the opposite side and short top edge cross grass without a clear boundary.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:16:27+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.5
+   },
    "reference": "30397976",
    "tile": "tile_3022_33074"
   },
   {
    "area_m2": 1134.5,
+   "edge": {
+    "beside": 30.32,
+    "on_line": 27.6,
+    "ratio": 0.91,
+    "samples": 299
+   },
+   "model_label": {
+    "equivalent_usd": 0.021173599999999997,
+    "evidence": "Most of the outline runs under tree canopy or across grass, with only short stretches near the tree\u2013grass boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:16:22+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.15
+   },
    "reference": "30398248",
    "tile": "tile_3022_33074"
   },
   {
    "area_m2": 495.4,
+   "edge": {
+    "beside": 25.74,
+    "on_line": 38.14,
+    "ratio": 1.482,
+    "samples": 221
+   },
+   "model_label": {
+    "equivalent_usd": 0.0106196,
+    "evidence": "The lower edge follows a clear field boundary, while the upper and right edges cross mixed bare ground and part of a building.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:16:38+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.55
+   },
    "reference": "30398308",
    "tile": "tile_3022_33074"
   },
   {
    "area_m2": 2456.9,
+   "edge": {
+    "beside": 30.15,
+    "on_line": 24.2,
+    "ratio": 0.803,
+    "samples": 563
+   },
+   "model_label": {
+    "equivalent_usd": 0.0128396,
+    "evidence": "The lower outline follows a dirt-track edge and cultivated-field margins, while the upper sides cross grass without clear boundaries.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:17:02+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.6
+   },
    "reference": "30398400",
    "tile": "tile_3022_33074"
   },
   {
    "area_m2": 1.2,
+   "edge": {
+    "beside": 12.75,
+    "on_line": 14.65,
+    "ratio": 1.149,
+    "samples": 8
+   },
+   "model_label": {
+    "equivalent_usd": 0.0075396000000000005,
+    "evidence": "The short outline at the top crosses uniform vegetation without a visible boundary feature.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:16:50+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0
+   },
    "reference": "30398671",
    "tile": "tile_3022_33074"
   },
   {
    "area_m2": 600.8,
+   "edge": {
+    "beside": 33.52,
+    "on_line": 55.13,
+    "ratio": 1.645,
+    "samples": 224
+   },
+   "model_label": {
+    "equivalent_usd": 0.0113396,
+    "evidence": "The lower and roadside edges follow paving and field boundaries, while the upper edge crosses paving and shadow without a clear boundary.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:17:13+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.65
+   },
    "reference": "30398904",
    "tile": "tile_3022_33074"
   },
   {
    "area_m2": 220.3,
+   "edge": {
+    "beside": 40.85,
+    "on_line": 41.34,
+    "ratio": 1.012,
+    "samples": 224
+   },
+   "model_label": {
+    "equivalent_usd": 0.0100296,
+    "evidence": "The long sides partly follow dirt-track margins and a cultivated-field edge, but fade into the bare yard near the buildings.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:17:21+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.6
+   },
    "reference": "30399088",
    "tile": "tile_3022_33074"
   },
   {
    "area_m2": 729.2,
+   "edge": {
+    "beside": 26.17,
+    "on_line": 26.72,
+    "ratio": 1.021,
+    "samples": 359
+   },
+   "model_label": {
+    "equivalent_usd": 0.0099696,
+    "evidence": "The lower long edge follows the hedge-to-field boundary, while the upper edge and left end run through vegetation.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:17:29+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.45
+   },
    "reference": "30399089",
    "tile": "tile_3022_33074"
   },
   {
    "area_m2": 12.5,
+   "edge": {
+    "beside": 31.23,
+    "on_line": 34.71,
+    "ratio": 1.112,
+    "samples": 24
+   },
+   "model_label": {
+    "equivalent_usd": 0.0094896,
+    "evidence": "The line mostly crosses patchy shrubs and canopy without following a clear fence, hedge edge, or surface boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:17:44+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.1
+   },
    "reference": "30399092",
    "tile": "tile_3022_33074"
   },
   {
    "area_m2": 591.2,
+   "edge": {
+    "beside": 23.93,
+    "on_line": 24.76,
+    "ratio": 1.035,
+    "samples": 374
+   },
+   "model_label": {
+    "equivalent_usd": 0.0124296,
+    "evidence": "The lower edge roughly follows the field\u2019s boundary with trees and grass, while the upper edge crosses cultivated ground.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:18:14+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.5
+   },
    "reference": "30399812",
    "tile": "tile_3022_33074"
   },
   {
    "area_m2": 635.9,
+   "edge": {
+    "beside": 27.96,
+    "on_line": 35.64,
+    "ratio": 1.274,
+    "samples": 375
+   },
+   "model_label": {
+    "equivalent_usd": 0.0098596,
+    "evidence": "The short ends follow the field margin and roadside verge, but both long sides cross uniform cultivated ground.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:18:09+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.1
+   },
    "reference": "30399942",
    "tile": "tile_3022_33074"
   },
   {
    "area_m2": 1397.0,
+   "edge": {
+    "beside": 17.93,
+    "on_line": 16.99,
+    "ratio": 0.947,
+    "samples": 224
+   },
+   "model_label": {
+    "equivalent_usd": 0.0189416,
+    "evidence": "The outline mostly crosses uniform grass, with only a short stretch near the left side aligning with a vegetation edge.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:18:18+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.1
+   },
    "reference": "36858360",
    "tile": "tile_3022_33074"
   },
   {
    "area_m2": 333.2,
+   "edge": {
+    "beside": 42.81,
+    "on_line": 44.42,
+    "ratio": 1.037,
+    "samples": 226
+   },
+   "model_label": {
+    "equivalent_usd": 0.0113096,
+    "evidence": "The upper edge and left kink roughly follow the grass-to-bare-ground transition, while the long lower edge and short right edge cross bare ground.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:18:33+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.5
+   },
    "reference": "39219876",
    "tile": "tile_3022_33074"
   },
   {
    "area_m2": 1435.8,
+   "edge": {
+    "beside": 28.63,
+    "on_line": 43.03,
+    "ratio": 1.503,
+    "samples": 273
+   },
+   "model_label": {
+    "equivalent_usd": 0.011099600000000001,
+    "evidence": "The outline follows the roadside edge, a fence and part of the house edge, but its diagonal extensions cross vegetation without a clear boundary.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:18:55+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.6
+   },
    "reference": "30395500",
    "tile": "tile_3022_33075"
   },
   {
    "area_m2": 111.0,
+   "edge": {
+    "beside": 27.37,
+    "on_line": 25.56,
+    "ratio": 0.934,
+    "samples": 141
+   },
+   "model_label": {
+    "equivalent_usd": 0.0083696,
+    "evidence": "The outline runs mostly through tree canopy and shadow, with no clear fence, hedge, kerb or surface boundary following its sides.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:18:55+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "30395585",
    "tile": "tile_3022_33075"
   },
   {
    "area_m2": 545.0,
+   "edge": {
+    "beside": 32.43,
+    "on_line": 28.21,
+    "ratio": 0.87,
+    "samples": 251
+   },
+   "model_label": {
+    "equivalent_usd": 0.0090396,
+    "evidence": "Most of the outline runs under tree canopy or cuts across the roof; only the short roadside edge follows a visible yard boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:19:11+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.1
+   },
    "reference": "30395868",
    "tile": "tile_3022_33075"
   },
   {
    "area_m2": 669.6,
+   "edge": {
+    "beside": 18.24,
+    "on_line": 17.62,
+    "ratio": 0.966,
+    "samples": 215
+   },
+   "model_label": {
+    "equivalent_usd": 0.0076896,
+    "evidence": "Almost the entire outline runs through dense tree canopy with no clear fence, hedge, or surface boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:19:08+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "30396396",
    "tile": "tile_3022_33075"
   },
   {
    "area_m2": 420.8,
+   "edge": {
+    "beside": 29.37,
+    "on_line": 31.87,
+    "ratio": 1.085,
+    "samples": 178
+   },
+   "model_label": {
+    "equivalent_usd": 0.018051599999999998,
+    "evidence": "The short upper-right side follows a path edge, while the long diagonal sides run through tree canopy.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:19:39+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.18
+   },
    "reference": "30397746",
    "tile": "tile_3022_33075"
   },
   {
    "area_m2": 1004.6,
+   "edge": {
+    "beside": 18.01,
+    "on_line": 19.72,
+    "ratio": 1.095,
+    "samples": 267
+   },
+   "model_label": {
+    "equivalent_usd": 0.0118796,
+    "evidence": "Parts of the left edge follow the field\u2013vegetation boundary, but the upper and long diagonal edges cross continuous grass.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:19:52+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.35
+   },
    "reference": "30398671",
    "tile": "tile_3022_33075"
   },
   {
    "area_m2": 1467.8,
+   "edge": {
+    "beside": 29.74,
+    "on_line": 36.27,
+    "ratio": 1.22,
+    "samples": 651
+   },
+   "model_label": {
+    "equivalent_usd": 0.0086096,
+    "evidence": "Both sides closely follow the visible edges of the paved road against grass, vegetation, and driveways.",
+    "label": "strong",
+    "labelled_at": "2026-10-13T12:19:42+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.95
+   },
    "reference": "30399200",
    "tile": "tile_3022_33075"
   },
   {
    "area_m2": 784.1,
+   "edge": {
+    "beside": 23.42,
+    "on_line": 25.54,
+    "ratio": 1.091,
+    "samples": 286
+   },
+   "model_label": {
+    "equivalent_usd": 0.0082196,
+    "evidence": "The outline runs through tree canopy and shadow, with almost no visible fence, hedge or surface boundary following it.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:19:36+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "30399284",
    "tile": "tile_3022_33075"
   },
   {
    "area_m2": 534.0,
+   "edge": {
+    "beside": 25.53,
+    "on_line": 24.3,
+    "ratio": 0.952,
+    "samples": 248
+   },
+   "model_label": {
+    "equivalent_usd": 0.0088996,
+    "evidence": "The short road-facing edge roughly follows roadside vegetation, while both long sides cross continuous tree canopy without visible boundaries.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:20:03+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.08
+   },
    "reference": "30402887",
    "tile": "tile_3022_33075"
   },
   {
    "area_m2": 474.7,
+   "edge": {
+    "beside": 16.06,
+    "on_line": 14.4,
+    "ratio": 0.897,
+    "samples": 141
+   },
+   "model_label": {
+    "equivalent_usd": 0.0084096,
+    "evidence": "The right side follows the grass\u2013road edge, while the long diagonal and lower angled side cross uniform grass.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:20:06+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.2
+   },
    "reference": "36858360",
    "tile": "tile_3022_33075"
   },
   {
    "area_m2": 468.2,
+   "edge": {
+    "beside": 19.65,
+    "on_line": 20.37,
+    "ratio": 1.037,
+    "samples": 344
+   },
+   "model_label": {
+    "equivalent_usd": 0.0101896,
+    "evidence": "The long diagonal sides run through tree canopy without a matching visible boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:20:27+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "30395682",
    "tile": "tile_3023_33074"
   },
   {
    "area_m2": 638.2,
+   "edge": {
+    "beside": 29.18,
+    "on_line": 18.51,
+    "ratio": 0.634,
+    "samples": 214
+   },
+   "model_label": {
+    "equivalent_usd": 0.011869600000000001,
+    "evidence": "Only a short stretch near the building aligns with a paved edge; most of the outline crosses tree canopy and shadow.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:20:48+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.1
+   },
    "reference": "30395748",
    "tile": "tile_3023_33074"
   },
   {
    "area_m2": 3422.7,
+   "edge": {
+    "beside": 22.84,
+    "on_line": 22.3,
+    "ratio": 0.976,
+    "samples": 536
+   },
+   "model_label": {
+    "equivalent_usd": 0.0075396000000000005,
+    "evidence": "The outline runs through dense tree canopy, with no clear fence, track, or vegetation boundary following its sides.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:20:37+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "30395942",
    "tile": "tile_3023_33074"
   },
   {
    "area_m2": 483.8,
+   "edge": {
+    "beside": 30.62,
+    "on_line": 31.31,
+    "ratio": 1.022,
+    "samples": 96
+   },
+   "model_label": {
+    "equivalent_usd": 0.0085296,
+    "evidence": "The long upper edge crosses tree canopy, while only a short part of the right edge roughly follows the vegetation-to-bare-ground boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:20:48+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.15
+   },
    "reference": "30395943",
    "tile": "tile_3023_33074"
   },
   {
    "area_m2": 116.6,
+   "edge": {
+    "beside": 26.78,
+    "on_line": 19.85,
+    "ratio": 0.741,
+    "samples": 87
+   },
+   "model_label": {
+    "equivalent_usd": 0.040932,
+    "evidence": "The outline crosses mottled grass and tree shadow without following a clear fence, hedge, or surface boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:20:52+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "30396053",
    "tile": "tile_3023_33074"
   },
   {
    "area_m2": 5667.5,
+   "edge": {
+    "beside": 31.03,
+    "on_line": 30.47,
+    "ratio": 0.982,
+    "samples": 1158
+   },
+   "model_label": {
+    "equivalent_usd": 0.0080296,
+    "evidence": "Almost the entire outline runs beneath dense tree canopy, with only a short lower segment near a visible clearing edge.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:21:04+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "30396096",
    "tile": "tile_3023_33074"
   },
   {
    "area_m2": 262.0,
+   "edge": {
+    "beside": 27.0,
+    "on_line": 27.14,
+    "ratio": 1.005,
+    "samples": 286
+   },
+   "model_label": {
+    "equivalent_usd": 0.040782,
+    "evidence": "Both drawn sides closely follow the visible edges of the diagonal track.",
+    "label": "strong",
+    "labelled_at": "2026-10-13T12:21:24+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.95
+   },
    "reference": "30396170",
    "tile": "tile_3023_33074"
   },
   {
    "area_m2": 83.9,
+   "edge": {
+    "beside": 19.95,
+    "on_line": 19.18,
+    "ratio": 0.961,
+    "samples": 128
+   },
+   "model_label": {
+    "equivalent_usd": 0.0085596,
+    "evidence": "The outline crosses grass and tree shadow without following a clear fence, hedge, or surface boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:21:21+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "30396255",
    "tile": "tile_3023_33074"
   },
   {
    "area_m2": 536.3,
+   "edge": {
+    "beside": 20.52,
+    "on_line": 22.85,
+    "ratio": 1.114,
+    "samples": 335
+   },
+   "model_label": {
+    "equivalent_usd": 0.0096696,
+    "evidence": "The outline runs through tree canopy without a clear fence, track, or surface boundary along its sides.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:21:42+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "30396480",
    "tile": "tile_3023_33074"
   },
   {
    "area_m2": 554.1,
+   "edge": {
+    "beside": 22.78,
+    "on_line": 23.38,
+    "ratio": 1.027,
+    "samples": 150
+   },
+   "model_label": {
+    "equivalent_usd": 0.0071696,
+    "evidence": "The outline runs through continuous tree canopy with no visible fence, wall, or surface boundary aligned to it.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:21:34+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0
+   },
    "reference": "30396569",
    "tile": "tile_3023_33074"
   },
   {
    "area_m2": 530.2,
+   "edge": {
+    "beside": 31.07,
+    "on_line": 20.11,
+    "ratio": 0.647,
+    "samples": 275
+   },
+   "model_label": {
+    "equivalent_usd": 0.0116896,
+    "evidence": "A short section follows the roof edge, but most of the outline crosses shaded ground and tree canopy without a visible boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:22:11+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.15
+   },
    "reference": "30403048",
    "tile": "tile_3023_33074"
   },
   {
    "area_m2": 713.3,
+   "edge": {
+    "beside": 25.44,
+    "on_line": 23.65,
+    "ratio": 0.929,
+    "samples": 165
+   },
+   "model_label": {
+    "equivalent_usd": 0.0109396,
+    "evidence": "Part of the lower diagonal follows the edge of a brown clearing, while the other sides cross vegetation without a clear boundary.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:22:07+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.25
+   },
    "reference": "30395500",
    "tile": "tile_3023_33075"
   },
   {
    "area_m2": 1556.4,
+   "edge": {
+    "beside": 30.49,
+    "on_line": 30.09,
+    "ratio": 0.987,
+    "samples": 425
+   },
+   "model_label": {
+    "equivalent_usd": 0.0095596,
+    "evidence": "The right-hand boundary follows a transition between lighter and darker tree canopy, while the top and diagonal sides cross continuous woodland.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:22:14+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.35
+   },
    "reference": "30395722",
    "tile": "tile_3023_33075"
   },
   {
    "area_m2": 3142.6,
+   "edge": {
+    "beside": 23.84,
+    "on_line": 21.46,
+    "ratio": 0.9,
+    "samples": 340
+   },
+   "model_label": {
+    "equivalent_usd": 0.0083296,
+    "evidence": "The outline crosses continuous tree canopy without following any discernible ground boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:22:23+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0
+   },
    "reference": "30395730",
    "tile": "tile_3023_33075"
   },
   {
    "area_m2": 106.7,
+   "edge": {
+    "beside": 29.46,
+    "on_line": 27.79,
+    "ratio": 0.943,
+    "samples": 87
+   },
+   "model_label": {
+    "equivalent_usd": 0.0079796,
+    "evidence": "The outline runs through dense tree canopy without a discernible fence, hedge, or surface boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:22:34+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "30395868",
    "tile": "tile_3023_33075"
   },
   {
    "area_m2": 2254.4,
+   "edge": {
+    "beside": 25.55,
+    "on_line": 31.56,
+    "ratio": 1.235,
+    "samples": 485
+   },
+   "model_label": {
+    "equivalent_usd": 0.0103496,
+    "evidence": "Some lower sections follow bare-soil and grass edges, while most of the outline crosses grass or runs beneath tree canopy.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:22:56+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.3
+   },
    "reference": "30396259",
    "tile": "tile_3023_33075"
   },
   {
    "area_m2": 100.9,
+   "edge": {
+    "beside": 24.02,
+    "on_line": 21.79,
+    "ratio": 0.907,
+    "samples": 80
+   },
+   "model_label": {
+    "equivalent_usd": 0.0086196,
+    "evidence": "The outline crosses tree canopy and mottled vegetation without a clear fence, hedge, or surface boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:22:46+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "30396284",
    "tile": "tile_3023_33075"
   },
   {
    "area_m2": 1180.8,
+   "edge": {
+    "beside": 26.01,
+    "on_line": 27.86,
+    "ratio": 1.071,
+    "samples": 320
+   },
+   "model_label": {
+    "equivalent_usd": 0.0086196,
+    "evidence": "Parts of the long sides follow the clearing\u2019s vegetation edge, while other stretches and the short ends run beneath trees and shadow.",
+    "label": "partial",
+    "labelled_at": "2026-10-13T12:23:01+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.45
+   },
    "reference": "30396455",
    "tile": "tile_3023_33075"
   },
   {
    "area_m2": 838.0,
+   "edge": {
+    "beside": 24.38,
+    "on_line": 26.2,
+    "ratio": 1.075,
+    "samples": 258
+   },
+   "model_label": {
+    "equivalent_usd": 0.008379600000000001,
+    "evidence": "The outline runs through dense tree canopy without a clear fence, wall, or consistent vegetation boundary.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:22:59+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.05
+   },
    "reference": "30396630",
    "tile": "tile_3023_33075"
   },
   {
    "area_m2": 24.2,
+   "edge": {
+    "beside": 24.97,
+    "on_line": 27.99,
+    "ratio": 1.121,
+    "samples": 33
+   },
+   "model_label": {
+    "equivalent_usd": 0.0085196,
+    "evidence": "The drawn outline crosses continuous tree canopy with no visible fence, edge, or surface change.",
+    "label": "weak",
+    "labelled_at": "2026-10-13T12:23:09+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0
+   },
    "reference": "30403021",
    "tile": "tile_3023_33075"
   },
   {
    "area_m2": 330.2,
+   "edge": {
+    "beside": 17.22,
+    "on_line": 33.74,
+    "ratio": 1.96,
+    "samples": 172
+   },
+   "model_label": {
+    "equivalent_usd": 0.011189600000000001,
+    "evidence": "The outline largely follows the boundary between the brown cultivated strip and surrounding grass, with short sections obscured by tree shadows.",
+    "label": "strong",
+    "labelled_at": "2026-10-13T12:23:29+00:00",
+    "model": "gpt-6.1-sol",
+    "visible_share": 0.9
+   },
    "reference": "30403083",
    "tile": "tile_3023_33075"
   }
