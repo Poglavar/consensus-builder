@@ -496,7 +496,7 @@ if (isEntrypoint(import.meta.url)) {
     main().catch(async error => {
         const diagnostic = safeFailureDiagnostic(error);
         console.error(`[${new Date().toISOString()}] SOCIETY AGENT FAILED: ${diagnostic}`);
-        if (process.argv.includes('--live')) await sendTelegram(`Society agent FAILED: ${diagnostic}`);
+        if (process.argv.includes('--live')) await sendTelegram(`Society agent FAILED: ${diagnostic}`, { alert: true });
         process.exit(1);
     });
 }

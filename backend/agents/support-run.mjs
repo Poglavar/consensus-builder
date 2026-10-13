@@ -258,6 +258,6 @@ async function main() {
 main().catch(async error => {
     const diagnostic = safeFailureDiagnostic(error);
     console.error(`[${new Date().toISOString()}] SUPPORTER FAILED: ${diagnostic}`);
-    await sendTelegram(`Supporter agent FAILED: ${diagnostic}`);
+    await sendTelegram(`Supporter agent FAILED: ${diagnostic}`, { alert: true });
     process.exit(1);
 });
