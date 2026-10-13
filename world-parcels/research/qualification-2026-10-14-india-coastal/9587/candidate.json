@@ -1,0 +1,63 @@
+{
+ "city": {
+  "code": "9587",
+  "name": "Kozhikode",
+  "point": [
+   75.84215,
+   11.19465
+  ]
+ },
+ "sampleIds": [
+  "IN-KL-CZMP-g1~758407110~111956660~06f21e6c175d9756b6d9b33545159c7fade34b666bd92b8c364b885a5666c253",
+  "IN-KL-CZMP-g1~758418721~111950181~942994cd74c3afb5f58472b91047d4384ef8afcf82e04fa4814b01dc3e6e22dd",
+  "IN-KL-CZMP-g1~758428951~111932063~306cf9095b648a19bc28e75718ef20e4cc129cc4a2a3e06076fa1ee9a6646c0b"
+ ],
+ "absentId": "IN-KL-CZMP-g1~758407110~111956660~0000000000000000000000000000000000000000000000000000000000000000",
+ "metricEpsg": "EPSG:32643",
+ "sourceClassification": {
+  "isParcel": true,
+  "evidence": [
+   "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Kerala/MapServer/6",
+   "https://czmp.ncscm.res.in/",
+   "world-parcels/research/ncscm-czmp-cities-2026-10-13.json"
+  ]
+ },
+ "cellSizeDegrees": 0.001,
+ "descriptor": {
+  "adapter": "arcgis",
+  "identityKind": "geometry-sha256-v1",
+  "lookupCellSize": 0.001,
+  "objectIdField": "OBJECTID",
+  "maxFeatures": 2000,
+  "maxConcurrentQueries": 2,
+  "countryCode": "IN",
+  "catalogueUrl": "https://czmp.ncscm.res.in/",
+  "licenceNote": "No reuse licence is stated on the CZMP portal or the ArcGIS service; the plan is published for public viewing.",
+  "id": "in-kl-ncscm-czmp-survey-plots",
+  "name": "NCSCM CZMP — Kerala survey plots",
+  "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Kerala/MapServer/6",
+  "idPrefix": "IN-KL-CZMP-",
+  "parcelNumberField": "Plot",
+  "outFields": [
+   "OBJECTID",
+   "Plot",
+   "Village_Name",
+   "District_Name",
+   "State_Name"
+  ],
+  "pageSize": 1000,
+  "maxBboxKm2": 4,
+  "metricSrid": 32643,
+  "cityIds": [],
+  "scope": "Survey-plot outlines on the Kerala Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+  "evidenceFile": "research/ncscm-czmp-cities-2026-10-13.json",
+  "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.",
+  "caveats": [
+   "Coastal-zone planning maps, not the land-records register: plot outlines are a geometry reference, not proof of current title or ownership.",
+   "Survey labels can be repeated, blank or zero. They are shown as published, never used as identity; OBJECTID is a transport field.",
+   "Application identity uses the source namespace plus canonical geometry SHA-256 at 1e-7-degree precision and a spatial locator. A changed outline gets a new reference; absence means that outline version was not returned.",
+   "The service answers browsers directly (CORS allows this site); no relay is used.",
+   "The service does not state the plan version or the survey date of the underlying plot maps."
+  ]
+ }
+}

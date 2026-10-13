@@ -394,7 +394,7 @@ async function main() {
             qualificationEvidenceFile: qualificationFile, metricReportFile: metricFile,
             ...(item.population2025 ? { population2025: item.population2025 } : {}), ...(item.population2015 ? { population2015: item.population2015 } : {}),
             appCityId: item.appCityId,
-            note: 'Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified.' });
+            note: 'Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified.' });
         let source = registry.sources.find(s => s.sourceId === item.descriptor.id);
         if (!source) {
             const d = item.descriptor;

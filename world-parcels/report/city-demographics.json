@@ -2381,11 +2381,14 @@
       "registryCityIds": [
         "geonames:1264527"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "chennai"
+      ],
       "wupCityCode": 10747,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 10092351,
       "population2025": 11153205,
@@ -2449,7 +2452,10 @@
           "distanceKm": 9.457
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "parcelSourceId": "in-tn-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/10747/qualification.json"
     },
     {
       "id": "wup2025:1854",
@@ -5373,11 +5379,14 @@
       "registryCityIds": [
         "wup2025:9587"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "kozhikode"
+      ],
       "wupCityCode": 9587,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 3874719,
       "population2025": 6123872,
@@ -5441,7 +5450,10 @@
           "distanceKm": 0.001
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "parcelSourceId": "in-kl-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/9587/qualification.json"
     },
     {
       "id": "wup2025:10098",
@@ -13364,11 +13376,14 @@
       "registryCityIds": [
         "wup2025:10013"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "thiruvananthapuram"
+      ],
       "wupCityCode": 10013,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 2366175,
       "population2025": 2946119,
@@ -13432,7 +13447,10 @@
           "distanceKm": 0
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "parcelSourceId": "in-kl-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/10013/qualification.json"
     },
     {
       "id": "wup2025:11531",
@@ -32255,10 +32273,13 @@
       "registryCityIds": [
         "wup2025:9663"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "ponnani"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -32276,7 +32297,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-kl-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/9663/qualification.json"
     },
     {
       "id": "wup2025:9895",
@@ -34249,10 +34273,13 @@
       "registryCityIds": [
         "wup2025:11255"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "visakhapatnam"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -34270,7 +34297,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-ap-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/11255/qualification.json"
     },
     {
       "id": "wup2025:4627",
@@ -34923,10 +34953,13 @@
       "registryCityIds": [
         "wup2025:7917"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "vasai_virar"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -34944,7 +34977,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-mh-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/7917/qualification.json"
     },
     {
       "id": "wup2025:7158",
@@ -43100,10 +43136,13 @@
       "registryCityIds": [
         "wup2025:10081"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "colachel"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -43121,7 +43160,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-tn-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/10081/qualification.json"
     },
     {
       "id": "wup2025:10231",
@@ -45999,10 +46041,13 @@
       "registryCityIds": [
         "wup2025:6440"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "bhavnagar"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -46020,7 +46065,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-gj-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/6440/qualification.json"
     },
     {
       "id": "wup2025:10802",
@@ -47675,10 +47723,13 @@
       "registryCityIds": [
         "wup2025:8148"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "panvel"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -47696,7 +47747,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-mh-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/8148/qualification.json"
     },
     {
       "id": "wup2025:4711",
@@ -47931,10 +47985,13 @@
       "registryCityIds": [
         "wup2025:7770"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "vapi"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -47952,7 +48009,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-gj-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/7770/qualification.json"
     },
     {
       "id": "wup2025:7010",
@@ -57872,11 +57932,17 @@
       "registryCityIds": [
         "wup2025:11081"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "kakinada"
+      ],
       "cohorts": [
         "registry",
-        "overnight-next-1101-1200"
-      ]
+        "overnight-next-1101-1200",
+        "app"
+      ],
+      "parcelSourceId": "in-ap-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/11081/qualification.json"
     },
     {
       "id": "wup2025:11208",

@@ -11533,7 +11533,7 @@
     },
     {
       "id": "in-mh-ncscm-czmp-survey-plots",
-      "name": "NCSCM CZMP 2019 — Maharashtra survey plots (Mumbai)",
+      "name": "NCSCM CZMP 2019 — Maharashtra survey plots",
       "adapter": "arcgis",
       "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES_2019/CZMP_Maharashtra19/MapServer/5",
       "identityKind": "geometry-sha256-v1",
@@ -11555,9 +11555,11 @@
       "countryCode": "IN",
       "metricSrid": 32643,
       "cityIds": [
-        "mumbai"
+        "mumbai",
+        "vasai_virar",
+        "panvel"
       ],
-      "scope": "City survey (CTS) and town-planning-scheme (TPS) plots drawn on Maharashtra's Coastal Zone Management Plan 2019 maps, which cover Greater Mumbai's eleven City Survey Offices. Labels repeat within a village, so application references are derived from each outline and change when an outline changes.",
+      "scope": "Survey-plot outlines drawn on Maharashtra's Coastal Zone Management Plan 2019 maps, including city survey (CTS) and town-planning-scheme (TPS) plots in Greater Mumbai. Coverage follows mapped coastal planning areas and can omit inland neighbourhoods. Labels repeat within a village, so application references are derived from each outline and change when an outline changes.",
       "evidenceFile": "research/mumbai-deep-2026-10-13.json",
       "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP 2019 survey plots, Maharashtra. Plot labels shown as published; references derived from geometry. Adapted to WGS84.",
       "catalogueUrl": "https://czmp.ncscm.res.in/",
@@ -12737,7 +12739,10 @@
       "pageSize": 1000,
       "maxBboxKm2": 4,
       "metricSrid": 32644,
-      "cityIds": [],
+      "cityIds": [
+        "colachel",
+        "chennai"
+      ],
       "scope": "Survey-plot outlines on the Tamil Nadu Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
       "evidenceFile": "research/ncscm-czmp-cities-2026-10-13.json",
       "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Tamil Nadu. Plot labels shown as published; references derived from geometry. Adapted to WGS84.",
@@ -12747,7 +12752,11 @@
         "Application identity uses the source namespace plus canonical geometry SHA-256 at 1e-7-degree precision and a spatial locator. A changed outline gets a new reference; absence means that outline version was not returned.",
         "The service answers browsers directly (CORS allows this site); no relay is used.",
         "The service does not state the plan version or the survey date of the underlying plot maps."
-      ]
+      ],
+      "metricSridByCity": {
+        "colachel": 32643,
+        "chennai": 32644
+      }
     },
     {
       "adapter": "arcgis",
@@ -12774,7 +12783,11 @@
       "pageSize": 1000,
       "maxBboxKm2": 4,
       "metricSrid": 32643,
-      "cityIds": [],
+      "cityIds": [
+        "kozhikode",
+        "ponnani",
+        "thiruvananthapuram"
+      ],
       "scope": "Survey-plot outlines on the Kerala Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
       "evidenceFile": "research/ncscm-czmp-cities-2026-10-13.json",
       "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.",
@@ -12812,7 +12825,10 @@
       "pageSize": 1000,
       "maxBboxKm2": 4,
       "metricSrid": 32644,
-      "cityIds": [],
+      "cityIds": [
+        "kakinada",
+        "visakhapatnam"
+      ],
       "scope": "Survey-plot outlines on the Andhra Pradesh Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
       "evidenceFile": "research/ncscm-czmp-cities-2026-10-13.json",
       "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Andhra Pradesh. Plot labels shown as published; references derived from geometry. Adapted to WGS84.",
@@ -12883,9 +12899,12 @@
         "Village"
       ],
       "pageSize": 1000,
-      "maxBboxKm2": 4,
+      "maxBboxKm2": 25,
       "metricSrid": 32642,
-      "cityIds": [],
+      "cityIds": [
+        "bhavnagar",
+        "vapi"
+      ],
       "scope": "Survey-plot outlines on the Gujarat Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
       "evidenceFile": "research/ncscm-czmp-cities-2026-10-13.json",
       "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Gujarat. Plot labels shown as published; references derived from geometry. Adapted to WGS84.",
@@ -12895,7 +12914,11 @@
         "Application identity uses the source namespace plus canonical geometry SHA-256 at 1e-7-degree precision and a spatial locator. A changed outline gets a new reference; absence means that outline version was not returned.",
         "The service answers browsers directly (CORS allows this site); no relay is used.",
         "The service does not state the plan version or the survey date of the underlying plot maps."
-      ]
+      ],
+      "metricSridByCity": {
+        "bhavnagar": 32643,
+        "vapi": 32643
+      }
     },
     {
       "adapter": "arcgis",

@@ -17023,10 +17023,10 @@
     },
     {
       "sourceId": "in-mh-ncscm-czmp-survey-plots",
-      "name": "NCSCM CZMP 2019 — Maharashtra survey plots (Mumbai)",
+      "name": "NCSCM CZMP 2019 — Maharashtra survey plots",
       "operator": null,
       "countryCode": "IN",
-      "scope": "City survey (CTS) and town-planning-scheme (TPS) plots drawn on Maharashtra's Coastal Zone Management Plan 2019 maps, which cover Greater Mumbai's eleven City Survey Offices. Labels repeat within a village, so application references are derived from each outline and change when an outline changes.",
+      "scope": "Survey-plot outlines drawn on Maharashtra's Coastal Zone Management Plan 2019 maps, including city survey (CTS) and town-planning-scheme (TPS) plots in Greater Mumbai. Coverage follows mapped coastal planning areas and can omit inland neighbourhoods. Labels repeat within a village, so application references are derived from each outline and change when an outline changes.",
       "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES_2019/CZMP_Maharashtra19/MapServer/5",
       "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
       "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
@@ -17034,20 +17034,28 @@
       "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
       "evidenceFile": "world-parcels/research/qualification-2026-10-13-mumbai/7945/qualification.json",
       "verifiedCityIds": [
-        "geonames:1275339"
+        "geonames:1275339",
+        "wup2025:7917",
+        "wup2025:8148"
       ],
       "verificationStatus": "verified_live_city_adapter",
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
-          "mumbai"
+          "mumbai",
+          "vasai_virar",
+          "panvel"
         ],
         "additionalCityEvidence": {
-          "mumbai": "world-parcels/research/qualification-2026-10-13-mumbai/7945/qualification.json"
+          "mumbai": "world-parcels/research/qualification-2026-10-13-mumbai/7945/qualification.json",
+          "vasai_virar": "world-parcels/research/qualification-2026-10-14-india-coastal/7917/qualification.json",
+          "panvel": "world-parcels/research/qualification-2026-10-14-india-coastal/8148/qualification.json"
         }
       },
       "appCityIds": [
-        "mumbai"
+        "mumbai",
+        "vasai_virar",
+        "panvel"
       ]
     },
     {
@@ -17396,6 +17404,142 @@
       },
       "appCityIds": [
         "chirand"
+      ]
+    },
+    {
+      "sourceId": "in-gj-ncscm-czmp-survey-plots",
+      "name": "NCSCM CZMP — Gujarat survey plots",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Survey-plot outlines on the Gujarat Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+      "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Gujarat/MapServer/6",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/6440/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:6440",
+        "wup2025:7770"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "bhavnagar",
+          "vapi"
+        ],
+        "additionalCityEvidence": {
+          "bhavnagar": "world-parcels/research/qualification-2026-10-14-india-coastal/6440/qualification.json",
+          "vapi": "world-parcels/research/qualification-2026-10-14-india-coastal/7770/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "bhavnagar",
+        "vapi"
+      ]
+    },
+    {
+      "sourceId": "in-kl-ncscm-czmp-survey-plots",
+      "name": "NCSCM CZMP — Kerala survey plots",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Survey-plot outlines on the Kerala Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+      "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Kerala/MapServer/6",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/9587/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:9587",
+        "wup2025:9663",
+        "wup2025:10013"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "kozhikode",
+          "ponnani",
+          "thiruvananthapuram"
+        ],
+        "additionalCityEvidence": {
+          "kozhikode": "world-parcels/research/qualification-2026-10-14-india-coastal/9587/qualification.json",
+          "ponnani": "world-parcels/research/qualification-2026-10-14-india-coastal/9663/qualification.json",
+          "thiruvananthapuram": "world-parcels/research/qualification-2026-10-14-india-coastal/10013/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "kozhikode",
+        "ponnani",
+        "thiruvananthapuram"
+      ]
+    },
+    {
+      "sourceId": "in-tn-ncscm-czmp-survey-plots",
+      "name": "NCSCM CZMP — Tamil Nadu survey plots",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Survey-plot outlines on the Tamil Nadu Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+      "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_TamilNadu/MapServer/6",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/10081/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:10081",
+        "geonames:1264527"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "colachel",
+          "chennai"
+        ],
+        "additionalCityEvidence": {
+          "colachel": "world-parcels/research/qualification-2026-10-14-india-coastal/10081/qualification.json",
+          "chennai": "world-parcels/research/qualification-2026-10-14-india-coastal/10747/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "colachel",
+        "chennai"
+      ]
+    },
+    {
+      "sourceId": "in-ap-ncscm-czmp-survey-plots",
+      "name": "NCSCM CZMP — Andhra Pradesh survey plots",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Survey-plot outlines on the Andhra Pradesh Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+      "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_AndhraPradesh/MapServer/5",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/11081/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:11081",
+        "wup2025:11255"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "kakinada",
+          "visakhapatnam"
+        ],
+        "additionalCityEvidence": {
+          "kakinada": "world-parcels/research/qualification-2026-10-14-india-coastal/11081/qualification.json",
+          "visakhapatnam": "world-parcels/research/qualification-2026-10-14-india-coastal/11255/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "kakinada",
+        "visakhapatnam"
       ]
     }
   ],
@@ -18662,9 +18806,11 @@
       ],
       "citySource": "https://www.geonames.org/1264527/chennai.html",
       "researchOrder": 29,
-      "parcelStatus": "temporarily_unavailable",
-      "sourceIds": [],
-      "researchFile": "research/chennai.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-tn-ncscm-czmp-survey-plots"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-coastal/10747/qualification.json",
       "previousResearchFile": "research/chennai.json",
       "retryFile": "research/retry/cities/chennai.json",
       "wupCityCode": 10747,
@@ -18709,7 +18855,13 @@
           "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
           "nextStep": "Reach official eServices from its landing page, resolve the WUP point to the applicable FMB or urban TSLR hierarchy, and verify a map boundary with a stable survey identifier."
         }
-      ]
+      ],
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/10747/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-coastal/10747/metric-report.json",
+      "population2025": 11153205,
+      "population2015": 10092351,
+      "appCityId": "chennai",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "geonames:2314302",
@@ -20064,9 +20216,10 @@
       "researchOrder": 66,
       "parcelStatus": "verified_sample_partial_coverage",
       "sourceIds": [
-        "in-kl-entebhoomi-110114"
+        "in-kl-entebhoomi-110114",
+        "in-kl-ncscm-czmp-survey-plots"
       ],
-      "researchFile": "research/kozhikode.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-coastal/9587/qualification.json",
       "aliases": [
         "wup2025:9587",
         "Kozhikode",
@@ -20133,7 +20286,13 @@
           "technicalBlockers": [],
           "termsAreInformational": true
         }
-      ]
+      ],
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/9587/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-coastal/9587/metric-report.json",
+      "population2025": 6123872,
+      "population2015": 3874719,
+      "appCityId": "kozhikode",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:10098",
@@ -22740,9 +22899,10 @@
       "researchOrder": 166,
       "parcelStatus": "verified_sample_partial_coverage",
       "sourceIds": [
-        "in-kl-entebhoomi-010111"
+        "in-kl-entebhoomi-010111",
+        "in-kl-ncscm-czmp-survey-plots"
       ],
-      "researchFile": "research/thiruvananthapuram.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-coastal/10013/qualification.json",
       "previousResearchFile": "research/thiruvananthapuram.json",
       "retryFile": "research/retry/cities/thiruvananthapuram.json",
       "aliases": [
@@ -22811,7 +22971,13 @@
           "technicalBlockers": [],
           "termsAreInformational": true
         }
-      ]
+      ],
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/10013/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-coastal/10013/metric-report.json",
+      "population2025": 2946119,
+      "population2015": 2366175,
+      "appCityId": "thiruvananthapuram",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:11531",
@@ -35481,9 +35647,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 367,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-9663-ponnani.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-kl-ncscm-czmp-survey-plots"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-coastal/9663/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-9663-ponnani.json",
       "aliases": [
         "wup2025:9663",
@@ -35508,7 +35676,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-9663-ponnani.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/9663/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-coastal/9663/metric-report.json",
+      "population2025": 2409567,
+      "population2015": 1702693,
+      "appCityId": "ponnani",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:9895",
@@ -38121,9 +38295,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 429,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-11255-visakhapatnam.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-ap-ncscm-czmp-survey-plots"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-coastal/11255/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-11255-visakhapatnam.json",
       "aliases": [
         "wup2025:11255",
@@ -38148,7 +38324,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-11255-visakhapatnam.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/11255/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-coastal/11255/metric-report.json",
+      "population2025": 1641957,
+      "population2015": 1553023,
+      "appCityId": "visakhapatnam",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:4627",
@@ -39056,9 +39238,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 451,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-7917-vasai-virar.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-mh-ncscm-czmp-survey-plots"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-coastal/7917/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-7917-vasai-virar.json",
       "aliases": [
         "wup2025:7917",
@@ -39083,7 +39267,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-7917-vasai-virar.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/7917/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-coastal/7917/metric-report.json",
+      "population2025": 1542177,
+      "population2015": 1358600,
+      "appCityId": "vasai_virar",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:7158",
@@ -50811,9 +51001,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 706,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-10081-colachel.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-tn-ncscm-czmp-survey-plots"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-coastal/10081/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-10081-colachel.json",
       "aliases": [
         "wup2025:10081",
@@ -50843,7 +51035,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-10081-colachel.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/10081/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-coastal/10081/metric-report.json",
+      "population2025": 837735,
+      "population2015": 706988,
+      "appCityId": "colachel",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:10231",
@@ -54978,9 +55176,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 796,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-6440-bhavnagar.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-gj-ncscm-czmp-survey-plots"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-coastal/6440/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-6440-bhavnagar.json",
       "aliases": [
         "wup2025:6440",
@@ -55012,7 +55212,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-6440-bhavnagar.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/6440/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-coastal/6440/metric-report.json",
+      "population2025": 739115,
+      "population2015": 697588,
+      "appCityId": "bhavnagar",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:10802",
@@ -57411,9 +57617,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 848,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-8148-panvel.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-mh-ncscm-czmp-survey-plots"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-coastal/8148/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-8148-panvel.json",
       "aliases": [
         "wup2025:8148",
@@ -57443,7 +57651,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-8148-panvel.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/8148/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-coastal/8148/metric-report.json",
+      "population2025": 692036,
+      "population2015": 636609,
+      "appCityId": "panvel",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:4711",
@@ -57785,9 +57999,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 856,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-7770-vapi.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-gj-ncscm-czmp-survey-plots"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-coastal/7770/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-7770-vapi.json",
       "aliases": [
         "wup2025:7770",
@@ -57817,7 +58033,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-7770-vapi.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/7770/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-coastal/7770/metric-report.json",
+      "population2025": 682459,
+      "population2015": 557957,
+      "appCityId": "vapi",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:7010",
@@ -75344,10 +75566,12 @@
       "checked": true,
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "registryGeometryFound": false,
-      "researchFile": "research/overnight-next-2026-10-09/city-11081-kakinada.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-coastal/11081/qualification.json",
       "latestAssessmentFile": "research/overnight-next-2026-10-09/city-11081-kakinada.json",
-      "parcelStatus": "no_open_geometry_found",
-      "sourceIds": [],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-ap-ncscm-czmp-survey-plots"
+      ],
       "aliases": [
         "wup2025:11081",
         "Kakinada"
@@ -75389,7 +75613,12 @@
           "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
           "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim."
         }
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/11081/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-coastal/11081/metric-report.json",
+      "population2015": 481624,
+      "appCityId": "kakinada",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:11208",

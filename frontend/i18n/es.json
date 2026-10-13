@@ -3914,6 +3914,17 @@
     },
     "city": {
         "labels": {
+            "bhavnagar": "Bhavnagar, India",
+            "vapi": "Vapi, India",
+            "vasai_virar": "Vasai-Virar, India",
+            "panvel": "Panvel, India",
+            "kozhikode": "Kozhikode, India",
+            "ponnani": "Ponnani, India",
+            "thiruvananthapuram": "Thiruvananthapuram, India",
+            "colachel": "Colachel, India",
+            "chennai": "Chennai, India",
+            "kakinada": "Kakinada, India",
+            "visakhapatnam": "Visakhapatnam, India",
             "sirsa": "Sirsa, India",
             "hisar": "Hisar, India",
             "kaithal": "Kaithal, India",
