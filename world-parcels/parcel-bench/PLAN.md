@@ -4,7 +4,7 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-13 (synthetic imagery sensitivity study complete). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-14 (expanded selection frozen; fresh baseline and resolution-augmentation comparison in preparation). Status values: todo · running · done · dropped (with the reason).
 
 ## Where we stand (2026-10-13)
 
@@ -17,8 +17,10 @@ Last updated 2026-10-13 (synthetic imagery sensitivity study complete). Status v
 Parcel F1 counts a parcel as recovered when one prediction overlaps it at IoU ≥ 0.5. The model is the
 layered v0 recipe (convnext_tiny encoder, U-Net decoder, RGB + OSM rasters in; boundary, interior and
 distance maps out; watershed reconstruction). The method holds up; absolute quality is not yet usable.
-Round 2 now has three seeds and paired intervals. Both selection sets still contain only four geographic
-blocks; tile-level intervals understate geographic uncertainty. The visibility audit describes image
+Round 2 now has three seeds and paired intervals. The v1 selection sets contain only four geographic
+blocks; tile-level intervals understate geographic uncertainty. Each v2 now has 12 blocks (48 tiles),
+with the original final sets preserved. Every v2 arm must be refit from ImageNet initialization: the added
+selection tiles appeared in prior full-pool training. Those old checkpoints cannot validate v2. The visibility audit describes image
 support but does not measure a recoverability ceiling. More data, image quality, training and reconstruction
 remain hypotheses to compare; a nonsignificant gain does not identify which one limits performance.
 
@@ -54,7 +56,7 @@ in three lanes, two Split runs about 40 minutes; a 1,600-tile 30-epoch run is ab
 | 8 | Ljubljana and a Spanish Csa city | laptop + GPU | todo |
 | 9 | Serving check (CPU inference) | laptop | todo |
 | 10 | Product decision: show guesses where the score clears a bar | the user | todo |
-| 11 | Satellite domain: score and train for satellite-like input | laptop + GPU | (a) synthetic selection study done 2026-10-13; training and real imagery pending |
+| 11 | Satellite domain: score and train for satellite-like input | laptop + GPU | (a) done; (b) expanded splits frozen, GPU setup running; (c) real imagery pending |
 | 12 | Nearby same-climate donor: a Dalmatian (Csa) city's tiles scored zero-shot and few-shot on Split | laptop + GPU | todo |
 
 **1. Bootstrap confidence intervals.** Resample tiles to give every pooled score a 95% interval and the
@@ -129,6 +131,15 @@ fresh test. Expand geographic selection coverage before the next model-selection
 spatial buffers absent from every compared checkpoint's training data, or refit all arms after freezing
 the larger split. Reassigning previously trained tiles would not create new held-out evidence.
 
+The first step 11(b) comparison is frozen in `gpu/plans/selection-v2-resolution.json`: three seeds per
+city and arm, all 1,623 eligible Zagreb / 395 Split training tiles, 30 epochs, the existing encoder,
+optimizer and reconstruction, and clean selection checkpoint choice every two epochs. The only changed
+training setting is a 50% probability of RGB-only box down/up-sampling, with GSD sampled uniformly from
+the 0.3 m model input grid to 1.0 m. Rotation, flipping, OSM dropout and targets stay paired by seed.
+Compare clean, 0.5 m and 1.0 m inputs with paired 12-block intervals and report seed ranges. These are
+synthetic resolution tests; real satellite transfer remains unmeasured. Do not compare v2 absolute
+scores with v1 to claim a training gain: both the holdout composition and training pool changed.
+
 **12. Nearby same-climate donor.** The direct test of the practice-region thesis that round 2 could not
 make (Zagreb and Split differ in climate as well as distance): export a Dalmatian Csa city 60–120 km from Split
 (Šibenik or Zadar; same national parcel table and DGU imagery, so `export_city.py` covers it), train on it, and
@@ -148,11 +159,25 @@ half a day (export) plus 1 GPU-h, about $0.50.
 | Total | 4–5 working days | about 8–11 h with overhead | about $4–7 |
 
 Spend log: 2026-10-12 $1.40; 2026-10-13 round 2 (36 runs, 105 min of queue, about 2.4 h of box) $1.20.
-Vast.ai credit after round 2: $7.38; top up before step 8.
+Vast.ai credit after round 2: $7.38. Credit before the v2 run: $7.3517. The first empty rental was terminated after a stalled image pull;
+the current RTX 4090 is $0.5333/hour including 60 GB storage. Startup is still in progress after
+switching to the provider's own PyTorch 2.13 image. Actual spend will be reconciled after termination.
 2026-10-13 imagery sensitivity: 72 fixed-checkpoint evaluations, about 10 minutes of local analysis,
 $0 billed; no new training or GPU rental.
 
 ## Learned (newest first)
+
+- 2026-10-14, validation expansion: `expand_selection.py` deterministically selects eight additional
+  2×2 blocks per city from cached training metadata, with at least 500 m separation and disjoint parcel
+  source IDs. The original 16 selection and 16 final records are preserved. Zagreb has three selection
+  blocks in each density bin; Split has one low, three medium, four high and four dense blocks because
+  no further eligible low-density block exists. This covers more geography but is not a probability
+  sample of either city. Training drops from 2,143 to 1,623 Zagreb tiles and 896 to 395 Split tiles;
+  the Zagreb purge includes 30 exhausted diagnostic tiles in addition to the 490 spatial/identity removals.
+  New checkpoint exposure records include ancestral training and selection geometry; training, resume,
+  initialization and scoring reject contamination, missing ancestry on v2, and changed resume recipes.
+  Both actual old city checkpoints were verified to fail the v2 check before prediction. No v2 final
+  imagery has been scored. New manifests: `manifests/{zagreb,split}-v2.json`.
 
 - 2026-10-13, step 11(a): `layered/imagery_study.py`, nine RGB conditions, 32 unique selection images,
   four checkpoints (three source-city seeds, one coastal-city seed), 72 evaluations / 1,152 tile predictions.

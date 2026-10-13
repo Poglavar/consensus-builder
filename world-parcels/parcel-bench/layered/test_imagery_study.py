@@ -190,6 +190,53 @@ class GeographicStudyTests(unittest.TestCase):
         self.assertAlmostEqual(details['cases']['haze']['delta_interval'][1], -0.1)
         np.testing.assert_allclose(details['cases']['haze']['per_block_delta'], [-0.2, -0.1], atol=1e-6)
         self.assertEqual(result['blocks'], [['a', 'b'], ['c', 'd']])
+        self.assertNotIn('training_arm_comparisons', result)
+
+    def test_report_compares_training_arms_directly_within_each_case(self):
+        records = [
+            {'id': 'a', 'bbox': [0, 0, 60, 30]},
+            {'id': 'b', 'bbox': [60, 0, 120, 30]},
+            {'id': 'c', 'bbox': [300, 0, 360, 30]},
+            {'id': 'd', 'bbox': [360, 0, 420, 30]},
+        ]
+        manifests = [{'version': version, 'splits': {'selection': {'tiles': records}}}
+                     for version in ('synthetic-v1', 'synthetic-v2')]
+        baseline = {
+            'clean': [{'a': 6, 'b': 6, 'c': 6, 'd': 6}, {'a': 5, 'b': 5, 'c': 5, 'd': 5}],
+            'haze': [{'a': 4, 'b': 4, 'c': 4, 'd': 4}, {'a': 3, 'b': 3, 'c': 3, 'd': 3}],
+        }
+        resolution = {
+            'clean': [{'a': 8, 'b': 8, 'c': 8, 'd': 8}, {'a': 7, 'b': 7, 'c': 7, 'd': 7}],
+            'haze': [{'a': 6, 'b': 6, 'c': 6, 'd': 6}, {'a': 5, 'b': 5, 'c': 5, 'd': 5}],
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary)
+            for arm, cases in (('baseline', baseline), ('resolution', resolution)):
+                for version in ('synthetic-v1', 'synthetic-v2'):
+                    for seed, case_rows in enumerate(zip(cases['clean'], cases['haze']), 1):
+                        for case, rows in zip(('clean', 'haze'), case_rows):
+                            save_eval(output / arm / f'seed-{seed}' / version / case, rows)
+            report = imagery_study.summarise(
+                output,
+                [('resolution', [Path('seed-one'), Path('seed-two')]),
+                 ('baseline', [Path('seed-one'), Path('seed-two')])],
+                manifests, ['clean', 'haze'], replicates=500)
+            markdown = (output / 'report.md').read_text()
+
+        result = report['benchmarks']['synthetic-v1']['training_arm_comparisons']
+        self.assertEqual(set(result), {'clean', 'haze'})
+        for case in ('clean', 'haze'):
+            delta = result[case]['differences']['resolution - baseline']['parcel_f1']
+            self.assertAlmostEqual(delta['point'], 0.2)
+            self.assertAlmostEqual(delta['low'], 0.2)
+            self.assertAlmostEqual(delta['high'], 0.2)
+            self.assertEqual(result[case]['tiles'], 2)
+            self.assertEqual(result[case]['replicates'], 500)
+        self.assertIn('| clean | resolution - baseline | +0.200 | +0.200 to +0.200 |', markdown)
+        self.assertIn('| haze | resolution - baseline | +0.200 | +0.200 to +0.200 |', markdown)
+        second_benchmark_row = markdown.index('| synthetic-v2 | baseline | 2 | haze |')
+        first_comparison_header = markdown.index('## Training-arm comparisons for synthetic-v1')
+        self.assertLess(second_benchmark_row, first_comparison_header)
 
 
 if __name__ == '__main__':

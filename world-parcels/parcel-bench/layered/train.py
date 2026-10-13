@@ -32,12 +32,15 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parent))
 import score  # noqa: E402
 from ledger import recipe_hash  # noqa: E402
+from exposure import combine_exposure, validate_exposure, validate_resume  # noqa: E402
+from imagery import augment_resolution  # noqa: E402
 from model import ParcelNet  # noqa: E402
 from reconstruct import RECON_DEFAULTS, reconstruct  # noqa: E402
 from targets import load_image, osm_channels, tile_targets  # noqa: E402
 
 DEFAULT_MANIFEST = HERE.parent / 'manifests' / 'zagreb-v1.json'
 RECIPE_FILES = [HERE / 'train.py', HERE / 'model.py', HERE / 'targets.py', HERE / 'reconstruct.py',
+                HERE / 'exposure.py', HERE / 'imagery.py',
                 HERE.parent.parent / 'guess-spike' / 'guess.py']
 
 
@@ -58,6 +61,7 @@ class TileIndex:
         self.manifest = read_json(manifest_path)
         self.dataset = Path(dataset)
         samples = {sample['id']: sample for sample in read_json(self.dataset / 'manifest.json')['samples']}
+        self.samples = samples
         self.tiles = {}
         for split_name in ('selection', 'final'):
             for record in self.manifest['splits'][split_name]['tiles']:
@@ -74,6 +78,13 @@ class TileIndex:
             sample = samples[tile_id]
             self.tiles[tile_id] = self.entry(tile_id, sample, sample['bbox'], 'train')
         self.scoring = self.manifest['scoring']
+        validate_exposure(self.exposure(pool_ids, []), self.manifest)
+
+    def exposure(self, train_ids, selection_ids, ancestor='imagenet'):
+        if ancestor == 'imagenet':
+            ancestor = {'format': 1, 'crs': self.manifest['crs'], 'training': [], 'selection': []}
+        return combine_exposure(self.manifest['crs'], [self.samples[t] for t in train_ids],
+                                [self.samples[t] for t in selection_ids], ancestor)
 
     def entry(self, tile_id, sample, bbox, split):
         osm = self.dataset / (sample.get('osm_input') or f"{sample['split']}/{tile_id}.osm-input.json")
@@ -119,8 +130,11 @@ def load_cache(entries, size, cap_m, dilate_px, cache_dir):
 
 
 class TileDataset(Dataset):
-    def __init__(self, cache, ids, *, augment, osm_dropout, seed):
+    def __init__(self, cache, ids, *, augment, osm_dropout, seed, resolution_aug_prob=0.0,
+                 resolution_aug_max_gsd=1.0, tile_size_m=153.6):
         self.cache, self.ids, self.augment, self.osm_dropout, self.seed, self.epoch = cache, list(ids), augment, osm_dropout, seed, 0
+        self.resolution_aug_prob, self.resolution_aug_max_gsd = resolution_aug_prob, resolution_aug_max_gsd
+        self.tile_size_m = tile_size_m
 
     def __len__(self):
         return len(self.ids)
@@ -143,6 +157,9 @@ class TileDataset(Dataset):
             image, osm, boundary, interior, distance = arrays
             if self.osm_dropout and rng.random() < self.osm_dropout:
                 osm = np.zeros_like(osm)
+            image = augment_resolution(image, [0, 0, self.tile_size_m, self.tile_size_m], seed=self.seed,
+                                       epoch=self.epoch, index=index, probability=self.resolution_aug_prob,
+                                       max_gsd_m=self.resolution_aug_max_gsd)
         x = np.ascontiguousarray(np.concatenate([image, osm]))
         y = {'boundary': np.ascontiguousarray(boundary), 'interior': np.ascontiguousarray(interior),
              'distance': np.ascontiguousarray(distance)}
@@ -250,10 +267,11 @@ def build_configs(thresholds, interior_seeds_options, hard_options):
             for t in thresholds for s in interior_seeds_options for h in hard_options]
 
 
-def load_init(path, encoder, size):
+def load_init(path, encoder, size, manifest):
     """Fine-tuning start: the model weights of another run's checkpoint (optimizer and schedule start fresh),
     plus a description of where they came from for the recipe: file hash, epoch and the donor run's results."""
     state = torch.load(path, map_location='cpu', weights_only=False)
+    validate_exposure(state.get('exposure'), manifest)
     if state.get('encoder') != encoder or state.get('in_chans') != 6 or state.get('size') != size:
         raise ValueError(f"--init {path} holds {state.get('encoder')} at {state.get('size')} px with "
                          f"{state.get('in_chans')} channels, not {encoder} at {size} px with 6")
@@ -265,7 +283,7 @@ def load_init(path, encoder, size):
     donor = read_json(donor) if donor.exists() else {}
     info = {'checkpoint': str(path), 'sha256': digest.hexdigest()[:16], 'epoch': state.get('epoch'),
             **{key: donor.get(key) for key in ('manifest_version', 'pool', 'n_train', 'seed', 'recipe_hash')}}
-    return state['model'], info
+    return state['model'], info, state.get('exposure')
 
 
 def make_scheduler(optimizer, total_steps, warmup):
@@ -293,6 +311,29 @@ def train(args):
     subset_seed = args.subset_seed if args.subset_seed is not None else args.seed
     train_ids = subset_ids(index.ids('train'), args.train_tiles, subset_seed)
     selection_ids = index.ids('selection')[:args.selection_tiles] if args.selection_tiles else index.ids('selection')
+    init_weights, init, ancestor = (load_init(args.init, args.encoder, args.size, index.manifest)
+                                     if args.init else (None, None, 'imagenet'))
+    exposure = index.exposure(train_ids, selection_ids, ancestor)
+    validate_exposure(exposure, index.manifest)
+    recipe = {'args': json.loads(json.dumps({k: (str(v) if isinstance(v, Path) else v) for k, v in vars(args).items()})),
+              'recipe_hash': recipe_hash(RECIPE_FILES), 'manifest_version': index.manifest['version'],
+              'manifest_sha256': hashlib.sha256(args.manifest.read_bytes()).hexdigest(),
+              'dataset_sha256': hashlib.sha256((args.dataset / 'manifest.json').read_bytes()).hexdigest(),
+              'pool': index.pool_name, 'n_train': len(train_ids), 'subset_seed': subset_seed, 'reconstruction': RECON_DEFAULTS,
+              'init': init, 'train_tiles': train_ids, 'selection_tiles': selection_ids, 'exposure': exposure}
+    resume_state = None
+    if args.resume and not (out / 'recipe.json').exists():
+        raise ValueError('--resume requires the original recipe.json')
+    if (out / 'recipe.json').exists():
+        if not args.resume:
+            raise ValueError('output already contains a training recipe; use --resume or a fresh directory')
+        validate_resume(read_json(out / 'recipe.json'), recipe)
+        if not (out / 'last.pt').exists():
+            raise ValueError('--resume requires last.pt')
+        resume_state = torch.load(out / 'last.pt', map_location='cpu', weights_only=False)
+        validate_exposure(resume_state.get('exposure'), index.manifest)
+        if resume_state.get('exposure') != exposure:
+            raise ValueError('resume checkpoint does not match the recorded training exposure')
     cache_dir = out.parent / 'cache' / f's{args.size}-cap{args.cap_m:g}-d{args.dilate_px}'
     t0 = time.time()
     cache = load_cache([index.tiles[t] for t in train_ids + selection_ids], args.size, args.cap_m, args.dilate_px, cache_dir)
@@ -302,11 +343,7 @@ def train(args):
     positives = sum(int(cache[t]['boundary'].sum()) for t in train_ids)
     total = sum(int(cache[t]['boundary'].size) for t in train_ids)
     pos_weight = torch.tensor(min(max((total - positives) / max(positives, 1), 1.0), 20.0), device=device)
-    init_weights, init = load_init(args.init, args.encoder, args.size) if args.init else (None, None)
-    recipe = {'args': {k: (str(v) if isinstance(v, Path) else v) for k, v in vars(args).items()},
-              'recipe_hash': recipe_hash(RECIPE_FILES), 'manifest_version': index.manifest['version'],
-              'pool': index.pool_name, 'n_train': len(train_ids), 'subset_seed': subset_seed, 'reconstruction': RECON_DEFAULTS,
-              'pos_weight': float(pos_weight), 'init': init, 'train_tiles': train_ids, 'selection_tiles': selection_ids}
+    recipe['pos_weight'] = float(pos_weight)
     (out / 'recipe.json').write_text(json.dumps(recipe, indent=2, sort_keys=True) + '\n')
 
     model = ParcelNet(args.encoder, in_chans=6, pretrained=not (args.no_pretrained or args.init)).to(device)
@@ -314,7 +351,9 @@ def train(args):
         model.load_state_dict(init_weights)
         log(f"initialised from {args.init} (epoch {init['epoch'] + 1}, trained on {init['pool']}, n={init['n_train']})")
     optimizer = torch.optim.AdamW(model.parameter_groups(args.lr, args.encoder_lr_scale), weight_decay=1e-4)
-    dataset = TileDataset(cache, train_ids, augment=True, osm_dropout=args.osm_dropout, seed=args.seed)
+    dataset = TileDataset(cache, train_ids, augment=True, osm_dropout=args.osm_dropout, seed=args.seed,
+                          resolution_aug_prob=args.resolution_aug_prob, resolution_aug_max_gsd=args.resolution_aug_max_gsd,
+                          tile_size_m=index.manifest['tile_size_m'])
     steps_per_epoch = min(math.ceil(len(dataset) / args.batch), args.max_steps or 10 ** 9)
     scheduler = make_scheduler(optimizer, steps_per_epoch * args.epochs, warmup=min(50, steps_per_epoch))
     use_amp = device.type == 'cuda'
@@ -324,8 +363,8 @@ def train(args):
                             [False, True] if args.hard_barrier == 'both' else [args.hard_barrier == 'on'])
     start_epoch, best = 0, {'parcel_f1': -1.0}
     journal = (out / 'journal.jsonl').open('a')
-    if args.resume and (out / 'last.pt').exists():
-        state = torch.load(out / 'last.pt', map_location=device, weights_only=False)
+    if resume_state is not None:
+        state = resume_state
         model.load_state_dict(state['model']); optimizer.load_state_dict(state['optimizer'])
         scheduler.load_state_dict(state['scheduler']); scaler.load_state_dict(state['scaler'])
         start_epoch, best = state['epoch'] + 1, state['best']
@@ -333,7 +372,10 @@ def train(args):
     global_step = start_epoch * steps_per_epoch
     for epoch in range(start_epoch, args.epochs):
         dataset.epoch = epoch
-        loader = DataLoader(dataset, batch_size=args.batch, shuffle=True, num_workers=args.workers, drop_last=False)
+        # The epoch determines shuffle order, including after a process restart and across paired arms.
+        generator = torch.Generator().manual_seed(args.seed * 1_000_003 + epoch)
+        loader = DataLoader(dataset, batch_size=args.batch, shuffle=True, num_workers=args.workers,
+                            drop_last=False, generator=generator)
         model.train()
         epoch_start, running = time.time(), []
         for step, (x, y) in enumerate(loader):
@@ -362,8 +404,7 @@ def train(args):
         journal.flush()
         state = {'model': model.state_dict(), 'optimizer': optimizer.state_dict(), 'scheduler': scheduler.state_dict(),
                  'scaler': scaler.state_dict(), 'epoch': epoch, 'best': best, 'encoder': args.encoder, 'in_chans': 6,
-                 'size': args.size, 'recon_size': args.recon_size}
-        torch.save(state, out / 'last.pt')
+                 'size': args.size, 'recon_size': args.recon_size, 'exposure': exposure}
         if (epoch + 1) % args.eval_every == 0 or epoch + 1 == args.epochs:
             t1 = time.time()
             summary = evaluate(model, index, cache, selection_ids, configs, device, recon_size=args.recon_size,
@@ -378,13 +419,18 @@ def train(args):
                 best = {'parcel_f1': chosen['parcel_f1'], 'epoch': epoch, 'config': summary['best_config'],
                         'metrics': chosen, 'pixel': summary['pixel']}
                 state['best'] = best
-                torch.save(state, out / 'best.pt')
+                # Keep optimizer state in last.pt only; selected weights are copied home for inference.
+                torch.save({key: value for key, value in state.items()
+                            if key not in ('optimizer', 'scheduler', 'scaler')}, out / 'best.pt')
                 (out / 'results.json').write_text(json.dumps({'best': best, 'recipe_hash': recipe['recipe_hash'],
                                                               'manifest_version': index.manifest['version'],
                                                               'pool': index.pool_name, 'n_train': len(train_ids),
                                                               'seed': args.seed, 'subset_seed': subset_seed, 'init': init},
                                                              indent=2, sort_keys=True) + '\n')
                 log(f"new best checkpoint saved (epoch {epoch + 1}, parcel F1 {best['parcel_f1']:.3f})")
+        # Save after evaluation so resume restores the newest checkpoint choice too.
+        state['best'] = best
+        torch.save(state, out / 'last.pt')
     journal.close()
     log(f"done; best selection parcel F1 {best['parcel_f1']:.3f} at epoch {best.get('epoch', -1) + 1} with {best.get('config')}")
     log(f"final split: python {HERE / 'train.py'} --evaluate-only --output {out} --dataset {args.dataset} --split final --run")
@@ -404,7 +450,8 @@ def evaluate_only(args):
     index = TileIndex(args.manifest, args.dataset, args.pool)
     checkpoint = args.checkpoint or args.output / 'best.pt'
     state = torch.load(checkpoint, map_location=device, weights_only=False)
-    results = read_json(args.output / 'results.json')
+    validate_exposure(state.get('exposure'), index.manifest)
+    results = read_json(checkpoint.parent / 'results.json')
     config = results['best']['config']
     ids = index.ids(args.split)[:args.selection_tiles] if args.selection_tiles else index.ids(args.split)
     cache_dir = args.output.parent / 'cache' / f"s{state['size']}-cap{args.cap_m:g}-d{args.dilate_px}"
@@ -454,6 +501,10 @@ def main(argv=None):
     parser.add_argument('--lr', type=float, default=3e-4)
     parser.add_argument('--encoder-lr-scale', type=float, default=0.3)
     parser.add_argument('--osm-dropout', type=float, default=0.2)
+    parser.add_argument('--resolution-aug-prob', type=float, default=0.0,
+                        help='training probability of RGB-only synthetic resolution degradation')
+    parser.add_argument('--resolution-aug-max-gsd', type=float, default=1.0,
+                        help='upper GSD in metres, sampled uniformly from the model input grid spacing')
     parser.add_argument('--device', default='auto')
     parser.add_argument('--workers', type=int, default=4, help='DataLoader workers (0 on macOS)')
     parser.add_argument('--eval-workers', type=int, default=8, help='reconstruction processes (0 = in-process)')
@@ -481,6 +532,8 @@ def main(argv=None):
     parser.add_argument('--split', choices=('selection', 'final'), default='selection')
     parser.add_argument('--run', action='store_true', help='required; without it only the plan prints')
     args = parser.parse_args(argv)
+    if not 0 <= args.resolution_aug_prob <= 1 or not math.isfinite(args.resolution_aug_max_gsd) or args.resolution_aug_max_gsd <= 0:
+        parser.error('resolution augmentation requires probability in [0, 1] and a finite positive maximum GSD')
     if args.smoke:
         args.encoder, args.size, args.recon_size, args.batch = 'resnet18', 128, 64, 2
         if args.epochs == 20:

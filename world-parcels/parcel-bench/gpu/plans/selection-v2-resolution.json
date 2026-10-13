@@ -1,0 +1,281 @@
+{
+  "name": "selection-v2-resolution",
+  "purpose": "Fresh three-seed per-city baselines and one RGB resolution-augmentation recipe on expanded 12-block selection sets. Same training pools, seeds and schedule; final splits remain sealed. Existing cadastral checkpoints cannot initialize these runs.",
+  "comparison": {
+    "baseline": "ImageNet initialization, original rotation/flip and OSM dropout",
+    "resolution": "Same recipe, independently sampled 50% probability of RGB box down/up-sampling with GSD uniform from the 0.3 m model grid to 1.0 m",
+    "selection": "Clean selection F1 chooses each checkpoint and reconstruction config; compare clean, 0.5 m and 1.0 m selection scores using paired 12-block resampling",
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "epochs": 30
+  },
+  "runs": [
+    {
+      "name": "split-base-n395-s1",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/split-v2.json",
+        "--seed",
+        "1",
+        "--epochs",
+        "30",
+        "--eval-every",
+        "2",
+        "--resolution-aug-prob",
+        "0",
+        "--resolution-aug-max-gsd",
+        "1.0"
+      ],
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/zagreb-v2.json"
+        }
+      ]
+    },
+    {
+      "name": "split-base-n395-s2",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/split-v2.json",
+        "--seed",
+        "2",
+        "--epochs",
+        "30",
+        "--eval-every",
+        "2",
+        "--resolution-aug-prob",
+        "0",
+        "--resolution-aug-max-gsd",
+        "1.0"
+      ],
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/zagreb-v2.json"
+        }
+      ]
+    },
+    {
+      "name": "split-base-n395-s3",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/split-v2.json",
+        "--seed",
+        "3",
+        "--epochs",
+        "30",
+        "--eval-every",
+        "2",
+        "--resolution-aug-prob",
+        "0",
+        "--resolution-aug-max-gsd",
+        "1.0"
+      ],
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/zagreb-v2.json"
+        }
+      ]
+    },
+    {
+      "name": "split-resolution-n395-s1",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/split-v2.json",
+        "--seed",
+        "1",
+        "--epochs",
+        "30",
+        "--eval-every",
+        "2",
+        "--resolution-aug-prob",
+        "0.5",
+        "--resolution-aug-max-gsd",
+        "1.0"
+      ],
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/zagreb-v2.json"
+        }
+      ]
+    },
+    {
+      "name": "split-resolution-n395-s2",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/split-v2.json",
+        "--seed",
+        "2",
+        "--epochs",
+        "30",
+        "--eval-every",
+        "2",
+        "--resolution-aug-prob",
+        "0.5",
+        "--resolution-aug-max-gsd",
+        "1.0"
+      ],
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/zagreb-v2.json"
+        }
+      ]
+    },
+    {
+      "name": "split-resolution-n395-s3",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/split-v2.json",
+        "--seed",
+        "3",
+        "--epochs",
+        "30",
+        "--eval-every",
+        "2",
+        "--resolution-aug-prob",
+        "0.5",
+        "--resolution-aug-max-gsd",
+        "1.0"
+      ],
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/zagreb-v2.json"
+        }
+      ]
+    },
+    {
+      "name": "zagreb-base-n1623-s1",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/zagreb-v2.json",
+        "--seed",
+        "1",
+        "--epochs",
+        "30",
+        "--eval-every",
+        "2",
+        "--resolution-aug-prob",
+        "0",
+        "--resolution-aug-max-gsd",
+        "1.0"
+      ],
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/split-v2.json"
+        }
+      ]
+    },
+    {
+      "name": "zagreb-base-n1623-s2",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/zagreb-v2.json",
+        "--seed",
+        "2",
+        "--epochs",
+        "30",
+        "--eval-every",
+        "2",
+        "--resolution-aug-prob",
+        "0",
+        "--resolution-aug-max-gsd",
+        "1.0"
+      ],
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/split-v2.json"
+        }
+      ]
+    },
+    {
+      "name": "zagreb-base-n1623-s3",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/zagreb-v2.json",
+        "--seed",
+        "3",
+        "--epochs",
+        "30",
+        "--eval-every",
+        "2",
+        "--resolution-aug-prob",
+        "0",
+        "--resolution-aug-max-gsd",
+        "1.0"
+      ],
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/split-v2.json"
+        }
+      ]
+    },
+    {
+      "name": "zagreb-resolution-n1623-s1",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/zagreb-v2.json",
+        "--seed",
+        "1",
+        "--epochs",
+        "30",
+        "--eval-every",
+        "2",
+        "--resolution-aug-prob",
+        "0.5",
+        "--resolution-aug-max-gsd",
+        "1.0"
+      ],
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/split-v2.json"
+        }
+      ]
+    },
+    {
+      "name": "zagreb-resolution-n1623-s2",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/zagreb-v2.json",
+        "--seed",
+        "2",
+        "--epochs",
+        "30",
+        "--eval-every",
+        "2",
+        "--resolution-aug-prob",
+        "0.5",
+        "--resolution-aug-max-gsd",
+        "1.0"
+      ],
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/split-v2.json"
+        }
+      ]
+    },
+    {
+      "name": "zagreb-resolution-n1623-s3",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/zagreb-v2.json",
+        "--seed",
+        "3",
+        "--epochs",
+        "30",
+        "--eval-every",
+        "2",
+        "--resolution-aug-prob",
+        "0.5",
+        "--resolution-aug-max-gsd",
+        "1.0"
+      ],
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/split-v2.json"
+        }
+      ]
+    }
+  ]
+}

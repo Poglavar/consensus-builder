@@ -210,6 +210,39 @@ code or inputs change. `--cases` can restrict conditions; a fresh clean baseline
 The source arm has three checkpoints and the coastal arm one; synthetic perturbations are a sensitivity
 diagnosis, not a measurement of real satellite performance. See `PLAN.md` step 11.
 
+## Expanded selection v2
+
+`manifests/zagreb-v2.json` and `manifests/split-v2.json` preserve every v1 selection and final record,
+and add eight separated 2×2 selection blocks per city. Each selection set now has 48 tiles in 12 blocks.
+Zagreb has three blocks per density bin. Split has one low, three medium, four high and four dense blocks;
+the cached eligible area has no additional low-density block. This is a geographically broader selection
+set, not a representative city sample.
+
+The added tiles previously belonged to training. Old cadastral checkpoints are invalid on v2. All new
+arms start from ImageNet and use the purged pools: 1,623 Zagreb tiles and 395 Split tiles. No training tile
+is within 500 m of selection/final or shares their parcel IDs; exhausted diagnostic tiles are excluded.
+`layered/exposure.py` records training and selection geometry in checkpoints, including donor ancestry,
+and enforces separation during initialization, resume and scoring. Resuming also checks the frozen
+manifest, dataset, selected tile IDs, code recipe and training arguments before changing the run record.
+
+The split is reproducible from metadata alone (existing frozen output must match exactly):
+
+```bash
+$PY expand_selection.py --parent manifests/zagreb-v1.json \
+  --dataset output/pool/hr-pool-v1/dataset/manifest.json --output manifests/zagreb-v2.json \
+  --quotas '{"low":2,"medium":2,"high":2,"dense":2}' --run
+$PY expand_selection.py --parent manifests/split-v1.json \
+  --dataset output/pool/hr-pool-v1/dataset/manifest.json --output manifests/split-v2.json \
+  --quotas '{"medium":2,"high":3,"dense":3}' --run
+```
+
+`gpu/plans/selection-v2-resolution.json` defines three seeds each for a fresh baseline and resolution
+augmentation in both cities. `--resolution-aug-prob 0.5 --resolution-aug-max-gsd 1.0` changes RGB alone;
+rotation, flipping, OSM dropout, targets and epoch shuffle are paired by seed. Every checkpoint is chosen
+on clean selection, then compared on clean and additionally resampled 0.5 m / 1 m images. Final splits
+are reserved for a later milestone. Absolute v1/v2 scores are not a treatment comparison because both
+the training pool and selection composition changed.
+
 ## Status
 
 Done 2026-10-12: scorer with 19 behavioural tests, ledger, Zagreb manifest frozen, rules baseline recorded on both splits, practice-region donors computed for all researched cities, GPU kit written, layered model v0 built with OSM sidecars for all 96 training tiles and an end-to-end CPU smoke test (train, resume, evaluate-only).

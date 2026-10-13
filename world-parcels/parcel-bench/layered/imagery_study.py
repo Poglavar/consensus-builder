@@ -29,55 +29,10 @@ import bootstrap  # noqa: E402
 import score  # noqa: E402
 from model import ParcelNet  # noqa: E402
 from train import RECIPE_FILES, TileIndex, evaluate, load_cache, log, pick_device, read_json  # noqa: E402
+from exposure import validate_exposure  # noqa: E402
+from imagery import CASES, perturb_rgb  # noqa: E402
 
-CASES = {
-    'clean': {},
-    'resample-0.5m': {'gsd_m': 0.5},
-    'resample-1m': {'gsd_m': 1.0},
-    'blur-0.3m': {'blur_sigma_m': 0.3},
-    'haze-15pct': {'haze': 0.15},
-    'shift-east-2m': {'east_m': 2.0},
-    'shift-west-2m': {'east_m': -2.0},
-    'shift-north-2m': {'north_m': 2.0},
-    'shift-south-2m': {'north_m': -2.0},
-}
 METRICS = ('parcel_f1', 'precision', 'recall', 'area_weighted_recall', 'boundary_f1', 'overlap_fraction')
-
-
-def perturb_rgb(image, bbox, *, gsd_m=0.0, blur_sigma_m=0.0, haze=0.0, east_m=0.0, north_m=0.0):
-    """Apply a physical-scale perturbation to CHW RGB in [0, 1], never changing the caller's array.
-    Resampling is applied to the model input, not the original sensor data. Blur uses a Gaussian; haze
-    mixes with a constant 0.9 grey. Positive east/north moves image content right/up. Reflection pads
-    missing border pixels, so shifts are approximate alignment stress tests, not new observations.
-    """
-    if image.ndim != 3 or image.shape[0] != 3 or not np.isfinite(image).all():
-        raise ValueError('expected finite CHW RGB')
-    values = (gsd_m, blur_sigma_m, haze, east_m, north_m, *bbox)
-    if not all(np.isfinite(v) for v in values) or gsd_m < 0 or blur_sigma_m < 0 or not 0 <= haze <= 1:
-        raise ValueError('invalid imagery perturbation')
-    height, width = image.shape[1:]
-    x_m = (bbox[2] - bbox[0]) / width
-    y_m = (bbox[3] - bbox[1]) / height
-    if x_m <= 0 or y_m <= 0:
-        raise ValueError('bbox must have positive width and height')
-    rgb = np.ascontiguousarray(image.transpose(1, 2, 0), dtype=np.float32).copy()
-    if gsd_m:
-        # A finer requested grid must not manufacture detail or add an up/down-sampling blur.
-        coarse = (max(1, min(width, round(width * x_m / gsd_m))),
-                  max(1, min(height, round(height * y_m / gsd_m))))
-        if coarse != (width, height):
-            rgb = cv2.resize(cv2.resize(rgb, coarse, interpolation=cv2.INTER_AREA),
-                             (width, height), interpolation=cv2.INTER_LINEAR)
-    if blur_sigma_m:
-        rgb = cv2.GaussianBlur(rgb, (0, 0), sigmaX=blur_sigma_m / x_m,
-                               sigmaY=blur_sigma_m / y_m, borderType=cv2.BORDER_REFLECT_101)
-    if haze:
-        rgb = rgb * (1.0 - haze) + 0.9 * haze
-    if east_m or north_m:
-        matrix = np.array([[1, 0, east_m / x_m], [0, 1, -north_m / y_m]], dtype=np.float32)
-        rgb = cv2.warpAffine(rgb, matrix, (width, height), flags=cv2.INTER_LINEAR,
-                             borderMode=cv2.BORDER_REFLECT_101)
-    return np.ascontiguousarray(np.clip(rgb, 0, 1).transpose(2, 0, 1))
 
 
 def geographic_blocks(records):
@@ -171,14 +126,17 @@ def summarise(output, arms, manifests, cases, replicates):
              'Checkpoint and reconstruction stay fixed. OSM and cadastral references are unchanged.', '',
              '| Benchmark | Training arm | Seeds | RGB case | Parcel F1 | Change | 95% block interval for change | Precision | Area recall | Boundary F1 |',
              '|---|---|---:|---|---:|---:|---|---:|---:|---:|']
+    comparison_lines = []
     for manifest in manifests:
         version = manifest['version']
         groups = geographic_blocks(manifest['splits']['selection']['tiles'])
         results = report['benchmarks'].setdefault(version, {'blocks': groups, 'arms': {}})
+        clustered_by_arm = {}
         for name, runs in arms:
             by_case = {case: [bootstrap.load_eval(output / name / f'seed-{i + 1}' / version / case)
                               for i in range(len(runs))] for case in cases}
             clustered = {case: [group_scores(seed, groups) for seed in seeds] for case, seeds in by_case.items()}
+            clustered_by_arm[name] = clustered
             uncertainty = bootstrap.bootstrap(clustered, ('parcel_f1',), replicates=replicates)
             details = {'seeds': len(runs), 'cases': {}, 'bootstrap': uncertainty}
             for case, seeds in by_case.items():
@@ -200,6 +158,30 @@ def summarise(output, arms, manifests, cases, replicates):
                              f'{delta:+.3f} | {ci[0]:+.3f} to {ci[1]:+.3f} | {fmt(means["precision"])} | '
                              f'{fmt(means["area_weighted_recall"])} | {fmt(means["boundary_f1"])} |')
             results['arms'][name] = details
+        if len(arms) > 1:
+            comparisons = {}
+            comparison_names = [name for name, _ in arms]
+            comparison_lines += ['', f'## Training-arm comparisons for {version}', '',
+                                 '| RGB case | Arm comparison (first − second) | Δ Parcel F1 | 95% block interval | Δ precision | '
+                                 'Δ area recall | Δ boundary F1 |',
+                                 '|---|---|---:|---|---:|---:|---:|']
+            for case in cases:
+                comparison_arms = {name: clustered_by_arm[name][case] for name in comparison_names}
+                available_metrics = [metric for metric in METRICS if all(
+                    score.pool(list(seed.values()))['metrics'].get(metric) is not None
+                    for seeds in comparison_arms.values() for seed in seeds)]
+                comparison = bootstrap.bootstrap(comparison_arms, available_metrics, replicates=replicates)
+                comparisons[case] = comparison
+                fmt_delta = lambda value: '—' if value is None else f'{value:+.3f}'
+                for pair, deltas in comparison['differences'].items():
+                    f1 = deltas['parcel_f1']
+                    comparison_lines.append(f'| {case} | {pair} | {fmt_delta(f1["point"])} | '
+                                            f'{f1["low"]:+.3f} to {f1["high"]:+.3f} | '
+                                            f'{fmt_delta(deltas.get("precision", {}).get("point"))} | '
+                                            f'{fmt_delta(deltas.get("area_weighted_recall", {}).get("point"))} | '
+                                            f'{fmt_delta(deltas.get("boundary_f1", {}).get("point"))} |')
+            results['training_arm_comparisons'] = comparisons
+    lines.extend(comparison_lines)
     write_json(output / 'report.json', report)
     (output / 'report.md').write_text('\n'.join(lines) + '\n')
     return report
@@ -253,6 +235,8 @@ def main(argv=None):
     for name, runs in arms:
         for i, run in enumerate(runs):
             state = torch.load(run / 'best.pt', map_location='cpu', weights_only=False)
+            for index in indexes:
+                validate_exposure(state.get('exposure'), index.manifest)
             settings = read_json(run / 'recipe.json')['args']
             config = read_json(run / 'results.json')['best']['config']
             match = re.fullmatch(r't([0-9.]+)-seeds([01])-hard([01])', config)
