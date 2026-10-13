@@ -469,6 +469,20 @@ describe('building proposal adapters', () => {
             expect(summary.groundTreatment).toMatchObject({ before: 'paved', after: 'green', changed: true });
             expect(summary.unchanged).toBe(false);
         });
+
+        it('persists switching a saved whole-parcel building back to footprint parcels', () => {
+            const adapter = buildBuildingAdapter('single');
+            const source = {
+                ...freeform,
+                buildingProposal: { ...freeform.buildingProposal, takeWholeParcels: true }
+            };
+            const draft = draftFor(adapter, source);
+
+            expect(draft.editorPayload.context.takeWholeParcels).toBe(true);
+            draft.editorPayload.context.takeWholeParcels = false;
+
+            expect(adapter.serializeProposal(draft).buildingProposal.takeWholeParcels).toBe(false);
+        });
     });
 
     it('classifies invalid building data as read-only', () => {

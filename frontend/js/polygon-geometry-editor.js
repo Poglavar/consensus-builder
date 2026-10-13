@@ -407,6 +407,7 @@
             const coordinate = this.ring[this.selectedVertexIndex];
             const title = this.options.deleteTitle || 'Delete selected vertex';
             const marker = this.L.marker([coordinate[1], coordinate[0]], {
+                pane: this.options.pane || 'markerPane',
                 keyboard: true,
                 interactive: true,
                 title,
@@ -466,6 +467,7 @@
                     [coordinate[1], coordinate[0]],
                     [next[1], next[0]]
                 ], {
+                    pane: this.options.pane || 'overlayPane',
                     className: 'polygon-geometry-editor__edge',
                     color: '#000000',
                     opacity: 0,
@@ -478,6 +480,7 @@
 
             this.ring.forEach(([lng, lat], vertexIndex) => {
                 const marker = this.L.marker([lat, lng], {
+                    pane: this.options.pane || 'markerPane',
                     draggable: true,
                     keyboard: true,
                     title: this.options.vertexTitle || 'Drag to reshape',
@@ -528,6 +531,7 @@
             this.liveLayer = null;
             if (this.ring.length < 3) return;
             const style = Object.assign({
+                pane: this.options.pane || 'overlayPane',
                 color: '#fb8c00',
                 weight: 2,
                 dashArray: '5,5',

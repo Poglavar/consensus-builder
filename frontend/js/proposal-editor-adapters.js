@@ -1076,7 +1076,7 @@
                     ...(clone(output.buildingProposal || {})),
                     applied: false,
                     typologyType: typology,
-                    ...(typology === 'single' && context.takeWholeParcels === true ? { takeWholeParcels: true } : {}),
+                    ...(typology === 'single' ? { takeWholeParcels: context.takeWholeParcels === true } : {}),
                     parameters: clone(context.parameters || {}),
                     // Plots the rule left out, with the building each would carry. Not buildings and
                     // never applied — the 3D view draws them see-through so a gap in an applied block

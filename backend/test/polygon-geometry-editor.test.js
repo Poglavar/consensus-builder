@@ -21,9 +21,10 @@ const square = [[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]];
 const squareFeature = turf.polygon([square]);
 
 function fakeLeaflet() {
-    const makeLayer = (kind, latLng = null) => ({
+    const makeLayer = (kind, latLng = null, options = {}) => ({
         kind,
         latLng,
+        options,
         handlers: {},
         addTo(target) {
             if (!Array.isArray(target.layers)) target.layers = [];
@@ -57,14 +58,14 @@ function fakeLeaflet() {
             };
             return group;
         },
-        polyline() {
-            return makeLayer('edge');
+        polyline(_latLngs, options) {
+            return makeLayer('edge', null, options);
         },
-        polygon() {
-            return makeLayer('live');
+        polygon(_latLngs, options) {
+            return makeLayer('live', null, options);
         },
-        marker(latLng) {
-            return makeLayer('marker', { lat: latLng[0], lng: latLng[1] });
+        marker(latLng, options) {
+            return makeLayer('marker', { lat: latLng[0], lng: latLng[1] }, options);
         },
         divIcon(options) {
             return options;
@@ -151,6 +152,49 @@ describe('shared polygon ring operations', () => {
 });
 
 describe('shared Leaflet interaction model', () => {
+    it('propagates a custom pane to vertex handles, edge hit targets, delete action, and live outline', () => {
+        const pane = 'single-building-handles';
+        const editor = create({
+            map: fakeMap(),
+            leaflet: fakeLeaflet(),
+            turf,
+            ring: square,
+            pane,
+            initialSelectedVertexIndex: 1,
+            showInitialDeleteAction: true
+        });
+
+        expect(editor.vertexMarkers.every(marker => marker.options.pane === pane)).toBe(true);
+        expect(editor.layerGroup.layers.filter(layer => layer.kind === 'edge').every(edge => edge.options.pane === pane)).toBe(true);
+        expect(editor.deleteMarker.options.pane).toBe(pane);
+
+        const marker = editor.vertexMarkers[1];
+        marker.handlers.dragstart({ target: marker });
+        marker.setLatLng({ lng: 1.1, lat: 0.5 });
+        marker.handlers.drag({ target: marker });
+        expect(editor.liveLayer.options.pane).toBe(pane);
+        editor.destroy();
+    });
+
+    it('keeps the normal Leaflet pane defaults when no pane is supplied', () => {
+        const editor = create({
+            map: fakeMap(),
+            leaflet: fakeLeaflet(),
+            turf,
+            ring: square,
+            showDeleteAction: false
+        });
+
+        expect(editor.vertexMarkers[0].options.pane).toBe('markerPane');
+        expect(editor.layerGroup.layers.find(layer => layer.kind === 'edge').options.pane).toBe('overlayPane');
+        const marker = editor.vertexMarkers[0];
+        marker.handlers.dragstart({ target: marker });
+        marker.setLatLng({ lng: -0.1, lat: 0.5 });
+        marker.handlers.drag({ target: marker });
+        expect(editor.liveLayer.options.pane).toBe('overlayPane');
+        editor.destroy();
+    });
+
     it('renders only real vertex markers and inserts through an edge click', () => {
         const commits = [];
         const editor = create({

@@ -1934,23 +1934,82 @@
             .forEach(border => { markOwnedMaterial(border, line); border.renderOrder = style === 'source' ? 9101 : 9201; target.add(border); });
     }
 
+    function activeSingleBuildingPreviewDetail() {
+        const editor = window.SingleBuildingMapEditor;
+        if (!editor || typeof editor.isActive !== 'function' || typeof editor.getPreview !== 'function') return null;
+        try { return editor.isActive() ? (editor.getPreview() || null) : null; } catch (_) { return null; }
+    }
+
+    function addSingleBuildingContextPreview3D(detail, target) {
+        if (!detail || !target) return;
+        const surface = detail.groundSurface;
+        if (surface?.polygon) {
+            const material = new THREE.MeshLambertMaterial({
+                color: surface.treatment === 'green' ? 0x4f8b55 : 0x8a8d91,
+                transparent: true,
+                opacity: 0.3,
+                depthWrite: false,
+                polygonOffset: true,
+                polygonOffsetFactor: -4,
+                polygonOffsetUnits: -4,
+                side: THREE.DoubleSide
+            });
+            const feature = { type: 'Feature', properties: {}, geometry: surface.polygon };
+            polygonFeatureToMeshes(feature, material, 0.035, 0).forEach(mesh => {
+                markOwnedMaterial(mesh, material);
+                mesh.renderOrder = 9190;
+                target.add(mesh);
+            });
+        }
+        if (detail.boundary?.geometry) {
+            const material = new THREE.LineBasicMaterial({ color: 0x64748b, transparent: true, opacity: 0.9, depthWrite: false });
+            polygonFeatureToBorderLines(detail.boundary, material, 0.12).forEach(border => {
+                markOwnedMaterial(border, material);
+                border.renderOrder = 9195;
+                target.add(border);
+            });
+        }
+    }
+
+    function resolvedProposalDraftPreviewDetail(detail, singleBuildingDetail) {
+        if (!singleBuildingDetail?.draftPreview) return detail || null;
+        // The live building editor owns the preview while it is open. The comparison detail stays
+        // cached so it can be restored as soon as that editor closes.
+        return { draftPreview: singleBuildingDetail.draftPreview, singleBuilding: singleBuildingDetail };
+    }
+
     function rebuildProposalDraftPreview3D(detail = latestProposalDraftPreviewDetail) {
         latestProposalDraftPreviewDetail = detail || null;
         if (!isActive || !proposalDraftGroup) return;
         disposeDraftPreviewChildren(proposalDraftGroup);
-        if (!detail) return;
+        const singleBuildingDetail = activeSingleBuildingPreviewDetail();
+        const previewDetail = resolvedProposalDraftPreviewDetail(latestProposalDraftPreviewDetail, singleBuildingDetail);
+        if (!previewDetail) { invalidateThreeView(); return; }
         const sourceGroup = new THREE.Group();
         const draftGroup = new THREE.Group();
         proposalDraftGroup.add(sourceGroup, draftGroup);
-        if (detail.sourceProposal) {
-            collectSourcePreviewFeatures(detail.sourceProposal)
+        if (previewDetail.sourceProposal) {
+            collectSourcePreviewFeatures(previewDetail.sourceProposal)
                 .forEach(feature => addDraftPreviewFeature3D(feature, sourceGroup, 'source', 'source'));
         }
-        if (detail.draftPreview) {
-            const draft = window.proposalDraftStore?.getDraft?.(detail.draftId) || null;
-            collectDraftPreviewFeatures(detail.draftPreview, draft)
-                .forEach(feature => addDraftPreviewFeature3D(feature, draftGroup, 'draft', detail.draftPreview.kind));
+        if (previewDetail.draftPreview) {
+            if (previewDetail.singleBuilding) addSingleBuildingContextPreview3D(previewDetail.singleBuilding, draftGroup);
+            const draft = previewDetail.singleBuilding ? null : (window.proposalDraftStore?.getDraft?.(previewDetail.draftId) || null);
+            collectDraftPreviewFeatures(previewDetail.draftPreview, draft)
+                .forEach(feature => addDraftPreviewFeature3D(feature, draftGroup, 'draft', previewDetail.draftPreview.kind));
         }
+        invalidateThreeView();
+    }
+
+    function handleSingleBuildingPreviewChange() {
+        // Read the current editor state here rather than retaining event.detail: the event's null
+        // close notification means "restore the general preview", and late-loaded 3D gets the same
+        // result by asking the editor directly during scene construction.
+        rebuildProposalDraftPreview3D(latestProposalDraftPreviewDetail);
+    }
+
+    function mapSelectionBlockedByEditor() {
+        try { return window.__mapEditLock?.blocksSelection?.() === true; } catch (_) { return false; }
     }
 
     function proposalKey3D(proposal) {
@@ -7189,7 +7248,11 @@
         try { typeof hideRoadAnalysisPanel === 'function' && hideRoadAnalysisPanel(); } catch (_) { }
         try { typeof hideOSMRoadSegmentListPopup === 'function' && hideOSMRoadSegmentListPopup(); } catch (_) { }
         try { typeof hideBlocksList === 'function' && hideBlocksList(); } catch (_) { }
-        try { typeof closeProposalDialog === 'function' && closeProposalDialog(); } catch (_) { }
+        // The proposal form is suspended underneath the on-map single-building editor. Closing it
+        // here would clear the parcel context that the editor is preparing for Done.
+        let singleBuildingEditorActive = false;
+        try { singleBuildingEditorActive = window.SingleBuildingMapEditor?.isActive?.() === true; } catch (_) { }
+        try { !singleBuildingEditorActive && typeof closeProposalDialog === 'function' && closeProposalDialog(); } catch (_) { }
         try {
             const blockifyModal = document.getElementById('blockify-modal');
             if (blockifyModal && typeof closeBlockifyModal === 'function') closeBlockifyModal();
@@ -7573,6 +7636,9 @@
 
     function handleParcelClick(evt) {
         if (evt.button !== 0) return;
+        // An on-map editor owns map clicks while its edit lock is held. OrbitControls remain
+        // untouched, so users can still rotate and pan the 3D view around the live design.
+        if (mapSelectionBlockedByEditor()) { clickDownXY = null; return; }
         // Photo mode is view-only: clicks still pan/tilt the camera (orbit controls), but never
         // select a parcel or proposal — no isolation, no "Proposal info" panel. Model 3D keeps
         // full click interaction.
@@ -8052,6 +8118,8 @@
     document.addEventListener('proposal-draft-preview-change', event => {
         rebuildProposalDraftPreview3D(event.detail || null);
     });
+
+    document.addEventListener('single-building-preview-change', handleSingleBuildingPreviewChange);
 
     document.addEventListener('mapshell:sheetclosed', event => {
         if (event.detail?.id === 'layers-sheet') stopBuildingRadiusPreview?.();

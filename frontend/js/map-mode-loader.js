@@ -52,6 +52,7 @@
     root.__ensurePhotorealMode = () => loadGroup('photo');
     function paint(state) {
         root.__mapModeState = state;
+        root.dispatchEvent(new CustomEvent('mapmodechange', { detail: state }));
         root.__pending3DMode = state.pending ? state.desired : null;
         if (root.updateModeButtonStates) { root.updateModeButtonStates(); return; }
         for (const [mode, id] of [['2d', 'mode-2d-toggle'], ['model', 'mode-3d-toggle'], ['photo', 'mode-realistic-toggle']]) {

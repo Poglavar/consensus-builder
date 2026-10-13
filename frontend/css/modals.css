@@ -2453,75 +2453,6 @@ body.site-intro-open { overflow: hidden; }
     display: block;
 }
 
-.single-building-3d-wrapper {
-    flex: 0 0 auto;
-    padding: 12px;
-    border-top: 1px solid var(--cb-line);
-}
-
-#single-building-3d {
-    width: 100%;
-    height: 240px;
-    background: var(--cb-surface-2);
-    position: relative;
-    border: 1px solid var(--cb-line);
-    border-radius: var(--cb-radius-sm);
-    overflow: hidden;
-}
-
-#single-building-3d canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100% !important;
-    height: 100% !important;
-    display: block;
-}
-
-/* ============================================
-   Freeform editor (#single-building-container, a .cb-dialog--xl): main | sidebar side by side in
-   the dialog body. The card, header, footer (the Done row) and phone sheet are the primitive's.
-   ============================================ */
-#single-building-container {
-    --cb-dialog-width: 1000px;
-}
-
-#single-building-body {
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    min-height: 0;
-    padding: 0;
-}
-
-#single-building-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    border-right: 1px solid var(--cb-line);
-}
-
-#single-building-map-wrap {
-    position: relative;
-    flex: 1 1 auto;
-    width: 100%;
-    min-height: 260px;
-}
-
-#single-building-map {
-    width: 100%;
-    height: 100%;
-}
-
-#single-building-sidebar {
-    width: 320px;
-    flex: 0 0 auto;
-    padding: var(--cb-space-5);
-    overflow-y: auto;
-    box-sizing: border-box;
-}
-
 /* Live regulatory indicators shared by the Urban Rule and Freeform geometry editors. */
 .building-density-card {
     margin: 0 0 18px;
@@ -2569,13 +2500,6 @@ body.site-intro-open { overflow: hidden; }
     color: var(--cb-text-muted);
     font-size: var(--cb-text-md);
     margin-top: 12px;
-}
-
-.single-building-rotation-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 6px;
 }
 
 /* The Freeform building picker: the select (or the rename field) and its three icon buttons. */
@@ -3171,19 +3095,13 @@ body.site-intro-open { overflow: hidden; }
     white-space: pre-wrap;
 }
 
-/* Urban rule and Freeform editors on phones: the dialog is the primitive's bottom sheet, whose
-   body scrolls the map, the 3D preview and the sidebar in one column between the fixed header and
-   the Done row. The 2D map and 3D preview both capture touch (pan/zoom), so the body can only be
-   scrolled by dragging on a non-map area: they are sized so the top of the slider section peeks
-   below them, and that peek is the scroll grip. */
+/* Urban rule editor on phones. */
 @media (max-width: 767.98px) {
-    #blockify-body,
-    #single-building-body {
+    #blockify-body {
         flex-direction: column;
     }
 
-    #blockify-main,
-    #single-building-main {
+    #blockify-main {
         flex: 0 0 auto;
         border-right: 0;
     }
@@ -3200,18 +3118,7 @@ body.site-intro-open { overflow: hidden; }
         min-height: 160px;
     }
 
-    #single-building-map-wrap {
-        flex: 0 0 auto;
-        height: 40vh;
-        min-height: 200px;
-    }
-
-    #single-building-map {
-        height: 100%;
-    }
-
-    #blockify-sidebar,
-    #single-building-sidebar {
+    #blockify-sidebar {
         width: 100%;
         max-width: 100%;
         flex: 0 0 auto;
@@ -3525,9 +3432,6 @@ body.site-intro-open { overflow: hidden; }
         height: calc(100dvh - 2 * var(--cb-space-4));
     }
 
-    #single-building-container {
-        height: min(720px, calc(100dvh - 2 * var(--cb-space-4)));
-    }
 }
 
 #blockify-controls,
@@ -3569,8 +3473,7 @@ body.site-intro-open { overflow: hidden; }
     }
 
     #rowhouse-buttons .btn,
-    #parcelbased-buttons .btn,
-    #single-building-controls .btn {
+    #parcelbased-buttons .btn {
         flex: 1 1 0;
     }
 }
