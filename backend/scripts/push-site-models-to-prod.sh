@@ -76,7 +76,7 @@ JS
 )
 if [[ -s "$work/source-paths" ]]; then
     source_root="$(cat "$work/source-root")"
-    tar -C "$source_root" -czf - -T "$work/source-paths" | ssh "$SSH_HOST" \
+    COPYFILE_DISABLE=1 tar -C "$source_root" -czf - -T "$work/source-paths" | ssh "$SSH_HOST" \
         'mkdir -p "$HOME/code/consensus-builder/data/floor-plan-downloads" && tar -xzf - -C "$HOME/code/consensus-builder/data/floor-plan-downloads"'
     ssh "$SSH_HOST" 'cd "$HOME/code/consensus-builder/data/floor-plan-downloads" && sha256sum -c -' < "$work/source-checks"
     psql -X -v ON_ERROR_STOP=1 -c "\\copy (SELECT b.sha256,b.media_type,b.byte_count,b.storage_path FROM floor_plan.blob b WHERE b.bytes_available AND EXISTS(SELECT 1 FROM floor_plan.site_model m,jsonb_array_elements(COALESCE(m.model#>'{inventory,apartments}','[]')) a WHERE a#>>'{source,sha256}'=b.sha256)) TO STDOUT" \

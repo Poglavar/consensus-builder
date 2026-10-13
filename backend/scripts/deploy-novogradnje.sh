@@ -30,10 +30,10 @@ elif [[ ! -L "$web/backend/node_modules" ]]; then
 elif ! cmp -s "$web/backend/package-lock.json" "$main/backend/package-lock.json"; then
     echo 'Shared dependency lock changed; install isolated dependencies before deploying.' >&2; exit 1
 fi
-pm2 startOrReload "$web/backend/novogradnje/ecosystem.config.cjs" --only novogradnje-web --update-env
+pm2 startOrReload "$web/backend/novogradnje/ecosystem.config.cjs" --only novogradnje-web --update-env >/dev/null
 # Wait for this process to answer its actual data route, with a bounded readiness check.
 for attempt in {1..20}; do
-    if curl -fsS http://127.0.0.1:8490/novogradnje/api/projects > /tmp/novogradnje-deploy-catalogue.json; then break; fi
+    if curl -fsS http://127.0.0.1:8490/novogradnje/api/projects > /tmp/novogradnje-deploy-catalogue.json 2>/dev/null; then break; fi
     [[ "$attempt" -lt 20 ]] || exit 1
     sleep 1
 done
@@ -50,8 +50,9 @@ for site,snippet in [('zagreb.lol','novogradnje.conf'),('urbangametheory.xyz','n
     if include in text: continue
     # Attach to the TLS server whose server_name names this site, preserving every existing route.
     import re
-    matches=list(re.finditer(r'^\s*server_name\s+[^;]*\b'+re.escape(site)+r'\b[^;]*;',text,re.M))
-    matches=[m for m in matches if '443' in text[text.rfind('server {',0,m.start()):text.find('\n}',m.end())]]
+    matches=list(re.finditer(r'^[ \t]*server_name[ \t]+([^;]+);',text,re.M))
+    matches=[m for m in matches if site in m.group(1).split() and
+             '443' in text[text.rfind('server {',0,m.start()):text.find('\n}',m.end())]]
     if len(matches)!=1: raise RuntimeError(f'Expected one TLS server for {site}')
     backup=path.with_name(path.name+'.before-novogradnje-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ'))
     backup.write_text(text)
