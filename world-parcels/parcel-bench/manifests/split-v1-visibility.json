@@ -1,0 +1,771 @@
+{
+ "benchmark": "split-v1",
+ "classes": [
+  "strong",
+  "partial",
+  "weak",
+  "uncertain"
+ ],
+ "created_at": "2026-10-13T08:35:12+00:00",
+ "definitions": {
+  "partial": "some sides of the outline are visible, others are not",
+  "strong": "the whole outline follows something visible: wall, fence, hedge, kerb, building edge, a change of surface or crop",
+  "uncertain": "cannot tell: shadow, blur or the image itself hides it",
+  "weak": "almost none of the outline is visible: it crosses uniform ground, runs under canopy or through buildings"
+ },
+ "population": 379,
+ "sample": [
+  {
+   "area_m2": 500.5,
+   "reference": "16887431",
+   "tile": "tile_3203_31373"
+  },
+  {
+   "area_m2": 5.1,
+   "reference": "16887432",
+   "tile": "tile_3203_31374"
+  },
+  {
+   "area_m2": 22831.3,
+   "reference": "16887433",
+   "tile": "tile_3203_31374"
+  },
+  {
+   "area_m2": 612.3,
+   "reference": "16887437",
+   "tile": "tile_3203_31374"
+  },
+  {
+   "area_m2": 327.3,
+   "reference": "16887431",
+   "tile": "tile_3204_31373"
+  },
+  {
+   "area_m2": 80.9,
+   "reference": "16908635",
+   "tile": "tile_3204_31373"
+  },
+  {
+   "area_m2": 615.7,
+   "reference": "16887432",
+   "tile": "tile_3204_31374"
+  },
+  {
+   "area_m2": 13877.0,
+   "reference": "16887437",
+   "tile": "tile_3204_31374"
+  },
+  {
+   "area_m2": 454.2,
+   "reference": "16908634",
+   "tile": "tile_3204_31374"
+  },
+  {
+   "area_m2": 296.0,
+   "reference": "16908635",
+   "tile": "tile_3204_31374"
+  },
+  {
+   "area_m2": 379.6,
+   "reference": "39653377",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 42.8,
+   "reference": "39653389",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 619.0,
+   "reference": "39653391",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 4.1,
+   "reference": "39653399",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 43.1,
+   "reference": "39654237",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 194.2,
+   "reference": "39654709",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 87.4,
+   "reference": "39654902",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 121.8,
+   "reference": "39654903",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 1777.4,
+   "reference": "39655006",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 184.9,
+   "reference": "39655007",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 608.6,
+   "reference": "39655008",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 172.9,
+   "reference": "39655009",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 1014.6,
+   "reference": "39655474",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 43.9,
+   "reference": "39655534",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 92.0,
+   "reference": "39656126",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 58.6,
+   "reference": "39656192",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 9.7,
+   "reference": "39656442",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 28.7,
+   "reference": "39656695",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 646.7,
+   "reference": "39657446",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 610.6,
+   "reference": "39658103",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 21.7,
+   "reference": "39658493",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 1133.7,
+   "reference": "39658933",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 421.8,
+   "reference": "39659059",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 83.7,
+   "reference": "39660258",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 54.7,
+   "reference": "39660587",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 10.5,
+   "reference": "39660632",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 295.8,
+   "reference": "39660633",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 22.0,
+   "reference": "39660634",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 25.2,
+   "reference": "39661535",
+   "tile": "tile_3224_31397"
+  },
+  {
+   "area_m2": 540.3,
+   "reference": "39653391",
+   "tile": "tile_3224_31398"
+  },
+  {
+   "area_m2": 551.7,
+   "reference": "39653916",
+   "tile": "tile_3224_31398"
+  },
+  {
+   "area_m2": 484.8,
+   "reference": "39654090",
+   "tile": "tile_3224_31398"
+  },
+  {
+   "area_m2": 937.5,
+   "reference": "39654177",
+   "tile": "tile_3224_31398"
+  },
+  {
+   "area_m2": 339.5,
+   "reference": "39655580",
+   "tile": "tile_3224_31398"
+  },
+  {
+   "area_m2": 98.8,
+   "reference": "39656127",
+   "tile": "tile_3224_31398"
+  },
+  {
+   "area_m2": 150.7,
+   "reference": "39656290",
+   "tile": "tile_3224_31398"
+  },
+  {
+   "area_m2": 558.7,
+   "reference": "39656445",
+   "tile": "tile_3224_31398"
+  },
+  {
+   "area_m2": 1.1,
+   "reference": "39658179",
+   "tile": "tile_3224_31398"
+  },
+  {
+   "area_m2": 43.5,
+   "reference": "39659309",
+   "tile": "tile_3224_31398"
+  },
+  {
+   "area_m2": 7.7,
+   "reference": "39659529",
+   "tile": "tile_3224_31398"
+  },
+  {
+   "area_m2": 611.5,
+   "reference": "39660163",
+   "tile": "tile_3224_31398"
+  },
+  {
+   "area_m2": 278.6,
+   "reference": "39660506",
+   "tile": "tile_3224_31398"
+  },
+  {
+   "area_m2": 917.1,
+   "reference": "39660637",
+   "tile": "tile_3224_31398"
+  },
+  {
+   "area_m2": 265.2,
+   "reference": "39661224",
+   "tile": "tile_3224_31398"
+  },
+  {
+   "area_m2": 580.4,
+   "reference": "39661413",
+   "tile": "tile_3224_31398"
+  },
+  {
+   "area_m2": 6.2,
+   "reference": "39661627",
+   "tile": "tile_3224_31398"
+  },
+  {
+   "area_m2": 704.6,
+   "reference": "39653374",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 140.4,
+   "reference": "39653376",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 988.7,
+   "reference": "39653377",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 768.6,
+   "reference": "39653389",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 263.0,
+   "reference": "39653391",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 320.9,
+   "reference": "39654175",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 691.1,
+   "reference": "39655004",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 454.3,
+   "reference": "39655245",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 884.9,
+   "reference": "39656028",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 168.4,
+   "reference": "39656550",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 1.6,
+   "reference": "39657313",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 520.7,
+   "reference": "39657416",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 61.6,
+   "reference": "39657681",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 93.1,
+   "reference": "39658309",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 812.8,
+   "reference": "39660169",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 2056.2,
+   "reference": "39660584",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 1209.2,
+   "reference": "39660585",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 229.9,
+   "reference": "39660827",
+   "tile": "tile_3225_31397"
+  },
+  {
+   "area_m2": 4761.8,
+   "reference": "39654025",
+   "tile": "tile_3225_31398"
+  },
+  {
+   "area_m2": 1792.8,
+   "reference": "39656690",
+   "tile": "tile_3225_31398"
+  },
+  {
+   "area_m2": 785.2,
+   "reference": "39658407",
+   "tile": "tile_3225_31398"
+  },
+  {
+   "area_m2": 1338.8,
+   "reference": "39659928",
+   "tile": "tile_3225_31398"
+  },
+  {
+   "area_m2": 1240.8,
+   "reference": "39660539",
+   "tile": "tile_3225_31398"
+  },
+  {
+   "area_m2": 33.1,
+   "reference": "39660637",
+   "tile": "tile_3225_31398"
+  },
+  {
+   "area_m2": 161.9,
+   "reference": "39661094",
+   "tile": "tile_3225_31398"
+  },
+  {
+   "area_m2": 3838.0,
+   "reference": "16895964",
+   "tile": "tile_3238_31368"
+  },
+  {
+   "area_m2": 130.5,
+   "reference": "16901388",
+   "tile": "tile_3238_31368"
+  },
+  {
+   "area_m2": 741.5,
+   "reference": "16901389",
+   "tile": "tile_3238_31368"
+  },
+  {
+   "area_m2": 93.7,
+   "reference": "16901394",
+   "tile": "tile_3238_31368"
+  },
+  {
+   "area_m2": 2405.4,
+   "reference": "16901402",
+   "tile": "tile_3238_31368"
+  },
+  {
+   "area_m2": 944.9,
+   "reference": "16901410",
+   "tile": "tile_3238_31368"
+  },
+  {
+   "area_m2": 891.6,
+   "reference": "16901411",
+   "tile": "tile_3238_31368"
+  },
+  {
+   "area_m2": 1329.3,
+   "reference": "16901413",
+   "tile": "tile_3238_31368"
+  },
+  {
+   "area_m2": 1168.9,
+   "reference": "16901448",
+   "tile": "tile_3238_31368"
+  },
+  {
+   "area_m2": 1466.0,
+   "reference": "16909060",
+   "tile": "tile_3238_31368"
+  },
+  {
+   "area_m2": 256.3,
+   "reference": "35829606",
+   "tile": "tile_3238_31368"
+  },
+  {
+   "area_m2": 233.5,
+   "reference": "35829608",
+   "tile": "tile_3238_31368"
+  },
+  {
+   "area_m2": 202.1,
+   "reference": "35829610",
+   "tile": "tile_3238_31368"
+  },
+  {
+   "area_m2": 460.8,
+   "reference": "35829611",
+   "tile": "tile_3238_31368"
+  },
+  {
+   "area_m2": 8.0,
+   "reference": "37866816",
+   "tile": "tile_3238_31368"
+  },
+  {
+   "area_m2": 86.3,
+   "reference": "37866817",
+   "tile": "tile_3238_31368"
+  },
+  {
+   "area_m2": 288.7,
+   "reference": "16895960",
+   "tile": "tile_3238_31369"
+  },
+  {
+   "area_m2": 2580.6,
+   "reference": "16895964",
+   "tile": "tile_3238_31369"
+  },
+  {
+   "area_m2": 425.7,
+   "reference": "16895575",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 397.4,
+   "reference": "16895952",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 73.5,
+   "reference": "16895954",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 499.6,
+   "reference": "16895955",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 314.1,
+   "reference": "16901406",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 206.5,
+   "reference": "16901407",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 768.7,
+   "reference": "16901408",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 350.8,
+   "reference": "16901416",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 17.4,
+   "reference": "16901420",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 336.4,
+   "reference": "16901423",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 651.3,
+   "reference": "16901424",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 15.4,
+   "reference": "16901426",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 121.1,
+   "reference": "16901428",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 174.8,
+   "reference": "16901433",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 191.7,
+   "reference": "16901439",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 7203.2,
+   "reference": "16901458",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 324.8,
+   "reference": "16901545",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 77.1,
+   "reference": "16901561",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 87.2,
+   "reference": "16909059",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 271.7,
+   "reference": "16909069",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 443.4,
+   "reference": "16909632",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 6.0,
+   "reference": "35522598",
+   "tile": "tile_3239_31368"
+  },
+  {
+   "area_m2": 272.5,
+   "reference": "16895707",
+   "tile": "tile_3239_31369"
+  },
+  {
+   "area_m2": 73.8,
+   "reference": "16895877",
+   "tile": "tile_3239_31369"
+  },
+  {
+   "area_m2": 160.0,
+   "reference": "16895936",
+   "tile": "tile_3239_31369"
+  },
+  {
+   "area_m2": 73.8,
+   "reference": "16895943",
+   "tile": "tile_3239_31369"
+  },
+  {
+   "area_m2": 104.8,
+   "reference": "16895948",
+   "tile": "tile_3239_31369"
+  },
+  {
+   "area_m2": 203.6,
+   "reference": "16895949",
+   "tile": "tile_3239_31369"
+  },
+  {
+   "area_m2": 453.0,
+   "reference": "16895953",
+   "tile": "tile_3239_31369"
+  },
+  {
+   "area_m2": 2571.4,
+   "reference": "16909060",
+   "tile": "tile_3239_31369"
+  },
+  {
+   "area_m2": 444.6,
+   "reference": "16909622",
+   "tile": "tile_3239_31369"
+  },
+  {
+   "area_m2": 24.0,
+   "reference": "37903122",
+   "tile": "tile_3239_31369"
+  },
+  {
+   "area_m2": 1061.4,
+   "reference": "16459709",
+   "tile": "tile_3261_31397"
+  },
+  {
+   "area_m2": 9855.7,
+   "reference": "16460669",
+   "tile": "tile_3261_31397"
+  },
+  {
+   "area_m2": 8223.1,
+   "reference": "16460688",
+   "tile": "tile_3261_31397"
+  },
+  {
+   "area_m2": 228.5,
+   "reference": "16460690",
+   "tile": "tile_3261_31397"
+  },
+  {
+   "area_m2": 585.0,
+   "reference": "16467439",
+   "tile": "tile_3261_31397"
+  },
+  {
+   "area_m2": 61.9,
+   "reference": "16459699",
+   "tile": "tile_3261_31398"
+  },
+  {
+   "area_m2": 264.9,
+   "reference": "16459700",
+   "tile": "tile_3261_31398"
+  },
+  {
+   "area_m2": 867.8,
+   "reference": "16459709",
+   "tile": "tile_3261_31398"
+  },
+  {
+   "area_m2": 253.5,
+   "reference": "16467439",
+   "tile": "tile_3261_31398"
+  },
+  {
+   "area_m2": 813.4,
+   "reference": "16459573",
+   "tile": "tile_3262_31397"
+  },
+  {
+   "area_m2": 160.5,
+   "reference": "16459577",
+   "tile": "tile_3262_31397"
+  },
+  {
+   "area_m2": 884.7,
+   "reference": "16459692",
+   "tile": "tile_3262_31397"
+  },
+  {
+   "area_m2": 553.9,
+   "reference": "16459696",
+   "tile": "tile_3262_31397"
+  },
+  {
+   "area_m2": 3704.4,
+   "reference": "16459688",
+   "tile": "tile_3262_31398"
+  },
+  {
+   "area_m2": 234.4,
+   "reference": "16459691",
+   "tile": "tile_3262_31398"
+  },
+  {
+   "area_m2": 215.4,
+   "reference": "16459699",
+   "tile": "tile_3262_31398"
+  },
+  {
+   "area_m2": 852.2,
+   "reference": "16459704",
+   "tile": "tile_3262_31398"
+  },
+  {
+   "area_m2": 451.8,
+   "reference": "16459705",
+   "tile": "tile_3262_31398"
+  },
+  {
+   "area_m2": 2307.7,
+   "reference": "36642649",
+   "tile": "tile_3262_31398"
+  }
+ ],
+ "seed": 0,
+ "split": "selection"
+}

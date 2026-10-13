@@ -3,7 +3,9 @@
 selection tiles under named variants (threshold grid, hard barrier, crossing-cost weight, reconstruction grid,
 interior-seed rules, watershed on the distance map, small-region cleanup) and score every variant with score.py,
 without touching the model. Selection split only: the winner becomes the frozen recipe before any final scoring.
-Writes <run>/recon-study/{study.json,study.md} and prints the table sorted by parcel F1."""
+Writes <run>/recon-study/{study.json,study.md} plus every variant's per-tile scores under recon-study/tiles/<variant>/
+(for bootstrap.py's paired intervals) and prints the table sorted by parcel F1. --eval-dir reads maps another
+evaluation saved, e.g. a run trained elsewhere scored on this manifest."""
 from __future__ import annotations
 
 import argparse
@@ -120,6 +122,14 @@ def variants(args):
     out['ws3:minregion120-seed80'] = dict(ws, min_region_m2=120.0, min_seed_m2=80.0)
     out['ws3:minregion120-t0.35'] = dict(ws, min_region_m2=120.0, threshold=0.35)
     out['ws3:minregion120-512'] = dict(ws, min_region_m2=120.0, recon_size=512)
+    # Round 4: per-city settings for denser, OSM-sparser cities (Split): the frozen recipe's threshold, small-region
+    # merge and seed-size rules around their frozen values, crossed.
+    frozen = dict(ws, min_region_m2=120.0)
+    out['ws4:frozen-t0.3'] = dict(frozen)
+    for t in (0.3, 0.4, 0.5, 0.6):
+        for m2 in (0.0, 30.0, 60.0, 120.0, 200.0):
+            for seed_m2 in (20.0, 40.0, 80.0):
+                out[f'ws4:t{t:g}-minregion{m2:g}-seed{seed_m2:g}'] = dict(ws, threshold=t, min_region_m2=m2, min_seed_m2=seed_m2)
     if args.only:
         out = {name: variant for name, variant in out.items() if any(key in name for key in args.only)}
     return out
@@ -134,6 +144,7 @@ def main(argv=None):
     parser.add_argument('--split', default='selection', choices=('selection',), help='selection only, by protocol')
     parser.add_argument('--workers', type=int, default=8)
     parser.add_argument('--only', nargs='*', help='variant-name substrings to run')
+    parser.add_argument('--eval-dir', default='', help='evaluation directory inside --run (default <split>-eval)')
     parser.add_argument('--go', action='store_true', help='required; without it the variant list prints')
     args = parser.parse_args(argv)
     index = TileIndex(args.manifest, args.dataset, args.pool)
@@ -143,7 +154,7 @@ def main(argv=None):
     if not args.go:
         print('\n'.join(f'{name}: {variant}' for name, variant in chosen.items()))
         return
-    eval_dir = args.run / f'{args.split}-eval'
+    eval_dir = args.run / (args.eval_dir or f'{args.split}-eval')
     jobs = [(name, variant, tile_id, index.tiles[tile_id]['bbox'], str(eval_dir / f'{tile_id}.probabilities.npz'),
              str(index.tiles[tile_id]['osm']) if index.tiles[tile_id]['osm'] else None, str(index.tiles[tile_id]['truth']),
              index.scoring) for name, variant in chosen.items() for tile_id in ids]
@@ -160,8 +171,13 @@ def main(argv=None):
         rows.append({'variant': name, 'config': variant, 'counts': pooled['counts'],
                      'metrics': {key: pooled['metrics'].get(key) for key in METRICS}})
     rows.sort(key=lambda row: (-(row['metrics']['parcel_f1'] or 0), -(row['metrics']['area_weighted_recall'] or 0)))
-    out = args.run / 'recon-study'
+    out = args.run / ('recon-study' + (f'-{eval_dir.name}' if args.eval_dir else ''))
     out.mkdir(exist_ok=True)
+    for name in chosen:
+        tiles_dir = out / 'tiles' / name.replace(':', '_')
+        tiles_dir.mkdir(parents=True, exist_ok=True)
+        for tile_id in ids:
+            (tiles_dir / f'{tile_id}.score.json').write_text(json.dumps(by_variant[name][tile_id], sort_keys=True) + '\n')
     (out / 'study.json').write_text(json.dumps({'run': str(args.run), 'split': args.split, 'tiles': ids, 'rows': rows},
                                                indent=1, sort_keys=True) + '\n')
     lines = ['| Variant | Parcel F1 | Precision | Recall | Area-weighted recall | Interior recall | Boundary F1 | Predictions |',

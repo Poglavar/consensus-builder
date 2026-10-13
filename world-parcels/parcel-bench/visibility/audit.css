@@ -1,0 +1,30 @@
+/* Visibility audit page: two image panels (close-up and whole tile) above the label buttons; stacks on phones. */
+:root {
+  --bg: #f6f5f2; --fg: #1d1d1b; --muted: #5d5b56; --panel: #ffffff; --line: #d9d6cf;
+  --accent: #1f5fbf; --chosen: #1f7a3a; --outline: #ffd400; --halo: #000000;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #161615; --fg: #ecebe7; --muted: #a8a59d; --panel: #222220; --line: #3a3935; --accent: #6ea2ff; --chosen: #4fc06f; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.4 system-ui, sans-serif; }
+.bar { display: flex; flex-wrap: wrap; gap: 16px; align-items: baseline; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+#progress, #position { color: var(--muted); }
+.panels { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 16px; }
+.panel { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px; }
+.panel svg { width: 100%; aspect-ratio: 1; display: block; background: #000; }
+figcaption { color: var(--muted); font-size: 13px; padding-top: 4px; }
+.controls { padding: 0 16px 24px; }
+.buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.buttons button { font: inherit; padding: 8px 14px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); cursor: pointer; }
+.buttons button.chosen { border-color: var(--chosen); outline: 2px solid var(--chosen); }
+.keys { color: var(--muted); font-size: 13px; }
+kbd { border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; font-size: 12px; }
+.definitions { display: grid; grid-template-columns: max-content 1fr; gap: 2px 12px; font-size: 13px; }
+.definitions dt { font-weight: 600; }
+.definitions dd { margin: 0; color: var(--muted); }
+.status { color: var(--accent); min-height: 1.4em; }
+.ring-halo { fill: none; stroke: var(--halo); stroke-opacity: 0.6; }
+.ring { fill: none; stroke: var(--outline); }
+.hidden .ring, .hidden .ring-halo { display: none; }
+@media (max-width: 700px) { .panels { grid-template-columns: 1fr; } }
