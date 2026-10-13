@@ -12,8 +12,12 @@
         maxZoom: 20, maxNativeZoom: 19,
         attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
-    const places = { miramarska: [45.80013, 15.97458, 18], center: [45.8078, 15.9776, 18], west: [45.79992, 15.95386, 18] };
-    map.setView(places.miramarska.slice(0, 2), places.miramarska[2]);
+    const places = { miramarska: [45.80013, 15.97458, 18], split: [45.7975692, 15.9705577, 20], center: [45.8078, 15.9776, 18], west: [45.79992, 15.95386, 18] };
+    const initialPlace = new URLSearchParams(location.search).get('view');
+    const initialView = Object.hasOwn(places, initialPlace) ? places[initialPlace] : places.miramarska;
+    map.setView(initialView.slice(0, 2), initialView[2]);
+    if (Object.hasOwn(places, initialPlace)) document.querySelectorAll('[data-place]').forEach(button =>
+        button.classList.toggle('active', button.dataset.place === initialPlace));
     const guideCanvas = $('guides'), carCanvas = $('cars');
     const guides = guideCanvas.getContext('2d'), ctx = carCanvas.getContext('2d');
     let network, sim, running = !reduced, rate = 2, seed = 52, selected = null, following = false;
@@ -74,11 +78,11 @@
             guides.save(); guides.translate(s.x, s.y); guides.rotate(-p.angle);
             guides.beginPath(); guides.moveTo(-3, -2); guides.lineTo(0, 0); guides.lineTo(-3, 2); guides.stroke(); guides.restore();
         }
-        if (zoom >= 18) {
-            guides.strokeStyle = '#367f7827'; guides.lineWidth = .75;
-            for (const connection of network.connections.values()) {
-                if (routeVisible(connection.path)) line(guides, connection.path);
-            }
+        for (const connection of network.connections.values()) {
+            if (!connection.geometryKind && zoom < 18) continue;
+            guides.strokeStyle = connection.geometryKind ? (zoom >= 17 ? '#367f784f' : '#367f7828') : '#367f7827';
+            guides.lineWidth = connection.geometryKind ? (zoom >= 19 ? 1.3 : .8) : .75;
+            if (routeVisible(connection.path)) line(guides, connection.path);
         }
     }
 
@@ -242,7 +246,7 @@
 
     async function load() {
         try {
-            const response = await fetch('data/central.json.gz?v=20261014c', { cache: 'no-store' });
+            const response = await fetch('data/central.json.gz?v=20261014d', { cache: 'no-store' });
             if (!response.ok) throw new Error(`Traffic data: HTTP ${response.status}`);
             const data = await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
             network = Engine.createNetwork(data);

@@ -10,8 +10,28 @@ npx http-server frontend -a localhost -p 8192 -c-1
 
 The playback controls set speed, car count, lane guides and mapped traffic signals with simulated cycles.
 Click a car to highlight its current lane and available exits; **Follow a car** keeps it in view.
-The place buttons jump to Miramarska × Vukovarska, the city centre, Trešnjevka or the entire loaded area.
+The place buttons jump to Miramarska × Vukovarska, a two-to-three-lane split on Lučićeva,
+the city centre, Trešnjevka or the entire loaded area. `/traffic/?view=split` opens the lane split directly.
 Reduced-motion preferences start the animation paused. Hidden tabs stop the animation clock.
+
+## Lane geometry
+
+`geometry.js` builds the physical paths once in projected metres; the car simulation and lane
+guides use those same paths. At aligned two-arm nodes, all lanes in a directed cross-section share
+a transition zone. Splits, merges and changes in lateral offset borrow space along both adjoining
+sections, normally 28 metres and longer for larger shifts. Quintic curves match the lane tangents
+at both ends and progress monotonically down the road. Coincident straight endpoints have no
+connector loop. Small coordinate mismatches blend over a shorter run, so cars do not briefly
+reverse at rounded section endpoints. Actual junction turns keep their exported geometry.
+
+Each end can borrow at most 45% of a section, less at bends or mapped signals. Signal stop positions
+remain at their original distance along the road. These are derived driving paths, not surveyed
+lane-marking locations. The saved movement IDs and allowed turns remain the source of truth;
+geometry does not add a new branch or resolve an unanswered lane.
+
+Cars keep their following gap through a split, including across its shared entrance. Cars on the
+same taper can follow each other without waiting for the entire transition to empty; competing
+merges yield to traffic already in the transition. Through paths retain the road speed limit.
 
 ## Data and limits
 
@@ -86,11 +106,11 @@ Do not copy raw API payloads into the frontend: source metadata may contain loca
 
 ```sh
 cd backend
-npx vitest run test/traffic-simulation.test.js test/traffic-snapshot.test.js test/traffic-preview-data.test.js test/traffic-signals.test.js
+npx vitest run test/traffic-simulation.test.js test/traffic-geometry.test.js test/traffic-snapshot.test.js test/traffic-preview-data.test.js test/traffic-signals.test.js
 ```
 
-`simulation.js` has no DOM, canvas or Leaflet dependencies. Headless tests exercise actual
-movement/queue/signal behavior and the saved-answer merge. The data test also runs traffic over
+`geometry.js` and `simulation.js` have no DOM, canvas or Leaflet dependencies. Headless tests
+exercise split/merge continuity, following gaps, signal positions, movement and the saved-answer merge. The data test also runs traffic over
 the exported graph, checking every entry against the source lane's allowed connections and lights.
 The signal test checks OSM direction tags, exact way/section matching and incoming-only controls.
 Desktop/mobile appearance and canvas animation are checked manually in a headed browser.

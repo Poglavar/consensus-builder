@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 const require = createRequire(import.meta.url);
 const Traffic = require('../../frontend/traffic/simulation.js');
-const { Simulation, createNetwork, laneChangeAllowed, signalState, GAP } = Traffic;
+const { Simulation, createNetwork, laneChangeAllowed, signalState, sample, GAP } = Traffic;
 
 const ORIGIN = [15.98, 45.81];
 const METRES_PER_DEGREE = 111320;
@@ -17,7 +17,7 @@ function lane(id, fromNode, toNode, start, end, options = {}) {
         fromNode, toNode, direction: options.direction || 'forward',
         type: 'driving', access: 'yes', highway: 'residential',
         stripIndex: options.stripIndex ?? 0, ordinal: options.ordinal ?? 0,
-        change: options.change || 'yes', maxSpeed: 30,
+        change: options.change || 'yes', maxSpeed: options.maxSpeed ?? 30,
         points: [geo(start), geo(end)]
     };
 }
@@ -56,6 +56,49 @@ function connectedNetwork({ signal = false, mapped = signal } = {}) {
         { laneId: 'in', fraction: 1 }, { laneId: 'cross-in', fraction: 1 }
     ] });
     return createNetwork(fixture);
+}
+
+function transitionNetwork(kind = 'split', signal = false) {
+    const lanes = [];
+    const connections = [];
+    const addLane = (id, from, to, y, sectionId) => lanes.push(lane(id, from, to,
+        [from === 'junction' ? 100 : 0, y], [to === 'junction' ? 100 : 200, y],
+        { sectionId, maxSpeed: 60 }));
+    const addMove = (id, fromLaneId, toLaneId, type) => {
+        const from = lanes.find(item => item.id === fromLaneId);
+        const to = lanes.find(item => item.id === toLaneId);
+        connections.push({ id, fromLaneId, toLaneId, nodeId: 'junction', type,
+            points: [from.points.at(-1), to.points[0]] });
+    };
+
+    if (kind === 'split') {
+        addLane('in-0', 'west', 'junction', 1.75, 'incoming');
+        addLane('in-1', 'west', 'junction', -1.75, 'incoming');
+        addLane('out-0', 'junction', 'east', 3.5, 'outgoing');
+        addLane('out-1', 'junction', 'east', 0, 'outgoing');
+        addLane('out-2', 'junction', 'east', -3.5, 'outgoing');
+        addMove('continue', 'in-0', 'out-0', 'continue');
+        addMove('split-a', 'in-1', 'out-1', 'split');
+        addMove('split-b', 'in-1', 'out-2', 'split');
+    } else {
+        addLane('in-0', 'west', 'junction', 3.5, 'incoming');
+        addLane('in-1', 'west', 'junction', 0, 'incoming');
+        addLane('in-2', 'west', 'junction', -3.5, 'incoming');
+        addLane('out-0', 'junction', 'east', 1.75, 'outgoing');
+        addLane('out-1', 'junction', 'east', -1.75, 'outgoing');
+        addMove('merge-a', 'in-0', 'out-0', 'merge');
+        addMove('merge-b', 'in-1', 'out-0', 'merge');
+        addMove('continue', 'in-2', 'out-1', 'continue');
+    }
+
+    const fixture = data(lanes, connections, { junction: 2 });
+    if (signal) fixture.signals.push({ id: 'outgoing-signal', point: geo([120, kind === 'split' ? 3.5 : 1.75]),
+        controls: [{ laneId: 'out-0', fraction: .2 }] });
+    return createNetwork(fixture);
+}
+
+function poseDistance(a, b) {
+    return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
 function circulatingNetwork() {
@@ -266,6 +309,106 @@ describe('traffic simulation', () => {
         sim.advance(1);
 
         expect(leading.s - trailing.s).toBeGreaterThanOrEqual(GAP - .001);
+    });
+
+    it('uses long aligned 2-to-3 and 3-to-2 tapers and keeps straight taper speed uncapped', () => {
+        const split = transitionNetwork('split');
+        const merge = transitionNetwork('merge');
+        for (const network of [split, merge]) {
+            for (const movement of network.connections.values()) {
+                expect(movement.geometryKind).toBe('taper');
+                expect(movement.path.length).toBeGreaterThanOrEqual(28);
+            }
+        }
+        expect(split.connections.get('continue').geometryKind).toBe('taper');
+        expect(split.connections.get('split-a').geometryKind).toBe('taper');
+        expect(merge.connections.get('merge-a').geometryKind).toBe('taper');
+
+        const approach = split.lanes.get('in-0');
+        expect(approach.endTrim + split.lanes.get('out-0').startTrim).toBeCloseTo(28, 1);
+        const sim = new Simulation(split, { count: 0, signals: false, laneChangeRate: 0 });
+        const vehicle = car(1, 'in-0', approach.path.length - .2, 'continue', 10);
+        vehicle.cruise = 10;
+        sim.cars.push(vehicle);
+        const modes = new Set();
+        let taperSpeed = 0;
+        for (let tick = 0; tick < 52; tick++) {
+            const before = sim.pose(vehicle);
+            sim.advance(.1);
+            const after = sim.pose(vehicle);
+            expect(poseDistance(before, after)).toBeLessThanOrEqual(1.1);
+            modes.add(vehicle.mode === 'lane' ? vehicle.laneId : 'connection');
+            if (vehicle.mode === 'connection') taperSpeed = Math.max(taperSpeed, vehicle.speed);
+        }
+        expect(modes).toContain('connection');
+        expect(modes).toContain('out-0');
+        expect(taperSpeed).toBeGreaterThan(6);
+    });
+
+    it('lets a follower enter the same long taper before its leader clears it, preserving GAP', () => {
+        const network = transitionNetwork('split');
+        const source = network.lanes.get('in-1');
+        const sim = new Simulation(network, { count: 0, signals: false, laneChangeRate: 0 });
+        const leader = car(1, 'in-1', source.path.length - 15, 'split-a', 10);
+        const follower = car(2, 'in-1', source.path.length - 27, 'split-a', 10);
+        leader.cruise = follower.cruise = 10;
+        sim.cars.push(leader, follower);
+        let followedOnTaper = false;
+        for (let tick = 0; tick < 55; tick++) {
+            const before = new Map(sim.cars.map(vehicle => [vehicle.id, sim.pose(vehicle)]));
+            sim.advance(.1);
+            for (const vehicle of sim.cars) expect(poseDistance(before.get(vehicle.id), sim.pose(vehicle))).toBeLessThanOrEqual(1.1);
+            const onTaper = sim.cars.filter(vehicle => vehicle.mode === 'connection' && vehicle.connectionId === 'split-a');
+            if (onTaper.length === 2) {
+                followedOnTaper = true;
+                expect(Math.abs(onTaper[0].s - onTaper[1].s)).toBeGreaterThanOrEqual(GAP - .001);
+            }
+            const sourceOccupants = sim.occupants().get('in-1') || [];
+            const positions = sourceOccupants.map(entry => entry.s).sort((a, b) => a - b);
+            if (positions.length === 2) expect(positions[1] - positions[0]).toBeGreaterThanOrEqual(GAP - .001);
+        }
+        expect(followedOnTaper).toBe(true);
+    });
+
+    it('keeps source spacing when followers take separate outgoing branches', () => {
+        const network = transitionNetwork('split');
+        const source = network.lanes.get('in-1');
+        const sim = new Simulation(network, { count: 0, signals: false, laneChangeRate: 0 });
+        const leader = car(1, 'in-1', source.path.length - 15, 'split-a', 10);
+        const follower = car(2, 'in-1', source.path.length - 27, 'split-b', 10);
+        leader.cruise = follower.cruise = 10;
+        sim.cars.push(leader, follower);
+        let bothBranchesOccupied = false;
+        let followerRemainsClearAfterLeaderExits = false;
+        for (let tick = 0; tick < 80; tick++) {
+            const before = new Map(sim.cars.map(vehicle => [vehicle.id, sim.pose(vehicle)]));
+            sim.advance(.1);
+            for (const vehicle of sim.cars) expect(poseDistance(before.get(vehicle.id), sim.pose(vehicle))).toBeLessThanOrEqual(1.1);
+            const sourceOccupants = sim.occupants().get('in-1') || [];
+            const positions = sourceOccupants.map(entry => entry.s).sort((a, b) => a - b);
+            if (positions.length === 2) expect(positions[1] - positions[0]).toBeGreaterThanOrEqual(GAP - .001);
+            if (leader.mode === 'connection' && follower.mode === 'connection'
+                && leader.connectionId !== follower.connectionId) bothBranchesOccupied = true;
+            if (leader.mode === 'lane' && leader.laneId === 'out-1'
+                && follower.mode === 'connection' && follower.connectionId === 'split-b') {
+                followerRemainsClearAfterLeaderExits = true;
+                expect(poseDistance(sim.pose(leader), sim.pose(follower))).toBeGreaterThanOrEqual(GAP - .001);
+            }
+        }
+        expect(bothBranchesOccupied).toBe(true);
+        expect(followerRemainsClearAfterLeaderExits).toBe(true);
+    });
+
+    it('maps an outgoing signal to the same world position after transition trimming', () => {
+        const network = transitionNetwork('split', true);
+        const outgoing = network.lanes.get('out-0');
+        const controlFraction = .2;
+        expect(outgoing.startTrim).toBeGreaterThan(0);
+        expect(outgoing.signals[0].stopS).toBeCloseTo(controlFraction * outgoing.rawPath.length - outgoing.startTrim, 5);
+        const stop = sample(outgoing.path, outgoing.signals[0].stopS);
+        const world = network.unproject([stop.x, stop.y]);
+        expect(world[0]).toBeCloseTo(network.signals.get('outgoing-signal').point[0], 8);
+        expect(world[1]).toBeCloseTo(network.signals.get('outgoing-signal').point[1], 8);
     });
 
     it('requires room for the crossing reservation and following gap before entering a lane', () => {

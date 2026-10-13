@@ -75,6 +75,38 @@ describe('exported traffic preview', () => {
         }
     });
 
+    it('replaces the Vukovarska endpoint weave and Lučićeva lane split with continuous road paths', () => {
+        const network = Traffic.createNetwork(data);
+        const targetNodes = new Set(['osm-node:2892273952', 'osm-node:2287954173']);
+        const moves = [...network.connections.values()].filter(move => targetNodes.has(move.nodeId));
+        expect(moves.length).toBeGreaterThan(5);
+        for (const move of moves) {
+            expect(move.geometryKind).toBe('taper');
+            expect(move.path.length).toBeGreaterThan(25);
+            const from = network.lanes.get(move.fromLaneId), to = network.lanes.get(move.toLaneId);
+            const a = Traffic.sample(from.path, from.path.length), b = Traffic.sample(to.path, 0);
+            const axis = [Math.cos(a.angle), Math.sin(a.angle)];
+            const start = Traffic.sample(move.path, 0), end = Traffic.sample(move.path, move.path.length);
+            expect(Math.hypot(start.x - a.x, start.y - a.y)).toBeLessThan(1e-6);
+            expect(Math.hypot(end.x - b.x, end.y - b.y)).toBeLessThan(1e-6);
+            expect(Math.abs(start.angle - a.angle)).toBeLessThan(.01);
+            expect(Math.abs(end.angle - b.angle)).toBeLessThan(.01);
+            for (let i = 1; i < move.path.points.length; i++) {
+                const p = move.path.points[i], previous = move.path.points[i - 1];
+                expect((p[0] - previous[0]) * axis[0] + (p[1] - previous[1]) * axis[1]).toBeGreaterThan(0);
+            }
+        }
+        expect([...network.connections.keys()]).toEqual(data.connections.map(move => move.id));
+        const displacedSignals = [];
+        for (const lane of network.lanes.values()) for (const signal of lane.signals) {
+            const rawControl = data.signals.find(item => item.id === signal.signalId).controls.find(item => item.laneId === lane.id);
+            const before = Traffic.sample(lane.rawPath, rawControl.fraction * lane.rawPath.length);
+            const after = Traffic.sample(lane.path, signal.stopS);
+            if (Math.hypot(before.x - after.x, before.y - after.y) > .001) displacedSignals.push(signal.signalId);
+        }
+        expect(displacedSignals).toEqual([]);
+    });
+
     it('keeps every default car progressing through a twenty-minute run', () => {
         const network = Traffic.createNetwork(data);
         const sim = new Traffic.Simulation(network, { count: 440, seed: 52 });

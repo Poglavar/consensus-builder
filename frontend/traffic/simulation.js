@@ -1,10 +1,11 @@
 // Deterministic traffic motion over an explicit directed lane graph; no DOM or map dependencies.
 // Unknown turns are never inferred. Signal phases are deliberately illustrative.
 (function (root, factory) {
-    const api = factory();
+    const geometry = typeof module !== 'undefined' && module.exports ? require('./geometry.js') : root.TrafficGeometry;
+    const api = factory(geometry);
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
     if (root) root.TrafficSimulation = api;
-})(typeof window !== 'undefined' ? window : null, function () {
+})(typeof window !== 'undefined' ? window : null, function (Geometry) {
     'use strict';
     const GAP = 7;
     const STEP = 0.1;
@@ -21,29 +22,7 @@
         };
     }
 
-    function path(points) {
-        const clean = points.filter((p, i) => !i || Math.hypot(p[0] - points[i - 1][0], p[1] - points[i - 1][1]) > 1e-5);
-        const arcs = [0];
-        for (let i = 1; i < clean.length; i++) {
-            arcs.push(arcs[i - 1] + Math.hypot(clean[i][0] - clean[i - 1][0], clean[i][1] - clean[i - 1][1]));
-        }
-        const bounds = clean.reduce((box, p) => [Math.min(box[0], p[0]), Math.min(box[1], p[1]),
-            Math.max(box[2], p[0]), Math.max(box[3], p[1])], [Infinity, Infinity, -Infinity, -Infinity]);
-        return { points: clean, arcs, bounds, length: arcs.at(-1) || 0 };
-    }
-
-    function sample(route, distance) {
-        const s = clamp(distance, 0, route.length);
-        let lo = 1, hi = route.arcs.length - 1;
-        while (lo < hi) {
-            const mid = (lo + hi) >> 1;
-            if (route.arcs[mid] < s) lo = mid + 1; else hi = mid;
-        }
-        const a = route.points[lo - 1], b = route.points[lo] || a;
-        const t = (s - route.arcs[lo - 1]) / (route.arcs[lo] - route.arcs[lo - 1] || 1);
-        return { x: a[0] + (b[0] - a[0]) * t, y: a[1] + (b[1] - a[1]) * t,
-            angle: Math.atan2(b[1] - a[1], b[0] - a[0]) };
-    }
+    const { path, sample } = Geometry;
 
     function laneChangeAllowed(from, to) {
         if (!from || !to || from.sectionId !== to.sectionId || from.direction !== to.direction
@@ -98,7 +77,7 @@
         const xScale = 111320 * Math.cos(origin[1] * Math.PI / 180);
         const project = p => [(p[0] - origin[0]) * xScale, (p[1] - origin[1]) * 111320];
         const unproject = p => [origin[0] + p[0] / xScale, origin[1] + p[1] / 111320];
-        const lanes = new Map();
+        let lanes = new Map();
         for (const lane of data.lanes) {
             if (!lane.points?.every(p => p.length >= 2 && p.every(Number.isFinite))) throw new Error(`Invalid lane geometry: ${lane.id}`);
             const route = path(lane.points.map(project));
@@ -106,7 +85,7 @@
             lanes.set(lane.id, { ...lane, path: route, outgoing: [], adjacent: [], signals: [] });
         }
         const nodes = new Map(data.nodes.map(node => [node.id, { ...node, incoming: [] }]));
-        const connections = new Map();
+        let connections = new Map();
         for (const connection of data.connections) {
             const from = lanes.get(connection.fromLaneId), to = lanes.get(connection.toLaneId);
             if (!from || !to) continue;
@@ -118,6 +97,7 @@
             connections.set(item.id, item);
             from.outgoing.push(item.id);
         }
+        ({ lanes, connections } = Geometry.build(lanes, connections, nodes, data.signals));
         // Preserve all permitted connections for inspection; routing only selects a subset.
         const regions = circulationRegions(lanes, connections);
         for (const lane of lanes.values()) {
@@ -146,7 +126,7 @@
                 if (!lane || !Number.isFinite(control.fraction) || control.fraction < 0 || control.fraction > 1) {
                     throw new Error(`Invalid mapped signal control: ${record.id}`);
                 }
-                lane.signals.push({ signalId: signal.id, phase: lane.sectionId, stopS: control.fraction * lane.path.length });
+                lane.signals.push({ signalId: signal.id, phase: lane.sectionId, stopS: clamp(control.fraction * lane.rawPath.length - lane.startTrim, 0, lane.path.length) });
                 signal.phases.push(lane.sectionId);
             }
             signal.phases = [...new Set(signal.phases)].sort();
@@ -215,7 +195,10 @@
                 return entries;
             }
             const connection = this.network.connections.get(car.connectionId);
-            return [[car.connectionId, car.s], [connection.toLaneId, -Math.max(0, connection.path.length - car.s)]];
+            const entries = [[car.connectionId, car.s], [connection.toLaneId, -Math.max(0, connection.path.length - car.s)]];
+            if (connection.geometryKind) entries.push([connection.fromLaneId,
+                this.network.lanes.get(connection.fromLaneId).path.length + car.s]);
+            return entries;
         }
 
         occupants() {
@@ -267,7 +250,15 @@
             const clearance = Math.min(GAP, receiving.path.length * .8);
             // The car needs room to release the crossing reservation AND leave its following
             // gap. Merely fitting its nose into a queue can lock both ends of a short street.
-            return !(occupied.get(receiving.id) || []).some(entry => entry.car !== car && entry.s < GAP + clearance);
+            return !(occupied.get(receiving.id) || []).some(entry => {
+                if (entry.car === car) return false;
+                // A taper is part of the through road: followers can enter behind a car
+                // on the same path. Competing merges still yield to the occupied branch.
+                if (connection.geometryKind && entry.car.mode === 'connection' && entry.car.connectionId === connection.id) {
+                    return entry.car.s < GAP;
+                }
+                return entry.s < GAP + clearance;
+            });
         }
 
         canEnter(car, connection, occupied) {
@@ -330,6 +321,17 @@
                 for (const entry of occupied.get(routeId) || []) {
                     if (entry.car !== car && entry.s >= car.s) clearance = Math.min(clearance, entry.s - car.s - GAP);
                 }
+                if (car.mode === 'connection') {
+                    const move = n.connections.get(car.connectionId);
+                    for (const entry of occupied.get(move.toLaneId) || []) {
+                        const ahead = entry.s + route.length - car.s;
+                        if (entry.car !== car && ahead >= 0) clearance = Math.min(clearance, ahead - GAP);
+                    }
+                    if (move.geometryKind) for (const entry of occupied.get(move.fromLaneId) || []) {
+                        const ahead = entry.s - lane.path.length - car.s;
+                        if (entry.car !== car && ahead >= 0) clearance = Math.min(clearance, ahead - GAP);
+                    }
+                }
                 if (car.mode === 'lane') this.tryLaneChange(car, occupied);
                 if (car.change) {
                     const target = n.lanes.get(car.change.to);
@@ -349,7 +351,7 @@
                 const connection = car.mode === 'lane' ? n.connections.get(car.next) : null;
                 const entering = car.mode === 'lane' && this.canEnter(car, connection, occupied);
                 let stopping = clearance;
-                car.state = car.mode === 'connection' ? 'turning' : car.change ? 'changing' : 'driving';
+                car.state = car.mode === 'connection' && !n.connections.get(car.connectionId).geometryKind ? 'turning' : car.change ? 'changing' : 'driving';
                 if (car.mode === 'lane' && !entering) {
                     stopping = Math.min(stopping, route.length - car.s);
                     if (route.length - car.s < 12) car.state = !connection ? 'blocked'
@@ -366,7 +368,10 @@
                 if (signalDistance < 12 && signalDistance <= clearance) car.state = 'red';
                 if (clearance < 15 && car.state === 'driving') car.state = 'queue';
                 const roadLimit = typeof lane.maxSpeed === 'number' && lane.maxSpeed > 0 ? lane.maxSpeed / 3.6 : 13.9;
-                const cruise = Math.min(car.cruise, roadLimit, car.mode === 'connection' ? 6 : Infinity);
+                const activeMove = car.mode === 'connection' ? n.connections.get(car.connectionId) : null;
+                const receivingLimit = activeMove ? n.lanes.get(activeMove.toLaneId).maxSpeed / 3.6 : Infinity;
+                const cruise = Math.min(car.cruise, roadLimit, receivingLimit > 0 ? receivingLimit : Infinity,
+                    activeMove && !activeMove.geometryKind ? 6 : Infinity);
                 const targetSpeed = Math.min(cruise, Math.sqrt(2 * 3 * Math.max(0, stopping)));
                 const oldSpeed = car.speed;
                 car.speed = clamp(targetSpeed, Math.max(0, car.speed - 3.5 * STEP), car.speed + 2 * STEP);
@@ -395,7 +400,7 @@
                     if (connection && this.canEnter(car, connection, occupied)) {
                         car.mode = 'connection'; car.connectionId = connection.id; car.s = 0;
                         if (n.nodes.get(connection.nodeId)?.degree >= 3) this.reservations.set(connection.nodeId, car.id);
-                        car.state = 'turning';
+                        car.state = connection.geometryKind ? 'driving' : 'turning';
                     } else car.speed = 0;
                 } else if (car.mode === 'connection' && route.length - car.s < 1e-6) {
                     const completed = n.connections.get(car.connectionId);
