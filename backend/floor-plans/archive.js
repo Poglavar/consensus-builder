@@ -4,6 +4,7 @@ import { normalizeUrl,extractPageEvidence } from './page-evidence.js';
 import { isHtmlPageResponse } from './html-response.js';
 import { listingIdentity } from './explicit-location.js';
 import { eligibleListingSql,isExcluded,excludeSource,qualifyPageEvidence,canFetchTarget,listingQualifies } from './source-policy.js';
+import { prepareSourceEvidence } from './compact-sources.js';
 export const sha256 = contentHash;
 export const putBlob = writeBlob;
 export async function enqueue(db,rawUrl,{agencyId=null,kind='page',priority=0,from=null,sourceKind='agency'}={}) {
@@ -67,7 +68,12 @@ export async function saveObservation(db,target,response,evidence,runId) {
  const mediaType=isHtmlPageResponse(response)&&!/html/i.test(response.headers.contentType||'')
   ?'text/html':response.headers.contentType;
  const observedAt=new Date(),hash=await putBlob(db,response.body,mediaType);
- await db.query(`INSERT INTO floor_plan.observation(url,sha256,evidence,run_id,observed_at) VALUES($1,$2,$3,$4,$5) ON CONFLICT(url,sha256) DO UPDATE SET updated_at=now()`,[target.url,hash,JSON.stringify(evidence),runId,observedAt]);
+ const storedEvidence={...evidence};
+ if(isHtmlPageResponse(response)||/\bxml\b/i.test(response.headers.contentType||'')) storedEvidence.sourcePacket=prepareSourceEvidence({url:target.url,sha256:hash,
+  html:response.body.toString('utf8'),facts:evidence.listing||{}});
+ await db.query(`INSERT INTO floor_plan.observation(url,sha256,evidence,run_id,observed_at) VALUES($1,$2,$3,$4,$5)
+  ON CONFLICT(url,sha256) DO UPDATE SET evidence=excluded.evidence,run_id=excluded.run_id,observed_at=excluded.observed_at,updated_at=now()`,
+ [target.url,hash,JSON.stringify(storedEvidence),runId,observedAt]);
  await db.query(`UPDATE floor_plan.target SET state='ok',http_status=$2,failure=NULL,etag=$3,last_modified=$4,current_sha256=$5,last_fetched_at=$6,next_check_at=now()+interval '1 day',updated_at=now() WHERE url=$1`,[target.url,response.status,response.headers.etag,response.headers.lastModified,hash,observedAt]);
  let aliasUrl=null;
  if(['home','page'].includes(target.kind)&&response.status===200&&response.finalUrl) {
@@ -90,6 +96,8 @@ export async function saveObservation(db,target,response,evidence,runId) {
     [finalUrl,target.agency_id,response.status,response.headers.etag,response.headers.lastModified,hash,observedAt]));
     if(saved.rowCount===1) {
      const aliasEvidence={...evidence,fetchedVia:sourceUrl,actualFinalUrl:finalUrl};
+     if(isHtmlPageResponse(response)||/\bxml\b/i.test(response.headers.contentType||'')) aliasEvidence.sourcePacket=prepareSourceEvidence({url:finalUrl,sha256:hash,
+      html:response.body.toString('utf8'),facts:evidence.listing||{}});
      await db.query(`INSERT INTO floor_plan.observation(url,sha256,evidence,run_id,observed_at) VALUES($1,$2,$3,$4,$5)
       ON CONFLICT(url,sha256) DO UPDATE SET evidence=excluded.evidence,run_id=excluded.run_id,observed_at=excluded.observed_at,updated_at=now()`,
      [finalUrl,hash,JSON.stringify(aliasEvidence),runId,observedAt]);

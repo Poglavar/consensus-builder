@@ -3,6 +3,7 @@
 # and paid readings run on the laptop (production collection is stopped), so production cannot build
 # these; it only serves them to the archive page's Sites tab. The table is derived, so prod's set is
 # REPLACED by the local one in one transaction: a site no longer located disappears there too.
+# Only retained originals referenced by public apartment models are copied, with hash verification.
 #
 # Usage:
 #   backend/scripts/push-site-models-to-prod.sh          # compare local and prod, change nothing
@@ -51,6 +52,42 @@ report "site models"
 
 [ -s "$work/local" ] || { echo "[$(ts)] Refusing: no local site models — pushing would empty production's set." >&2; exit 1; }
 [ "$RUN" -eq 1 ] || { echo "[$(ts)] DRY RUN — pass --run to replace production's site models"; exit 0; }
+
+# Verify selected plan originals locally before any publication. No HTML or gallery cache travels.
+(
+cd "$BACKEND_DIR"
+node --input-type=module - "$work" <<'JS'
+import pg from 'pg';
+import { writeFile } from 'node:fs/promises';
+import { archiveRoot, readBlobRow } from './floor-plans/blob-store.js';
+const dir=process.argv[2], db=new pg.Client(process.env.DATABASE_URL?{connectionString:process.env.DATABASE_URL,host:process.env.PGHOST}:undefined);
+await db.connect();
+try {
+ const rows=(await db.query(`SELECT b.* FROM floor_plan.blob b WHERE b.bytes_available AND EXISTS(
+  SELECT 1 FROM floor_plan.site_model m,jsonb_array_elements(COALESCE(m.model#>'{inventory,apartments}','[]')) a
+  WHERE a#>>'{source,sha256}'=b.sha256) ORDER BY b.sha256`)).rows;
+ for(const row of rows)await readBlobRow(row);
+ await writeFile(`${dir}/source-root`,archiveRoot());
+ await writeFile(`${dir}/source-paths`,rows.map(r=>r.storage_path).join('\n')+(rows.length?'\n':''));
+ await writeFile(`${dir}/source-checks`,rows.map(r=>`${r.sha256}  ${r.storage_path}`).join('\n')+(rows.length?'\n':''));
+ console.log(`Verified ${rows.length} selected plan originals (${rows.reduce((n,r)=>n+Number(r.byte_count),0)} bytes).`);
+} finally {await db.end();}
+JS
+)
+if [[ -s "$work/source-paths" ]]; then
+    source_root="$(cat "$work/source-root")"
+    tar -C "$source_root" -czf - -T "$work/source-paths" | ssh "$SSH_HOST" \
+        'mkdir -p "$HOME/code/consensus-builder/data/floor-plan-downloads" && tar -xzf - -C "$HOME/code/consensus-builder/data/floor-plan-downloads"'
+    ssh "$SSH_HOST" 'cd "$HOME/code/consensus-builder/data/floor-plan-downloads" && sha256sum -c -' < "$work/source-checks"
+    psql -X -v ON_ERROR_STOP=1 -c "\\copy (SELECT b.sha256,b.media_type,b.byte_count,b.storage_path FROM floor_plan.blob b WHERE b.bytes_available AND EXISTS(SELECT 1 FROM floor_plan.site_model m,jsonb_array_elements(COALESCE(m.model#>'{inventory,apartments}','[]')) a WHERE a#>>'{source,sha256}'=b.sha256)) TO STDOUT" \
+      | ssh "$SSH_HOST" "$PROD_PSQL -c 'SET ROLE geo_user' \
+          -c 'CREATE TEMP TABLE public_source_push (sha256 text,media_type text,byte_count bigint,storage_path text)' \
+          -c '\\copy public_source_push FROM STDIN' \
+          -c 'INSERT INTO floor_plan.blob(sha256,media_type,byte_count,storage_path,bytes_available,stored_at)
+              SELECT sha256,media_type,byte_count,storage_path,true,now() FROM public_source_push
+              ON CONFLICT(sha256) DO UPDATE SET media_type=excluded.media_type,byte_count=excluded.byte_count,
+                storage_path=excluded.storage_path,bytes_available=true,stored_at=now(),discarded_at=NULL,discard_reason=NULL,updated_at=now()'"
+fi
 
 # One psql session on prod: stage into a temp table, then delete-and-upsert in ONE implicit
 # transaction (a multi-statement -c string), so a failure leaves prod's previous set intact.

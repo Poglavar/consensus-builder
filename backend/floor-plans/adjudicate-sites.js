@@ -1,6 +1,6 @@
 // Queues close site-location calls for LLM adjudication and applies the readings, through the
 // shared batch worker (batch API, per-item cost, daily budget, one chunk per invocation).
-import { readBlob } from './blob-store.js';
+import { readSourceEvidence } from './compact-sources.js';
 import { runBatchStage } from './batch-worker.js';
 import { SITE_PROCESSOR, SITE_SCHEMA, applySiteReading, buildSiteRequest, parseSiteReading, prepareSiteEvidence, siteTaskId } from './site-adjudication.js';
 
@@ -8,8 +8,12 @@ export async function enqueueSiteTasks(db, { limit = 20, urls = null, statuses =
     if (!Number.isInteger(limit) || limit < 1 || limit > 1000) throw new Error('Site adjudication queue limit must be 1..1000.');
     const rows = (await db.query(`SELECT l.url, l.facts, l.location, t.current_sha256
         FROM floor_plan.listing l JOIN floor_plan.target t ON t.url = l.url
-        JOIN floor_plan.blob b ON b.sha256 = t.current_sha256 AND b.bytes_available
+        JOIN floor_plan.blob b ON b.sha256 = t.current_sha256
+        LEFT JOIN floor_plan.observation o ON o.url=l.url AND o.sha256=t.current_sha256
         WHERE l.location_status = ANY($1::text[]) AND l.location->>'sourceSha256' = t.current_sha256
+          AND (b.bytes_available OR (o.evidence->'sourcePacket'->>'schema'='processed-source-evidence.v1'
+            AND o.evidence->'sourcePacket'->'source'->>'sha256'=t.current_sha256
+            AND o.evidence->'sourcePacket'->'source'->>'url'=l.url))
           AND jsonb_array_length(COALESCE(l.location->'candidates', '[]'::jsonb)) > 0
           AND ($2::text[] IS NULL OR l.url = ANY($2::text[]))
           AND NOT EXISTS (SELECT 1 FROM floor_plan.building_task bt WHERE bt.listing_url = l.url
@@ -17,9 +21,10 @@ export async function enqueueSiteTasks(db, { limit = 20, urls = null, statuses =
         ORDER BY l.location_checked_at, l.url LIMIT $4`, [statuses, urls, SITE_PROCESSOR, limit])).rows;
     let enqueued = 0;
     for (const row of rows) {
-        const bytes = await readBlob(db, row.current_sha256);
-        if (!bytes) continue;
-        const packet = prepareSiteEvidence({ url: row.url, sha256: row.current_sha256, html: bytes.toString('utf8'), facts: row.facts || {}, location: row.location });
+        const source = await readSourceEvidence(db,{url:row.url,sha256:row.current_sha256,facts:row.facts||{}});
+        if (!source) continue;
+        const packet = prepareSiteEvidence({ url: row.url, sha256: row.current_sha256,
+            facts: row.facts || {}, location: row.location, sourcePacket: source.building });
         const saved = await db.query(`INSERT INTO floor_plan.building_task(id, source_sha256, listing_url, processor, context, candidate_map)
             VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(id) DO NOTHING`,
         [siteTaskId(packet), row.current_sha256, row.url, SITE_PROCESSOR, JSON.stringify(packet), JSON.stringify(packet.candidateMap)]);

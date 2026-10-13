@@ -1,6 +1,7 @@
 // Conservative, source-backed HTML evidence extraction; never invents property facts.
 import * as cheerio from 'cheerio';
 import { extractExplicitLocation, propertyDetailId } from './explicit-location.js';
+import { extractPropertyFacts } from './property-facts.js';
 
 const TRACKING = /^(utm_|fbclid$|gclid$|mc_cid$|mc_eid$|ref$|source$)/i;
 const PLAN_WORD = /(tlocrt|floor[._ -]?plans?|ground[._ -]?plans?|blueprints?|etažni|etazni|tlocrti|\bgrundriss(?:e)?\b)/i;
@@ -134,6 +135,14 @@ function architectureProjectStatus($, pageUrl) {
     return null;
 }
 
+function propertyEvidenceText($, sourceType) {
+    const root = sourceType === 'architecture' ? $('main').first() : $('main').first().length ? $('main').first() : $('article').first();
+    if (!root.length) return '';
+    const content = root.clone();
+    content.find('header,footer,nav,aside,form,[role="navigation"],[role="contentinfo"],.item-wrap,.property-project-items-table,[class*="related" i],[class*="recommend" i],[class*="similar" i],[class*="menu" i],[class*="breadcrumb" i]').remove();
+    return content.text().replace(/\s+/g, ' ').trim();
+}
+
 // A page may embed whole project tables and recommendation cards. Discovery is
 // page-wide, but a plan belongs to the main listing only when its local owner agrees.
 function assetOwnership($, el, listing, pageUrl, url, label, forcedKind = null, mainCarousel = null) {
@@ -253,6 +262,12 @@ export function extractPageEvidence(html, pageUrl, { sourceKind = null, discover
                 areaM2: null, newBuild: null, projectName: title, locality: architectureLocality($, pageUrl),
                 projectStatus: architectureProjectStatus($, pageUrl) };
         } else listing = null;
+    }
+    if (listing) {
+        const factText = propertyEvidenceText($, sourceKind);
+        const propertyDetails = extractPropertyFacts({ record, title: listing.title || listingTitle || '', text: factText, sourceType: listing.sourceType || null });
+        listing.propertyDetails = propertyDetails;
+        if (propertyDetails.newBuild !== null) listing.newBuild = propertyDetails.newBuild;
     }
     // A retention audit still identifies every object, but generic pages do
     // not need their directory links and images enumerated again.

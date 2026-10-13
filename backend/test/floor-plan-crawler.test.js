@@ -1,7 +1,7 @@
 // Purpose: characterize crawler discovery and archive validation without network or PostgreSQL.
 import { describe, expect, it, vi } from 'vitest';
 import { crawl, discoverTargets, discoverTargetsWithStats } from '../floor-plans/crawler.js';
-import { countPendingTargets, createTargetSelector, normalizeSiteHost, OWNED_ASSET_SQL } from '../floor-plans/crawl-queue.js';
+import { countPendingTargets, createTargetSelector, normalizeSiteHost, LOCATED_ASSET_SQL, OWNED_ASSET_SQL } from '../floor-plans/crawl-queue.js';
 import { DEFERRED_GENERATED_SEARCH_SQL, isGeneratedSearchTarget } from '../floor-plans/discovery-policy.js';
 import { importAgencies, saveObservation } from '../floor-plans/archive.js';
 import { seedKnownSites } from '../floor-plans/agency-sites.js';
@@ -135,7 +135,8 @@ describe('floor-plan queue fairness', () => {
             { url: 'https://www.eurovilla.hr/stan/123/', kind: 'page', discovered_from: 'https://www.eurovilla.hr/sitemap-properties.xml.gz', priority: 20, last_fetched_at: null, next_check_at: 0 },
         );
         if (includeUnmatchedAssets) targets.push(
-            { url: 'https://b.test/unmatched.pdf', kind: 'asset', priority: 100, matchStatus: 'candidate', buildingId: null, owned: true, last_fetched_at: null, next_check_at: 0 },
+            { url: 'https://b.test/unmatched.pdf', kind: 'asset', priority: 100, matchStatus: 'candidate', buildingId: null, owned: true, locationStatus: 'located', last_fetched_at: null, next_check_at: 0 },
+            { url: 'https://b.test/unlocated.pdf', kind: 'asset', priority: 99, matchStatus: 'candidate', buildingId: null, owned: true, locationStatus: 'unresolved', last_fetched_at: null, next_check_at: 0 },
             { url: 'https://b.test/not-owned.pdf', kind: 'asset', priority: 100, matchStatus: 'verified', buildingId: 'b-1', owned: false, last_fetched_at: null, next_check_at: 0 },
         );
         return { query: vi.fn(async (sql, [, excluded]) => {
@@ -143,10 +144,11 @@ describe('floor-plan queue fairness', () => {
         const kinds = kindClause?.[1].match(/'([^']+)'/g)?.map(k => k.slice(1, -1)) || [];
         const nestedSitemaps = sql.includes("regexp_replace(t.discovered_from,'^https?://[^/]+','') NOT IN ('','/')");
         const rootSitemaps = sql.includes("regexp_replace(t.discovered_from,'^https?://[^/]+','') IN ('','/')") && !sql.includes("regexp_replace(t.discovered_from,'^https?://[^/]+','') NOT IN ('','/')");
-        const matched = sql.includes("l.match_status='verified'");
+        const matched = sql.includes("WHERE l.match_status='verified' AND l.building_id IS NOT NULL");
+        const located = sql.includes("l.location_status IN ('located','probable')");
         const ownedOnly = sql.includes("l.facts->>'sourceEvidenceStatus' IS DISTINCT FROM 'not-a-listing'");
         const generatedSearchPolicy = sql.includes('sitemap-searches-[a-z]{2}');
-        const rows = targets.filter(t => t.next_check_at === 0 && kinds.includes(t.kind) && !(generatedSearchPolicy && isGeneratedSearchTarget(t)) && !(nestedSitemaps && !t.discovered_from?.endsWith('/sitemap.xml')) && !(rootSitemaps && t.discovered_from?.endsWith('/sitemap.xml')) && !excluded.includes(new URL(t.url).host.replace(/^www\./, '')) && (!matched || (t.kind !== 'asset' || (t.matchStatus === 'verified' && t.buildingId && t.owned))) && (!ownedOnly || t.kind !== 'asset' || t.owned));
+        const rows = targets.filter(t => t.next_check_at === 0 && kinds.includes(t.kind) && !(generatedSearchPolicy && isGeneratedSearchTarget(t)) && !(nestedSitemaps && !t.discovered_from?.endsWith('/sitemap.xml')) && !(rootSitemaps && t.discovered_from?.endsWith('/sitemap.xml')) && !excluded.includes(new URL(t.url).host.replace(/^www\./, '')) && (!located || (t.kind !== 'asset' || t.locationStatus === 'located' || t.locationStatus === 'probable' || (t.matchStatus === 'verified' && t.buildingId))) && (!matched || (t.kind !== 'asset' || (t.matchStatus === 'verified' && t.buildingId && t.owned))) && (!ownedOnly || t.kind !== 'asset' || t.owned));
         rows.sort((a, b) => (a.last_fetched_at === null ? -1 : 1) - (b.last_fetched_at === null ? -1 : 1) || b.priority - a.priority || a.url.localeCompare(b.url));
         if (rows[0]) rows[0].next_check_at = Infinity; // A fetch moves the selected target out of the due queue.
         return { rows: rows.slice(0, 1) };
@@ -245,14 +247,14 @@ describe('site-scoped queue', () => {
         { url: 'https://cdn.example/shared-photo.jpg', kind: 'asset', agency_id: 9 },
     ];
     const listings = [
-        { url: 'https://www.opereta.hr/stan/1', owned: [
+        { url: 'https://www.opereta.hr/stan/1', location_status: 'located', owned: [
             { url: 'https://cdn.example/owned.pdf', kind: 'image' },
             { url: 'https://opereta.hr/owned.pdf', kind: 'image' },
             { url: 'https://cdn.example/plan.pdf', kind: 'floor-plan' },
             { url: 'https://cdn.example/brochure.pdf', kind: 'document' },
             { url: 'https://cdn.example/shared-photo.jpg', kind: 'image' },
         ] },
-        { url: 'https://other.hr/stan/3', owned: [
+        { url: 'https://other.hr/stan/3', location_status: 'located', owned: [
             { url: 'https://cdn.example/foreign.pdf', kind: 'floor-plan' },
             { url: 'https://cdn.example/shared-photo.jpg', kind: 'floor-plan' },
         ] },
@@ -265,13 +267,15 @@ describe('site-scoped queue', () => {
             const scoped = sql.includes('site_listing.url');
             const site = scoped ? params[selection ? 2 : 1] : null;
             if (scoped) expect(site).toBe('opereta.hr');
-            expect(sql).toContain("regexp_replace(lower(split_part(t.url,'/',3)),'^www\\.','')");
+            if (selection || scoped) expect(sql).toContain("regexp_replace(lower(split_part(t.url,'/',3)),'^www\\.','')");
             if (scoped) expect(sql).toContain("regexp_replace(lower(split_part(site_listing.url,'/',3)),'^www\\.','')");
             const planOnly = sql.includes("asset->>'kind' IN ('floor-plan','document')") || sql.includes("'kind','floor-plan'");
+            const locatedOnly = sql.includes("l.location_status IN ('located','probable')");
             const selected = targets.filter(target => due.has(target.url) && (
                 target.kind === 'asset'
                     ? listings.some(listing => (!site || host(listing.url) === site) && listing.owned.some(asset =>
-                        asset.url === target.url && (!planOnly || ['floor-plan', 'document'].includes(asset.kind))))
+                        asset.url === target.url && (!planOnly || ['floor-plan', 'document'].includes(asset.kind))
+                        && (!locatedOnly || ['located','probable'].includes(listing.location_status))))
                     : !site || host(target.url) === site));
             const kind = sql.match(/AND t\.kind='(asset|page|home|sitemap)'/)?.[1];
             const eligible = selected.filter(target => !kind || target.kind === kind);
@@ -301,20 +305,20 @@ describe('site-scoped queue', () => {
         const db = scopedDb();
         expect((await countPendingTargets(db, { site: 'www.opereta.hr', assetOnly: true })).pending).toBe(5);
         const countSql = db.query.mock.calls.map(([sql]) => sql);
-        expect(countSql).toHaveLength(2); // pending plus generated-search deferrals
+        expect(countSql).toHaveLength(3); // pending, unlocated-asset, and generated-search counts
         expect(countSql.every(sql => sql.includes('CROSS JOIN LATERAL jsonb_array_elements(site_listing.asset_urls)'))).toBe(true);
         expect(countSql.every(sql => !sql.includes('opereta.hr'))).toBe(true); // parameterized hostname
 
         const ownedDb = scopedDb();
         const owned = await countPendingTargets(ownedDb, { site: 'opereta.hr', assetOnly: true, ownedAssetsOnly: true });
         expect(owned.deferredUnownedAssets).toBe(0);
-        expect(ownedDb.query).toHaveBeenCalledTimes(2); // no redundant ownership anti-join
-        expect(ownedDb.query.mock.calls[0][0]).not.toContain('FROM floor_plan.listing l');
+        expect(ownedDb.query).toHaveBeenCalledTimes(3); // pending, unlocated-asset, and generated-search counts
+        expect(ownedDb.query.mock.calls[0][0]).toContain('FROM floor_plan.listing l');
 
         const ownedSelector = createTargetSelector({ site: 'opereta.hr', assetOnly: true, ownedAssetsOnly: true });
         const ownedSelectorDb = scopedDb();
         await ownedSelector(ownedSelectorDb);
-        expect(ownedSelectorDb.query.mock.calls[0][0]).not.toContain('FROM floor_plan.listing l');
+        expect(ownedSelectorDb.query.mock.calls[0][0]).toContain('l.location_status IN (\'located\',\'probable\')');
     });
 
     it('drains remaining site-owned assets after the final page in mixed mode', async () => {
@@ -340,7 +344,7 @@ describe('site-scoped queue', () => {
         expect(sql).toContain('CROSS JOIN LATERAL jsonb_array_elements(site_listing.asset_urls)');
         expect(sql).toContain("asset->'listingOwned'='true'::jsonb");
         expect(sql).toContain("asset->>'kind' IN ('floor-plan','document')");
-        expect(sql).not.toContain('FROM floor_plan.listing l');
+        expect(sql).toContain("l.location_status IN ('located','probable')");
         expect((await countPendingTargets(scopedDb(), { site: 'opereta.hr', assetOnly: true, planAssetsOnly: true })).pending).toBe(2);
         const unscoped = scopedDb();
         expect((await countPendingTargets(unscoped, { assetOnly: true, planAssetsOnly: true })).pending).toBe(4);
@@ -527,23 +531,28 @@ it('persists request, response, host, and decoded-body metrics after each attemp
 });
 
 it('counts only work eligible in the current phase and reports deferred unmatched assets separately', async () => {
+    expect(LOCATED_ASSET_SQL).toContain("l.location_status IN ('located','probable')");
+    expect(LOCATED_ASSET_SQL).toContain("l.match_status='verified'");
+    expect(LOCATED_ASSET_SQL).toContain('l.building_id IS NOT NULL');
+    expect(LOCATED_ASSET_SQL).toContain("'listingOwned',true");
     expect(OWNED_ASSET_SQL).toContain("l.facts->>'sourceEvidenceStatus' IS DISTINCT FROM 'not-a-listing'");
     expect(OWNED_ASSET_SQL).toContain("'listingOwned',true");
     const calls = [];
-    const values = ['3', '8', '4', '3431'];
+    const values = ['3', '5', '8', '4', '3431'];
     const db = { query: vi.fn(async (sql) => {
         calls.push(sql);
         return { rows: [{ n: values[calls.length - 1] }] };
     }) };
-    expect(await countPendingTargets(db, { discoveryOnly: true })).toEqual({ pending: 3, deferredUnmatchedAssets: 8, deferredUnownedAssets: 4, deferredGeneratedSearchTargets: 3431 });
+    expect(await countPendingTargets(db, { discoveryOnly: true })).toEqual({ pending: 3, deferredUnlocatedAssets: 5, deferredUnmatchedAssets: 8, deferredUnownedAssets: 4, deferredGeneratedSearchTargets: 3431 });
     expect(calls[0]).toContain("t.kind IN ('home','sitemap','page')");
     expect(calls[0]).toContain("AND t.kind IN ('home','sitemap','page')");
     expect(calls[0]).toContain("AND NOT COALESCE((t.kind='asset' AND t.image_kind IN ('photo','render')");
     expect(calls[0]).toContain('sitemap-searches-[a-z]{2}');
-    expect(calls[1]).toContain("l.match_status='verified'");
-    expect(calls[1]).toContain('l.building_id IS NOT NULL');
-    expect(calls[1]).toContain("'listingOwned',true");
-    expect(calls[3]).toContain("sitemap-searches-[a-z]{2}");
+    expect(calls[0]).toContain("l.location_status IN ('located','probable')");
+    expect(calls[2]).toContain("l.match_status='verified'");
+    expect(calls[2]).toContain('l.building_id IS NOT NULL');
+    expect(calls[2]).toContain("'listingOwned',true");
+    expect(calls[4]).toContain("sitemap-searches-[a-z]{2}");
     calls.length = 0;
     await countPendingTargets(db, { assetOnly: true, matchedAssetsOnly: true });
     expect(calls[0]).toContain("t.kind='asset'");
@@ -553,7 +562,7 @@ it('counts only work eligible in the current phase and reports deferred unmatche
     expect(calls[0]).toContain("t.kind='asset'");
     expect(calls[0]).toContain("l.facts->>'sourceEvidenceStatus' IS DISTINCT FROM 'not-a-listing'");
     expect(calls[0]).toContain("'listingOwned',true");
-    expect(calls[0]).not.toContain("l.match_status='verified'");
+    expect(calls[0]).toContain("l.location_status IN ('located','probable')");
     calls.length = 0;
     await countPendingTargets(db, { matchedAssetsOnly: true, ownedAssetsOnly: true });
     expect(calls[0]).toContain("l.match_status='verified'");

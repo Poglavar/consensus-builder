@@ -6,6 +6,8 @@ import { fingerprint } from '../buildings/floor-models.js';
 import { fitPlan, toLocalMetres, toLngLat, transformRing, ringArea } from './plan-placement.js';
 import { sameStreet } from './site-scoring.js';
 import { sheetContexts } from './sheet-context.js';
+import { projectInventory, projectSources } from './project-inventory.js';
+import { currentProcessedPlans } from '../floor-plan-archive/processed-catalogue.js';
 
 const closeRing = ring => (ring.length && (ring[0][0] !== ring.at(-1)[0] || ring[0][1] !== ring.at(-1)[1]) ? [...ring, ring[0]] : ring);
 
@@ -119,9 +121,9 @@ export async function sitePlans(db, listingUrls) {
         WHERE e.status = 'reviewed' AND e.model ? 'architecture'
           AND (e.model->'source'->>'listingUrl' = ANY($1::text[]) OR l.url = ANY($1::text[]))
         ORDER BY e.sha256`, [listingUrls])).rows.map(row => ({ id: `reviewed-${row.sha256.slice(0, 12)}`, kind: 'reviewed', ...row }));
-    const machine = (await db.query(`SELECT p.id, p.source_sha256 AS sha256, p.model, t.listing_url FROM floor_plan.processed_plan p
-        JOIN floor_plan.plan_task t ON t.id = p.task_id WHERE t.listing_url = ANY($1::text[])`, [listingUrls])).rows
-        .filter(row => !reviewed.some(r => r.sha256 === row.sha256)).map(row => ({ ...row, kind: 'machine' }));
+    const machine = (await currentProcessedPlans(db)).filter(row => listingUrls.includes(row.listing_url)
+        && !reviewed.some(r => r.sha256 === row.source_sha256))
+        .map(row => ({ ...row, sha256: row.source_sha256, kind: 'machine' }));
     return [...reviewed, ...machine];
 }
 
@@ -184,7 +186,10 @@ export async function siteModel(db, listingUrl) {
     const label = point ? `${point.street} ${point.number}` : top.permits?.find(p => p.streets?.length)?.streets[0] || key;
     return { schema: 'site-model.v1', siteKey: key, label, listingUrl, siblings: siblings.map(s => s.url), location: { status: listing.location_status, score: top.score,
         reasons: top.reasons }, footprint: footprint ? { source: footprint.source, areaM2: Math.round(footprint.areaM2), caseId: footprint.caseId || null,
-        caseKind: footprint.caseKind || null } : null, envelope, placements };
+        caseKind: footprint.caseKind || null } : null, envelope, placements,
+        inventory: projectInventory(siblings, plans),
+        sources: projectSources(siblings),
+        parcels: (top.parcels || []).map(p => ({ ko: p.ko, kc: p.kc })) };
 }
 
 // Build and store one model per located site (grouped by site key). Idempotent: an unchanged model

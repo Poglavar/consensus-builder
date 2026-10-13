@@ -1,7 +1,6 @@
 // Runs heuristic site location over listings: signals from the listing's own text, candidate sites
 // from address points/permits/parcels, weighted ranking. Checkpointed per listing; idempotent.
-import { prepareBuildingEvidence } from './building-reading.js';
-import { readBlob } from './blob-store.js';
+import { readSourceEvidence } from './compact-sources.js';
 import { hasLocationSignal, listingSignals } from './site-signals.js';
 import { siteCandidates, zagrebStreetIndex } from './site-candidates.js';
 import { rankSites } from './site-scoring.js';
@@ -20,10 +19,9 @@ function summarize(entry) {
 }
 
 export async function locateListing(db, listing, { observedAt = Date.now(), streetIndex } = {}) {
-    const bytes = await readBlob(db, listing.current_sha256);
-    if (!bytes) throw new Error('Listing HTML is not retained.');
-    const evidence = prepareBuildingEvidence({ url: listing.url, sha256: listing.current_sha256, html: bytes.toString('utf8'), facts: listing.facts || {} });
-    const signals = listingSignals({ facts: listing.facts || {}, text: evidence.text, title: listing.facts?.title || '', streetIndex });
+    const evidence = await readSourceEvidence(db,{url:listing.url,sha256:listing.current_sha256,facts:listing.facts||{}});
+    if (!evidence) throw new Error('Listing source evidence is unavailable.');
+    const signals = listingSignals({ facts: listing.facts || {}, text: evidence.building.text, title: listing.facts?.title || '', streetIndex });
     const candidates = await siteCandidates(db, signals);
     const ranking = rankSites(candidates, signals, { observedAt });
     return { schema: LOCATION_SCHEMA, status: ranking.status, margin: ranking.margin, signals,
@@ -35,8 +33,12 @@ export async function locateSites(db, { limit = 100, urls = null, recheck = fals
     const streetIndex = await zagrebStreetIndex(db);
     const rows = (await db.query(`SELECT l.url, l.facts, l.last_observed_at, t.current_sha256
         FROM floor_plan.listing l JOIN floor_plan.target t ON t.url = l.url
-        JOIN floor_plan.blob b ON b.sha256 = t.current_sha256 AND b.bytes_available
+        JOIN floor_plan.blob b ON b.sha256 = t.current_sha256
+        LEFT JOIN floor_plan.observation o ON o.url=l.url AND o.sha256=t.current_sha256
         WHERE ($1::text[] IS NULL OR l.url = ANY($1::text[]))
+          AND (b.bytes_available OR (o.evidence->'sourcePacket'->>'schema'='processed-source-evidence.v1'
+            AND o.evidence->'sourcePacket'->'source'->>'sha256'=t.current_sha256
+            AND o.evidence->'sourcePacket'->'source'->>'url'=l.url))
           AND ($2 OR l.location_checked_at IS NULL OR l.location->>'sourceSha256' IS DISTINCT FROM t.current_sha256)
           AND l.facts->>'sourceEvidenceStatus' IS DISTINCT FROM 'not-a-listing'
         ORDER BY l.location_checked_at NULLS FIRST, l.url LIMIT $3`, [urls, recheck, limit])).rows;

@@ -73,12 +73,25 @@ describe('same-host redirect observations', () => {
     const aliasObservation = db.calls.find(call => call.sql.includes('INSERT INTO floor_plan.observation') && call.args[0] === finalUrl);
     expect(aliasObservation).toBeDefined();
     expect(JSON.parse(aliasObservation.args[2])).toMatchObject({ listing: null, assets: [], links: [], fetchedVia: origin, actualFinalUrl: finalUrl });
+    const aliasEvidence=JSON.parse(aliasObservation.args[2]);
+    expect(aliasEvidence.sourcePacket).toMatchObject({
+      schema:'processed-source-evidence.v1',
+      source:{url:finalUrl,sha256:hash},
+      building:{source:{url:finalUrl,sha256:hash}},
+    });
+    await save(db,target({current_sha256:hash}),response());
+    const repeatedAlias=db.calls.filter(call=>call.sql.includes('INSERT INTO floor_plan.observation')&&call.args[0]===finalUrl).at(-1);
+    expect(JSON.parse(repeatedAlias.args[2]).sourcePacket).toMatchObject({
+      schema:'processed-source-evidence.v1',
+      source:{url:finalUrl,sha256:hash},
+      building:{source:{url:finalUrl,sha256:hash}},
+    });
     expect(aliasObservation.args[1]).toBe(hash);
     expect(aliasObservation.args[3]).toBe('run-redirect');
     expect(aliasObservation.inTransaction).toBe(true);
     expect(db.calls.at(-1).sql).toBe('COMMIT');
-    expect(db.calls.filter(call => call.sql === 'BEGIN')).toHaveLength(1);
-    expect(db.calls.filter(call => call.sql === 'COMMIT')).toHaveLength(1);
+    expect(db.calls.filter(call => call.sql === 'BEGIN')).toHaveLength(2);
+    expect(db.calls.filter(call => call.sql === 'COMMIT')).toHaveLength(2);
   });
 
   it.each([

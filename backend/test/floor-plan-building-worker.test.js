@@ -15,6 +15,7 @@ import {buildingCandidates,enqueueBuildingTasks,recognizeBuildings,storeBuilding
 import {addressedBuildings} from '../floor-plans/building-resolution.js';
 import {prepareBuildingEvidence,parseBuildingReading,BUILDING_PROCESSOR} from '../floor-plans/building-reading.js';
 import {BUILDING_SCHEMA} from '../floor-plans/building-reading-schema.js';
+import {prepareSourceEvidence} from '../floor-plans/compact-sources.js';
 
 const model=DEFAULTS.providers.anthropic.model,hash='a'.repeat(64),url='https://agency.test/listing/1';
 const raw=()=>({schema:'ad-building-reading.v1',isListing:true,
@@ -150,11 +151,13 @@ describe('building batch worker',()=>{
         const row={url,current_sha256:hash,sha256:hash,storage_path:'raw/aa/hash',byte_count:35,bytes_available:true,
             testBytes:Buffer.from('<main><p>Example Street 12</p></main>'),
             facts:{explicitLocation:{schema:'explicit-listing-location.v1',street:'Example Street',houseNumber:'12'},locality:'Split'}};
+        const sourcePacket=prepareSourceEvidence({url,sha256:hash,html:row.testBytes.toString('utf8'),facts:row.facts});
         const calls=[];
         const db={query:vi.fn(async(sql,args=[])=>{
             calls.push({sql,args});
             if(sql.includes('pg_try_advisory_lock'))return {rows:[{locked:true}]};
             if(sql.startsWith('SELECT l.*,t.current_sha256,b.sha256'))return {rows:[row]};
+            if(sql.includes("evidence->'sourcePacket' AS packet"))return {rows:[{packet:sourcePacket}]};
             if(sql==='SELECT * FROM floor_plan.building_binding ORDER BY id')return {rows:[]};
             return {rows:[],rowCount:1};
         })};

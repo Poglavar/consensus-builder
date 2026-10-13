@@ -46,6 +46,7 @@ function deps(order,{afterDiscovery}={}) {
   readSheets:async(_db,options)=>{order.push('readSheets');return {status:'complete',read:1,submitted:options.submit?1:0,costUsd:0.02};},
   buildSiteModels:async()=>{order.push('siteModels');return {sites:1,built:1,changed:1,failed:0,retired:0};},
   publishProcessedPlans:async()=>{order.push('publish');return {published:1};},
+  compactSources:async(_db,options)=>{order.push('retention');expect(options).toMatchObject({apply:true,limit:1000});return {sourceReadErrors:0,filesDeleted:2};},
   coverage:async()=>({targets:[]})
  };
 }
@@ -56,7 +57,7 @@ describe('floor-plan daily pipeline',()=>{
   const baseCrawl=operations.crawl;
   operations.crawl=async(...args)=>{if(args[1].assetOnly) assetCrawlOptions=args[1];return baseCrawl(...args);};
   const result=await daily(db,{maxPages:10,maxMinutes:5,dependencies:operations});
-  expect(order).toEqual(['registry','knownSites','discovery','bindings','resolve','spatial','locateSites','enqueueSiteTasks','adjudicateSites','enqueueBuildings','recognizeBuildings','assets','enqueueImages','classifyImages','extract','enqueue','interpret','enqueueSheetTasks','readSheets','siteModels','publish']);
+  expect(order).toEqual(['registry','knownSites','discovery','bindings','resolve','spatial','locateSites','enqueueSiteTasks','adjudicateSites','enqueueBuildings','recognizeBuildings','assets','enqueueImages','classifyImages','extract','enqueue','interpret','enqueueSheetTasks','readSheets','siteModels','publish','retention']);
   expect(assetCrawlOptions.maxPages).toBe(7);
   expect(assetCrawlOptions).toMatchObject({assetOnly:true,ownedAssetsOnly:true});
   expect(result).toMatchObject({status:'complete',pagesFetched:5,verified:{matchedAssets:4,currentProcessedPlans:0}});

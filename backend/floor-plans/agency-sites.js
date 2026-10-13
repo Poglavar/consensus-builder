@@ -1,8 +1,8 @@
 // Keeps discovered agency sites distinct from verified registry-to-domain associations.
-import * as cheerio from 'cheerio';
 import { enqueue } from './archive.js';
 import { normalizeUrl } from './page-evidence.js';
 import { readBlobRow } from './blob-store.js';
+import { agencyIdentityEvidence,sourceEvidenceMatches } from './compact-sources.js';
 const norm=value=>String(value).normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase().replace(/[^a-z0-9]/g,'');
 const social=/^(?:www\.)?(?:facebook\.com|instagram\.com|linkedin\.com|youtube\.com|tiktok\.com)$/i;
 export async function importSites(db,records) {
@@ -51,16 +51,11 @@ export async function seedKnownSites(db) {
  }
  return {sites:unique.size};
 }
-export function agencyIdentityEvidence(html) {
- const $=cheerio.load(html);$('script,style,noscript').remove();
- const visible=$('body').text().replace(/\s+/g,' '),matches=[];
- for(const match of visible.matchAll(/\bOIB\s*[:.]?\s*(?:HR)?\s*(\d{11})\b/gi)) matches.push({oib:match[1],quote:match[0],context:visible.slice(Math.max(0,match.index-350),match.index+100)});
- return {matches,text:visible};
-}
-export async function verifySiteFromPage(db,target,html,finalUrl) {
+export { agencyIdentityEvidence };
+export async function verifySiteFromEvidence(db,target,identity,finalUrl) {
  if(target.kind!=='home' && !/kontakt|contact|o-nama|about|uvjeti|privacy|impressum/i.test(target.url)) return null;
- const {matches,text}=agencyIdentityEvidence(html);
- if(!matches.length) return null;
+ const {matches,text}=identity||{};
+ if(!Array.isArray(matches)||!matches.length||typeof text!=='string') return null;
  const registry=(await db.query('SELECT registry_id,legal_name,oib FROM floor_plan.agency WHERE oib=ANY($1::text[])',[[...new Set(matches.map(m=>m.oib))]])).rows;
  const verified=registry.filter(row=>{
   const shortName=row.legal_name.split(/\s+(?:j\.)?d\.o\.o\.|,?\s+obrt|\s+za\s+/i)[0];
@@ -76,6 +71,9 @@ export async function verifySiteFromPage(db,target,html,finalUrl) {
  await db.query(`UPDATE floor_plan.target SET agency_id=$2,updated_at=now() WHERE agency_id IS NULL AND regexp_replace(url,'^https?://(www\\.)?([^/]+).*$', '\\2')=$1`,[new URL(origin).hostname.replace(/^www\./,''),agency.registry_id]);
  await db.query(`UPDATE floor_plan.listing l SET agency_id=t.agency_id,updated_at=now() FROM floor_plan.target t WHERE l.url=t.url AND l.agency_id IS NULL AND t.agency_id=$1`,[agency.registry_id]);
  return evidence;
+}
+export async function verifySiteFromPage(db,target,html,finalUrl) {
+ return verifySiteFromEvidence(db,target,agencyIdentityEvidence(html),finalUrl);
 }
 
 // Search/directory leads remain candidates until the agency's own legal identity is observed.
@@ -99,13 +97,24 @@ export async function importWebsiteCandidates(db,records) {
 }
 
 export async function verifyArchivedSites(db) {
- const pages=(await db.query(`SELECT t.*,b.sha256,b.storage_path,b.byte_count,b.bytes_available,b.media_type FROM floor_plan.target t JOIN floor_plan.blob b ON b.sha256=t.current_sha256 WHERE b.bytes_available AND b.media_type ILIKE '%html%' AND (t.kind='home' OR t.url ~* 'kontakt|contact|o-nama|about|uvjeti|privacy|impressum') ORDER BY t.last_fetched_at`)).rows;
+ const pages=(await db.query(`SELECT t.*,b.sha256,b.storage_path,b.byte_count,b.bytes_available,b.media_type,
+  o.evidence->'sourcePacket' AS source_packet FROM floor_plan.target t JOIN floor_plan.blob b ON b.sha256=t.current_sha256
+  LEFT JOIN floor_plan.observation o ON o.url=t.url AND o.sha256=t.current_sha256
+  WHERE b.media_type ILIKE '%html%' AND (t.kind='home' OR t.url ~* 'kontakt|contact|o-nama|about|uvjeti|privacy|impressum')
+   AND (b.bytes_available OR (o.evidence->'sourcePacket'->>'schema'='processed-source-evidence.v1'
+    AND o.evidence->'sourcePacket'->'source'->>'url'=t.url AND o.evidence->'sourcePacket'->'source'->>'sha256'=t.current_sha256))
+  ORDER BY t.last_fetched_at`)).rows;
  const verified=new Set();
  for(const page of pages) {
-  const bytes=await readBlobRow(page);
-  if(!bytes) continue;
-  const match=await verifySiteFromPage(db,page,bytes.toString(),page.url);
+  let identity;
+  if(sourceEvidenceMatches(page.source_packet,page.url,page.current_sha256)) identity=page.source_packet.agencyIdentity;
+  else if(page.bytes_available) {
+   const bytes=await readBlobRow(page);
+   if(bytes) identity=agencyIdentityEvidence(bytes.toString());
+  }
+  if(!identity) continue;
+  const match=await verifySiteFromEvidence(db,page,identity,page.url);
   if(match) verified.add(match.registry_id);
  }
- return {pages:pages.length,verifiedAgencies:verified.size};
+ return {pages:pages.length,verifiedAgencies:verified.size,fromSnapshots:pages.filter(page=>sourceEvidenceMatches(page.source_packet,page.url,page.current_sha256)).length};
 }

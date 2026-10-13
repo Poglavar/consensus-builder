@@ -63,7 +63,7 @@ export async function purgeExcludedContent(db) {
 export async function enforceSourcePolicy(db,{apply=false,log=console.log}={}) {
  const locked=(await db.query(`SELECT pg_try_advisory_lock(hashtext('floor-plan-crawl')) AS locked`)).rows[0]?.locked;
  if(!locked) throw new Error('Stop the active crawl before applying the source policy.');
- const result={apply,checked:0,eligible:0,excluded:0,alreadyExcluded:0,nonObjects:0,reclassifiedAssets:0,accepted:[]};
+ const result={apply,checked:0,eligible:0,excluded:0,alreadyExcluded:0,nonObjects:0,compactedSources:0,unavailableSources:0,reclassifiedAssets:0,accepted:[]};
  try {
   if(apply) {
    // Older sitemap discovery could label a binary download as a generic page.
@@ -84,7 +84,7 @@ export async function enforceSourcePolicy(db,{apply=false,log=console.log}={}) {
    const rows=(await db.query(`SELECT l.*,t.url,t.agency_id,l.url IS NOT NULL AS has_listing,
     COALESCE(l.last_observed_at,t.last_fetched_at,
      (SELECT max(o.observed_at) FROM floor_plan.observation o WHERE o.url=t.url)) AS source_observed_at,
-    t.current_sha256,t.exclusion_reason,t.source_kind,b.sha256,b.storage_path,b.byte_count,b.bytes_available,b.media_type,
+    t.current_sha256,t.exclusion_reason,t.source_kind,b.sha256,b.storage_path,b.byte_count,b.bytes_available,b.media_type,b.discard_reason,
     EXISTS(SELECT 1 FROM floor_plan.exclusion x WHERE x.url=t.url OR x.identity=t.source_identity) AS permanently_excluded
     FROM floor_plan.target t LEFT JOIN floor_plan.listing l USING(url) LEFT JOIN floor_plan.blob b ON b.sha256=t.current_sha256
     WHERE t.url>$1 AND (l.url IS NOT NULL OR (t.kind IN ('home','page') AND t.current_sha256 IS NOT NULL))
@@ -95,6 +95,8 @@ export async function enforceSourcePolicy(db,{apply=false,log=console.log}={}) {
     for(const row of rows) {
      cursor=row.url;result.checked++;
      if(row.permanently_excluded||row.exclusion_reason) {result.alreadyExcluded++;continue;}
+     if(row.discard_reason==='processed-source.v1') {result.compactedSources++;continue;}
+     if(!row.bytes_available) {result.unavailableSources++;continue;}
      const bytes=/html/i.test(row.media_type||'')?await readBlobRow(row):null;
      const html=bytes?bytes.toString():null;
      const document=cheerio.load(html||'');

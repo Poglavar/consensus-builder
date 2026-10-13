@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { fetchHgkRegistry,selectZagrebRecords } from './registry.js';
 import { importAgencies,putBlob,coverage } from './archive.js';
 import { fetchPublic } from './fetch-public.js';
-import { seedKnownSites } from './agency-sites.js';
+import { refreshSourceRoster, prioritizeResidentialSources } from './source-roster.js';
 import { crawl } from './crawler.js';
 import { processAssets } from './process-assets.js';
 import { matchBuildingCandidates } from './building-links.js';
@@ -22,6 +22,7 @@ import { locateSites } from './locate-sites.js';
 import { enqueueSiteTasks,adjudicateSites } from './adjudicate-sites.js';
 import { enqueueSheetTasks,readSheets } from './sheet-context.js';
 import { buildSiteModels } from './site-model.js';
+import { compactSources } from './compact-sources.js';
 import { computeCost } from '../../../agents/lib/llm-cost/index.mjs';
 import { resolveCall } from '../../../agents/lib/llm-cost/llm.mjs';
 
@@ -122,9 +123,9 @@ export async function daily(db,options={}) {
  const now=options.now || Date.now,started=now(),deadline=started+maxMinutes*60000,id=randomUUID();
  const result={id,status:'running',startedAt:new Date(started).toISOString(),stages:{},errors:[],
   limits:{maxMinutes,maxPages,maxAssets,budgetUsd:budgetUsd===Infinity?null:budgetUsd,budgetUnlimited:budgetUsd===Infinity,chunkSize,model,aiStage}};
- const deps={fetchHgkRegistry,selectZagrebRecords,importAgencies,putBlob,seedKnownSites,crawl,seedReviewedBindings,
+ const deps={fetchHgkRegistry,selectZagrebRecords,importAgencies,putBlob,seedKnownSites:refreshSourceRoster,prioritizeResidentialSources,crawl,seedReviewedBindings,
   resolveBuildingLinks,matchBuildingCandidates,processAssets,enqueuePlanTasks,interpretPlans,enqueueBuildingTasks,recognizeBuildings,
-  enqueueImageTasks,classifyImages,coverage,locateSites,enqueueSiteTasks,adjudicateSites,enqueueSheetTasks,readSheets,buildSiteModels,
+  enqueueImageTasks,classifyImages,coverage,locateSites,enqueueSiteTasks,adjudicateSites,enqueueSheetTasks,readSheets,buildSiteModels,compactSources,
   ...(options.dependencies||{})};
  let stop=false,pagesFetched=0;
  const remainingMs=()=>Math.max(0,deadline-now());
@@ -169,7 +170,8 @@ export async function daily(db,options={}) {
   await stage('reviewedBindings',()=>deps.seedReviewedBindings(db));
   await stage('buildingResolution',async()=>({exact:await deps.resolveBuildingLinks(db,{limit:options.resolveLimit||2000,deadline}),
    spatialCandidates:await deps.matchBuildingCandidates(db,{limit:options.candidateLimit||1000,deadline})}));
-  await stage('locateSites',()=>deps.locateSites(db,{limit:options.locationLimit||100,deadline}));
+  await stage('locateSites',async()=>{const located=await deps.locateSites(db,{limit:options.locationLimit||100,deadline});
+   await deps.prioritizeResidentialSources(db);return located;});
   await stage('enqueueSiteTasks',()=>deps.enqueueSiteTasks(db,{limit:options.siteEnqueueLimit||100}));
   await stage('adjudicateSites',()=>deps.adjudicateSites(db,{dailyBudgetUsd:budgetUsd,
    chunkSize,submit:!options.noAI&&aiStage==='sites',deadline}));
@@ -195,12 +197,16 @@ export async function daily(db,options={}) {
    const publish=options.dependencies?.publishProcessedPlans || (await import('./publish-plans.js')).publishProcessedPlans;
    return publish(db,{limit:options.publishLimit||100,deadline});
   });
+  await stage('sourceRetention',async()=>{
+   const retention=await deps.compactSources(db,{apply:true,limit:options.retentionLimit||1000,deadline});
+   return {...retention,status:retention.sourceReadErrors?'partial':'complete'};
+  });
   result.coverage=await deps.coverage(db);
   result.verified=await verifiedOutcome(db);
   result.downloads=aggregateDownloads(result.stages);
   const storageAfter=await storageSnapshot(db);
   result.storage={before:storageBefore,after:storageAfter,newBlobs:storageAfter.blobs-storageBefore.blobs,
-   newBytes:storageAfter.bytes-storageBefore.bytes,basis:'Net retained archive growth, including registry snapshots and removal of confirmed non-plan image bytes.'};
+   newBytes:storageAfter.bytes-storageBefore.bytes,basis:'Net retained archive growth after completed source compaction; hashes, evidence and model results are preserved.'};
   result.pagesFetched=pagesFetched;
   result.elapsedMs=now()-started;
   const deadlineExpired=remainingMs()<=0;

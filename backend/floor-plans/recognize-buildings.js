@@ -3,10 +3,10 @@ import { fingerprint } from '../buildings/floor-models.js';
 import { normalizeUrl } from './page-evidence.js';
 import { addressKey, addressedBuildings, sourceLocality } from './building-resolution.js';
 import { eligibleListingSql } from './source-policy.js';
-import { BUILDING_PROCESSOR,prepareBuildingEvidence,buildBuildingRequest,parseBuildingReading } from './building-reading.js';
+import { BUILDING_PROCESSOR,buildBuildingRequest,parseBuildingReading } from './building-reading.js';
 import { BUILDING_SCHEMA } from './building-reading-schema.js';
 import { runBatchStage } from './batch-worker.js';
-import { readBlobRow } from './blob-store.js';
+import { buildingEvidenceWithCandidates,readSourceEvidence } from './compact-sources.js';
 
 export function buildingTaskId(context,candidateMap) {return fingerprint([BUILDING_PROCESSOR,context,candidateMap]);}
 
@@ -57,9 +57,13 @@ export async function enqueueBuildingTasks(db,{limit=100,listingUrl=null,deadlin
     try {
         const rows=(await db.query(`SELECT l.*,t.current_sha256,b.sha256,b.storage_path,b.byte_count,b.bytes_available,b.media_type FROM floor_plan.listing l
             JOIN floor_plan.target t ON t.url=l.url JOIN floor_plan.blob b ON b.sha256=t.current_sha256
+            LEFT JOIN floor_plan.observation o ON o.url=l.url AND o.sha256=t.current_sha256
             WHERE l.facts->>'sourceEvidenceStatus' IS DISTINCT FROM 'not-a-listing'
             AND ${eligibleListingSql('l')}
-            AND b.bytes_available AND lower(b.media_type) LIKE '%html%' AND ($1::text IS NULL OR l.url=$1)
+            AND (b.bytes_available OR (o.evidence->'sourcePacket'->>'schema'='processed-source-evidence.v1'
+              AND o.evidence->'sourcePacket'->'source'->>'sha256'=t.current_sha256
+              AND o.evidence->'sourcePacket'->'source'->>'url'=l.url))
+            AND lower(b.media_type) LIKE '%html%' AND ($1::text IS NULL OR l.url=$1)
             AND (l.match_status<>'verified' OR $1::text IS NOT NULL)
             ORDER BY EXISTS(SELECT 1 FROM floor_plan.building_task bt WHERE bt.listing_url=l.url
                 AND bt.source_sha256=t.current_sha256 AND bt.processor=$3),l.created_at,l.url LIMIT $2`,
@@ -70,10 +74,10 @@ export async function enqueueBuildingTasks(db,{limit=100,listingUrl=null,deadlin
         const result={selected:rows.length,enqueued:0,existing:0,deferred:0};
         for(const row of rows) {
             if(Date.now()>=deadline) {result.deferred++;continue;}
-            const bytes=await readBlobRow(row);
-            if(!bytes) throw new Error(`Archived listing source bytes are missing: ${row.current_sha256}`);
             const candidates=await buildingCandidates(db,row,{bindings,addressRows});
-            const context=prepareBuildingEvidence({url:row.url,sha256:row.current_sha256,html:bytes.toString('utf8'),facts:row.facts,candidates});
+            const source=await readSourceEvidence(db,{url:row.url,sha256:row.current_sha256,facts:row.facts||{}});
+            if(!source) throw new Error(`Archived listing source evidence is unavailable: ${row.current_sha256}`);
+            const context=buildingEvidenceWithCandidates(source,candidates);
             const candidateMap=candidates.map((candidate,index)=>({id:`C${index+1}`,city:candidate.city,source:candidate.source,
                 ownerId:candidate.ownerId||'',buildingId:candidate.buildingId,bindingId:candidate.bindingId||null}));
             const id=buildingTaskId(context,candidateMap);

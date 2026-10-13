@@ -49,8 +49,8 @@ function candidateSummary(entry, index) {
     };
 }
 
-export function prepareSiteEvidence({ url, sha256, html, facts = {}, location }) {
-    const base = prepareBuildingEvidence({ url, sha256, html, facts });
+export function prepareSiteEvidence({ url, sha256, html, facts = {}, location, sourcePacket = null }) {
+    const base = sourcePacket || prepareBuildingEvidence({ url, sha256, html, facts });
     const candidates = (location?.candidates || []).slice(0, MAX_CANDIDATES);
     const { schema, ...signals } = location?.signals || {};
     return { schema: 'ad-site-evidence.v1', source: base.source, title: clean(facts.title).slice(0, 300), text: base.text,

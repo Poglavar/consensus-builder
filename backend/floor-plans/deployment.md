@@ -1,5 +1,48 @@
 # Floor-plan production runtime
 
+## Public Novogradnje release
+
+The public catalogue lives at `https://zagreb.lol/novogradnje/`, crosslinked with
+Moja parcela (`/parcele/`) and Lovac na prilike (`/lovac/`). Collection remains local;
+the public service reads the existing production `floor_plan.site_model` and blob
+metadata. It never starts a worker or registers a crawl schedule.
+
+After a tested, committed and pushed release:
+
+```sh
+# Optional metadata backfill from retained local HTML; no fetching or model calls.
+PGHOST=localhost node backend/scripts/floor-plan-property-backfill.mjs --apply
+PGHOST=localhost node backend/scripts/floor-plan-archive.mjs site-models --limit 500
+backend/scripts/push-site-models-to-prod.sh --run
+bash backend/scripts/deploy-novogradnje.sh --run
+```
+
+Publication copies only retained plan originals referenced by the public apartment
+models, checks SHA-256 at both ends, writes their blob metadata, then publishes the
+derived model set transactionally. It does not copy the HTML/gallery download cache.
+The deploy creates/updates a dedicated `consensus-builder-novogradnje` checkout and
+the `novogradnje-web` PM2 process on loopback port 8490; the main API checkout stays
+untouched. Dependencies may be shared only when the lockfiles match. The protected
+environment and archive directory remain in the existing production checkout.
+
+The versioned nginx snippets mount `/novogradnje/` and redirect the former
+`urbangametheory.xyz/floor-plan-archive.html` links through the legacy selection
+resolver. Existing vhosts are backed up before their include is inserted; nginx
+must pass validation before reload. The hub card, root sitemap, child sitemap
+declaration and destination probe are maintained in `zagreb-site`.
+
+Verify the public API contains projects, a real apartment URL has its own canonical
+and JSON-LD, the original source hash matches, 3D geometry renders, and missing
+assets return 404. Inspect the running PM2 cwd/release, not just the deploy log.
+This deployment does not enable `consensus-builder-floor-plan-daily`.
+
+For completed-source cleanup, stop the one-off crawler, run
+`PGHOST=localhost node backend/scripts/floor-plan-retention.mjs`, inspect its report,
+then add `--apply`. Compare model/result/cost fingerprints and inspect evidence
+readback before resuming. Production raw data should only be compacted after its
+consumers have the packet-aware readers; publishing the isolated web service alone
+does not upgrade the main archive worker.
+
 Deploy through the repository's normal Git release workflow. The default is a
 manual run with no recurring schedule. The job files alone do not register one.
 **The user explicitly withheld approval to schedule this job on 2026-10-08. Do
@@ -149,8 +192,9 @@ listings are permanently excluded across known aliases, with only a minimal
 tombstone retained. `daily` recognizes building locations before extraction, and
 `sites` is the default submission stage. `--ai-stage images`,
 `--ai-stage plans`, `--ai-stage sheets` and `--ai-stage buildings` are explicit alternatives; `--ai-stage none` submits no
-stage. All stages still collect prior work. Downloads and image screening need
-an address-qualified owner but do not need a resolved building. OCR/line extraction,
+stage. All stages still collect prior work. Downloads need current listing ownership
+and a located/probable site or a verified building match; discovery pages remain
+eligible while location is unresolved. OCR/line extraction,
 plan queueing and paid interpretation require an independently supported city and
 exact source address resolved to a current verified canonical listing match or a
 current source-cited `building_task` candidate with canonical mapping, matching

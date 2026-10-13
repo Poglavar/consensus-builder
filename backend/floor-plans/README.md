@@ -2,6 +2,51 @@
 
 This pipeline keeps public agency evidence separate from published building architecture. It runs against the existing `geodata` database and creates the `floor_plan` schema as `geo_user`.
 
+## Novogradnje catalogue and current collection policy
+
+The public destination is **https://zagreb.lol/novogradnje/**. The dedicated read-only
+server (`backend/scripts/novogradnje-server.mjs`) serves project and apartment pages,
+server-rendered metadata/JSON-LD, a sitemap, source plans and a compact search API.
+Project URLs carry a stable site-key ID; apartment IDs derive from posting identity
+and unit number. Renamed project slugs redirect to their current canonical URL.
+The old archive HTML route redirects through a resolver that preserves known site
+and plan selections. The operations/review API remains separate.
+
+New-build claims are the default filter and receive crawl priority. Older buildings
+remain searchable, with an explicitly sourced construction year when available.
+A completion forecast is labeled separately; absent or conflicting years remain
+unknown. Advertised apartment area and physical net plan area remain separate.
+Translated aliases of one posting contribute evidence without multiplying its
+apartments or source links. Commercial-only projects are omitted from this catalogue.
+
+The source roster reconciles every known agency domain and the 18 evidenced studio
+seeds. Unverified architecture leads remain leads. Discovery still spans the broad
+source set, while **asset fetching now requires a located/probable site or a verified
+building match and current listing ownership**. This concentrates download and
+interpretation work on objects that can actually appear on the map. The deeper
+processing gates and shared paid-call budget still apply.
+
+Completed HTML/XML sources are reduced to URL/hash-bound evidence packets after
+parsing. Every alias and historical observation must be supported before shared
+bytes are discarded. Location, agency verification and text readers use those
+packets; unchanged 304/200 revisits reuse them without restoring source files or
+creating processing tasks. A server without HTTP validators still has to transfer
+its response for a hash comparison. Unfinished assets and retained plans/PDFs stay
+available. An envelope image is discarded only after both classification and sheet
+reading finish, with its structured result preserved and no plan consumer waiting.
+
+`floor-plan-retention.mjs` audits by default; `--apply` commits evidence and tombstones
+before deleting files. It is also the final bounded `daily` stage. A repeated apply
+resumes interrupted file pruning. Compacted raw HTML cannot be reparsed as HTML;
+that command reports skipped compacted sources rather than treating them as empty.
+Models, revisions, processing results and cost records are retained.
+
+Only supported placements appear inside the transparent building view. Ambiguous
+fits stay separate, and envelopes show known/estimated outlines and storeys; this
+is not proof of a reconstructed facade or complete apartment inventory. Continued
+coverage work is source discovery, resolving location ambiguity, then processing
+the matched plan/render queue and reviewing geometry. **Scheduling remains disabled.**
+
 The official HGK **broker companies** (`posrednici`) registry is fetched in full, with page counts, stable totals and unique IDs checked before updating the city list. The City of Zagreb filter uses its 68 official settlements, with postal disambiguation for Strmec. The checked snapshot contains 470 city agencies; two ambiguous Strmec records remain in the snapshot's `scope_review`. Registry inclusion is the recorded fact; the API does not provide a separate active-license flag. This is registered-seat coverage, not every agency selling property in the city.
 
 ## Source files and database metadata

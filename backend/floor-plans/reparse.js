@@ -10,9 +10,12 @@ import { readBlobRow,pruneDiscardedFiles } from './blob-store.js';
 export async function reparseListings(db,{log=console.log}={}) {
  const locked=(await db.query(`SELECT pg_try_advisory_lock(hashtext('floor-plan-crawl')) AS locked`)).rows[0].locked;
  if(!locked) throw new Error('Stop the active crawl before reparsing archived listings.');
- const result={processed:0,changed:0,notListing:0,excluded:0,buildingLinksWithdrawn:0,enqueued:0};
+ const result={processed:0,changed:0,notListing:0,excluded:0,buildingLinksWithdrawn:0,enqueued:0,compactedSkipped:0};
  try {
   const total=Number((await db.query('SELECT count(*) AS n FROM floor_plan.listing')).rows[0].n);
+  result.compactedSkipped=Number((await db.query(`SELECT count(*)::int AS n FROM floor_plan.listing l
+   JOIN floor_plan.target t ON t.url=l.url JOIN floor_plan.blob b ON b.sha256=t.current_sha256
+   WHERE b.discard_reason='processed-source.v1' AND ${eligibleListingSql()}`)).rows[0]?.n||0);
   const models=(await db.query(`SELECT model FROM floor_plan.extraction WHERE model ? 'architecture'`)).rows.map(r=>r.model);
   let cursor='';
   while(true) {

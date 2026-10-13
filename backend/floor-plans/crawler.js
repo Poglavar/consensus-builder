@@ -55,8 +55,10 @@ export async function crawl(db,{maxPages=1000,maxMinutes=45,agencyId=null,site=n
    Object.assign(metrics,recordCrawlAttempt(metrics,target.url));
    Object.assign(counters,crawlMetricCounters(metrics));
    try {
-    let cached=Boolean(target.current_sha256)&&target.cached_bytes_available!==false;
-    if(cached&&target.cached_storage_path) {
+    const processed=target.cached_processed===true;
+    let cached=Boolean(target.current_sha256)&&(processed||target.cached_bytes_available!==false);
+    if(cached&&!processed&&target.cached_bytes_available===true&&!target.cached_storage_path) cached=false;
+    if(cached&&!processed&&target.cached_storage_path) {
      try {cached=(await stat(sourceFilePath(target.cached_storage_path,target.current_sha256))).size===target.cached_byte_count;}
      catch(error) {if(error.code!=='ENOENT')throw error;cached=false;}
     }
