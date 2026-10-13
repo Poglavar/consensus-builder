@@ -361,7 +361,8 @@ export async function runSiteCrawl(options, dependencies = {}) {
             writeJsonAtomicSync(paths.progress, { ...progress, updatedAt: isoNow(), activeElapsedMs: Math.round(activeElapsedMs()) });
           }
           const approximatePending = Math.max(0, pendingBefore.pending - Number(event.requestsAttempted || 0) + Number(event.discovered || 0));
-          log(JSON.stringify(makeSnapshot(options, progress, trace, { ...pendingBefore, pending: approximatePending }, {
+          log(JSON.stringify(makeSnapshot(options, { ...progress, activeElapsedMs: Math.round(activeElapsedMs()) }, trace,
+            { ...pendingBefore, pending: approximatePending }, {
             current: event.current ? safeUrl(event.current) : null,
             lastStatus: traceRows.at(-1)?.status ?? null,
             newlyDiscovered: Number(event.discovered || 0),

@@ -130,9 +130,9 @@ this cleanup on production; a future application rollout still needs these
 checks against the then-current data. Architecture studios enter the existing `floor_plan.site`
 queue through the implemented `architecture-sites --file FILE` command and
 the agent-maintained `backend/floor-plans/architecture-studios.json`. The
-verified HKA/MPGI-backed roster contains 18 studio sites and is a partial seed,
+verified HKA/MPGI-backed roster contains 20 studio sites and is a partial seed,
 not a complete studio register. The national MPGI lists authorize particular
-spatial-planning work; 49 unverified Zagreb leads are kept separately from seeds.
+spatial-planning work; 47 unresolved or excluded Zagreb leads are kept separately from seeds.
 Applying this source policy also resets older verified listing-to-building
 associations whose evidence lacks `locationPolicy=explicit-address-v1` and
 clears their canonical links. Rerun exact resolution from current source

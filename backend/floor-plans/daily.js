@@ -22,7 +22,7 @@ import { locateSites } from './locate-sites.js';
 import { enqueueSiteTasks,adjudicateSites } from './adjudicate-sites.js';
 import { enqueueSheetTasks,readSheets } from './sheet-context.js';
 import { buildSiteModels } from './site-model.js';
-import { compactSources } from './compact-sources.js';
+import { compactSources,drainSourceRetention } from './compact-sources.js';
 import { computeCost } from '../../../agents/lib/llm-cost/index.mjs';
 import { resolveCall } from '../../../agents/lib/llm-cost/llm.mjs';
 
@@ -125,7 +125,7 @@ export async function daily(db,options={}) {
   limits:{maxMinutes,maxPages,maxAssets,budgetUsd:budgetUsd===Infinity?null:budgetUsd,budgetUnlimited:budgetUsd===Infinity,chunkSize,model,aiStage}};
  const deps={fetchHgkRegistry,selectZagrebRecords,importAgencies,putBlob,seedKnownSites:refreshSourceRoster,prioritizeResidentialSources,crawl,seedReviewedBindings,
   resolveBuildingLinks,matchBuildingCandidates,processAssets,enqueuePlanTasks,interpretPlans,enqueueBuildingTasks,recognizeBuildings,
-  enqueueImageTasks,classifyImages,coverage,locateSites,enqueueSiteTasks,adjudicateSites,enqueueSheetTasks,readSheets,buildSiteModels,compactSources,
+  enqueueImageTasks,classifyImages,coverage,locateSites,enqueueSiteTasks,adjudicateSites,enqueueSheetTasks,readSheets,buildSiteModels,compactSources,drainSourceRetention,
   ...(options.dependencies||{})};
  let stop=false,pagesFetched=0;
  const remainingMs=()=>Math.max(0,deadline-now());
@@ -198,8 +198,8 @@ export async function daily(db,options={}) {
    return publish(db,{limit:options.publishLimit||100,deadline});
   });
   await stage('sourceRetention',async()=>{
-   const retention=await deps.compactSources(db,{apply:true,limit:options.retentionLimit||1000,deadline});
-   return {...retention,status:retention.sourceReadErrors?'partial':'complete'};
+   return deps.drainSourceRetention(db,{compact:deps.compactSources,limit:options.retentionLimit||1000,
+    deadline,signal:options.signal,log:options.log,now});
   });
   result.coverage=await deps.coverage(db);
   result.verified=await verifiedOutcome(db);

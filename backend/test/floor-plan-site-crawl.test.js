@@ -120,6 +120,33 @@ describe('Opereta durable site crawler runner', () => {
     expect(logs.some(line => JSON.parse(line).etaSeconds !== undefined)).toBe(true);
   });
 
+  it('uses current monotonic elapsed time in live ETA snapshots', async () => {
+    const runDir = await tempDir();
+    const queues = {
+      discovery: [{ url: 'https://opereta.hr/listing/1', kind: 'page' }, { url: 'https://opereta.hr/listing/2', kind: 'page' }],
+      assets: [],
+    };
+    const h = harness(queues), logs = [];
+    let clock = 0;
+    h.monotonic = () => clock;
+    h.crawlFn = async (_db, crawlOptions) => {
+      const target = await crawlOptions.selectTarget();
+      await crawlOptions.fetcher(target.url, {});
+      queues.discovery.shift();
+      // Simulate DB/queue/throttle work after the request trace and before the live event.
+      clock += 35000;
+      crawlOptions.log(JSON.stringify({ run: 'slow-work', current: target.url, requestsAttempted: 1,
+        failed: 0, blocked: 0, discovered: 0 }));
+      return { id: 'slow-work', status: 'complete', counters: { requestsAttempted: 1, failed: 0, blocked: 0,
+        changed: 1, unchanged: 0, discovered: 0, filteredGeneratedSearchTargets: 0 } };
+    };
+
+    const result = await runSiteCrawl({ ...options(runDir), maxPages: 1 }, { ...h, log: line => logs.push(line) });
+    const live = logs.map(line => JSON.parse(line)).find(snapshot => snapshot.current === 'https://opereta.hr/listing/1');
+    expect(result.stopReason).toBe('max-pages');
+    expect(live).toMatchObject({ elapsedMs: 35000, pending: 1, etaSeconds: 35, etaApproximate: true });
+  });
+
   it('starts an explicitly mixed run with both page and asset selectors and completes only when both queues drain', async () => {
     const runDir = await tempDir();
     const queues = {
