@@ -14,6 +14,21 @@ describe('exported traffic preview', () => {
         expect(lanes.size).toBe(data.lanes.length);
         expect(new Set(data.connections.map(connection => connection.id)).size).toBe(data.connections.length);
         expect(data.source.savedJunctions.length).toBeGreaterThan(0);
+        expect(data.source.osmSnapshotId).toBeDefined();
+        expect(data.signals.length).toBeGreaterThan(0);
+        expect(new Set(data.signals.map(signal => signal.id)).size).toBe(data.signals.length);
+        for (const signal of data.signals) {
+            expect(signal.id).toMatch(/^osm-node:\d+$/);
+            expect(signal.point.every(Number.isFinite)).toBe(true);
+            for (const control of signal.controls) {
+                const lane = lanes.get(control.laneId);
+                expect(lane).toBeDefined();
+                expect(signal.sourceWayIds).toContain(String(lane.sourceWayId));
+                expect(['both', lane.direction]).toContain(signal.direction);
+                expect(control.fraction).toBeGreaterThanOrEqual(0);
+                expect(control.fraction).toBeLessThanOrEqual(1);
+            }
+        }
         expect(data.connections.some(connection => connection.solutionId && connection.source === 'codex')).toBe(true);
         const invalid = data.connections.filter(connection => {
             const from = lanes.get(connection.fromLaneId), to = lanes.get(connection.toLaneId);
@@ -28,11 +43,12 @@ describe('exported traffic preview', () => {
     it('never leaves its allowed graph, enters on red, or overlaps a queue during an animated run', () => {
         const network = Traffic.createNetwork(data);
         const sim = new Traffic.Simulation(network, { count: 220, seed: 97 });
+        const originalCars = sim.cars.map(car => car.id);
         const violations = [];
         let entries = 0;
         for (let tick = 0; tick < 650; tick++) {
             const before = new Map(sim.cars.map(car => [car.id, {
-                mode: car.mode, laneId: car.laneId, connectionId: car.connectionId, changeTo: car.change?.to
+                mode: car.mode, laneId: car.laneId, s: car.s, connectionId: car.connectionId, changeTo: car.change?.to
             }]));
             sim.advance(.1);
             const crossingByNode = new Map();
@@ -54,6 +70,14 @@ describe('exported traffic preview', () => {
                     if (previous.changeTo !== car.laneId || !Traffic.laneChangeAllowed(
                         network.lanes.get(previous.laneId), network.lanes.get(car.laneId))) violations.push('illegal lane change');
                 }
+                if (previous?.mode === 'lane' && car.mode === 'lane' && previous.laneId === car.laneId) {
+                    for (const control of network.lanes.get(car.laneId).signals) {
+                        if (previous.s <= control.stopS + 1e-6 && car.s > control.stopS + 1e-6
+                            && Traffic.signalAspect(network.signals.get(control.signalId), control.phase, sim.time) !== 'green') {
+                            violations.push('passed mapped stop position on red');
+                        }
+                    }
+                }
                 if (car.mode === 'connection') {
                     const nodeId = network.connections.get(car.connectionId).nodeId;
                     if (network.nodes.get(nodeId).degree >= 3) crossingByNode.set(nodeId, (crossingByNode.get(nodeId) || 0) + 1);
@@ -70,6 +94,7 @@ describe('exported traffic preview', () => {
             if (violations.length) break;
         }
         expect(violations).toEqual([]);
+        expect(sim.cars.map(car => car.id)).toEqual(originalCars);
         expect(entries).toBeGreaterThan(200);
         expect(sim.crossings).toBeGreaterThan(40);
         expect(sim.laneChanges).toBeGreaterThan(0);

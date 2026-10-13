@@ -8,7 +8,7 @@ For a new local server, run from the repository root:
 npx http-server frontend -a localhost -p 8192 -c-1
 ```
 
-The playback controls set speed, car count, lane guides and illustrative traffic lights.
+The playback controls set speed, car count, lane guides and mapped traffic signals with simulated cycles.
 Click a car to highlight its current lane and available exits; **Follow a car** keeps it in view.
 The place buttons jump to Miramarska × Vukovarska, the city centre, Trešnjevka or the entire loaded area.
 Reduced-motion preferences start the animation paused. Hidden tabs stop the animation clock.
@@ -38,14 +38,23 @@ lane in the same section/direction, respect `change:lanes`, and reserve space in
 the manoeuvre. Drivers queue behind each other. Junction reservations serialize crossings at an
 OSM node, and cars check that their receiving lane has room before entering.
 
-Traffic demand, speeds without a mapped limit, and **all signal placement and phase timings are
-illustrative**. These are not live traffic, observed signal plans or a calibrated traffic model.
-Some junctions remain incomplete; missing turns are never filled in with guesses. A car with no
-known exit stops, ends its trip after three simulated seconds and respawns elsewhere. Boundary
-exits behave the same way. The last recorded whole-city survey (2026-09-28) had 57 open junction
-groups out of 21,806; this smaller export is not a new citywide coverage survey.
+Traffic demand, speeds without a mapped limit, and **signal colors and cycle timings are
+illustrative**. Signal locations come from OSM nodes in the same July 28, 2026 snapshot as the road
+geometry. Controls attach by exact source-way and section-vertex membership and respect
+`traffic_signals:direction` or `direction`; tagged signalised road crossings are included. An OSM
+node can represent a whole junction or crossing, not each physical signal pole. The mapped point is
+the source location; the simulated colors and cycles are not live traffic, observed signal plans or
+a calibrated traffic model.
+
+Some junctions remain incomplete; missing turns are never filled in with guesses. When a car has no
+known exit, or reaches the preview boundary, that same car stays visibly stopped. Cars are removed
+only by reset or when the user lowers the car count.
+
+The last recorded whole-city survey (2026-09-28) had 57 open junction groups out of 21,806; this
+smaller export is not a new citywide coverage survey.
 
 Lane-change semantics: [OSM `change` documentation](https://wiki.openstreetmap.org/wiki/Key:change).
+Signal-node semantics: [OSM traffic signals](https://wiki.openstreetmap.org/wiki/Tag:highway%3Dtraffic_signals).
 Map data: [OpenStreetMap contributors, ODbL](https://www.openstreetmap.org/copyright).
 
 ## Refresh the snapshot
@@ -69,10 +78,11 @@ Do not copy raw API payloads into the frontend: source metadata may contain loca
 
 ```sh
 cd backend
-npx vitest run test/traffic-simulation.test.js test/traffic-snapshot.test.js test/traffic-preview-data.test.js
+npx vitest run test/traffic-simulation.test.js test/traffic-snapshot.test.js test/traffic-preview-data.test.js test/traffic-signals.test.js
 ```
 
 `simulation.js` has no DOM, canvas or Leaflet dependencies. Headless tests exercise actual
 movement/queue/signal behavior and the saved-answer merge. The data test also runs traffic over
 the exported graph, checking every entry against the source lane's allowed connections and lights.
+The signal test checks OSM direction tags, exact way/section matching and incoming-only controls.
 Desktop/mobile appearance and canvas animation are checked manually in a headed browser.

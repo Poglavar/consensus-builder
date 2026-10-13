@@ -6,6 +6,46 @@ export function publicCarLane(lane) {
         && [null, undefined, '', 'yes', 'permissive', 'designated'].includes(lane.access);
 }
 
+// Signal locations come from OSM nodes, never junction degree or a nearby-road guess.
+// Lane stop positions are projections onto the matching source way, clipped to its display portal.
+export function mapTrafficSignals(signalNodes, sections, lanes) {
+    const bySection = new Map(sections.map(section => [section.id, section]));
+    const wayIds = new Set(lanes.map(lane => String(lane.sourceWayId)));
+    return signalNodes.filter(signal => (signal.tags.highway === 'traffic_signals'
+        || signal.tags.highway === 'crossing' && (signal.tags.crossing === 'traffic_signals'
+            || signal.tags['crossing:signals'] === 'yes'))
+        && signal.wayIds.some(id => wayIds.has(String(id)))).map(signal => {
+        const direction = signal.tags['traffic_signals:direction'] || signal.tags.direction || 'both';
+        const sourceWays = new Set(signal.wayIds.map(String));
+        const controls = [];
+        const scale = 111320 * Math.cos(signal.point[1] * Math.PI / 180);
+        const project = p => [(p[0] - signal.point[0]) * scale, (p[1] - signal.point[1]) * 111320];
+        for (const lane of lanes) {
+            if (!sourceWays.has(String(lane.sourceWayId)) || !['both', lane.direction].includes(direction)
+                || lane.fromNode === signal.id) continue;
+            const section = bySection.get(lane.sectionId);
+            // Way membership alone is insufficient: the node must occur in this section.
+            if (!section?.coordinates.some(p => Math.hypot(...project(p)) < .02)) continue;
+            const points = lane.geometry.coordinates.map(project);
+            let total = 0, nearest = Infinity, along = 0;
+            for (let i = 1; i < points.length; i++) {
+                const a = points[i - 1], b = points[i], dx = b[0] - a[0], dy = b[1] - a[1];
+                const length = Math.hypot(dx, dy);
+                const t = length ? Math.max(0, Math.min(1, -(a[0] * dx + a[1] * dy) / (length * length))) : 0;
+                const distance = Math.hypot(a[0] + dx * t, a[1] + dy * t);
+                if (distance < nearest) { nearest = distance; along = total + t * length; }
+                total += length;
+            }
+            if (total > 0) controls.push({ laneId: lane.id, fraction: lane.toNode === signal.id ? 1 : along / total });
+        }
+        return {
+            id: signal.id, point: signal.point, direction,
+            kind: signal.tags.highway === 'traffic_signals' ? 'traffic_signals' : 'signalised_crossing',
+            sourceWayIds: [...sourceWays], controls
+        };
+    });
+}
+
 function incidentLanes(graph, nodeId) {
     return graph.lanes.filter(lane => lane.fromNode === nodeId || lane.toNode === nodeId);
 }

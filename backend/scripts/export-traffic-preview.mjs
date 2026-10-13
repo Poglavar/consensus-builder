@@ -8,7 +8,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { gzipSync } from 'node:zlib';
 import dotenv from 'dotenv';
 import pg from 'pg';
-import { mergeSavedJunctions, publicCarLane } from './lib/traffic-snapshot.mjs';
+import { mapTrafficSignals, mergeSavedJunctions, publicCarLane } from './lib/traffic-snapshot.mjs';
 
 const args = new Map();
 for (let i = 2; i < process.argv.length; i += 2) args.set(process.argv[i], process.argv[i + 1]);
@@ -45,9 +45,20 @@ try {
     });
     if (!response.ok) throw new Error(`OSM API: HTTP ${response.status}`);
     const evidence = await response.json();
-    if (evidence.truncated || !evidence.snapshot || !evidence.features?.length) {
+    if (evidence.truncated || !evidence.snapshot?.id || !evidence.features?.length) {
         throw new Error('The OSM snapshot is missing or truncated; choose a smaller area.');
     }
+    const signalRows = (await pool.query(`SELECT n.osm_id, n.tags,
+        ST_X(n.geom) AS lon, ST_Y(n.geom) AS lat,
+        ARRAY(SELECT DISTINCT m.way_id::text FROM public.osm_topology_way_node m
+            WHERE m.snapshot_id=n.snapshot_id AND m.node_id=n.osm_id ORDER BY m.way_id::text) AS way_ids
+        FROM public.osm_topology_node n
+        WHERE n.snapshot_id=$1 AND n.visible
+        AND (n.tags->>'highway'='traffic_signals'
+            OR (n.tags->>'highway'='crossing' AND (n.tags->>'crossing'='traffic_signals'
+                OR n.tags->>'crossing:signals'='yes')))
+        AND n.geom && ST_MakeEnvelope($2,$3,$4,$5,4326)
+        ORDER BY n.osm_id`, [evidence.snapshot.id, ...bbox])).rows;
     const decisionRows = (await pool.query(`SELECT decision_key, node_key, assignment
         FROM lane_topology_decision WHERE city=$1 AND superseded_at IS NULL
         AND point && ST_MakeEnvelope($2,$3,$4,$5,4326)`, [city, ...bbox])).rows;
@@ -94,16 +105,22 @@ try {
     const junctionIds = new Set(display.nodes.filter(node => node.degree >= 3).map(node => node.id));
     const unresolved = new Set(merged.problems.filter(problem => problem.type === 'unresolved_intersection')
         .flatMap(problem => problem.nodeIds || []));
+    const signals = mapTrafficSignals(signalRows.map(row => ({
+        id: `osm-node:${row.osm_id}`, point: [row.lon, row.lat], tags: row.tags, wayIds: row.way_ids
+    })), merged.sections, lanes);
     const data = {
-        schemaVersion: 1, city, bbox,
+        schemaVersion: 2, city, bbox,
         source: {
+            osmSnapshotId: evidence.snapshot.id,
             osmTimestamp: evidence.snapshot.sourceTimestamp, osmSha256: evidence.snapshot.sourceSha256,
             exportedAt: new Date().toISOString(), selectedSolutions: selected.length,
             savedJunctions: merged.savedJunctions.filter(item => usedSavedNodes.has(item.nodeId) && junctionIds.has(item.nodeId)),
             liveDecisions: decisionRows.length, blockedRestrictions: forbidden.size,
             unsupportedRestrictionWays: unsupportedWays.size,
-            note: 'OSM and saved candidate junction answers; illustrative traffic and signal timings.'
+            signalSource: 'OSM tagged signal nodes, original coordinates and way memberships in the same snapshot.',
+            note: 'OSM and saved candidate junction answers; mapped signals with illustrative phase timings.'
         },
+        signals,
         nodes: display.nodes.filter(node => nodeIds.has(node.id)).map(node => ({
             id: node.id, point: node.point, degree: node.degree, unresolved: unresolved.has(node.id)
         })),
@@ -133,6 +150,7 @@ try {
     const json = JSON.stringify(data, (_key, value) => typeof value === 'number' ? Math.round(value * 1e7) / 1e7 : value) + '\n';
     await writeFile(output, gzipSync(json));
     console.log(JSON.stringify({ lanes: data.lanes.length, connections: data.connections.length,
+        mappedSignals: signals.length, controlledSignals: signals.filter(signal => signal.controls.length).length,
         savedJunctions: data.source.savedJunctions.length, unresolvedNodes: data.nodes.filter(node => node.unresolved).length,
         restrictionChecks: restrictions.stats }, null, 2));
 } finally { await pool.end(); }

@@ -66,9 +66,9 @@
             if (!lane.points?.every(p => p.length >= 2 && p.every(Number.isFinite))) throw new Error(`Invalid lane geometry: ${lane.id}`);
             const route = path(lane.points.map(project));
             if (route.length < .05) continue;
-            lanes.set(lane.id, { ...lane, path: route, outgoing: [], adjacent: [] });
+            lanes.set(lane.id, { ...lane, path: route, outgoing: [], adjacent: [], signals: [] });
         }
-        const nodes = new Map(data.nodes.map(node => [node.id, { ...node, incoming: [], phases: [] }]));
+        const nodes = new Map(data.nodes.map(node => [node.id, { ...node, incoming: [] }]));
         const connections = new Map();
         for (const connection of data.connections) {
             const from = lanes.get(connection.fromLaneId), to = lanes.get(connection.toLaneId);
@@ -91,33 +91,53 @@
         for (const siblings of sections.values()) {
             for (const from of siblings) from.adjacent = siblings.filter(to => laneChangeAllowed(from, to) && to.outgoing.length).map(to => to.id);
         }
-        for (const node of nodes.values()) {
-            const incoming = node.incoming.map(id => lanes.get(id)).filter(lane => lane.outgoing.length && lane.highway !== 'service');
-            const mainApproaches = new Set(incoming.map(lane => lane.sectionId));
-            node.signal = node.degree >= 3 && mainApproaches.size >= 2;
-            node.phases = [...new Set(node.incoming.map(id => lanes.get(id))
-                .filter(lane => lane.outgoing.length).map(lane => lane.sectionId))].sort();
-            node.offset = [...node.id].reduce((n, c) => (n * 31 + c.charCodeAt(0)) >>> 0, 0) % 37;
+        const signals = new Map();
+        for (const record of data.signals) {
+            const signal = { ...record, phases: [] };
+            for (const control of record.controls) {
+                const lane = lanes.get(control.laneId);
+                if (!lane || !Number.isFinite(control.fraction) || control.fraction < 0 || control.fraction > 1) {
+                    throw new Error(`Invalid mapped signal control: ${record.id}`);
+                }
+                lane.signals.push({ signalId: signal.id, phase: lane.sectionId, stopS: control.fraction * lane.path.length });
+                signal.phases.push(lane.sectionId);
+            }
+            signal.phases = [...new Set(signal.phases)].sort();
+            signal.offset = [...signal.id].reduce((n, c) => (n * 31 + c.charCodeAt(0)) >>> 0, 0) % 37;
+            signals.set(signal.id, signal);
         }
+        for (const lane of lanes.values()) lane.signals.sort((a, b) => a.stopS - b.stopS);
         // Spawn on through streets with enough room to see the cars moving, weighted by length.
         const spawnLanes = [...lanes.values()].filter(lane => lane.path.length > 25 && lane.outgoing.length && lane.highway !== 'service');
         const weights = [];
         let totalWeight = 0;
         for (const lane of spawnLanes) { totalWeight += lane.path.length; weights.push(totalWeight); }
-        return { origin, lanes, nodes, connections, project, unproject, spawnLanes, weights, totalWeight, data };
+        return { origin, lanes, nodes, signals, connections, project, unproject, spawnLanes, weights, totalWeight, data };
     }
 
-    function signalState(network, lane, time, enabled = true) {
-        const node = network.nodes.get(lane.toNode);
-        if (!enabled || !node?.signal) return 'green';
-        const phase = node.phases.indexOf(lane.sectionId);
-        // Service approaches at a signalised junction also wait; they receive their own phase.
-        const phases = node.phases.length;
+    function signalAspect(signal, phaseKey, time, enabled = true) {
+        if (!enabled) return 'green';
+        const phase = signal.phases.indexOf(phaseKey);
         if (phase < 0) return 'red';
+        // Even a single mapped approach has a red interval for crossing traffic/pedestrians.
+        // These timings are illustrative; OSM supplies positions and directions, not signal plans.
+        const phases = Math.max(2, signal.phases.length);
         const slot = 12;
-        const t = ((time + node.offset) % (slot * phases) + slot * phases) % (slot * phases);
+        const t = ((time + signal.offset) % (slot * phases) + slot * phases) % (slot * phases);
         if (Math.floor(t / slot) !== phase) return 'red';
         return t % slot < 9 ? 'green' : t % slot < 10.5 ? 'amber' : 'red';
+    }
+
+    function signalState(network, lane, time, enabled = true, position = lane.path.length) {
+        const control = lane.signals.find(item => item.stopS >= position - 1e-6);
+        return control ? signalAspect(network.signals.get(control.signalId), control.phase, time, enabled) : 'green';
+    }
+
+    function signalStoppingDistance(network, lane, position, time, enabled) {
+        if (!enabled) return Infinity;
+        const control = lane.signals.find(item => item.stopS >= position - 1e-6
+            && signalAspect(network.signals.get(item.signalId), item.phase, time) !== 'green');
+        return control ? Math.max(0, control.stopS - position) : Infinity;
     }
 
     class Simulation {
@@ -132,7 +152,6 @@
             this.reservations = new Map();
             this.crossings = 0;
             this.laneChanges = 0;
-            this.trips = 0;
             this.nextId = 1;
             this.targetCount = 0;
             this.setCount(count);
@@ -177,7 +196,7 @@
                 this.cars.push({ id: this.nextId++, laneId: lane.id, mode: 'lane', s, speed: 0,
                     cruise: 7.5 + this.random() * 4.5, color: Math.floor(this.random() * 7),
                     next: this.choose(lane.outgoing), state: 'driving', change: null,
-                    stoppedFor: 0, cooldown: this.time + 4 + this.random() * 10, clearance: null });
+                    cooldown: this.time + 4 + this.random() * 10, clearance: null });
                 return true;
             }
             return false;
@@ -256,13 +275,22 @@
                     if (route.length - car.s < 12) car.state = !connection ? 'blocked'
                         : signalState(n, lane, this.time, this.signals) !== 'green' ? 'red' : 'queue';
                 }
+                let signalDistance = car.mode === 'lane'
+                    ? signalStoppingDistance(n, lane, car.s, this.time, this.signals) : Infinity;
+                if (car.change) {
+                    const target = n.lanes.get(car.change.to), ratio = target.path.length / lane.path.length;
+                    signalDistance = Math.min(signalDistance,
+                        signalStoppingDistance(n, target, car.s * ratio, this.time, this.signals) / ratio);
+                }
+                stopping = Math.min(stopping, signalDistance);
+                if (signalDistance < 12 && signalDistance <= clearance) car.state = 'red';
                 if (clearance < 15 && car.state === 'driving') car.state = 'queue';
                 const roadLimit = typeof lane.maxSpeed === 'number' && lane.maxSpeed > 0 ? lane.maxSpeed / 3.6 : 13.9;
                 const cruise = Math.min(car.cruise, roadLimit, car.mode === 'connection' ? 6 : Infinity);
                 const targetSpeed = Math.min(cruise, Math.sqrt(2 * 3 * Math.max(0, stopping)));
                 const oldSpeed = car.speed;
                 car.speed = clamp(targetSpeed, Math.max(0, car.speed - 3.5 * STEP), car.speed + 2 * STEP);
-                const travel = Math.max(0, Math.min(car.speed * STEP, clearance, route.length - car.s));
+                const travel = Math.max(0, Math.min(car.speed * STEP, clearance, route.length - car.s, signalDistance));
                 car.s += travel;
                 if (travel < car.speed * STEP - .001) car.speed = travel / STEP;
                 car.braking = car.speed < oldSpeed - .05 || (car.speed < .5 && car.state !== 'driving');
@@ -282,18 +310,14 @@
                     car.cooldown = this.time + 10;
                     this.laneChanges++;
                 }
-                if (car.mode === 'lane' && !car.change && route.length - car.s < .02) {
+                if (car.mode === 'lane' && !car.change && route.length - car.s < 1e-6) {
                     car.s = route.length;
                     if (connection && this.canEnter(car, connection, occupied)) {
                         car.mode = 'connection'; car.connectionId = connection.id; car.s = 0;
                         if (n.nodes.get(connection.nodeId)?.degree >= 3) this.reservations.set(connection.nodeId, car.id);
-                        car.state = 'turning'; car.stoppedFor = 0;
-                    } else if (!connection) {
-                        car.stoppedFor += STEP;
-                        car.speed = 0;
-                        if (car.stoppedFor > 3) { this.retire(car); this.trips++; }
+                        car.state = 'turning';
                     } else car.speed = 0;
-                } else if (car.mode === 'connection' && route.length - car.s < .02) {
+                } else if (car.mode === 'connection' && route.length - car.s < 1e-6) {
                     const completed = n.connections.get(car.connectionId);
                     const nextLane = n.lanes.get(completed.toLaneId);
                     car.mode = 'lane'; car.laneId = nextLane.id; car.connectionId = null; car.s = 0;
@@ -312,7 +336,7 @@
                     occupied.get(id).push({ car, s });
                 }
             }
-            while (this.cars.length < this.targetCount && this.spawn()) { /* replace completed trips */ }
+            while (this.cars.length < this.targetCount && this.spawn()) { /* fill requested count as space opens */ }
         }
 
         pose(car) {
@@ -336,5 +360,5 @@
                 crossings: this.crossings, laneChanges: this.laneChanges, time: this.time };
         }
     }
-    return { createNetwork, Simulation, signalState, laneChangeAllowed, sample, path, randomGenerator, GAP, STEP };
+    return { createNetwork, Simulation, signalState, signalAspect, laneChangeAllowed, sample, path, randomGenerator, GAP, STEP };
 });

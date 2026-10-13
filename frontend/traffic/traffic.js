@@ -17,12 +17,17 @@
     const guideCanvas = $('guides'), carCanvas = $('cars');
     const guides = guideCanvas.getContext('2d'), ctx = carCanvas.getContext('2d');
     let network, sim, running = !reduced, rate = 2, seed = 52, selected = null, following = false;
+    let signalPopup = null;
     let transform, size = { x: 0, y: 0 }, previousFrame = null, uiTime = 0, frameId = null;
     let screenCars = [], frameCount = 0, tileErrors = 0;
     tiles.on('tileerror', () => { tileErrors++; });
 
     function resize() {
         size = map.getSize();
+        if (signalPopup?.isOpen()) {
+            signalPopup.options.maxWidth = Math.max(140, Math.min(280, size.x - 72));
+            signalPopup.update();
+        }
         const dpr = Math.min(devicePixelRatio || 1, 2);
         for (const canvas of [guideCanvas, carCanvas]) {
             canvas.width = Math.round(size.x * dpr); canvas.height = Math.round(size.y * dpr);
@@ -79,18 +84,20 @@
 
     function drawSignals() {
         if (!$('lights').checked || map.getZoom() < 17) return;
-        for (const node of network.nodes.values()) {
-            if (!node.signal || !visible(screen(network.project(node.point)))) continue;
-            for (const laneId of node.incoming) {
-                const lane = network.lanes.get(laneId);
-                if (lane.highway === 'service' || !lane.outgoing.length) continue;
-                const last = lane.path.points.at(-1), p = screen(last);
-                if (!visible(p)) continue;
-                const state = Engine.signalState(network, lane, sim.time, sim.signals);
-                ctx.beginPath(); ctx.arc(p.x, p.y, map.getZoom() >= 19 ? 3 : 2.2, 0, Math.PI * 2);
-                ctx.fillStyle = { green: '#308868', red: '#c26354', amber: '#d7a13a' }[state]; ctx.fill();
-                ctx.strokeStyle = '#ffffffdd'; ctx.lineWidth = 1; ctx.stroke();
+        for (const signal of network.signals.values()) {
+            const p = screen(network.project(signal.point));
+            if (!visible(p)) continue;
+            const radius = map.getZoom() >= 19 ? 4 : 3;
+            const states = signal.phases.length ? signal.phases.map(phase => Engine.signalAspect(signal, phase, sim.time)) : ['unknown'];
+            for (let index = 0; index < states.length; index++) {
+                const start = index * Math.PI * 2 / states.length - Math.PI / 2;
+                ctx.beginPath(); ctx.moveTo(p.x, p.y);
+                ctx.arc(p.x, p.y, radius, start, start + Math.PI * 2 / states.length); ctx.closePath();
+                ctx.fillStyle = { green: '#308868', red: '#c26354', amber: '#d7a13a', unknown: '#74827c' }[states[index]];
+                ctx.fill();
             }
+            ctx.beginPath(); ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = '#ffffffdd'; ctx.lineWidth = 1; ctx.stroke();
         }
     }
 
@@ -176,6 +183,25 @@
     map.on('click', event => {
         const nearest = screenCars.map(car => ({ ...car, distance: Math.hypot(car.x - event.containerPoint.x, car.y - event.containerPoint.y) }))
             .sort((a, b) => a.distance - b.distance)[0];
+        const mapped = network && $('lights').checked && map.getZoom() >= 17
+            ? [...network.signals.values()].map(signal => {
+                const p = screen(network.project(signal.point));
+                return { signal, distance: Math.hypot(p.x - event.containerPoint.x, p.y - event.containerPoint.y) };
+            }).sort((a, b) => a.distance - b.distance)[0] : null;
+        if (mapped?.distance < 12 && mapped.distance < (nearest?.distance ?? Infinity)) {
+            following = false; updateUI();
+            const signal = mapped.signal, id = signal.id.replace('osm-node:', '');
+            const content = document.createElement('div');
+            const title = document.createElement('strong'); title.textContent = t('signalSource', { id });
+            const detail = document.createElement('p'); detail.textContent = t('signalDetails');
+            const link = document.createElement('a'); link.textContent = t('signalLink');
+            link.href = `https://www.openstreetmap.org/node/${encodeURIComponent(id)}`;
+            link.target = '_blank'; link.rel = 'noopener';
+            content.append(title, detail, link);
+            signalPopup = L.popup({ maxWidth: Math.max(140, Math.min(280, size.x - 72)), autoPanPadding: [16, 16] })
+                .setLatLng([signal.point[1], signal.point[0]]).setContent(content).openOn(map);
+            return;
+        }
         selected = nearest?.distance < 22 ? nearest.id : null;
         following = false; updateUI(); drawCars();
     });
@@ -216,7 +242,7 @@
 
     async function load() {
         try {
-            const response = await fetch('data/central.json.gz?v=20261014a', { cache: 'no-store' });
+            const response = await fetch('data/central.json.gz?v=20261014b', { cache: 'no-store' });
             if (!response.ok) throw new Error(`Traffic data: HTTP ${response.status}`);
             const data = await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
             network = Engine.createNetwork(data);
