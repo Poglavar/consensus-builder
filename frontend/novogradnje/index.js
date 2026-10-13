@@ -84,10 +84,12 @@
         const h=node('h1','detail-title',title),address=node('p','detail-address',addressText);left.append(h,address);
         const links=node('div','detail-links'),home=node('a','', selected?'Povratak na pretragu':'← Povratak na pretragu');home.href='/novogradnje/';links.append(home);head.append(left,links);card.append(head);
         card.append(node('p','confidence-note',`${text.kinds[project.kind]||text.kinds.unknown} · ${text.year(project)}. Oznake ovise o dostupnim izvorima.`));
+        if(!apartments.length)card.append(node('p','confidence-note','Projekt je pronađen kod izvora. Još nemamo podatke o pojedinim stanovima ni tlocrte za pregled. Pogledajte projekt kod izvora ili pretražite dostupne stanove.'));
         if(!selected){
             const sources=project.sources||[];
             if(sources.length){
                 const projectSources=node('details','detail-sources'),summary=node('summary','',`Izvori oglasa (${sources.length})`),sourceList=node('div','detail-source-list');
+                projectSources.open=!apartments.length;
                 for(const source of sources)addSourceLink(sourceList,source.url,source.label||'Otvori oglas ↗');
                 projectSources.append(summary,sourceList);card.append(projectSources);
             }
@@ -114,11 +116,14 @@
                 if(selected.architecture)viewers.push(V.mountApartment(planHost,selected));else {const message=node('p','viewer-copy','Geometrija tlocrta nije dostupna za prikaz.');plan.append(message);}
                 addOriginal(plan,selected.source);addSourceLink(plan,selected.source?.url||selected.source?.publicUrl,'Otvori izvor tlocrta ↗');grid.append(plan);
             }
-            const building=node('section','viewer-panel'),buildingTitle=node('h3','', 'Obris i katovi zgrade'),buildingHost=node('div','viewer-canvas');building.append(buildingTitle,buildingHost);
-            const placement=selected.placement,floorAvailable=Number.isFinite(selected.floor)&&(project.model?.envelope?.storeys||[]).some(s=>s.level===selected.floor&&Number.isFinite(s.elevationM));
-            const placementText=placement?.status==='placed'&&floorAvailable?'Procijenjeni položaj prema tlocrtu i obrisu zgrade.':placement?.status==='ambiguous'?'Položaj nije jednoznačan; tlocrt nije postavljen u zgradu.':'Položaj stana nije prikazan jer kat ili siguran položaj nisu poznati.';
-            building.append(node('p','viewer-copy',placementText));viewers.push(V.mountEnvelope(buildingHost,project.model,selected));grid.append(building);card.append(grid);
-        } else {
+            if(C.hasEnvelope(project.model)){
+                const building=node('section','viewer-panel'),buildingTitle=node('h3','', 'Obris i katovi zgrade'),buildingHost=node('div','viewer-canvas');building.append(buildingTitle,buildingHost);
+                const placement=selected.placement,floorAvailable=Number.isFinite(selected.floor)&&(project.model?.envelope?.storeys||[]).some(s=>s.level===selected.floor&&Number.isFinite(s.elevationM));
+                const placementText=placement?.status==='placed'&&floorAvailable?'Procijenjeni položaj prema tlocrtu i obrisu zgrade.':placement?.status==='ambiguous'?'Položaj nije jednoznačan; tlocrt nije postavljen u zgradu.':'Položaj stana nije prikazan jer kat ili siguran položaj nisu poznati.';
+                building.append(node('p','viewer-copy',placementText));viewers.push(V.mountEnvelope(buildingHost,project.model,selected));grid.append(building);
+            }
+            if(grid.childNodes.length)card.append(grid);
+        } else if(C.hasEnvelope(project.model)) {
             const envelope=node('section','viewer-panel'),title=node('h3','', 'Obris i katovi zgrade'),canvas=node('div','viewer-canvas');envelope.append(title,canvas,node('p','viewer-copy','Model prikazuje dostupni obris zgrade i katove; visine mogu biti procijenjene iz izvora.'));viewers.push(V.mountEnvelope(canvas,project.model,null));card.append(envelope);
         }
         host.append(card);if(detailError)host.append(node('p','confidence-note',detailError));if(apartmentId&&!selected)host.append(node('p','confidence-note','Traženi stan nije dostupan u trenutnom katalogu.'));

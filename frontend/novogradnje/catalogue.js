@@ -32,16 +32,20 @@
         return {scale:best.scale,rotation:radians,x:best.tx+best.scale*Math.sin(radians)*depth,
             y:best.ty-best.scale*Math.cos(radians)*depth};
     }
+    function hasEnvelope(model) {
+        return Boolean(model?.envelope?.footprint && model.envelope.storeys?.some(storey =>
+            finite(storey.heightM) && storey.heightM > 0 && finite(storey.elevationM)));
+    }
     function filterProjects(projects, input = {}) {
         const filters = normalizeFilters(input), query = folded(filters.q);
         return (projects || []).filter(project => {
+            if (!(project.apartments || []).length) return false;
             if (filters.kind !== 'all' && project.kind !== filters.kind) return false;
             const apartmentTitles=(project.apartments||[]).map(apartment=>apartment.sourceTitle||'');
             const searchText=[project.name,project.label,project.address,project.slug,...(project.titles||[]),...apartmentTitles].join(' ');
             if (query && !folded(searchText).includes(query)) return false;
             const apartments = (project.apartments || []).filter(apartment => matchesApartment(apartment, filters));
-            const hasApartmentFilters=filters.minArea!==null||filters.maxArea!==null||filters.rooms!==null||Boolean(filters.orientation);
-            return apartments.length > 0 || (!hasApartmentFilters && (project.apartments||[]).length===0);
+            return apartments.length > 0;
         }).map(project => ({ ...project, apartments: (project.apartments || []).filter(apartment => matchesApartment(apartment, filters)) }));
     }
     function encodeFilters(input) {
@@ -58,5 +62,5 @@
         const p = new URLSearchParams(search || '');
         return normalizeFilters({ q: p.get('q'), kind: p.get('kind'), minArea: p.get('min'), maxArea: p.get('max'), rooms: p.get('rooms'), orientation: p.get('orientation') });
     }
-    return { normalizeFilters, matchesApartment, placementTransform, filterProjects, encodeFilters, decodeFilters };
+    return { normalizeFilters, matchesApartment, placementTransform, hasEnvelope, filterProjects, encodeFilters, decodeFilters };
 });
