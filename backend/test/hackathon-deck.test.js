@@ -3,7 +3,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const frontend = path.resolve(import.meta.dirname, '../../frontend');
-const html = fs.readFileSync(path.join(frontend, 'deck.html'), 'utf8');
+const html = fs.readFileSync(path.join(frontend, 'deck2.html'), 'utf8');
 const landing = fs.readFileSync(path.join(frontend, 'index.html'), 'utf8');
 const demo = fs.readFileSync(path.join(frontend, 'hackathon-demo.html'), 'utf8');
 const actors = fs.readFileSync(path.join(frontend, 'actor-explorer.html'), 'utf8');
