@@ -72,7 +72,12 @@ gets a short turn, pages and eligible assets interleave, and known pages are che
 again with validators/hash reuse. Explicit new-build project members receive higher
 priority, including previously queued children. Ordinary property pages labeled
 “Tlocrt” remain pages until their actual plan assets are discovered. This command
-does not schedule future runs, submit AI batches or publish models.
+also drains source retention between hosts with a fresh deadline of up to 15 seconds,
+so a host reaching its crawl deadline does not indefinitely defer file deletion.
+Cleanup time counts toward the cumulative budget and is reserved in the checkpoint
+before cleanup starts. Deferred or failed cleanup keeps the host result partial.
+These are cooperative deadlines; an in-flight operation can finish after the deadline.
+This command does not schedule future runs, submit AI batches or publish models.
 For a large existing archive, use `--apply --until-complete --limit 250` after
 reviewing a sample audit. Each batch commits and verifies its evidence before file
 removal, reports cumulative reclaimed bytes, and is skipped on restart. Exact

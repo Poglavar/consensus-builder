@@ -10,6 +10,7 @@ afterEach(async()=>{await Promise.all(dirs.splice(0).map(path=>rm(path,{recursiv
 
 const limits={maxTotalPages:10,maxTotalMinutes:1,maxSitePages:150,maxSiteMinutes:3};
 const options=runDir=>({runDir,...limits});
+const runCrawl=(opts,deps={})=>runCoverageCrawl(opts,{monotonic:()=>0,retentionFn:async()=>({status:'complete',partial:false,remaining:false,deferred:0}),...deps});
 
 async function saveArtifacts(runDir,{requests=0,elapsedMs=0,status='partial',stopReason='max-pages',failed=0}={}){
  await mkdir(runDir,{recursive:true});
@@ -61,12 +62,135 @@ describe('portable bounded multi-host crawl',()=>{
    const used=opts.site==='agency.test'?4:0;
    return saveArtifacts(opts.runDir,{requests:used,elapsedMs:opts.site==='agency.test'?40000:0,status:'complete',stopReason:'queue-exhausted'});
   });
-  const summary=await runCoverageCrawl(options(runDir),{hosts:['agency.test','second.test'],runSiteCrawlFn});
+  const summary=await runCrawl(options(runDir),{hosts:['agency.test','second.test'],runSiteCrawlFn});
   expect(summary.status).toBe('complete');
   expect(calls).toHaveLength(2);
   expect(calls[0]).toMatchObject({assetMode:'all',interleaveAssets:true,revisitKnown:true,maxPages:10,maxMinutes:1});
   expect(calls[1]).toMatchObject({maxPages:6,maxMinutes:1/3});
   expect(summary.totals).toEqual({requestsAttempted:4,activeElapsedMs:40000});
+ });
+
+ it('runs bounded retention after the host crawl and accounts its elapsed time in both budgets',async()=>{
+  const runDir=await tempDir(), calls=[];
+  let clock=100;
+  const summary=await runCrawl(options(runDir),{
+   hosts:['first.test','second.test'],
+   monotonic:()=>clock,
+   retentionFn:async args=>{
+    calls.push(args);
+    clock+=2000;
+    args.log({phase:'checkpoint'});
+    return {status:'complete',partial:false,remaining:false,deferred:0};
+   },
+   runSiteCrawlFn:async opts=>saveArtifacts(opts.runDir,{requests:1,elapsedMs:1000,status:'complete',stopReason:'queue-exhausted'}),
+  });
+  expect(calls).toHaveLength(2);
+  expect(calls.every(args=>args.limit===100 && args.deadline-Date.now()<=15000)).toBe(true);
+  expect(summary.hostResults.map(row=>row.status)).toEqual(['completed','completed']);
+  expect(summary.hostResults.map(row=>row.retention.status)).toEqual(['complete','complete']);
+  expect(summary.hostResults.map(row=>row.retentionElapsedMs)).toEqual([2000,2000]);
+  expect(summary.hostResults[0]).toMatchObject({activeElapsedMs:3000,retention:{status:'complete',elapsedMs:2000}});
+  expect(summary.totals.activeElapsedMs).toBe(6000);
+  const saved=JSON.parse(await readFile(join(runDir,'summary.json'),'utf8'));
+  expect(saved.hostResults[0].retentionElapsedMs).toBe(2000);
+ });
+
+ it('keeps a host partial when retention is deferred and preserves that state on resume',async()=>{
+  const runDir=await tempDir(), crawled=[];
+  const first=await runCrawl(options(runDir),{
+   hosts:['first.test','second.test'],
+   retentionFn:async()=>({status:'partial',partial:true,remaining:true,deferred:3,stopReason:'deadline'}),
+   runSiteCrawlFn:async opts=>{crawled.push(opts.site);return saveArtifacts(opts.runDir,{status:'complete',stopReason:'queue-exhausted'});},
+  });
+  expect(first.hostResults[0]).toMatchObject({status:'partial',stopReason:'retention-incomplete',retention:{status:'partial'}});
+  expect(crawled).toEqual(['first.test','second.test']);
+
+  const resumeCalls=[];
+  const resumed=await runCrawl(options(runDir),{
+   hosts:['first.test','second.test'],
+   retentionFn:async()=>({status:'complete',partial:false,remaining:false,deferred:0}),
+   runSiteCrawlFn:async opts=>{resumeCalls.push(opts.site);return saveArtifacts(opts.runDir,{status:'complete',stopReason:'queue-exhausted'});},
+  });
+  expect(resumed.hostResults[0]).toMatchObject({status:'partial',stopReason:'retention-incomplete',retention:{status:'partial'}});
+  expect(resumeCalls).toEqual([]);
+  expect(resumed.status).toBe('partial');
+ });
+
+ it('keeps a host partial when retention rejects and preserves that state on resume',async()=>{
+  const runDir=await tempDir();
+  const first=await runCrawl(options(runDir),{
+   hosts:['first.test'],
+   retentionFn:async()=>{throw new Error('retention unavailable');},
+   runSiteCrawlFn:async opts=>saveArtifacts(opts.runDir,{status:'complete',stopReason:'queue-exhausted'}),
+  });
+  expect(first.hostResults[0]).toMatchObject({status:'partial',stopReason:'retention-incomplete',
+   retention:{status:'partial',error:'retention unavailable'}});
+  const crawlCalls=[];
+  const resumed=await runCrawl(options(runDir),{
+   hosts:['first.test'],
+   retentionFn:async()=>({status:'complete',partial:false,remaining:false,deferred:0}),
+   runSiteCrawlFn:async opts=>{crawlCalls.push(opts.site);return saveArtifacts(opts.runDir,{status:'complete',stopReason:'queue-exhausted'});},
+  });
+  expect(resumed.hostResults[0]).toMatchObject({status:'partial',stopReason:'retention-incomplete',
+   retention:{status:'partial',error:'retention unavailable'}});
+  expect(crawlCalls).toEqual([]);
+  expect(resumed.status).toBe('partial');
+ });
+
+ it('resumes the legacy 31-request checkpoint with absent cleanup fields',async()=>{
+  const runDir=await tempDir(),legacyOptions={...options(runDir),maxTotalPages:50};
+  await runCrawl(legacyOptions,{hosts:['first.test'],runSiteCrawlFn:opts=>saveArtifacts(opts.runDir,{requests:31,elapsedMs:23000,status:'interrupted',stopReason:'interrupted'})});
+  const summaryPath=join(runDir,'summary.json');
+  const summary=JSON.parse(await readFile(summaryPath,'utf8'));
+  const row=summary.hostResults[0];
+  // Match an older durable summary with only the established aggregate counters.
+  delete row.runnerElapsedMs;
+  delete row.retentionElapsedMs;
+  delete row.retention;
+  row.requestsAttempted=31;
+  row.activeElapsedMs=23000;
+  summary.totals={requestsAttempted:31,activeElapsedMs:23000};
+  await writeFile(summaryPath,JSON.stringify(summary));
+
+  const calls=[];
+  const resumed=await runCrawl(legacyOptions,{
+   hosts:['first.test'],
+   retentionFn:async()=>({status:'complete',partial:false,remaining:false,deferred:0}),
+   runSiteCrawlFn:async opts=>{
+    calls.push({maxPages:opts.maxPages,maxMinutes:opts.maxMinutes});
+    return saveArtifacts(opts.runDir,{requests:31,elapsedMs:23000,status:'complete',stopReason:'queue-exhausted'});
+   },
+  });
+  expect(calls).toEqual([{maxPages:50,maxMinutes:1}]);
+  expect(resumed.status).toBe('complete');
+  expect(resumed.hostResults[0].error).toBeFalsy();
+  expect(resumed.hostResults[0]).toMatchObject({requestsAttempted:31,runnerElapsedMs:23000,retentionElapsedMs:0,activeElapsedMs:23000});
+ });
+
+ it('keeps a pre-reserved cleanup allowance when reconciling a killed retention phase',async()=>{
+  const runDir=await tempDir();
+  await runCrawl(options(runDir),{hosts:['first.test'],runSiteCrawlFn:opts=>saveArtifacts(opts.runDir,{status:'complete',stopReason:'queue-exhausted'})});
+  const summaryPath=join(runDir,'summary.json');
+  const summary=JSON.parse(await readFile(summaryPath,'utf8'));
+  const row=summary.hostResults[0];
+  row.retentionElapsedMs=15000;
+  row.activeElapsedMs=15000;
+  row.retention={status:'running',limit:100,elapsedMs:15000};
+  summary.totals.activeElapsedMs=15000;
+  await writeFile(summaryPath,JSON.stringify(summary));
+
+  const calls=[];
+  const resumed=await runCrawl(options(runDir),{
+   hosts:['first.test'],
+   retentionFn:async()=>({status:'complete',partial:false,remaining:false,deferred:0}),
+   runSiteCrawlFn:async opts=>{
+    calls.push(opts.maxMinutes);
+    return saveArtifacts(opts.runDir,{status:'complete',stopReason:'queue-exhausted'});
+   },
+  });
+  expect(calls).toEqual([0.75]);
+  expect(resumed.hostResults[0]).toMatchObject({status:'completed',retentionElapsedMs:15000,activeElapsedMs:15000,
+   retention:{status:'complete',elapsedMs:0}});
  });
 
  it('keeps capacity hosts resumable and skips partial or failed hosts',async()=>{
@@ -76,26 +200,29 @@ describe('portable bounded multi-host crawl',()=>{
    if(opts.site==='capacity.test') return saveArtifacts(opts.runDir,{requests:2,elapsedMs:5000,status:'partial',stopReason:'archive-capacity'});
    return saveArtifacts(opts.runDir,{requests:1,elapsedMs:1000,status:'complete',stopReason:'queue-exhausted'});
   });
-  const first=await runCoverageCrawl(options(runDir),{hosts:['capacity.test','later.test'],runSiteCrawlFn});
+  const first=await runCrawl(options(runDir),{hosts:['capacity.test','later.test'],runSiteCrawlFn});
   expect(first.status).toBe('partial');
   expect(first.stopReason).toBe('archive-capacity');
   expect(calls).toEqual(['capacity.test']);
 
-  const resumed=await runCoverageCrawl(options(runDir),{hosts:['capacity.test','later.test'],runSiteCrawlFn:vi.fn(async opts=>{
+  const observedPages=[];
+  const resumed=await runCrawl(options(runDir),{hosts:['capacity.test','later.test'],runSiteCrawlFn:vi.fn(async opts=>{
    calls.push(opts.site);
-   expect(opts.maxPages).toBe(opts.site==='capacity.test'?10:7);
+   observedPages.push({site:opts.site,maxPages:opts.maxPages});
    await saveArtifacts(opts.runDir,{requests:opts.site==='capacity.test'?3:1,elapsedMs:6000,status:'complete',stopReason:'queue-exhausted'});
    return JSON.parse(await readFile(join(opts.runDir,'result.json'),'utf8'));
   })});
   expect(resumed.status).toBe('complete');
   expect(calls).toEqual(['capacity.test','capacity.test','later.test']);
+  expect(observedPages).toEqual([{site:'capacity.test',maxPages:10},{site:'later.test',maxPages:7}]);
+  expect(resumed.hostResults.every(row=>row.status==='completed' && !row.error)).toBe(true);
   expect(resumed.hostResults.map(row=>row.requestsAttempted)).toEqual([3,1]);
  });
 
  it('does not rerun hosts already recorded partial or failed',async()=>{
   const runDir=await tempDir(),firstCalls=[];
   const hosts=['partial.test','failed.test','capacity.test','later.test'];
-  const first=await runCoverageCrawl(options(runDir),{hosts,runSiteCrawlFn:async opts=>{
+  const first=await runCrawl(options(runDir),{hosts,runSiteCrawlFn:async opts=>{
    firstCalls.push(opts.site);
    if(opts.site==='failed.test') throw new Error('database unavailable');
    const status=opts.site==='partial.test'?'partial':opts.site==='capacity.test'?'partial':'complete';
@@ -105,7 +232,7 @@ describe('portable bounded multi-host crawl',()=>{
   expect(first.status).toBe('partial');
   expect(firstCalls).toEqual(['partial.test','failed.test','capacity.test']);
   const resumedCalls=[];
-  await runCoverageCrawl(options(runDir),{hosts,runSiteCrawlFn:async opts=>{
+  await runCrawl(options(runDir),{hosts,runSiteCrawlFn:async opts=>{
    resumedCalls.push(opts.site);
    return saveArtifacts(opts.runDir,{status:'complete',stopReason:'queue-exhausted'});
   }});
@@ -114,7 +241,7 @@ describe('portable bounded multi-host crawl',()=>{
 
  it('stops the pass after an interrupted host without starting the next host',async()=>{
   const runDir=await tempDir(),called=[];
-  const summary=await runCoverageCrawl(options(runDir),{hosts:['first.test','second.test'],runSiteCrawlFn:async opts=>{
+  const summary=await runCrawl(options(runDir),{hosts:['first.test','second.test'],runSiteCrawlFn:async opts=>{
    called.push(opts.site);
    return saveArtifacts(opts.runDir,{requests:1,elapsedMs:1000,status:'interrupted',stopReason:'interrupted'});
   }});
@@ -124,7 +251,7 @@ describe('portable bounded multi-host crawl',()=>{
 
  it('does not begin another host when a signal arrives during a completed host',async()=>{
   const runDir=await tempDir(),controller=new AbortController(),called=[];
-  const summary=await runCoverageCrawl(options(runDir),{hosts:['first.test','second.test'],signal:controller.signal,
+  const summary=await runCrawl(options(runDir),{hosts:['first.test','second.test'],signal:controller.signal,
    runSiteCrawlFn:async opts=>{
     called.push(opts.site);
     controller.abort();
@@ -138,30 +265,30 @@ describe('portable bounded multi-host crawl',()=>{
  it('persists summary atomically and rejects mismatched hosts or caps on resume',async()=>{
   const runDir=await tempDir();
   const runSiteCrawlFn=async opts=>saveArtifacts(opts.runDir,{status:'complete',stopReason:'queue-exhausted'});
-  await runCoverageCrawl(options(runDir),{hosts:['agency.test'],runSiteCrawlFn});
+  await runCrawl(options(runDir),{hosts:['agency.test'],runSiteCrawlFn});
   const summary=JSON.parse(await readFile(join(runDir,'summary.json'),'utf8'));
   expect(summary).toMatchObject({version:1,status:'complete',hosts:['agency.test'],hostResults:[{host:'agency.test',status:'completed'}]});
-  await expect(runCoverageCrawl(options(runDir),{hosts:['other.test'],runSiteCrawlFn})).rejects.toThrow(/different host list or budget/);
-  await expect(runCoverageCrawl({...options(runDir),maxTotalPages:11},{hosts:['agency.test'],runSiteCrawlFn})).rejects.toThrow(/different host list or budget/);
+  await expect(runCrawl(options(runDir),{hosts:['other.test'],runSiteCrawlFn})).rejects.toThrow(/different host list or budget/);
+  await expect(runCrawl({...options(runDir),maxTotalPages:11},{hosts:['agency.test'],runSiteCrawlFn})).rejects.toThrow(/different host list or budget/);
  });
 
  it('throws on malformed interior trace records instead of undercounting requests',async()=>{
   const runDir=await tempDir();
   const runSiteCrawlFn=async opts=>saveArtifacts(opts.runDir,{requests:1,status:'complete',stopReason:'queue-exhausted'});
-  await runCoverageCrawl(options(runDir),{hosts:['agency.test'],runSiteCrawlFn,log:()=>{}});
+  await runCrawl(options(runDir),{hosts:['agency.test'],runSiteCrawlFn,log:()=>{}});
   await writeFile(join(runDir,'hosts','agency.test','trace.ndjson'),
    `${JSON.stringify({durationMs:1})}\nnot-json\n${JSON.stringify({durationMs:2})}\n`);
-  await expect(runCoverageCrawl(options(runDir),{hosts:['agency.test'],runSiteCrawlFn,log:()=>{}}))
+  await expect(runCrawl(options(runDir),{hosts:['agency.test'],runSiteCrawlFn,log:()=>{}}))
    .rejects.toThrow(/Malformed crawler trace.*line 2/);
  });
 
  it('ignores one incomplete final trace line while preserving all complete requests',async()=>{
   const runDir=await tempDir();
   const runSiteCrawlFn=async opts=>saveArtifacts(opts.runDir,{requests:1,elapsedMs:1200,status:'complete',stopReason:'queue-exhausted'});
-  await runCoverageCrawl(options(runDir),{hosts:['agency.test'],runSiteCrawlFn,log:()=>{}});
+  await runCrawl(options(runDir),{hosts:['agency.test'],runSiteCrawlFn,log:()=>{}});
   await writeFile(join(runDir,'hosts','agency.test','trace.ndjson'),
    `${JSON.stringify({durationMs:1200})}\n{"durationMs":`);
-  const resumed=await runCoverageCrawl(options(runDir),{hosts:['agency.test'],runSiteCrawlFn,log:()=>{}});
+  const resumed=await runCrawl(options(runDir),{hosts:['agency.test'],runSiteCrawlFn,log:()=>{}});
   expect(resumed.status).toBe('complete');
   expect(resumed.totals).toEqual({requestsAttempted:1,activeElapsedMs:1200});
  });
@@ -170,7 +297,7 @@ describe('portable bounded multi-host crawl',()=>{
   const runDir=await tempDir(),calls=[];
   await saveArtifacts(join(runDir,'hosts','first.test'),{requests:0,status:'partial',stopReason:'archive-capacity'});
   await saveArtifacts(join(runDir,'hosts','interrupted.test'),{requests:9,elapsedMs:50000,status:'interrupted',stopReason:'interrupted'});
-  const summary=await runCoverageCrawl(options(runDir),{hosts:['first.test','interrupted.test'],log:()=>{},runSiteCrawlFn:async opts=>{
+  const summary=await runCrawl(options(runDir),{hosts:['first.test','interrupted.test'],log:()=>{},runSiteCrawlFn:async opts=>{
    calls.push({site:opts.site,maxPages:opts.maxPages});
    return saveArtifacts(opts.runDir,{requests:1,elapsedMs:1000,status:'complete',stopReason:'queue-exhausted'});
   }});
@@ -182,13 +309,13 @@ describe('portable bounded multi-host crawl',()=>{
  it('logs timestamped host progress, total budgets and resume skips by default',async()=>{
   const runDir=await tempDir(),log=vi.fn();
   const runSiteCrawlFn=async opts=>saveArtifacts(opts.runDir,{requests:1,status:'complete',stopReason:'queue-exhausted'});
-  await runCoverageCrawl(options(runDir),{hosts:['agency.test'],runSiteCrawlFn,log});
+  await runCrawl(options(runDir),{hosts:['agency.test'],runSiteCrawlFn,log});
   expect(log.mock.calls.map(([line])=>line)).toEqual([
    expect.stringMatching(/^\[\d{4}-\d\d-\d\dT.*\] \[1\/1\] start agency\.test .*total=0\/10 pages/),
    expect.stringMatching(/^\[\d{4}-\d\d-\d\dT.*\] \[1\/1\] done agency\.test status=completed .*total=1\/10 pages/),
   ]);
   log.mockClear();
-  await runCoverageCrawl(options(runDir),{hosts:['agency.test'],runSiteCrawlFn,log});
+  await runCrawl(options(runDir),{hosts:['agency.test'],runSiteCrawlFn,log});
   expect(log).toHaveBeenCalledWith(expect.stringMatching(/^\[\d{4}-\d\d-\d\dT.*\] \[1\/1\] skip agency\.test status=completed/));
  });
 });

@@ -274,10 +274,18 @@ The October 13 refinement adds heuristic site location, site adjudication, sheet
 
 The laptop repeat job is stopped. The approved replacement is the transient
 `novogradnje-coverage-20261014.service` on Valhalla, running the isolated
-`consensus-builder-novogradnje-crawl` checkout at `7e13f2d5`. It visits 198 source
-domains, up to 50 requests or 90 seconds per host, with cumulative limits of 10,000
-requests and six hours. Systemd also bounds runtime and memory; there is no timer,
-boot startup, automatic restart or paid-model submission.
+`consensus-builder-novogradnje-crawl` checkout, initially at `7e13f2d5`; the ignored
+`launch.json` records subsequent collector revisions. It visits 198 source domains,
+up to 50 requests with a 90-second crawl deadline per host, and cumulative limits of
+10,000 requests and six hours. In-flight work can finish after a cooperative deadline.
+Systemd enforces a separate 6-hour-15-minute runtime limit and 2 GiB memory limit;
+there is no timer, boot startup, automatic restart or paid-model submission.
+
+The first pilot preserved 31 requests at a controlled pause. A follow-up refinement
+drains source retention between hosts with a fresh deadline of up to 15 seconds,
+independent of an expired host deadline but bounded by the remaining global budget.
+Cleanup time is checkpointed separately from crawl time; an interrupted cleanup
+retains its reserved allowance on resume. Deferred cleanup remains visibly partial.
 
 Actual inspection found Valhalla's local container has the legacy `consensus`
 database, not a local `geodata` database. The existing database owner imported only

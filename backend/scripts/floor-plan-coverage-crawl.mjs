@@ -4,11 +4,16 @@ import { mkdir, open, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs as parseNodeArgs } from 'node:util';
+import { performance } from 'node:perf_hooks';
 import dotenv from 'dotenv';
+import pg from 'pg';
 import { normalizeSiteHost } from '../floor-plans/crawl-queue.js';
+import { drainSourceRetention } from '../floor-plans/compact-sources.js';
 import { runSiteCrawl } from './floor-plan-site-crawl.mjs';
 
 const DEFAULTS = Object.freeze({ maxTotalPages: 10000, maxTotalMinutes: 360, maxSitePages: 150, maxSiteMinutes: 3 });
+const RETENTION_LIMIT = 100;
+const RETENTION_MAX_MS = 15000;
 const HELP = [
   'Usage: node scripts/floor-plan-coverage-crawl.mjs --run --hosts FILE --run-dir DIR [options]',
   '',
@@ -89,6 +94,7 @@ export function calculateHostLimits({
   hostElapsedMs = 0,
   totalRequests = 0,
   totalElapsedMs = 0,
+  hostRetentionElapsedMs = 0,
   maxTotalPages,
   maxTotalMinutes,
   maxSitePages,
@@ -98,10 +104,33 @@ export function calculateHostLimits({
   const remainingTotalMs = Math.max(0, maxTotalMinutes * 60000 - totalElapsedMs);
   return {
     maxPages: Math.min(maxSitePages, hostRequests + remainingTotalPages),
-    maxMinutes: Math.min(maxSiteMinutes, (hostElapsedMs + remainingTotalMs) / 60000),
+    maxMinutes: Math.min(Math.max(0, (maxSiteMinutes * 60000 - hostRetentionElapsedMs) / 60000),
+      Math.max(0, (hostElapsedMs + remainingTotalMs - hostRetentionElapsedMs) / 60000)),
     remainingTotalPages,
     remainingTotalMs,
   };
+}
+
+async function boundedRetention({ deadline, limit, log }) {
+  const timeoutMs = Math.max(0, Math.floor(deadline - Date.now()));
+  if (!timeoutMs) return { status: 'partial', partial: true, remaining: true, deferred: 0, stopReason: 'deadline' };
+  const connectionString = process.env.DATABASE_URL;
+  const connection = {
+    ...(connectionString ? { connectionString } : {}),
+    ...(process.env.PGHOST ? { host: process.env.PGHOST } : {}),
+    connectionTimeoutMillis: timeoutMs,
+    statement_timeout: timeoutMs,
+    query_timeout: timeoutMs,
+  };
+  const client = new pg.Client(connection);
+  let connected = false;
+  try {
+    await client.connect();
+    connected = true;
+    return await drainSourceRetention(client, { limit, deadline, log });
+  } finally {
+    if (connected) await client.end();
+  }
 }
 
 async function atomicJson(path, value) {
@@ -201,10 +230,17 @@ export async function runCoverageCrawl(options, dependencies = {}) {
     createdAt: new Date().toISOString(),
     hosts,
     limits,
-    hostResults: hosts.map(host => ({ host, status: 'pending', requestsAttempted: 0, activeElapsedMs: 0, attempts: 0 })),
+    hostResults: hosts.map(host => ({ host, status: 'pending', requestsAttempted: 0, activeElapsedMs: 0,
+      runnerElapsedMs: 0, retentionElapsedMs: 0, attempts: 0 })),
   };
   const byHost = new Map(summary.hostResults.map(row => [row.host, row]));
-  for (const host of hosts) if (!byHost.has(host)) byHost.set(host, { host, status: 'pending', requestsAttempted: 0, activeElapsedMs: 0, attempts: 0 });
+  for (const host of hosts) if (!byHost.has(host)) byHost.set(host, { host, status: 'pending', requestsAttempted: 0,
+    activeElapsedMs: 0, runnerElapsedMs: 0, retentionElapsedMs: 0, attempts: 0 });
+  for (const row of byHost.values()) {
+    row.runnerElapsedMs = Number(row.runnerElapsedMs ?? row.activeElapsedMs ?? 0);
+    row.retentionElapsedMs = Number(row.retentionElapsedMs || 0);
+    row.activeElapsedMs = row.runnerElapsedMs + row.retentionElapsedMs;
+  }
   summary.hostResults = hosts.map(host => byHost.get(host));
 
   let stopRequested = false;
@@ -227,8 +263,18 @@ export async function runCoverageCrawl(options, dependencies = {}) {
       const hostRunDir = join(options.runDir, 'hosts', row.host);
       const usage = await readHostUsage(hostRunDir);
       row.requestsAttempted = Math.max(Number(row.requestsAttempted || 0), usage.requestsAttempted);
-      row.activeElapsedMs = Math.max(Number(row.activeElapsedMs || 0), usage.activeElapsedMs);
-      row.status = statusFromArtifacts({ progress: usage.progress, result: usage.result, fallback: row.status });
+      row.runnerElapsedMs = Math.max(Number(row.runnerElapsedMs || 0), usage.activeElapsedMs);
+      row.activeElapsedMs = row.runnerElapsedMs + Number(row.retentionElapsedMs || 0);
+      const artifactStatus = statusFromArtifacts({ progress: usage.progress, result: usage.result, fallback: row.status });
+      if (row.retention?.status === 'running' || row.retention?.status === 'interrupted') {
+        row.retentionElapsedMs = Math.max(Number(row.retentionElapsedMs || 0), Number(row.retention.elapsedMs || 0));
+        row.activeElapsedMs = row.runnerElapsedMs + row.retentionElapsedMs;
+        row.retention.status = 'interrupted';
+        row.status = ['capacity', 'interrupted'].includes(artifactStatus) ? artifactStatus : 'interrupted';
+        row.stopReason ||= 'retention-interrupted';
+      } else if (['partial', 'failed'].includes(row.retention?.status)) {
+        row.status = ['capacity', 'interrupted'].includes(artifactStatus) ? artifactStatus : 'partial';
+      } else row.status = artifactStatus;
     }
     refreshTotals(summary);
     summary.updatedAt = new Date().toISOString();
@@ -251,6 +297,7 @@ export async function runCoverageCrawl(options, dependencies = {}) {
         hostElapsedMs: row.activeElapsedMs,
         totalRequests,
         totalElapsedMs,
+        hostRetentionElapsedMs: row.retentionElapsedMs,
         ...limits,
       });
       if (allowance.remainingTotalPages <= 0 || allowance.remainingTotalMs <= 0) {
@@ -299,8 +346,9 @@ export async function runCoverageCrawl(options, dependencies = {}) {
       const latest = await readHostUsage(hostRunDir);
       row.requestsAttempted = Math.max(row.requestsAttempted, latest.requestsAttempted,
         Number(result?.counters?.requestsAttempted || 0));
-      row.activeElapsedMs = Math.max(row.activeElapsedMs, latest.activeElapsedMs,
+      row.runnerElapsedMs = Math.max(Number(row.runnerElapsedMs || 0), latest.activeElapsedMs,
         Number(result?.counters?.fetchElapsedMs || 0));
+      row.activeElapsedMs = row.runnerElapsedMs + Number(row.retentionElapsedMs || 0);
       const resultLike = result || latest.result;
       if (runErrorCode === 'ARCHIVE_CAPACITY' || resultLike?.stopReason === 'archive-capacity') {
         row.status = 'capacity';
@@ -316,7 +364,77 @@ export async function runCoverageCrawl(options, dependencies = {}) {
       summary.updatedAt = row.updatedAt;
       refreshTotals(summary);
       await atomicJson(summaryPath, summary);
-      output(`[${new Date().toISOString()}] [${hostIndex + 1}/${summary.hostResults.length}] done ${row.host} status=${row.status} host=${row.requestsAttempted}/${limits.maxSitePages} pages total=${summary.totals.requestsAttempted}/${limits.maxTotalPages} pages active=${formatMinutes(summary.totals.activeElapsedMs)}/${limits.maxTotalMinutes}m reason=${row.stopReason || 'none'}`);
+
+      // The site runner has returned and released its crawl lock. Drain a small retention batch
+      // before moving to another host, while accounting this work against both time budgets.
+      const retentionBaseMs = Number(row.retentionElapsedMs || 0);
+      const remainingGlobalMs = Math.max(0, limits.maxTotalMinutes * 60000 - summary.totals.activeElapsedMs);
+      const retentionWindowMs = Math.min(RETENTION_MAX_MS, remainingGlobalMs);
+      const retentionDeadline = Date.now() + retentionWindowMs;
+      const retentionStartedAt = new Date().toISOString();
+      const retentionClock = dependencies.monotonic || (() => performance.now());
+      // Reserve the bounded window before starting. If the process is killed mid-cleanup,
+      // reconciliation keeps the full reservation in the global and per-host budgets.
+      row.retentionElapsedMs = retentionBaseMs + retentionWindowMs;
+      row.activeElapsedMs = Number(row.runnerElapsedMs || 0) + row.retentionElapsedMs;
+      row.retention = { status: 'running', limit: RETENTION_LIMIT, startedAt: retentionStartedAt,
+        deadlineAt: new Date(retentionDeadline).toISOString(), elapsedMs: retentionWindowMs };
+      row.updatedAt = retentionStartedAt;
+      summary.updatedAt = retentionStartedAt;
+      refreshTotals(summary);
+      await atomicJson(summaryPath, summary);
+      const retentionStarted = retentionClock();
+      const activeRetentionMs = () => Math.max(0, retentionClock() - retentionStarted);
+
+      let checkpointWrites = Promise.resolve();
+      const persistRetentionCheckpoint = checkpoint => {
+        row.retention.lastCheckpoint = checkpoint && typeof checkpoint === 'object' ? checkpoint : null;
+        row.retention.updatedAt = new Date().toISOString();
+        summary.updatedAt = row.retention.updatedAt;
+        refreshTotals(summary);
+        const snapshot = JSON.parse(JSON.stringify(summary));
+        checkpointWrites = checkpointWrites.then(() => atomicJson(summaryPath, snapshot));
+      };
+      let retentionResult = null;
+      let retentionError = null;
+      try {
+        retentionResult = await (dependencies.retentionFn || boundedRetention)({
+          host: row.host,
+          limit: RETENTION_LIMIT,
+          deadline: retentionDeadline,
+          log: persistRetentionCheckpoint,
+        });
+      } catch (error) {
+        retentionError = String(error?.message || error);
+      }
+      const retentionElapsedMs = Math.max(0, Math.round(activeRetentionMs()));
+      row.retentionElapsedMs = retentionBaseMs + retentionElapsedMs;
+      row.activeElapsedMs = Number(row.runnerElapsedMs || 0) + row.retentionElapsedMs;
+      const retentionIncomplete = Boolean(retentionError || retentionResult?.status !== 'complete'
+        || retentionResult?.partial || retentionResult?.remaining || Number(retentionResult?.deferred || 0) > 0
+        || Number(retentionResult?.sourceReadErrors || 0) > 0);
+      row.retention = {
+        status: retentionIncomplete ? 'partial' : 'complete',
+        limit: RETENTION_LIMIT,
+        startedAt: retentionStartedAt,
+        finishedAt: new Date().toISOString(),
+        deadlineAt: new Date(retentionDeadline).toISOString(),
+        elapsedMs: retentionElapsedMs,
+        ...(retentionResult ? { result: retentionResult } : {}),
+        ...(retentionError ? { error: retentionError } : {}),
+      };
+      if (retentionIncomplete && !['capacity', 'interrupted'].includes(row.status)) {
+        row.crawlStatus = row.status;
+        row.crawlStopReason = row.stopReason;
+        row.status = 'partial';
+        row.stopReason = 'retention-incomplete';
+      }
+      row.updatedAt = new Date().toISOString();
+      summary.updatedAt = row.updatedAt;
+      refreshTotals(summary);
+      await checkpointWrites;
+      await atomicJson(summaryPath, summary);
+      output(`[${new Date().toISOString()}] [${hostIndex + 1}/${summary.hostResults.length}] done ${row.host} status=${row.status} host=${row.requestsAttempted}/${limits.maxSitePages} pages total=${summary.totals.requestsAttempted}/${limits.maxTotalPages} pages active=${formatMinutes(summary.totals.activeElapsedMs)}/${limits.maxTotalMinutes}m retention=${row.retention.status}/${formatMinutes(retentionElapsedMs)}m reason=${row.stopReason || 'none'}`);
 
       if (row.status === 'capacity') { stopReason = 'archive-capacity'; break; }
       if (row.status === 'interrupted' || stopRequested || externalSignal?.aborted) { stopReason = 'interrupted'; break; }
