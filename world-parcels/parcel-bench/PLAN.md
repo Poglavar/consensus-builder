@@ -21,6 +21,10 @@ Weak points: Split conclusions rest on one seed and 16 selection tiles, no confi
 the ceiling (boundaries invisible from the air) is unknown. The Zagreb curve still rises, so data is
 likelier than architecture to be the lever.
 
+Croatia is the best case for imagery: low-altitude aircraft orthophotos at 0.15–0.5 m. Most of the world has
+only satellite imagery (0.3–0.5 m commercial at best, 1–10 m free, haze, off-nadir lean, older dates), so every
+claim about uncovered cities is read against satellite-like input (step 11). Sources and licences: `IMAGERY.md`.
+
 ## The loop every step follows
 
 1. Change one thing (data, model, targets, reconstruction or augmentation).
@@ -49,6 +53,7 @@ in three lanes, two Split runs about 40 minutes; a 1,600-tile 30-epoch run is ab
 | 8 | Ljubljana and a Spanish Csa city | laptop + GPU | todo |
 | 9 | Serving check (CPU inference) | laptop | todo |
 | 10 | Product decision: show guesses where the score clears a bar | the user | todo |
+| 11 | Satellite domain: score and train for satellite-like input | laptop + GPU | todo |
 
 **1. Bootstrap confidence intervals.** Resample tiles to give every pooled score a 95% interval and the
 minimum detectable effect per benchmark. Success: every comparison in the ledger reads as a difference
@@ -86,7 +91,8 @@ about 3 GPU-h, about $1.50.
 **7. Milestone 4.** Freeze the recipe, score both final splits once. Proposed targets: Zagreb final
 ≥ 0.38, Split final ≥ 0.20.
 
-**8. Third and fourth cities.** Ljubljana (shared Austro-Hungarian cadastral tradition and a climate
+**8. Third and fourth cities.** Candidates with open sub-metre imagery and open parcels are listed in
+`IMAGERY.md` (France, Netherlands, New Zealand, Spain, Slovenia). Ljubljana (shared Austro-Hungarian cadastral tradition and a climate
 like Zagreb's, but another country) and a Spanish Csa city (Catastro + PNOA, Split's climate, another
 legal tradition). Training rights checked before any download. Success: a donor × target table, three
 seeds, saying whether a same-tradition or a same-climate donor saves more target labels. ETA 0.5–1 day
@@ -97,6 +103,15 @@ city's tiles can be guessed in acceptable time on a server CPU. ETA 30 min, $0.
 
 **10. Product decision.** Whether to show guesses, flagged as estimates, in cities whose held-out score
 clears a bar the user sets.
+
+**11. Satellite domain.** (a) Score the frozen benchmarks with the imagery degraded to satellite-like input
+(0.5 m and 1 m, blur and haze, a few metres of misregistration) to measure the drop; (b) train with that
+degradation as augmentation and keep it only by the loop's rule on both the clean and the degraded
+selection splits; (c) score on real satellite imagery where open parcels exist: Satellogic EarthView 1 m
+(CC BY 4.0) over a benchmark city, or Google imagery once a written permission is on file (its terms bar
+bulk download, caching, tracing and ML training without one; see `IMAGERY.md`). Success: a measured
+clean-to-satellite gap and an augmentation that narrows it without costing the clean score. ETA about 1 day,
+about 2 GPU-h, about $1.
 
 ## ETA and spend
 
@@ -110,6 +125,11 @@ clears a bar the user sets.
 Vast.ai credit on 2026-10-13: $8.58 (spent $1.40 on 2026-10-12); top up before step 8.
 
 ## Learned (newest first)
+
+- 2026-10-13: imagery sources vetted (`IMAGERY.md`). All free web basemaps (Google, Esri, Mapbox, Bing, MapTiler,
+  HERE) bar bulk download, caching and ML training in their current terms; open national aerial programmes
+  (France, Netherlands, Spain, Switzerland, Slovenia, Czechia, NZ, NAIP and others) allow training; the only
+  free sub-metre-ish satellite source with an open licence is Satellogic EarthView (1 m, CC BY 4.0, 2022).
 
 - 2026-10-13, step 4: on Split's selection maps (split-only seed 1) the frozen watershed recipe with its per-run
   threshold choice (0.5 for Split, 0.3 for Zagreb) is within 0.004 of the best of 61 per-city variants
