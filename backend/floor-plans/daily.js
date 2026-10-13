@@ -18,6 +18,10 @@ import { enqueueImageTasks,classifyImages } from './classify-images.js';
 import { validBudget } from './batch-worker.js';
 import { emptyCrawlMetrics,recordCrawlAttempt,recordCrawlResponse,recordCrawlSuccess,crawlMetricCounters,crawlMetricTelemetry } from './crawl-metrics.js';
 import { currentProcessedCatalogueRows } from '../floor-plan-archive/processed-catalogue.js';
+import { locateSites } from './locate-sites.js';
+import { enqueueSiteTasks,adjudicateSites } from './adjudicate-sites.js';
+import { enqueueSheetTasks,readSheets } from './sheet-context.js';
+import { buildSiteModels } from './site-model.js';
 import { computeCost } from '../../../agents/lib/llm-cost/index.mjs';
 import { resolveCall } from '../../../agents/lib/llm-cost/llm.mjs';
 
@@ -26,7 +30,7 @@ const layerModel=()=>resolveCall('anthropic').model;
 
 const exec=promisify(execFile);
 const REQUIRED_TABLES=['agency','site','target','blob','observation','listing','extraction','model_revision',
- 'building_binding','plan_task','building_task','image_task','ai_batch','processed_plan','pipeline_run','exclusion'];
+ 'building_binding','plan_task','building_task','image_task','ai_batch','processed_plan','pipeline_run','exclusion','site_model'];
 
 export async function productionPreflight(db,{env=process.env,python=env.FLOOR_PLAN_PYTHON || 'python3',price=computeCost,
  runtimeCheck=async()=>exec(python,[fileURLToPath(new URL('../scripts/floor-plan-runtime-check.py',import.meta.url))],{timeout:20000})}={}) {
@@ -109,10 +113,10 @@ async function verifiedOutcome(db) {
 
 export async function daily(db,options={}) {
  const maxMinutes=options.maxMinutes ?? 180,maxPages=options.maxPages ?? 10000,maxAssets=options.maxAssets ?? 100;
- const budgetUsd=options.dailyBudgetUsd ?? 5,chunkSize=options.chunkSize ?? 1,model=layerModel(),aiStage=options.aiStage??'buildings';
+ const budgetUsd=options.dailyBudgetUsd ?? 5,chunkSize=options.chunkSize ?? 1,model=layerModel(),aiStage=options.aiStage??'sites';
  if(!Number.isFinite(maxMinutes)||maxMinutes<=0||!Number.isInteger(maxPages)||maxPages<1
   ||!Number.isInteger(maxAssets)||maxAssets<1||!validBudget(budgetUsd)
-  ||!Number.isInteger(chunkSize)||chunkSize<1||chunkSize>20||!['images','plans','buildings','none'].includes(aiStage)) throw new Error('Invalid daily floor-plan limits.');
+  ||!Number.isInteger(chunkSize)||chunkSize<1||chunkSize>20||!['images','plans','buildings','sites','sheets','none'].includes(aiStage)) throw new Error('Invalid daily floor-plan limits.');
  const locked=(await db.query(`SELECT pg_try_advisory_lock(hashtext('floor-plan-daily')) AS locked`)).rows[0].locked;
  if(!locked) throw new Error('Daily floor-plan pipeline already running.');
  const now=options.now || Date.now,started=now(),deadline=started+maxMinutes*60000,id=randomUUID();
@@ -120,15 +124,15 @@ export async function daily(db,options={}) {
   limits:{maxMinutes,maxPages,maxAssets,budgetUsd:budgetUsd===Infinity?null:budgetUsd,budgetUnlimited:budgetUsd===Infinity,chunkSize,model,aiStage}};
  const deps={fetchHgkRegistry,selectZagrebRecords,importAgencies,putBlob,seedKnownSites,crawl,seedReviewedBindings,
   resolveBuildingLinks,matchBuildingCandidates,processAssets,enqueuePlanTasks,interpretPlans,enqueueBuildingTasks,recognizeBuildings,
-  enqueueImageTasks,classifyImages,coverage,
+  enqueueImageTasks,classifyImages,coverage,locateSites,enqueueSiteTasks,adjudicateSites,enqueueSheetTasks,readSheets,buildSiteModels,
   ...(options.dependencies||{})};
  let stop=false,pagesFetched=0;
  const remainingMs=()=>Math.max(0,deadline-now());
  const stage=async(name,fn,onFailure=()=>({}))=>{
-  if(stop||remainingMs()<=0) {result.stages[name]={status:'skipped',reason:stop?'prior-stage-failed':'deadline'};return null;}
+  if(stop||options.signal?.aborted||remainingMs()<=0) {result.stages[name]={status:'skipped',reason:stop?'prior-stage-failed':options.signal?.aborted?'interrupted':'deadline'};return null;}
   try {
    const value=await fn();result.stages[name]=value;
-   if(value?.status==='partial'||value?.status==='failed') result.partial=true;
+   if(value?.status==='partial'||value?.status==='failed'||value?.failed>0||value?.deferred>0) result.partial=true;
    await db.query(`UPDATE floor_plan.pipeline_run SET result=$2,updated_at=now() WHERE id=$1`,[id,JSON.stringify(result)]);
    return value;
   } catch(error) {
@@ -160,17 +164,21 @@ export async function daily(db,options={}) {
   await stage('knownSites',()=>deps.seedKnownSites(db));
   const discoveryPageLimit=Math.max(1,Math.floor(maxPages*0.4));
   const discovery=await stage('discoveryCrawl',()=>deps.crawl(db,{maxPages:discoveryPageLimit,
-   maxMinutes:Math.min(remainingMs()/60000,maxMinutes*0.4),discoveryOnly:true,deadline}));
+   maxMinutes:Math.min(remainingMs()/60000,maxMinutes*0.4),discoveryOnly:true,deadline,signal:options.signal}));
   pagesFetched+=Number(discovery?.counters?.fetched||0);
   await stage('reviewedBindings',()=>deps.seedReviewedBindings(db));
   await stage('buildingResolution',async()=>({exact:await deps.resolveBuildingLinks(db,{limit:options.resolveLimit||2000,deadline}),
    spatialCandidates:await deps.matchBuildingCandidates(db,{limit:options.candidateLimit||1000,deadline})}));
+  await stage('locateSites',()=>deps.locateSites(db,{limit:options.locationLimit||100,deadline}));
+  await stage('enqueueSiteTasks',()=>deps.enqueueSiteTasks(db,{limit:options.siteEnqueueLimit||100}));
+  await stage('adjudicateSites',()=>deps.adjudicateSites(db,{dailyBudgetUsd:budgetUsd,
+   chunkSize,submit:!options.noAI&&aiStage==='sites',deadline}));
   await stage('enqueueBuildingTasks',()=>deps.enqueueBuildingTasks(db,{limit:options.buildingEnqueueLimit||100,deadline}));
   await stage('recognizeBuildings',()=>deps.recognizeBuildings(db,{dailyBudgetUsd:budgetUsd,
    chunkSize,submit:!options.noAI&&aiStage==='buildings',deadline}));
   const remainingPages=Math.max(0,maxPages-pagesFetched);
   const assetCrawl=await stage('assetCrawl',()=>deps.crawl(db,{maxPages:remainingPages,
-   maxMinutes:Math.min(remainingMs()/60000,maxMinutes*0.35),assetOnly:true,ownedAssetsOnly:true,deadline}));
+   maxMinutes:Math.min(remainingMs()/60000,maxMinutes*0.35),assetOnly:true,ownedAssetsOnly:true,deadline,signal:options.signal}));
   pagesFetched+=Number(assetCrawl?.counters?.fetched||0);
   await stage('enqueueImageTasks',()=>deps.enqueueImageTasks(db,{limit:options.imageEnqueueLimit||1000,deadline}));
   await stage('classifyImages',()=>deps.classifyImages(db,{dailyBudgetUsd:budgetUsd,
@@ -179,6 +187,10 @@ export async function daily(db,options={}) {
   await stage('enqueuePlanTasks',()=>deps.enqueuePlanTasks(db,{limit:options.enqueueLimit||1000,deadline}));
   await stage('interpretPlans',()=>deps.interpretPlans(db,{dailyBudgetUsd:budgetUsd,
    chunkSize,submit:!options.noAI&&aiStage==='plans',deadline}));
+  await stage('enqueueSheetTasks',()=>deps.enqueueSheetTasks(db,{limit:options.sheetEnqueueLimit||100,deadline}));
+  await stage('readSheets',()=>deps.readSheets(db,{dailyBudgetUsd:budgetUsd,
+   chunkSize,submit:!options.noAI&&aiStage==='sheets',deadline}));
+  await stage('siteModels',()=>deps.buildSiteModels(db,{limit:options.siteModelLimit||500,deadline}));
   await stage('publishProcessedPlans',async()=>{
    const publish=options.dependencies?.publishProcessedPlans || (await import('./publish-plans.js')).publishProcessedPlans;
    return publish(db,{limit:options.publishLimit||100,deadline});
@@ -194,9 +206,14 @@ export async function daily(db,options={}) {
   const deadlineExpired=remainingMs()<=0;
   const unsuccessfulStage=Object.values(result.stages).some(s=>s?.status==='failed'||s?.status==='partial'
    ||(s?.status==='skipped'&&s.reason!=='collection-only'));
-  result.status=result.errors.length?'failed':result.partial||deadlineExpired||unsuccessfulStage?'partial':'complete';
+  result.status=options.signal?.aborted?'interrupted':result.errors.length?'failed':result.partial||deadlineExpired||unsuccessfulStage?'partial':'complete';
   result.finishedAt=new Date(now()).toISOString();
   await db.query(`UPDATE floor_plan.pipeline_run SET status=$2,result=$3,finished_at=now(),updated_at=now() WHERE id=$1`,[id,result.status,JSON.stringify(result)]);
   return result;
+ } catch(error) {
+  result.status='failed';result.finishedAt=new Date(now()).toISOString();
+  result.errors.push({stage:'finalization',error:error.message});
+  await db.query(`UPDATE floor_plan.pipeline_run SET status=$2,result=$3,finished_at=now(),updated_at=now() WHERE id=$1`,[id,result.status,JSON.stringify(result)]);
+  throw error;
  } finally {await db.query(`SELECT pg_advisory_unlock(hashtext('floor-plan-daily'))`);}
 }

@@ -1,5 +1,6 @@
 // Read-only access to public agency evidence, coverage, and separately reviewed unit geometry.
 import { coverage } from '../floor-plans/archive.js';
+import { latestRun } from '../floor-plans/run-status.js';
 import { buildingSummary, buildingView, catalogueCounts, sourceView } from '../floor-plan-archive/review-catalogue.js';
 import { currentProcessedCatalogueRows, currentProcessedPlan, currentProcessedPlans, processedBuildingId, processedBuildingView, processedPlanView, processedBuildingSummary } from '../floor-plan-archive/processed-catalogue.js';
 import { readBlobRow } from '../floor-plans/blob-store.js';
@@ -8,7 +9,7 @@ export function setupFloorPlanArchiveRoute(app,pool) {
   res.set('Cache-Control','no-store');
   try {await handler(req,res);} catch(error) {if(error.code==='42P01') return res.status(503).json({error:'Floor-plan archive has not been initialized.'});next(error);}
  });
- route('/status',async(_req,res)=>res.json({coverage:await coverage(pool),lastRun:(await pool.query('SELECT * FROM floor_plan.run ORDER BY created_at DESC LIMIT 1')).rows[0] || null}));
+ route('/status',async(_req,res)=>res.json({coverage:await coverage(pool),lastRun:await latestRun(pool),pipeline:await latestRun(pool,{pipeline:true})}));
  route('/agencies',async(req,res)=>{
   const offset=Math.max(0,Number.parseInt(req.query.offset,10)||0),limit=Math.min(500,Math.max(1,Number.parseInt(req.query.limit,10)||100));
   res.json({agencies:(await pool.query(`SELECT registry_id,legal_name,registered_address,registry_source,registry_observed_at,website,website_status,website_evidence,COALESCE((SELECT jsonb_agg(jsonb_build_object('url',c.url,'sourceUrl',c.source_url)) FROM floor_plan.website_candidate c WHERE c.agency_id=floor_plan.agency.registry_id),'[]'::jsonb) AS candidate_websites FROM floor_plan.agency WHERE in_scope ORDER BY legal_name LIMIT $1 OFFSET $2`,[limit,offset])).rows});

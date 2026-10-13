@@ -618,11 +618,10 @@ it('requeues a newly explicit floor-plan label despite an old negative image cac
         (selected=true,{url:'https://agency.test/stan/1',kind:'page',agency_id:1,current_sha256:null}),
         fetcher:async url=>({status:200,headers:{contentType:'text/html'},finalUrl:url,
             body:Buffer.from('<script type="application/ld+json">{"@type":"Apartment","identifier":"1","address":{"streetAddress":"Ilica 12"}}</script><div class="gallery"><img src="/tlocrt.jpg" alt="Tlocrt"></div>')})});
-    const requeue=calls.find(([sql])=>sql.includes('image_kind=CASE WHEN $3 THEN NULL'));
+    const requeue=calls.find(([sql])=>sql.includes('image_kind=NULL,image_classified_sha256=NULL'));
     expect(requeue).toBeDefined();
-    expect(requeue[1]).toEqual(['https://agency.test/tlocrt.jpg',1,true]);
-    expect(requeue[0]).toContain('image_classified_sha256=CASE WHEN $3 THEN NULL');
-    expect(requeue[0]).toContain('OR NOT COALESCE((t.kind=\'asset\'');
+    expect(requeue[1]).toEqual(['https://agency.test/tlocrt.jpg',1]);
+    expect(requeue[0]).toContain('image_classified_sha256=NULL');
 });
 
 it('queues image classification for exactly the repeated --listing-url listings', async () => {

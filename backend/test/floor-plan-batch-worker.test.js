@@ -37,9 +37,11 @@ function makeDb({queued=[],batches=[],tasks=[],used=0}={}) {
    for(const batch of state.batches) if(batch.status==='submitting') batch.status='unknown';
    return {rows:[],rowCount:1};
   }
-  if(sql.includes("FROM floor_plan.ai_batch WHERE status='submitted'")&&sql.includes('count(*)'))
-   return {rows:[{n:state.batches.filter(row=>row.status==='submitted'&&row.stage==='plans').length}]};
-  if(sql.includes("FROM floor_plan.ai_batch WHERE status='submitted'")) return {rows:state.batches.filter(row=>row.status==='submitted'&&row.stage==='plans')};
+  if(sql.includes("FROM floor_plan.ai_batch WHERE status='submitted'")) {
+   const pending=state.batches.filter(row=>row.status==='submitted'&&row.stage===args[0]
+    &&(!sql.includes('t.processor=$2')||state.tasks.some(task=>task.batch_id===row.id&&task.processor===args[1])));
+   return sql.includes('count(*)')?{rows:[{n:pending.length}]}:{rows:pending};
+  }
   if(sql.includes("FROM floor_plan.ai_batch WHERE status IN ('submitted','unknown')"))
    return {rows:[{n:state.batches.filter(row=>['submitted','unknown'].includes(row.status)).length}]};
   if(sql.includes("FROM floor_plan.ai_batch WHERE status='unknown'")) return {rows:[{n:state.batches.filter(row=>row.status==='unknown').length}]};
@@ -104,6 +106,16 @@ function makeDb({queued=[],batches=[],tasks=[],used=0}={}) {
 }
 
 const USAGE={input_tokens:100,output_tokens:40};
+it('leaves a pending sheet batch untouched when collecting plan geometry',async()=>{
+ const sheet={...baseTask(),processor:'sheet-context-v1',status:'submitted',batch_id:'sheet-batch'};
+ const db=makeDb({tasks:[sheet],batches:[{id:'sheet-batch',status:'submitted',provider_id:'sheet-provider'}]});
+ const remote=fakeClient();
+ const result=await interpretPlans(db,{submit:false,client:remote.client,log:()=>{}});
+ expect(result).toMatchObject({collected:0,costUsd:0});
+ expect(remote.retrieve).not.toHaveBeenCalled();expect(remote.results).not.toHaveBeenCalled();
+ expect(db.state.tasks[0]).toMatchObject({status:'submitted',cost_usd:null});
+ expect(db.state.batches[0].status).toBe('submitted');
+});
 function fakeClient({response=notPlan,processingStatus='ended',answeredBy=LAYER_MODEL,stopReason='end_turn'}={}) {
  const create=vi.fn(async()=>({id:'provider-batch-1'}));
  const retrieve=vi.fn(async()=>({processing_status:processingStatus,request_counts:{succeeded:1}}));

@@ -147,8 +147,8 @@ project's own exact street and house number before retaining its HTML or fetchin
 images/documents. A studio or agency contact address cannot qualify. Addressless
 listings are permanently excluded across known aliases, with only a minimal
 tombstone retained. `daily` recognizes building locations before extraction, and
-`buildings` is the default submission stage. `--ai-stage images`
-and `--ai-stage plans` are explicit alternatives; `--ai-stage none` submits no
+`sites` is the default submission stage. `--ai-stage images`,
+`--ai-stage plans`, `--ai-stage sheets` and `--ai-stage buildings` are explicit alternatives; `--ai-stage none` submits no
 stage. All stages still collect prior work. Downloads and image screening need
 an address-qualified owner but do not need a resolved building. OCR/line extraction,
 plan queueing and paid interpretation require an independently supported city and
@@ -221,3 +221,5 @@ Use `pm2 delete consensus-builder-floor-plan-daily` and `pm2 save` to remove the
 scheduled job. The archived sources, tasks and models stay intact. Coordinate
 the monitor entry when deliberately stopping the job so absence is not mistaken
 for an unnoticed failure.
+
+The October 13 refinement adds heuristic site location, site adjudication, sheet-context collection and site-model assembly to the daily wrapper. Shared provider stages are filtered by reader before collection. Site-model failures or incomplete passes remain partial; saved run status is checked against its live advisory lock. The user explicitly kept recurring scheduling disabled; the local repeat crawl is a separate fetch-only pass.

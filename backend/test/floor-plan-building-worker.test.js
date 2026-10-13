@@ -228,7 +228,7 @@ describe('building batch worker',()=>{
         expect((await runBatchStage(db,adapter,{dailyBudgetUsd:1,client:remote.client,price:()=>0.25,
             maxOutputTokens:256,log:()=>{}})).submitted).toBe(1);
         expect(remote.retrieve).not.toHaveBeenCalled();
-        expect(calls.find(call=>call.sql.includes("FROM floor_plan.ai_batch WHERE status='submitted'"))?.args).toEqual(['plans']);
+        expect(calls.find(call=>call.sql.includes("FROM floor_plan.ai_batch WHERE status='submitted'"))?.args).toEqual(['plans','test-plan']);
     });
     it('replays a checkpointed paid response without collecting or recording a second charge',async()=>{
         const paid={model,data:raw(),text:JSON.stringify(raw()),usage:{input_tokens:100,output_tokens:40},costUsd:0.01};

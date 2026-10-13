@@ -61,7 +61,9 @@ export async function runBatchStage(db,adapter,{dailyBudgetUsd=0,chunkSize=1,sub
     try {
         // The shared lock proves no live worker owns these submitting rows. Never retry ambiguous submissions.
         await db.query(`UPDATE floor_plan.ai_batch SET status='unknown',error='Submission interrupted; reconcile provider batch ID before retrying',updated_at=now() WHERE status='submitting'`);
-        const pending=(await db.query(`SELECT * FROM floor_plan.ai_batch WHERE status='submitted' AND stage=$1 ORDER BY created_at`,[adapter.stage])).rows;
+        const pending=(await db.query(`SELECT * FROM floor_plan.ai_batch WHERE status='submitted' AND stage=$1
+            AND EXISTS(SELECT 1 FROM ${table} t WHERE t.batch_id=floor_plan.ai_batch.id AND t.processor=$2)
+            ORDER BY created_at`,[adapter.stage,adapter.processor])).rows;
         if(pending.length||(submit&&dailyBudgetUsd>0))client ||= new Anthropic({maxRetries:0,timeout:60000});
         const timeout=()=>Math.max(1,Math.min(60000,deadline-Date.now()));
         const timedClient=()=>client.withOptions?client.withOptions({timeout:timeout(),maxRetries:0}):client;
@@ -69,7 +71,7 @@ export async function runBatchStage(db,adapter,{dailyBudgetUsd=0,chunkSize=1,sub
         for(const batch of pending) {
             if(Date.now()>=deadline) {result.awaitingBatch++;continue;}
             // A paid response is checkpointed before domain processing. Recover a crash there without another API/ledger read.
-            const cached=(await db.query(`SELECT * FROM ${table} WHERE batch_id=$1 AND status='submitted' AND result ? 'paidResponse'`,[batch.id])).rows;
+            const cached=(await db.query(`SELECT * FROM ${table} WHERE batch_id=$1 AND status='submitted' AND result ? 'paidResponse' AND processor=$2`,[batch.id,adapter.processor])).rows;
             for(const task of cached) await apply(task,task.result.paidResponse);
             const state=await llm().pollBatch(batch.provider_id);
             if(!state.done) {
@@ -82,6 +84,7 @@ export async function runBatchStage(db,adapter,{dailyBudgetUsd=0,chunkSize=1,sub
             for await(const item of llm().collectBatch(batch.provider_id,{schema:adapter.schema,skipCustomIds:finished.map(task=>task.id)})) {
                 const task=(await db.query(`SELECT * FROM ${table} WHERE id=$1 AND batch_id=$2`,[item.customId,batch.id])).rows[0];
                 if(!task) throw new Error('Batch returned an unknown task.');
+                if(task.processor!==adapter.processor) throw new Error('Batch returned a task for a different reader.');
                 if(task.status!=='submitted')continue;
                 if(item.reason==='errored') {
                     await saveFailure(task,new Error(item.error));
@@ -102,7 +105,8 @@ export async function runBatchStage(db,adapter,{dailyBudgetUsd=0,chunkSize=1,sub
             await db.query(`UPDATE floor_plan.ai_batch SET status='complete',updated_at=now() WHERE id=$1`,[batch.id]);
         }
         const unknown=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.ai_batch WHERE status='unknown'`)).rows[0].n);
-        const ownPending=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.ai_batch WHERE status='submitted' AND stage=$1`,[adapter.stage])).rows[0].n);
+        const ownPending=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.ai_batch WHERE status='submitted' AND stage=$1
+            AND EXISTS(SELECT 1 FROM ${table} t WHERE t.batch_id=floor_plan.ai_batch.id AND t.processor=$2)`,[adapter.stage,adapter.processor])).rows[0].n);
         if(submit&&dailyBudgetUsd>0&&!unknown&&!ownPending&&Date.now()<deadline) {
             const tasks=(await db.query(`SELECT * FROM ${table} WHERE status='queued' AND processor=$2${taskIds===null?'':' AND id=ANY($3::text[])'}${adapter.taskFilterSql?` AND ${adapter.taskFilterSql}`:''} ORDER BY created_at,id LIMIT $1`,
                 taskIds===null?[chunkSize,adapter.processor]:[chunkSize,adapter.processor,taskIds])).rows;

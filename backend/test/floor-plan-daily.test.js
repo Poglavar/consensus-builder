@@ -32,6 +32,9 @@ function deps(order,{afterDiscovery}={}) {
   seedReviewedBindings:async()=>{order.push('bindings');return {bindings:2};},
   resolveBuildingLinks:async()=>{order.push('resolve');return {processed:2,verified:1,unresolved:1};},
   matchBuildingCandidates:async()=>{order.push('spatial');return {candidates:1,unresolved:0};},
+  locateSites:async()=>{order.push('locateSites');return {status:'complete',located:1};},
+  enqueueSiteTasks:async()=>{order.push('enqueueSiteTasks');return {enqueued:1};},
+  adjudicateSites:async(_db,options)=>{order.push('adjudicateSites');return {status:'complete',submitted:options.submit?1:0,costUsd:0.05};},
   processAssets:async(_db,options)=>{order.push('extract');expect(options).not.toHaveProperty('matchedOnly');return {status:'complete',processed:1,needsReview:1,pending:0};},
   enqueueImageTasks:async()=>{order.push('enqueueImages');return {enqueued:2};},
   classifyImages:async(_db,options)=>{order.push('classifyImages');return {status:'complete',submitted:options.submit?1:0,costUsd:0.1};},
@@ -39,6 +42,9 @@ function deps(order,{afterDiscovery}={}) {
   recognizeBuildings:async(_db,options)=>{order.push('recognizeBuildings');return {status:'complete',submitted:options.submit?1:0};},
   enqueuePlanTasks:async()=>{order.push('enqueue');return {enqueued:1};},
   interpretPlans:async(_db,options)=>{order.push('interpret');expect(options.dailyBudgetUsd).toBe(5);expect(options.chunkSize).toBe(1);expect(options).not.toHaveProperty('model');return {status:'complete',ready:1,submitted:0,awaitingBatch:0};},
+  enqueueSheetTasks:async()=>{order.push('enqueueSheetTasks');return {enqueued:1};},
+  readSheets:async(_db,options)=>{order.push('readSheets');return {status:'complete',read:1,submitted:options.submit?1:0,costUsd:0.02};},
+  buildSiteModels:async()=>{order.push('siteModels');return {sites:1,built:1,changed:1,failed:0,retired:0};},
   publishProcessedPlans:async()=>{order.push('publish');return {published:1};},
   coverage:async()=>({targets:[]})
  };
@@ -50,13 +56,15 @@ describe('floor-plan daily pipeline',()=>{
   const baseCrawl=operations.crawl;
   operations.crawl=async(...args)=>{if(args[1].assetOnly) assetCrawlOptions=args[1];return baseCrawl(...args);};
   const result=await daily(db,{maxPages:10,maxMinutes:5,dependencies:operations});
-  expect(order).toEqual(['registry','knownSites','discovery','bindings','resolve','spatial','enqueueBuildings','recognizeBuildings','assets','enqueueImages','classifyImages','extract','enqueue','interpret','publish']);
+  expect(order).toEqual(['registry','knownSites','discovery','bindings','resolve','spatial','locateSites','enqueueSiteTasks','adjudicateSites','enqueueBuildings','recognizeBuildings','assets','enqueueImages','classifyImages','extract','enqueue','interpret','enqueueSheetTasks','readSheets','siteModels','publish']);
   expect(assetCrawlOptions.maxPages).toBe(7);
   expect(assetCrawlOptions).toMatchObject({assetOnly:true,ownedAssetsOnly:true});
   expect(result).toMatchObject({status:'complete',pagesFetched:5,verified:{matchedAssets:4,currentProcessedPlans:0}});
-  expect(result.limits.aiStage).toBe('buildings');
-  expect(result.stages.recognizeBuildings.submitted).toBe(1);
+  expect(result.limits.aiStage).toBe('sites');
+  expect(result.stages.adjudicateSites.submitted).toBe(1);
+  expect(result.stages.recognizeBuildings.submitted).toBe(0);
   expect(result.stages.classifyImages.submitted).toBe(0);
+  expect(result.stages.readSheets.submitted).toBe(0);
   expect(result.storage).toMatchObject({newBlobs:1,newBytes:50});
   const snapshot=db.query.mock.calls.find(([sql])=>sql.includes('AS blobs'))[0];
   expect(snapshot).toContain('WHERE bytes_available');
@@ -68,17 +76,28 @@ describe('floor-plan daily pipeline',()=>{
   const order=[],result=await daily(fakeDb(),{maxMinutes:5,noAI:true,dependencies:deps(order)});
   expect(result.status).toBe('complete');
   expect(result.stages.interpretPlans).toMatchObject({status:'complete',submitted:0});
+  expect(result.stages.adjudicateSites).toMatchObject({status:'complete',submitted:0});
   expect(result.stages.recognizeBuildings).toMatchObject({status:'complete',submitted:0});
   expect(result.stages.classifyImages).toMatchObject({status:'complete',submitted:0});
+  expect(result.stages.readSheets).toMatchObject({status:'complete',submitted:0});
   expect(order).toContain('enqueue');expect(order).toContain('publish');
  });
- it.each([['images',true,false,false],['plans',false,true,false],['buildings',false,false,true],['none',false,false,false]])('submits only selected %s AI stage',async(aiStage,images,plans,buildings)=>{
+ it.each([['sites',false,false,false,true,false],['sheets',false,false,false,false,true],['images',true,false,false,false,false],['plans',false,true,false,false,false],['buildings',false,false,true,false,false],['none',false,false,false,false,false]])('submits only selected %s AI stage',async(aiStage,images,plans,buildings,sites,sheets)=>{
   const order=[],seen=[];const operations=deps(order);
   operations.classifyImages=async(_db,options)=>{seen.push(['images',options.submit]);return {status:'complete'};};
   operations.interpretPlans=async(_db,options)=>{seen.push(['plans',options.submit]);return {status:'complete'};};
   operations.recognizeBuildings=async(_db,options)=>{seen.push(['buildings',options.submit]);return {status:'complete'};};
+  operations.adjudicateSites=async(_db,options)=>{seen.push(['sites',options.submit]);return {status:'complete'};};
+  operations.readSheets=async(_db,options)=>{seen.push(['sheets',options.submit]);return {status:'complete'};};
   expect((await daily(fakeDb(),{maxMinutes:5,aiStage,dependencies:operations})).status).toBe('complete');
-  expect(seen).toEqual([['buildings',buildings],['images',images],['plans',plans]]);
+  expect(seen).toEqual([['sites',sites],['buildings',buildings],['images',images],['plans',plans],['sheets',sheets]]);
+ });
+ it('marks deferred or failed site-model building as a partial daily run',async()=>{
+  for(const result of [{sites:3,built:1,failed:0,deferred:2},{sites:1,built:0,failed:1}]) {
+   const order=[],operations=deps(order);operations.buildSiteModels=async()=>{order.push('siteModels');return result;};
+   const run=await daily(fakeDb(),{maxMinutes:5,dependencies:operations});
+   expect(run.status).toBe('partial');
+  }
  });
  it('counts registry downloads and unions hosts across phases without double-counting archive growth',async()=>{
   const order=[],operations=deps(order);
@@ -131,6 +150,14 @@ describe('floor-plan daily pipeline',()=>{
   expect(result.status).toBe('partial');
   expect(result.stages.reviewedBindings).toMatchObject({status:'skipped',reason:'deadline'});
   expect(order).toEqual(['registry','knownSites','discovery']);
+ });
+ it('persists a failed verdict when final readback fails, then rethrows',async()=>{
+  const db=fakeDb(),order=[],operations=deps(order);
+  operations.coverage=async()=>{throw new Error('final readback failed');};
+  await expect(daily(db,{maxMinutes:5,dependencies:operations})).rejects.toThrow('final readback failed');
+  const finalWrite=db.query.mock.calls.find(([sql,args])=>sql.includes('SET status=$2,result=$3,finished_at=now()')&&args?.[1]==='failed');
+  expect(finalWrite).toBeDefined();
+  expect(JSON.parse(finalWrite[1][2])).toMatchObject({status:'failed',errors:[{stage:'finalization',error:'final readback failed'}]});
  });
 });
 
@@ -188,18 +215,20 @@ describe('floor-plan production preflight',()=>{
 });
 
 describe('daily run statistics',()=>{
- it('writes distinct host counts, retained archive growth, and all three AI costs',async()=>{
+ it('writes distinct host counts, retained archive growth, and all five AI costs',async()=>{
   const path=join(tmpdir(),`floor-plan-daily-stats-${process.pid}-${Date.now()}.json`);
   try {
    await writeDailyStats(path,{startedAt:'2026-10-11T00:00:00Z',endedAt:'2026-10-11T00:01:00Z',
     result:{status:'complete',downloads:{uniqueHostsAttempted:3,uniqueHostsSucceeded:2,decodedResponseBodyBytes:1200},
-     storage:{newBlobs:1,newBytes:50},stages:{enqueueBuildingTasks:{enqueued:2},enqueueImageTasks:{enqueued:3},
+     storage:{newBlobs:1,newBytes:50},stages:{locateSites:{located:1},enqueueSiteTasks:{enqueued:1},enqueueBuildingTasks:{enqueued:2},enqueueImageTasks:{enqueued:3},
       classifyImages:{classified:2,discarded:1,costUsd:0.1},recognizeBuildings:{candidates:1,costUsd:0.2},
-      interpretPlans:{costUsd:0.3}},errors:[]}});
+      interpretPlans:{costUsd:0.3},adjudicateSites:{costUsd:0.05},enqueueSheetTasks:{enqueued:1},
+      readSheets:{read:1,costUsd:0.02},siteModels:{built:1}},errors:[]}});
    const stats=JSON.parse(await readFile(path,'utf8'));
    expect(stats).toMatchObject({verdict:'success',counters:{sitesAttempted:3,sitesSucceeded:2,
     decodedResponseBodyBytes:1200,newStoredBlobs:1,newStoredBytes:50,buildingTasksQueued:2,buildingCandidates:1,
-    imageTasksQueued:3,imagesDiscarded:1,costUsd:0.6}});
+    imageTasksQueued:3,imagesDiscarded:1,siteTasksQueued:1,sitesLocated:1,sheetTasksQueued:1,sheetsRead:1,
+    siteModelsBuilt:1,costUsd:0.67}});
   } finally {await rm(path,{force:true});}
  });
 });

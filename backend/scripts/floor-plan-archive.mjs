@@ -27,6 +27,7 @@ import { buildSiteModels,siteModel } from '../floor-plans/site-model.js';
 import { enqueueSheetTasks,readSheets } from '../floor-plans/sheet-context.js';
 import { zagrebStreetIndex } from '../floor-plans/site-candidates.js';
 import { pruneDiscardedFiles } from '../floor-plans/blob-store.js';
+import { latestRun } from '../floor-plans/run-status.js';
 
 dotenv.config({path:fileURLToPath(new URL('../.env',import.meta.url)),quiet:true});
 
@@ -66,11 +67,11 @@ const HELP=`Usage: node scripts/floor-plan-archive.mjs <command> [options]
  migrate-storage [--apply] [--report FILE] [--drop-database-bytes [--reclaim-space]]
                               Export and verify files; drop database bytes only when explicitly requested
  prune-files                  Retry removal of files already marked discarded in metadata
- daily [--max-pages 10000] [--max-minutes 180] [--max-assets 100] [--ai-stage images|plans|buildings|none] [--ai-budget-usd 5|none] [--ai-chunk-size 1] [--run-stats FILE] [--no-ai]
+ daily [--max-pages 10000] [--max-minutes 180] [--max-assets 100] [--ai-stage sites|images|plans|sheets|buildings|none] [--ai-budget-usd 5|none] [--ai-chunk-size 1] [--run-stats FILE] [--no-ai]
  status                       Print coverage and recent run
  Environment: backend/.env, PGHOST override or DATABASE_URL. Public sources only.
  Models come from agents/lib/llm-cost/defaults.json; image triage uses its cheap tier.
- Daily prioritizes buildings by default. Extraction and plan interpretation wait for a located building.
+ Daily prioritizes site adjudication by default. Extraction and plan interpretation wait for a located site.
  Recognition submits at most one chunk (1..20 items) per invocation. --budget-usd none removes
  the spend ceiling, not the chunk limit. --collect-only/--no-ai never submit new work.
  Incomplete, blocked, or deferred work returns status partial and exit code 2.`;
@@ -98,6 +99,8 @@ export async function runCli(argv=process.argv.slice(2),{clientFactory=options=>
  const connectionString=process.env.DATABASE_URL;
  const client=clientFactory(connectionString?{connectionString,...(process.env.PGHOST?{host:process.env.PGHOST}:{})}:undefined);
  await client.connect();
+ const controller=new AbortController(),stop=()=>controller.abort(),interruptible=['daily','crawl'].includes(action);
+ if(interruptible) {process.once('SIGTERM',stop);process.once('SIGINT',stop);}
  try {
   // Page qualification reads street-name mentions from this index; load it once per run.
   if(action!=='init') await zagrebStreetIndex(client);
@@ -163,7 +166,7 @@ export async function runCli(argv=process.argv.slice(2),{clientFactory=options=>
    try {
     result=await daily(client,{maxPages:number('--max-pages',10000),maxMinutes:number('--max-minutes',180),maxAssets:number('--max-assets',100),
      dailyBudgetUsd:budget(),chunkSize:number('--ai-chunk-size',number('--chunk-size',1)),
-     aiStage:has('--ai-stage')?option('--ai-stage'):'buildings',noAI:has('--no-ai')||has('--collect-only')});
+     aiStage:has('--ai-stage')?option('--ai-stage'):'sites',noAI:has('--no-ai')||has('--collect-only'),signal:controller.signal});
    } catch(error) {failure=error;throw error;}
    finally {if(statsFile) await writeDailyStats(statsFile,{startedAt,endedAt:new Date().toISOString(),result,error:failure});}
   }
@@ -171,13 +174,13 @@ export async function runCli(argv=process.argv.slice(2),{clientFactory=options=>
    const maxPages=number('--max-pages',1000),maxMinutes=number('--max-minutes',45);
    if(!Number.isInteger(maxPages)||maxPages<1||!Number.isFinite(maxMinutes)||maxMinutes<=0) throw new Error('Positive crawl limits required.');
    result=await crawl(client,{maxPages,maxMinutes,agencyId:has('--agency')?Number(option('--agency')):null,
-    site:crawlSite,discoveryOnly:has('--discovery-only'),assetOnly:has('--assets-only'),planAssetsOnly:has('--plan-assets-only')});
+    site:crawlSite,discoveryOnly:has('--discovery-only'),assetOnly:has('--assets-only'),planAssetsOnly:has('--plan-assets-only'),signal:controller.signal});
   }
-  else if(action==='status') result={coverage:await coverage(client),lastRun:(await client.query('SELECT id,status,counters,finished_at,updated_at FROM floor_plan.run ORDER BY created_at DESC LIMIT 1')).rows[0] || null,pipeline:(await client.query('SELECT * FROM floor_plan.pipeline_run ORDER BY created_at DESC LIMIT 1')).rows[0] || null};
+  else if(action==='status') result={coverage:await coverage(client),lastRun:await latestRun(client),pipeline:await latestRun(client,{pipeline:true})};
   else throw new Error(`Unknown action: ${action}`);
   output(result);
   return result?.status==='complete'||result?.status==='ready'||!result?.status?0:2;
- } finally {await client.end();}
+ } finally {if(interruptible) {process.removeListener('SIGTERM',stop);process.removeListener('SIGINT',stop);}await client.end();}
 }
 
 async function readJson(path) {return JSON.parse(await readFile(path,'utf8'));}
@@ -202,11 +205,15 @@ export async function writeDailyStats(path,result) {
   buildingCandidates:Number(run?.stages?.recognizeBuildings?.candidates||0),
   imageTasksQueued:Number(run?.stages?.enqueueImageTasks?.enqueued||0),
   imagesDiscarded:Number(run?.stages?.classifyImages?.discarded||0),
-  costUsd:Number(run?.stages?.interpretPlans?.costUsd||0)+Number(run?.stages?.recognizeBuildings?.costUsd||0)+Number(run?.stages?.classifyImages?.costUsd||0),
-  failed:Number((run?.errors||[]).length+(run?.stages?.extraction?.failed||0)+(run?.stages?.interpretPlans?.failed||0)+(run?.stages?.recognizeBuildings?.failed||0)+(run?.stages?.classifyImages?.failed||0))
+  siteTasksQueued:Number(run?.stages?.enqueueSiteTasks?.enqueued||0),
+  sitesLocated:Number(run?.stages?.locateSites?.located||0)+Number(run?.stages?.adjudicateSites?.located||0),
+  sheetTasksQueued:Number(run?.stages?.enqueueSheetTasks?.enqueued||0),sheetsRead:Number(run?.stages?.readSheets?.read||0),
+  siteModelsBuilt:Number(run?.stages?.siteModels?.built||0),
+  costUsd:['interpretPlans','recognizeBuildings','classifyImages','adjudicateSites','readSheets'].reduce((sum,key)=>sum+Number(run?.stages?.[key]?.costUsd||0),0),
+  failed:Number((run?.errors||[]).length+['extraction','interpretPlans','recognizeBuildings','classifyImages','locateSites','adjudicateSites','readSheets','siteModels'].reduce((sum,key)=>sum+Number(run?.stages?.[key]?.failed||0),0))
  };
  const complete=run?.status==='complete'&&!error;
- const value={version:1,job:'consensus-builder-floor-plan-daily',runStatus:error?'failed':complete?'completed':'partial',
+ const value={version:1,job:'consensus-builder-floor-plan-daily',runStatus:error?'failed':run?.status==='interrupted'?'interrupted':complete?'completed':'partial',
   verdict:complete?'success':'failure',startedAt,endedAt,dryRun:false,counters,
   error:error?String(error.message||error):run?.errors?.map(item=>item.error).join('; ')||null};
  await mkdir(dirname(path),{recursive:true});

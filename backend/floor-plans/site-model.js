@@ -191,7 +191,7 @@ export async function siteModel(db, listingUrl) {
 // keeps its row; a changed one replaces it. Sites whose postings carry no plans are still stored,
 // because their envelope and location are reviewable on their own. A pass over every site also
 // removes the models of sites no longer located (the table is derived, so nothing is lost).
-export async function buildSiteModels(db, { limit = 500, log = console.log, build = siteModel } = {}) {
+export async function buildSiteModels(db, { limit = 500, log = console.log, build = siteModel, deadline = Infinity } = {}) {
     const rows = (await db.query(`SELECT url, location FROM floor_plan.listing
         WHERE location_status IN ('located','probable') AND location->'candidates'->0 IS NOT NULL ORDER BY url`)).rows;
     const bySite = new Map();
@@ -199,9 +199,10 @@ export async function buildSiteModels(db, { limit = 500, log = console.log, buil
         const key = siteKey(row.location.candidates[0]);
         if (key && !bySite.has(key)) bySite.set(key, row.url);
     }
-    const result = { sites: bySite.size, built: 0, changed: 0, failed: 0, retired: 0 };
+    const result = { sites: bySite.size, built: 0, changed: 0, failed: 0, retired: 0, deferred: 0 };
     let index = 0;
     for (const [key, url] of [...bySite].slice(0, limit)) {
+        if (Date.now() >= deadline) break;
         index++;
         try {
             const model = await build(db, url);
@@ -219,9 +220,11 @@ export async function buildSiteModels(db, { limit = 500, log = console.log, buil
         if (index % 25 === 0) log(JSON.stringify({ at: new Date().toISOString(), stage: 'site-models', progress: `${index}/${Math.min(limit, bySite.size)}`, ...result }));
     }
     // A truncated pass cannot tell an unvisited site from a retired one.
-    if (bySite.size <= limit) {
+    result.deferred = bySite.size - result.built - result.failed;
+    if (!result.deferred && !result.failed) {
         const retired = await db.query(`DELETE FROM floor_plan.site_model WHERE NOT (site_key = ANY($1::text[]))`, [[...bySite.keys()]]);
         result.retired = retired.rowCount || 0;
     }
+    result.status = result.failed || result.deferred ? 'partial' : 'complete';
     return result;
 }

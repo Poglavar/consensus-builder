@@ -14,6 +14,16 @@ afterEach(async () => {
   await Promise.all(tempDirs.splice(0).map(path => rm(path, { recursive: true, force: true })));
 });
 
+it('revisits known pages once per durable run rather than resetting them on resume',async()=>{
+  const runDir=await tempDir(),db=fakeDb(),revisitKnownFn=vi.fn(async()=>({targets:3}));
+  const options={site:'agency.test',runDir,assetMode:'all',revisitKnown:true,interleaveAssets:false,maxPages:1,maxMinutes:5};
+  const dependencies={clientFactory:()=>db,revisitKnownFn,countPendingFn:async()=>({pending:0}),log:()=>{}};
+  expect((await runSiteCrawl(options,dependencies)).status).toBe('complete');
+  expect((await runSiteCrawl(options,dependencies)).status).toBe('complete');
+  expect(revisitKnownFn).toHaveBeenCalledTimes(1);
+  expect(JSON.parse(await readFile(join(runDir,'progress.json'),'utf8')).revisit.targets).toBe(3);
+});
+
 function fakeDb({ recoveryCounters = null } = {}) {
   return {
     connect: vi.fn(async () => {}),

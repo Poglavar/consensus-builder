@@ -1,6 +1,6 @@
 // Sheet context: lenient parsing of a paid reading, and the storey formula a sheet implies.
 import { describe, expect, it } from 'vitest';
-import { parseSheetContext } from '../floor-plans/sheet-context.js';
+import { parseSheetContext,enqueueSheetTasks } from '../floor-plans/sheet-context.js';
 import { storeysFromSheet } from '../floor-plans/site-model.js';
 
 const reading = (overrides = {}) => ({
@@ -12,6 +12,17 @@ const reading = (overrides = {}) => ({
 });
 
 describe('sheet context', () => {
+    it('reuses a sheet already read through another listing alias without queuing paid work',async()=>{
+        const statements=[];
+        const db={query:async(sql)=>{
+            statements.push(sql);
+            if(sql.includes('SELECT DISTINCT ON (t.current_sha256)'))return {rows:[{sha256:'a'.repeat(64),source_url:'https://source.test/sheet.png',listing_url:'https://source.test/new-alias'}]};
+            if(sql.includes('SELECT id FROM floor_plan.plan_task'))return {rows:[{id:'existing-task'}]};
+            return {rows:[],rowCount:0};
+        }};
+        expect(await enqueueSheetTasks(db,{listingUrls:['https://source.test/new-alias']})).toMatchObject({sources:1,enqueued:0,reused:1});
+        expect(statements.some(sql=>sql.startsWith('INSERT'))).toBe(false);
+    });
     it('keeps orientation from street labels, the key-plan position and the visible storeys', () => {
         const sheet = parseSheetContext(reading());
         expect(sheet.orientation).toMatchObject({ basis: 'street-labels', northDeg: null });

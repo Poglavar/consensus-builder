@@ -72,8 +72,18 @@ export function parseSheetContext(raw) {
 }
 
 // Queue every plan sheet and envelope image of a listing's site that has no current reading.
-export async function enqueueSheetTasks(db, { listingUrls }) {
-    if (!Array.isArray(listingUrls) || !listingUrls.length) throw new Error('Sheet context needs listing URLs.');
+export async function enqueueSheetTasks(db, { listingUrls = null, limit = 100, deadline = Infinity } = {}) {
+    if (listingUrls === null) listingUrls = (await db.query(`SELECT DISTINCT l.url FROM floor_plan.listing l
+        CROSS JOIN LATERAL jsonb_array_elements(l.asset_urls) a
+        JOIN floor_plan.target t ON t.url=a->>'url' AND t.kind='asset'
+        JOIN floor_plan.blob b ON b.sha256=t.current_sha256 AND b.bytes_available
+        WHERE l.location_status IN ('located','probable') AND a->'listingOwned'='true'::jsonb
+          AND (t.image_kind='envelope' OR EXISTS(SELECT 1 FROM floor_plan.processed_plan p WHERE p.source_sha256=t.current_sha256)
+            OR EXISTS(SELECT 1 FROM floor_plan.extraction e WHERE e.sha256=t.current_sha256 AND e.status='reviewed' AND e.model ? 'architecture'))
+          AND NOT EXISTS(SELECT 1 FROM floor_plan.plan_task pt WHERE pt.source_sha256=t.current_sha256 AND pt.processor=$2)
+        ORDER BY l.url LIMIT $1`, [limit,SHEET_PROCESSOR])).rows.map(row => row.url);
+    if (!Array.isArray(listingUrls)) throw new Error('Sheet context needs listing URLs.');
+    if (!listingUrls.length) return { sources: 0, enqueued: 0, reused: 0, deferred: 0 };
     const plans = await sitePlans(db, listingUrls);
     const envelope = (await db.query(`SELECT DISTINCT ON (t.current_sha256) t.current_sha256 AS sha256, t.url AS source_url, l.url AS listing_url
         FROM floor_plan.listing l, jsonb_array_elements(l.asset_urls) a
@@ -84,8 +94,13 @@ export async function enqueueSheetTasks(db, { listingUrls }) {
     const sources = new Map();
     for (const row of plans) if (row.sha256 && !sources.has(row.sha256)) sources.set(row.sha256, { listing: row.listing_url, url: row.model?.source?.url || null });
     for (const row of envelope) if (!sources.has(row.sha256)) sources.set(row.sha256, { listing: row.listing_url, url: row.source_url });
-    let enqueued = 0;
+    let enqueued = 0, reused = 0, deferred = 0;
     for (const [sha256, source] of sources) {
+        if (Date.now() >= deadline) { deferred = sources.size - enqueued - reused; break; }
+        // The sheet's printed clues belong to its bytes. URL/language aliases must not pay to
+        // reread the same sheet, including queued, completed and explicit review/error results.
+        if ((await db.query(`SELECT id FROM floor_plan.plan_task WHERE source_sha256=$1 AND processor=$2 LIMIT 1`,
+            [sha256, SHEET_PROCESSOR])).rows.length) { reused++; continue; }
         const target = source.url || (await db.query(`SELECT url FROM floor_plan.target WHERE current_sha256 = $1 AND kind = 'asset' ORDER BY url LIMIT 1`, [sha256])).rows[0]?.url;
         const listing = (await db.query(`SELECT url, facts FROM floor_plan.listing WHERE url = $1`, [source.listing])).rows[0];
         if (!target || !listing) continue;
@@ -95,7 +110,7 @@ export async function enqueueSheetTasks(db, { listingUrls }) {
             floor: listing.facts?.floor ?? null, unitId: listing.facts?.unitId ?? null } }), SHEET_PROCESSOR]);
         enqueued += saved.rowCount || 0;
     }
-    return { sources: sources.size, enqueued };
+    return { sources: sources.size, enqueued, reused, deferred };
 }
 
 export async function readSheets(db, options = {}) {

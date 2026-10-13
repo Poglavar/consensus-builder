@@ -44,6 +44,10 @@ export async function importAgencies(db,document,matches=[]) {
  return {imported,websites};
 }
 export async function saveObservation(db,target,response,evidence,runId) {
+ const previousAssets=evidence.listing&&target.current_sha256
+  ?(await db.query('SELECT asset_urls FROM floor_plan.listing WHERE url=$1',[target.url])).rows[0]?.asset_urls||[]:[];
+ const newlyLabelledPlans=(evidence.assets||[]).filter(asset=>asset.listingOwned===true&&asset.kind==='floor-plan'
+  &&!previousAssets.some(previous=>previous.url===asset.url&&previous.listingOwned===true&&previous.kind==='floor-plan')).map(asset=>asset.url);
  if(target.kind!=='asset' && /^(?:image\/|application\/pdf)/i.test(response.headers.contentType||''))
   throw new Error('An image or document needs an address-qualified listing owner before it can be archived.');
  if(target.kind==='asset' && !await canFetchTarget(db,target)) return {changed:false,excluded:true,evidence};
@@ -104,7 +108,7 @@ export async function saveObservation(db,target,response,evidence,runId) {
   building_evidence=CASE WHEN l.facts IS DISTINCT FROM excluded.facts THEN NULL ELSE l.building_evidence END,
   match_checked_at=CASE WHEN l.facts IS DISTINCT FROM excluded.facts THEN NULL ELSE l.match_checked_at END,updated_at=now()`,[target.url,target.agency_id,evidence.listing.sourceId,JSON.stringify(evidence.listing),JSON.stringify((evidence.assets || []).filter(asset=>asset.listingOwned===true)),observedAt]);
  if(target.kind==='asset') await db.query(`INSERT INTO floor_plan.extraction(sha256,evidence) VALUES($1,$2) ON CONFLICT DO NOTHING`,[hash,JSON.stringify({sourceUrl:target.url,discoveredFrom:target.discovered_from,mediaType:response.headers.contentType})]);
- return {hash,changed:target.current_sha256!==hash,aliasUrl,evidence};
+ return {hash,changed:target.current_sha256!==hash,aliasUrl,evidence,newlyLabelledPlans};
 }
 export async function coverage(db) {
  const agencies=(await db.query(`SELECT count(*)::int AS total,count(website)::int AS websites FROM floor_plan.agency WHERE in_scope`)).rows[0];

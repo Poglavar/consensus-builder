@@ -51,7 +51,16 @@ function stageFilter(stage) {
   return `t.kind='asset'`;
 }
 
-export function createTargetSelector({ agencyId = null, site = null, discoveryOnly = false, assetOnly = false, matchedAssetsOnly = false, ownedAssetsOnly = false, planAssetsOnly = false } = {}) {
+export async function revisitKnownTargets(db, { site } = {}) {
+  site = normalizeSiteHost(site);
+  if (!site) throw new Error('A site is required for revisiting known targets.');
+  const result = await db.query(`UPDATE floor_plan.target t SET next_check_at=LEAST(next_check_at,now()),updated_at=now()
+    WHERE ${HOST_SQL}=$1 AND t.kind IN ('home','sitemap','page') AND t.current_sha256 IS NOT NULL
+      AND ${ALLOWED_TARGET_SQL} AND NOT ${DEFERRED_GENERATED_SEARCH_SQL}`, [site]);
+  return { targets: result.rowCount };
+}
+
+export function createTargetSelector({ agencyId = null, site = null, discoveryOnly = false, assetOnly = false, matchedAssetsOnly = false, ownedAssetsOnly = false, planAssetsOnly = false, knownFirst = false } = {}) {
   site=normalizeSiteHost(site);
   const visitedHosts = new Map();
   let stage = assetOnly ? 'assets' : 'homes';
@@ -64,7 +73,9 @@ export function createTargetSelector({ agencyId = null, site = null, discoveryOn
 
   async function choose(db, current) {
     const excluded = [...(visitedHosts.get(current) || [])];
-    const sql = `SELECT t.* FROM floor_plan.target t
+    const sql = `SELECT t.*,COALESCE(b.bytes_available,false) AS cached_bytes_available,
+      b.storage_path AS cached_storage_path,b.byte_count AS cached_byte_count FROM floor_plan.target t
+      LEFT JOIN floor_plan.blob b ON b.sha256=t.current_sha256
       WHERE t.next_check_at<=now()
         AND ${ALLOWED_TARGET_SQL}
         AND ($1::bigint IS NULL OR t.agency_id=$1)
@@ -73,7 +84,7 @@ export function createTargetSelector({ agencyId = null, site = null, discoveryOn
         ${current === 'assets' ? '' : `AND NOT ${DEFERRED_GENERATED_SEARCH_SQL}`}
         AND NOT (${HOST_SQL}=ANY($2::text[]))
         ${current === 'assets' ? assetFilters : ''}
-      ORDER BY (t.last_fetched_at IS NULL) DESC, t.priority DESC,
+      ORDER BY (t.last_fetched_at IS NULL) ${knownFirst ? 'ASC' : 'DESC'}, t.priority DESC,
         t.next_check_at, ${HOST_SQL}, t.url
       LIMIT 1`;
     return (await db.query(sql, site ? [agencyId, excluded, site] : [agencyId, excluded])).rows[0] || null;

@@ -9,7 +9,7 @@ import { performance } from 'node:perf_hooks';
 import dotenv from 'dotenv';
 import pg from 'pg';
 import { crawl } from '../floor-plans/crawler.js';
-import { countPendingTargets, createTargetSelector, normalizeSiteHost } from '../floor-plans/crawl-queue.js';
+import { countPendingTargets, createTargetSelector, normalizeSiteHost, revisitKnownTargets } from '../floor-plans/crawl-queue.js';
 import { fetchPublic } from '../floor-plans/fetch-public.js';
 import { zagrebStreetIndex } from '../floor-plans/site-candidates.js';
 
@@ -26,6 +26,7 @@ const HELP = [
   'Options:',
   '  --asset-mode all|plans      Crawl all listing-owned images (default) or only labelled plans/documents',
   '  --interleave-assets         Alternate due pages and assets in one resumable mixed stage',
+  '  --revisit-known             Recheck known pages once, using validators and stored results',
   '  --max-pages N               Overall request cap across chunks/resumes (default 50000)',
   '  --max-minutes N             Overall active-time cap across chunks/resumes (default 360)',
   '  -h, --help                  Print help without loading env or connecting to PostgreSQL',
@@ -61,6 +62,7 @@ export function parseArgs(argv = []) {
       'run-dir': { type: 'string' },
       'asset-mode': { type: 'string' },
       'interleave-assets': { type: 'boolean' },
+      'revisit-known': { type: 'boolean' },
       'max-pages': { type: 'string' },
       'max-minutes': { type: 'string' },
     },
@@ -77,7 +79,7 @@ export function parseArgs(argv = []) {
   if (!Number.isSafeInteger(maxPages) || maxPages < 1) throw new Error('--max-pages must be a positive integer.');
   if (!Number.isFinite(maxMinutes) || maxMinutes <= 0) throw new Error('--max-minutes must be positive.');
   return { help: false, site, runDir: resolve(values['run-dir']), assetMode,
-    interleaveAssets: Boolean(values['interleave-assets']), maxPages, maxMinutes };
+    interleaveAssets: Boolean(values['interleave-assets']), revisitKnown: Boolean(values['revisit-known']), maxPages, maxMinutes };
 }
 
 async function writeJsonAtomic(path, value) {
@@ -132,7 +134,7 @@ function summarizeTrace(rows) {
 }
 
 function addCounters(total, counters = {}) {
-  for (const key of ['failed', 'blocked', 'unchanged', 'changed', 'discovered', 'filteredGeneratedSearchTargets']) {
+  for (const key of ['failed', 'blocked', 'unchanged', 'notModified', 'identicalBodies', 'changed', 'discovered', 'filteredGeneratedSearchTargets']) {
     total[key] = (total[key] || 0) + Number(counters[key] || 0);
   }
 }
@@ -217,12 +219,21 @@ export async function runSiteCrawl(options, dependencies = {}) {
     : undefined;
   const db = clientFactory(connection);
   await db.connect();
+  const controller = new AbortController();
+  const stop = () => controller.abort();
+  process.once('SIGTERM', stop);
+  process.once('SIGINT', stop);
   let locked = false;
   try {
     locked = Boolean((await db.query("SELECT pg_try_advisory_lock(hashtext('floor-plan-crawl')) AS locked")).rows[0]?.locked);
     if (!locked) throw new Error('Another floor-plan crawl is already running.');
     // Page qualification reads street-name mentions from this index; load it once per run.
     await zagrebStreetIndex(db);
+
+    if (options.revisitKnown && !progress.revisit) {
+      progress.revisit = { at: isoNow(), ...(await (dependencies.revisitKnownFn || revisitKnownTargets)(db, { site: options.site })) };
+      await writeJsonAtomic(paths.progress, progress);
+    }
 
     if (progress.inFlight?.runId && !progress.foldedRunIds.includes(progress.inFlight.runId)) {
       const saved = await db.query('SELECT counters FROM floor_plan.run WHERE id=$1', [progress.inFlight.runId]);
@@ -248,6 +259,7 @@ export async function runSiteCrawl(options, dependencies = {}) {
     await writeJsonAtomic(paths.progress, { ...progress, updatedAt: isoNow(), activeElapsedMs: Math.round(elapsedBase) });
     let stopReason = null;
     while (progress.stage !== 'done') {
+      if (controller.signal.aborted) { stopReason = 'interrupted'; break; }
       if (trace.denialStreak >= 3) { stopReason = 'sustained-http-denials'; break; }
       const stage = progress.stage;
       const pendingBefore = await pendingForStage(db, { ...options, stage }, countFn);
@@ -271,6 +283,7 @@ export async function runSiteCrawl(options, dependencies = {}) {
         discoveryOnly: stage === 'discovery',
         assetOnly: stage === 'assets',
         planAssetsOnly: stage !== 'discovery' && options.assetMode === 'plans',
+        knownFirst: Boolean(progress.revisit),
       });
       const selectTarget = async client => {
         if (denialStop) return null;
@@ -315,6 +328,7 @@ export async function runSiteCrawl(options, dependencies = {}) {
       progress.inFlight = { stage, startedAt: chunkStartedAt, runId: null, counters: {} };
       writeJsonAtomicSync(paths.progress, { ...progress, updatedAt: isoNow(), activeElapsedMs: Math.round(activeElapsedMs()) });
       const result = await crawlFn(db, {
+        signal: controller.signal,
         maxPages: chunkLimit,
         maxMinutes: remainingMs / 60000,
         site: options.site,
@@ -335,6 +349,8 @@ export async function runSiteCrawl(options, dependencies = {}) {
                 failed: event.failed,
                 blocked: event.blocked,
                 unchanged: event.unchanged,
+                notModified: event.notModified,
+                identicalBodies: event.identicalBodies,
                 changed: event.changed,
                 discovered: event.discovered,
                 filteredGeneratedSearchTargets: event.filteredGeneratedSearchTargets,
@@ -369,6 +385,9 @@ export async function runSiteCrawl(options, dependencies = {}) {
         requests: Number(result.counters?.requestsAttempted || 0),
         discovered: Number(result.counters?.discovered || 0),
         failed: Number(result.counters?.failed || 0),
+        unchanged: Number(result.counters?.unchanged || 0),
+        notModified: Number(result.counters?.notModified || 0),
+        identicalBodies: Number(result.counters?.identicalBodies || 0),
         blocked: Number(result.counters?.blocked || 0),
         pendingBefore: pendingBefore.pending,
         pendingAfter: pendingAfter.pending,
@@ -383,6 +402,7 @@ export async function runSiteCrawl(options, dependencies = {}) {
         status: result.status || null,
       })));
 
+      if (controller.signal.aborted) { stopReason = 'interrupted'; break; }
       if (denialStop) { stopReason = 'sustained-http-denials'; break; }
       if (!Number(result.counters?.requestsAttempted || 0) && pendingAfter.pending > 0) {
         stopReason = 'no-progress';
@@ -400,7 +420,7 @@ export async function runSiteCrawl(options, dependencies = {}) {
     };
     const complete = progress.stage === 'done';
     const hadFailures = progress.counters.failed > 0 || progress.counters.blocked > 0 || trace.failedFetches > 0;
-    const status = complete && !hadFailures ? 'complete' : 'partial';
+    const status = controller.signal.aborted ? 'interrupted' : complete && !hadFailures ? 'complete' : 'partial';
     const result = {
       at: isoNow(),
       site: options.site,
@@ -440,6 +460,8 @@ export async function runSiteCrawl(options, dependencies = {}) {
     await writeJsonAtomic(paths.result, { at: isoNow(), site: options.site, assetMode: options.assetMode, status: 'failed', error: failure, stage: progress.stage });
     throw error;
   } finally {
+    process.removeListener('SIGTERM', stop);
+    process.removeListener('SIGINT', stop);
     if (locked) await db.query("SELECT pg_advisory_unlock(hashtext('floor-plan-crawl'))");
     await db.end();
   }
