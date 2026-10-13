@@ -55,6 +55,27 @@ class CurveSummaryTests(unittest.TestCase):
             self.assertIn('seed 1, best epoch 4, config t0.3-seeds1-hard0', recorded[0]['note'])
             self.assertEqual(recorded[2]['counts']['predictions'], 4000)
 
+    def test_prefix_picks_one_arm_and_eval_dir_another_score_with_its_own_ledger_note(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            split = make_run(root, 50, 1, 0.10); split.rename(root / 'split-n50-s1')
+            tuned = make_run(root, 50, 1, 0.15); tuned = tuned.rename(root / 'finetune-n50-s1')
+            results = json.loads((tuned / 'results.json').read_text())
+            results['init'] = {'manifest_version': 'zagreb-v1', 'pool': 'zagreb-pool-v2', 'n_train': 1600, 'seed': 1,
+                               'sha256': '0123456789abcdef'}
+            (tuned / 'results.json').write_text(json.dumps(results))
+            (tuned / 'selection-eval').rename(tuned / 'selection-eval-zagreb-v1')
+            self.assertEqual([row['run'] for row in curve_summary.collect(root, 'split-')], ['split-n50-s1'])
+            self.assertEqual(curve_summary.collect(root, 'finetune-'), [])         # it has no own selection-eval here
+            rows = curve_summary.collect(root, 'finetune-', 'selection-eval-zagreb-v1')
+            self.assertEqual([row['run'] for row in rows], ['finetune-n50-s1'])
+            ledger = root / 'ledger.jsonl'
+            self.assertEqual(curve_summary.ledger_add(rows, 'zagreb-v1', 'ft', ledger), 1)
+            note = read_rows(ledger)[0]['note']
+            self.assertIn('initialised from zagreb-v1 zagreb-pool-v2 n1600 seed 1 (0123456789abcdef)', note)
+            self.assertIn('scored as selection-eval-zagreb-v1', note)
+            self.assertEqual(curve_summary.ledger_add(rows, 'zagreb-v1', 'ft', ledger), 0)
+
 
 if __name__ == '__main__':
     unittest.main()

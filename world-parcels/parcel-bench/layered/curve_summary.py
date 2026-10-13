@@ -3,7 +3,9 @@
 config from results.json, pooled metrics from selection-eval/pooled.json) in one table with the mean and range
 per training-set size, written as JSON and as a Markdown table for the README. With --ledger-add, one ledger row
 per run is appended (skipping rows already recorded for the same method and note), so the curve stays comparable
-with every other row. No torch needed; runs on the laptop after gpu/sync.sh pull."""
+with every other row. --prefix picks one arm of a mixed runs directory (e.g. split- or finetune- in a round of
+gpu/queue_runner.py) and --eval-dir another evaluation of the same runs (selection-eval-zagreb-v1 for the
+cross-city score). No torch needed; runs on the laptop after gpu/sync.sh pull."""
 from __future__ import annotations
 
 import argparse
@@ -19,20 +21,21 @@ RUN_PATTERN = re.compile(r'n(\d+)-s(\d+)$')
 METRICS = ('parcel_f1', 'precision', 'recall', 'area_weighted_recall', 'interior_recall', 'boundary_f1')
 
 
-def collect(runs):
+def collect(runs, prefix='', eval_dir='selection-eval'):
     rows = []
     for directory in sorted(Path(runs).iterdir()):
         match = RUN_PATTERN.search(directory.name)
-        pooled = directory / 'selection-eval' / 'pooled.json'
+        pooled = directory / eval_dir / 'pooled.json'
         results = directory / 'results.json'
-        if not match or not pooled.exists() or not results.exists():
+        if not directory.name.startswith(prefix) or not match or not pooled.exists() or not results.exists():
             continue
         result, metrics = json.loads(results.read_text()), json.loads(pooled.read_text())
         rows.append({'run': directory.name, 'n_train': int(match.group(1)), 'seed': int(match.group(2)),
                      'best_epoch': result['best']['epoch'] + 1, 'config': result['best']['config'],
                      'recipe_hash': result['recipe_hash'], 'pool': result.get('pool'),
                      'predictions': metrics['counts'].get('predictions'), 'references': metrics['counts'].get('references'),
-                     'metrics': {key: metrics['metrics'].get(key) for key in METRICS}, 'pooled': str(pooled)})
+                     'metrics': {key: metrics['metrics'].get(key) for key in METRICS}, 'pooled': str(pooled),
+                     'eval_dir': eval_dir, 'init': result.get('init')})
     return sorted(rows, key=lambda row: (row['n_train'], row['seed']))
 
 
@@ -70,6 +73,11 @@ def ledger_add(rows, benchmark, method_prefix, ledger):
     for row in rows:
         method = f"{method_prefix}-n{row['n_train']}"
         note = f"learning curve: pool {row['pool']}, seed {row['seed']}, best epoch {row['best_epoch']}, config {row['config']}"
+        if row.get('init'):
+            init = row['init']
+            note += f", initialised from {init['manifest_version']} {init['pool']} n{init['n_train']} seed {init['seed']} ({init['sha256']})"
+        if row.get('eval_dir', 'selection-eval') != 'selection-eval':
+            note += f", scored as {row['eval_dir']}"
         if (method, note) in existing:
             continue
         subprocess.run([sys.executable, str(HERE.parent / 'ledger.py'), '--ledger', str(ledger), 'add', '--benchmark', benchmark,
@@ -82,21 +90,24 @@ def ledger_add(rows, benchmark, method_prefix, ledger):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--runs', type=Path, default=HERE.parent / 'output' / 'runs' / 'curve')
-    parser.add_argument('--output', type=Path, help='JSON summary (default <runs>/curve.json)')
-    parser.add_argument('--markdown', type=Path, help='Markdown table (default <runs>/curve.md)')
+    parser.add_argument('--prefix', default='', help='only run directories whose name starts with this')
+    parser.add_argument('--eval-dir', default='selection-eval', help='evaluation directory inside each run')
+    parser.add_argument('--output', type=Path, help='JSON summary (default <runs>/<prefix>curve[-<eval suffix>].json)')
+    parser.add_argument('--markdown', type=Path, help='Markdown table (default as --output with .md)')
     parser.add_argument('--ledger-add', action='store_true', help='append one ledger row per run')
     parser.add_argument('--ledger', type=Path, default=HERE.parent / 'results.jsonl')
     parser.add_argument('--benchmark', default='zagreb-v1')
     parser.add_argument('--method-prefix', default='layered-v0-convnext_tiny-30ep')
     args = parser.parse_args(argv)
-    rows = collect(args.runs)
+    rows = collect(args.runs, args.prefix, args.eval_dir)
     if not rows:
         raise SystemExit(f'no finished runs under {args.runs}')
     summary = aggregate(rows)
     table = markdown(summary, rows)
-    output = args.output or args.runs / 'curve.json'
+    stem = f"{args.prefix}curve{args.eval_dir.removeprefix('selection-eval')}"
+    output = args.output or args.runs / f'{stem}.json'
     output.write_text(json.dumps({'runs': rows, 'summary': summary}, indent=1, sort_keys=True) + '\n')
-    (args.markdown or args.runs / 'curve.md').write_text(table)
+    (args.markdown or args.runs / f'{stem}.md').write_text(table)
     print(table)
     for row in rows:
         print(f"{row['run']}: F1 {row['metrics']['parcel_f1']:.3f} epoch {row['best_epoch']} {row['config']} "

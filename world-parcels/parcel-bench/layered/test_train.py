@@ -1,6 +1,7 @@
 """Smoke tests for the layered trainer: model output shapes on CPU, seeded nested training subsets, and a
 two-tile training run on the real Zagreb dataset when it is present (skipped otherwise), including resume,
-evaluate-only, the no-OSM evaluation mode and a pool manifest replacing the frozen training pool."""
+evaluate-only, the no-OSM evaluation mode, a pool manifest replacing the frozen training pool and fine-tuning
+from a donor checkpoint (--init)."""
 import json
 import os
 import subprocess
@@ -90,6 +91,30 @@ class SmokeTrainTests(unittest.TestCase):
             completed = self.trainer(Path(directory) / 'bad', '--pool', str(pool))
             self.assertNotEqual(completed.returncode, 0)
             self.assertIn('held-out tile', completed.stderr)
+
+    def test_init_starts_from_the_donor_weights_and_records_the_donor(self):
+        with tempfile.TemporaryDirectory() as directory:
+            donor = Path(directory) / 'donor'
+            self.run_trainer(donor)
+            tuned = Path(directory) / 'tuned'
+            stdout = self.run_trainer(tuned, '--init', str(donor / 'best.pt'), '--lr', '0')
+            self.assertIn('initialised from', stdout)
+            # With a zero learning rate the fine-tuned parameters must still be exactly the donor's.
+            before = torch.load(donor / 'best.pt', weights_only=False)['model']
+            after = torch.load(tuned / 'last.pt', weights_only=False)['model']
+            parameters = [name for name, _ in ParcelNet('resnet18', in_chans=6, pretrained=False).named_parameters()]
+            for name in parameters:
+                self.assertTrue(torch.equal(before[name], after[name]), name)
+            recipe = json.loads((tuned / 'recipe.json').read_text())
+            self.assertEqual(recipe['init']['checkpoint'], str(donor / 'best.pt'))
+            self.assertEqual(recipe['init']['manifest_version'], 'zagreb-v1')
+            self.assertEqual(len(recipe['init']['sha256']), 16)
+            self.assertEqual(json.loads((tuned / 'results.json').read_text())['init'], recipe['init'])
+            wrong = Path(directory) / 'wrong.pt'
+            torch.save({'model': {}, 'encoder': 'convnext_tiny', 'in_chans': 6, 'size': 128, 'epoch': 0}, wrong)
+            completed = self.trainer(Path(directory) / 'bad', '--init', str(wrong))
+            self.assertNotEqual(completed.returncode, 0)
+            self.assertIn('convnext_tiny', completed.stderr)
 
     def test_train_resume_and_evaluate_only(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -19,6 +19,8 @@ from datetime import datetime, timezone
 from multiprocessing import get_context
 from pathlib import Path
 
+import hashlib
+
 import cv2
 import numpy as np
 import torch
@@ -248,6 +250,24 @@ def build_configs(thresholds, interior_seeds_options, hard_options):
             for t in thresholds for s in interior_seeds_options for h in hard_options]
 
 
+def load_init(path, encoder, size):
+    """Fine-tuning start: the model weights of another run's checkpoint (optimizer and schedule start fresh),
+    plus a description of where they came from for the recipe: file hash, epoch and the donor run's results."""
+    state = torch.load(path, map_location='cpu', weights_only=False)
+    if state.get('encoder') != encoder or state.get('in_chans') != 6 or state.get('size') != size:
+        raise ValueError(f"--init {path} holds {state.get('encoder')} at {state.get('size')} px with "
+                         f"{state.get('in_chans')} channels, not {encoder} at {size} px with 6")
+    digest = hashlib.sha256()
+    with open(path, 'rb') as handle:
+        for block in iter(lambda: handle.read(1 << 20), b''):
+            digest.update(block)
+    donor = Path(path).parent / 'results.json'
+    donor = read_json(donor) if donor.exists() else {}
+    info = {'checkpoint': str(path), 'sha256': digest.hexdigest()[:16], 'epoch': state.get('epoch'),
+            **{key: donor.get(key) for key in ('manifest_version', 'pool', 'n_train', 'seed', 'recipe_hash')}}
+    return state['model'], info
+
+
 def make_scheduler(optimizer, total_steps, warmup):
     def factor(step):
         if step < warmup:
@@ -282,13 +302,17 @@ def train(args):
     positives = sum(int(cache[t]['boundary'].sum()) for t in train_ids)
     total = sum(int(cache[t]['boundary'].size) for t in train_ids)
     pos_weight = torch.tensor(min(max((total - positives) / max(positives, 1), 1.0), 20.0), device=device)
+    init_weights, init = load_init(args.init, args.encoder, args.size) if args.init else (None, None)
     recipe = {'args': {k: (str(v) if isinstance(v, Path) else v) for k, v in vars(args).items()},
               'recipe_hash': recipe_hash(RECIPE_FILES), 'manifest_version': index.manifest['version'],
               'pool': index.pool_name, 'n_train': len(train_ids), 'subset_seed': subset_seed, 'reconstruction': RECON_DEFAULTS,
-              'pos_weight': float(pos_weight), 'train_tiles': train_ids, 'selection_tiles': selection_ids}
+              'pos_weight': float(pos_weight), 'init': init, 'train_tiles': train_ids, 'selection_tiles': selection_ids}
     (out / 'recipe.json').write_text(json.dumps(recipe, indent=2, sort_keys=True) + '\n')
 
-    model = ParcelNet(args.encoder, in_chans=6, pretrained=not args.no_pretrained).to(device)
+    model = ParcelNet(args.encoder, in_chans=6, pretrained=not (args.no_pretrained or args.init)).to(device)
+    if init_weights is not None:
+        model.load_state_dict(init_weights)
+        log(f"initialised from {args.init} (epoch {init['epoch'] + 1}, trained on {init['pool']}, n={init['n_train']})")
     optimizer = torch.optim.AdamW(model.parameter_groups(args.lr, args.encoder_lr_scale), weight_decay=1e-4)
     dataset = TileDataset(cache, train_ids, augment=True, osm_dropout=args.osm_dropout, seed=args.seed)
     steps_per_epoch = min(math.ceil(len(dataset) / args.batch), args.max_steps or 10 ** 9)
@@ -358,7 +382,7 @@ def train(args):
                 (out / 'results.json').write_text(json.dumps({'best': best, 'recipe_hash': recipe['recipe_hash'],
                                                               'manifest_version': index.manifest['version'],
                                                               'pool': index.pool_name, 'n_train': len(train_ids),
-                                                              'seed': args.seed, 'subset_seed': subset_seed},
+                                                              'seed': args.seed, 'subset_seed': subset_seed, 'init': init},
                                                              indent=2, sort_keys=True) + '\n')
                 log(f"new best checkpoint saved (epoch {epoch + 1}, parcel F1 {best['parcel_f1']:.3f})")
     journal.close()
@@ -449,6 +473,8 @@ def main(argv=None):
     parser.add_argument('--max-steps', type=int, default=0, help='steps per epoch limit (0 = all)')
     parser.add_argument('--seed', type=int, default=1)
     parser.add_argument('--resume', action='store_true')
+    parser.add_argument('--init', type=Path, help="fine-tune: start from this checkpoint's model weights instead of "
+                                                  'ImageNet; optimizer, schedule and checkpoint choice start fresh')
     parser.add_argument('--smoke', action='store_true', help='tiny CPU run: resnet18, 128 px, 2 tiles, 2 steps')
     parser.add_argument('--evaluate-only', action='store_true', help='score a split with the selected checkpoint/config')
     parser.add_argument('--checkpoint', type=Path)
