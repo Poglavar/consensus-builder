@@ -1,6 +1,6 @@
 // Small, hash-bound source evidence survives after successful HTML parsing.
 import * as cheerio from 'cheerio';
-import { prepareBuildingEvidence } from './building-reading.js';
+import { buildingEvidenceFacts, prepareBuildingEvidence } from './building-reading.js';
 import { pruneDiscardedFiles,readBlob,readBlobRow } from './blob-store.js';
 
 export const PROCESSED_SOURCE_REASON = 'processed-source.v1';
@@ -8,10 +8,15 @@ export const SOURCE_EVIDENCE_SCHEMA = 'processed-source-evidence.v1';
 
 export function agencyIdentityEvidence(html) {
     const $ = cheerio.load(html);
-    $('script,style,noscript').remove();
-    $('br').replaceWith(' ');
-    $('p,div,section,li,h1,h2,h3').append(' ');
-    const visible = $('body').text().replace(/\s+/g, ' ').trim();
+    return agencyIdentityEvidenceFromDocument($);
+}
+
+function agencyIdentityEvidenceFromDocument($) {
+    const body = $('body').length ? $('body').clone() : $.root().clone();
+    body.find('script,style,noscript').remove();
+    body.find('br').replaceWith(' ');
+    body.find('p,div,section,li,h1,h2,h3').append(' ');
+    const visible = body.text().replace(/\s+/g, ' ').trim();
     const matches = [];
     for (const match of visible.matchAll(/\bOIB\s*[:.]?\s*(?:HR)?\s*(\d{11})\b/gi)) {
         matches.push({ oib: match[1], quote: match[0], context: visible.slice(Math.max(0, match.index - 350), match.index + 100) });
@@ -19,21 +24,27 @@ export function agencyIdentityEvidence(html) {
     return { matches, text: visible.slice(0, 20000), truncated: visible.length > 20000 };
 }
 
-export function prepareSourceEvidence({ url, sha256, html, facts = {} } = {}) {
+export function prepareSourceEvidence({ url, sha256, html, document = null, facts = {} } = {}) {
     if (typeof html !== 'string') throw new Error('Source evidence needs HTML text.');
+    const $ = document || cheerio.load(html);
     return {
         schema: SOURCE_EVIDENCE_SCHEMA,
         source: { url, sha256 },
-        building: prepareBuildingEvidence({ url, sha256, html, facts }),
-        agencyIdentity: agencyIdentityEvidence(html),
+        building: prepareBuildingEvidence({ url, sha256, html, document: $, facts }),
+        agencyIdentity: agencyIdentityEvidenceFromDocument($),
     };
 }
 
-export function sourceEvidenceMatches(value, url, sha256) {
-    return value?.schema === SOURCE_EVIDENCE_SCHEMA && value.source?.url === url
+export function sourceEvidenceMatches(value, url, sha256, facts) {
+    const matches = value?.schema === SOURCE_EVIDENCE_SCHEMA && value.source?.url === url
         && value.source?.sha256 === sha256 && value.building?.source?.url === url
         && value.building?.source?.sha256 === sha256 && typeof value.building.text === 'string'
         && Array.isArray(value.building.links) && Array.isArray(value.agencyIdentity?.matches);
+    if (!matches || facts === undefined) return matches;
+    try {
+        const expected = buildingEvidenceFacts(facts), actual = value.building.facts;
+        return Object.keys(expected).every(key => actual?.[key] === expected[key]);
+    } catch { return false; }
 }
 
 export function buildingEvidenceWithCandidates(sourceEvidence, candidates = []) {
@@ -117,7 +128,7 @@ export async function compactSources(db, { apply = false, limit = 50000, deadlin
                     OR t.state IS DISTINCT FROM 'ok'))
               ORDER BY b.sha256 LIMIT $1
             )
-            SELECT t.url,t.kind,o.sha256,
+            SELECT t.url,t.kind,o.sha256,o.evidence->'sourcePacket' AS packet,
                 CASE WHEN t.current_sha256=o.sha256 THEN l.facts ELSE '{}'::jsonb END AS facts,
                 b.media_type,b.byte_count,b.storage_path,b.bytes_available
             FROM candidate_hashes c JOIN floor_plan.blob b ON b.sha256=c.sha256
@@ -156,12 +167,16 @@ export async function compactSources(db, { apply = false, limit = 50000, deadlin
             const packets = [];
             let validGroup = true;
             let deadlineReached = false;
+            let html;
+            let document;
             for (const alias of group) {
                 if (expired()) { deadlineReached = true; break; }
+                if (sourceEvidenceMatches(alias.packet, alias.url, hash, alias.facts || {})) continue;
                 try {
+                    if (html === undefined) html = bytes.toString('utf8');
+                    if (!document) document = cheerio.load(html);
                     packets.push({ url: alias.url, sha256: hash,
-                        packet: prepareSourceEvidence({ url: alias.url, sha256: hash,
-                            html: bytes.toString('utf8'), facts: alias.facts || {} }) });
+                        packet: prepareSourceEvidence({ url: alias.url, sha256: hash, html, document, facts: alias.facts || {} }) });
                 } catch (error) {
                     result.sourceReadErrors++;
                     log({ url: alias.url, hash, error: error.message });

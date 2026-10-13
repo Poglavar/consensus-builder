@@ -39,7 +39,9 @@ This deployment does not enable `consensus-builder-floor-plan-daily`.
 For completed-source cleanup, stop the one-off crawler, run
 `PGHOST=localhost node backend/scripts/floor-plan-retention.mjs`, inspect its report,
 then add `--apply`. Compare model/result/cost fingerprints and inspect evidence
-readback before resuming. Production raw data should only be compacted after its
+readback before resuming. For a large archive, audit a bounded sample with
+`--limit 250`, then use `--apply --until-complete --limit 250` to checkpoint every
+batch; a restart skips sources already compacted. Production raw data should only be compacted after its
 consumers have the packet-aware readers; publishing the isolated web service alone
 does not upgrade the main archive worker.
 

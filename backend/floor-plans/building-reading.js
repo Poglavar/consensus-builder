@@ -18,6 +18,11 @@ const limited=(value,max)=>typeof value==='string'?clean(value).slice(0,max):nul
 const isObject=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const keys=(value,expected)=>isObject(value)&&Object.keys(value).every(key=>expected.includes(key))&&expected.every(key=>Object.hasOwn(value,key));
 const assert=(condition,message)=>{if(!condition)throw new Error(message);};
+export function buildingEvidenceFacts(facts={}) {
+    if(!isObject(facts))throw new Error('Listing facts must be an object.');
+    return {title:limited(facts.title,300),address:limited(facts.address,300),
+        projectName:limited(facts.projectName,300),projectUrl:httpUrl(facts.projectUrl)};
+}
 
 export const BUILDING_PROMPT=[
     'Read the supplied public property-listing text and structured claims. Return only the structured JSON reading.',
@@ -30,15 +35,15 @@ export const BUILDING_PROMPT=[
     'Return schema=ad-building-reading.v1, isListing, address {value,quote}, project {name,quote,linkId}, candidateId, confidence high|medium|low, rationale, and issues.'
 ].join('\n');
 
-export function prepareBuildingEvidence({url,sha256,html,facts={},candidates=[],bindings=[]}={}) {
+export function prepareBuildingEvidence({url,sha256,html,document=null,facts={},candidates=[],bindings=[]}={}) {
     const sourceUrl=httpUrl(url);
     assert(sourceUrl,'Building evidence needs an HTTP source URL.');
     assert(typeof sha256==='string'&&/^[a-f0-9]{64}$/i.test(sha256),'Building evidence needs a SHA-256 digest.');
-    assert(typeof html==='string','Building evidence needs HTML source text.');
+    assert(typeof html==='string'||document,'Building evidence needs HTML source text.');
     assert(isObject(facts),'Listing facts must be an object.');
     assert(Array.isArray(candidates)&&candidates.length<=MAX_CANDIDATES,'Invalid building candidates.');
     assert(Array.isArray(bindings),'Invalid source bindings.');
-    const $=cheerio.load(html);
+    const $=document||cheerio.load(html);
     const structured=[];
     $('script[type="application/ld+json"]').each((_,node)=>{
         try {
@@ -66,8 +71,7 @@ export function prepareBuildingEvidence({url,sha256,html,facts={},candidates=[],
     // Keep DOM block boundaries visible; adjacent house/floor numbers must not become one claim.
     body.find('br').replaceWith(' ');
     body.find('div,p,section,li,tr,td,th,h1,h2,h3,h4,dt,dd').append(' ');
-    const claimFacts={title:limited(facts.title,300),address:limited(facts.address,300),
-        projectName:limited(facts.projectName,300),projectUrl:httpUrl(facts.projectUrl)};
+    const claimFacts=buildingEvidenceFacts(facts);
     // Parser claims remain separate: adding them to quotable text would make them their own evidence.
     const claims=[title,description,...structured,clean(body.text())];
     const fullText=clean(claims.filter(Boolean).join(' | '));

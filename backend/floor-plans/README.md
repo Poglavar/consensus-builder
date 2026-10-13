@@ -40,6 +40,10 @@ before deleting files. It is also the final bounded `daily` stage. A repeated ap
 resumes interrupted file pruning. Compacted raw HTML cannot be reparsed as HTML;
 that command reports skipped compacted sources rather than treating them as empty.
 Models, revisions, processing results and cost records are retained.
+For a large existing archive, use `--apply --until-complete --limit 250` after
+reviewing a sample audit. Each batch commits and verifies its evidence before file
+removal, reports cumulative reclaimed bytes, and is skipped on restart. Exact
+URL/hash evidence already saved by the crawler is reused rather than parsed again.
 
 Only supported placements appear inside the transparent building view. Ambiguous
 fits stay separate, and envelopes show known/estimated outlines and storeys; this

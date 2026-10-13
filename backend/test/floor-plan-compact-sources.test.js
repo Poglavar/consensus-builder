@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import * as cheerio from 'cheerio';
 import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
 import { mkdtemp,rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -16,8 +17,28 @@ describe('processed source evidence',()=>{
    html:'<html><title>Example</title><body><main><h1>Ilica 12</h1></main><p>OIB: 12345678901</p></body></html>',facts:{title:'Example'}});
   expect(sourceEvidenceMatches(packet,'https://agency.test/listing/1','a'.repeat(64))).toBe(true);
   expect(sourceEvidenceMatches(packet,'https://agency.test/listing/1','b'.repeat(64))).toBe(false);
+  expect(sourceEvidenceMatches(packet,'https://agency.test/listing/1','a'.repeat(64),{title:'Example'})).toBe(true);
+  expect(sourceEvidenceMatches(packet,'https://agency.test/listing/1','a'.repeat(64),{title:'Changed claim'})).toBe(false);
   expect(packet.agencyIdentity.matches[0]).toMatchObject({oib:'12345678901'});
   expect(packet.building.text).toContain('Ilica 12');
+ });
+
+ it('matches independent parsing while reusing one document across URL and facts aliases',()=>{
+  const digest='b'.repeat(64),html='<html><head><title>Listing</title><script type="application/ld+json">{"@type":"Apartment","url":"https://agency.test/listing/old/","name":"Old Structured Listing"}</script></head><body><p>OIB: 12345678901</p><main><h1>Example Street 12</h1><a href="details">Details</a></main></body></html>';
+  const oldUrl='https://agency.test/listing/old/',aliasUrl='https://agency.test/canonical/listing/';
+  const document=cheerio.load(html);
+  const sharedOld=prepareSourceEvidence({url:oldUrl,sha256:digest,html,document,facts:{title:'Old facts',address:'Example Street 12'}});
+  const sharedAlias=prepareSourceEvidence({url:aliasUrl,sha256:digest,html,document,facts:{title:'Alias facts'}});
+  expect(sharedOld).toEqual(prepareSourceEvidence({url:oldUrl,sha256:digest,html,facts:{title:'Old facts',address:'Example Street 12'}}));
+  expect(sharedAlias).toEqual(prepareSourceEvidence({url:aliasUrl,sha256:digest,html,facts:{title:'Alias facts'}}));
+  expect(sharedOld.building.links[0].url).toBe('https://agency.test/listing/old/details');
+  expect(sharedAlias.building.links[0].url).toBe('https://agency.test/canonical/listing/details');
+  expect(sharedOld.building.text).toContain('Old Structured Listing');
+  expect(sharedAlias.building.text).not.toContain('Old Structured Listing');
+  expect(sharedOld.building.facts).toMatchObject({title:'Old facts',address:'Example Street 12'});
+  expect(sharedAlias.building.facts.title).toBe('Alias facts');
+  expect(sharedOld.agencyIdentity.matches[0].oib).toBe('12345678901');
+  expect(sharedAlias.agencyIdentity.matches[0].oib).toBe('12345678901');
  });
 
  it('uses the exact observation snapshot after source bytes are discarded',async()=>{
@@ -113,6 +134,31 @@ describe('source compaction',()=>{
   expect(urls.every(url=>sourceEvidenceMatches(snapshots.get(url),url,hash))).toBe(true);
   expect(discard).toEqual([hash]);
   expect(prune).toHaveBeenCalledOnce();
+ });
+
+ it('reuses only exact validated alias packets and repairs a stale URL-bound packet',async()=>{
+  const body=Buffer.from('<html><body><main>Real source details</main></body></html>'),hash=sha(body),path=await writeSourceFile(body,hash,'text/html');
+  const [goodUrl,staleUrl]=['https://agency.test/good','https://agency.test/stale'];
+  const goodPacket=prepareSourceEvidence({url:goodUrl,sha256:hash,html:body.toString('utf8'),facts:{title:'Reusable'}});
+  const badPacket=prepareSourceEvidence({url:'https://agency.test/wrong',sha256:hash,html:'<main>Stale packet</main>'});
+  const rows=[goodUrl,staleUrl].map((url,index)=>({url,kind:'page',sha256:hash,media_type:'text/html',byte_count:body.length,
+   storage_path:path,bytes_available:true,facts:index===0?{title:'Reusable'}:{},packet:index===0?goodPacket:badPacket}));
+  const snapshots=new Map(),updatedUrls=[];
+  const db={query:vi.fn(async(sql,params=[])=>{
+   if(sql.includes('pg_try_advisory_lock'))return {rows:[{locked:true}]};
+   if(sql.includes('WITH candidate_hashes'))return {rows};
+   if(sql.includes('SELECT DISTINCT t.url'))return {rows:[]};
+   if(sql.includes('AS n FROM floor_plan.target')||sql.includes('AS n FROM floor_plan.blob')||sql.includes('discard_reason IN'))return {rows:[{n:0}]};
+   if(sql.includes('SELECT sha256 FROM floor_plan.blob'))return {rows:[]};
+   if(sql.startsWith('UPDATE floor_plan.observation')){snapshots.set(params[0],JSON.parse(params[2]).sourcePacket);updatedUrls.push(params[0]);return {rowCount:1,rows:[]};}
+   if(sql.includes("evidence->'sourcePacket' AS packet"))return {rows:[{packet:snapshots.get(params[0])}]};
+   return {rows:[],rowCount:1};
+  })};
+  await compactSources(db,{apply:true,prune:vi.fn(async()=>({}))});
+  expect(sourceEvidenceMatches(goodPacket,goodUrl,hash)).toBe(true);
+  expect(updatedUrls).toEqual([staleUrl]);
+  expect(sourceEvidenceMatches(snapshots.get(staleUrl),staleUrl,hash)).toBe(true);
+  expect(snapshots.get(staleUrl).building.text).toContain('Real source details');
  });
 
  it('retains shared bytes when any current alias cannot be parsed into a valid packet',async()=>{
