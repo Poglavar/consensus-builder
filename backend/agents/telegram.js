@@ -1,4 +1,4 @@
-// One Telegram line per agent run (design §WS3: a run sends at most one summary message).
+// Agent activity goes to its dedicated bot topic; explicit failure alerts retain the alert bot.
 // Mirrors cadastre-data/api/src/lib/telegram.js: no-op with a warning when the bot vars are unset,
 // never throws, so a messaging failure can never be what fails a run.
 
@@ -16,14 +16,15 @@ function chunk(text, size) {
  * Send a plain-text Telegram message, split across messages when it is too long.
  *
  * @param {string} text
- * @param {{ fetchImpl?: Function, env?: object }} [options]
+ * @param {{ fetchImpl?: Function, env?: object, alert?: boolean }} [options]
  * @returns {Promise<boolean>} true when every chunk was accepted
  */
-export async function sendTelegram(text, { fetchImpl, env = process.env } = {}) {
-    const token = env?.TELEGRAM_BOT_TOKEN;
-    const chatId = env?.TELEGRAM_CHAT_ID;
-    if (!token || !chatId) {
-        console.warn('[telegram] TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID not set — skipping message');
+export async function sendTelegram(text, { fetchImpl, env = process.env, alert = false } = {}) {
+    const token = alert ? env?.TELEGRAM_BOT_TOKEN : env?.TELEGRAM_ACTIVITY_BOT_TOKEN;
+    const chatId = alert ? env?.TELEGRAM_CHAT_ID : env?.TELEGRAM_ACTIVITY_CHAT_ID;
+    const threadId = alert ? null : env?.TELEGRAM_ACTIVITY_THREAD_ID;
+    if (!token || !chatId || (!alert && !threadId)) {
+        console.warn(`[telegram] ${alert ? 'TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID' : 'TELEGRAM_ACTIVITY_*'} not set — skipping message`);
         return false;
     }
     const message = typeof text === 'string' ? text : String(text ?? '');
@@ -43,7 +44,8 @@ export async function sendTelegram(text, { fetchImpl, env = process.env } = {}) 
             const res = await send(`https://api.telegram.org/bot${token}/sendMessage`, {
                 method: 'POST',
                 headers: { 'content-type': 'application/json' },
-                body: JSON.stringify({ chat_id: chatId, text: part })
+                body: JSON.stringify({ chat_id: chatId, text: part,
+                    ...(!alert ? { message_thread_id: Number(threadId) } : {}) })
             });
             if (!res.ok) {
                 const body = await res.text().catch(() => '');

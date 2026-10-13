@@ -11,7 +11,7 @@
 //   STAGE: planned | chosen | minted | posted | staked (default staked)
 // Env: PG* (run with PGHOST=localhost on the host), ANTHROPIC_API_KEY, AGENT_LLM_MODEL,
 //      AGENT_LLM_DAILY_CAP_USD (1000), AGENT_API_BASE (default http://localhost:$API_PORT),
-//      SOLANA_RPC_URL, TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID (optional, one summary per run).
+//      SOLANA_RPC_URL, TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID for failure alerts; TELEGRAM_ACTIVITY_* for activity topics.
 
 import 'dotenv/config';
 import fs from 'node:fs';
@@ -322,7 +322,7 @@ async function main() {
     if (failures.length) {
         const text = `${headline}\n${failures.length} FAILURE(S):\n- ${failures.join('\n- ')}`;
         console.error(text);
-        await sendTelegram(text);
+        await sendTelegram(text, { alert: true });
         process.exit(1);
     }
     // A clean run is not news: Telegram carries only failures; the outcome is on the bots dashboard.
@@ -330,6 +330,6 @@ async function main() {
 
 main().catch(async (err) => {
     console.error(`[${new Date().toISOString()}] FAILED:`, err);
-    await sendTelegram(`Agents runner FAILED: ${err.message}`);
+    await sendTelegram(`Agents runner FAILED: ${err.message}`, { alert: true });
     process.exit(1);
 });
