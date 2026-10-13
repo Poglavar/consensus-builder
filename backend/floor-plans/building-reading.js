@@ -8,13 +8,22 @@ import {BUILDING_SCHEMA} from './building-reading-schema.js';
 export const BUILDING_PROCESSOR='ad-building-recognition-v3-explicit-address';
 const MAX_TEXT=18000, MAX_LINKS=80, MAX_CANDIDATES=40;
 const clean=value=>String(value??'').replace(/\s+/g,' ').trim();
+// Keep bounded JSON strings on Unicode scalar boundaries. PostgreSQL's JSON
+// parser rejects escaped lone surrogates produced when UTF-16 slice splits a pair.
+export function unicodeSafeSlice(value,start=0,end=value.length) {
+    let from=Math.max(0,Math.min(value.length,start)),to=Math.max(from,Math.min(value.length,end));
+    const high=code=>code>=0xD800&&code<=0xDBFF,low=code=>code>=0xDC00&&code<=0xDFFF;
+    if(from>0&&from<value.length&&low(value.charCodeAt(from))&&high(value.charCodeAt(from-1)))from++;
+    if(to>0&&to<value.length&&high(value.charCodeAt(to-1))&&low(value.charCodeAt(to)))to--;
+    return value.slice(from,to);
+}
 const httpUrl=value=>{
     if(typeof value!=='string')return null;
     try { const u=new URL(value); return ['http:','https:'].includes(u.protocol)&&u.username===''&&u.password===''?u.href:null; }
     catch { return null; }
 };
 const localUrl=(raw,base)=>{try{return httpUrl(new URL(raw,base).href);}catch{return null;}};
-const limited=(value,max)=>typeof value==='string'?clean(value).slice(0,max):null;
+const limited=(value,max)=>typeof value==='string'?unicodeSafeSlice(clean(value),0,max):null;
 const isObject=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const keys=(value,expected)=>isObject(value)&&Object.keys(value).every(key=>expected.includes(key))&&expected.every(key=>Object.hasOwn(value,key));
 const assert=(condition,message)=>{if(!condition)throw new Error(message);};
@@ -75,12 +84,12 @@ export function prepareBuildingEvidence({url,sha256,html,document=null,facts={},
     // Parser claims remain separate: adding them to quotable text would make them their own evidence.
     const claims=[title,description,...structured,clean(body.text())];
     const fullText=clean(claims.filter(Boolean).join(' | '));
-    const text=fullText.slice(0,MAX_TEXT);
+    const text=unicodeSafeSlice(fullText,0,MAX_TEXT);
     const links=[],seen=new Set();
     const addLink=(raw,label)=>{
         const target=localUrl(raw,sourceUrl);
         if(!target||seen.has(target))return;
-        seen.add(target);links.push({id:`L${links.length+1}`,url:target,text:clean(label).slice(0,180)});
+        seen.add(target);links.push({id:`L${links.length+1}`,url:target,text:unicodeSafeSlice(clean(label),0,180)});
     };
     body.find('a[href]').each((_,node)=>addLink($(node).attr('href'),$(node).text()));
     if(claimFacts.projectUrl)addLink(claimFacts.projectUrl,'Structured project URL');

@@ -17,6 +17,14 @@ const raw=()=>({schema:'ad-building-reading.v1',isListing:true,
     address:{value:'Example Street 12',quote:'Example Street 12'},
     project:{name:'River House',quote:'River House',linkId:'L1'},
     candidateId:'C1',confidence:'medium',rationale:'Quoted street address matches C1.',issues:[]});
+const isWellFormed=value=>{
+    for(let index=0;index<value.length;index++){
+        const code=value.charCodeAt(index);
+        if(code>=0xD800&&code<=0xDBFF){if(index+1>=value.length||value.charCodeAt(++index)<0xDC00||value.charCodeAt(index)>0xDFFF)return false;}
+        else if(code>=0xDC00&&code<=0xDFFF)return false;
+    }
+    return true;
+};
 
 describe('source-only building reader',()=>{
     it('prepares bounded public text and opaque candidate identifiers',()=>{
@@ -108,5 +116,18 @@ describe('source-only building reader',()=>{
         expect(packet.text).toHaveLength(18000);
         expect(packet.links).toHaveLength(80);
         expect(packet.truncation).toEqual({text:true,links:true});
+    });
+    it('keeps astral Unicode pairs intact at bounded packet cutoffs',()=>{
+        const packet=prepareBuildingEvidence({...input(),
+            html:`<main>${'A'.repeat(17999)}😀</main><a href="/long">${'L'.repeat(179)}😀</a>`,
+            facts:{title:`${'T'.repeat(299)}😀`},
+            candidates:[{address:`${'S'.repeat(299)}😀`,name:`${'N'.repeat(299)}😀`,evidence:`${'E'.repeat(699)}😀`}]
+        });
+        expect(packet.text).toHaveLength(17999);
+        expect(packet.facts.title).toHaveLength(299);
+        expect(packet.candidates[0]).toMatchObject({address:'S'.repeat(299),name:'N'.repeat(299),evidence:'E'.repeat(699)});
+        expect(packet.links[0].text).toHaveLength(179);
+        for(const value of [packet.text,packet.facts.title,packet.candidates[0].address,packet.candidates[0].name,
+            packet.candidates[0].evidence,packet.links[0].text])expect(isWellFormed(value)).toBe(true);
     });
 });

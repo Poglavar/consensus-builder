@@ -1,6 +1,6 @@
 // Small, hash-bound source evidence survives after successful HTML parsing.
 import * as cheerio from 'cheerio';
-import { buildingEvidenceFacts, prepareBuildingEvidence } from './building-reading.js';
+import { buildingEvidenceFacts, prepareBuildingEvidence, unicodeSafeSlice } from './building-reading.js';
 import { pruneDiscardedFiles,readBlob,readBlobRow } from './blob-store.js';
 
 export const PROCESSED_SOURCE_REASON = 'processed-source.v1';
@@ -19,9 +19,9 @@ function agencyIdentityEvidenceFromDocument($) {
     const visible = body.text().replace(/\s+/g, ' ').trim();
     const matches = [];
     for (const match of visible.matchAll(/\bOIB\s*[:.]?\s*(?:HR)?\s*(\d{11})\b/gi)) {
-        matches.push({ oib: match[1], quote: match[0], context: visible.slice(Math.max(0, match.index - 350), match.index + 100) });
+        matches.push({ oib: match[1], quote: match[0], context: unicodeSafeSlice(visible, Math.max(0, match.index - 350), match.index + 100) });
     }
-    return { matches, text: visible.slice(0, 20000), truncated: visible.length > 20000 };
+    return { matches, text: unicodeSafeSlice(visible, 0, 20000), truncated: visible.length > 20000 };
 }
 
 export function prepareSourceEvidence({ url, sha256, html, document = null, facts = {} } = {}) {
@@ -52,13 +52,14 @@ export function buildingEvidenceWithCandidates(sourceEvidence, candidates = []) 
     if (!packet || typeof packet.text !== 'string' || !Array.isArray(packet.links))
         throw new Error('Processed source has no building evidence packet.');
     if (!Array.isArray(candidates) || candidates.length > 40) throw new Error('Invalid building candidates.');
-    const clean = value => typeof value === 'string' ? value.replace(/\s+/g, ' ').trim().slice(0, 700) : null;
+    const clean = (value, max = 700) => typeof value === 'string' ? unicodeSafeSlice(value.replace(/\s+/g, ' ').trim(), 0, max) : null;
     return { ...packet, candidates: candidates.map((candidate, index) => {
         const distanceM = candidate.distanceM ?? null;
         if (distanceM !== null && (!Number.isFinite(distanceM) || distanceM < 0 || distanceM > 1e6))
             throw new Error('Invalid candidate distance.');
-        return { id: `C${index + 1}`, address: clean(candidate.address)?.slice(0, 300) || null,
-            name: clean(candidate.name)?.slice(0, 300) || null, distanceM, evidence: clean(candidate.evidence) };
+        return { id: `C${index + 1}`, address: clean(candidate.address, 300) || null,
+            name: clean(candidate.name, 300) || null,
+            distanceM, evidence: clean(candidate.evidence) };
     }) };
 }
 

@@ -1,3 +1,4 @@
+// Extract source-backed residential facts while leaving absent or conflicting claims unknown.
 const YEAR = /(?:19|20)\d{2}/g;
 const clean = value => String(value ?? '').replace(/\s+/g, ' ').trim();
 const valuesFor = (text, pattern) => [...text.matchAll(pattern)].map(match => ({ value: match[1], quote: clean(match[0]).slice(0, 180) }));
@@ -21,9 +22,6 @@ function inferType(title, text, sourceType) {
         return 'unknown';
     }
     if (/\b(stan|apartman|apartment|flat)\b/.test(t)) return 'apartment';
-    if (/\b(kuća|kuca|house|villa|vila)\b/.test(t)) return 'house';
-    if (/\b(hotel|ured|office|poslovn\w*|trgov\w*|muzej|galerij\w*|izložb\w*|izlozb\w*)\b/.test(t)) return 'commercial';
-    if (/\b(stamben\w*|residential|housing|zgrada|building|dom)\b/.test(t)) return 'residential';
     if (/\b(kuća|kuca|house|villa|vila)\b/.test(t)) return 'house';
     if (/\b(hotel|ured|office|poslovn\w*|trgov\w*|muzej|galerij\w*|izložb\w*|izlozb\w*)\b/.test(t)) return 'commercial';
     if (/\b(stamben\w*|residential|housing|zgrada|building|dom)\b/.test(t)) return 'residential';

@@ -4,12 +4,20 @@ import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
 import { mkdtemp,rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { compactSources,prepareSourceEvidence,readSourceEvidence,sourceEvidenceMatches } from '../floor-plans/compact-sources.js';
+import { agencyIdentityEvidence,compactSources,prepareSourceEvidence,readSourceEvidence,sourceEvidenceMatches } from '../floor-plans/compact-sources.js';
 import { writeSourceFile } from '../floor-plans/blob-store.js';
 import { crawl } from '../floor-plans/crawler.js';
 import { createTargetSelector } from '../floor-plans/crawl-queue.js';
 
 const sha = value => createHash('sha256').update(value).digest('hex');
+const isWellFormed=value=>{
+ for(let index=0;index<value.length;index++){
+  const code=value.charCodeAt(index);
+  if(code>=0xD800&&code<=0xDBFF){if(index+1>=value.length||value.charCodeAt(++index)<0xDC00||value.charCodeAt(index)>0xDFFF)return false;}
+  else if(code>=0xDC00&&code<=0xDFFF)return false;
+ }
+ return true;
+};
 
 describe('processed source evidence',()=>{
  it('binds a bounded evidence packet to the exact page URL and source hash',()=>{
@@ -39,6 +47,17 @@ describe('processed source evidence',()=>{
   expect(sharedAlias.building.facts.title).toBe('Alias facts');
   expect(sharedOld.agencyIdentity.matches[0].oib).toBe('12345678901');
   expect(sharedAlias.agencyIdentity.matches[0].oib).toBe('12345678901');
+ });
+
+ it('keeps astral Unicode pairs intact at source packet cutoffs and OIB context edges',()=>{
+  const text=agencyIdentityEvidence(`<body>${'A'.repeat(19999)}😀</body>`);
+  const contextual=agencyIdentityEvidence(`<body>${'A'.repeat(349)}😀${'B'.repeat(348)} OIB: 12345678901 ${'C'.repeat(82)}😀 OIB: 12345678901 ${'D'.repeat(120)}</body>`);
+  expect(text.text).toHaveLength(19999);
+  expect(text.truncated).toBe(true);
+  expect(isWellFormed(text.text)).toBe(true);
+  expect(contextual.matches[0].context).not.toContain('😀');
+  expect(contextual.matches[1].context).toContain('😀');
+  for(const {quote,context} of contextual.matches){expect(isWellFormed(quote)).toBe(true);expect(isWellFormed(context)).toBe(true);}
  });
 
  it('uses the exact observation snapshot after source bytes are discarded',async()=>{
