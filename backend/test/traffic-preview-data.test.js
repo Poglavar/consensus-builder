@@ -40,6 +40,65 @@ describe('exported traffic preview', () => {
         expect(JSON.stringify(data)).not.toMatch(/\/Users\/|\/home\/|sourceFile|@gmail\.com/);
     });
 
+    it('lets both cars from the reported Miramarska median use their saved exits', () => {
+        const network = Traffic.createNetwork(data);
+        const sim = new Traffic.Simulation(network, { count: 0, signals: false, laneChangeRate: 0 });
+        const nodeId = 'osm-node:1449370111';
+        const approaches = [0, 1].map(ordinal => [...network.lanes.values()].find(lane =>
+            String(lane.sourceWayId) === '924732205' && lane.toNode === nodeId && lane.ordinal === ordinal));
+        expect(network.nodes.get(nodeId).unresolved).toBe(true);
+        for (const [index, lane] of approaches.entries()) {
+            const movement = lane.outgoing.map(id => network.connections.get(id)).find(connection =>
+                String(network.lanes.get(connection.toLaneId).sourceWayId) === '285567739');
+            expect(movement).toBeDefined();
+            expect(movement.solutionId).toBe('139');
+            expect(data.source.savedPartialJunctions.some(item => item.nodeId === nodeId
+                && item.solutionId === '139' && item.laneIds.includes(lane.id))).toBe(true);
+            sim.cars.push({ id: index + 1, laneId: lane.id, mode: 'lane', s: lane.path.length,
+                speed: 0, cruise: 8, color: index, next: movement.id, state: 'blocked',
+                change: null, cooldown: Infinity, clearance: null });
+        }
+        const original = [...sim.cars];
+        const originalPositions = original.map(car => sim.pose(car));
+        const traversed = new Set();
+        for (let tick = 0; tick < 100; tick++) {
+            sim.advance(.1);
+            for (const car of sim.cars) if (car.mode === 'connection'
+                && network.connections.get(car.connectionId).nodeId === nodeId) traversed.add(car.id);
+        }
+        expect(sim.cars).toHaveLength(2);
+        expect([...traversed].sort()).toEqual([1, 2]);
+        for (const [index, car] of sim.cars.entries()) {
+            expect(car).toBe(original[index]);
+            const position = sim.pose(car), start = originalPositions[index];
+            expect(Math.hypot(position.x - start.x, position.y - start.y)).toBeGreaterThan(5);
+        }
+    });
+
+    it('keeps every default car progressing through a twenty-minute run', () => {
+        const network = Traffic.createNetwork(data);
+        const sim = new Traffic.Simulation(network, { count: 440, seed: 52 });
+        const original = sim.cars.map(car => car.id);
+        const lastMoved = new Map(original.map(id => [id, 0]));
+        const previous = new Map(sim.cars.map(car => [car.id, { laneId: car.laneId, mode: car.mode, s: car.s }]));
+        let blocked = 0;
+        for (let tick = 0; tick < 12000; tick++) {
+            sim.advance(.1);
+            for (const car of sim.cars) {
+                const before = previous.get(car.id);
+                if (car.laneId !== before.laneId || car.mode !== before.mode || Math.abs(car.s - before.s) > .001) {
+                    lastMoved.set(car.id, sim.time);
+                }
+                before.laneId = car.laneId; before.mode = car.mode; before.s = car.s;
+                if (car.state === 'blocked') blocked++;
+            }
+        }
+        expect(blocked).toBe(0);
+        expect(sim.cars.map(car => car.id)).toEqual(original);
+        expect(sim.cars.filter(car => sim.time - lastMoved.get(car.id) > 120).map(car => car.id)).toEqual([]);
+        expect(sim.crossings).toBeGreaterThan(10000);
+    }, 60000);
+
     it('never leaves its allowed graph, enters on red, or overlaps a queue during an animated run', () => {
         const network = Traffic.createNetwork(data);
         const sim = new Traffic.Simulation(network, { count: 220, seed: 97 });

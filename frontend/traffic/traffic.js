@@ -242,7 +242,7 @@
 
     async function load() {
         try {
-            const response = await fetch('data/central.json.gz?v=20261014b', { cache: 'no-store' });
+            const response = await fetch('data/central.json.gz?v=20261014c', { cache: 'no-store' });
             if (!response.ok) throw new Error(`Traffic data: HTTP ${response.status}`);
             const data = await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
             network = Engine.createNetwork(data);

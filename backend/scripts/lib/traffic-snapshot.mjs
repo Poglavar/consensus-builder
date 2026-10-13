@@ -1,5 +1,5 @@
 // Combines compatible saved junction answers with the current directed OSM lane graph.
-// A whole junction is replaced atomically; incomplete answers never invent missing movements.
+// Complete junctions replace the base atomically; partial answers only fill unassigned lanes.
 
 export function publicCarLane(lane) {
     return lane?.type === 'driving' && !lane.centreLane && lane.direction !== 'both'
@@ -65,6 +65,8 @@ export function mergeSavedJunctions(base, solutions, { isUnsafe, missingNodes })
     const baseLanes = new Map(base.lanes.map(lane => [lane.id, lane]));
     const baseNodes = new Set(base.nodes.map(node => node.id));
     const chosen = new Map();
+    const partial = new Map();
+    const baseAssigned = new Set(base.connections.map(connection => connection.fromLaneId));
     const humanNodes = new Set((base.decisions?.answered || []).map(answer => answer.nodeId));
     const ordered = [...solutions].filter(solution => solution.sourceKind !== 'deterministic')
         .sort((a, b) => Number(b.status === 'canonical') - Number(a.status === 'canonical')
@@ -78,6 +80,8 @@ export function mergeSavedJunctions(base, solutions, { isUnsafe, missingNodes })
         }
         const graph = solution.graph;
         const open = missingNodes(graph);
+        const errors = (graph.problems || []).filter(problem => problem.severity === 'error'
+            && problem.type !== 'unresolved_intersection');
         for (const problem of graph.problems || []) {
             if (problem.type === 'unresolved_intersection' || problem.severity === 'error') {
                 for (const id of problem.nodeIds || []) open.add(id);
@@ -89,7 +93,7 @@ export function mergeSavedJunctions(base, solutions, { isUnsafe, missingNodes })
             grouped.get(connection.nodeId).push(connection);
         }
         for (const [nodeId, connections] of grouped) {
-            if (!baseNodes.has(nodeId) || chosen.has(nodeId) || open.has(nodeId) || humanNodes.has(nodeId)) continue;
+            if (!baseNodes.has(nodeId) || chosen.has(nodeId) || humanNodes.has(nodeId)) continue;
             const current = incidentLanes(base, nodeId);
             const stored = incidentLanes(graph, nodeId);
             // A clipped viewport or changed source must not erase an approach that exists today.
@@ -102,17 +106,44 @@ export function mergeSavedJunctions(base, solutions, { isUnsafe, missingNodes })
                 fromLaneId: mapping.get(connection.fromLaneId), toLaneId: mapping.get(connection.toLaneId) }));
             if (!remapped.every(connection => baseLanes.get(connection.fromLaneId)?.toNode === nodeId
                 && baseLanes.get(connection.toLaneId)?.fromNode === nodeId)) continue;
-            chosen.set(nodeId, { solution, connections: remapped });
+            if (!open.has(nodeId)) {
+                chosen.set(nodeId, { solution, connections: remapped });
+            } else {
+                // An unanswered lane must not erase a checked answer for another lane. Preserve
+                // existing base movements and keep the node unresolved; never synthesize a turn.
+                const unsafe = errors.some(problem => (problem.nodeIds || []).includes(nodeId)
+                    || stored.some(lane => (problem.laneIds || []).includes(lane.id)
+                        || (problem.sectionIds || []).includes(lane.sectionId)));
+                if (unsafe) continue;
+                const fromLanes = new Set(remapped.map(connection => connection.fromLaneId));
+                for (const laneId of fromLanes) {
+                    if (baseAssigned.has(laneId) || partial.has(laneId)) continue;
+                    partial.set(laneId, { nodeId, laneId, solution,
+                        connections: remapped.filter(connection => connection.fromLaneId === laneId) });
+                }
+            }
         }
     }
+    const usedPartial = [...partial.values()].filter(item => !chosen.has(item.nodeId));
+    const savedConnections = ({ solution, connections }) => connections.map(connection => ({
+        ...connection, savedSolutionId: String(solution.id), savedSource: solution.sourceKind
+    }));
     const connections = base.connections.filter(connection => !chosen.has(connection.nodeId))
-        .concat([...chosen.values()].flatMap(({ solution, connections: saved }) => saved.map(connection => ({
-            ...connection, savedSolutionId: String(solution.id), savedSource: solution.sourceKind
-        }))));
+        .concat([...chosen.values(), ...usedPartial].flatMap(savedConnections));
+    const partialJunctions = new Map();
+    for (const { nodeId, laneId, solution } of usedPartial) {
+        const key = `${nodeId}:${solution.id}`;
+        if (!partialJunctions.has(key)) partialJunctions.set(key, {
+            nodeId, solutionId: String(solution.id), source: solution.sourceKind,
+            status: solution.status, createdAt: solution.createdAt, laneIds: []
+        });
+        partialJunctions.get(key).laneIds.push(laneId);
+    }
     return {
         ...base, connections,
         problems: base.problems.filter(problem => problem.type !== 'unresolved_intersection'
             || !(problem.nodeIds || []).every(id => chosen.has(id))),
+        savedPartialJunctions: [...partialJunctions.values()],
         savedJunctions: [...chosen].map(([nodeId, { solution }]) => ({
             nodeId, solutionId: String(solution.id), source: solution.sourceKind,
             status: solution.status, createdAt: solution.createdAt

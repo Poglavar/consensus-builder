@@ -115,6 +115,10 @@ try {
             osmTimestamp: evidence.snapshot.sourceTimestamp, osmSha256: evidence.snapshot.sourceSha256,
             exportedAt: new Date().toISOString(), selectedSolutions: selected.length,
             savedJunctions: merged.savedJunctions.filter(item => usedSavedNodes.has(item.nodeId) && junctionIds.has(item.nodeId)),
+            savedPartialJunctions: merged.savedPartialJunctions.map(item => ({ ...item,
+                laneIds: item.laneIds.filter(id => connections.some(connection => connection.fromLaneId === id
+                    && connection.savedSolutionId === item.solutionId))
+            })).filter(item => item.laneIds.length),
             liveDecisions: decisionRows.length, blockedRestrictions: forbidden.size,
             unsupportedRestrictionWays: unsupportedWays.size,
             signalSource: 'OSM tagged signal nodes, original coordinates and way memberships in the same snapshot.',
@@ -152,5 +156,6 @@ try {
     console.log(JSON.stringify({ lanes: data.lanes.length, connections: data.connections.length,
         mappedSignals: signals.length, controlledSignals: signals.filter(signal => signal.controls.length).length,
         savedJunctions: data.source.savedJunctions.length, unresolvedNodes: data.nodes.filter(node => node.unresolved).length,
+        partialJunctions: new Set(data.source.savedPartialJunctions.map(item => item.nodeId)).size,
         restrictionChecks: restrictions.stats }, null, 2));
 } finally { await pool.end(); }

@@ -69,29 +69,42 @@ describe('traffic snapshot saved junction merge', () => {
 
     it('does not merge rejected or deterministic solutions', () => {
         const { base, graph } = fixture();
-        const rejected = solution('rejected', graph, { status: 'rejected' });
-        const deterministic = solution('derived', graph, { sourceKind: 'deterministic' });
+        const partialGraph = { ...graph, connections: [movement('saved-b', 'in-b', 'out-b')] };
+        const rejected = solution('rejected', partialGraph, { status: 'rejected' });
+        const deterministic = solution('derived', partialGraph, { sourceKind: 'deterministic' });
 
-        expect(mergeSavedJunctions(base, [rejected, deterministic], mergeOptions).connections)
-            .toEqual(base.connections);
+        const merged = mergeSavedJunctions(base, [rejected, deterministic], {
+            ...mergeOptions, missingNodes: () => new Set([J])
+        });
+        expect(merged.connections).toEqual(base.connections);
+        expect(merged.savedPartialJunctions).toEqual([]);
     });
 
     it('does not merge a solution whose parent comparison finds a regression', () => {
         const { base, graph } = fixture();
         const parent = solution('parent', graph, { status: 'rejected' });
-        const child = solution('child', graph, { parentId: 'parent' });
+        const child = solution('child', {
+            ...graph, connections: [movement('saved-b', 'in-b', 'out-b')]
+        }, { parentId: 'parent' });
         const isUnsafe = vi.fn(() => true);
 
-        const merged = mergeSavedJunctions(base, [parent, child], { ...mergeOptions, isUnsafe });
+        const merged = mergeSavedJunctions(base, [parent, child], {
+            ...mergeOptions, isUnsafe, missingNodes: () => new Set([J])
+        });
 
         expect(isUnsafe).toHaveBeenCalledWith(child, parent);
         expect(merged.connections).toEqual(base.connections);
         expect(merged.savedJunctions).toEqual([]);
+        expect(merged.savedPartialJunctions).toEqual([]);
     });
 
     it('does not merge an answer that still has an incomplete node', () => {
         const { base, graph } = fixture();
-        const candidate = solution('partial', graph);
+        // The candidate only repeats the already assigned in-a movement; it has no saved move
+        // for the currently unassigned in-b lane, so partial import must add nothing.
+        const candidate = solution('partial', {
+            ...graph, connections: [movement('saved-a', 'in-a', 'out-a')]
+        });
 
         const merged = mergeSavedJunctions(base, [candidate], {
             ...mergeOptions, missingNodes: () => new Set([J])
@@ -99,16 +112,147 @@ describe('traffic snapshot saved junction merge', () => {
 
         expect(merged.connections).toEqual(base.connections);
         expect(merged.savedJunctions).toEqual([]);
+        expect(merged.savedPartialJunctions).toEqual([]);
+    });
+
+    it('fills only zero-exit incoming lanes from a compatible partial answer and keeps the node unresolved', () => {
+        const { base, graph } = fixture();
+        const candidate = solution('partial-in-b', {
+            ...graph, connections: [movement('saved-b', 'in-b', 'out-b')]
+        });
+
+        const merged = mergeSavedJunctions(base, [candidate], {
+            ...mergeOptions, missingNodes: () => new Set([J])
+        });
+
+        expect(merged.connections.filter(item => item.nodeId === J)).toEqual([
+            base.connections.find(item => item.id === 'old-a'),
+            expect.objectContaining({
+                id: 'saved-b', fromLaneId: 'in-b', toLaneId: 'out-b',
+                savedSolutionId: 'partial-in-b', savedSource: 'claude'
+            })
+        ]);
+        expect(merged.connections.find(item => item.id === 'keep-other')).toBeDefined();
+        expect(merged.problems).toEqual(base.problems);
+        expect(merged.savedJunctions).toEqual([]);
+        expect(merged.savedPartialJunctions).toEqual([{
+            nodeId: J, solutionId: 'partial-in-b', source: 'claude', status: 'candidate',
+            createdAt: '2026-10-01T00:00:00Z', laneIds: ['in-b']
+        }]);
+    });
+
+    it.each([
+        ['node', { nodeIds: [J] }],
+        ['incident lane', { laneIds: ['in-b'] }],
+        ['incident section', { sectionIds: ['section-in-b'] }]
+    ])('blocks a partial import when a non-unresolved error names the %s', (_label, location) => {
+        const { base, graph } = fixture();
+        const candidate = solution('error-at-node', {
+            ...graph,
+            connections: [movement('saved-b', 'in-b', 'out-b')],
+            problems: [{ type: 'invalid_geometry', severity: 'error', ...location }]
+        });
+
+        const merged = mergeSavedJunctions(base, [candidate], {
+            ...mergeOptions, missingNodes: () => new Set([J])
+        });
+
+        expect(merged.connections).toEqual(base.connections);
+        expect(merged.savedPartialJunctions).toEqual([]);
+    });
+
+    it('does not partially import a human-decided node', () => {
+        const { base, graph } = fixture();
+        base.decisions.answered.push({ nodeId: J, assignment: {} });
+        const candidate = solution('human-decided', {
+            ...graph, connections: [movement('saved-b', 'in-b', 'out-b')]
+        });
+
+        const merged = mergeSavedJunctions(base, [candidate], {
+            ...mergeOptions, missingNodes: () => new Set([J])
+        });
+
+        expect(merged.connections).toEqual(base.connections);
+        expect(merged.savedPartialJunctions).toEqual([]);
+    });
+
+    it('does not import a partial movement when its stored incoming lane has no unique match', () => {
+        const { base, graph } = fixture();
+        const candidate = solution('unmatched-in-b', {
+            ...graph,
+            lanes: graph.lanes.map(item => item.id === 'in-b'
+                ? { ...item, sourceWayId: 'different-way' }
+                : item),
+            connections: [movement('saved-b', 'in-b', 'out-b')]
+        });
+
+        const merged = mergeSavedJunctions(base, [candidate], {
+            ...mergeOptions, missingNodes: () => new Set([J])
+        });
+
+        expect(merged.connections).toEqual(base.connections);
+        expect(merged.savedPartialJunctions).toEqual([]);
+    });
+
+    it('keeps the newest compatible partial answer per incoming lane', () => {
+        const { base, graph } = fixture();
+        const older = solution('older', {
+            ...graph, connections: [movement('older-b', 'in-b', 'out-b')]
+        }, { createdAt: '2026-10-01T00:00:00Z' });
+        const newer = solution('newer', {
+            ...graph, connections: [movement('newer-b', 'in-b', 'out-a')]
+        }, { createdAt: '2026-10-02T00:00:00Z' });
+
+        const merged = mergeSavedJunctions(base, [older, newer], {
+            ...mergeOptions, missingNodes: candidateGraph => candidateGraph.connections.length === 1
+                ? new Set([J]) : new Set()
+        });
+
+        expect(merged.connections.filter(item => item.nodeId === J)).toEqual([
+            base.connections.find(item => item.id === 'old-a'),
+            expect.objectContaining({
+                id: 'newer-b', fromLaneId: 'in-b', toLaneId: 'out-a', savedSolutionId: 'newer'
+            })
+        ]);
+        expect(merged.savedPartialJunctions).toEqual([expect.objectContaining({
+            nodeId: J, solutionId: 'newer', laneIds: ['in-b']
+        })]);
+    });
+
+    it('lets a complete accepted node replace any partial answer collected earlier', () => {
+        const { base, graph } = fixture();
+        const partial = solution('newer-partial', {
+            ...graph, connections: [movement('partial-b', 'in-b', 'out-b')]
+        }, { createdAt: '2026-10-02T00:00:00Z' });
+        const complete = solution('older-complete', graph, { createdAt: '2026-10-01T00:00:00Z' });
+
+        const merged = mergeSavedJunctions(base, [complete, partial], {
+            ...mergeOptions, missingNodes: candidateGraph => candidateGraph.connections.length === 1
+                ? new Set([J]) : new Set()
+        });
+
+        expect(merged.connections.filter(item => item.nodeId === J)).toEqual([
+            expect.objectContaining({ id: 'saved-a', savedSolutionId: 'older-complete' }),
+            expect.objectContaining({ id: 'saved-b', savedSolutionId: 'older-complete' })
+        ]);
+        expect(merged.savedPartialJunctions).toEqual([]);
+        expect(merged.savedJunctions).toEqual([expect.objectContaining({ nodeId: J, solutionId: 'older-complete' })]);
+        expect(merged.problems).toEqual([{ type: 'warning', nodeIds: [J] }]);
     });
 
     it('rejects a saved graph when the current junction has an extra arm', () => {
         const { base, graph } = fixture({ extraBaseLane: true });
-        const candidate = solution('old-topology', graph);
+        const candidate = solution('old-topology', {
+            ...graph, connections: [movement('saved-b', 'in-b', 'out-b')]
+        });
 
-        const merged = mergeSavedJunctions(base, [candidate], mergeOptions);
+        const merged = mergeSavedJunctions(base, [candidate], {
+            ...mergeOptions, missingNodes: () => new Set([J])
+        });
 
         expect(merged.connections).toEqual(base.connections);
         expect(merged.savedJunctions).toEqual([]);
+        expect(merged.savedPartialJunctions).toEqual([]);
     });
 
     it('maps stored lanes by their unique incidence when split IDs and far endpoints changed', () => {

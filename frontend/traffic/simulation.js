@@ -56,6 +56,43 @@
             || (!left && ['not_left', 'only_right'].includes(rule));
     }
 
+    function circulationRegions(lanes, connections) {
+        const next = new Map([...lanes.values()].map(lane => [lane.id,
+            lane.outgoing.map(id => connections.get(id).toLaneId)]));
+        const previous = new Map([...lanes.keys()].map(id => [id, []]));
+        for (const [from, targets] of next) for (const to of targets) previous.get(to).push(from);
+        // Two iterative depth-first passes find strongly connected regions without a
+        // recursion limit. A car must be able to return along known permitted movements.
+        const seen = new Set(), order = [];
+        for (const id of lanes.keys()) {
+            if (seen.has(id)) continue;
+            seen.add(id);
+            const stack = [{ id, index: 0 }];
+            while (stack.length) {
+                const current = stack.at(-1), targets = next.get(current.id);
+                if (current.index === targets.length) { order.push(current.id); stack.pop(); continue; }
+                const to = targets[current.index++];
+                if (!seen.has(to)) { seen.add(to); stack.push({ id: to, index: 0 }); }
+            }
+        }
+        seen.clear();
+        const regions = new Map();
+        for (const id of order.reverse()) {
+            if (seen.has(id)) continue;
+            const component = [id];
+            seen.add(id);
+            for (let i = 0; i < component.length; i++) {
+                for (const from of previous.get(component[i])) {
+                    if (!seen.has(from)) { seen.add(from); component.push(from); }
+                }
+            }
+            if (component.length > 1 || next.get(id).includes(id)) {
+                for (const member of component) regions.set(member, id);
+            }
+        }
+        return regions;
+    }
+
     function createNetwork(data) {
         const origin = [(data.bbox[0] + data.bbox[2]) / 2, (data.bbox[1] + data.bbox[3]) / 2];
         const xScale = 111320 * Math.cos(origin[1] * Math.PI / 180);
@@ -81,6 +118,15 @@
             connections.set(item.id, item);
             from.outgoing.push(item.id);
         }
+        // Preserve all permitted connections for inspection; routing only selects a subset.
+        const regions = circulationRegions(lanes, connections);
+        for (const lane of lanes.values()) {
+            lane.region = regions.get(lane.id);
+            // Keep traffic within each region: one-way feeders would otherwise fill a small
+            // isolated loop forever. The allowed source graph remains available for inspection.
+            lane.routes = lane.outgoing.filter(id => lane.region != null
+                && regions.get(connections.get(id).toLaneId) === lane.region);
+        }
         const sections = new Map();
         for (const lane of lanes.values()) {
             const key = `${lane.sectionId}:${lane.direction}`;
@@ -89,7 +135,8 @@
             nodes.get(lane.toNode)?.incoming.push(lane.id);
         }
         for (const siblings of sections.values()) {
-            for (const from of siblings) from.adjacent = siblings.filter(to => laneChangeAllowed(from, to) && to.outgoing.length).map(to => to.id);
+            for (const from of siblings) from.adjacent = siblings.filter(to => laneChangeAllowed(from, to)
+                && to.routes.length && to.region === from.region).map(to => to.id);
         }
         const signals = new Map();
         for (const record of data.signals) {
@@ -108,7 +155,7 @@
         }
         for (const lane of lanes.values()) lane.signals.sort((a, b) => a.stopS - b.stopS);
         // Spawn on through streets with enough room to see the cars moving, weighted by length.
-        const spawnLanes = [...lanes.values()].filter(lane => lane.path.length > 25 && lane.outgoing.length && lane.highway !== 'service');
+        const spawnLanes = [...lanes.values()].filter(lane => lane.path.length > 25 && lane.routes.length && lane.highway !== 'service');
         const weights = [];
         let totalWeight = 0;
         for (const lane of spawnLanes) { totalWeight += lane.path.length; weights.push(totalWeight); }
@@ -150,6 +197,7 @@
             this.laneChangeRate = laneChangeRate;
             this.cars = [];
             this.reservations = new Map();
+            this.waitingPriorities = new Map();
             this.crossings = 0;
             this.laneChanges = 0;
             this.nextId = 1;
@@ -195,7 +243,7 @@
                 if ((occupied.get(lane.id) || []).some(entry => Math.abs(entry.s - s) < GAP * 2)) continue;
                 this.cars.push({ id: this.nextId++, laneId: lane.id, mode: 'lane', s, speed: 0,
                     cruise: 7.5 + this.random() * 4.5, color: Math.floor(this.random() * 7),
-                    next: this.choose(lane.outgoing), state: 'driving', change: null,
+                    next: this.choose(lane.routes), state: 'driving', change: null,
                     cooldown: this.time + 4 + this.random() * 10, clearance: null });
                 return true;
             }
@@ -214,14 +262,23 @@
             for (const [id, owner] of this.reservations) if (owner === car.id) this.reservations.delete(id);
         }
 
+        hasExitSpace(car, connection, occupied) {
+            const receiving = this.network.lanes.get(connection.toLaneId);
+            const clearance = Math.min(GAP, receiving.path.length * .8);
+            // The car needs room to release the crossing reservation AND leave its following
+            // gap. Merely fitting its nose into a queue can lock both ends of a short street.
+            return !(occupied.get(receiving.id) || []).some(entry => entry.car !== car && entry.s < GAP + clearance);
+        }
+
         canEnter(car, connection, occupied) {
             if (!connection) return false;
             const lane = this.network.lanes.get(car.laneId);
             if (signalState(this.network, lane, this.time, this.signals) !== 'green') return false;
             const owner = this.reservations.get(connection.nodeId);
             if (owner != null && owner !== car.id) return false;
-            if ((occupied.get(connection.toLaneId) || []).some(entry => entry.car !== car && entry.s < GAP + 2)) return false;
-            return true;
+            const priority = this.waitingPriorities.get(connection.nodeId);
+            if (priority && priority.id !== car.id) return false;
+            return this.hasExitSpace(car, connection, occupied);
         }
 
         tryLaneChange(car, occupied) {
@@ -248,6 +305,21 @@
         step() {
             this.time += STEP;
             const occupied = this.occupants();
+            this.waitingPriorities.clear();
+            for (const car of this.cars) {
+                const lane = this.network.lanes.get(car.laneId);
+                if (car.mode !== 'lane' || car.change || car.speed >= .5 || lane.path.length - car.s > .1) {
+                    car.queuedAt = null; continue;
+                }
+                car.queuedAt ??= this.time;
+                const connection = this.network.connections.get(car.next);
+                if (this.time - car.queuedAt < 24 || !connection || !this.hasExitSpace(car, connection, occupied)) continue;
+                // A long-waiting approach gets the next crossing when its light is green.
+                // Independently simulated nearby signals must not let cross traffic occupy
+                // every one of another approach's green windows indefinitely.
+                const priority = this.waitingPriorities.get(connection.nodeId);
+                if (!priority || car.queuedAt < priority.queuedAt) this.waitingPriorities.set(connection.nodeId, car);
+            }
             for (const car of [...this.cars]) {
                 const previousKeys = this.carOccupancies(car).map(([id]) => id);
                 const n = this.network;
@@ -265,6 +337,14 @@
                     for (const entry of occupied.get(target.id) || []) {
                         if (entry.car !== car && entry.s >= car.s * ratio) clearance = Math.min(clearance, (entry.s - car.s * ratio - GAP) / ratio);
                     }
+                }
+                if (car.mode === 'lane' && !car.change && car.speed < .5 && route.length - car.s < 12
+                    && !this.canEnter(car, n.connections.get(car.next), occupied)) {
+                    // These drivers have no fixed destination: a queued driver may take another
+                    // permitted, clear exit, preventing a full roundabout from waiting forever.
+                    const alternatives = lane.routes.filter(id => id !== car.next
+                        && this.canEnter(car, n.connections.get(id), occupied));
+                    if (alternatives.length) car.next = this.choose(alternatives);
                 }
                 const connection = car.mode === 'lane' ? n.connections.get(car.next) : null;
                 const entering = car.mode === 'lane' && this.canEnter(car, connection, occupied);
@@ -306,7 +386,7 @@
                     car.s *= to.path.length / lane.path.length;
                     car.laneId = to.id;
                     car.change = null;
-                    car.next = this.choose(to.outgoing);
+                    car.next = this.choose(to.routes);
                     car.cooldown = this.time + 10;
                     this.laneChanges++;
                 }
@@ -321,7 +401,7 @@
                     const completed = n.connections.get(car.connectionId);
                     const nextLane = n.lanes.get(completed.toLaneId);
                     car.mode = 'lane'; car.laneId = nextLane.id; car.connectionId = null; car.s = 0;
-                    car.next = this.choose(nextLane.outgoing); car.state = 'driving';
+                    car.next = this.choose(nextLane.routes); car.state = 'driving';
                     car.clearance = { nodeId: completed.nodeId, remaining: Math.min(GAP, nextLane.path.length * .8) };
                     if (n.nodes.get(completed.nodeId)?.degree >= 3) this.crossings++;
                 }

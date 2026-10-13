@@ -25,18 +25,26 @@ parent-regression checks and OSM restriction validator. Candidates are not promo
 Its metadata records the OSM timestamp/hash and each selected saved solution's ID, status and date.
 Exporter timestamps describe the export, not the age of the OSM evidence.
 
-A saved junction replaces a current node atomically only when every directed lane incidence can
-be matched uniquely and the saved node is complete. Lane matching uses source way, direction,
-ordinal, access and turn/change rules, because section split IDs vary with viewport extent.
-An omitted `centreLane` flag means false; actual shared centre lanes are excluded from car traffic.
-Rejected, incomplete, incompatible and regressing candidates are excluded. Live manual decisions
-take precedence. Unsupported restriction approaches and movements that contradict mapped OSM
-restrictions are blocked. Bus/private/destination-only lanes are excluded.
+A complete saved junction replaces a current node atomically only when every directed lane
+incidence can be matched uniquely. Lane matching uses source way, direction, ordinal, access and
+turn/change rules, because section split IDs vary with viewport extent. A compatible incomplete
+answer can also contribute checked saved movements for still-unassigned incoming lanes; existing
+movements and the node's unresolved status are retained. This export keeps the same 858 fully saved
+junctions and adds 14 checked connections across 3 unresolved junctions. An omitted `centreLane`
+flag means false; actual shared centre lanes are excluded from car traffic. Rejected, incompatible
+and regressing candidates are excluded. Live manual decisions take precedence. Unsupported
+restriction approaches and movements that contradict mapped OSM restrictions are blocked.
+Bus/private/destination-only lanes are excluded. Missing movements are never inferred.
 
-The simulation chooses only exported lane connections. Lane changes cross one adjacent driving
-lane in the same section/direction, respect `change:lanes`, and reserve space in both lanes during
-the manoeuvre. Drivers queue behind each other. Junction reservations serialize crossings at an
-OSM node, and cars check that their receiving lane has room before entering.
+The simulation chooses only exported lane connections. Traffic spawns across all cyclic lane
+regions, weighted by eligible lane length; routes and lane changes stay within each car's region.
+Lane changes cross one adjacent driving lane in the same section/direction, respect `change:lanes`,
+and reserve space in both lanes during the manoeuvre. Drivers queue behind each other. Junction
+reservations serialize crossings at an OSM node, and a car needs room to clear its reservation and
+keep a following gap before entering a lane. The oldest long-waiting approach with room gets
+priority for the next crossing, while still obeying its signal. Near a blocked turn, a queued driver
+may choose another clear, explicit permitted exit in the same region. Missing exits are never
+inferred.
 
 Traffic demand, speeds without a mapped limit, and **signal colors and cycle timings are
 illustrative**. Signal locations come from OSM nodes in the same July 28, 2026 snapshot as the road
@@ -46,9 +54,9 @@ node can represent a whole junction or crossing, not each physical signal pole. 
 the source location; the simulated colors and cycles are not live traffic, observed signal plans or
 a calibrated traffic model.
 
-Some junctions remain incomplete; missing turns are never filled in with guesses. When a car has no
-known exit, or reaches the preview boundary, that same car stays visibly stopped. Cars are removed
-only by reset or when the user lowers the car count.
+Some junctions remain unresolved, so normal traffic does not use feeders or dead ends outside cyclic
+regions. A manually placed car that reaches a missing exit remains stopped; cars persist until the
+user resets the preview or lowers the car count.
 
 The last recorded whole-city survey (2026-09-28) had 57 open junction groups out of 21,806; this
 smaller export is not a new citywide coverage survey.
