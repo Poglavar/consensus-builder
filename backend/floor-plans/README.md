@@ -19,7 +19,7 @@ unknown. Advertised apartment area and physical net plan area remain separate.
 Translated aliases of one posting contribute evidence without multiplying its
 apartments or source links. Commercial-only projects are omitted from this catalogue.
 
-The source roster reconciles every known agency domain and the 18 evidenced studio
+The source roster reconciles every known agency domain and the 20 evidenced studio
 seeds. Unverified architecture leads remain leads. Discovery still spans the broad
 source set, while **asset fetching now requires a located/probable site or a verified
 building match and current listing ownership**. This concentrates download and
@@ -79,7 +79,7 @@ Long runs should use the installed `run-job` helper or an equivalent persistent 
 
 No recurring schedule is enabled by this code or by running the CLI. A PM2 definition is available for a future explicitly approved 06:00 UTC schedule; follow [`deployment.md`](deployment.md) before enabling it. A scheduled host and a laptop automation must not independently submit the same paid work.
 
-The HKA/MPGI-backed architecture-studio roster in `backend/floor-plans/architecture-studios.json` contains 18 verified websites and portfolio seeds. Import it locally with `architecture-sites --file backend/floor-plans/architecture-studios.json`; the command validates every row before adding it to the existing `floor_plan.site` queue with `source_kind=architecture`. Studio projects use the same exact-address and building-location gates as agency listings. The two official MPGI spatial-planning approval PDFs supplied 59 Zagreb company/address pairs; 49 unresolved leads remain separately in `architecture-studio-leads.json` and are not crawl seeds. These approval lists cover spatial-planning work, not every architecture practice, so the combined roster remains partial.
+The HKA/MPGI-backed architecture-studio roster in `backend/floor-plans/architecture-studios.json` contains 20 verified websites and portfolio seeds. Import it locally with `architecture-sites --file backend/floor-plans/architecture-studios.json`; the command validates every row before adding it to the existing `floor_plan.site` queue with `source_kind=architecture`. Studio projects use the same exact-address and building-location gates as agency listings. The two official MPGI spatial-planning approval PDFs supplied 59 Zagreb company/address pairs; 47 unresolved or excluded leads remain separately in `architecture-studio-leads.json` and are not crawl seeds. These approval lists cover spatial-planning work, not every architecture practice, so the combined roster remains partial.
 
 On October 11 the user approved production archive cleanup while keeping development and collection local. The production Opereta downloader remains stopped. One-off maintenance applied the additive policy DDL and removed **1,958,102,084 bytes** of ineligible raw evidence; final retained content was **1,524,350,976 bytes**. Readback found no excluded-source observations, unchanged processed-model and cost totals, and a repeated final cleanup was a no-op. Production application code was not deployed and the recurring schedule remains disabled. The earlier 500-photo experiment is historical evidence from before this policy.
 

@@ -358,6 +358,56 @@
         "https://www.unifika.hr/hrvatski/prostorno-uredjenje_3/",
         "https://www.unifika.hr/hrvatski/upu-bosanka_10/"
       ]
+    },
+    {
+      "id": "ag-planum",
+      "name": "AG Planum d.o.o.",
+      "registered_address": "Sv. Matej 85, Zagreb",
+      "registry_evidence_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+      "registry_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 3,
+          "approval_date": "06.06.2025"
+        }
+      ],
+      "registry_address_as_listed": "Ulica sv. Mateja 85",
+      "website": "https://www.agplanum.com/",
+      "website_evidence_url": "https://www.agplanum.com/ured/",
+      "verification_basis": "The studio’s own office page identifies AG Planum d.o.o. and its seat at Sv. Matej 85, Zagreb, matching the MPGI listing; it separately labels Međimurska 19 as its office. Its official residential portfolio lists multiple Zagreb projects, including a Rudeš residential building and Zagreb housing projects.",
+      "seed_project_urls": [
+        "https://www.agplanum.com/stambena/"
+      ],
+      "observedAt": "2026-10-14"
+    },
+    {
+      "id": "zg-projekt",
+      "name": "ZG-PROJEKT d.o.o.",
+      "registered_address": "I. Đorđića 24, 10000 Zagreb",
+      "registry_evidence_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+      "registry_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 94,
+          "approval_date": "07.03.2019"
+        }
+      ],
+      "registry_address_as_listed": "Đorđićeva 24",
+      "website": "https://www.zg-projekt.hr/",
+      "website_evidence_url": "https://www.zg-projekt.hr/kontakt/",
+      "verification_basis": "The firm’s own homepage identifies ZG-PROJEKT d.o.o., describes architecture among its practices, and lists I. Đorđića 24, Zagreb, matching the MPGI address. Its official portfolio documents a 20-unit residential and commercial building in Ivanić-Grad.",
+      "seed_project_urls": [
+        "https://www.zg-projekt.hr/en/case-study/residential-and-commercial-building-ivanic-grad/"
+      ],
+      "observedAt": "2026-10-14"
     }
   ],
   "retrieval_limitations": [

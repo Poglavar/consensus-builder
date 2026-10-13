@@ -29,7 +29,7 @@ export async function importArchitectureSites(db,document) {
    registryEntries:row.registry_entries||[],registryAddressAsListed:row.registry_address_as_listed||null,
    addressDiscrepancy:row.address_discrepancy||null,
    registryMemberIds:row.registry_member_ids||[],websiteEvidenceUrl:proof,verificationBasis:row.verification_basis,
-   sourceObservedAt:document.observedAt||null,scopeComplete:document.scope_complete===true};
+   sourceObservedAt:row.observedAt||document.observedAt||null,scopeComplete:document.scope_complete===true};
   await db.query(`INSERT INTO floor_plan.site(url,name,discovery_url,evidence,verification_status)
    VALUES($1,$2,$3,$4,'verified_registry_company') ON CONFLICT(url) DO UPDATE SET
     name=excluded.name,discovery_url=excluded.discovery_url,evidence=excluded.evidence,

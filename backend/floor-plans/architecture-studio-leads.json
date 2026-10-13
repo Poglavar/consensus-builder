@@ -21,9 +21,9 @@
     "upu_pdf_zagreb_legal_entity_seats": 22,
     "all_spatial_pdf_zagreb_legal_entity_seats": 37,
     "deduplicated_pdf_legal_name_and_seat_pairs": 59,
-    "verified_pdf_seed_candidates": 10,
+    "verified_pdf_seed_candidates": 12,
     "verified_external_hka_candidate_count": 1,
-    "unresolved_or_excluded_pdf_leads": 49
+    "unresolved_or_excluded_pdf_leads": 47
   },
   "leads": [
     {
@@ -75,7 +75,14 @@
           "approval_date": "06.06.2025"
         }
       ],
-      "status": "unverified_lead"
+      "status": "verified_studio_seed",
+      "website": "https://www.agplanum.com/",
+      "website_evidence_url": "https://www.agplanum.com/ured/",
+      "verification_basis": "The studio’s own office page identifies AG Planum d.o.o. and its seat at Sv. Matej 85, Zagreb, matching the MPGI listing; it separately labels Međimurska 19 as its office. Its official residential portfolio lists multiple Zagreb projects, including a Rudeš residential building and Zagreb housing projects.",
+      "seed_project_urls": [
+        "https://www.agplanum.com/stambena/"
+      ],
+      "websiteObservedAt": "2026-10-14"
     },
     {
       "legal_name_as_listed": "AKTERACIJA d.o.o.",
@@ -830,7 +837,14 @@
           "approval_date": "07.03.2019"
         }
       ],
-      "status": "unverified_lead"
+      "status": "verified_studio_seed",
+      "website": "https://www.zg-projekt.hr/",
+      "website_evidence_url": "https://www.zg-projekt.hr/kontakt/",
+      "verification_basis": "The firm’s own homepage identifies ZG-PROJEKT d.o.o., describes architecture among its practices, and lists I. Đorđića 24, Zagreb, matching the MPGI address. Its official portfolio documents a 20-unit residential and commercial building in Ivanić-Grad.",
+      "seed_project_urls": [
+        "https://www.zg-projekt.hr/en/case-study/residential-and-commercial-building-ivanic-grad/"
+      ],
+      "websiteObservedAt": "2026-10-14"
     },
     {
       "legal_name_as_listed": "ZONA KVADRAT d.o.o.",

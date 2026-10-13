@@ -23,6 +23,16 @@ describe('architecture studio source import',()=>{
    ['https://studio.test/project/one/','page','architecture']]);
   expect(targets.every(([sql])=>sql.includes('floor_plan.exclusion'))).toBe(true);
  });
+ it('preserves per-record observation dates and falls back to the document date',async()=>{
+  const client=db();
+  await importArchitectureSites(client,{records:[
+   {...row,observedAt:'2026-10-14'},
+   {...row,id:'older-studio',website:'https://older.test/',website_evidence_url:'https://older.test/contact/',seed_project_urls:[]},
+  ],scope_complete:false,observedAt:'2026-10-11'});
+  const evidence=client.query.mock.calls.filter(([sql])=>sql.includes('INSERT INTO floor_plan.site'))
+   .map(([,args])=>JSON.parse(args[3]));
+  expect(evidence.map(item=>item.sourceObservedAt)).toEqual(['2026-10-14','2026-10-11']);
+ });
  it.each([
   {registry_evidence_url:'https://directory.test/studio'},
   {website_evidence_url:'https://unrelated.test/studio'},
