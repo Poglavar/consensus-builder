@@ -43,6 +43,15 @@ h2 { margin: 0 0 11px; font-size: 11px; font-weight: 650; }
 .inspector h2 { margin: 0; }
 .car-swatch { width: 17px; height: 8px; border-radius: 3px; background: #257c78; border: 1px solid #245b59; }
 .inspector p { margin: 9px 0; color: #61716a; font-size: 11px; line-height: 1.6; min-height: 34px; }
+#selected-detail { white-space: pre-line; }
+.inspection-field { display: flex; flex-direction: column; gap: 4px; margin: 12px 0; font-size: 11px; line-height: 1.5; }
+.inspection-field > span { color: var(--muted); font-size: 10px; }
+.inspection-field strong { font-weight: 600; overflow-wrap: anywhere; }
+#selected-status[hidden], #selected-blocker[hidden], #show-signal[hidden] { display: none; }
+#selected-signal[data-aspect="red"] { color: #9d4035; }
+#selected-signal[data-aspect="amber"] { color: #8c641c; }
+#selected-signal[data-aspect="green"] { color: #216b4c; }
+#show-signal { margin: 0 15px 12px 0; }
 .text-button { border: 0; padding: 0; background: transparent; color: var(--accent); font-size: 11px; font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
 .about { margin-top: 20px; font-size: 11px; line-height: 1.7; color: var(--muted); }
 .about summary { font-weight: 600; color: var(--ink); }

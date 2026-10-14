@@ -34,7 +34,7 @@
             }
             return result;
         }
-        blocked(id, pose, before = pose) {
+        blocker(id, pose, before = pose) {
             const distance = Math.hypot(pose.x - before.x, pose.y - before.y);
             const angle = Math.atan2(Math.sin(pose.angle - before.angle), Math.cos(pose.angle - before.angle));
             const steps = Math.max(1, Math.ceil(distance / .5), Math.ceil(Math.abs(angle) / .15));
@@ -42,11 +42,12 @@
                 const f = i / steps, p = { x: before.x + (pose.x - before.x) * f,
                     y: before.y + (pose.y - before.y) * f, angle: before.angle + angle * f };
                 for (const other of this.nearby(p)) {
-                    if (other !== id && overlaps(p, this.positions.get(other))) return true;
+                    if (other !== id && overlaps(p, this.positions.get(other))) return other;
                 }
             }
-            return false;
+            return null;
         }
+        blocked(id, pose, before = pose) { return this.blocker(id, pose, before) != null; }
     }
     return { LENGTH, WIDTH, overlaps, Index };
 });

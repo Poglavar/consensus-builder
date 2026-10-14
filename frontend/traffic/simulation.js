@@ -368,12 +368,12 @@
             for (const [id, owner] of this.reservations) if (owner === car.id) this.reservations.delete(id);
         }
 
-        receivingClear(car, connection, occupied) {
+        receivingBlocker(car, connection, occupied) {
             const receiving = this.network.lanes.get(connection.toLaneId);
             const clearance = this.needsReservation(connection) ? Math.min(EXIT_CLEAR, receiving.path.length * .8) : 0;
             // The car needs room to release the crossing reservation AND leave its following
             // gap. Merely fitting its nose into a queue can lock both ends of a short street.
-            return !(occupied.get(receiving.id) || []).some(entry => {
+            return (occupied.get(receiving.id) || []).find(entry => {
                 if (entry.car === car) return false;
                 // A taper is part of the through road: followers can enter behind a car
                 // on the same path. Competing merges still yield to the occupied branch.
@@ -381,58 +381,70 @@
                     return entry.car.s < GAP;
                 }
                 return entry.s < GAP + clearance;
-            });
+            })?.car.id ?? null;
         }
+        receivingClear(car, connection, occupied) { return this.receivingBlocker(car, connection, occupied) == null; }
 
-        hasExitSpace(car, connection, occupied) {
-            if (!this.receivingClear(car, connection, occupied)) return false;
-            if (!this.needsReservation(connection)) return true;
+        exitBlocker(car, connection, occupied) {
+            const immediate = this.receivingBlocker(car, connection, occupied);
+            if (immediate != null) return { kind: 'exit', carId: immediate };
+            if (!this.needsReservation(connection)) return null;
             const key = this.junctionKey(connection.nodeId), queue = [connection.toLaneId], seen = new Set();
+            let blocker = null;
             // An empty tiny connector is not an exit. Check all the way through
             // the reserved area before occupying it, so downstream queues can clear.
             for (let i = 0; i < queue.length; i++) {
                 const lane = this.network.lanes.get(queue[i]);
                 if (seen.has(lane.id)) continue;
                 seen.add(lane.id);
-                if (this.junctionKey(lane.toNode) !== key || !lane.exitRoutes?.length) return true;
+                if (this.junctionKey(lane.toNode) !== key || !lane.exitRoutes?.length) return null;
                 for (const id of lane.exitRoutes) {
                     const move = this.network.connections.get(id);
-                    if (this.receivingClear(car, move, occupied)) queue.push(move.toLaneId);
+                    const blockedBy = this.receivingBlocker(car, move, occupied);
+                    if (blockedBy == null) queue.push(move.toLaneId);
+                    else blocker ??= blockedBy;
                 }
             }
-            return false;
+            return { kind: 'exit', carId: blocker };
         }
+        hasExitSpace(car, connection, occupied) { return this.exitBlocker(car, connection, occupied) == null; }
 
         needsReservation(connection) { return this.network.junctionKeys.has(this.junctionKey(connection.nodeId)) || !['taper', 'continuation'].includes(connection.geometryKind); }
 
         junctionKey(nodeId) { return this.network.junctionGroups?.get(nodeId) || nodeId; }
 
-        canEnter(car, connection, occupied, checkSignal = true) {
-            if (!connection) return false;
+        entryBlocker(car, connection, occupied, checkSignal = true, bodies = this.bodies) {
+            if (!connection) return { kind: 'noExit' };
             const lane = this.network.lanes.get(car.laneId);
-            if (checkSignal && signalState(this.network, lane, this.time, this.signals) !== 'green') return false;
-            if (this.gates.some(gate => gate.blocksEntry?.(car, connection, this))) return false;
+            if (checkSignal && signalState(this.network, lane, this.time, this.signals) !== 'green') return { kind: 'signal' };
+            if (this.gates.some(gate => gate.blocksEntry?.(car, connection, this))) return { kind: 'closure' };
             const owner = this.reservations.get(this.junctionKey(connection.nodeId));
-            if (owner != null && owner !== car.id) return false;
+            if (owner != null && owner !== car.id) return { kind: 'junction', carId: owner };
             const priority = this.waitingPriorities.get(this.junctionKey(connection.nodeId));
-            if (owner == null && priority && priority.id !== car.id) return false;
-            if (!this.hasExitSpace(car, connection, occupied)) return false;
-            return lane.path.length - car.s >= 14 || owner === car.id || this.turnClear(car, connection);
+            if (owner == null && priority && priority.id !== car.id) return { kind: 'priority', carId: priority.id };
+            const exit = this.exitBlocker(car, connection, occupied);
+            if (exit) return exit;
+            const blocker = lane.path.length - car.s >= 14 || owner === car.id ? null : this.turnBlocker(car, connection, bodies);
+            return blocker == null ? null : { kind: 'collision', carId: blocker };
         }
+        canEnter(car, connection, occupied, checkSignal = true) { return this.entryBlocker(car, connection, occupied, checkSignal) == null; }
 
-        turnClear(car, connection) {
-            if (!this.bodies || connection.geometryKind) return true;
+        turnBlocker(car, connection, bodies = this.bodies) {
+            if (!bodies || connection.geometryKind) return null;
             // Check the whole turn before entering, including nearby OSM approaches.
             // Stopping halfway through a blocked turn would lock those approaches.
             let previous = sample(connection.path, 0);
-            if (this.bodies.blocked(car.id, previous)) return false;
+            let blocker = bodies.blocker(car.id, previous);
+            if (blocker != null) return blocker;
             for (let station = .5; station <= connection.path.length + .5; station += .5) {
                 const next = sample(connection.path, Math.min(station, connection.path.length));
-                if (this.bodies.blocked(car.id, next, previous)) return false;
+                blocker = bodies.blocker(car.id, next, previous);
+                if (blocker != null) return blocker;
                 previous = next;
             }
-            return true;
+            return null;
         }
+        turnClear(car, connection) { return this.turnBlocker(car, connection) == null; }
 
         tryLaneChange(car, occupied) {
             const from = this.network.lanes.get(car.laneId);
@@ -461,12 +473,15 @@
             return { lane, move, route: move ? move.path : lane.path, id: move ? move.id : lane.id };
         }
 
-        limits(car, occupied) {
+        limits(car, occupied, bodies = this.bodies) {
             const n = this.network, { lane, move, route, id } = this.routeInfo(car);
-            let clearance = Infinity;
+            let clearance = Infinity, leader = null;
             const ahead = (key, station, ratio = 1) => {
                 for (const entry of occupied.get(key) || []) {
-                    if (entry.car !== car && entry.s >= station - 1e-7) clearance = Math.min(clearance, (entry.s - station - GAP) / ratio);
+                    const distance = (entry.s - station - GAP) / ratio;
+                    if (entry.car !== car && entry.s >= station - 1e-7 && distance < clearance) {
+                        clearance = distance; leader = entry.car.id;
+                    }
                 }
             };
             ahead(id, car.s);
@@ -484,13 +499,55 @@
                 signal = Math.min(signal, signalStoppingDistance(n, target, car.s * ratio, this.time, this.signals) / ratio);
             }
             const connection = !move && n.connections.get(car.next);
-            const available = !!move || (!car.change && this.canEnter(car, connection, occupied, false));
+            const entry = move ? null : car.change ? { kind: 'changing' } : this.entryBlocker(car, connection, occupied, false, bodies);
+            const available = !!move || entry == null;
             const entering = !!move || (available && signalState(n, lane, this.time, this.signals) === 'green');
             const gate = Math.min(Infinity, ...this.gates.map(item => item.distance?.(car, this) ?? Infinity));
             const hold = connection && this.needsReservation(connection)
                 && this.reservations.get(this.junctionKey(connection.nodeId)) !== car.id ? HOLD : 0;
-            return { clearance, signal, connection, entering, available,
-                stopping: Math.max(0, Math.min(clearance, signal, gate, available ? Infinity : Math.max(0, route.length - car.s - hold))), gate };
+            const entryDistance = available ? Infinity : Math.max(0, route.length - car.s - hold);
+            return { clearance, signal, connection, entering, available, entry, entryDistance, leader,
+                stopping: Math.max(0, Math.min(clearance, signal, gate, entryDistance)), gate };
+        }
+
+        signalAhead(car, stopping = false) {
+            if (!this.signals || car.mode !== 'lane') return null;
+            const lane = this.network.lanes.get(car.laneId), approaches = [{ lane, ratio: 1 }];
+            if (car.change) {
+                const target = this.network.lanes.get(car.change.to);
+                approaches.push({ lane: target, ratio: target.path.length / lane.path.length });
+            }
+            const controls = approaches.flatMap(({ lane: approach, ratio }) => approach.signals
+                .filter(control => control.stopS >= car.s * ratio - 1e-6)
+                .map(control => {
+                    const signal = this.network.signals.get(control.signalId);
+                    return { id: signal.id, point: signal.point, aspect: signalAspect(signal, control.phase, this.time),
+                        distance: Math.max(0, (control.stopS - car.s * ratio) / ratio),
+                        stop: sample(approach.path, control.stopS) };
+                }));
+            return controls.filter(control => !stopping || control.aspect !== 'green')
+                .sort((a, b) => a.distance - b.distance)[0] || null;
+        }
+
+        inspectCar(car) {
+            const signal = this.signalAhead(car);
+            if (car.speed >= .05) return { kind: 'moving', speed: car.speed * 3.6, signal };
+            if (car.collisionBlocker != null) return { kind: 'collision', carId: car.collisionBlocker, signal };
+            const bodies = new Collision.Index();
+            for (const other of this.cars) bodies.set(other.id, this.pose(other));
+            const limits = this.limits(car, this.occupants(), bodies);
+            // The nearest constraint determines where this vehicle must wait.
+            // A red farther along the approach is not the cause of a queue here.
+            const constraints = [
+                { kind: 'following', carId: limits.leader, distance: limits.clearance },
+                { ...limits.entry, distance: limits.entryDistance },
+                { kind: 'closure', distance: limits.gate },
+                { kind: 'signal', distance: limits.signal }
+            ].filter(item => item.kind && Number.isFinite(item.distance))
+                .sort((a, b) => a.distance - b.distance);
+            const reason = constraints[0];
+            if (reason && reason.distance < .1) return { ...reason, signal: reason.kind === 'signal' ? this.signalAhead(car, true) : signal };
+            return { kind: 'starting', signal };
         }
 
         move(car, distance, occupied) {
@@ -552,6 +609,7 @@
                 const reservations = [...this.reservations].filter(([, owner]) => owner === car.id);
                 const counts = [this.crossings, this.laneChanges];
                 car.traversed = [];
+                car.collisionBlocker = null;
                 const previousKeys = this.carOccupancies(car).map(([id]) => id);
                 const { lane, move, route } = this.routeInfo(car);
                 if (!move) this.tryLaneChange(car, occupied);
@@ -595,9 +653,10 @@
                     }
                 }
                 const after = this.pose(car);
-                if (bodies.blocked(car.id, after, before)) {
+                const collisionBlocker = bodies.blocker(car.id, after, before);
+                if (collisionBlocker != null) {
                     for (const key of Object.keys(car)) if (!(key in snapshot)) delete car[key];
-                    Object.assign(car, snapshot, { speed: 0, state: 'queue', braking: true, traversed: [] });
+                    Object.assign(car, snapshot, { speed: 0, state: 'queue', braking: true, traversed: [], collisionBlocker });
                     for (const [id, owner] of this.reservations) if (owner === car.id) this.reservations.delete(id);
                     for (const [id, owner] of reservations) this.reservations.set(id, owner);
                     [this.crossings, this.laneChanges] = counts;

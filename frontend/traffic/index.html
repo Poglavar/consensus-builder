@@ -7,19 +7,19 @@
     <meta name="theme-color" content="#f5f4ef">
     <title>Zagreb, in motion · Lane Lab</title>
     <link rel="stylesheet" href="../vendor/leaflet-1.9.4/leaflet.css">
-    <link rel="stylesheet" href="traffic.css?v=20261014e">
+    <link rel="stylesheet" href="traffic.css?v=20261014f">
     <script defer src="../vendor/leaflet-1.9.4/leaflet.js"></script>
     <script defer src="../js/reduced-motion.js"></script>
     <script defer src="../js/i18n.js"></script>
-    <script defer src="copy.js?v=20261014e"></script>
-    <script defer src="geometry.js?v=20261014e"></script>
-    <script defer src="collision.js?v=20261014e"></script>
-    <script defer src="simulation.js?v=20261014e"></script>
-    <script defer src="scenario.js?v=20261014e"></script>
-    <script defer src="meters.js?v=20261014e"></script>
+    <script defer src="copy.js?v=20261014f"></script>
+    <script defer src="geometry.js?v=20261014f"></script>
+    <script defer src="collision.js?v=20261014f"></script>
+    <script defer src="simulation.js?v=20261014f"></script>
+    <script defer src="scenario.js?v=20261014f"></script>
+    <script defer src="meters.js?v=20261014f"></script>
     <script defer src="../js/corridor-profile.js"></script>
-    <script defer src="scene-layer.js?v=20261014e"></script>
-    <script defer src="traffic.js?v=20261014e"></script>
+    <script defer src="scene-layer.js?v=20261014f"></script>
+    <script defer src="traffic.js?v=20261014f"></script>
 </head>
 <body>
     <main class="app">
@@ -77,6 +77,11 @@
             <section class="inspector" aria-live="polite">
                 <div class="inspector-top"><span class="car-swatch" aria-hidden="true"></span><h2 id="selected-title" data-i18n-key="traffic.follow"></h2></div>
                 <p id="selected-detail" data-i18n-key="traffic.selectHint"></p>
+                <div id="selected-status" hidden>
+                    <div class="inspection-field"><span id="selected-reason-label"></span><strong id="selected-reason"></strong><span id="selected-blocker" hidden></span></div>
+                    <div class="inspection-field"><span data-i18n-key="traffic.signalAhead"></span><strong id="selected-signal"></strong></div>
+                    <button id="show-signal" class="text-button" data-i18n-key="traffic.showSignal" hidden></button>
+                </div>
                 <button id="follow" class="text-button" data-i18n-key="traffic.follow" disabled></button>
             </section>
 

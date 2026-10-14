@@ -10,6 +10,10 @@ npx http-server frontend -a localhost -p 8192 -c-1
 
 The playback controls set speed, car count, lane guides and mapped traffic signals with simulated cycles.
 Click a car to highlight its current lane and available exits; **Follow a car** keeps it in view.
+The inspector shows the current reason for waiting, the blocking car when known, and the mapped
+signal controlling this approach with its current color and distance. **Show signal** locates that
+OSM node on the map. The selected signal and any blocking vehicle are highlighted; the signal cycle
+remains simulated. These diagnostics reuse the motion constraints and do not change the run.
 The place buttons jump to Miramarska × Vukovarska, a two-to-three-lane split on Lučićeva,
 the city centre, Trešnjevka or the entire loaded area. `/traffic/?view=split` opens the lane split directly.
 Reduced-motion preferences start the animation paused. Hidden tabs stop the animation clock.

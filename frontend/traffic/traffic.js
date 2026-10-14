@@ -24,6 +24,7 @@
     const guides = guideCanvas.getContext('2d'), ctx = carCanvas.getContext('2d');
     let baseNetwork, editor, laneIndex, hover = null, meterHover = null, selectedMeter = null, tool = 'inspect', roadEdges, transitionEdges;
     let network, sim, running = !reduced, rate = 2, seed = 52, selected = null, following = false;
+    let selectedInfo = null;
     let signalPopup = null;
     let transform, size = { x: 0, y: 0 }, previousFrame = null, uiTime = 0, frameId = null;
     let screenCars = [], frameCount = 0, tileErrors = 0;
@@ -193,6 +194,19 @@
             ctx.setLineDash([]);
         }
         drawSignals();
+        if (chosen) {
+            const signal = sim.signalAhead(chosen, selectedInfo?.kind === 'signal');
+            if (signal) {
+                const pose = sim.pose(chosen), from = screen([pose.x, pose.y]), stop = screen([signal.stop.x, signal.stop.y]);
+                const target = screen(network.project(signal.point));
+                const color = { red: '#b64432', amber: '#ba881d', green: '#238261' }[signal.aspect];
+                ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+                ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(stop.x, stop.y); ctx.lineTo(target.x, target.y); ctx.stroke();
+                ctx.setLineDash([]); ctx.beginPath(); ctx.arc(target.x, target.y, 11, 0, Math.PI * 2); ctx.stroke();
+                ctx.beginPath(); ctx.arc(target.x, target.y, 5, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+            }
+        }
         for (const car of sim.cars) {
             const pose = running ? sim.renderPose(car) : sim.pose(car), p = screen([pose.x, pose.y]);
             if (!visible(p)) continue;
@@ -204,6 +218,9 @@
             if (selected === car.id) {
                 ctx.beginPath(); ctx.arc(0, 0, length * .9, 0, Math.PI * 2);
                 ctx.strokeStyle = '#177c6eb0'; ctx.lineWidth = 1.5; ctx.stroke();
+            } else if (selectedInfo?.carId === car.id) {
+                ctx.beginPath(); ctx.arc(0, 0, length * .9, 0, Math.PI * 2);
+                ctx.strokeStyle = '#bb7926'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]); ctx.stroke(); ctx.setLineDash([]);
             }
             ctx.shadowColor = '#16362644'; ctx.shadowBlur = .8; ctx.shadowOffsetY = 1;
             ctx.fillStyle = colors[car.color]; ctx.strokeStyle = '#243e465c'; ctx.lineWidth = .6;
@@ -235,12 +252,29 @@
         $('source-detail').textContent = `${t('solved', { count: network.data.source.savedJunctions.length })}. ${t('snapshot', { date: network.data.source.osmTimestamp.slice(0, 10) })}.`;
         const car = sim.cars.find(item => item.id === selected);
         if (!car) { selected = null; following = false; }
+        selectedInfo = car ? sim.inspectCar(car) : null;
         $('selected-title').textContent = car ? t('selected', { id: car.id }) : t('follow');
         $('follow').textContent = t(following ? 'unfollow' : 'follow');
+        $('selected-status').hidden = !car;
         if (car) {
             const lane = network.lanes.get(car.laneId);
-            $('selected-detail').textContent = `${lane.name || t('unnamed')} · ${t('lane', { number: lane.ordinal + 1 })}\n${t(car.state)} · ${t('exits', { count: lane.outgoing.length })}`;
+            $('selected-detail').textContent = `${lane.name || t('unnamed')} · ${t('lane', { number: lane.ordinal + 1 })}\n${t('exits', { count: lane.outgoing.length })}`;
             document.querySelector('.car-swatch').style.backgroundColor = colors[car.color];
+            const reason = !running && ['starting', 'moving'].includes(selectedInfo.kind) ? 'paused' : selectedInfo.kind;
+            $('selected-reason-label').textContent = t(reason === 'moving' ? 'moving' : 'stopReason');
+            $('selected-reason').textContent = t(`reason${reason[0].toUpperCase()}${reason.slice(1)}`, {
+                id: selectedInfo.carId, speed: selectedInfo.speed?.toFixed(1),
+                aspect: selectedInfo.signal ? t(`aspect${selectedInfo.signal.aspect[0].toUpperCase()}${selectedInfo.signal.aspect.slice(1)}`) : ''
+            });
+            $('selected-blocker').hidden = selectedInfo.kind !== 'exit' || selectedInfo.carId == null;
+            $('selected-blocker').textContent = t('blockingCar', { id: selectedInfo.carId });
+            const signal = selectedInfo.signal;
+            $('selected-signal').dataset.aspect = signal?.aspect || '';
+            $('selected-signal').textContent = signal ? t('signalApproach', {
+                id: signal.id.replace('osm-node:', ''), distance: signal.distance.toFixed(1),
+                aspect: t(`aspect${signal.aspect[0].toUpperCase()}${signal.aspect.slice(1)}`)
+            }) : t(sim.signals ? 'signalNone' : 'signalDisabled');
+            $('show-signal').hidden = !signal;
         } else $('selected-detail').textContent = t('selectHint');
         updateTools();
     }
@@ -370,21 +404,33 @@
                 return { signal, distance: Math.hypot(p.x - pointer.x, p.y - pointer.y) };
             }).sort((a, b) => a.distance - b.distance)[0] : null;
         if (mapped?.distance < 12 && mapped.distance < (nearest?.distance ?? Infinity)) {
-            following = false; updateUI();
-            const signal = mapped.signal, id = signal.id.replace('osm-node:', '');
-            const content = document.createElement('div');
-            const title = document.createElement('strong'); title.textContent = t('signalSource', { id });
-            const detail = document.createElement('p'); detail.textContent = t('signalDetails');
-            const link = document.createElement('a'); link.textContent = t('signalLink');
-            link.href = `https://www.openstreetmap.org/node/${encodeURIComponent(id)}`;
-            link.target = '_blank'; link.rel = 'noopener';
-            content.append(title, detail, link);
-            signalPopup = L.popup({ maxWidth: Math.max(140, Math.min(280, map.getSize().x - 72)), autoPanPadding: [16, 16] })
-                .setLatLng([signal.point[1], signal.point[0]]).setContent(content).openOn(map);
+            following = false; updateUI(); openSignal(mapped.signal);
             return;
         }
         selected = nearest?.distance < 22 ? nearest.id : null;
         following = false; updateUI(); drawCars();
+        if (selected != null) document.querySelector('.inspector').scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
+    });
+    function openSignal(signal) {
+        const id = signal.id.replace('osm-node:', '');
+        const content = document.createElement('div');
+        const title = document.createElement('strong'); title.textContent = t('signalSource', { id });
+        const detail = document.createElement('p'); detail.textContent = t('signalDetails');
+        const link = document.createElement('a'); link.textContent = t('signalLink');
+        link.href = `https://www.openstreetmap.org/node/${encodeURIComponent(id)}`;
+        link.target = '_blank'; link.rel = 'noopener';
+        content.append(title, detail, link);
+        signalPopup = L.popup({ maxWidth: Math.max(140, Math.min(280, map.getSize().x - 72)), autoPanPadding: [16, 16] })
+            .setLatLng([signal.point[1], signal.point[0]]).setContent(content).openOn(map);
+    }
+    $('show-signal').addEventListener('click', () => {
+        const car = sim.cars.find(item => item.id === selected);
+        const signal = car && sim.signalAhead(car, selectedInfo?.kind === 'signal');
+        if (!signal) return;
+        following = false;
+        map.setView([signal.point[1], signal.point[0]], Math.max(19, map.getZoom()), { animate: !reduced });
+        document.querySelector('.map-stage').scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
+        openSignal(network.signals.get(signal.id)); updateUI(); drawCars();
     });
     new ResizeObserver(() => { map.invalidateSize({ animate: false }); resize(); }).observe(document.querySelector('.map-stage'));
     document.addEventListener('visibilitychange', () => { if (document.hidden) { cancelAnimationFrame(frameId); frameId = null; previousFrame = null; } else wake(); });
@@ -401,7 +447,7 @@
     });
     $('speed').addEventListener('input', () => { rate = Number($('speed').value); $('speed-value').textContent = `${rate}×`; });
     $('density').addEventListener('input', () => { $('density-value').textContent = $('density').value; sim?.setCount(Number($('density').value)); updateUI(); drawCars(); });
-    $('lights').addEventListener('change', () => { if (sim) sim.signals = $('lights').checked; drawCars(); });
+    $('lights').addEventListener('change', () => { if (sim) sim.signals = $('lights').checked; updateUI(); drawCars(); });
     $('lanes').addEventListener('change', drawGuides);
     $('follow').addEventListener('click', () => {
         if (following) following = false;
@@ -425,7 +471,7 @@
 
     async function load() {
         try {
-            const response = await fetch('data/central.json.gz?v=20261014e', { cache: 'no-store' });
+            const response = await fetch('data/central.json.gz?v=20261014f', { cache: 'no-store' });
             if (!response.ok) throw new Error(`Traffic data: HTTP ${response.status}`);
             const data = await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
             network = baseNetwork = Engine.createNetwork(data);
