@@ -1688,9 +1688,10 @@ const ProposalManager = {
             }
 
             if (!failed.length) {
-                // Closure members replay with deferred presentation; their layers still changed
-                // (a park cut by a new square on the same ground). One redraw per kind replayed.
-                const replayedKinds = new Set(orderedReplay.map(record => {
+                // Every removed or replayed output changes its presentation layer. Superseded
+                // records are no longer applied, so they are absent from orderedReplay even though
+                // their old rendered output must disappear. Redraw each affected kind after commit.
+                const affectedKinds = new Set(Array.from(seedById.values(), record => {
                     const classified = applyRoute?.classifyApplyRoute?.(record) || {};
                     return classified.route === 'building' ? 'building' : String(classified.goalKey || '');
                 }));
@@ -1702,7 +1703,7 @@ const ProposalManager = {
                     try { if (typeof scheduleCorridorStripRefresh === 'function') scheduleCorridorStripRefresh(); } catch (_) { }
                     const redraw = { park: 'updateParksLayer', square: 'updateSquaresLayer', lake: 'updateLakesLayer', station: 'updateTransitStationsLayer', building: 'updateProposedBuildingsLayer' };
                     const browserRoot = typeof window !== 'undefined' ? window : globalThis;
-                    replayedKinds.forEach(kind => {
+                    affectedKinds.forEach(kind => {
                         const name = redraw[kind];
                         try { if (name && typeof browserRoot[name] === 'function') browserRoot[name](); } catch (_) { }
                     });

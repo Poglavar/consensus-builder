@@ -397,6 +397,45 @@ describe('geometric interaction on open ground', () => {
         expect(globalThis.proposalStorage.getProposal('first').applied).toBe(false);
         expect(fabric.list().map(feature => feature.properties.producedByProposalId)).toEqual(['second']);
     });
+
+    it('redraws buildings removed when an overlapping Square is applied', async () => {
+        const block = {
+            proposalId: 'block-under-square',
+            title: 'Block',
+            goal: 'buildings',
+            applied: false,
+            createdAt: '2026-10-01T00:00:00.000Z',
+            cadastreParcelIds: [],
+            site: { type: 'MultiPolygon', coordinates: [rect(0, 0, 20, 20).coordinates] },
+            binding: { parcels: [], coverage: 'none', source: 'client-preview' },
+            buildingProposal: { type: 'block' },
+            geometry: { buildings: [turf.feature(rect(2, 2, 8, 8))] }
+        };
+        const square = structureRecord('square-over-block', 'square', rect(0, 0, 20, 20), {
+            binding: { parcels: [], coverage: 'none', source: 'client-preview' }
+        });
+        const supersession = require('../../frontend/js/proposal-supersession.js');
+        install('collectAppliedProposalAlternatives', supersession.collectAppliedProposalAlternatives);
+        let renderedBuildingIds = [];
+        let renderedSquareIds = [];
+        install('updateProposedBuildingsLayer', vi.fn(() => {
+            renderedBuildingIds = globalThis.proposedBuildings.map(feature => feature.properties.proposalId);
+        }));
+        install('updateSquaresLayer', vi.fn(() => {
+            renderedSquareIds = globalThis.squares.map(feature => feature.properties.proposalId);
+        }));
+
+        const { manager } = await harness({ records: [block, square] });
+        await expect(manager.applyProposal('block-under-square')).resolves.toBe(true);
+        expect(renderedBuildingIds).toEqual(['block-under-square']);
+
+        await expect(manager.applyProposal('square-over-block')).resolves.toBe(true);
+
+        expect(globalThis.proposalStorage.getProposal('block-under-square').applied).toBe(false);
+        expect(globalThis.proposedBuildings).toEqual([]);
+        expect(renderedBuildingIds).toEqual([]);
+        expect(renderedSquareIds).toEqual(['square-over-block']);
+    });
 });
 
 describe('two proposals on the same open ground', () => {
