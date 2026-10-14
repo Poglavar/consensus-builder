@@ -23,6 +23,7 @@
         approvalImportSequence: 0
     };
     const failedDraftReopenInFlight = new Set();
+    const placementBindingInFlight = new Map();
 
     function tDraft(key, fallback, params = {}) {
         let value = null;
@@ -45,6 +46,55 @@
                 ? global.CityConfigManager.getCurrentCityId()
                 : null;
         } catch (_) { return null; }
+    }
+
+    async function rebindFreePlacementDraft(draftId) {
+        const store = global.proposalDraftStore;
+        let draft = store?.getDraft?.(draftId) || null;
+        const placementApi = global.proposalDraftPlacement;
+        if (!draft || !placementApi?.isFreePlacementDraft?.(draft)) return draft;
+        const currentPlacementSite = placementApi.freePlacementPatch(draft, draft.editorPayload?.placement || {})?.site;
+        if (draft.editorPayload?.placement?.bindingStatus === 'bound'
+            && JSON.stringify(draft.fields?.site) === JSON.stringify(currentPlacementSite)
+            && String(draft.fields?.binding?.source || '').startsWith('server:')
+            && ['complete', 'partial', 'none'].includes(draft.fields?.binding?.coverage)) return draft;
+        const currentFlight = placementBindingInFlight.get(String(draftId));
+        if (currentFlight) return currentFlight;
+
+        const operation = (async () => {
+            const placement = draft.editorPayload?.placement || {};
+            const site = placementApi.freePlacementPatch(draft, placement)?.site;
+            if (!site) throw new Error(tDraft('proposalDrafts.placement.invalidSite', 'A free placement needs a valid polygon site.'));
+            const bindingApi = global.__publishBinding;
+            const backendBase = typeof global.resolveBackendBaseUrl === 'function'
+                ? global.resolveBackendBaseUrl()
+                : (typeof global.getBackendBase === 'function' ? global.getBackendBase() : '');
+            if (!bindingApi?.createFetchBinding || !backendBase || typeof global.fetch !== 'function') {
+                throw new Error(tDraft('proposalDrafts.placement.bindingUnavailable', 'The authoritative site binding service is unavailable. Your moved draft is saved locally.'));
+            }
+            const fetchBinding = bindingApi.createFetchBinding(global.fetch.bind(global), backendBase);
+            const binding = await fetchBinding({
+                site,
+                toleranceM: Number(draft.fields?.toleranceM) || 0,
+                city: draft.cityId || draft.sourceSnapshot?.city || currentCityId() || null
+            });
+            const latest = store.getDraft?.(draftId) || null;
+            if (!latest || !placementApi.isFreePlacementDraft(latest)
+                || JSON.stringify(latest.editorPayload?.placement?.site) !== JSON.stringify(site)) {
+                throw new Error(tDraft('proposalDrafts.placement.geometryChanged', 'The moved geometry changed while its site was being bound. Retry the save.'));
+            }
+            const patch = placementApi.markFreePlacementBound(latest, binding);
+            const updated = store.updateDraft(draftId, patch, { recordHistory: false });
+            return store.validateDraft(draftId) || updated;
+        })();
+        placementBindingInFlight.set(String(draftId), operation);
+        try {
+            return await operation;
+        } finally {
+            if (placementBindingInFlight.get(String(draftId)) === operation) {
+                placementBindingInFlight.delete(String(draftId));
+            }
+        }
     }
 
     function cityLabel(cityId) {
@@ -1733,7 +1783,19 @@
 
     async function stageProposalDraftForPublishing(draftId) {
         const store = global.proposalDraftStore;
-        let draft = store?.validateDraft(draftId);
+        let draft = store?.getDraft?.(draftId) || null;
+        if (draft && global.proposalDraftPlacement?.isFreePlacementDraft?.(draft)) {
+            try {
+                draft = await rebindFreePlacementDraft(draftId);
+            } catch (error) {
+                store.markPublishFailed(draftId, error);
+                const message = error?.message || String(error);
+                if (typeof global.showStyledAlert === 'function') global.showStyledAlert(message);
+                else if (typeof global.updateStatus === 'function') global.updateStatus(message);
+                return false;
+            }
+        }
+        draft = store?.validateDraft(draftId);
         if (!draft?.validation?.valid) {
             if (draft) renderShell();
             return false;
@@ -1961,6 +2023,14 @@
         };
 
         draft = store.validateDraft(draftId);
+        if (global.proposalDraftPlacement?.isFreePlacementDraft?.(draft)) {
+            try {
+                draft = await rebindFreePlacementDraft(draftId);
+            } catch (error) {
+                return keepAsDraft(error?.message || String(error));
+            }
+            draft = store.validateDraft(draftId);
+        }
         if (!draft?.validation?.valid) {
             return keepAsDraft(draft?.validation?.errors?.[0]?.message || '');
         }
@@ -2023,7 +2093,12 @@
                 // Changed-land forks are counterproposals: their source remains standing while
                 // only the new proposal's own ground is materialised. Ordinary replacements
                 // still release and replay their source's scope.
-                const supersededIds = stored.landFork ? [] : [stored.sourceProposalId, stored.replacementOfProposalId]
+                const sourceRecord = stored.sourceProposalId
+                    ? (global.proposalStorage?.getProposal?.(stored.sourceProposalId)
+                        || (String(draft.sourceProposalId || '') === String(stored.sourceProposalId)
+                            ? draft.sourceSnapshot : null))
+                    : null;
+                const supersededIds = (stored.landFork || global.isPublishedProposalRecord?.(sourceRecord) === true) ? [] : [stored.sourceProposalId, stored.replacementOfProposalId]
                     .filter(Boolean).map(String);
                 profile.mark('record');
 
@@ -2113,9 +2188,14 @@
             if (Array.isArray(options.parcelIds)) fields.selectedParcelIds = options.parcelIds.map(String);
         } else if (kind === 'building') {
             if (!['buildings', 'row', 'parcelBased', 'single'].includes(draft.adapterKey || draft.goal)) return null;
-            const typology = payload.parameters?.typology || draft.editorPayload?.typology || draft.adapterKey;
+            const rawTypology = payload.parameters?.typology || draft.editorPayload?.typology || draft.adapterKey;
+            // `buildings` is the editor adapter key; its persisted design typology is `block`.
+            // Keeping the domain value here prevents a save/reload from reopening as a generic
+            // building payload without the block-specific massing context.
+            const typology = rawTypology === 'buildings' ? 'block' : rawTypology;
+            const buildingContext = JSON.parse(JSON.stringify(payload));
             patch = {
-                editorPayload: { typology, context: JSON.parse(JSON.stringify(payload)) },
+                editorPayload: { typology, context: buildingContext },
                 previewGeometry: JSON.parse(JSON.stringify(payload.buildings?.length ? payload.buildings : [payload.buildingFeature].filter(Boolean)))
             };
             const savedBuildingGeometryEdit = Boolean(draft.sourceProposalId);
@@ -2146,8 +2226,35 @@
         } else {
             return null;
         }
+        const placementInput = options.placement || payload.placement || null;
+        if (placementInput?.free === true) {
+            try {
+                const placement = global.proposalDraftPlacement?.freePlacementPatch?.(draft, placementInput);
+                if (!placement) return null;
+                patch.editorPayload = { ...(patch.editorPayload || {}), placement: placement.placement };
+                fields.site = placement.fields.site;
+                fields.selectedParcelIds = placement.fields.selectedParcelIds;
+                fields.cadastreParcelIds = placement.fields.cadastreParcelIds;
+                fields.binding = null;
+            } catch (error) {
+                console.warn('[ProposalEditor] Refused unsafe free placement', error);
+                if (typeof global.showStyledAlert === 'function') global.showStyledAlert(error?.message || String(error));
+                return null;
+            }
+        }
         if (Object.keys(fields).length) patch.fields = fields;
-        const updated = store.updateDraft(draft.id, patch, { coalesceKey: options.coalesceKey || `editor:${kind}` });
+        const updateOptions = { coalesceKey: options.coalesceKey || `editor:${kind}` };
+        const updated = kind === 'building'
+            // Editor payloads are complete snapshots. Replacing their context atomically prevents
+            // recursive draft merging from retaining removed feature flags (for example a stale
+            // `manual: true` on a block footprint after the user returns to parametric mode).
+            ? store.updateDraft(draft.id, current => ({
+                ...current,
+                ...patch,
+                fields: patch.fields ? { ...(current.fields || {}), ...patch.fields } : current.fields,
+                editorPayload: { ...(current.editorPayload || {}), ...(patch.editorPayload || {}) }
+            }), updateOptions)
+            : store.updateDraft(draft.id, patch, updateOptions);
         store.validateDraft(draft.id);
         // The source/draft comparison overlay belongs to the (retired) editor dialog. Rendering
         // it without the dialog open left ghost outlines on the map with nothing to clear them.
@@ -2247,6 +2354,7 @@
     global.startInstantSiteDesign = startInstantSiteDesign;
     global.startSiteSubdivision = startSiteSubdivision;
     global.syncActiveProposalDraftFromEditor = syncActiveProposalDraftFromEditor;
+    global.rebindFreePlacementDraft = rebindFreePlacementDraft;
     global.renderProposalDraftComparison = renderProposalDraftComparison;
     global.clearProposalDraftComparison = clearProposalDraftComparison;
     global.focusDraftValidationIssue = focusDraftValidationIssue;

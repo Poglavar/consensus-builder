@@ -460,6 +460,7 @@
         draftHasDesignGeometry,
         draftGroundIssue,
         snapCoordinate,
+        boxOf,
         snapTargetsInBox,
         snapToGround,
         openGroundOf,

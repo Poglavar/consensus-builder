@@ -55,6 +55,14 @@
     flex: 0 0 auto;
 }
 
+.structure-geometry-boundary {
+    cursor: grab;
+}
+
+.structure-geometry-boundary:active {
+    cursor: grabbing;
+}
+
 .structure-geometry-options label {
     display: flex;
     gap: 8px;

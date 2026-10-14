@@ -6,7 +6,15 @@
     "controls": "Controles",
     "showControls": "Mostrar controles",
     "hideControls": "Ocultar controles",
-    "moreOptions": "Más opciones"
+    "moreOptions": "Más opciones",
+    "undo": "Deshacer (Cmd/Ctrl+Z)",
+    "lockReject": "La huella actual está fuera de la ubicación fijada. Muévela dentro para usar el bloqueo del sitio.",
+    "placement": {
+      "snap": "Ajustar a los bordes",
+      "lock": "Fijar a la ubicación inicial",
+      "outside": "Fuera de la ubicación inicial. Las parcelas afectadas se recalcularán al guardar.",
+      "lockOutside": "Mueve el diseño dentro de la ubicación inicial antes de fijarlo."
+    }
   },
     "optionalTools": {
         "loadFailed": "No se pudo cargar esta herramienta. Inténtalo de nuevo."
@@ -447,6 +455,20 @@
             "draftCreateFailed": "No se pudo guardar un borrador local para este diseño. El emplazamiento no ha cambiado.",
             "handoffFailed": "No se pudo abrir el editor de diseño. El emplazamiento no ha cambiado y el borrador de diseño se conservó localmente.",
             "handoffFailedReason": "No se pudo abrir el editor de diseño: {{reason}}. El emplazamiento no ha cambiado y el borrador de diseño se conservó localmente."
+        },
+        "placement": {
+            "fixedSite": "Este tipo de propuesta tiene un emplazamiento fijo y no se puede mover.",
+            "existingBuilding": "Las propuestas de edificios existentes conservan su huella vinculada al edificio y no admiten ubicación libre.",
+            "invalidSite": "La ubicación libre necesita un emplazamiento poligonal válido.",
+            "freshBinding": "La ubicación libre necesita una nueva vinculación del emplazamiento calculada por el servidor.",
+            "unknownCoverage": "El servidor no puede verificar este emplazamiento con un catastro compatible. Muévelo a una zona compatible o contacta con el equipo de datos municipales.",
+            "unverifiedCoverage": "La vinculación del emplazamiento no confirmó la cobertura catastral. Vuelve a intentarlo antes de aplicar o publicar.",
+            "pending": "Vuelve a vincular el emplazamiento movido antes de aplicar o publicar este borrador.",
+            "bindingUnavailable": "El servicio de vinculación autoritativa del emplazamiento no está disponible. El borrador movido se guardó localmente.",
+            "geometryChanged": "La geometría cambió mientras se vinculaba el emplazamiento. Vuelve a guardar.",
+            "buildingOutsideSite": "La geometría del edificio movido debe quedar completamente dentro del nuevo emplazamiento.",
+            "surroundingsOutsideSite": "El entorno movido debe quedar completamente dentro del nuevo emplazamiento. Mueve toda la propuesta o ajusta el límite del terreno antes de guardar.",
+            "massingOutsideSite": "La masa edificada movida debe quedar completamente dentro del nuevo emplazamiento."
         },
         "review": {
             "title": "Revisar cambios",
@@ -2085,12 +2107,14 @@
             "uploadNoPolygon": "No se encontró ningún polígono utilizable en ese archivo.",
             "uploadOutside": "El polígono subido no se superpone con este bloque de forma utilizable.",
             "uploadError": "No se pudo leer ese archivo.",
-            "infoText": "Arrastra la huella para moverla. Arrastra un vértice para cambiar la forma, haz clic en un borde para añadir un vértice o selecciona uno y usa la papelera o Supr/Retroceso para eliminarlo. El edificio debe permanecer completamente dentro del bloque.",
-            "infoTextTouch": "Arrastra la huella para moverla. Arrastra un vértice para cambiar la forma, toca un borde para añadir un vértice o selecciona uno y usa la papelera para eliminarlo. El edificio debe permanecer completamente dentro del bloque.",
+            "infoText": "Arrastra la huella para moverla. Arrastra un vértice para cambiar la forma, haz clic en un borde para añadir uno o selecciona un vértice y usa la papelera o Supr/Retroceso para eliminarlo. Usa «Fijar a la ubicación inicial» para mantenerla dentro; de lo contrario, puedes moverla libremente.",
+            "infoTextTouch": "Arrastra la huella para moverla. Arrastra un vértice para cambiar la forma, toca un borde para añadir uno o selecciona un vértice y usa la papelera para eliminarlo. Usa «Fijar a la ubicación inicial» para mantenerla dentro; de lo contrario, puedes moverla libremente.",
             "parcelLabel": "Parcela del edificio",
             "parcelFootprint": "Parcela según la huella",
             "parcelWhole": "Tomar las parcelas enteras",
-            "parcelInfo": "Por defecto el edificio forma su propia parcela según su huella y el resto del terreno queda con su propietario. Al tomar parcelas enteras, estas pasan a ser la parcela del edificio tal como están."
+            "parcelInfo": "Por defecto el edificio forma su propia parcela según su huella y el resto del terreno queda con su propietario. Al tomar parcelas enteras, estas pasan a ser la parcela del edificio tal como están.",
+            "moveTogether": "Mover toda la propuesta",
+            "uploadInvalid": "El polígono subido no es válido o está fuera de la ubicación fijada."
         },
         "buildingUpload": {
             "title": "Subir un modelo de edificio",
@@ -3313,9 +3337,9 @@
             },
             "manual": {
                 "edit": "Editar forma manualmente",
-                "back": "Volver a los controles",
-                "hint": "Modo manual: arrastra un vértice para remodelar, haz clic en un borde para añadir uno o selecciona un vértice y usa la papelera o Supr/Retroceso para eliminarlo. La anchura y la altura siguen siendo ajustables.",
-                "hintSimplified": "Modo manual: contorno simplificado a {{count}} puntos arrastrables. Arrastra un punto para remodelar, haz clic en un borde para añadir uno o selecciona un punto y usa la papelera o Supr/Retroceso para eliminarlo. La anchura y la altura siguen siendo ajustables.",
+                "back": "Descartar la forma manual y volver a la geometría generada",
+                "hint": "Modo manual: arrastra un vértice para cambiar la forma, haz clic en un borde para añadir uno o selecciona un vértice y usa la papelera o Supr/Retroceso para eliminarlo. La altura sigue siendo ajustable.",
+                "hintSimplified": "Modo manual: contorno simplificado con {{count}} puntos que puedes arrastrar. Arrastra un punto para cambiar la forma, haz clic en un borde para añadir uno o selecciona un punto y usa la papelera o Supr/Retroceso para eliminarlo. La altura sigue siendo ajustable.",
                 "needShape": "Primero genera una forma con los controles y luego edítala manualmente.",
                 "confirmReset": "¿Descartar las ediciones manuales y volver a los controles?",
                 "error": "No se pudo construir desde el contorno manual. Intenta devolver el vértice.",
@@ -3383,7 +3407,10 @@
                 "proceed": "Continuar de todos modos",
                 "cancel": "Volver"
             },
-            "regenerate": "Regenerar"
+            "regenerate": "Regenerar",
+            "editShape": "Editar la huella manualmente",
+            "returnGenerated": "Descartar los cambios manuales y volver a la forma generada",
+            "confirmReturnGenerated": "¿Volver a la forma generada y descartar los cambios manuales?"
         }
     },
     "parcelBased": {
@@ -5006,7 +5033,8 @@
             "fountain": "Fuente",
             "stall": "Mesa",
             "statue": "Estatua",
-            "erase": "Eliminar"
+            "erase": "Eliminar",
+            "move": "Mover"
         },
         "finishPath": "Terminar sendero",
         "undo": "Deshacer",
@@ -5017,20 +5045,24 @@
         "hintPath": "Haz clic para añadir puntos al sendero y luego elige Terminar sendero.",
         "hintSelect": "Selecciona un elemento para empezar.",
         "statusOutside": "Coloca los elementos dentro del límite de la estructura.",
-        "statusSaved": "Diseño de la estructura guardado."
+        "statusSaved": "Diseño de la estructura guardado.",
+        "hintMove": "Arrastra dentro del límite para mover todo el diseño. El contorno y todo su contenido se mueven juntos.",
+        "moveUnavailable": "No se pudo mover este diseño. Inténtalo de nuevo."
     },
     "stationEditor": {
         "ariaLabel": "Editor de geometría de estación",
         "title": "Editar geometría de estación",
         "station": "Estación",
         "close": "Cerrar",
-        "fixedPosition": "El centro de la estación permanece fijo. Gira la estación a su alrededor.",
         "rotation": "Rotación",
         "platformHeight": "Altura del andén sobre el suelo",
         "hint": "La vista previa del mapa se actualiza mientras editas.",
         "cancel": "Cancelar",
         "save": "Listo",
-        "saved": "Geometría de estación guardada."
+        "saved": "Geometría de estación guardada.",
+        "moveHint": "Arrastra la huella de la estación o el marcador central para cambiarla de lugar. El tipo, tamaño, rotación y altura del andén se mantienen.",
+        "dragCenter": "Arrastra para mover la estación",
+        "undo": "Deshacer"
     },
     "claims": {
         "onParcels": "En las parcelas:",

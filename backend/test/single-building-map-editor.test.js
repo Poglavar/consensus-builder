@@ -23,7 +23,7 @@ const functions = new Map();
 })(ast);
 
 function extract(name, variables, stubs) {
-    const locallyDeclared = new Set(['singleMap', 'singleEditor', 'singleSession', 'singleUploadOnConfirm', 'singleBlockLayer', 'singleParcelBorderLayer', 'singleRectGroup', 'singleGroundPreviewLayer', 'singleRectLayer', 'singleActivePolygonLayer', 'singleDragMarker', 'singlePendingVertexActionIndex', 'singleBuildingDesignChangeTracker', 'disabledViewButtons', 'suspendedPanels', 'threeControls', 'editorFocusReturn', 'currentGroundTreatment', 'currentTakeWholeParcels']);
+    const locallyDeclared = new Set(['singleMap', 'singleEditor', 'singleSession', 'singleUploadOnConfirm', 'singleBlockLayer', 'singleParcelBorderLayer', 'singleRectGroup', 'singleGroundPreviewLayer', 'singleRectLayer', 'singleActivePolygonLayer', 'singleDragMarker', 'singlePendingVertexActionIndex', 'singleBuildingDesignChangeTracker', 'disabledViewButtons', 'suspendedPanels', 'threeControls', 'editorFocusReturn', 'currentGroundTreatment', 'currentTakeWholeParcels', 'singleHistory', 'singleBuildingLayers']);
     const bindings = Object.keys(stubs).filter(key => !locallyDeclared.has(key)).map(key => `const ${key}=this.${key};`).join('\n');
     const context = { console, ...stubs };
     vm.runInNewContext(`${variables}\n${bindings}\n${functions.get(name)}\nthis.fn=${name};`, context);
@@ -54,6 +54,7 @@ function closeHarness(options = {}) {
     const stubs = {
         document, window, map, singleMap: map, singleEditor: editor,
         singleSession: { close: vi.fn(() => { calls.sessionClosed = true; }) },
+        singleHistory: { destroy: vi.fn() }, singleBuildingLayers: new Map(),
         singleBlockLayer: 'block', singleParcelBorderLayer: 'border', singleRectGroup: 'footprints',
         singleGroundPreviewLayer: 'ground', singleRectLayer: {}, singleActivePolygonLayer: {}, singleDragMarker: {},
         singleBuildingDesignChangeTracker: { stop: vi.fn() }, singlePendingVertexActionIndex: 3,
@@ -67,10 +68,10 @@ function closeHarness(options = {}) {
         threeControls: { removeEventListener: vi.fn() }, editorFocusReturn: null,
         EDIT_LOCK_OWNER: 'single-building-editor', CustomEvent: class { constructor(type, init) { this.type = type; this.detail = init.detail; } }
     };
-    const variables = `let singleSession=this.singleSession, singleMap=this.singleMap, singleEditor=this.singleEditor, singleUploadOnConfirm=this.singleUploadOnConfirm, singleBlockLayer=this.singleBlockLayer, singleParcelBorderLayer=this.singleParcelBorderLayer, singleRectGroup=this.singleRectGroup, singleGroundPreviewLayer=this.singleGroundPreviewLayer, singleRectLayer=this.singleRectLayer, singleActivePolygonLayer=this.singleActivePolygonLayer, singleDragMarker=this.singleDragMarker, singlePendingVertexActionIndex=this.singlePendingVertexActionIndex, singleBuildingDesignChangeTracker=this.singleBuildingDesignChangeTracker, disabledViewButtons=this.disabledViewButtons, suspendedPanels=this.suspendedPanels, threeControls=this.threeControls, editorFocusReturn=this.editorFocusReturn, singleBlockFeature={geometry:{}}, singleRectFeature={geometry:{}}, currentRotationDeg=90, currentGroundTreatment='paved', currentTakeWholeParcels=true;`;
+    const variables = `let singleGroundBoundary=null, singleHistory=this.singleHistory, singleBuildingLayers=this.singleBuildingLayers, singleSession=this.singleSession, singleMap=this.singleMap, singleEditor=this.singleEditor, singleUploadOnConfirm=this.singleUploadOnConfirm, singleBlockLayer=this.singleBlockLayer, singleParcelBorderLayer=this.singleParcelBorderLayer, singleRectGroup=this.singleRectGroup, singleGroundPreviewLayer=this.singleGroundPreviewLayer, singleRectLayer=this.singleRectLayer, singleActivePolygonLayer=this.singleActivePolygonLayer, singleDragMarker=this.singleDragMarker, singlePendingVertexActionIndex=this.singlePendingVertexActionIndex, singleBuildingDesignChangeTracker=this.singleBuildingDesignChangeTracker, disabledViewButtons=this.disabledViewButtons, suspendedPanels=this.suspendedPanels, threeControls=this.threeControls, editorFocusReturn=this.editorFocusReturn, singleBlockFeature={geometry:{}}, singleRectFeature={geometry:{}}, currentRotationDeg=90, currentGroundTreatment='paved', currentTakeWholeParcels=true;`;
     const names = ['singleBuildingPreview', 'updateSingleBuildingPreview', 'closeSingleBuildingMapEditor', 'requestCloseSingleBuildingMapEditor'];
     const context = { console, ...stubs };
-    const locallyDeclared = new Set(['singleMap', 'singleEditor', 'singleSession', 'singleUploadOnConfirm', 'singleBlockLayer', 'singleParcelBorderLayer', 'singleRectGroup', 'singleGroundPreviewLayer', 'singleRectLayer', 'singleActivePolygonLayer', 'singleDragMarker', 'singlePendingVertexActionIndex', 'singleBuildingDesignChangeTracker', 'disabledViewButtons', 'suspendedPanels', 'threeControls', 'editorFocusReturn', 'currentGroundTreatment', 'currentTakeWholeParcels']);
+    const locallyDeclared = new Set(['singleMap', 'singleEditor', 'singleSession', 'singleUploadOnConfirm', 'singleBlockLayer', 'singleParcelBorderLayer', 'singleRectGroup', 'singleGroundPreviewLayer', 'singleRectLayer', 'singleActivePolygonLayer', 'singleDragMarker', 'singlePendingVertexActionIndex', 'singleBuildingDesignChangeTracker', 'disabledViewButtons', 'suspendedPanels', 'threeControls', 'editorFocusReturn', 'currentGroundTreatment', 'currentTakeWholeParcels', 'singleHistory', 'singleBuildingLayers']);
     const bindings = Object.keys(stubs).filter(key => !locallyDeclared.has(key)).map(key => `const ${key}=this.${key};`).join('\n');
     vm.runInNewContext(`${variables}\n${bindings}\n${names.map(name => functions.get(name)).join('\n')}\nthis.close=closeSingleBuildingMapEditor; this.cancel=requestCloseSingleBuildingMapEditor;`, context);
     return { close: context.close, cancel: context.cancel, calls, map, editor, panel, body, stubs, window, document };
@@ -228,12 +229,13 @@ describe('single-building map editor lifecycle', () => {
             getActiveBuilding: () => entry, getSingleBuildingContext: () => ({ blockName: 'Block', parcels: [{ feature: { properties: { BROJ_CESTICE: '77' } } }] }),
             setSingleBuildingStatus: vi.fn(), resolveParcelId: () => 'parcel-77', describeSingleBuildingSelection: () => 'Block',
             multiParcelSelection: { clearSelection: vi.fn(), selectedParcels: new Set(), updateUI: vi.fn() },
-            window: { SingleBuildingGeometry: { clipFootprintToBoundary: value => value } }, turf: {},
-            singleUploadOnConfirm: afterUploadDone,
+            window: { SingleBuildingGeometry: { clipFootprintToBoundary: vi.fn(value => value) } }, turf: {},
+            singleSession: { placement: { locked: false } }, currentPlacementSite: () => ({ type: 'MultiPolygon', coordinates: [] }),
+            singleUploadOnConfirm: afterUploadDone, cloneSingleFeature: value => structuredClone(value),
             currentGroundSurface: () => ({ treatment: 'green' }), setPendingBuildingProposalContext: value => pendingContexts.push(value),
             closeSingleBuildingMapEditor: close, document: { getElementById: () => null }
         };
-        const variables = `let buildingEntries=[this.entry], singleBlockFeature={geometry:{}}, currentTakeWholeParcels=true, pendingSingleBuildingMeta=null, singleUploadOnConfirm=this.singleUploadOnConfirm; const DEFAULT_HEIGHT_M=12;`;
+        const variables = `let buildingEntries=[this.entry], singleBlockFeature={geometry:{}}, singleGroundBoundary={geometry:{}}, currentTakeWholeParcels=true, pendingSingleBuildingMeta=null, singleUploadOnConfirm=this.singleUploadOnConfirm; const DEFAULT_HEIGHT_M=12;`;
         const context = { ...stubs, entry };
         const bindings = Object.keys(stubs).filter(key => key !== 'singleUploadOnConfirm').map(key => `const ${key}=this.${key};`).join('\n');
         vm.runInNewContext(`${variables}\n${bindings}\n${functions.get('confirmSingleBuilding')}\nthis.confirm=confirmSingleBuilding;`, context);
@@ -241,6 +243,8 @@ describe('single-building map editor lifecycle', () => {
         expect(pendingContexts).toHaveLength(1);
         expect(pendingContexts[0]).toMatchObject({ parcelIds: ['parcel-77'], blockName: 'Block', takeWholeParcels: true });
         expect(pendingContexts[0].buildings).toHaveLength(1);
+        expect(stubs.window.SingleBuildingGeometry.clipFootprintToBoundary).not.toHaveBeenCalled();
+        expect(pendingContexts[0].placement).toMatchObject({ free: true });
         expect(close).toHaveBeenCalledWith({ preservePending: true });
         expect(afterUploadDone).toHaveBeenCalledOnce();
 

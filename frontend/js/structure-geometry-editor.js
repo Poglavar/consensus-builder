@@ -12,12 +12,14 @@
         pathCursor: null,
         rubberBand: null,
         geometryDrag: null,
+        boundaryDrag: null,
         polygonEditor: null,
         layer: null,
         panel: null,
         session: null,
         reselectKey: null,
-        lakeError: null
+        lakeError: null,
+        initialSite: null
     };
 
     // Everything the editor draws lives in its own pane ABOVE the structure panes (squares
@@ -56,6 +58,26 @@
             return [Number(value[0]) + deltaLng, Number(value[1]) + deltaLat];
         }
         return value.map(item => translateCoordinateCollection(item, deltaLng, deltaLat));
+    }
+
+    function moveDecorations(value, from, to) {
+        const moveCoordinates = global.SingleBuildingGeometry?.moveCoordinateCollection;
+        if (typeof moveCoordinates !== 'function' || !value) return value;
+        const moved = { ...clone(value) };
+        for (const [key, coordinates] of Object.entries(value)) {
+            if (key !== 'benches' && Array.isArray(coordinates)) {
+                moved[key] = moveCoordinates(coordinates, from, to);
+            }
+        }
+        // Bench records carry metadata beside their point, so move the nested coordinate
+        // explicitly and preserve each bearing without mutating the drag's starting snapshot.
+        if (Array.isArray(value.benches)) {
+            moved.benches = value.benches.map(bench => ({
+                ...bench,
+                coordinate: moveCoordinates(bench.coordinate, from, to)
+            }));
+        }
+        return moved;
     }
 
     function normalizeDecorations(kind, input) {
@@ -220,6 +242,105 @@
         render();
     }
 
+    function startBoundaryDrag(event) {
+        if (state.tool !== 'move' || state.boundaryDrag || !event?.latlng || !state.boundary?.geometry) return;
+        try {
+            if (event.originalEvent) global.L.DomEvent.stop(event.originalEvent);
+            else global.L.DomEvent.stopPropagation(event);
+        } catch (_) { }
+        const latlng = event.latlng;
+        state.boundaryDrag = {
+            startBoundary: clone(state.boundary),
+            startDecorations: clone(state.decorations),
+            startPathPoints: clone(state.pathPoints),
+            from: { lng: Number(latlng.lng), lat: Number(latlng.lat) },
+            recorded: false,
+            mapDraggingWasEnabled: global.map?.dragging?.enabled?.() === true
+        };
+        try { global.map?.dragging?.disable?.(); } catch (_) { }
+        global.map?.on('mousemove', moveBoundaryDrag);
+        global.map?.on('touchmove', moveBoundaryDrag);
+        global.map?.on('mouseup', endBoundaryDrag);
+        global.map?.on('touchend', endBoundaryDrag);
+        global.map?.on('touchcancel', endBoundaryDrag);
+        global.document?.addEventListener('mouseup', endBoundaryDrag);
+        global.document?.addEventListener('touchend', endBoundaryDrag);
+        global.document?.addEventListener('touchcancel', endBoundaryDrag);
+    }
+
+    function moveBoundaryDrag(event) {
+        const drag = state.boundaryDrag;
+        const latlng = event?.latlng;
+        if (!drag || !latlng || !Number.isFinite(latlng.lng) || !Number.isFinite(latlng.lat)) return;
+        const placement = state.session?.placement;
+        const rawTo = { lng: Number(latlng.lng), lat: Number(latlng.lat) };
+        let target = rawTo;
+        try {
+            target = placement?.moveTarget?.(drag.startBoundary.geometry, drag.from, rawTo, event.originalEvent) || rawTo;
+        } catch (_) { return; }
+        if (!target || !Number.isFinite(target.lng) || !Number.isFinite(target.lat)) return;
+        if (Math.abs(target.lng - drag.from.lng) < 1e-12 && Math.abs(target.lat - drag.from.lat) < 1e-12) return;
+        const moveCoordinates = global.SingleBuildingGeometry?.moveCoordinateCollection;
+        if (typeof moveCoordinates !== 'function' || typeof global.SingleBuildingGeometry?.moveGeometry !== 'function') {
+            if (!drag.missingHelperReported) {
+                drag.missingHelperReported = true;
+                global.updateStatus?.(t('moveUnavailable', 'Could not move this design. Try again.'));
+            }
+            return;
+        }
+        let feature;
+        let decorations;
+        let pathPoints;
+        try {
+            const geometry = global.SingleBuildingGeometry.moveGeometry(drag.startBoundary.geometry, drag.from, target);
+            feature = { ...clone(drag.startBoundary), geometry };
+            if (placement?.accepts && !placement.accepts(feature)) return;
+            decorations = drag.startDecorations
+                ? moveDecorations(drag.startDecorations, drag.from, target)
+                : drag.startDecorations;
+            pathPoints = moveCoordinates(drag.startPathPoints || [], drag.from, target);
+        } catch (_) {
+            if (!drag.missingHelperReported) {
+                drag.missingHelperReported = true;
+                global.updateStatus?.(t('moveUnavailable', 'Could not move this design. Try again.'));
+            }
+            return;
+        }
+        if (!drag.recorded) {
+            recordHistory();
+            drag.recorded = true;
+        }
+        state.boundary = feature;
+        state.decorations = decorations;
+        state.pathPoints = pathPoints;
+        state.pathCursor = null;
+        placement?.update?.(feature);
+        render();
+    }
+
+    function endBoundaryDrag() {
+        const drag = state.boundaryDrag;
+        state.boundaryDrag = null;
+        if (!drag) return;
+        if (global.map) {
+            global.map.off('mousemove', moveBoundaryDrag);
+            global.map.off('touchmove', moveBoundaryDrag);
+            global.map.off('mouseup', endBoundaryDrag);
+            global.map.off('touchend', endBoundaryDrag);
+            global.map.off('touchcancel', endBoundaryDrag);
+            if (drag.mapDraggingWasEnabled) {
+                try { global.map.dragging?.enable?.(); } catch (_) { }
+            }
+        }
+        global.document?.removeEventListener('mouseup', endBoundaryDrag);
+        global.document?.removeEventListener('touchend', endBoundaryDrag);
+        global.document?.removeEventListener('touchcancel', endBoundaryDrag);
+        const changed = JSON.stringify(state.boundary?.geometry) !== JSON.stringify(drag.startBoundary.geometry);
+        if (drag.recorded && !changed) historyCtl?.discardLast?.();
+        state.session?.placement?.update?.(state.boundary);
+        render();
+    }
+
     function moveGeometryDrag(event) {
         const drag = state.geometryDrag;
         const latlng = event?.latlng;
@@ -268,6 +389,7 @@
     }
 
     function bindDraggableGeometry(layer, type, index) {
+        if (state.tool === 'move') return layer;
         bindErasable(layer, type, index);
         layer.on('mousedown', event => startGeometryDrag(event, layer, type, index));
         layer.on('touchstart', event => startGeometryDrag(event, layer, type, index));
@@ -277,11 +399,13 @@
     function addPointMarker(group, type, coord, index, icon) {
         const marker = global.L.marker([coord[1], coord[0]], {
             icon,
-            draggable: true,
-            keyboard: true,
+            interactive: state.tool !== 'move',
+            draggable: state.tool !== 'move',
+            keyboard: state.tool !== 'move',
             // Point handles must stay above interactive paths regardless of the map's pan offset.
             pane: state.session.handlePane
         }).addTo(group);
+        if (state.tool === 'move') return marker;
         marker.on('dragstart', recordHistory);
         marker.on('dragend', () => {
             const next = marker.getLatLng();
@@ -306,21 +430,25 @@
     function renderPark(group) {
         state.decorations.paths.forEach((path, index) => bindDraggableGeometry(global.L.polyline(path.map(([lng, lat]) => [lat, lng]), {
             color: '#f7edc8', weight: 5, opacity: 0.95, dashArray: '8 5', pane: EDITOR_PANE,
+            interactive: state.tool !== 'move',
             className: 'structure-geometry-draggable'
         }).addTo(group), 'paths', index));
         state.decorations.ponds.forEach((ring, index) => bindDraggableGeometry(global.L.polygon(ring.map(([lng, lat]) => [lat, lng]), {
             color: '#1d4ed8', fillColor: '#38bdf8', fillOpacity: 0.75, weight: 2, pane: EDITOR_PANE,
+            interactive: state.tool !== 'move',
             className: 'structure-geometry-draggable'
         }).addTo(group), 'ponds', index));
         state.decorations.flowerbeds.forEach((ring, index) => bindDraggableGeometry(global.L.polygon(ring.map(([lng, lat]) => [lat, lng]), {
             color: '#be185d', fillColor: '#f472b6', fillOpacity: 0.78, weight: 2, pane: EDITOR_PANE,
+            interactive: state.tool !== 'move',
             className: 'structure-geometry-draggable'
         }).addTo(group), 'flowerbeds', index));
         state.decorations.trees.forEach((coord, index) => addPointMarker(group, 'trees', coord, index, makeIcon('is-tree', '🌳')));
         (state.decorations.benches || []).forEach((bench, index) => addPointMarker(group, 'benches', bench.coordinate, index, makeIcon('is-bench', '▰')));
         if (state.pathPoints.length) {
             global.L.polyline(state.pathPoints.map(([lng, lat]) => [lat, lng]), {
-                color: '#f59e0b', weight: 4, dashArray: '5 5', pane: EDITOR_PANE
+                color: '#f59e0b', weight: 4, dashArray: '5 5', pane: EDITOR_PANE,
+                interactive: state.tool !== 'move'
             }).addTo(group);
         }
         updateRubberBand();
@@ -369,16 +497,23 @@
         const factory = global.GeometryEditHistory;
         if (!factory) return null;
         historyCtl = factory.create({
-            capture: () => ({ decorations: clone(state.decorations), pathPoints: clone(state.pathPoints) }),
+            capture: () => ({
+                boundary: clone(state.boundary),
+                decorations: clone(state.decorations),
+                pathPoints: clone(state.pathPoints)
+            }),
             restore: (snapshot) => {
+                state.boundary = clone(snapshot.boundary);
                 state.decorations = clone(snapshot.decorations);
                 state.pathPoints = clone(snapshot.pathPoints);
                 state.pathCursor = null;
+                state.session?.placement?.update?.(state.boundary);
                 render();
+                state.polygonEditor?.render?.({ refreshRing: true });
             }
         });
         historyCtl.bindKeyboard(global.document || global, {
-            enabled: () => !!state.decorations   // only while the editor owns the map
+            enabled: () => !!state.draftId   // only while the editor owns the map
         });
         return historyCtl;
     }
@@ -401,8 +536,14 @@
                 weight: 3,
                 dashArray: '8 5'
             },
-            interactive: false,
-            pane: EDITOR_PANE
+            interactive: state.tool === 'move',
+            pane: EDITOR_PANE,
+            onEachFeature: (_feature, layer) => {
+                if (state.tool !== 'move') return;
+                layer.on('mousedown', startBoundaryDrag);
+                layer.on('touchstart', startBoundaryDrag);
+            },
+            className: 'structure-geometry-boundary'
         }).addTo(state.layer);
         if (state.kind === 'lake') {
             const graphics = global.buildLakeGraphicsFromGeometry?.(state.boundary?.geometry) || null;
@@ -428,7 +569,7 @@
         });
     }
 
-    function commitLakeOuterRing(ring) {
+    function commitLakeOuterRing(ring, reason = 'move') {
         const closed = closeRing(ring);
         const geometry = clone(state.boundary?.geometry);
         if (!closed || !geometry) return false;
@@ -439,91 +580,34 @@
         } else {
             return false;
         }
+        const currentRing = lakeOuterRing(state.boundary);
+        const same = currentRing?.length === closed.length
+            && currentRing.every((point, index) => point[0] === closed[index][0] && point[1] === closed[index][1]);
+        if (same) {
+            if (reason === 'move') historyCtl?.discardLast?.();
+            return true;
+        }
+        if (reason !== 'move') recordHistory();
         state.boundary.geometry = geometry;
+        state.session?.placement?.update?.(state.boundary);
         render();
+        state.polygonEditor?.render?.({ refreshRing: true });
         return true;
     }
 
-    function localizedFailure(key, fallback) {
-        const fullKey = `proposalApplyFailures.${key}`;
-        try {
-            const translated = global.i18n?.t?.(fullKey);
-            if (translated && translated !== fullKey) return translated;
-        } catch (_) { }
-        return fallback;
-    }
-
-    function unavailableLakeCheck(reason) {
-        if (reason === 'adapter') {
-            const key = 'proposalDrafts.design.unavailable';
-            try {
-                const translated = global.i18n?.t?.(key);
-                if (translated && translated !== key) return { code: 'lake-adapter-unavailable', message: translated };
-            } catch (_) { }
-            return { code: 'lake-adapter-unavailable', message: 'This design editor is unavailable.' };
-        }
-        return {
-            code: 'cadastral-ground-unavailable',
-            message: localizedFailure('groundUnavailable', 'Cadastral parcel data could not be loaded. Check your connection and try again.')
-        };
-    }
-
     function lakeBoundaryFailure(graphics) {
-        if (!graphics || !oneConnectedLakeGeometry(graphics.geometry || state.boundary?.geometry)) {
+        const geometry = graphics?.geometry || state.boundary?.geometry;
+        const ring = lakeOuterRing({ geometry });
+        let simpleRing = false;
+        try { simpleRing = !!global.SingleBuildingGeometry?.isSimpleRing?.(ring); } catch (_) { }
+        if (!graphics || !oneConnectedLakeGeometry(geometry)
+            || !Array.isArray(ring) || ring.length < 4 || !simpleRing) {
             return {
                 code: 'proposal-footprint-invalid',
                 message: t('lakeInvalid', 'A lake boundary must form one connected area. Adjust the outline and try again.')
             };
         }
-
-        const manager = global.ProposalManager;
-        if (!manager || typeof manager.getProposalGroundFailure !== 'function') return unavailableLakeCheck('manager');
-        const adapter = global.proposalEditorAdapterRegistry?.get?.('lake');
-        if (!adapter || typeof adapter.serializeProposal !== 'function') return unavailableLakeCheck('adapter');
-
-        const draft = global.proposalDraftStore?.getDraft?.(state.draftId);
-        if (!draft) {
-            return {
-                code: 'proposal-not-found',
-                message: localizedFailure('notFound', 'This proposal is no longer available. Refresh the proposals list and try again.')
-            };
-        }
-
-        // Match the final serializer pipeline against a private candidate. Keep both geometry
-        // projections aligned: the adapter reads editorPayload.geometry for the record footprint
-        // and structureProposal.geometry for the authored structure payload.
-        const candidate = clone(draft);
-        candidate.editorPayload = clone(candidate.editorPayload || {});
-        const structureProposal = clone(candidate.editorPayload.structureProposal || {});
-        structureProposal.kind = 'lake';
-        structureProposal.geometry = clone(state.boundary.geometry);
-        structureProposal.lakeGraphics = clone(graphics);
-        delete structureProposal.decorations;
-        candidate.editorPayload.structureProposal = structureProposal;
-        candidate.editorPayload.geometry = clone(state.boundary.geometry);
-        candidate.previewGeometry = clone(state.boundary.geometry);
-        let record;
-        try { record = adapter.serializeProposal(candidate); } catch (_) {
-            return {
-                code: 'proposal-footprint-invalid',
-                message: localizedFailure('invalidGeometry', 'The proposal geometry is missing or invalid. Edit its geometry before applying.')
-            };
-        }
-        if (!record || typeof record !== 'object') {
-            return {
-                code: 'proposal-footprint-invalid',
-                message: localizedFailure('invalidGeometry', 'The proposal geometry is missing or invalid. Edit its geometry before applying.')
-            };
-        }
-        let failure;
-        try { failure = manager.getProposalGroundFailure(record); } catch (_) {
-            return unavailableLakeCheck('manager');
-        }
-        if (!failure) return null;
-        return {
-            ...failure,
-            message: failure.message || localizedFailure('groundUnavailable', 'Cadastral parcel data could not be loaded. Check your connection and try again.')
-        };
+        return null;
     }
 
     function circleRing(center, radiusMeters) {
@@ -614,10 +698,41 @@
         updateRubberBand();
     }
 
+    function createLakePolygonEditor() {
+        if (state.kind !== 'lake' || !state.session || state.polygonEditor) return state.polygonEditor;
+        const ring = lakeOuterRing(state.boundary);
+        if (!Array.isArray(ring) || typeof global.PolygonGeometryEditor?.create !== 'function') return null;
+        state.polygonEditor = global.PolygonGeometryEditor.create({
+            map: global.map,
+            pane: state.session.handlePane || EDITOR_PANE,
+            leaflet: global.L,
+            turf: global.turf,
+            ring,
+            getRing: () => lakeOuterRing(state.boundary) || ring,
+            boundary: () => state.session?.placement?.locked ? state.initialSite : null,
+            snapCoordinate: (coordinate, event) =>
+                state.session?.placement?.snapCoordinate?.(coordinate, event) || coordinate,
+            undo: false,
+            showUndoButton: false,
+            onDragStart: () => recordHistory(),
+            vertexTitle: t('lakeVertexTitle', 'Drag to reshape the lake boundary'),
+            deleteTitle: t('lakeDeleteVertexTitle', 'Delete this boundary point'),
+            undoTitle: t('lakeUndoTitle', 'Undo lake boundary edit'),
+            onCommit: ({ ring: nextRing, reason }) => commitLakeOuterRing(nextRing, reason)
+        });
+        return state.polygonEditor;
+    }
+
     function setTool(tool) {
-        if (state.tool === 'path' && tool !== 'path') finishPath();
-        state.tool = tool;
-        updatePanelState();
+        const nextTool = state.tool === tool && state.kind === 'lake' && tool === 'move' ? null : tool;
+        if (state.tool === 'path' && nextTool !== 'path') finishPath();
+        if (state.kind === 'lake' && nextTool === 'move' && state.polygonEditor) {
+            state.polygonEditor.destroy();
+            state.polygonEditor = null;
+        }
+        state.tool = nextTool;
+        if (state.kind === 'lake' && state.tool !== 'move') createLakePolygonEditor();
+        render();
     }
 
     // A tool is a .btn toggle: the chosen one is aria-pressed (css/primitives.css).
@@ -629,10 +744,12 @@
         if (state.kind === 'lake') {
             return `
                 <p class="structure-geometry-options">${t('lakeBoundaryHint', 'The lake shape and its generated shore and water graphics will be saved together.')}</p>
+                <div class="structure-geometry-tools">${toolButton('move', 'fa-arrows-up-down-left-right', t('tools.move', 'Move lake'))}</div>
                 `;
         }
         const tools = state.kind === 'park'
             ? [
+                toolButton('move', 'fa-arrows-up-down-left-right', t('tools.move', 'Move park')),
                 toolButton('tree', 'fa-tree', t('tools.tree', 'Tree')),
                 toolButton('flowerbed', 'fa-seedling', t('tools.flowerbed', 'Flowerbed')),
                 toolButton('pond', 'fa-water', t('tools.pond', 'Pond')),
@@ -640,6 +757,7 @@
                 toolButton('bench', 'fa-chair', t('tools.bench', 'Bench'))
             ].join('')
             : [
+                toolButton('move', 'fa-arrows-up-down-left-right', t('tools.move', 'Move square')),
                 toolButton('fountain', 'fa-droplet', t('tools.fountain', 'Fountain')),
                 toolButton('tree', 'fa-tree', t('tools.tree', 'Tree')),
                 toolButton('bench', 'fa-chair', t('tools.bench', 'Bench')),
@@ -655,8 +773,7 @@
             ? '<p class="structure-geometry-error structure-geometry-footer-error" data-role="lake-error" role="status" aria-live="assertive" hidden></p>'
             : '';
         const undoLabel = t('undo', 'Undo');
-        const undo = state.kind === 'lake' ? ''
-            : `<button type="button" class="btn btn-sm" data-action="undo" aria-label="${undoLabel}"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i>${undoLabel}</button>`;
+        const undo = `<button type="button" class="btn btn-sm" data-action="undo" aria-label="${undoLabel}"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i>${undoLabel}</button>`;
         const finish = state.kind === 'park'
             ? `<button type="button" class="btn btn-sm" data-action="finish-path" hidden>${t('finishPath', 'Finish path')}</button>`
             : '';
@@ -678,9 +795,13 @@
         }
         if (state.session?.setHint) {
             if (state.kind === 'lake') {
-                state.session.setHint(t('hintLake', 'Use the map points to reshape the lake boundary. Undo is available on the map.'));
+                state.session.setHint(state.tool === 'move'
+                    ? t('hintMove', 'Drag inside the boundary to move the full design. The outline and all its contents move together.')
+                    : t('hintLake', 'Use the map points to reshape the lake boundary. Undo is available on the map.'));
             } else if (!state.tool) {
                 state.session.setHint(t('hintSelect', 'Select an item to begin.'));
+            } else if (state.tool === 'move') {
+                state.session.setHint(t('hintMove', 'Drag inside the boundary to move the full design. The outline and all its contents move together.'));
             } else {
                 const toolLabels = {
                     tree: t('tools.tree', 'Tree'), flowerbed: t('tools.flowerbed', 'Flowerbed'),
@@ -719,7 +840,7 @@
     }
 
     function onMapClick(event) {
-        if (!state.draftId || !state.tool || state.tool === 'erase') return;
+        if (!state.draftId || !state.tool || state.tool === 'erase' || state.tool === 'move') return;
         placeAt([event.latlng.lng, event.latlng.lat]);
     }
 
@@ -738,6 +859,7 @@
         state.reselectKey = null;
         state.lakeError = null;
         if (state.geometryDrag) endGeometryDrag();
+        if (state.boundaryDrag) endBoundaryDrag();
         if (state.polygonEditor) {
             try { state.polygonEditor.destroy(); } catch (_) { }
             state.polygonEditor = null;
@@ -755,6 +877,7 @@
         state.draftId = null;
         state.kind = null;
         state.boundary = null;
+        state.initialSite = null;
         state.decorations = null;
         if (historyCtl) { historyCtl.destroy(); historyCtl = null; }
         state.tool = null;
@@ -814,7 +937,15 @@
             current.decorations = clone(state.decorations);
         }
         try {
-            const updated = global.syncActiveProposalDraftFromEditor?.('structure', { structureProposal: current }, { coalesceKey: 'editor:structure' });
+            const updated = global.syncActiveProposalDraftFromEditor?.('structure', { structureProposal: current }, {
+                coalesceKey: 'editor:structure',
+                placement: {
+                    // The starting parcel is only a guide. A saved relocation must bind to the
+                    // live edited footprint, so later edits cannot snap back to the old site.
+                    site: clone(state.boundary.geometry),
+                    free: true
+                }
+            });
             if (!updated) {
                 global.reportProposalDesignSaveFailure?.();
                 return false;
@@ -840,6 +971,7 @@
             || typeof global.PolygonGeometryEditor?.create !== 'function')) return false;
         state.kind = kind;
         state.boundary = boundary;
+        state.initialSite = clone(boundary);
         state.decorations = kind === 'lake' ? null : normalizeDecorations(kind, sourceDecorations(draft));
         state.lakeError = null;
         state.tool = null;
@@ -857,6 +989,13 @@
             title,
             content: panelMarkup(),
             footer: footerMarkup(),
+            placement: {
+                site: clone(state.initialSite),
+                onLockChange: () => {
+                    state.polygonEditor?.render?.({ refreshRing: true });
+                    state.session?.placement?.update?.(state.boundary);
+                }
+            },
             modes: ['2d'],
             onCancel: () => closeEditor(false),
             onModeChange: mode => {
@@ -866,6 +1005,7 @@
         if (!session) {
             state.kind = null;
             state.boundary = null;
+            state.initialSite = null;
             state.decorations = null;
             state.reselectKey = null;
             return false;
@@ -882,25 +1022,14 @@
         try { global.updateParksLayer?.(); } catch (_) { }
         try { global.updateSquaresLayer?.(); } catch (_) { }
         try { global.updateLakesLayer?.(); } catch (_) { }
-        if (kind !== 'lake') {
-            ensureHistory()?.bindButton(state.panel.querySelector('[data-action="undo"]'));
-            global.map.on('click', onMapClick);
-            global.map.on('mousemove', onMapMouseMove);
-        }
+        ensureHistory()?.bindButton(state.panel.querySelector('[data-action="undo"]'));
+        state.session.placement?.update?.(state.boundary);
+        global.map.on('click', onMapClick);
+        global.map.on('mousemove', onMapMouseMove);
         global.document?.addEventListener('keydown', onKeyDown, true);
         render();
         if (kind === 'lake') {
-            state.polygonEditor = global.PolygonGeometryEditor.create({
-                map: global.map,
-                pane: session.handlePane || EDITOR_PANE,
-                leaflet: global.L,
-                turf: global.turf,
-                ring: initialLakeRing,
-                vertexTitle: t('lakeVertexTitle', 'Drag to reshape the lake boundary'),
-                deleteTitle: t('lakeDeleteVertexTitle', 'Delete this boundary point'),
-                undoTitle: t('lakeUndoTitle', 'Undo lake boundary edit'),
-                onCommit: ({ ring }) => commitLakeOuterRing(ring)
-            });
+            createLakePolygonEditor();
         }
         if (!global.isThreeModeActive?.()) session.fitFeature(boundary, { maxZoom: 20 });
         return true;

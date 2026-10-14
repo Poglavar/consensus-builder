@@ -6,7 +6,15 @@
     "controls": "Controls",
     "showControls": "Show controls",
     "hideControls": "Hide controls",
-    "moreOptions": "More options"
+    "moreOptions": "More options",
+    "undo": "Undo",
+    "lockReject": "The current footprint is outside the locked site. Move it back inside to use site lock.",
+    "placement": {
+      "snap": "Snap to edges",
+      "lock": "Lock to starting site",
+      "outside": "Outside the starting site. Save to recalculate affected parcels.",
+      "lockOutside": "Move the design inside the starting site before locking it."
+    }
   },
     "optionalTools": {
         "loadFailed": "Could not load this tool. Please try again."
@@ -447,6 +455,20 @@
             "draftCreateFailed": "Could not save a local draft for this site design. The site remains unchanged.",
             "handoffFailed": "The design editor could not open. Your site is unchanged, and the design draft was preserved locally.",
             "handoffFailedReason": "The design editor could not open: {{reason}}. Your site is unchanged, and the design draft was preserved locally."
+        },
+        "placement": {
+            "fixedSite": "This proposal type has a fixed site and cannot be moved.",
+            "existingBuilding": "Existing-building proposals keep their source-aware footprint and cannot use free placement.",
+            "invalidSite": "A free placement needs a valid polygon site.",
+            "freshBinding": "A free placement needs a fresh authoritative site binding.",
+            "unknownCoverage": "The server cannot verify this site against a supported cadastre. Move it into a supported area or contact the city data team.",
+            "unverifiedCoverage": "The site binding did not confirm its cadastral coverage. Retry the binding before applying or publishing.",
+            "pending": "The moved site must be rebound before this draft can be applied or published.",
+            "bindingUnavailable": "The authoritative site binding service is unavailable. Your moved draft is saved locally.",
+            "geometryChanged": "The moved geometry changed while its site was being bound. Retry the save.",
+            "buildingOutsideSite": "The moved building geometry must fit entirely inside its new site.",
+            "surroundingsOutsideSite": "The moved surroundings must fit entirely inside the new site. Move the whole proposal or adjust its ground boundary before saving.",
+            "massingOutsideSite": "The moved block massing must fit entirely inside its new site."
         },
         "review": {
             "title": "Review changes",
@@ -2034,12 +2056,14 @@
             "uploadNoPolygon": "No usable polygon found in that file.",
             "uploadOutside": "The uploaded polygon does not overlap this block in a usable way.",
             "uploadError": "Could not read that file.",
-            "infoText": "Drag the footprint to move it. Drag a vertex to reshape it, click an edge to add a vertex, or select a vertex and use the trash button or Delete/Backspace to remove it. The building must remain fully within the block.",
-            "infoTextTouch": "Drag the footprint to move it. Drag a vertex to reshape it, tap an edge to add a vertex, or select a vertex and use the trash button to remove it. The building must remain fully within the block.",
+            "infoText": "Drag the footprint to move it. Drag a vertex to reshape it, click an edge to add a vertex, or select a vertex and use the trash button or Delete/Backspace to remove it. Use “Lock to starting site” to keep it within this site; otherwise you can move it freely.",
+            "infoTextTouch": "Drag the footprint to move it. Drag a vertex to reshape it, tap an edge to add a vertex, or select a vertex and use the trash button to remove it. Use “Lock to starting site” to keep it within this site; otherwise you can move it freely.",
             "parcelLabel": "Building parcel",
             "parcelFootprint": "Footprint parcel",
             "parcelWhole": "Take the whole parcels",
-            "parcelInfo": "By default the building forms its own parcel from its footprint and the rest of the land stays with its owner. Taking whole parcels makes them the building’s parcel as they are."
+            "parcelInfo": "By default the building forms its own parcel from its footprint and the rest of the land stays with its owner. Taking whole parcels makes them the building’s parcel as they are.",
+            "moveTogether": "Move whole proposal",
+            "uploadInvalid": "The uploaded polygon is invalid or outside the locked site."
         },
         "buildingUpload": {
             "title": "Upload a building model",
@@ -3262,9 +3286,9 @@
             },
             "manual": {
                 "edit": "Edit shape manually",
-                "back": "Back to sliders",
-                "hint": "Manual mode: drag a vertex to reshape, click an edge to add one, or select a vertex and use the trash button or Delete/Backspace to remove it. Width and height stay adjustable.",
-                "hintSimplified": "Manual mode: outline simplified to {{count}} draggable points. Drag a point to reshape, click an edge to add one, or select a point and use the trash button or Delete/Backspace to remove it. Width and height stay adjustable.",
+                "back": "Discard manual shape and return to generated geometry",
+                "hint": "Manual mode: drag a vertex to reshape, click an edge to add one, or select a vertex and use the trash button or Delete/Backspace to remove it. Height stays adjustable.",
+                "hintSimplified": "Manual mode: outline simplified to {{count}} draggable points. Drag a point to reshape, click an edge to add one, or select a point and use the trash button or Delete/Backspace to remove it. Height stays adjustable.",
                 "needShape": "Generate a shape with the sliders first, then edit it manually.",
                 "confirmReset": "Discard manual edits and go back to the sliders?",
                 "error": "Could not build from the manual outline. Try moving the vertex back.",
@@ -3332,7 +3356,10 @@
                 "proceed": "Proceed anyway",
                 "cancel": "Go back"
             },
-            "regenerate": "Regenerate"
+            "regenerate": "Regenerate",
+            "editShape": "Edit footprint manually",
+            "returnGenerated": "Discard manual edits and return to the generated shape",
+            "confirmReturnGenerated": "Return to the generated shape and discard manual edits?"
         }
     },
     "parcelBased": {
@@ -4955,7 +4982,8 @@
             "fountain": "Fountain",
             "stall": "Table",
             "statue": "Statue",
-            "erase": "Remove"
+            "erase": "Remove",
+            "move": "Move"
         },
         "finishPath": "Finish path",
         "undo": "Undo",
@@ -4966,20 +4994,24 @@
         "hintPath": "Click to add path points, then choose Finish path.",
         "hintSelect": "Select an item to begin.",
         "statusOutside": "Place items inside the structure boundary.",
-        "statusSaved": "Structure design saved."
+        "statusSaved": "Structure design saved.",
+        "hintMove": "Drag inside the boundary to move the full design. The outline and all its contents move together.",
+        "moveUnavailable": "Could not move this design. Try again."
     },
     "stationEditor": {
         "ariaLabel": "Station geometry editor",
         "title": "Edit station geometry",
         "station": "Station",
         "close": "Close",
-        "fixedPosition": "The station centre stays fixed. Rotate the station around it.",
         "rotation": "Rotation",
         "platformHeight": "Platform height above ground",
         "hint": "The map preview updates while you edit.",
         "cancel": "Cancel",
         "save": "Done",
-        "saved": "Station geometry saved."
+        "saved": "Station geometry saved.",
+        "moveHint": "Drag the station footprint or centre marker to reposition it. Its type, size, rotation and platform height stay the same.",
+        "dragCenter": "Drag to move the station",
+        "undo": "Undo"
     },
     "claims": {
         "onParcels": "On parcels:",

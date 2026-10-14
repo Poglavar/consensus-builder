@@ -33,6 +33,13 @@ describe('portable chain proposal record', () => {
         expect(restored).toEqual(record);
     });
 
+    it('preserves the authored free-placement marker through the portable record', () => {
+        const record = authored({ freePlacement: true });
+        const metadata = chainRecord.metadataProperties(record);
+        expect(metadata.proposal.freePlacement).toBe(true);
+        expect(chainRecord.fromMetadata({ properties: metadata }).freePlacement).toBe(true);
+    });
+
     it('omits runtime state, acceptance claims, and server preparation/signature from the portable record', async () => {
         const record = authored({
             acceptedParcelIds: ['HR-1'], ownerAcceptances: { 'HR-1': true },

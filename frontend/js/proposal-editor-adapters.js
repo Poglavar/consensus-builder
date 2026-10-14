@@ -20,6 +20,22 @@
         'ownership-transfer'
     ];
 
+    // Physical, material drafts may be explicitly moved to a new site. Parcel acts and
+    // readjustments remain tied to their authored scope/deal.
+    const FREE_PLACEMENT_GOALS = new Set([
+        'park', 'square', 'lake', 'station', 'single', 'buildings', 'row'
+    ]);
+    const KNOWN_SITE_COVERAGE = new Set(['complete', 'partial', 'none']);
+
+    function placementMessage(key, fallback) {
+        try {
+            const i18nKey = `proposalDrafts.placement.${key}`;
+            const value = global.i18n?.t?.(i18nKey);
+            if (value && value !== i18nKey) return value;
+        } catch (_) { }
+        return fallback;
+    }
+
     function clone(value) {
         if (value === undefined || value === null) return value;
         try { return JSON.parse(JSON.stringify(value)); } catch (_) { return value; }
@@ -113,6 +129,7 @@
             // untouched edit must preserve this immutable scope; only a changed/new selection is
             // projected through LiveParcelFabric at serialization time.
             cadastreParcelIds: authoredCadastreParcelIds,
+            binding: clone(proposal?.binding || null),
             site: clone(proposal?.site || null),
             toleranceM: Number.isFinite(Number(proposal?.toleranceM)) ? Number(proposal.toleranceM) : 0,
             offer: Number.isFinite(Number(proposal?.offer)) ? Number(proposal.offer) : 0,
@@ -133,6 +150,84 @@
             approvalConfig: clone(proposal?.approvalConfig || null),
             lens: clone(Array.isArray(proposal?.lens) ? proposal.lens : [])
         };
+    }
+
+    function freePlacementPatch(draft, placement) {
+        if (!placement || placement.free !== true) return null;
+        const goal = normalizeGoal(draft?.adapterKey || draft?.goal);
+        if (!FREE_PLACEMENT_GOALS.has(goal)) {
+            throw new Error(placementMessage('fixedSite', 'This proposal type has a fixed site and cannot be moved.'));
+        }
+        if (String(draft?.editorPayload?.context?.parameters?.mode || '').toLowerCase() === 'existing') {
+            throw new Error(placementMessage('existingBuilding', 'Existing-building proposals keep their source-aware footprint and cannot use free placement.'));
+        }
+        const site = siteDraftApi().toMultiPolygon(placement.site);
+        if (!site) throw new Error(placementMessage('invalidSite', 'A free placement needs a valid polygon site.'));
+        return {
+            site: clone(site),
+            placement: { free: true, site: clone(site), bindingStatus: 'pending' },
+            fields: { site: clone(site), selectedParcelIds: [], cadastreParcelIds: [], binding: null }
+        };
+    }
+
+    function isFreePlacementDraft(draft) {
+        return !!(draft?.editorPayload?.placement?.free === true
+            && FREE_PLACEMENT_GOALS.has(normalizeGoal(draft.adapterKey || draft.goal)));
+    }
+
+    function restoredFreePlacement(proposal, goal) {
+        const key = normalizeGoal(goal || sourceGoal(proposal));
+        if (proposal?.freePlacement !== true || !FREE_PLACEMENT_GOALS.has(key)
+            || String(proposal?.buildingProposal?.parameters?.mode || '').toLowerCase() === 'existing') {
+            return null;
+        }
+        const site = siteDraftApi().toMultiPolygon(proposal.site);
+        if (!site) return null;
+        return {
+            free: true,
+            site: clone(site),
+            bindingStatus: String(proposal.binding?.source || '').startsWith('server:')
+                && KNOWN_SITE_COVERAGE.has(proposal.binding?.coverage) ? 'bound' : 'pending'
+        };
+    }
+
+    function markFreePlacementBound(draft, binding) {
+        if (!isFreePlacementDraft(draft) || !binding || typeof binding !== 'object'
+            || !String(binding.source || '').startsWith('server:')) {
+            throw new Error(placementMessage('freshBinding', 'A free placement needs a fresh authoritative site binding.'));
+        }
+        if (binding.coverage === 'unknown') {
+            throw new Error(placementMessage('unknownCoverage', 'The server cannot verify this site against a supported cadastre. Move it into a supported area or contact the city data team.'));
+        }
+        if (!KNOWN_SITE_COVERAGE.has(binding.coverage)) {
+            throw new Error(placementMessage('unverifiedCoverage', 'The site binding did not confirm its cadastral coverage. Retry the binding before applying or publishing.'));
+        }
+        const site = siteDraftApi().toMultiPolygon(draft.editorPayload.placement.site);
+        if (!site) throw new Error(placementMessage('invalidSite', 'A free placement needs a valid polygon site.'));
+        const parcelIds = [...new Set((Array.isArray(binding.parcels) ? binding.parcels : [])
+            .map(hit => normalizeParcelId(hit?.parcelId)).filter(Boolean))].sort();
+        return {
+            fields: { site: clone(site), selectedParcelIds: [], cadastreParcelIds: parcelIds, binding: clone(binding) },
+            editorPayload: {
+                placement: { ...clone(draft.editorPayload.placement), site: clone(site), free: true, bindingStatus: 'bound' }
+            }
+        };
+    }
+
+    function placementBindingIssue(draft) {
+        if (!isFreePlacementDraft(draft)) return null;
+        const binding = draft.fields?.binding;
+        if (binding?.coverage === 'unknown') {
+            return issue('placement-binding-unknown', placementMessage('unknownCoverage', 'The server cannot verify this site against a supported cadastre. Move it into a supported area or contact the city data team.'), 'editorPayload.placement.site');
+        }
+        if (binding && !KNOWN_SITE_COVERAGE.has(binding.coverage)) {
+            return issue('placement-binding-unverified', placementMessage('unverifiedCoverage', 'The site binding did not confirm its cadastral coverage. Retry the binding before applying or publishing.'), 'editorPayload.placement.site');
+        }
+        if (draft.editorPayload.placement.bindingStatus !== 'bound'
+            || !binding || !String(binding.source || '').startsWith('server:')) {
+            return issue('placement-binding-pending', placementMessage('pending', 'The moved site must be rebound before this draft can be applied or published.'), 'editorPayload.placement.site');
+        }
+        return null;
     }
 
     function siteDraftApi() {
@@ -166,6 +261,8 @@
         // geometry (proposals/site-draft.js, PARCEL-OPTIONAL.md).
         const groundIssue = siteDraftApi().draftGroundIssue(draft);
         if (groundIssue) errors.push(issue(groundIssue.code, groundIssue.message, groundIssue.path));
+        const placementIssue = placementBindingIssue(draft);
+        if (placementIssue) errors.push(placementIssue);
         if (!draft?.fields?.description || !String(draft.fields.description).trim()) {
             warnings.push(issue('missing-description', 'A description will help others understand the replacement.', 'fields.description'));
         }
@@ -258,6 +355,8 @@
             ineligibleParcels: clone(bp.ineligibleParcels || []),
             // Freeform proposals may pave or green the parcel area around their buildings.
             groundSurface: clone(proposal?.geometry?.groundSurface || null),
+            // Keep the authored host outline separate from the effective ground surface.
+            groundBoundary: clone(proposal?.geometry?.groundBoundary || null),
             // §15a: footprint parcel (default) vs taking the whole host parcels.
             takeWholeParcels: bp.takeWholeParcels === true
         };
@@ -270,6 +369,20 @@
         if (!Array.isArray(coordinates) || coordinates.length === 0) return false;
         const ring = geometry.type === 'Polygon' ? coordinates[0] : coordinates[0]?.[0];
         return Array.isArray(ring) && ring.length >= 4;
+    }
+
+    function featureFromSite(site) {
+        const geometry = site && site.type === 'Feature' ? site.geometry : site;
+        if (!siteDraftApi().isPolygonal(geometry)) return null;
+        return { type: 'Feature', properties: {}, geometry: clone(geometry) };
+    }
+
+    function geometryWithinSite(candidate, site) {
+        const t = turfRef || global.turf;
+        const candidateFeature = featureFromSite(candidate);
+        const siteFeature = featureFromSite(site);
+        if (!t || typeof t.booleanWithin !== 'function' || !candidateFeature || !siteFeature) return false;
+        try { return t.booleanWithin(candidateFeature, siteFeature); } catch (_) { return false; }
     }
 
     function planFeatures(plan) {
@@ -307,6 +420,8 @@
         const output = clone(proposal || {});
         [
             'proposalId', 'proposal_id', 'id', 'hash', 'chainProposalId', 'tokenId', 'onchain', 'nft',
+            'onchainData', 'serverProposalId', 'isMinted', 'chainId', 'contractAddress', 'metadataUri',
+            'imageURI', 'chainRef', 'lifecycleStatus', 'effectiveStatus', 'effective_status', 'mintedAt', 'publishedAt',
             'createdAt', 'updatedAt', 'acceptedParcelIds', 'ownerAcceptances', 'ownerApprovals',
             'ownerApprovalHistory', 'ownershipApprovals', 'executedAt', 'appliedAt'
         ].forEach(key => delete output[key]);
@@ -324,16 +439,31 @@
             && selectedParcelIds.every(id => sourceSelectionIds.includes(id));
         // No live selection: a site on bare ground (or on ground whose binding is computed at
         // publish). The declaration starts as the preview binding when the site carries one.
-        const cadastreParcelIds = authoredCadastreParcelIds.length && selectionUnchanged
+        const cadastreParcelIds = isFreePlacementDraft(draft)
+            ? boundParcelIds(fields.binding)
+            : (authoredCadastreParcelIds.length && selectionUnchanged
             ? authoredCadastreParcelIds
-            : (selectedParcelIds.length ? cadastreIdsForLiveSelection(selectedParcelIds) : boundParcelIds(fields.binding));
+            : (selectedParcelIds.length ? cadastreIdsForLiveSelection(selectedParcelIds) : boundParcelIds(fields.binding)));
         const site = siteDraftApi().draftSite(draft);
         if (site) output.site = site;
         else delete output.site;
         const toleranceM = Number(fields.toleranceM);
         if (Number.isFinite(toleranceM) && toleranceM > 0) output.toleranceM = toleranceM;
         else delete output.toleranceM;
-        if (fields.binding && typeof fields.binding === 'object') output.binding = clone(fields.binding);
+        if (isFreePlacementDraft(draft)) {
+            const placementIssue = placementBindingIssue(draft);
+            if (placementIssue) throw new Error(placementIssue.message);
+            output.site = clone(draft.editorPayload.placement.site);
+            output.binding = clone(fields.binding);
+            output.freePlacement = true;
+            // A moved draft is a new authored effect. Never inherit a prior server preparation,
+            // approval stamp or effect/cadastre snapshot from its source record.
+            [
+                'preparation', 'preparedArtifact', 'preparedAt', 'preparationId', 'effectHash',
+                'ownershipFlow', 'cadastreFrame', 'acceptedParcelIds', 'ownerAcceptances',
+                'ownerApprovals', 'ownerApprovalHistory', 'ownershipApprovals'
+            ].forEach(key => delete output[key]);
+        } else if (fields.binding && typeof fields.binding === 'object') output.binding = clone(fields.binding);
         output.title = fields.name || output.title || output.name || '';
         output.name = output.title;
         output.proposalName = output.title;
@@ -639,6 +769,11 @@
     async function prepareProposalDraftParcelSelection(draftOrParcelIds) {
         if (Array.isArray(draftOrParcelIds)) return prepareParcelSelection(draftOrParcelIds);
         const draft = draftOrParcelIds || {};
+        // A free placement is authored against its current site, never the source proposal's old
+        // parcel IDs. Editors may use that site as a synthetic host, but it is not a cadastre act.
+        if (isFreePlacementDraft(draft)) {
+            return { ids: [], layers: [], substituted: false, complete: true, unresolvedIds: [], site: clone(draft.editorPayload.placement.site) };
+        }
         const originalIds = (draft.fields?.selectedParcelIds || []).map(String);
         const authoredBuildingSite = draft.sourceProposalId
             && ['buildings', 'row', 'parcelBased', 'single'].includes(draft.adapterKey || draft.goal)
@@ -735,6 +870,7 @@
                 applied: false,
                 geometry
             });
+            const placement = restoredFreePlacement(proposal, key);
             structureProposal.kind = key;
             structureProposal.geometry = clone(geometry);
             return {
@@ -744,7 +880,8 @@
                 editorPayload: {
                     geometry: clone(geometry),
                     structureProposal,
-                    facets: clone(proposal.facets || proposal.proposalFacets || null)
+                    facets: clone(proposal.facets || proposal.proposalFacets || null),
+                    ...(placement ? { placement } : {})
                 },
                 previewGeometry: clone(geometry)
             };
@@ -798,6 +935,7 @@
                 structureProposal.platformHeightM = Number(global.TransitStationModels?.specFor?.('elevated')?.defaultPlatformHeightM) || 10;
             }
             const geometry = clone(structureProposal.geometry || proposal?.geometry?.stationGraphics || proposal?.geometry || null);
+            const placement = restoredFreePlacement(proposal, 'station');
             structureProposal.geometry = geometry;
             return {
                 adapterKey: 'station',
@@ -806,7 +944,8 @@
                 editorPayload: {
                     geometry: clone(geometry),
                     structureProposal,
-                    facets: clone(proposal.facets || proposal.proposalFacets || null)
+                    facets: clone(proposal.facets || proposal.proposalFacets || null),
+                    ...(placement ? { placement } : {})
                 },
                 previewGeometry: clone(geometry)
             };
@@ -974,6 +1113,15 @@
         return 'buildings';
     }
 
+    function buildingTypologyForProposal(proposal, fallback) {
+        const raw = proposal?.typologyType || proposal?.buildingProposal?.typologyType
+            || proposal?.buildingProposal?.parameters?.typology || fallback;
+        const typology = normalizeGoal(raw);
+        return ['single', 'row', 'parcelBased', 'block'].includes(typology)
+            ? typology
+            : (fallback === 'buildings' ? 'block' : fallback);
+    }
+
     function buildBuildingAdapter(key) {
         return {
             key,
@@ -990,12 +1138,14 @@
             },
             draftFromProposal(proposal) {
                 const resolvedKey = buildingGoalForProposal(proposal, key);
+                const designTypology = buildingTypologyForProposal(proposal, key);
                 const context = proposalBuildingContext(proposal);
+                const placement = restoredFreePlacement(proposal, resolvedKey);
                 return {
                     adapterKey: resolvedKey,
                     proposalType: proposal.primaryType || proposalTypeLabel(resolvedKey),
                     fields: sourceFields(proposal),
-                    editorPayload: { typology: resolvedKey, context },
+                    editorPayload: { typology: designTypology, context, ...(placement ? { placement } : {}) },
                     previewGeometry: clone(context.buildings?.length ? context.buildings : [context.buildingFeature].filter(Boolean))
                 };
             },
@@ -1020,13 +1170,31 @@
             async openDesignEditor(draft) {
                 const context = clone(draft.editorPayload?.context || {});
                 const typology = draft.editorPayload?.typology || key;
+                const relocated = isFreePlacementDraft(draft);
+                const placementSite = relocated ? clone(draft.editorPayload.placement.site) : null;
+                const placementFeature = relocated ? featureFromSite(placementSite) : null;
+                if (relocated) {
+                    context.placement = { free: true, site: clone(placementSite) };
+                    context.parcelIds = [];
+                    // The old per-cadastre pieces and exclusions describe the source parcels, not
+                    // the moved site. Reopen from the full current massing/bar as a synthetic host.
+                    context.ineligibleParcels = [];
+                    if (typology === 'block' && featureGeometryValid(context.blockMassing)) {
+                        context.buildingFeature = clone(context.blockMassing);
+                        context.buildings = [clone(context.blockMassing)];
+                    }
+                }
                 const savedBuildingEdit = Boolean(draft.sourceProposalId);
                 const authoredSite = draft.fields?.site || null;
                 if (savedBuildingEdit && !siteDraftApi().isPolygonal(authoredSite)) {
                     throw new Error(global.i18n?.t?.('onMapEditor.missingSite') || 'This saved building has no valid authored site boundary, so its geometry cannot be edited safely.');
                 }
-                const selection = await prepareProposalDraftParcelSelection(draft);
-                if (!selection.ids.length) throw new Error('The source parcels are not available in this city view.');
+                const selection = relocated
+                    ? { ids: [], layers: [], complete: true, unresolvedIds: [] }
+                    : await prepareProposalDraftParcelSelection(draft);
+                if (!selection.ids.length && !siteDraftApi().isPolygonal(placementSite || authoredSite)) {
+                    throw new Error('The source parcels are not available in this city view.');
+                }
                 context.parcelIds = selection.ids;
                 global.pendingBuildingProposalContext = context;
                 if (typeof global.setPendingBuildingProposalContext === 'function') global.setPendingBuildingProposalContext(context, { fromDraft: true });
@@ -1036,9 +1204,11 @@
                         blockName: context.blockName,
                         parcelIds: selection.ids,
                         initialBuildings: features,
-                        site: authoredSite,
+                        site: placementSite || authoredSite,
+                        placement: relocated ? clone(context.placement) : null,
                         initialGroundTreatment: context.groundSurface?.treatment || null,
-                        initialTakeWholeParcels: context.takeWholeParcels === true
+                        initialTakeWholeParcels: context.takeWholeParcels === true,
+                        initialGroundBoundary: clone(context.groundBoundary || null)
                     });
                     return opened !== false;
                 }
@@ -1047,18 +1217,22 @@
                         blockName: context.blockName,
                         parcelIds: selection.ids,
                         initialParameters: context.parameters || null,
-                        site: authoredSite,
-                        initialFeature: features[0] || null
+                        site: placementFeature || authoredSite,
+                        initialFeature: features[0] || null,
+                        placement: relocated ? clone(context.placement) : null
                     });
                     return opened !== false;
                 }
                 if (typology === 'parcelBased' && typeof global.openParcelBasedForParcels === 'function') {
-                    const opened = await global.openParcelBasedForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: authoredSite, initialParameters: context.parameters || null });
+                    const opened = await global.openParcelBasedForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: placementFeature || authoredSite, initialParameters: context.parameters || null, placement: relocated ? clone(context.placement) : null });
                     return opened !== false;
                 }
                 if (typeof global.openUrbanRuleForParcels === 'function') {
-                    const seed = typeof global.buildBlockifySeed === 'function' ? global.buildBlockifySeed(context) : context.parameters;
-                    const opened = await global.openUrbanRuleForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: authoredSite, initialState: seed || null });
+                    const seed = { ...(typeof global.buildBlockifySeed === 'function'
+                        ? (global.buildBlockifySeed(context) || {})
+                        : (context.parameters || {})) };
+                    if (relocated && featureGeometryValid(context.blockMassing)) seed.blockMassing = clone(context.blockMassing);
+                    const opened = await global.openUrbanRuleForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: placementFeature || authoredSite, initialState: seed || null, placement: relocated ? clone(context.placement) : null });
                     return opened !== false;
                 }
                 return false;
@@ -1068,13 +1242,27 @@
                 const context = clone(draft.editorPayload?.context || {});
                 const features = context.buildings?.length ? context.buildings : [context.buildingFeature].filter(Boolean);
                 const typology = draft.editorPayload?.typology || key;
+                if (isFreePlacementDraft(draft)) {
+                    const site = draft.editorPayload.placement.site;
+                    if (!features.length || features.some(feature => !geometryWithinSite(feature, site))) {
+                        throw new Error(placementMessage('buildingOutsideSite', 'The moved building geometry must fit entirely inside its new site.'));
+                    }
+                    context.ineligibleParcels = [];
+                    if (context.groundSurface?.polygon && !geometryWithinSite(context.groundSurface.polygon, site)) {
+                        throw new Error(placementMessage('surroundingsOutsideSite', 'The moved surroundings must fit entirely inside the new site. Move the whole proposal or adjust its ground boundary before saving.'));
+                    }
+                }
                 output.goal = typology === 'single' ? 'single' : 'buildings';
                 output.primaryType = 'Urban Rule';
                 output.typologyType = typology;
                 output.geometry = { ...(output.geometry || {}), buildings: clone(features) };
                 const blockMassing = typology === 'block' && featureGeometryValid(context.blockMassing)
-                    ? clone(context.blockMassing)
-                    : null;
+                        ? clone(context.blockMassing)
+                        : null;
+                if (isFreePlacementDraft(draft) && typology === 'block'
+                    && (!blockMassing || !geometryWithinSite(blockMassing, draft.editorPayload.placement.site))) {
+                    throw new Error(placementMessage('massingOutsideSite', 'The moved block massing must fit entirely inside its new site.'));
+                }
                 if (blockMassing) output.geometry.blockMassing = blockMassing;
                 else delete output.geometry.blockMassing;
                 // Only the freeform editor offers a surroundings treatment; every other typology
@@ -1082,6 +1270,9 @@
                 const groundSurface = typology === 'single' ? clone(context.groundSurface || null) : null;
                 if (groundSurface) output.geometry.groundSurface = groundSurface;
                 else delete output.geometry.groundSurface;
+                const groundBoundary = typology === 'single' ? clone(context.groundBoundary || null) : null;
+                if (groundBoundary) output.geometry.groundBoundary = groundBoundary;
+                else delete output.geometry.groundBoundary;
                 output.buildingProposal = {
                     ...(clone(output.buildingProposal || {})),
                     applied: false,
@@ -1091,7 +1282,7 @@
                     // Plots the rule left out, with the building each would carry. Not buildings and
                     // never applied — the 3D view draws them see-through so a gap in an applied block
                     // says "this plot cannot take one as it stands" instead of nothing at all.
-                    ineligibleParcels: clone(context.ineligibleParcels || []),
+                    ineligibleParcels: isFreePlacementDraft(draft) ? [] : clone(context.ineligibleParcels || []),
                     blockName: context.blockName || null
                 };
                 return finalizeAuthoredProposal(output);
@@ -1370,6 +1561,12 @@
     global.openProposalDraftDesign = openProposalDraftDesign;
     global.prepareProposalDraftParcelSelection = prepareProposalDraftParcelSelection;
     global.releaseEditorSeededMultiSelection = releaseEditorSeededMultiSelection;
+    global.proposalDraftPlacement = {
+        freePlacementPatch,
+        isFreePlacementDraft,
+        markFreePlacementBound,
+        placementBindingIssue
+    };
 
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = {
@@ -1384,7 +1581,11 @@
             buildStructureAdapter,
             buildStationAdapter,
             summarizeCommonChanges,
-            prepareParcelSelection
+            prepareParcelSelection,
+            freePlacementPatch,
+            isFreePlacementDraft,
+            markFreePlacementBound,
+            placementBindingIssue
         };
     }
 })(typeof window !== 'undefined' ? window : globalThis);

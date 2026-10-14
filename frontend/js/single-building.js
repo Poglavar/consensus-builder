@@ -14,7 +14,13 @@
     let singlePolygonEditor = null;
     let singlePendingVertexActionIndex = null;
     let singleDragMarker = null; // legacy marker; not rendered anymore
-    let singleBlockFeature = null;
+    let singleBlockFeature = null; // starting site, retained as an optional placement guide
+    let singleGroundBoundary = null;
+    let singleMoveTogether = true;
+    let singleHistory = null;
+    let rectDragStartDesign = null;
+    let rectDragHistoryRecorded = false;
+    const singleBuildingLayers = new Map();
     let lastValidCenter = null; // LatLng of the last valid active-footprint centre
     let singleRectFeature = null;
     let rectDragActive = false;
@@ -54,7 +60,48 @@
         const api = buildingGroundApi();
         if (!api) return null;
         const buildings = buildingEntries.filter(entry => entry?.feature).map(entry => entry.feature);
-        return api.buildSurface(currentGroundTreatment, singleBlockFeature, buildings);
+        return api.buildSurface(currentGroundTreatment, singleGroundBoundary || singleBlockFeature, buildings);
+    }
+
+    function currentPlacementSite(buildings = null) {
+        const features = buildings ? buildings.slice() : buildingEntries.filter(entry => entry?.feature).map(entry => entry.feature);
+        if ((currentGroundTreatment !== 'none' || currentTakeWholeParcels) && singleGroundBoundary) {
+            features.unshift(singleGroundBoundary);
+        }
+        let combined = null;
+        for (const feature of features) combined = combined ? turf.union(combined, feature) : cloneSingleFeature(feature);
+        if (!combined?.geometry) return null;
+        return combined.geometry.type === 'MultiPolygon' ? combined.geometry
+            : { type: 'MultiPolygon', coordinates: [combined.geometry.coordinates] };
+    }
+
+    function captureSingleBuildingDesign() {
+        return cloneSingleFeature({ buildings: buildingEntries, activeId: activeBuildingId,
+            groundBoundary: singleGroundBoundary, groundTreatment: currentGroundTreatment,
+            takeWholeParcels: currentTakeWholeParcels });
+    }
+
+    function ensureSingleBuildingHistory() {
+        if (!singleHistory) {
+            singleHistory = window.GeometryEditHistory.create({
+                capture: captureSingleBuildingDesign,
+                restore(snapshot) {
+                    buildingEntries = cloneSingleFeature(snapshot.buildings);
+                    singleGroundBoundary = cloneSingleFeature(snapshot.groundBoundary);
+                    currentGroundTreatment = snapshot.groundTreatment;
+                    currentTakeWholeParcels = snapshot.takeWholeParcels;
+                    refreshBuildingSelector();
+                    setActiveBuilding(snapshot.activeId, { refreshUI: true });
+                    const ground = document.getElementById('single-ground-treatment');
+                    if (ground) ground.value = currentGroundTreatment;
+                    const mode = document.getElementById('single-parcel-mode');
+                    if (mode) mode.value = currentTakeWholeParcels ? 'whole' : 'footprint';
+                }
+            });
+            singleHistory.bindKeyboard(document, { enabled: () => !!singleEditor && !rectDragActive });
+            singleHistory.bindButton(document.getElementById('single-building-undo'));
+        }
+        return singleHistory;
     }
 
     function resolveParcelId(feature) {
@@ -89,6 +136,7 @@
     // Buildings to restore when the editor next opens, instead of one default building. Set by
     // openSingleBuildingForParcels({ initialBuildings }); consumed once by showSingleBuildingMapEditor().
     let singleBuildingSeedBuildings = null;
+    let singleBuildingSeedGroundBoundary = null;
 
     // Centre of a stored building feature, as a Leaflet LatLng. Position isn't in `parameters`,
     // so a fork has to recover it from the geometry.
@@ -289,6 +337,7 @@
         // copy is still preferable to silently changing its shape; the new active handles reveal it.
         if (!copiedFeature) copiedFeature = cloneSingleFeature(source.feature);
 
+        ensureSingleBuildingHistory().record();
         const entry = addNewBuildingEntry(featureCenterLatLng(copiedFeature), {
             feature: copiedFeature,
             height: source.height,
@@ -304,6 +353,7 @@
     function removeActiveBuilding() {
         if (!buildingEntries.length) return;
         if (buildingEntries.length === 1) return; // keep at least one building
+        ensureSingleBuildingHistory().record();
         buildingEntries = buildingEntries.filter(b => b.id !== activeBuildingId);
         const next = buildingEntries[buildingEntries.length - 1];
         setActiveBuilding(next.id);
@@ -427,7 +477,7 @@
             if (!ring || !window.SingleBuildingGeometry?.isSimpleRing(ring)) return false;
             if (turf.area(feature) < 0.5) return false;
             if (typeof turf.kinks === 'function' && turf.kinks(feature).features.length) return false;
-            return footprintFullyInsideBlock(feature, singleBlockFeature);
+            return !singleSession?.placement || singleSession.placement.accepts(feature);
         } catch (_) {
             return false;
         }
@@ -446,19 +496,6 @@
                 if (active) active.lastValidCenter = center;
             }
         }
-    }
-
-    function redrawActiveFootprint(feature) {
-        if (!singleActivePolygonLayer || !feature?.geometry) return;
-        try {
-            if (feature.geometry.type === 'Polygon') {
-                const latLngs = feature.geometry.coordinates.map(ring => ring.map(([lng, lat]) => L.latLng(lat, lng)));
-                singleActivePolygonLayer.setLatLngs(latLngs);
-            } else if (feature.geometry.type === 'MultiPolygon') {
-                const latLngs = feature.geometry.coordinates.map(polygon => polygon.map(ring => ring.map(([lng, lat]) => L.latLng(lat, lng))));
-                singleActivePolygonLayer.setLatLngs(latLngs);
-            }
-        } catch (_) { }
     }
 
     function getSingleProjector() {
@@ -658,6 +695,7 @@
             try { parcelId = resolveParcelId(parcel?.feature); } catch (_) { }
             if (!parcelId) return;
             const id = String(parcelId);
+            if (/^site(-plot)?:/.test(id)) return;
             parcelIds.push(id);
             parentDetails.push({ id, number: String(parcel?.feature?.properties?.BROJ_CESTICE || id) });
         });
@@ -688,7 +726,9 @@
             buildingFeature: buildings[0] || null,
             buildings,
             groundSurface: currentGroundSurface(),
-            takeWholeParcels: currentTakeWholeParcels
+            groundBoundary: cloneSingleFeature(singleGroundBoundary),
+            takeWholeParcels: currentTakeWholeParcels,
+            placement: { site: currentPlacementSite(), free: true }
         }, { coalesceKey: 'single-building-live' });
     }
 
@@ -701,6 +741,7 @@
         }
         singleRectLayer = null;
         singleActivePolygonLayer = null;
+        singleBuildingLayers.clear();
 
         buildingEntries.forEach(entry => {
             if (!entry.feature) return;
@@ -719,6 +760,7 @@
                 interactive: true,
                 bubblingMouseEvents: false
             }).addTo(singleRectGroup);
+            singleBuildingLayers.set(entry.id, layer);
             if (isActive) {
                 singleRectLayer = layer;
                 layer.eachLayer(polygonLayer => {
@@ -755,6 +797,7 @@
         renderSharedPolygonEditor();
         syncRotationButtons();
         autosaveSingleBuildingDraft();
+        singleSession?.placement?.update(currentPlacementSite());
         updateSingleBuildingPreview();
     }
 
@@ -781,12 +824,6 @@
         }
     }
 
-    function updateEditedFootprintPreview(feature) {
-        setActiveFeature(feature);
-        redrawActiveFootprint(feature);
-        try { updateSingleBuildingPreview(); } catch (_) { }
-    }
-
     function destroySinglePolygonEditor() {
         if (!singlePolygonEditor) return;
         try { singlePolygonEditor.destroy(); } catch (_) { }
@@ -798,10 +835,11 @@
         const candidate = featureWithOuterRing(singleRectFeature, closedRing);
         if (!candidate || !editableFootprintValid(candidate)) {
             // The shared handle followed the pointer freely. Only now, on release, restore the last
-            // buildable footprint if the final ring crosses itself or cannot fit inside the parcel.
+            // valid footprint if the ring crosses itself or violates an explicitly locked site.
             updateRectangleLayers();
             return false;
         }
+        if (JSON.stringify(candidate.geometry) !== JSON.stringify(singleRectFeature.geometry)) ensureSingleBuildingHistory().record();
         setActiveFeature(candidate);
         updateRectangleLayers();
         return true;
@@ -823,14 +861,16 @@
                 return;
             }
 
-            const constrained = window.PolygonGeometryEditor.constrainRingToBoundary(ring, singleBlockFeature, turf) || ring;
+            const constrained = singleSession?.placement?.locked
+                ? (window.PolygonGeometryEditor.constrainRingToBoundary(ring, singleBlockFeature, turf) || ring) : ring;
             const closedRing = window.SingleBuildingGeometry.ensureClosedRing(constrained);
             const candidate = featureWithOuterRing(singleRectFeature, closedRing);
             if (!candidate || !editableFootprintValid(candidate)) {
-                showSingleBuildingEditorAlert('uploadOutside', 'The uploaded polygon does not overlap this block in a usable way.');
+                showSingleBuildingEditorAlert('uploadInvalid', 'The uploaded polygon is invalid or outside the locked site.');
                 return;
             }
 
+            ensureSingleBuildingHistory().record();
             const active = getActiveBuilding();
             currentRotationDeg = 0;
             if (active) active.rotation = 0;
@@ -858,7 +898,9 @@
             leaflet: L,
             turf,
             ring,
-            boundary: () => singleBlockFeature,
+            boundary: () => singleSession?.placement?.locked ? singleBlockFeature : null,
+            snapCoordinate: (coordinate, event) => singleSession.placement.snapCoordinate(coordinate, event),
+            undo: false,
             initialSelectedVertexIndex,
             showInitialDeleteAction: Number.isInteger(initialSelectedVertexIndex),
             vertexTitle: translateSingleBuildingText('modal.singleBuilding.vertexLabel', 'Drag to reshape'),
@@ -893,6 +935,7 @@
         const active = getActiveBuilding();
         const candidate = rotatedFootprintCandidate(deltaDeg);
         if (!active || !candidate) return;
+        ensureSingleBuildingHistory().record();
         singlePendingVertexActionIndex = null;
         const nextRotation = ((Number(active.rotation || 0) + deltaDeg) % 360 + 360) % 360;
         active.rotation = nextRotation;
@@ -915,6 +958,11 @@
     function handleRectDragEnd() {
         const wasActive = rectDragActive;
         const finalFeature = rectDragLastValidFeature || rectDragStartFeature;
+        if (rectDragHistoryRecorded && JSON.stringify(captureSingleBuildingDesign()) === JSON.stringify(rectDragStartDesign)) {
+            singleHistory?.discardLast();
+        }
+        rectDragStartDesign = null;
+        rectDragHistoryRecorded = false;
         rectDragActive = false;
         rectDragStartPointerPt = null;
         rectDragStartCenterPt = null;
@@ -953,13 +1001,49 @@
         const newCenter = singleMap.layerPointToLatLng(newCenterPt);
         const startCenter = singleMap.layerPointToLatLng(rectDragStartCenterPt);
         if (!rectDragStartFeature?.geometry) return;
-        // The footprint keeps its ground metres from the drag's start point, placed at its end point.
-        const geometry = window.SingleBuildingGeometry.moveGeometry(rectDragStartFeature.geometry, startCenter, newCenter);
+        // One metric transform moves the proposal and all its contents. Moving an individual
+        // building is also available, while the original site remains only an optional guide.
+        if (Math.abs(delta.x) + Math.abs(delta.y) < 1 && !rectDragHistoryRecorded) return;
+        const target = singleSession.placement.moveTarget(rectDragStartFeature.geometry, startCenter, newCenter, e);
+        const geometry = window.SingleBuildingGeometry.moveGeometry(rectDragStartFeature.geometry, startCenter, target);
         const candidate = featureWithGeometry(rectDragStartFeature, geometry);
         if (!candidate || !editableFootprintValid(candidate)) return;
-
+        const movedEntries = rectDragStartDesign.buildings.map(entry => {
+            if (!singleMoveTogether && entry.id !== activeBuildingId) return cloneSingleFeature(entry);
+            const moved = cloneSingleFeature(entry);
+            moved.feature.geometry = window.SingleBuildingGeometry.moveGeometry(entry.feature.geometry, startCenter, target);
+            moved.lastValidCenter = featureCenterLatLng(moved.feature);
+            return moved;
+        });
+        if (movedEntries.some(entry => !singleSession.placement.accepts(entry.feature))) return;
+        const movedGround = singleMoveTogether && rectDragStartDesign.groundBoundary
+            ? featureWithGeometry(rectDragStartDesign.groundBoundary,
+                window.SingleBuildingGeometry.moveGeometry(rectDragStartDesign.groundBoundary.geometry, startCenter, target))
+            : cloneSingleFeature(rectDragStartDesign.groundBoundary);
+        if ((currentGroundTreatment !== 'none' || currentTakeWholeParcels)
+            && movedGround && !singleSession.placement.accepts(movedGround)) return;
+        if (!rectDragHistoryRecorded) {
+            ensureSingleBuildingHistory().record();
+            rectDragHistoryRecorded = true;
+        }
+        buildingEntries = movedEntries;
+        singleGroundBoundary = movedGround;
         rectDragLastValidFeature = candidate;
-        updateEditedFootprintPreview(candidate);
+        setActiveFeature(candidate);
+        buildingEntries.forEach(entry => {
+            const layer = singleBuildingLayers.get(entry.id);
+            layer?.eachLayer(polygon => {
+                if (typeof polygon.setLatLngs !== 'function') return;
+                const convert = coordinates => typeof coordinates[0] === 'number'
+                    ? L.latLng(coordinates[1], coordinates[0]) : coordinates.map(convert);
+                polygon.setLatLngs(convert(entry.feature.geometry.coordinates));
+            });
+            const center = featureCenterLatLng(entry.feature);
+            if (center) layer?.getTooltip?.()?.setLatLng(center);
+        });
+        updateGroundPreview();
+        singleSession.placement.update(currentPlacementSite());
+        updateSingleBuildingPreview();
         if (singleDragMarker) {
             try { singleDragMarker.setLatLng(newCenter); } catch (_) { }
         }
@@ -987,6 +1071,8 @@
             || e.latlng;
         rectDragStartCenterPt = singleMap.latLngToLayerPoint(centerLL);
         rectDragStartPointerPt = singleMap.latLngToLayerPoint(e.latlng);
+        rectDragStartDesign = captureSingleBuildingDesign();
+        rectDragHistoryRecorded = false;
         rectDragStartFeature = cloneSingleFeature(singleRectFeature);
         rectDragLastValidFeature = cloneSingleFeature(singleRectFeature);
         rectDragActive = true;
@@ -1103,6 +1189,10 @@
             singleDragMarker = null;
         }
         singleBlockFeature = null;
+        singleGroundBoundary = null;
+        singleBuildingLayers.clear();
+        singleHistory?.destroy();
+        singleHistory = null;
         singleRectFeature = null;
         currentRotationDeg = 0;
         currentGroundTreatment = 'none';
@@ -1162,6 +1252,7 @@
             const parcelId = resolveParcelId(parcel?.feature);
             if (!parcelId) return;
             const idStr = parcelId.toString();
+            if (/^site(-plot)?:/.test(idStr)) return;
             let number = idStr;
             try {
                 if (parcel.feature?.properties?.BROJ_CESTICE) {
@@ -1177,7 +1268,7 @@
             multiParcelSelection.updateUI();
         }
 
-        if (!normalizedParcelIds.length) {
+        if (!normalizedParcelIds.length && !singleBlockFeature?.geometry) {
             setSingleBuildingStatus('could_not_determine_parcels_for_this_block', 'Could not determine parcels for this block.');
             return;
         }
@@ -1185,8 +1276,9 @@
         const clonedBuildings = [];
         for (const entry of buildingEntries) {
             if (!entry || !entry.feature) continue;
-            const cloned = window.SingleBuildingGeometry.clipFootprintToBoundary(
-                JSON.parse(JSON.stringify(entry.feature)), singleBlockFeature, turf);
+            const cloned = singleSession?.placement?.locked
+                ? window.SingleBuildingGeometry.clipFootprintToBoundary(JSON.parse(JSON.stringify(entry.feature)), singleBlockFeature, turf)
+                : JSON.parse(JSON.stringify(entry.feature));
             if (!cloned.properties) cloned.properties = {};
             cloned.properties.height = Math.max(3, Number(entry.height) || DEFAULT_HEIGHT_M);
             cloned.properties.rotation = Number(entry.rotation) || 0;
@@ -1237,7 +1329,9 @@
             buildingFeature: buildingFeatures[0] || null,
             buildings: buildingFeatures,
             groundSurface: currentGroundSurface(),
-            takeWholeParcels: currentTakeWholeParcels
+            groundBoundary: cloneSingleFeature(singleGroundBoundary),
+            takeWholeParcels: currentTakeWholeParcels,
+            placement: { site: currentPlacementSite(buildingFeatures), free: true }
         };
         if (typeof setPendingBuildingProposalContext === 'function') {
             setPendingBuildingProposalContext(singleContext);
@@ -1539,6 +1633,9 @@
 
     function mountSingleBuildingMapEditor() {
         singleBlockFeature = getSelectedBlockFeature();
+        singleGroundBoundary = cloneSingleFeature(singleBuildingSeedGroundBoundary || singleBlockFeature);
+        singleBuildingSeedGroundBoundary = null;
+        singleMoveTogether = true;
         if (!singleBlockFeature) {
             setSingleBuildingStatus('select_a_block_first', 'Select a block first');
             return;
@@ -1585,11 +1682,11 @@
             infoText: (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(pointer: coarse)').matches)
                 ? translateSingleBuildingText(
                     'modal.singleBuilding.infoTextTouch',
-                    'Drag the footprint to move it. Drag a vertex to reshape it, tap an edge to add a vertex, or select a vertex and use the trash button to remove it. The building must remain fully within the block.'
+                    'Drag the footprint to move it. Drag a vertex to reshape it, tap an edge to add a vertex, or select a vertex and use the trash button to remove it. Use Lock to starting site when the design must stay within the selected land.'
                 )
                 : translateSingleBuildingText(
                     'modal.singleBuilding.infoText',
-                    'Drag the footprint to move it. Drag a vertex to reshape it, click an edge to add a vertex, or select a vertex and use the trash button or Delete/Backspace to remove it. The building must remain fully within the block.'
+                    'Drag the footprint to move it. Drag a vertex to reshape it, click an edge to add a vertex, or select a vertex and use the trash button or Delete/Backspace to remove it. Use Lock to starting site when the design must stay within the selected land.'
                 )
         };
 
@@ -1601,6 +1698,7 @@
                 modes: ['2d', 'model'],
                 onCancel: requestCloseSingleBuildingMapEditor,
                 onModeChange: syncSingleBuildingView,
+                placement: { site: singleBlockFeature, onLockChange: () => { renderSharedPolygonEditor(); syncRotationButtons(); } },
                 hints: {
                     '2d': translateSingleBuildingText('modal.singleBuilding.mapHint', 'Drag the building or its corners. Tap an edge to add a corner.'),
                     model: translateSingleBuildingText('modal.singleBuilding.modelHint', 'Adjust the height and orbit to see the fit. Use 2D to reshape the footprint.')
@@ -1609,7 +1707,8 @@
                     <button id="single-rotate-counterclockwise" class="btn" type="button" title="${modalText.rotateCounterclockwiseLabel}" aria-label="${modalText.rotateCounterclockwiseLabel}"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> 5°</button>
                     <button id="single-rotate-clockwise" class="btn" type="button" title="${modalText.rotateClockwiseLabel}" aria-label="${modalText.rotateClockwiseLabel}"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i> 5°</button>
                 `,
-                content: `                        <div class="on-map-building__height">
+                content: `                        <label class="on-map-editor__placement-option"><input id="single-move-together" type="checkbox" checked><span>${translateSingleBuildingText('modal.singleBuilding.moveTogether', 'Move whole proposal')}</span></label>
+                        <div class="on-map-building__height">
                             <label for="single-height-slider">${modalText.heightLabel} <strong id="single-height-value">${DEFAULT_HEIGHT_M}</strong></label>
                             <input type="range" id="single-height-slider" min="3" max="250" step="1" value="${DEFAULT_HEIGHT_M}">
                         </div>
@@ -1651,6 +1750,7 @@
                         </details>
 `,
                 footer: `
+                        <button id="single-building-undo" type="button" class="btn btn-quiet" disabled>${translateSingleBuildingText('onMapEditor.undo', 'Undo')}</button>
                         <button id="single-building-cancel" type="button" class="btn btn-quiet">${modalText.cancel}</button>
                         <button id="single-building-confirm" type="button" class="btn btn-primary">${modalText.confirm}</button>
                     `
@@ -1680,6 +1780,9 @@
                 }
             });
 
+            document.getElementById('single-move-together').addEventListener('change', event => {
+                singleMoveTogether = event.target.checked;
+            });
             document.getElementById('single-rotate-counterclockwise')
                 .addEventListener('click', () => rotateActiveFootprint(5));
             document.getElementById('single-rotate-clockwise')
@@ -1688,6 +1791,7 @@
             const groundSelect = document.getElementById('single-ground-treatment');
             if (groundSelect) {
                 groundSelect.addEventListener('change', (e) => {
+                    ensureSingleBuildingHistory().record();
                     currentGroundTreatment = normalizeGroundTreatment(e.target.value);
                     updateGroundPreview();
                     updateSingleBuildingPreview();
@@ -1698,6 +1802,7 @@
             const parcelModeSelect = document.getElementById('single-parcel-mode');
             if (parcelModeSelect) {
                 parcelModeSelect.addEventListener('change', (e) => {
+                    ensureSingleBuildingHistory().record();
                     currentTakeWholeParcels = e.target.value === 'whole';
                     autosaveSingleBuildingDraft();
                 });
@@ -1847,6 +1952,7 @@
         // Frame the editable object once. Later edits leave the user's camera alone.
         singleSession.fitFeature(singleRectFeature);
         syncSingleBuildingView();
+        ensureSingleBuildingHistory();
         singleBuildingDesignChanges().capture();
         document.getElementById('single-height-slider').focus({ preventScroll: true });
         return true;
@@ -1855,18 +1961,24 @@
     // `initialBuildings` (optional) reopens the editor on previously-saved building features
     // instead of one default building — used by "Copy into new proposal".
     // `initialGroundTreatment` restores the proposal's surroundings choice the same way.
-    function openSingleBuildingForParcels({ blockName, parcelIds, initialBuildings = null, site = null, initialGroundTreatment = null, initialTakeWholeParcels = null }) {
+    function openSingleBuildingForParcels({ blockName, parcelIds, initialBuildings = null, site = null, initialGroundTreatment = null, initialTakeWholeParcels = null, initialGroundBoundary = null }) {
         if (singleEditor) return false;
         const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
-        if (!ids.length) {
-            setSingleBuildingStatus('select_parcels_before_launching_the_single_building_tool', 'Select parcels before launching the single building tool.');
+        const siteGeometry = site?.type === 'Feature' ? site.geometry : site;
+        const siteOnly = !ids.length && ['Polygon', 'MultiPolygon'].includes(siteGeometry?.type);
+        if (!ids.length && !siteOnly) {
+            setSingleBuildingStatus('select_parcels_before_launching_the_single_building_tool', 'Select a site before launching the single building tool.');
             return;
         }
         singleBuildingSeedBuildings = (Array.isArray(initialBuildings) && initialBuildings.length) ? initialBuildings : null;
         singleBuildingSeedGroundTreatment = initialGroundTreatment;
+        singleBuildingSeedGroundBoundary = initialGroundBoundary;
         singleBuildingSeedTakeWholeParcels = initialTakeWholeParcels;
-        const liveParcels = singleBuildingParcelsForIds(ids);
-        if (liveParcels.length !== ids.length) {
+        const liveParcels = siteOnly ? [{ id: 'site:single', feature: {
+            type: 'Feature', properties: { parcelId: 'site:single', synthetic: true, siteParcel: true },
+            geometry: cloneSingleFeature(siteGeometry)
+        } }] : singleBuildingParcelsForIds(ids);
+        if (!siteOnly && liveParcels.length !== ids.length) {
             setSingleBuildingStatus('could_not_resolve_parcel_data_for_the_single_building_tool', 'Could not resolve parcel data for the single building tool.');
             return;
         }

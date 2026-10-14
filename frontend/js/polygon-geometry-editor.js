@@ -578,7 +578,7 @@
                 : this.ring[vertexIndex];
             // A caller-supplied snap (the site tool snaps to parcel edges) replaces the boundary one.
             const coordinate = typeof this.options.snapCoordinate === 'function'
-                ? (this.options.snapCoordinate(rawCoordinate) || rawCoordinate)
+                ? (this.options.snapCoordinate(rawCoordinate, event) || rawCoordinate)
                 : snapCoordinateToBoundary(rawCoordinate, this.options.boundary, this.turf);
             if (coordinate) this.ring[vertexIndex] = coordinate;
             const constrainedRing = constrainRingToBoundary(this.ring, this.options.boundary, this.turf);

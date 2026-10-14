@@ -151,7 +151,8 @@ describe('carried into the applied plan', () => {
     });
 
     it('serializes them onto the proposal record', () => {
-        expect(adapters).toContain('ineligibleParcels: clone(context.ineligibleParcels || [])');
+        expect(adapters).toContain('ineligibleParcels: isFreePlacementDraft(draft) ? [] : clone(context.ineligibleParcels || [])');
+        expect(adapters).toContain('context.ineligibleParcels = [];');
         expect(adapters).not.toContain('blockParcelIds: clone(');
         expect(adapters).toContain('output.geometry.blockMassing = blockMassing');
     });

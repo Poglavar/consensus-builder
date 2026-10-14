@@ -5,8 +5,10 @@ import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 
 const require = createRequire(import.meta.url);
+globalThis.proj4 ||= require('proj4');
 const previousModels = globalThis.TransitStationModels;
 globalThis.TransitStationModels = require('../../frontend/js/vendor/transit-station-models.js');
+const SingleBuildingGeometry = require('../../frontend/js/single-building-geometry.js');
 const alignments = require('../../frontend/js/transit-alignments.js');
 const stations = require('../../frontend/js/transit-stations.js');
 
@@ -304,10 +306,11 @@ describe('station geometry editing', () => {
             'map', 'L', 'document', 'turf', 'proposalDraftStore', 'ProposalSelection',
             'hideProposalDetailsPanel', 'hideParcelInfoPanel', 'isProposalDesignCommitSession',
             'finishProposalDraftDesignSession', 'reportProposalDesignSaveFailure', 'updateStatus',
-            'syncActiveProposalDraftFromEditor', 'OnMapEditor'
+            'syncActiveProposalDraftFromEditor', 'OnMapEditor', 'GeometryEditHistory', 'SingleBuildingGeometry'
         ];
         const originals = new Map(keys.map(key => [key, globalThis[key]]));
         const listeners = new Map();
+        const documentHandlers = new Map();
         const panel = {
             classList: { add() {}, remove() {} },
             innerHTML: '', dataset: {},
@@ -321,6 +324,25 @@ describe('station geometry editing', () => {
         const finish = vi.fn();
         const reportFailure = vi.fn();
         const updateStatus = vi.fn();
+        const undoButton = {
+            disabled: true, attributes: {}, listeners: {},
+            setAttribute(name, value) { this.attributes[name] = value; },
+            addEventListener(type, handler) { this.listeners[type] = handler; },
+            removeEventListener(type) { delete this.listeners[type]; },
+            fire() { this.listeners.click?.(); }
+        };
+        const layers = [];
+        const markers = [];
+        const mapHandlers = new Map();
+        const makeEventLayer = (options = {}) => ({
+            options, events: {},
+            addTo(group) { group?.items?.push(this); return this; },
+            clearLayers() { this.items = []; },
+            on(type, handler) { this.events[type] = handler; return this; },
+            fire(type, event = {}) { this.events[type]?.({ target: this, ...event }); return this; },
+            getLatLng() { return this.latlng; },
+            setLatLng(value) { this.latlng = Array.isArray(value) ? { lat: value[0], lng: value[1] } : value; return this; }
+        });
         const draft = {
             id: 'station-save-draft', adapterKey: 'station', sourceProposalId: 'station-1',
             editorPayload: { structureProposal: {
@@ -329,26 +351,66 @@ describe('station geometry editing', () => {
                 geometry: stations.createStationFootprint([15.98, 45.81], 20, 'elevated', turf)
             } }
         };
-        const makeLayer = () => ({ addTo() { return this; }, clearLayers() {} });
+        const makeLayer = () => Object.assign(makeEventLayer(), { items: [] });
         globalThis.map = {
-            getPane: () => ({ style: {} }), createPane: () => ({ style: {} }), removeLayer() {}
+            getPane: () => ({ style: {} }), createPane: () => ({ style: {} }), removeLayer() {},
+            dragging: { _enabled: true, enabled() { return this._enabled; }, disable() { this._enabled = false; }, enable() { this._enabled = true; } },
+            on(type, handler) { const values = mapHandlers.get(type) || []; values.push(handler); mapHandlers.set(type, values); },
+            off(type, handler) { mapHandlers.set(type, (mapHandlers.get(type) || []).filter(value => value !== handler)); },
+            fire(type, event = {}) { (mapHandlers.get(type) || []).slice().forEach(handler => handler(event)); }
         };
         globalThis.L = {
             layerGroup: makeLayer, featureGroup: makeLayer,
-            geoJSON: () => ({ addTo() { return this; } }),
-            polyline: () => ({ addTo() { return this; } }),
-            marker: () => ({ addTo() { return this; } }),
+            geoJSON: (feature, options = {}) => {
+                const layer = makeEventLayer(options);
+                layer.feature = feature;
+                options.onEachFeature?.(feature, layer);
+                layers.push(layer);
+                return layer;
+            },
+            polyline: (_points, options) => makeEventLayer(options),
+            marker: (latlng, options) => {
+                const marker = makeEventLayer(options);
+                marker.latlng = { lat: latlng[0], lng: latlng[1] };
+                markers.push(marker);
+                return marker;
+            },
             divIcon: options => options
         };
         globalThis.document = {
             body: { appendChild() {} },
             createElement: () => panel,
-            addEventListener() {}, removeEventListener() {}, getElementById: () => null
+            addEventListener(type, handler) {
+                const values = documentHandlers.get(type) || [];
+                values.push(handler);
+                documentHandlers.set(type, values);
+            },
+            removeEventListener(type, handler) {
+                documentHandlers.set(type, (documentHandlers.get(type) || []).filter(value => value !== handler));
+            },
+            fire(type, event = {}) { (documentHandlers.get(type) || []).slice().forEach(handler => handler(event)); },
+            listenerCount: type => (documentHandlers.get(type) || []).length,
+            getElementById: () => null
         };
-        globalThis.OnMapEditor = { open: vi.fn(() => ({
-            root: panel, close: closeSession, fitFeature: vi.fn()
-        })) };
+        const placement = {
+            locked: false,
+            moveTarget: vi.fn((_geometry, from, to) => {
+                if (!Number.isFinite(from?.lng) || !Number.isFinite(from?.lat)) {
+                    throw new Error('move origin must be a {lng, lat} coordinate');
+                }
+                return to;
+            }),
+            accepts: () => true,
+            update: vi.fn(),
+            setLocked(value) { this.locked = value; }
+        };
+        globalThis.OnMapEditor = { open: vi.fn(options => {
+            panel.innerHTML = `${options.content}${options.footer}`;
+            return { root: panel, close: closeSession, fitFeature: vi.fn(), placement, setHint: vi.fn() };
+        }) };
         globalThis.turf = turf;
+        globalThis.SingleBuildingGeometry = SingleBuildingGeometry;
+        globalThis.GeometryEditHistory = require('../../frontend/js/geometry-edit/history.js');
         globalThis.proposalDraftStore = { getDraft: id => id === draft.id ? draft : null };
         globalThis.ProposalSelection = { getKey: () => 'station-1' };
         globalThis.hideProposalDetailsPanel = () => {};
@@ -358,6 +420,7 @@ describe('station geometry editing', () => {
         globalThis.reportProposalDesignSaveFailure = reportFailure;
         globalThis.updateStatus = updateStatus;
         globalThis.syncActiveProposalDraftFromEditor = vi.fn(sync);
+        panel.querySelector = selector => selector.includes('undo') ? undoButton : null;
         expect(stations.openStationGeometryEditor(draft)).toBe(true);
         const clickSave = () => listeners.get('click')({
             target: { closest: () => ({ dataset: { stationEditorAction: 'save' } }) }
@@ -369,7 +432,16 @@ describe('station geometry editing', () => {
                 else globalThis[key] = value;
             }
         };
-        return { draft, panel, closeSession, finish, reportFailure, updateStatus, clickSave, restore };
+        return {
+            draft, panel, closeSession, finish, reportFailure, updateStatus, clickSave, undoButton, layers, markers, placement,
+            clickUndo: () => undoButton.fire(),
+            fireDocument: (type, event) => globalThis.document.fire(type, event),
+            documentListenerCount: type => globalThis.document.listenerCount(type),
+            mapListenerCount: type => (mapHandlers.get(type) || []).length,
+            isMapDraggingEnabled: () => globalThis.map.dragging.enabled(),
+            fireMap: (type, event) => globalThis.map.fire(type, event),
+            restore
+        };
     }
 
     it('rotates around the fixed centre and carries elevated height into the edited structure', () => {
@@ -400,6 +472,20 @@ describe('station geometry editing', () => {
         expect(original.bearing).toBe(0);
     });
 
+    it('accepts a moved centre while preserving the station dimensions and orientation', () => {
+        const originalCenter = [15.98, 45.81];
+        const nextCenter = [15.9802, 45.8103];
+        const original = {
+            stationType: 'elevated', center: originalCenter, bearing: 20, platformHeightM: 14,
+            geometry: stations.createStationFootprint(originalCenter, 20, 'elevated', turf)
+        };
+        const moved = stations.buildEditedStationStructure(original, { center: nextCenter }, turf, []);
+        expect(moved.center).toEqual(nextCenter);
+        expect(moved.bearing).toBe(20);
+        expect(moved.platformHeightM).toBe(14);
+        expect(moved.geometry).not.toEqual(original.geometry);
+    });
+
     it('clamps elevated platform height but removes it from surface station types', () => {
         expect(stations.normalizePlatformHeight(100, 'elevated')).toBe(40);
         expect(stations.normalizePlatformHeight(-5, 'elevated')).toBe(3);
@@ -411,7 +497,7 @@ describe('station geometry editing', () => {
         expect(bus).not.toHaveProperty('platformHeightM');
     });
 
-    it('opens a fixed-centre elevated editor with rotation and height controls', async () => {
+    it('opens a movable elevated editor with rotation, height and shared placement controls', async () => {
         const keys = [
             'map', 'L', 'document', 'turf', 'proposalDraftStore', 'ProposalSelection',
             'hideProposalDetailsPanel', 'hideParcelInfoPanel', 'isProposalDesignCommitSession',
@@ -419,7 +505,7 @@ describe('station geometry editing', () => {
         ];
         const originals = new Map(keys.map(key => [key, globalThis[key]]));
         let panel = null;
-        const makeLayer = () => ({ addTo() { return this; }, clearLayers() {} });
+        const makeLayer = () => ({ items: [], addTo() { return this; }, clearLayers() { this.items = []; } });
         const classList = { add() {}, remove() {} };
         globalThis.map = {
             getPane: () => ({ style: {} }), createPane: () => ({ style: {} }), removeLayer() {}
@@ -427,9 +513,15 @@ describe('station geometry editing', () => {
         globalThis.L = {
             layerGroup: makeLayer,
             featureGroup: makeLayer,
-            geoJSON: () => ({ addTo() { return this; } }),
+            geoJSON: (feature, options = {}) => {
+                const layer = { events: {}, on(type, handler) { this.events[type] = handler; return this; }, addTo(group) { group?.items?.push(this); return this; } };
+                options.onEachFeature?.(feature, layer);
+                return layer;
+            },
             polyline: () => ({ addTo() { return this; } }),
-            marker: () => ({ addTo() { return this; } }),
+            marker: (_latlng, options) => ({
+                options, on() { return this; }, setLatLng() { return this; }, addTo(group) { group?.items?.push(this); return this; }
+            }),
             divIcon: options => options
         };
         globalThis.document = {
@@ -447,7 +539,7 @@ describe('station geometry editing', () => {
         globalThis.OnMapEditor = { open: vi.fn(options => {
             panel = globalThis.document.createElement('section');
             panel.innerHTML = options.content + options.footer;
-            return { root: panel, close: closeSession, fitFeature: vi.fn() };
+            return { root: panel, close: closeSession, fitFeature: vi.fn(), setHint: vi.fn(), placement: { update: vi.fn() } };
         }) };
         globalThis.turf = turf;
         globalThis.ProposalSelection = { getKey: () => 'station-1' };
@@ -471,7 +563,9 @@ describe('station geometry editing', () => {
             expect(globalThis.transitStationGeometryEditorActive).toBe(true);
             expect(panel.innerHTML).toContain('data-station-editor-bearing');
             expect(panel.innerHTML).toContain('data-station-editor-height');
+            expect(panel.innerHTML).toContain('data-station-editor-action="undo"');
             expect(panel.innerHTML).not.toMatch(/latitude|longitude/i);
+            expect(globalThis.OnMapEditor.open).toHaveBeenCalledWith(expect.objectContaining({ placement: expect.objectContaining({ site: draft.editorPayload.structureProposal.geometry }) }));
             await stations.cancelStationGeometryEditor();
             expect(globalThis.transitStationGeometryEditorActive).toBe(false);
             expect(finishedDraftId).toBe('station-draft');
@@ -502,6 +596,92 @@ describe('station geometry editing', () => {
         }
     });
 
+    it('supports centre-handle and body drags with one-gesture undo', async () => {
+        const sync = vi.fn(() => ({ id: 'station-save-draft' }));
+        const harness = openSaveHarness({ sync });
+        try {
+            const original = { ...harness.draft.editorPayload.structureProposal };
+            const marker = harness.markers.at(-1);
+            marker.fire('dragstart', { originalEvent: {} });
+            marker.setLatLng([45.8103, 15.9802]);
+            marker.fire('drag', { originalEvent: {} });
+            marker.fire('dragend');
+
+            expect(harness.placement.moveTarget).toHaveBeenCalledWith(
+                expect.any(Object),
+                { lng: original.center[0], lat: original.center[1] },
+                { lng: 15.9802, lat: 45.8103 },
+                {}
+            );
+            expect(harness.undoButton.disabled).toBe(false);
+            expect(harness.placement.update).toHaveBeenLastCalledWith(expect.objectContaining({ geometry: expect.any(Object) }));
+            const movedCall = sync.mock.calls.at(-1);
+            expect(movedCall[0]).toBe('station');
+            const moved = movedCall[1].structureProposal;
+            expect(moved.center[0]).toBeCloseTo(15.9802, 6);
+            expect(moved.center[1]).toBeCloseTo(45.8103, 6);
+            expect(moved.stationType).toBe(original.stationType);
+            expect(moved.bearing).toBe(original.bearing);
+            expect(moved.platformHeightM).toBe(original.platformHeightM);
+            expect(movedCall[2]).toEqual({ coalesceKey: 'editor:station', placement: { site: moved.geometry, free: true } });
+
+            harness.clickUndo();
+            expect(sync.mock.calls.at(-1)[1].structureProposal.center).toEqual(original.center);
+            expect(harness.undoButton.disabled).toBe(true);
+            expect(harness.markers.at(-1).getLatLng()).toEqual({ lat: original.center[1], lng: original.center[0] });
+
+            harness.layers.at(-1).fire('mousedown', {
+                latlng: { lng: original.center[0] + 0.00005, lat: original.center[1] + 0.00003 },
+                originalEvent: {}
+            });
+            globalThis.map.fire('mousemove', { latlng: { lng: original.center[0] + 0.00025, lat: original.center[1] + 0.00023 } });
+            globalThis.map.fire('mouseup');
+            const bodyMoved = sync.mock.calls.at(-1)[1].structureProposal;
+            expect(bodyMoved.center[0]).toBeCloseTo(original.center[0] + 0.0002, 5);
+            expect(bodyMoved.center[1]).toBeCloseTo(original.center[1] + 0.0002, 5);
+            expect(harness.undoButton.disabled).toBe(false);
+            harness.clickUndo();
+            expect(sync.mock.calls.at(-1)[1].structureProposal.center).toEqual(original.center);
+        } finally {
+            await harness.restore();
+        }
+    });
+
+    it('ends station body drags when pointer release occurs outside the map and removes completion listeners', async () => {
+        const sync = vi.fn(() => ({ id: 'station-save-draft' }));
+        const harness = openSaveHarness({ sync });
+        try {
+            const original = harness.draft.editorPayload.structureProposal.center;
+            harness.layers.at(-1).fire('mousedown', {
+                latlng: { lng: original[0] + 0.00005, lat: original[1] + 0.00003 },
+                originalEvent: {}
+            });
+            expect(harness.isMapDraggingEnabled()).toBe(false);
+            expect(harness.documentListenerCount('mouseup')).toBe(1);
+            expect(harness.documentListenerCount('touchend')).toBe(1);
+            expect(harness.documentListenerCount('touchcancel')).toBe(1);
+
+            harness.fireMap('mousemove', { latlng: { lng: original[0] + 0.00025, lat: original[1] + 0.00023 } });
+            expect(sync).not.toHaveBeenCalled();
+            harness.fireDocument('mouseup');
+            expect(sync).toHaveBeenCalledTimes(1);
+            expect(harness.isMapDraggingEnabled()).toBe(true);
+            for (const type of ['mousemove', 'touchmove', 'mouseup', 'touchend', 'touchcancel']) {
+                expect(harness.mapListenerCount(type)).toBe(0);
+            }
+            for (const type of ['mouseup', 'touchend', 'touchcancel']) {
+                expect(harness.documentListenerCount(type)).toBe(0);
+            }
+
+            const updateCount = harness.placement.update.mock.calls.length;
+            harness.fireMap('mousemove', { latlng: { lng: original[0] + 0.00045, lat: original[1] + 0.00043 } });
+            expect(harness.placement.update).toHaveBeenCalledTimes(updateCount);
+            expect(sync).toHaveBeenCalledTimes(1);
+        } finally {
+            await harness.restore();
+        }
+    });
+
     it('does not overwrite a failed draft finish with a saved status', async () => {
         const harness = openSaveHarness({ sync: () => ({ id: 'station-save-draft' }) });
         harness.finish.mockReturnValue(null);
@@ -523,7 +703,7 @@ describe('station geometry editing', () => {
             expect(harness.closeSession).toHaveBeenCalledTimes(1);
             expect(globalThis.syncActiveProposalDraftFromEditor).toHaveBeenCalledWith(
                 'station', expect.objectContaining({ structureProposal: expect.any(Object) }),
-                { coalesceKey: 'editor:station' }
+                { coalesceKey: 'editor:station', placement: expect.objectContaining({ free: true, site: expect.any(Object) }) }
             );
             expect(harness.reportFailure).not.toHaveBeenCalled();
             expect(harness.updateStatus).not.toHaveBeenCalledWith('Station geometry saved.');

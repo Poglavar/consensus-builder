@@ -29,6 +29,7 @@ function previewHarness({ modal, authoredSite, lastSuperparcel, ruleKind }) {
     vm.runInNewContext(`
         let blockifyModal=this.blockifyModal;
         let blockifyAuthoredSite=this.authoredSite;
+        let blockifyGenerationSite=this.authoredSite;
         let lastSuperparcel=this.lastSuperparcel;
         let blockRuleKind=this.ruleKind;
         ${extracted('blockifyDesignBoundary')}
@@ -71,6 +72,9 @@ function closeHarness() {
         let generatedBuildingFeatures=[{ feature: true }], existingFootprints=[{ feature: true }];
         let existingFootprintsPromise=Promise.resolve([]), blockifyBlock={ parcels: [] };
         let blockifyBlockNameOverride='block', blockifyAuthoredSite={ geometry: {} };
+        let blockifyGenerationSite={ geometry: {} }, blockifyHistoryKeydown=null, blockifyHistory=null, blockifyUndoButton=null;
+        let blockifyDragState=null, blockifyShapeHistoryRecorded=false, blockifyPlacementTransform={ translationMeters: [0, 0], rotationDegrees: 0 };
+        let blockifyPlacementSite={ geometry: {} };
         let currentSetback=99, currentBuildingWidth=88;
         const DEFAULT_SETBACK=2, DEFAULT_BUILDING_WIDTH=15;
         const document=this.document, window=this.window, CustomEvent=this.CustomEvent;
@@ -93,7 +97,7 @@ function closeHarness() {
             polygonEditor:blockifyPolygonEditor, generated:generatedBuildingFeature,
             generatedFeatures:generatedBuildingFeatures, existing:existingFootprints,
             existingPromise:existingFootprintsPromise, block:blockifyBlock, blockName:blockifyBlockNameOverride,
-            site:blockifyAuthoredSite, pendingVertex:blockifyPendingVertexActionIndex,
+            site:blockifyAuthoredSite, generationSite:blockifyGenerationSite, pendingVertex:blockifyPendingVertexActionIndex,
             setback:currentSetback, width:currentBuildingWidth
         });
     `, context);
@@ -150,7 +154,7 @@ describe('Urban rule shared-map editor behavior', () => {
             modal: null, map: null, parcel: null, boundary: null, building: null, footprint: null, debug: null,
             pieces: [], excluded: [], handle: null, polygonEditor: null, generated: null,
             generatedFeatures: null, existing: null, existingPromise: null, block: null, blockName: null,
-            site: null, pendingVertex: null, setback: 2, width: 15
+            site: null, generationSite: null, pendingVertex: null, setback: 2, width: 15
         });
         expect(h.setPendingBuildingProposalContext).toHaveBeenCalledWith(null);
         expect(h.window.pendingBuildingFromBlockify).toBeNull();

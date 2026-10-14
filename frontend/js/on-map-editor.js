@@ -247,6 +247,7 @@
                 doc.removeEventListener('keydown', onKeydown);
                 controls?.removeEventListener('change', positionTools);
                 panelResize?.disconnect();
+                session.placement?.destroy();
                 disabledButtons.forEach(({ button, disabled }) => { button.disabled = disabled; });
                 suspended.forEach(({ element, display }) => { if (element.isConnected) element.style.display = display; });
                 root.remove();
@@ -322,6 +323,10 @@
                 env.addEventListener('threeModeReady', onModeChange);
                 doc.addEventListener('keydown', onKeydown);
                 panelResize?.observe(panel);
+                if (options.placement) {
+                    if (!env.OnMapPlacement?.create) throw new Error('Placement controls are unavailable.');
+                    session.placement = env.OnMapPlacement.create({ ...options.placement, session }, env);
+                }
                 setCollapsed(false);
                 syncMode(false);
                 const desired = env.__mapModeState?.desired || '2d';

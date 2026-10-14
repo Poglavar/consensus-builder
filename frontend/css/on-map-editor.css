@@ -108,3 +108,33 @@ body.on-map-editing .map-shell-slot--tray { display: none; }
 
 /* A newly opened Settings/Layers sheet takes focus above the in-progress editor. */
 body.on-map-editing .map-sheet { z-index: var(--cb-z-open-menu); }
+
+/* Parcel guides are optional; their warning stays visible with the controls folded. */
+.on-map-editor__placement {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border-color, #dbe2ea);
+}
+.on-map-editor__placement-option {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 36px;
+    margin: 0;
+    font-size: 13px;
+    cursor: pointer;
+}
+.on-map-editor__placement-option input { margin: 0; }
+.on-map-editor__placement-warning {
+    margin: 0 0 8px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: #fff6df;
+    color: #704a08;
+    font-size: 12px;
+    line-height: 1.4;
+}
+.on-map-editor__placement-warning[hidden] { display: none; }

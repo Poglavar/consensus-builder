@@ -56,7 +56,7 @@ describe('floating building-family editors', () => {
 
     it('publishes the example build-out independently from permitted massing and exclusions', () => {
         expect(rowHouse).toContain("draftPreview: { kind: 'buildings', features: rowBuildOut }");
-        expect(rowHouse).toContain("boundary: cachedSuperparcel");
+        expect(rowHouse).toContain("boundary: rowHouseBlock?.site || cachedSuperparcel");
         expect(rowHouse).toContain("envelopes: rowRuleKind === 'exact' ? [] : rowUnits");
         expect(rowHouse).toContain("excluded: rowExcluded.filter(entry => entry?.feature?.geometry).map(entry => entry.feature)");
 
@@ -69,8 +69,10 @@ describe('floating building-family editors', () => {
 
     it('uses an authored site as the editor boundary while retaining per-parcel inputs', () => {
         expect(rowHouse).toContain('initialFeature = null, site = null');
-        expect(rowHouse).toContain('site: site?.geometry ? cloneRowHouseFeature(site) : null');
-        expect(rowHouse).toContain('? cloneRowHouseFeature(block.site)');
+        expect(rowHouse).toContain('site: authoredSite');
+        expect(rowHouse).toContain('function rowHouseGeneratorSite(block)');
+        expect(rowHouse.match(/let superparcel = rowHouseGeneratorSite\(block\) \|\| robustUnionLocal\(parcelFeatures\);/g)).toHaveLength(2);
+        expect(rowHouse).toContain('generatorSite: initialParameters?.placementBaseSite?.geometry');
         expect(rowHouse).toContain('fitFeature(block.site?.geometry ? block.site : featureCollection');
 
         expect(parcelBased).toContain('initialParameters = null, site = null');
@@ -106,6 +108,21 @@ describe('floating building-family editors', () => {
         expect(rowHouse).toContain("addEventListener('click', requestCloseRowHouseModal)");
         expect(parcelBased).toContain('btn-parcelbased-cancel');
         expect(parcelBased).toContain("addEventListener('click', requestCloseParcelBasedModal)");
+    });
+
+    it('saves the canonical full row bar and block massing for free placement', () => {
+        expect(rowHouse).toContain('buildings: [feature]');
+        expect(rowHouse).toContain('placement: { site: cloneRowHouseFeature(generatedRowHouseFeature), free: true }');
+        expect(rowHouse).toContain('site: block.site || cachedSuperparcel,');
+        expect(rowHouse).toContain("manualMode: rowHouseManualMode");
+        expect(rowHouse).toContain('if (!rowHousePlacementLocked() && (rowHouseBlock?.syntheticSite || !fitsParcelUnion))');
+
+        const blockEditor = readFileSync(new URL('../../frontend/js/building-blocks.js', import.meta.url), 'utf8');
+        expect(blockEditor).toContain(': [JSON.parse(JSON.stringify(generatedBuildingFeature))]');
+        expect(blockEditor).toContain('blockMassing = blockifyMode !== \'existing\' && generatedBuildingFeature?.geometry');
+        expect(blockEditor).toContain("...(blockifyMode !== 'existing' ? { placement: { site: blockifyClone(generatedBuildingFeature || clonedFeature), free: true } } : {})");
+        expect(blockEditor).toContain("blockifyPlacementLocked() ? originalSuperparcel : false");
+        expect(blockEditor).toContain('simplifyAndClipOutline(outerBuilding, 0, blockifyPlacementBoundary())');
     });
 
     it.each([

@@ -19,7 +19,7 @@ function install(name, value) {
     globalThis[name] = value;
 }
 
-function loadInstantCreate({ lands, reason = 'The live fabric could not be validated.', throws = false, replacement = false }) {
+function loadInstantCreate({ lands, reason = 'The live fabric could not be validated.', throws = false, replacement = false, publishedSource = null }) {
     const draft = {
         id: 'draft-park',
         goal: 'park',
@@ -53,7 +53,7 @@ function loadInstantCreate({ lands, reason = 'The live fabric could not be valid
     });
     install('proposalStorage', {
         addProposal: vi.fn(() => proposal.proposalId),
-        getProposal: vi.fn(() => proposal),
+        getProposal: vi.fn(id => id === 'source-lake' && publishedSource ? publishedSource : proposal),
         save: vi.fn()
     });
     const ProposalManager = {
@@ -69,6 +69,7 @@ function loadInstantCreate({ lands, reason = 'The live fabric could not be valid
     };
     install('ProposalManager', ProposalManager);
     install('isProposalApplied', value => value.applied === true);
+    install('isPublishedProposalRecord', require('../../frontend/js/proposal-supersession.js').isPublishedProposalRecord);
     install('selectAndHighlightProposal', selectAndHighlightProposal);
     install('showStyledAlert', showStyledAlert);
     install('showEphemeralMessage', showEphemeralMessage);
@@ -418,6 +419,20 @@ describe('one-click structure creation focus', () => {
 
         expect(showStyledAlert).not.toHaveBeenCalled();
         expect(showEphemeralMessage).toHaveBeenCalledWith('Geometry updated.', 4000, 'success');
+        expect(ProposalManager._commitReplacementSupersession).not.toHaveBeenCalled();
+    });
+
+    it('derives a published-source geometry fork without releasing the applied source', async () => {
+        const source = { proposalId: 'source-lake', goal: 'lake', lifecycleStatus: 'published', applied: true };
+        const { proposal, ProposalManager } = loadInstantCreate({ lands: true, replacement: true, publishedSource: source });
+
+        await globalThis.instantCreateProposalFromDraft('draft-park');
+
+        expect(ProposalManager.deriveForNewProposal).toHaveBeenCalledWith(
+            expect.objectContaining({ proposalId: proposal.proposalId }),
+            { supersededIds: [] }
+        );
+        expect(source.applied).toBe(true);
         expect(ProposalManager._commitReplacementSupersession).not.toHaveBeenCalled();
     });
 

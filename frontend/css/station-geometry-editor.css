@@ -41,3 +41,10 @@
 
 
 .station-editor-bearing > span:first-child { grid-column: 1 / -1; }
+
+.station-editor-footprint { cursor: grab; }
+.station-editor-footprint:active { cursor: grabbing; }
+
+@media (max-width: 639.98px) {
+    .on-map-editor__footer [data-station-editor-action] { min-height: 40px; }
+}

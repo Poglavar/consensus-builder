@@ -59,6 +59,35 @@ describe('proposal replacement supersession', () => {
         expect(replacement.supersedesProposalIds).toBeUndefined();
     });
 
+    it('preserves a published source for a moved non-overlapping fork but still finds real overlap', () => {
+        const source = {
+            proposalId: 'published-source', lifecycleStatus: 'published', applied: true, appliedAt: 'before',
+            goal: 'park', structureProposal: { kind: 'park', geometry: turf.polygon([[[15.9, 45.8], [15.901, 45.8], [15.901, 45.801], [15.9, 45.801], [15.9, 45.8]]]) }
+        };
+        const moved = {
+            proposalId: 'moved-fork', sourceProposalId: source.proposalId, applied: true, goal: 'park', freePlacement: true,
+            structureProposal: { kind: 'park', geometry: turf.polygon([[[16.1, 45.8], [16.101, 45.8], [16.101, 45.801], [16.1, 45.801], [16.1, 45.8]]]) }
+        };
+        const records = [source, moved];
+        const sourceBefore = structuredClone(source);
+
+        expect([...proposalReplacementFamilyIds(moved, records)]).toEqual(['moved-fork']);
+        expect(collectAppliedProposalAlternatives(moved, records, {
+            planOrder: require('../../frontend/js/proposals/plan-order.js')
+        })).toEqual([]);
+        expect(commitReplacementSupersession(moved, moved.proposalId, id => records.find(record => record.proposalId === id))).toBeNull();
+        expect(source).toEqual(sourceBefore);
+
+        const overlapping = {
+            ...moved,
+            proposalId: 'overlapping-fork',
+            structureProposal: { kind: 'park', geometry: source.structureProposal.geometry }
+        };
+        expect(collectAppliedProposalAlternatives(overlapping, [source, overlapping], {
+            planOrder: require('../../frontend/js/proposals/plan-order.js')
+        }).map(record => record.proposalId)).toEqual(['published-source']);
+    });
+
     it('does not treat a disjoint land fork as an alternative to its applied source', () => {
         const source = {
             proposalId: 'source', applied: true, goal: 'park',

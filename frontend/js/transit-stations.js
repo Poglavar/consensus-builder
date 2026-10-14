@@ -723,7 +723,7 @@
     function buildEditedStationStructure(structureValue, changes = {}, turfApi, parcelEntries) {
         const current = clone(structureValue || {});
         const type = normalizeType(current.stationType);
-        const center = coordinate(current.center);
+        const center = coordinate(changes.center ?? current.center);
         if (!type || !center) return null;
         const bearing = normalizeBearing(changes.bearing ?? current.bearing);
         const geometry = createStationFootprint(center, bearing, type, turfApi);
@@ -764,7 +764,6 @@
         return `
             <p class="on-map-editor__hint">${spec?.label || stationEditorText('station', 'Station')}</p>
             <div class="station-editor-body">
-                <p>${stationEditorText('fixedPosition', 'The station centre stays fixed. Rotate the station around it.')}</p>
                 <label class="station-editor-field station-editor-bearing">
                     <span>${stationEditorText('rotation', 'Rotation')}</span>
                     <input type="range" data-station-editor-bearing-range min="0" max="359" step="1" value="${stationEditor.bearing}">
@@ -776,7 +775,144 @@
     }
 
     function stationEditorFooter() {
-        return `<button type="button" class="btn" data-station-editor-action="cancel">${stationEditorText('cancel', 'Cancel')}</button><button type="button" class="btn btn-primary" data-station-editor-action="save">${stationEditorText('save', 'Done')}</button>`;
+        return `<button type="button" class="btn btn-sm" data-station-editor-action="undo" disabled aria-disabled="true">${stationEditorText('undo', 'Undo')}</button><button type="button" class="btn" data-station-editor-action="cancel">${stationEditorText('cancel', 'Cancel')}</button><button type="button" class="btn btn-primary" data-station-editor-action="save">${stationEditorText('save', 'Done')}</button>`;
+    }
+
+    function ensureStationEditorHistory() {
+        if (stationEditor?.history) return stationEditor.history;
+        const history = global.GeometryEditHistory?.create?.({
+            capture: () => ({
+                center: stationEditor.center.slice(),
+                bearing: stationEditor.bearing,
+                platformHeightM: stationEditor.platformHeightM
+            }),
+            restore: snapshot => {
+                stationEditor.center = snapshot.center.slice();
+                stationEditor.bearing = snapshot.bearing;
+                stationEditor.platformHeightM = snapshot.platformHeightM;
+                const bearingRange = stationEditor.panel?.querySelector('[data-station-editor-bearing-range]');
+                const bearingNumber = stationEditor.panel?.querySelector('[data-station-editor-bearing]');
+                const heightInput = stationEditor.panel?.querySelector('[data-station-editor-height]');
+                if (bearingRange) bearingRange.value = String(snapshot.bearing);
+                if (bearingNumber) bearingNumber.value = String(snapshot.bearing);
+                if (heightInput && Number.isFinite(Number(snapshot.platformHeightM))) heightInput.value = String(snapshot.platformHeightM);
+                renderStationEditorPreview();
+                stationEditor.session?.placement?.update?.({
+                    type: 'Feature', properties: {},
+                    geometry: createStationFootprint(stationEditor.center, stationEditor.bearing, stationEditor.type)
+                });
+                syncStationEditorDraft();
+            }
+        });
+        if (!history) return null;
+        stationEditor.history = history;
+        history.bindKeyboard(global.document, { enabled: () => !!stationEditor });
+        return history;
+    }
+
+    function startStationMove(event, pointerValue, source) {
+        if (!stationEditor || stationEditor.move) return;
+        const pointer = coordinate(pointerValue || event?.latlng);
+        if (!pointer) return;
+        try {
+            if (event?.originalEvent) global.L.DomEvent?.stop?.(event.originalEvent);
+            else if (event) global.L.DomEvent?.stopPropagation?.(event);
+        } catch (_) { }
+        const geometry = createStationFootprint(stationEditor.center, stationEditor.bearing, stationEditor.type);
+        if (!geometry) return;
+        stationEditor.move = {
+            from: { lng: pointer[0], lat: pointer[1] },
+            startCenter: stationEditor.center.slice(),
+            startGeometry: geometry,
+            startBearing: stationEditor.bearing,
+            recorded: false,
+            source,
+            mapDraggingWasEnabled: global.map?.dragging?.enabled?.() === true
+        };
+        try { global.map?.dragging?.disable?.(); } catch (_) { }
+        if (source === 'body') {
+            global.map?.on('mousemove', moveStationBody);
+            global.map?.on('touchmove', moveStationBody);
+            global.map?.on('mouseup', endStationMove);
+            global.map?.on('touchend', endStationMove);
+            global.map?.on('touchcancel', endStationMove);
+            global.document?.addEventListener('mouseup', endStationMove);
+            global.document?.addEventListener('touchend', endStationMove);
+            global.document?.addEventListener('touchcancel', endStationMove);
+        }
+    }
+
+    function updateStationMove(event) {
+        const move = stationEditor?.move;
+        const raw = coordinate(event?.latlng);
+        if (!move || !raw) return;
+        const placement = stationEditor.session?.placement;
+        let target = { lng: raw[0], lat: raw[1] };
+        try {
+            target = placement?.moveTarget?.(
+                move.startGeometry, move.from, target, event?.originalEvent
+            ) || target;
+        } catch (_) { return; }
+        if (!Number.isFinite(target?.lng) || !Number.isFinite(target?.lat)) return;
+        const mover = global.SingleBuildingGeometry?.moveCoordinateCollection;
+        if (typeof mover !== 'function') return;
+        let center;
+        let feature;
+        try {
+            center = mover(move.startCenter, move.from, target);
+            const geometry = createStationFootprint(center, stationEditor.bearing, stationEditor.type);
+            feature = { type: 'Feature', properties: {}, geometry };
+            if (!geometry || (placement?.accepts && !placement.accepts(feature))) return;
+        } catch (_) { return; }
+        if (Math.abs(center[0] - move.startCenter[0]) < 1e-12 && Math.abs(center[1] - move.startCenter[1]) < 1e-12) return;
+        if (!move.recorded) {
+            ensureStationEditorHistory()?.record();
+            move.recorded = true;
+        }
+        stationEditor.center = center;
+        placement?.update?.(feature);
+        renderStationEditorPreview();
+    }
+
+    function moveStationBody(event) { updateStationMove(event); }
+
+    function startStationBodyMove(event) {
+        startStationMove(event, event?.latlng, 'body');
+    }
+
+    function startStationMarkerMove(event) {
+        startStationMove(event, stationEditor?.center, 'marker');
+    }
+
+    function moveStationMarker(event) {
+        const latLng = event?.target?.getLatLng?.();
+        if (!latLng) return;
+        updateStationMove({ ...event, latlng: latLng });
+    }
+
+    function endStationMove() {
+        const move = stationEditor?.move;
+        if (!move) return;
+        stationEditor.move = null;
+        if (move.source === 'body' && global.map) {
+            global.map.off('mousemove', moveStationBody);
+            global.map.off('touchmove', moveStationBody);
+            global.map.off('mouseup', endStationMove);
+            global.map.off('touchend', endStationMove);
+            global.map.off('touchcancel', endStationMove);
+            global.document?.removeEventListener('mouseup', endStationMove);
+            global.document?.removeEventListener('touchend', endStationMove);
+            global.document?.removeEventListener('touchcancel', endStationMove);
+        }
+        if (move.mapDraggingWasEnabled) {
+            try { global.map?.dragging?.enable?.(); } catch (_) { }
+        }
+        const changed = stationEditor.center[0] !== move.startCenter[0] || stationEditor.center[1] !== move.startCenter[1];
+        if (move.recorded && !changed) stationEditor.history?.discardLast?.();
+        const geometry = createStationFootprint(stationEditor.center, stationEditor.bearing, stationEditor.type);
+        stationEditor.session?.placement?.update?.({ type: 'Feature', properties: {}, geometry });
+        renderStationEditorPreview();
+        if (changed) syncStationEditorDraft();
     }
 
     function renderStationEditorPreview() {
@@ -785,9 +921,15 @@
         const geometry = createStationFootprint(stationEditor.center, stationEditor.bearing, stationEditor.type);
         if (!geometry) return;
         const color = COLORS[stationEditor.type] || '#334155';
-        global.L.geoJSON({ type: 'Feature', properties: {}, geometry }, {
+        const previewFeature = { type: 'Feature', properties: {}, geometry };
+        global.L.geoJSON(previewFeature, {
             pane: STATION_EDITOR_PANE,
-            interactive: false,
+            interactive: true,
+            onEachFeature: (_feature, layer) => {
+                layer.on('mousedown', startStationBodyMove);
+                layer.on('touchstart', startStationBodyMove);
+            },
+            className: 'station-editor-footprint',
             style: { color, weight: 3, fillColor: color, fillOpacity: 0.25, dashArray: '8 5' }
         }).addTo(stationEditor.layer);
         const directionEnd = offsetCoordinate(
@@ -807,11 +949,21 @@
             weight: 4,
             opacity: 0.9
         }).addTo(stationEditor.layer);
-        global.L.marker([stationEditor.center[1], stationEditor.center[0]], {
-            pane: STATION_EDITOR_PANE,
-            icon: markerIcon(stationEditor.type, true),
-            interactive: false
-        }).addTo(stationEditor.layer);
+        if (!stationEditor.centerMarker) {
+            stationEditor.centerMarker = global.L.marker([stationEditor.center[1], stationEditor.center[0]], {
+                pane: STATION_EDITOR_PANE,
+                icon: markerIcon(stationEditor.type, true),
+                interactive: true,
+                draggable: true,
+                keyboard: true,
+                title: stationEditorText('dragCenter', 'Drag to move the station')
+            }).addTo(stationEditor.handleLayer);
+            stationEditor.centerMarker.on('dragstart', startStationMarkerMove);
+            stationEditor.centerMarker.on('drag', moveStationMarker);
+            stationEditor.centerMarker.on('dragend', endStationMove);
+        } else {
+            stationEditor.centerMarker.setLatLng([stationEditor.center[1], stationEditor.center[0]]);
+        }
     }
 
     function syncStationEditorDraft() {
@@ -819,12 +971,16 @@
         const draft = global.proposalDraftStore?.getDraft?.(stationEditor.draftId);
         const current = draft?.editorPayload?.structureProposal;
         const next = buildEditedStationStructure(current, {
+            center: stationEditor.center,
             bearing: stationEditor.bearing,
             platformHeightM: stationEditor.platformHeightM
         });
         if (!draft || !next) return null;
         const updated = typeof global.syncActiveProposalDraftFromEditor === 'function'
-            ? global.syncActiveProposalDraftFromEditor('station', { structureProposal: next }, { coalesceKey: 'editor:station' })
+            ? global.syncActiveProposalDraftFromEditor('station', { structureProposal: next }, {
+                coalesceKey: 'editor:station',
+                placement: { site: clone(next.geometry), free: true }
+            })
             : global.proposalDraftStore.updateDraft(draft.id, {
                 fields: { selectedParcelIds: clone(next.selectedParcelIds || draft.fields?.selectedParcelIds || []) },
                 editorPayload: { ...draft.editorPayload, geometry: clone(next.geometry), structureProposal: next },
@@ -857,10 +1013,13 @@
     function teardownStationEditor() {
         const previous = stationEditor;
         if (!previous) return null;
+        if (previous.move) endStationMove();
         try { previous.panel?.removeEventListener('click', previous.onClick); } catch (_) { }
         try { previous.panel?.removeEventListener('input', previous.onInput); } catch (_) { }
+        try { previous.history?.destroy?.(); } catch (_) { }
         previous.session?.close();
         try { global.map?.removeLayer(previous.layer); } catch (_) { }
+        try { global.map?.removeLayer(previous.handleLayer); } catch (_) { }
         stationEditor = null;
         global.transitStationGeometryEditorActive = false;
         try { updateTransitStationsLayer(); } catch (_) { }
@@ -886,6 +1045,7 @@
 
     function saveStationGeometryEditor() {
         if (!stationEditor) return false;
+        if (stationEditor.move) endStationMove();
         const draftId = stationEditor.draftId;
         const isCommit = global.isProposalDesignCommitSession?.() === true;
         try {
@@ -924,6 +1084,10 @@
             reselectKey: global.ProposalSelection?.getKey?.() || null,
             panel: null,
             layer: null,
+            handleLayer: null,
+            centerMarker: null,
+            history: null,
+            move: null,
             onInput: null,
             onClick: null,
             onKey: null
@@ -932,11 +1096,19 @@
             owner: 'station-geometry-editor', id: 'station-geometry-editor',
             title: stationEditorText('title', 'Edit station geometry'),
             modes: ['2d'], content: stationEditorMarkup(), footer: stationEditorFooter(),
+            placement: {
+                site: clone(structure.geometry),
+                onLockChange: () => stationEditor?.session?.placement?.update?.({
+                    type: 'Feature', properties: {},
+                    geometry: createStationFootprint(stationEditor.center, stationEditor.bearing, stationEditor.type)
+                })
+            },
             onCancel: cancelStationGeometryEditor
         });
         if (!session) { stationEditor = null; return false; }
         stationEditor.session = session;
         stationEditor.layer = global.L.layerGroup().addTo(global.map);
+        stationEditor.handleLayer = global.L.layerGroup().addTo(global.map);
         const panel = session.root;
         stationEditor.panel = panel;
         stationEditor.onInput = event => {
@@ -946,12 +1118,16 @@
         };
         stationEditor.onClick = event => {
             const action = event.target?.closest?.('[data-station-editor-action]')?.dataset.stationEditorAction;
+            if (action === 'undo') return;
             if (action === 'cancel') void cancelStationGeometryEditor();
             else if (action === 'save') saveStationGeometryEditor();
         };
         panel.addEventListener('input', stationEditor.onInput);
         panel.addEventListener('click', stationEditor.onClick);
+        ensureStationEditorHistory()?.bindButton(panel.querySelector('[data-station-editor-action="undo"]'));
         global.transitStationGeometryEditorActive = true;
+        session.setHint?.(stationEditorText('moveHint', 'Drag the station footprint or centre marker to reposition it. Its type, size, rotation and platform height stay the same.'));
+        session.placement?.update?.({ type: 'Feature', properties: {}, geometry: createStationFootprint(center, stationEditor.bearing, type) });
         session.fitFeature({ type: 'Feature', properties: {}, geometry: structure.geometry }, { maxZoom: 20 });
         updateTransitStationsLayer();
         renderStationEditorPreview();
