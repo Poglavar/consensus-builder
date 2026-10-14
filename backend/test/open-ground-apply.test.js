@@ -615,3 +615,89 @@ describe('a road built through an applied park', () => {
         expect(out.version).toBe(3);
     });
 });
+
+
+describe('proposal ground refusal diagnostics', () => {
+    it('does not acquire loaded neighbouring parcels when an edited lake leaves its selected land', async () => {
+        const neighbour = parcel('HR-330264-2', rect(20, 0, 40, 10));
+        const lake = structureRecord('lake-outside', 'lake', rect(2, 1, 30, 9), {
+            declared: ['HR-330264-1'], site: HR1.geometry,
+            binding: { parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'complete' }
+        });
+        const { manager, repository } = await harness({ facts: [HR1, neighbour], records: [lake] });
+        const before = structuredClone(lake);
+
+        expect(manager.getProposalGroundFailure(lake)).toMatchObject({
+            code: 'proposal-footprint-outside-cadastre',
+            message: expect.stringContaining('beyond its selected cadastral parcels')
+        });
+        expect(repository.calls).toEqual([]);
+        expect(lake).toEqual(before);
+        await expect(manager.applyProposal(lake.proposalId)).resolves.toBe(false);
+        expect(manager.getLastApplyFailureInfo(lake.proposalId)).toMatchObject({
+            code: 'proposal-footprint-outside-cadastre',
+            message: expect.stringContaining('includes the additional parcels')
+        });
+        expect(lake.applied).toBe(false);
+        expect(lake.cadastreParcelIds).toEqual(['HR-330264-1']);
+    });
+
+    it('retains the original lake and fabric after a refused replacement, and clears the error after correction', async () => {
+        const supersession = require('../../frontend/js/proposal-supersession.js');
+        const source = structureRecord('lake-source', 'lake', rect(2, 1, 18, 9), {
+            declared: ['HR-330264-1'], site: HR1.geometry,
+            binding: { parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'complete' }
+        });
+        const edited = structureRecord('lake-edit', 'lake', rect(2, 1, 30, 9), {
+            declared: ['HR-330264-1'], site: HR1.geometry, binding: source.binding
+        });
+        edited.sourceProposalId = source.proposalId;
+        const { manager, store, fabric } = await harness({ facts: [HR1], records: [source, edited] });
+        install('commitReplacementSupersession', supersession.commitReplacementSupersession);
+        install('collectAppliedProposalAlternatives', supersession.collectAppliedProposalAlternatives);
+        const notify = vi.fn();
+        install('showEphemeralMessage', notify);
+        await expect(manager.applyProposal(source.proposalId)).resolves.toBe(true);
+        const before = JSON.stringify(fabric.list());
+        notify.mockClear();
+
+        await expect(manager.deriveForNewProposal(edited, { supersededIds: [source.proposalId] })).resolves.toBeNull();
+        expect(store.getProposal(source.proposalId).applied).toBe(true);
+        expect(store.getProposal(edited.proposalId).applied).toBe(false);
+        expect(JSON.stringify(fabric.list())).toBe(before);
+        expect(notify).not.toHaveBeenCalled();
+        expect(manager.getLastApplyFailureInfo(edited.proposalId)?.code).toBe('proposal-footprint-outside-cadastre');
+
+        store.getProposal(edited.proposalId).structureProposal.geometry = rect(3, 1, 17, 9);
+        await expect(manager.applyProposal(edited.proposalId)).resolves.toBe(true);
+        expect(store.getProposal(edited.proposalId).applied).toBe(true);
+        expect(store.getProposal(source.proposalId).applied).toBe(false);
+        expect(manager.getLastApplyFailure(edited.proposalId)).toBeNull();
+    });
+
+    it('distinguishes a declared parcel that is absent from geometry outside loaded parcels', async () => {
+        const lake = structureRecord('lake-missing', 'lake', rect(2, 1, 18, 9), {
+            declared: ['HR-330264-9'],
+            binding: { parcels: [{ parcelId: 'HR-330264-9' }], coverage: 'complete' }
+        });
+        const { manager } = await harness({ records: [lake] });
+        await expect(manager.applyProposal(lake.proposalId)).rejects.toMatchObject({ code: 'cadastral-ground-absent' });
+        expect(manager.getLastApplyFailureInfo(lake.proposalId)).toMatchObject({
+            code: 'cadastral-ground-absent', missingIds: ['HR-330264-9'],
+            message: expect.stringContaining('HR-330264-9')
+        });
+        expect(lake.applied).toBe(false);
+    });
+
+    it('explains an open-ground footprint leaving its authored site', async () => {
+        const lake = structureRecord('lake-open-outside', 'lake', rect(0, 0, 12, 10), {
+            site: rect(0, 0, 10, 10), binding: { parcels: [], coverage: 'none' }
+        });
+        const { manager } = await harness({ records: [lake] });
+        expect(manager.getProposalGroundFailure(lake)).toMatchObject({
+            code: 'proposal-footprint-outside-site', message: expect.stringContaining('beyond its site')
+        });
+        await expect(manager.applyProposal(lake.proposalId)).resolves.toBe(false);
+        expect(manager.getLastApplyFailureInfo(lake.proposalId)?.code).toBe('proposal-footprint-outside-site');
+    });
+});

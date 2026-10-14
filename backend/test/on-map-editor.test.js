@@ -119,6 +119,31 @@ function runtime({ claim = true, popup = false } = {}) {
 afterEach(() => vi.restoreAllMocks());
 
 describe('OnMapEditor shared floating-panel lifecycle', () => {
+    it('uses the global view buttons and keeps mode hints and guards in sync', () => {
+        const { editor, env, buttons, envListeners } = runtime();
+        const session = editor.open({
+            owner: 'row-house',
+            modes: ['2d', 'model'],
+            hints: { '2d': 'Edit the footprint on the map.', model: 'Edit the footprint in 3D.' }
+        });
+
+        expect(session.content.children.map(child => child.className)).toEqual([
+            'on-map-editor__hint', 'on-map-editor__body'
+        ]);
+        expect(buttons['mode-2d-toggle'].disabled).toBe(false);
+        expect(buttons['mode-3d-toggle'].disabled).toBe(false);
+        expect(buttons['mode-realistic-toggle'].disabled).toBe(true);
+        expect(editor.allowsMode('model')).toBe(true);
+        expect(editor.allowsMode('photo')).toBe(false);
+        expect(session.content.children[0].textContent).toBe('Edit the footprint on the map.');
+
+        env.__mapModeState.desired = 'model';
+        env.isThreeModeActive = () => true;
+        envListeners.get('mapmodechange')();
+        expect(session.content.children[0].textContent).toBe('Edit the footprint in 3D.');
+        session.close();
+    });
+
     it('keeps anchored tools hidden until geometry is ready, and hides them when it is cleared', () => {
         const { editor } = runtime();
         const session = editor.open({ owner: 'row-house', tools: 'rotate' });
@@ -128,6 +153,15 @@ describe('OnMapEditor shared floating-panel lifecycle', () => {
         expect(session.tools.style.left).toMatch(/px$/);
         session.setAnchor(null);
         expect(session.tools.hidden).toBe(true);
+        session.close();
+    });
+
+    it('keeps anchored tools beside a left-docked 3D panel', () => {
+        const { editor } = runtime();
+        const session = editor.open({ owner: 'row-house', tools: 'rotate' });
+        session.panel.getBoundingClientRect = () => ({ left: 60, right: 380, width: 320, top: 76 });
+        session.setAnchor({ lat: 1, lng: 2 });
+        expect(Number.parseFloat(session.tools.style.left)).toBeGreaterThanOrEqual(392);
         session.close();
     });
 

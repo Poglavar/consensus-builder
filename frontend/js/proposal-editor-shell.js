@@ -1286,13 +1286,34 @@
         return instantCreateProposalFromDraft(draft.id);
     }
 
+    function reportSiteDesignStartIssue(key, fallback, params = {}) {
+        let message;
+        switch (key) {
+            case 'editorBusy': message = tDraft('proposalDrafts.design.editorBusy', fallback, params); break;
+            case 'siteUnavailable': message = tDraft('proposalDrafts.design.siteUnavailable', fallback, params); break;
+            case 'parcelsUnavailable': message = tDraft('proposalDrafts.design.parcelsUnavailable', fallback, params); break;
+            case 'draftCreateFailed': message = tDraft('proposalDrafts.design.draftCreateFailed', fallback, params); break;
+            case 'handoffFailed': message = tDraft('proposalDrafts.design.handoffFailed', fallback, params); break;
+            case 'handoffFailedReason': message = tDraft('proposalDrafts.design.handoffFailedReason', fallback, params); break;
+            default: message = fallback;
+        }
+        try { global.showEphemeralMessage?.(message, 7000, 'error'); } catch (_) { }
+        try { global.updateStatus?.(message); } catch (_) { }
+        return false;
+    }
+
     // A building typology on a site: the design tool opens on the site's design parcels (the live
     // selection it came from, the whole site as one synthetic superparcel, or synthetic plots cut
     // along a frontage), and Done commits the draft as for any Build-palette creation.
     async function startInstantSiteDesign(adapterKey, siteContext, designParcelIds) {
-        if (global.OnMapEditor?.isActive?.()) return false;
+        if (global.OnMapEditor?.isActive?.()) {
+            return reportSiteDesignStartIssue('editorBusy', 'Another geometry editor is already using the map. Close it before starting this site design.');
+        }
         const ids = (designParcelIds || []).map(String).filter(Boolean);
-        if (!ids.length || !siteContext || !siteContext.site) return false;
+        if (!ids.length) return reportSiteDesignStartIssue('parcelsUnavailable', 'No design parcels are available for this site. Select the site again and try once its parcels are loaded.');
+        if (!siteContext || !siteContext.site) {
+            return reportSiteDesignStartIssue('siteUnavailable', 'The selected site is unavailable. Select a valid site and try again.');
+        }
         const draft = global.proposalDraftStore.createDraft({
             cityId: currentCityId(),
             goal: adapterKey,
@@ -1302,7 +1323,7 @@
             editorPayload: {},
             previewGeometry: null
         });
-        if (!draft) return false;
+        if (!draft) return reportSiteDesignStartIssue('draftCreateFailed', 'Could not save a local draft for this site design. The site remains unchanged.');
         geometryEditCommitDraftId = draft.id;
         let opened = false;
         try {
@@ -1310,13 +1331,14 @@
         } catch (error) {
             opened = false;
             console.warn('[ProposalEditor] Site design tool failed to open', error);
-        }
-        if (opened === false) {
             geometryEditCommitDraftId = null;
-            global.proposalDraftStore.deleteDraft(draft.id);
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.'));
-            }
+            return reportSiteDesignStartIssue('handoffFailedReason', 'The design editor could not open: {{reason}}. Your site is unchanged, and the design draft was preserved locally.', {
+                reason: String(error?.message || error || 'unknown error')
+            });
+        }
+        if (!opened) {
+            geometryEditCommitDraftId = null;
+            return reportSiteDesignStartIssue('handoffFailed', 'The design editor could not open. Your site is unchanged, and the design draft was preserved locally.');
         }
         return opened;
     }
@@ -1325,8 +1347,12 @@
     // its pool — the bound parcels' part with their owners, the open ground with none. No live
     // selection: the declaration is the site's binding (replaced by the server's at publish).
     async function startSiteSubdivision(siteContext) {
-        if (global.OnMapEditor?.isActive?.()) return false;
-        if (!siteContext || !siteContext.site) return false;
+        if (global.OnMapEditor?.isActive?.()) {
+            return reportSiteDesignStartIssue('editorBusy', 'Another geometry editor is already using the map. Close it before starting this site design.');
+        }
+        if (!siteContext || !siteContext.site) {
+            return reportSiteDesignStartIssue('siteUnavailable', 'The selected site is unavailable. Select a valid site and try again.');
+        }
         const site = JSON.parse(JSON.stringify(siteContext.site));
         const draft = global.proposalDraftStore.createDraft({
             cityId: currentCityId(),
@@ -1337,7 +1363,7 @@
             editorPayload: { plan: { poolSource: 'site', poolGeometry: site, algorithm: 'sweep-line', polygons: [] } },
             previewGeometry: null
         });
-        if (!draft) return false;
+        if (!draft) return reportSiteDesignStartIssue('draftCreateFailed', 'Could not save a local draft for this site design. The site remains unchanged.');
         geometryEditCommitDraftId = draft.id;
         let opened = false;
         try {
@@ -1345,13 +1371,14 @@
         } catch (error) {
             opened = false;
             console.warn('[ProposalEditor] Subdivision editor failed to open', error);
-        }
-        if (opened === false) {
             geometryEditCommitDraftId = null;
-            global.proposalDraftStore.deleteDraft(draft.id);
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.'));
-            }
+            return reportSiteDesignStartIssue('handoffFailedReason', 'The design editor could not open: {{reason}}. Your site is unchanged, and the design draft was preserved locally.', {
+                reason: String(error?.message || error || 'unknown error')
+            });
+        }
+        if (!opened) {
+            geometryEditCommitDraftId = null;
+            return reportSiteDesignStartIssue('handoffFailed', 'The design editor could not open. Your site is unchanged, and the design draft was preserved locally.');
         }
         return opened;
     }
@@ -1876,6 +1903,7 @@
         // arrangement there (PARCEL-OPTIONAL.md phase 3).
         const atomicCorridorAuthoring = !!proposal.roadProposal?.definition;
         let proposalId = null;
+        let deriveFailure = null;
         if (atomicCorridorAuthoring) {
             // Finish owns the complete road mutation. The manager first plans every junction edit,
             // then commits the new record, touched existing records, parcel fabric, and persistence
@@ -1919,8 +1947,6 @@
                 // still release and replay their source's scope.
                 const supersededIds = stored.landFork ? [] : [stored.sourceProposalId, stored.replacementOfProposalId]
                     .filter(Boolean).map(String);
-                global.ProposalManager?._commitReplacementSupersession?.(proposalId, stored);
-                global.proposalStorage?.save?.();
                 profile.mark('record');
 
                 // NOTHING re-applies the whole plan. Only the ground whose take set actually changed is
@@ -1937,12 +1963,9 @@
                 try { global.ProposalManager?._refreshUIAfterProposalChange?.(global.proposalStorage?.getProposal?.(proposalId)); } catch (_) { }
                 profile.mark('ui');
             } catch (error) {
+                deriveFailure = error;
                 console.warn('[ProposalEditor] Replay after instant create failed; object stays parked', error);
             }
-        }
-        if ((proposal.sourceProposalId || proposal.replacementOfProposalId)
-            && typeof global.showEphemeralMessage === 'function') {
-            global.showEphemeralMessage(tDraft('proposalDrafts.geometryUpdated', 'Geometry updated.'), 4000, 'success');
         }
 
         // A parked object renders nothing — without a word it just looks like the road vanished.
@@ -1954,8 +1977,12 @@
         try {
             const persisted = global.proposalStorage?.getProposal?.(proposalId);
             landed = !!(persisted && typeof global.isProposalApplied === 'function' && global.isProposalApplied(persisted));
-            if (persisted && !landed && typeof global.showStyledAlert === 'function') {
-                const reason = global.ProposalManager?.getLastApplyFailure?.(proposalId) || '';
+            if (!landed && proposalId && typeof global.showStyledAlert === 'function') {
+                let failureInfo = null;
+                try { failureInfo = global.ProposalManager?.getLastApplyFailureInfo?.(proposalId) || null; } catch (_) { }
+                let lastFailure = '';
+                try { lastFailure = global.ProposalManager?.getLastApplyFailure?.(proposalId) || ''; } catch (_) { }
+                const reason = failureInfo?.message || lastFailure || deriveFailure?.message || '';
                 global.showStyledAlert(reason
                     ? tDraft('proposalDrafts.builtButParkedBecause',
                         'The object was created but could not be placed on the map: {{reason}} It is parked in your proposals list — select it there to see and apply it.',
@@ -1963,6 +1990,10 @@
                     : tDraft('proposalDrafts.builtButParked', 'The object was created but could not be placed on the map (a conflict blocked it). It is parked in your proposals list — select it there to see and apply it.'));
             }
         } catch (_) { }
+        if (landed && (proposal.sourceProposalId || proposal.replacementOfProposalId)
+            && typeof global.showEphemeralMessage === 'function') {
+            global.showEphemeralMessage(tDraft('proposalDrafts.geometryUpdated', 'Geometry updated.'), 4000, 'success');
+        }
         try { if (typeof global.updateShowProposalsButton === 'function') global.updateShowProposalsButton(); } catch (_) { }
         // The drawing seeded the multi-parcel selection, which pops the parcel info panel — hide
         // it; the object's own details panel opens collapsed instead.

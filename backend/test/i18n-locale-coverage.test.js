@@ -156,6 +156,20 @@ describe('i18n locale coverage', () => {
         expect(dead).toEqual([]);
     });
 
+    it('defines all proposal apply failure messages in every locale', () => {
+        const keys = [
+            'outsideCadastre', 'outsideSite', 'groundUnavailable', 'groundMissing', 'undeclared',
+            'invalidGeometry', 'applyFailed', 'busy', 'storeUnavailable', 'notFound'
+        ];
+        for (const lang of LANGS) {
+            for (const key of keys) {
+                const value = locales[lang][`proposalApplyFailures.${key}`];
+                expect(value, `${lang}: proposalApplyFailures.${key}`).toEqual(expect.any(String));
+                expect(value.length).toBeGreaterThan(0);
+            }
+        }
+    });
+
     it('every en key exists in hr, es and sr', () => {
         for (const lang of ['hr', 'es', 'sr']) {
             const missing = Object.keys(locales.en).filter(key => !hasKey(locales[lang], key)

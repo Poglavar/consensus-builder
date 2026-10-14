@@ -19,7 +19,7 @@ function install(name, value) {
     globalThis[name] = value;
 }
 
-function loadInstantCreate({ lands }) {
+function loadInstantCreate({ lands, reason = 'The live fabric could not be validated.', throws = false, replacement = false }) {
     const draft = {
         id: 'draft-park',
         goal: 'park',
@@ -40,8 +40,10 @@ function loadInstantCreate({ lands }) {
         cadastreParcelIds: draft.fields.selectedParcelIds.slice(),
         applied: false
     };
+    if (replacement) proposal.sourceProposalId = 'source-lake';
     const selectAndHighlightProposal = vi.fn();
     const showStyledAlert = vi.fn();
+    const showEphemeralMessage = vi.fn();
 
     install('proposalDraftStore', {
         getDraft: vi.fn(() => draft),
@@ -54,25 +56,29 @@ function loadInstantCreate({ lands }) {
         getProposal: vi.fn(() => proposal),
         save: vi.fn()
     });
-    install('ProposalManager', {
+    const ProposalManager = {
         _commitReplacementSupersession: vi.fn(),
         deriveForNewProposal: vi.fn(async () => {
+            if (throws) throw new Error(reason || 'derive exploded');
             proposal.applied = lands;
             return lands ? { applied: true } : null;
         }),
         _refreshUIAfterProposalChange: vi.fn(),
-        getLastApplyFailure: vi.fn(() => 'The live fabric could not be validated.')
-    });
+        getLastApplyFailure: vi.fn(() => reason || null),
+        getLastApplyFailureInfo: vi.fn(() => reason ? { message: reason, code: 'test-failure' } : null)
+    };
+    install('ProposalManager', ProposalManager);
     install('isProposalApplied', value => value.applied === true);
     install('selectAndHighlightProposal', selectAndHighlightProposal);
     install('showStyledAlert', showStyledAlert);
+    install('showEphemeralMessage', showEphemeralMessage);
     install('updateShowProposalsButton', vi.fn());
     install('beginApplyIndicator', vi.fn());
     install('endApplyIndicator', vi.fn());
 
     delete require.cache[shellPath];
     require(shellPath);
-    return { selectAndHighlightProposal, showStyledAlert, proposal };
+    return { selectAndHighlightProposal, showStyledAlert, showEphemeralMessage, proposal, ProposalManager };
 }
 
 beforeEach(() => {
@@ -177,7 +183,7 @@ describe('one-click structure creation focus', () => {
     });
 
     it('preserves the whole-block selection when placement is refused', async () => {
-        const { selectAndHighlightProposal, showStyledAlert } = loadInstantCreate({ lands: false });
+        const { selectAndHighlightProposal, showStyledAlert, showEphemeralMessage, ProposalManager } = loadInstantCreate({ lands: false, replacement: true });
 
         const releaseEditorSeededMultiSelection = vi.fn();
         install('releaseEditorSeededMultiSelection', releaseEditorSeededMultiSelection);
@@ -185,6 +191,9 @@ describe('one-click structure creation focus', () => {
         await globalThis.instantCreateProposalFromDraft('draft-park');
 
         expect(showStyledAlert).toHaveBeenCalledOnce();
+        expect(showStyledAlert.mock.calls[0][0]).toContain('The live fabric could not be validated.');
+        expect(showEphemeralMessage).not.toHaveBeenCalledWith('Geometry updated.', expect.anything(), 'success');
+        expect(ProposalManager._commitReplacementSupersession).not.toHaveBeenCalled();
         expect(selectAndHighlightProposal).not.toHaveBeenCalled();
         expect(releaseEditorSeededMultiSelection).not.toHaveBeenCalled();
     });
@@ -201,6 +210,29 @@ describe('one-click structure creation focus', () => {
             false,
             true
         );
+    });
+
+    it('shows a thrown placement reason and keeps replacement edits without a success toast', async () => {
+        const { showStyledAlert, showEphemeralMessage, proposal, ProposalManager } = loadInstantCreate({
+            lands: false, throws: true, replacement: true, reason: 'Lake geometry could not be derived.'
+        });
+
+        const result = await globalThis.instantCreateProposalFromDraft('draft-park');
+
+        expect(result).toBe(proposal.proposalId);
+        expect(showStyledAlert.mock.calls[0][0]).toContain('Lake geometry could not be derived.');
+        expect(showEphemeralMessage).not.toHaveBeenCalledWith('Geometry updated.', expect.anything(), 'success');
+        expect(ProposalManager._commitReplacementSupersession).not.toHaveBeenCalled();
+    });
+
+    it('announces a geometry edit only after replacement geometry lands', async () => {
+        const { showStyledAlert, showEphemeralMessage, ProposalManager } = loadInstantCreate({ lands: true, replacement: true });
+
+        await globalThis.instantCreateProposalFromDraft('draft-park');
+
+        expect(showStyledAlert).not.toHaveBeenCalled();
+        expect(showEphemeralMessage).toHaveBeenCalledWith('Geometry updated.', 4000, 'success');
+        expect(ProposalManager._commitReplacementSupersession).not.toHaveBeenCalled();
     });
 
     it('releases the editor-seeded multi-select once the structure lands', async () => {

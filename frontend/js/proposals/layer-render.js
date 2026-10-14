@@ -991,6 +991,9 @@ function proposalUnapplyPhaseLabel(event, t) {
 
 async function removeProposalFromMap(proposalId, options = {}) {
     if (!proposalId || typeof ProposalManager === 'undefined' || typeof ProposalManager.unapplyProposal !== 'function') {
+        if (typeof reportProposalMapActionFailure === 'function') {
+            reportProposalMapActionFailure(proposalId, '', 'unapplyUnavailable', 'unapply');
+        }
         return false;
     }
 
@@ -1052,10 +1055,21 @@ async function removeProposalFromMap(proposalId, options = {}) {
             }
         });
         if (unapplied === false) {
+            if (typeof reportProposalMapActionFailure === 'function') {
+                reportProposalMapActionFailure(proposalId, '', 'unapplyFailedUnknown', 'unapply');
+            }
             return false;
         }
         succeeded = true;
+        try { if (typeof clearProposalMapActionFailure === 'function') clearProposalMapActionFailure(proposalId); } catch (_) { }
         return true;
+    } catch (error) {
+        if (typeof reportProposalMapActionFailure === 'function') {
+            reportProposalMapActionFailure(proposalId, String(error?.message || error || ''), 'unapplyFailedUnknown', 'unapply');
+        } else if (typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage(String(error?.message || error || 'Could not remove this proposal from the map.'), 8000, 'error');
+        }
+        return false;
     } finally {
         // The manager may have re-rendered the details panel while the await was in flight, so the
         // `button` captured above may now be detached. Resolve it again and render from the record's

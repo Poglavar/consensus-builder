@@ -18,6 +18,12 @@
         return Array.isArray(a) && Array.isArray(b) && a[0] === b[0] && a[1] === b[1];
     }
 
+    function ringsEqual(a, b) {
+        const left = openRing(a);
+        const right = openRing(b);
+        return left.length === right.length && left.every((point, index) => coordinatesEqual(point, right[index]));
+    }
+
     function openRing(ring) {
         if (!Array.isArray(ring)) return [];
         const points = ring
@@ -252,6 +258,8 @@
             this.deleteMarker = null;
             this.deleteActionVisible = this.selectedVertexIndex !== null && options.showInitialDeleteAction === true;
             this.destroyed = false;
+            this.dragStartRing = null;
+            this.dragHistoryRecorded = false;
             this.boundKeydown = event => this.handleKeydown(event);
             this.boundMapClick = () => this.hideDeleteAction({ clearSelection: true });
 
@@ -544,6 +552,10 @@
         handleVertexDragStart(vertexIndex, event) {
             this.stopLeafletEvent(event);
             this.hideDeleteAction({ clearSelection: true });
+            // Leaflet mutates this.ring during each drag event. Capture before that first mutation
+            // so Ctrl/Cmd+Z restores the actual pre-drag shape rather than the dragged endpoint.
+            this.dragStartRing = openRing(this.ring);
+            this.dragHistoryRecorded = this.history ? this.history.record() : false;
             this.emit('onDragStart', 'move', vertexIndex);
         }
 
@@ -561,7 +573,6 @@
             const latLng = event && event.target && typeof event.target.getLatLng === 'function'
                 ? event.target.getLatLng()
                 : null;
-            if (this.history) this.history.record();
             const rawCoordinate = latLng
                 ? [latLng.lng, latLng.lat]
                 : this.ring[vertexIndex];
@@ -579,6 +590,10 @@
                 try { this.map.removeLayer(this.liveLayer); } catch (_) { }
             }
             this.liveLayer = null;
+            const dragChanged = this.dragStartRing && !ringsEqual(this.dragStartRing, this.ring);
+            if (!dragChanged && this.dragHistoryRecorded) this.history?.discardLast?.();
+            this.dragStartRing = null;
+            this.dragHistoryRecorded = false;
             const releasedVertexIndex = nearestVertexIndex(this.ring, coordinate) ?? vertexIndex;
             this.emit('onCommit', 'move', releasedVertexIndex);
             if (!this.destroyed) {
@@ -632,6 +647,8 @@
         destroy() {
             if (this.destroyed) return;
             this.destroyed = true;
+            this.dragStartRing = null;
+            this.dragHistoryRecorded = false;
             this.clearLayers();
             // Release the undo binding with the editor, or its shortcut outlives the tool.
             if (this.history) { this.history.destroy(); this.history = null; }

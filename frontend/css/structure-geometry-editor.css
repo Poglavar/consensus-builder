@@ -8,6 +8,18 @@
 .structure-geometry-options { margin: var(--cb-space-2) 0; }
 .structure-geometry-tools .btn { min-width: 0; white-space: normal; }
 
+.structure-geometry-error {
+    margin: var(--cb-space-2) 0;
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border-radius: var(--cb-radius-md);
+    color: var(--cb-danger-soft-ink);
+    background: var(--cb-danger-soft);
+    font-size: var(--cb-text-sm);
+    line-height: 1.4;
+}
+
+.structure-geometry-error[hidden] { display: none; }
+
 .structure-geometry-tools .btn {
     flex: 0 0 auto;
 }

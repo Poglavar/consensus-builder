@@ -1549,8 +1549,6 @@
             closeLabel: translateSingleBuildingText('modal.singleBuilding.closeLabel', 'Close buildings modal'),
             cancel: translateSingleBuildingText('modal.singleBuilding.cancel', 'Cancel'),
             more: translateSingleBuildingText('modal.singleBuilding.more', 'Site & details'),
-            modelView: translateSingleBuildingText('modal.singleBuilding.modelView', '3D model'),
-            mapView: translateSingleBuildingText('modal.singleBuilding.mapView', '2D map'),
             confirm: translateSingleBuildingText('modal.singleBuilding.confirm', 'Done'),
             buildingsTitle: translateSingleBuildingText('modal.singleBuilding.buildingsTitle', 'Buildings'),
             addLabel: translateSingleBuildingText('modal.singleBuilding.addLabel', 'Duplicate building'),

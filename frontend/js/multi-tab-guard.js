@@ -151,7 +151,7 @@
         container.style.top = Math.max(20, clearance) + 'px';
     }
 
-    // A create or an edit in a read-only tab is silently thrown away, so say it where the user is
+    // A create or an edit in a read-only tab is parked for recovery, so say it where the user is
     // looking — one toast per burst, since a single user action triggers several saves.
     const WRITE_TOAST_THROTTLE_MS = 4000;
     // -Infinity, not 0: performance.now() starts near zero, so a 0 sentinel makes the very first
@@ -164,7 +164,7 @@
         if ((now - lastWriteToastAt) < WRITE_TOAST_THROTTLE_MS) return;
         lastWriteToastAt = now;
         const KEY = 'multitab.notSaved';
-        let text = 'Proposal was NOT saved and will be lost on browser reload.';
+        let text = 'This city is open in another tab. Your changes are kept in a recovery copy, but are not saved to the shared plan. Use the main tab to save changes.';
         try {
             if (scope.i18n && typeof scope.i18n.t === 'function') {
                 // A missing key resolves to the key itself, which must never reach the user — the

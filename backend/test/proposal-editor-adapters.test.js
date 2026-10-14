@@ -648,17 +648,43 @@ describe('geometry draft starters respect an incumbent map editor', () => {
         const global = {
             OnMapEditor: { isActive: () => true },
             proposalDraftStore: { activeDraft, createDraft },
-            openProposalDraftDesign
+            openProposalDraftDesign,
+            showEphemeralMessage: vi.fn(),
+            updateStatus: vi.fn()
         };
         const prefix = `let geometryEditCommitDraftId='incumbent-draft'; this.getCommitDraftId=()=>geometryEditCommitDraftId;`;
-        const start = loadProposalEditorShellFunction(name, { global }, prefix);
+        const start = loadProposalEditorShellFunction(name, { global, reportSiteDesignStartIssue: vi.fn(() => false) }, prefix);
         const site = { site: { type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } } };
 
         expect(await invoke(start, site)).toBe(false);
         expect(global.proposalDraftStore.activeDraft).toBe(activeDraft);
         expect(createDraft).not.toHaveBeenCalled();
         expect(openProposalDraftDesign).not.toHaveBeenCalled();
+        expect(start.context.reportSiteDesignStartIssue).toHaveBeenCalledOnce();
         expect(start.context.getCommitDraftId()).toBe('incumbent-draft');
+    });
+
+    it('keeps the newly authored site draft when its design editor cannot open', async () => {
+        const draft = { id: 'site-draft' };
+        const store = { createDraft: vi.fn(() => draft), deleteDraft: vi.fn() };
+        const report = vi.fn(() => false);
+        const start = loadProposalEditorShellFunction('startInstantSiteDesign', {
+            global: {
+                OnMapEditor: { isActive: () => false },
+                proposalDraftStore: store,
+                openProposalDraftDesign: vi.fn(async () => false)
+            },
+            reportSiteDesignStartIssue: report,
+            currentCityId: () => 'zagreb',
+            proposalLabel: () => 'Building',
+            siteDraftFields: () => ({ selectedParcelIds: ['parcel-1'] })
+        }, `let geometryEditCommitDraftId=null; this.getCommitDraftId=()=>geometryEditCommitDraftId;`);
+
+        expect(await start('single', { site: { type: 'Feature' } }, ['parcel-1'])).toBe(false);
+        expect(store.createDraft).toHaveBeenCalledOnce();
+        expect(store.deleteDraft).not.toHaveBeenCalled();
+        expect(start.context.getCommitDraftId()).toBeNull();
+        expect(report).toHaveBeenCalledWith('handoffFailed', 'The design editor could not open. Your site is unchanged, and the design draft was preserved locally.');
     });
 
     it('refuses direct draft-design opens before resuming or activating their draft', async () => {

@@ -1,10 +1,7 @@
 {
   "onMapEditor": {
     "missingSite": "Ova spremljena zgrada nema valjanu granicu izvorne lokacije pa nije moguće sigurno uređivati njezinu geometriju.",
-    "cancel": "Odustani",
-    "view": "Prikaz",
-    "mapView": "2D karta",
-    "modelView": "3D model"
+    "cancel": "Odustani"
   },
     "optionalTools": {
         "loadFailed": "Alat se nije uspio učitati. Pokušajte ponovno."
@@ -182,7 +179,7 @@
     },
     "multitab": {
         "warning": "Ovaj grad je već otvoren u drugoj kartici. Da se spremljeni prijedlozi ne izgube, promjene u ovoj kartici neće se spremiti — zatvorite ostale kartice ovog grada i ponovno učitajte ovu za uređivanje. Drugi gradovi mogu ostati otvoreni.",
-        "notSaved": "Prijedlog NIJE spremljen i izgubit će se pri ponovnom učitavanju stranice."
+        "notSaved": "Ovaj grad otvoren je u drugoj kartici. Vaše se promjene čuvaju u kopiji za oporavak, ali se ne spremaju u zajednički plan. Za spremanje promjena upotrijebite glavnu karticu."
     },
     "proposalApproval": {
         "ownerLabel": "Vlasnik {{label}}",
@@ -294,6 +291,18 @@
             "sponsorReceives": "Pokrovitelj prima {{amount}}.",
             "sponsorNothing": "Uplate vlasnika pokrivaju sve isplate; pokrovitelj ne plaća ništa."
         }
+    },
+    "proposalApplyFailures": {
+        "outsideCadastre": "Geometrija prijedloga prelazi granice odabranih katastarskih čestica. Zadržite je unutar odabranog zemljišta ili izradite prijedlog koji uključuje dodatne čestice.",
+        "outsideSite": "Geometrija prijedloga prelazi granice lokacije. Zadržite je unutar lokacije ili uredite lokaciju prije primjene.",
+        "groundUnavailable": "Podaci katastarskih čestica nisu se mogli učitati. Provjerite vezu i pokušajte ponovno.",
+        "groundMissing": "Katastarski podaci nisu dostupni za: {{parcels}}. Prijedlog se ne može primijeniti dok se te čestice ne učitaju.",
+        "undeclared": "Prijedlog nema katastarske čestice ni lokaciju na slobodnom zemljištu. Odredite lokaciju prije primjene.",
+        "invalidGeometry": "Geometrija prijedloga nedostaje ili nije valjana. Uredite je prije primjene.",
+        "applyFailed": "Prijedlog se nije mogao postaviti na kartu jer se geometrija nije mogla izvesti iz odabranog zemljišta.",
+        "busy": "U tijeku je druga izmjena karte. Pričekajte da završi pa pokušajte ponovno.",
+        "storeUnavailable": "Prijedlozi se još nisu učitali. Pričekajte da se grad učita pa pokušajte ponovno.",
+        "notFound": "Ovaj prijedlog više nije dostupan. Osvježite popis prijedloga i pokušajte ponovno."
     },
     "proposalDrafts": {
         "title": "Skice",
@@ -426,7 +435,13 @@
             "road": "Cesta",
             "track": "Pruga",
             "parcelOnly": "Ovaj prijedlog nema zasebnu geometriju dizajna. Isticanje čestica ostaje aktivno dok uređujete ostale stavke.",
-            "unavailable": "Ovaj uređivač dizajna nije dostupan."
+            "unavailable": "Ovaj uređivač dizajna nije dostupan.",
+            "editorBusy": "Drugi uređivač geometrije već koristi kartu. Zatvorite ga prije pokretanja ovog dizajna lokacije.",
+            "siteUnavailable": "Odabrana lokacija nije dostupna. Odaberite valjanu lokaciju i pokušajte ponovno.",
+            "parcelsUnavailable": "Za ovu lokaciju nema dostupnih čestica za dizajn. Ponovno odaberite lokaciju i pokušajte kada se njezine čestice učitaju.",
+            "draftCreateFailed": "Nije moguće spremiti lokalni nacrt ovog dizajna. Lokacija nije promijenjena.",
+            "handoffFailed": "Uređivač dizajna nije se mogao otvoriti. Lokacija nije promijenjena, a nacrt dizajna sačuvan je lokalno.",
+            "handoffFailedReason": "Uređivač dizajna nije se mogao otvoriti: {{reason}}. Lokacija nije promijenjena, a nacrt dizajna sačuvan je lokalno."
         },
         "review": {
             "title": "Pregled promjena",
@@ -1372,7 +1387,15 @@
                 "apply_disabled_for_type": "Primjena je onemogućena za ovu vrstu prijedloga.",
                 "editApproval": "Uredi vlasništvo i odobravanje",
                 "addApproval": "Dodaj vlasništvo i odobravanje",
-                "editApprovalHint": "Otvara uređivač na kartici Odobravanje. Spremanje stvara zamjenski prijedlog; prihvaćanja ovog prijedloga se ne prenose."
+                "editApprovalHint": "Otvara uređivač na kartici Odobravanje. Spremanje stvara zamjenski prijedlog; prihvaćanja ovog prijedloga se ne prenose.",
+                "applyFailed": "Nije moguće primijeniti ovaj prijedlog: {{reason}}",
+                "applyFailedUnknown": "Nije moguće primijeniti ovaj prijedlog. Pokušajte ponovno.",
+                "applyUnavailable": "Ovaj prijedlog nije moguće primijeniti na kartu.",
+                "applyUnsupported": "Ova vrsta prijedloga ne podržava primjenu na karti.",
+                "missingProposal": "Nije odabran prijedlog za primjenu.",
+                "unapplyFailed": "Ovaj prijedlog nije moguće ukloniti s karte: {{reason}}",
+                "unapplyFailedUnknown": "Ovaj prijedlog nije moguće ukloniti s karte. Pokušajte ponovno.",
+                "unapplyUnavailable": "Ovaj prijedlog nije moguće ukloniti s karte."
             },
             "expiry": {
                 "expired": "Prijedlog je istekao",
@@ -1992,8 +2015,6 @@
             "closeLabel": "Zatvori prozor jedne zgrade",
             "cancel": "Odustani",
             "more": "Čestica i detalji",
-            "modelView": "3D model",
-            "mapView": "2D karta",
             "mapHint": "Povuci zgradu ili njezine vrhove. Dodirni brid za dodavanje vrha.",
             "modelHint": "Podesi visinu i okreni prikaz za provjeru uklapanja. Koristi 2D za promjenu tlocrta.",
             "previewLabel": "3D pregled",
@@ -3395,6 +3416,7 @@
     },
     "reparcellization": {
         "modal": {
+            "mapHint": "Uredite granice parcela na karti; ovdje pregledajte vlasništvo i udjele.",
             "savedRecipientUnresolved": "Spremljeni primatelj izlazne čestice nema odgovarajući doprinos među trenutačnim ulazima.",
             "ownerReview": "Pregled vlasnika",
             "allOwners": "Svi vlasnici",

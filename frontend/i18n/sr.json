@@ -1,10 +1,7 @@
 {
   "onMapEditor": {
     "missingSite": "Ova sačuvana zgrada nema važeću granicu izvorne lokacije pa nije moguće bezbedno uređivati njenu geometriju.",
-    "cancel": "Odustani",
-    "view": "Prikaz",
-    "mapView": "2D mapa",
-    "modelView": "3D model"
+    "cancel": "Odustani"
   },
     "optionalTools": {
         "loadFailed": "Alat nije mogao da se učita. Pokušajte ponovo."
@@ -182,7 +179,7 @@
     },
     "multitab": {
         "warning": "Ovaj grad je već otvoren u drugoj kartici. Da se sačuvani predlozi ne izgube, promene u ovoj kartici neće biti sačuvane — zatvorite ostale kartice ovog grada i ponovo učitajte ovu za uređivanje. Drugi gradovi mogu ostati otvoreni.",
-        "notSaved": "Predlog NIJE sačuvan i biće izgubljen pri ponovnom učitavanju stranice."
+        "notSaved": "Ovaj grad je otvoren u drugoj kartici. Vaše promene se čuvaju u kopiji za oporavak, ali se ne čuvaju u zajedničkom planu. Koristite glavnu karticu da sačuvate promene."
     },
     "proposalApproval": {
         "ownerLabel": "Vlasnik {{label}}",
@@ -294,6 +291,18 @@
             "sponsorReceives": "Pokrovitelj prima {{amount}}.",
             "sponsorNothing": "Uplate vlasnika pokrivaju sve isplate; pokrovitelj ne plaća ništa."
         }
+    },
+    "proposalApplyFailures": {
+        "outsideCadastre": "Geometrija predloga prelazi granice izabranih katastarskih parcela. Zadržite je unutar izabranog zemljišta ili napravite predlog koji obuhvata dodatne parcele.",
+        "outsideSite": "Geometrija predloga prelazi granice lokacije. Zadržite je unutar lokacije ili uredite lokaciju pre primene.",
+        "groundUnavailable": "Podaci katastarskih parcela nisu mogli da se učitaju. Proverite vezu i pokušajte ponovo.",
+        "groundMissing": "Katastarski podaci nisu dostupni za: {{parcels}}. Predlog ne može da se primeni dok se te parcele ne učitaju.",
+        "undeclared": "Predlog nema katastarske parcele ni lokaciju na slobodnom zemljištu. Odredite lokaciju pre primene.",
+        "invalidGeometry": "Geometrija predloga nedostaje ili nije ispravna. Uredite je pre primene.",
+        "applyFailed": "Predlog nije mogao da se postavi na mapu jer geometrija nije mogla da se izvede iz izabranog zemljišta.",
+        "busy": "U toku je druga izmena mape. Sačekajte da se završi pa pokušajte ponovo.",
+        "storeUnavailable": "Predlozi još nisu učitani. Sačekajte da se učitavanje grada završi pa pokušajte ponovo.",
+        "notFound": "Ovaj predlog više nije dostupan. Osvežite listu predloga i pokušajte ponovo."
     },
     "proposalDrafts": {
         "title": "Nacrti",
@@ -426,7 +435,13 @@
             "road": "Put",
             "track": "Pruga",
             "parcelOnly": "Ovaj predlog nema posebnu geometriju dizajna. Isticanje parcela ostaje aktivno dok uređujete ostale stavke.",
-            "unavailable": "Ovaj uređivač dizajna nije dostupan."
+            "unavailable": "Ovaj uređivač dizajna nije dostupan.",
+            "editorBusy": "Drugi uređivač geometrije već koristi mapu. Zatvorite ga pre pokretanja ovog dizajna lokacije.",
+            "siteUnavailable": "Izabrana lokacija nije dostupna. Izaberite važeću lokaciju i pokušajte ponovo.",
+            "parcelsUnavailable": "Za ovu lokaciju nema dostupnih parcela za dizajn. Ponovo izaberite lokaciju i pokušajte kada se njene parcele učitaju.",
+            "draftCreateFailed": "Nije moguće sačuvati lokalni nacrt ovog dizajna. Lokacija nije promenjena.",
+            "handoffFailed": "Uređivač dizajna nije mogao da se otvori. Lokacija nije promenjena, a nacrt dizajna je sačuvan lokalno.",
+            "handoffFailedReason": "Uređivač dizajna nije mogao da se otvori: {{reason}}. Lokacija nije promenjena, a nacrt dizajna je sačuvan lokalno."
         },
         "review": {
             "title": "Pregled promena",
@@ -1372,7 +1387,15 @@
                 "apply_disabled_for_type": "Primena je onemogućena za ovu vrstu predloga.",
                 "editApproval": "Uredi vlasništvo i odobravanje",
                 "addApproval": "Dodaj vlasništvo i odobravanje",
-                "editApprovalHint": "Otvara uređivač na kartici Odobravanje. Čuvanje pravi zamenski predlog; prihvatanja ovog predloga se ne prenose."
+                "editApprovalHint": "Otvara uređivač na kartici Odobravanje. Čuvanje pravi zamenski predlog; prihvatanja ovog predloga se ne prenose.",
+                "applyFailed": "Nije moguće primeniti ovaj predlog: {{reason}}",
+                "applyFailedUnknown": "Nije moguće primeniti ovaj predlog. Pokušajte ponovo.",
+                "applyUnavailable": "Ovaj predlog nije moguće primeniti na mapu.",
+                "applyUnsupported": "Ova vrsta predloga ne podržava primenu na mapi.",
+                "missingProposal": "Nije izabran predlog za primenu.",
+                "unapplyFailed": "Ovaj predlog nije moguće ukloniti sa mape: {{reason}}",
+                "unapplyFailedUnknown": "Ovaj predlog nije moguće ukloniti sa mape. Pokušajte ponovo.",
+                "unapplyUnavailable": "Ovaj predlog nije moguće ukloniti sa mape."
             },
             "expiry": {
                 "expired": "Predlog je istekao",
@@ -1992,8 +2015,6 @@
             "closeLabel": "Zatvori modal jedne zgrade",
             "cancel": "Otkaži",
             "more": "Parcela i detalji",
-            "modelView": "3D model",
-            "mapView": "2D mapa",
             "mapHint": "Prevuci zgradu ili njene vrhove. Dodirni ivicu za dodavanje vrha.",
             "modelHint": "Podesi visinu i okreni prikaz da proveriš uklapanje. Koristi 2D za promenu osnove.",
             "previewLabel": "3D pregled",
@@ -3395,6 +3416,7 @@
     },
     "reparcellization": {
         "modal": {
+            "mapHint": "Uredite granice parcela na mapi; ovde pregledajte vlasništvo i udele.",
             "savedRecipientUnresolved": "Sačuvani primalac izlazne parcele nema odgovarajući doprinos u trenutnim ulazima.",
             "ownerReview": "Pregled vlasnika",
             "allOwners": "Svi vlasnici",

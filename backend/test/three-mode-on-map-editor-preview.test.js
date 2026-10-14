@@ -93,6 +93,55 @@ function previewHarness() {
     };
 }
 
+function buildingPreviewHarness() {
+    const calls = { configured: [], attributes: [], added: [], uploaded: [] };
+    class Material {
+        constructor(options) { Object.assign(this, options); this.userData = {}; }
+    }
+    class Float32BufferAttribute {
+        constructor(array, itemSize) { Object.assign(this, { array, itemSize }); }
+    }
+    const makeMesh = material => {
+        const geometry = {
+            attributes: { position: { array: new Float32Array(9) }, normal: { array: new Float32Array(9) } },
+            setAttribute(name, value) { this.attributes[name] = value; calls.attributes.push(name); }
+        };
+        return { geometry, userData: {}, material };
+    };
+    const THREE = { MeshLambertMaterial: Material, LineBasicMaterial: Material, Float32BufferAttribute, DoubleSide: 'double' };
+    const buildingFacades = {
+        buildingKey: vi.fn((feature, city) => `${city}:${feature.properties.parcelId}`),
+        buildingDesign: vi.fn((key, height, floorHeight) => ({ key, height, floorHeight })),
+        configureMaterial: vi.fn((material, design, state) => {
+            calls.configured.push({ material, design, state });
+            material.facadeDesign = design;
+            return material;
+        }),
+        wallCoordinates: vi.fn(() => new Float32Array(9))
+    };
+    const placeUploadedModel = vi.fn((feature, target) => calls.uploaded.push({ feature, target }));
+    const stubs = {
+        window: { CityConfigManager: { getCurrentCityId: () => 'zagreb' }, STOREY_HEIGHT_M: 3.3 },
+        THREE,
+        buildingFacades,
+        facadeState: { enabled: true },
+        buildingMaterials: { ghost: {} },
+        cloneBuildingMaterial: vi.fn(material => ({ ...material, userData: { ...material.userData } })),
+        estimateBuildingHeightMeters: () => 16.5,
+        polygonFeatureToMeshes: vi.fn((feature, material) => [makeMesh(material), makeMesh(material)]),
+        polygonFeatureToBorderLines: vi.fn(() => []),
+        lineFeatureToLine: vi.fn(),
+        markOwnedMaterial: vi.fn(),
+        placeUploadedModel,
+        markOwnedGeometry: vi.fn()
+    };
+    const context = { console, ...stubs };
+    const bindings = Object.keys(stubs).map(name => `const ${name}=this.${name};`).join('\n');
+    const code = `${bindings}\n${declarations.get('prepareProceduralFacadeMeshes')}\n${declarations.get('addDraftPreviewFeature3D')}\nthis.add=addDraftPreviewFeature3D;`;
+    vm.runInNewContext(code, context);
+    return { add: context.add, calls, stubs };
+}
+
 function cleanupHarness(editorActive) {
     const pendingContext = { parcelIds: ['parcel-77'] };
     const calls = { proposalClose: 0, blockifyClose: 0, detailHide: 0 };
@@ -113,6 +162,35 @@ function cleanupHarness(editorActive) {
 }
 
 describe('three-mode on-map editor live preview', () => {
+    it('skins actual procedural building previews while preserving envelopes, exclusions and uploaded GLTF materials', () => {
+        const harness = buildingPreviewHarness();
+        const feature = {
+            type: 'Feature', properties: { parcelId: '123/4', urbanRule: { floorHeightM: 3.5 } },
+            geometry: { type: 'Polygon', coordinates: [[[15, 44], [15.001, 44], [15.001, 44.001], [15, 44.001], [15, 44]]] }
+        };
+        const target = group();
+        harness.add(feature, target, 'draft', 'buildings');
+
+        expect(harness.calls.configured).toHaveLength(1);
+        expect(harness.calls.configured[0].design).toEqual({ key: 'zagreb:123/4', height: 16.5, floorHeight: 3.5 });
+        expect(harness.stubs.buildingFacades.wallCoordinates).toHaveBeenCalledTimes(2);
+        expect(harness.calls.attributes).toEqual(['cbFacadeCoord', 'cbFacadeCoord']);
+        expect(target.children).toHaveLength(2);
+        expect(target.children[0].material).toMatchObject({ color: 0x2563eb, opacity: 0.55, transparent: true, depthWrite: true });
+        expect(target.children.every(mesh => mesh.userData.cbFacadeOwned)).toBe(true);
+
+        harness.add(feature, target, 'envelope', 'buildings');
+        harness.add(feature, target, 'excluded', 'buildings');
+        harness.add(feature, target, 'source', 'buildings');
+        expect(harness.calls.configured).toHaveLength(1);
+
+        const uploaded = { ...feature, properties: { ...feature.properties, modelUrl: '/authored.glb' } };
+        harness.add(uploaded, target, 'draft', 'buildings', { isCurrent: () => true });
+        expect(harness.stubs.placeUploadedModel).toHaveBeenCalledWith(uploaded, target, harness.stubs.buildingMaterials.ghost,
+            expect.objectContaining({ fitToFootprint: true, cloneGeometry: true }));
+        expect(harness.calls.configured).toHaveLength(1);
+    });
+
     it('keeps the suspended proposal form and parcel context while the building editor is active', () => {
         const active = cleanupHarness(true);
         expect(active.calls.proposalClose).toBe(0);

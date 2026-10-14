@@ -13,7 +13,7 @@ const renderEnd = source.indexOf('\nlet proposalSupportWalletRefreshBound =');
 if (renderStart < 0 || renderEnd <= renderStart) throw new Error('Could not isolate proposal details renderer');
 const renderSource = `let proposalDetailsEscapeHandler = null;\n${source.slice(renderStart, renderEnd)}`;
 
-function render(proposal, { applied = false, connected = false, road = false, summary = null, lifecycle = 'Active', approvalSetup = false, editable = null } = {}) {
+function render(proposal, { applied = false, connected = false, road = false, summary = null, lifecycle = 'Active', approvalSetup = false, editable = null, actionError = '' } = {}) {
     const content = { dataset: {}, innerHTML: '', scrollTop: 0, querySelectorAll: () => [], querySelector: () => null };
     const body = { scrollTop: 0, classList: { contains: () => false, add() {} } };
     const footer = { innerHTML: '', querySelector: () => null };
@@ -47,6 +47,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
     };
     const window = {
         i18n: null,
+        __proposalMapActionFailures: actionError ? { [String(proposal.proposalId)]: actionError } : {},
         addEventListener() {}, removeEventListener() {},
         MapShell: { closeSheets() {} },
         ProposalDisplayText: { text: value => String(value || ''), parcelLabel: value => value },
@@ -120,6 +121,16 @@ function render(proposal, { applied = false, connected = false, road = false, su
 const parse = html => load(`<main>${html}</main>`);
 
 describe('proposal details action footer', () => {
+    it('keeps a failed map-application reason visible in the proposal panel', () => {
+        const proposal = { proposalId: 'lake-1', title: 'Lake', cadastreParcelIds: [] };
+        const result = render(proposal, { actionError: 'Geometry extends beyond this site.' });
+        const panel = parse(result.footer.innerHTML);
+
+        expect(panel('[data-proposal-map-action-error]').attr('role')).toBe('alert');
+        expect(panel('[data-proposal-map-action-error]').attr('data-proposal-map-action-error')).toBe('lake-1');
+        expect(panel('[data-proposal-map-action-error]').text()).toBe('Geometry extends beyond this site.');
+    });
+
     it('leaves out donations, pledges and the market for a minted approval setup the contract never executes', () => {
         const proposal = { proposalId: 'approval-1', title: 'Readjustment', cadastreParcelIds: [], nft: { chainId: 'solana-devnet' } };
         const plain = render(proposal, { connected: true });

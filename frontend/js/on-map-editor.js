@@ -48,17 +48,6 @@
             cancel.setAttribute('aria-label', text('cancel', 'Cancel'));
             cancel.addEventListener('click', () => options.onCancel?.());
             const content = node('div', 'on-map-editor__content', panel);
-            const views = node('div', 'on-map-editor__views', content);
-            views.hidden = modes.length < 2;
-            views.setAttribute('role', 'group');
-            views.setAttribute('aria-label', text('view', 'View'));
-            modes.forEach(mode => {
-                const button = node('button', 'btn btn-quiet', views,
-                    mode === '2d' ? text('mapView', '2D map') : text('modelView', '3D model'));
-                button.type = 'button';
-                button.dataset.editorView = mode;
-                button.addEventListener('click', () => env.requestMapMode?.(mode));
-            });
             const hint = node('p', 'on-map-editor__hint', content);
             const body = node('div', 'on-map-editor__body', content);
             appendContent(body, options.content);
@@ -117,10 +106,11 @@
                 const belowTools = tools.hidden ? 76 : toolsRect.bottom - bounds.top + 12;
                 const top = !mobile && bounds.height - 100 - belowTools >= popupRect.height
                     ? Math.max(76, belowTools) : 76;
-                const right = !mobile && bounds.width - panelRect.width - 48 >= popupRect.width
+                const panelIsLeft = panelRect.left < bounds.left + bounds.width / 2;
+                const clearPanel = !mobile && bounds.width - panelRect.width - 48 >= popupRect.width
                     ? panelRect.width + 24 : 12;
-                openPopup.options.autoPanPaddingTopLeft = [12, top];
-                openPopup.options.autoPanPaddingBottomRight = [right, 100];
+                openPopup.options.autoPanPaddingTopLeft = [panelIsLeft ? clearPanel : 12, top];
+                openPopup.options.autoPanPaddingBottomRight = [panelIsLeft ? 100 : clearPanel, 100];
                 openPopup.update();
             }
             function onPopupClose(event) {
@@ -153,19 +143,18 @@
                 tools.hidden = false;
                 const rect = panel.getBoundingClientRect();
                 const mobile = env.innerWidth < 640;
-                const right = mobile ? env.innerWidth - 12 : rect.left - 12;
+                const panelIsLeft = !mobile && rect.left < env.innerWidth / 2;
+                const left = panelIsLeft ? rect.right + 12 : 12;
+                const right = mobile ? env.innerWidth - 12 : panelIsLeft ? env.innerWidth - 12 : rect.left - 12;
                 const bottom = mobile ? rect.top - 12 : env.innerHeight - 100;
                 const width = tools.offsetWidth || 160;
                 const height = tools.offsetHeight || 44;
-                tools.style.left = `${Math.max(12, Math.min(point.x - width / 2, right - width))}px`;
+                tools.style.left = `${Math.max(left, Math.min(point.x - width / 2, right - width))}px`;
                 tools.style.top = `${Math.max(76, Math.min(point.y + 28, bottom - height))}px`;
             }
 
             function syncMode(notify = true) {
                 const mode = env.__mapModeState?.desired || (env.isThreeModeActive?.() ? 'model' : '2d');
-                views.querySelectorAll('[data-editor-view]').forEach(button => {
-                    button.setAttribute('aria-pressed', String(button.dataset.editorView === mode));
-                });
                 hint.textContent = options.hints?.[mode] || '';
                 hint.hidden = !hint.textContent;
                 disabledButtons.forEach(({ button }) => { button.disabled = true; });

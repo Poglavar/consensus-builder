@@ -16,7 +16,8 @@
         layer: null,
         panel: null,
         session: null,
-        reselectKey: null
+        reselectKey: null,
+        lakeError: null
     };
 
     // Everything the editor draws lives in its own pane ABOVE the structure panes (squares
@@ -392,7 +393,9 @@
             pane: EDITOR_PANE
         }).addTo(state.layer);
         if (state.kind === 'lake') {
-            renderLakePreview();
+            const graphics = global.buildLakeGraphicsFromGeometry?.(state.boundary?.geometry) || null;
+            state.lakeError = lakeBoundaryFailure(graphics);
+            renderLakePreview(graphics);
             updatePanelState();
             return;
         }
@@ -401,8 +404,7 @@
         updatePanelState();
     }
 
-    function renderLakePreview() {
-        const graphics = global.buildLakeGraphicsFromGeometry?.(state.boundary?.geometry);
+    function renderLakePreview(graphics) {
         if (!graphics) return;
         [
             [graphics.shore, { color: '#c48b4a', weight: 2, opacity: 0.9, fillColor: '#f3d7a0', fillOpacity: 0.9 }],
@@ -428,6 +430,88 @@
         state.boundary.geometry = geometry;
         render();
         return true;
+    }
+
+    function localizedFailure(key, fallback) {
+        const fullKey = `proposalApplyFailures.${key}`;
+        try {
+            const translated = global.i18n?.t?.(fullKey);
+            if (translated && translated !== fullKey) return translated;
+        } catch (_) { }
+        return fallback;
+    }
+
+    function unavailableLakeCheck(reason) {
+        if (reason === 'adapter') {
+            const key = 'proposalDrafts.design.unavailable';
+            try {
+                const translated = global.i18n?.t?.(key);
+                if (translated && translated !== key) return { code: 'lake-adapter-unavailable', message: translated };
+            } catch (_) { }
+            return { code: 'lake-adapter-unavailable', message: 'This design editor is unavailable.' };
+        }
+        return {
+            code: 'cadastral-ground-unavailable',
+            message: localizedFailure('groundUnavailable', 'Cadastral parcel data could not be loaded. Check your connection and try again.')
+        };
+    }
+
+    function lakeBoundaryFailure(graphics) {
+        if (!graphics || !oneConnectedLakeGeometry(graphics.geometry || state.boundary?.geometry)) {
+            return {
+                code: 'proposal-footprint-invalid',
+                message: t('lakeInvalid', 'A lake boundary must form one connected area. Adjust the outline and try again.')
+            };
+        }
+
+        const manager = global.ProposalManager;
+        if (!manager || typeof manager.getProposalGroundFailure !== 'function') return unavailableLakeCheck('manager');
+        const adapter = global.proposalEditorAdapterRegistry?.get?.('lake');
+        if (!adapter || typeof adapter.serializeProposal !== 'function') return unavailableLakeCheck('adapter');
+
+        const draft = global.proposalDraftStore?.getDraft?.(state.draftId);
+        if (!draft) {
+            return {
+                code: 'proposal-not-found',
+                message: localizedFailure('notFound', 'This proposal is no longer available. Refresh the proposals list and try again.')
+            };
+        }
+
+        // Match the final serializer pipeline against a private candidate. Keep both geometry
+        // projections aligned: the adapter reads editorPayload.geometry for the record footprint
+        // and structureProposal.geometry for the authored structure payload.
+        const candidate = clone(draft);
+        candidate.editorPayload = clone(candidate.editorPayload || {});
+        const structureProposal = clone(candidate.editorPayload.structureProposal || {});
+        structureProposal.kind = 'lake';
+        structureProposal.geometry = clone(state.boundary.geometry);
+        structureProposal.lakeGraphics = clone(graphics);
+        delete structureProposal.decorations;
+        candidate.editorPayload.structureProposal = structureProposal;
+        candidate.editorPayload.geometry = clone(state.boundary.geometry);
+        candidate.previewGeometry = clone(state.boundary.geometry);
+        let record;
+        try { record = adapter.serializeProposal(candidate); } catch (_) {
+            return {
+                code: 'proposal-footprint-invalid',
+                message: localizedFailure('invalidGeometry', 'The proposal geometry is missing or invalid. Edit its geometry before applying.')
+            };
+        }
+        if (!record || typeof record !== 'object') {
+            return {
+                code: 'proposal-footprint-invalid',
+                message: localizedFailure('invalidGeometry', 'The proposal geometry is missing or invalid. Edit its geometry before applying.')
+            };
+        }
+        let failure;
+        try { failure = manager.getProposalGroundFailure(record); } catch (_) {
+            return unavailableLakeCheck('manager');
+        }
+        if (!failure) return null;
+        return {
+            ...failure,
+            message: failure.message || localizedFailure('groundUnavailable', 'Cadastral parcel data could not be loaded. Check your connection and try again.')
+        };
     }
 
     function circleRing(center, radiusMeters) {
@@ -512,6 +596,7 @@
             return `
                 <p class="on-map-editor__hint">${t('instructionsLake', 'Drag boundary points to reshape the lake. Click an edge to add a point; select a point to remove it.')}</p>
                 <p class="structure-geometry-options">${t('lakeBoundaryHint', 'The lake shape and its generated shore and water graphics will be saved together.')}</p>
+                <p class="structure-geometry-error" data-role="lake-error" role="alert" hidden></p>
                 <p class="on-map-editor__hint" data-role="hint"></p>`;
         }
         const tools = state.kind === 'park'
@@ -564,6 +649,15 @@
             : (state.tool
                 ? t('hintPlace', 'Click the map to place the selected item.')
                 : t('hintSelect', 'Select an item to begin.')));
+        if (state.kind === 'lake') {
+            const error = panel.querySelector('[data-role="lake-error"]');
+            if (error) {
+                error.textContent = state.lakeError?.message || '';
+                error.hidden = !state.lakeError;
+            }
+            const save = panel.querySelector('[data-action="save"]');
+            if (save) save.disabled = !!state.lakeError;
+        }
     }
 
     function handlePanelClick(event) {
@@ -593,6 +687,7 @@
         const draftId = state.draftId;
         const reselectKey = state.reselectKey || null;
         state.reselectKey = null;
+        state.lakeError = null;
         if (state.geometryDrag) endGeometryDrag();
         if (state.polygonEditor) {
             try { state.polygonEditor.destroy(); } catch (_) { }
@@ -653,13 +748,9 @@
         current.geometry = clone(state.boundary.geometry);
         if (state.kind === 'lake') {
             const graphics = global.buildLakeGraphicsFromGeometry?.(current.geometry);
-            const derivedGeometry = graphics?.geometry || current.geometry;
-            if (!graphics || !oneConnectedLakeGeometry(derivedGeometry)) {
-                if (typeof global.updateStatus === 'function') {
-                    global.updateStatus(t('lakeInvalid', 'A lake boundary must form one connected area. Adjust the outline and try again.'));
-                }
-                return false;
-            }
+            state.lakeError = lakeBoundaryFailure(graphics);
+            updatePanelState();
+            if (state.lakeError) return false;
             current.lakeGraphics = clone(graphics);
             delete current.decorations;
         } else {
@@ -685,6 +776,7 @@
         state.kind = kind;
         state.boundary = boundary;
         state.decorations = kind === 'lake' ? null : normalizeDecorations(kind, sourceDecorations(draft));
+        state.lakeError = null;
         state.tool = null;
         state.pathPoints = [];
         state.pathCursor = null;

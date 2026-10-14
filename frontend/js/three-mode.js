@@ -1937,7 +1937,23 @@
             return;
         }
         const height = kind === 'buildings' ? estimateBuildingHeightMeters(feature) : 0;
-        polygonFeatureToMeshes(feature, fill, style === 'source' ? 0.22 : 0.38, height)
+        let meshes = polygonFeatureToMeshes(feature, fill, style === 'source' ? 0.22 : 0.38, height);
+        // Only the actual procedural building proposal gets a facade skin. Permitted envelopes,
+        // excluded plots, source/comparison geometry and green/road surfaces retain their own
+        // materials. Uploaded models return through placeUploadedModel above with authored mats.
+        if (style === 'draft' && kind === 'buildings' && !feature.properties?.modelUrl) {
+            try {
+                const point = feature.geometry.type === 'MultiPolygon'
+                    ? feature.geometry.coordinates[0][0][0] : feature.geometry.coordinates[0][0];
+                const metresPerUnit = Math.cos(point[1] * Math.PI / 180);
+                const ruleFloorHeight = feature.properties?.urbanRule?.floorHeightM;
+                const floorHeight = typeof ruleFloorHeight === 'number' && Number.isFinite(ruleFloorHeight) && ruleFloorHeight > 0
+                    ? ruleFloorHeight : (window.STOREY_HEIGHT_M || 3.3);
+                const city = window.CityConfigManager?.getCurrentCityId?.() || '';
+                meshes = prepareProceduralFacadeMeshes(meshes, feature, height, floorHeight, metresPerUnit, city, true);
+            } catch (_) { /* Keep the basic 3D preview if optional facade setup fails. */ }
+        }
+        meshes
             .forEach(mesh => { markOwnedMaterial(mesh, fill); mesh.renderOrder = style === 'source' ? 9100 : 9200; target.add(mesh); });
         polygonFeatureToBorderLines(feature, line, Math.max(0.5, height + 0.5))
             .forEach(border => { markOwnedMaterial(border, line); border.renderOrder = style === 'source' ? 9101 : 9201; target.add(border); });
@@ -5675,6 +5691,21 @@
         targetGroup.add(lines);
     }
 
+    function prepareProceduralFacadeMeshes(meshes, owner, height, floorHeight, metresPerUnit, city, ownsMaterial = false) {
+        if (!owner || !meshes.length) return meshes;
+        const design = buildingFacades.buildingDesign(buildingFacades.buildingKey(owner, city), height, floorHeight);
+        const facadeMaterial = buildingFacades.configureMaterial(
+            ownsMaterial ? meshes[0].material : cloneBuildingMaterial(meshes[0].material), design, facadeState, THREE);
+        meshes.forEach(mesh => {
+            mesh.material = facadeMaterial;
+            mesh.geometry.setAttribute('cbFacadeCoord', new THREE.Float32BufferAttribute(
+                buildingFacades.wallCoordinates(mesh.geometry.attributes.position.array,
+                    mesh.geometry.attributes.normal.array, metresPerUnit), 3));
+            mesh.userData.cbFacadeOwned = true;
+        });
+        return meshes;
+    }
+
     function createBuildingSlices(buildingFeature, height, material, targetGroup, facadeSource = null) {
         if (!buildingFeature?.geometry) return;
         const hasFacade = !!facadeSource;
@@ -5689,17 +5720,7 @@
             if (!hasFacade || !meshes.length) return meshes;
             // Use the actual intersected parcel, not the source volume's parcel hint. This
             // changes the skin at ownership seams and keeps separate volumes on one parcel alike.
-            const design = buildingFacades.buildingDesign(buildingFacades.buildingKey(owner, city), height, floorHeight);
-            const facadeMaterial = buildingFacades.configureMaterial(
-                ownsMaterial ? meshes[0].material : cloneBuildingMaterial(meshes[0].material), design, facadeState, THREE);
-            meshes.forEach(mesh => {
-                mesh.material = facadeMaterial;
-                mesh.geometry.setAttribute('cbFacadeCoord', new THREE.Float32BufferAttribute(
-                    buildingFacades.wallCoordinates(mesh.geometry.attributes.position.array,
-                        mesh.geometry.attributes.normal.array, metresPerUnit), 3));
-                mesh.userData.cbFacadeOwned = true;
-            });
-            return meshes;
+            return prepareProceduralFacadeMeshes(meshes, owner, height, floorHeight, metresPerUnit, city, ownsMaterial);
         };
         if (!window.LiveParcelFabric) {
             const meshes = prepareFacades(polygonFeatureToMeshes(buildingFeature, material, 0, height));

@@ -34,6 +34,9 @@ function makeEditorHarness(decorations, options = {}) {
     const historyInstances = [];
     const mapHandlers = new Map();
     const documentHandlers = new Map();
+    const groundRecords = [];
+    const lakeError = { hidden: true, textContent: '' };
+    const lakeSave = { disabled: false };
     const groups = [];
     const panel = {
         classList: makeClassList(),
@@ -50,6 +53,8 @@ function makeEditorHarness(decorations, options = {}) {
         },
         querySelector(selector) {
             const element = { hidden: false, disabled: false, textContent: '', setAttribute() {} };
+            if (selector === '[data-role="lake-error"]') return lakeError;
+            if (selector === '[data-action="save"]') return lakeSave;
             return /finish-path/.test(selector) ? element : (/data-role/.test(selector) ? element : null);
         },
         fireClick({ tool, action }) {
@@ -164,6 +169,26 @@ function makeEditorHarness(decorations, options = {}) {
             lineString: coordinates => ({ type: 'Feature', geometry: { type: 'LineString', coordinates } })
         },
         proposalDraftStore: { getDraft: () => draft },
+        proposalEditorAdapterRegistry: {
+            get(key) {
+                if (key !== 'lake' || options.adapterAvailable === false) return null;
+                return {
+                    serializeProposal(candidate) {
+                        const serialized = JSON.parse(JSON.stringify(candidate));
+                        const structureProposal = serialized.editorPayload.structureProposal;
+                        serialized.structureProposal = structureProposal;
+                        serialized.geometry = JSON.parse(JSON.stringify(serialized.editorPayload.geometry));
+                        return serialized;
+                    }
+                };
+            }
+        },
+        ProposalManager: options.managerAvailable === false ? null : {
+            getProposalGroundFailure(record) {
+                groundRecords.push(record);
+                return options.groundFailure?.(record) || null;
+            }
+        },
         syncActiveProposalDraftFromEditor(_section, payload) {
             savedPayload = payload;
             savedDecorations = payload.structureProposal.decorations;
@@ -202,6 +227,9 @@ function makeEditorHarness(decorations, options = {}) {
     return {
         context, panel, groups, markers, historyInstances, document,
         draft,
+        groundRecords,
+        lakeError,
+        lakeSave,
         get polygonEditorOptions() { return polygonEditorOptions; },
         get polygonEditorDestroyed() { return polygonEditorDestroyed; },
         get finishedDrafts() { return finishedDrafts; },
@@ -227,6 +255,55 @@ function makeEditorHarness(decorations, options = {}) {
 const currentMarkers = harness => harness.groups.at(-1).items.filter(item => item.events && typeof item.fire === 'function');
 
 describe('structure geometry editor history wiring', () => {
+    it('blocks a lake edit outside its authored ground, keeps the edit open, then allows a valid save', () => {
+        const originalRing = [[0, 0], [1, 0], [1, 1], [0, 1]];
+        const geometry = { type: 'Polygon', coordinates: [[...originalRing, originalRing[0]]] };
+        const outsideRing = [[0, 0], [1.25, 0], [1, 1], [0, 1]];
+        const harness = makeEditorHarness(null, {
+            kind: 'lake', geometry,
+            groundFailure(record) {
+                return record.geometry.coordinates[0][1][0] > 1
+                    ? { code: 'proposal-footprint-outside-cadastre', message: 'Outside the selected parcels.' }
+                    : null;
+            }
+        });
+
+        expect(harness.open()).toBe(true);
+        expect(harness.polygonEditorOptions.onCommit({ ring: outsideRing, reason: 'move' })).toBe(true);
+        expect(harness.groundRecords.at(-1).geometry.coordinates[0][1]).toEqual([1.25, 0]);
+        expect(harness.draft.editorPayload.structureProposal.geometry).toEqual(geometry);
+        expect(harness.lakeError).toMatchObject({ hidden: false, textContent: 'Outside the selected parcels.' });
+        expect(harness.lakeSave.disabled).toBe(true);
+
+        harness.save();
+        expect(harness.context.isStructureGeometryEditorActive()).toBe(true);
+        expect(harness.savedPayload).toBeNull();
+
+        expect(harness.polygonEditorOptions.onCommit({ ring: originalRing, reason: 'undo' })).toBe(true);
+        expect(harness.lakeError.hidden).toBe(true);
+        expect(harness.lakeError.textContent).toBe('');
+        expect(harness.lakeSave.disabled).toBe(false);
+        const saved = harness.save().structureProposal;
+        expect(saved.geometry.coordinates[0]).toEqual([...originalRing, originalRing[0]]);
+        expect(saved.lakeGraphics.version).toBe('fresh');
+        expect(harness.context.isStructureGeometryEditorActive()).toBe(false);
+    });
+
+    it('keeps lake save disabled when the ground guard or serializer is unavailable', () => {
+        const geometry = { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] };
+        const noManager = makeEditorHarness(null, { kind: 'lake', geometry, managerAvailable: false });
+        expect(noManager.open()).toBe(true);
+        expect(noManager.lakeError.hidden).toBe(false);
+        expect(noManager.lakeSave.disabled).toBe(true);
+        noManager.cancel();
+
+        const noAdapter = makeEditorHarness(null, { kind: 'lake', geometry, adapterAvailable: false });
+        expect(noAdapter.open()).toBe(true);
+        expect(noAdapter.lakeError.hidden).toBe(false);
+        expect(noAdapter.lakeSave.disabled).toBe(true);
+        noAdapter.cancel();
+    });
+
     it('edits and saves a lake boundary with freshly derived graphics', () => {
         const originalRing = [[0, 0], [1, 0], [1, 1], [0, 1]];
         const geometry = { type: 'Polygon', coordinates: [[...originalRing, originalRing[0]]] };

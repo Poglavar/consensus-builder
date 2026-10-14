@@ -385,6 +385,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Use stable proposalId only (hash support removed)
     const proposalKey = fullProposal.proposalId
         || proposal.proposalId;
+    const mapActionFailure = proposalKey
+        ? window.__proposalMapActionFailures?.[String(proposalKey)]
+        : '';
+    const mapActionFailureHtml = mapActionFailure
+        ? `<div class="proposal-editor-approval-error proposal-map-action-error" data-proposal-map-action-error="${safeAgentText(proposalKey)}" role="alert">${safeAgentText(mapActionFailure)}</div>`
+        : '';
     const hasProposalManager = typeof ProposalManager !== 'undefined'
         && typeof ProposalManager.applyProposal === 'function'
         && typeof ProposalManager.unapplyProposal === 'function';
@@ -567,6 +573,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <i class="fas fa-circle-info" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.details', 'Details')}
             </button>
         </div>
+        ${mapActionFailureHtml}
     `;
     const additionalActionsHtml = crossSectionButtonHtml + editGeometryButtonHtml + compareButtonHtml + buyButtonHtml + driveButtonHtml;
 

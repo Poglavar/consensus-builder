@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-14: Geometry editors use the global view buttons; in desktop 3D their controls dock left so Layers can remain open on the right.
+
 - 2026-10-09: Run the population-ranked parcel research task in an isolated Valhalla checkout with durable per-city checkpoints so it continues when the laptop is closed; future publication remains an explicit release action.
 - 2026-10-09: Public parcel research must continue beyond human-facing UI: inspect viewer configuration, network requests and first-party WFS/OGC/ArcGIS/download endpoints, distinguishing a UI login or fetch failure from unavailable parcel geometry; source discovery and runtime qualification remain separate.
 

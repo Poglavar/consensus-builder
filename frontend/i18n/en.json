@@ -1,10 +1,7 @@
 {
   "onMapEditor": {
     "missingSite": "This saved building has no valid authored site boundary, so its geometry cannot be edited safely.",
-    "cancel": "Cancel",
-    "view": "View",
-    "mapView": "2D map",
-    "modelView": "3D model"
+    "cancel": "Cancel"
   },
     "optionalTools": {
         "loadFailed": "Could not load this tool. Please try again."
@@ -182,7 +179,7 @@
     },
     "multitab": {
         "warning": "This city is already open in another tab. To avoid losing saved proposals, changes made here won't be saved — close the other tabs of this city and reload this one to edit. Other cities can stay open.",
-        "notSaved": "Proposal was NOT saved and will be lost on browser reload."
+        "notSaved": "This city is open in another tab. Your changes are kept in a recovery copy, but are not saved to the shared plan. Use the main tab to save changes."
     },
     "proposalApproval": {
         "ownerLabel": "Owner {{label}}",
@@ -294,6 +291,18 @@
             "sponsorReceives": "The sponsor receives {{amount}}.",
             "sponsorNothing": "Owner payments cover every payout; the sponsor pays nothing."
         }
+    },
+    "proposalApplyFailures": {
+        "outsideCadastre": "The proposal geometry extends beyond its selected cadastral parcels. Keep it within the selected land, or create a proposal that includes the additional parcels.",
+        "outsideSite": "The proposal geometry extends beyond its site. Keep it inside the site, or edit the site before applying.",
+        "groundUnavailable": "Cadastral parcel data could not be loaded. Check your connection and try applying again.",
+        "groundMissing": "Cadastral parcel data is unavailable for: {{parcels}}. This proposal cannot be applied until those parcels can be loaded.",
+        "undeclared": "This proposal has no cadastral parcels or open-ground site. Define its site before applying.",
+        "invalidGeometry": "The proposal geometry is missing or invalid. Edit its geometry before applying.",
+        "applyFailed": "The proposal could not be placed on the map because its geometry could not be derived from the selected land.",
+        "busy": "Another map update is still running. Wait for it to finish and try again.",
+        "storeUnavailable": "Proposals are not loaded yet. Wait for the city to finish loading and try again.",
+        "notFound": "This proposal is no longer available. Refresh the proposals list and try again."
     },
     "proposalDrafts": {
         "title": "Drafts",
@@ -426,7 +435,13 @@
             "road": "Road",
             "track": "Track",
             "parcelOnly": "This proposal has no separate design geometry. Parcel highlighting remains live while you edit its other facets.",
-            "unavailable": "This design editor is unavailable."
+            "unavailable": "This design editor is unavailable.",
+            "editorBusy": "Another geometry editor is already using the map. Close it before starting this site design.",
+            "siteUnavailable": "The selected site is unavailable. Select a valid site and try again.",
+            "parcelsUnavailable": "No design parcels are available for this site. Select the site again and try once its parcels are loaded.",
+            "draftCreateFailed": "Could not save a local draft for this site design. The site remains unchanged.",
+            "handoffFailed": "The design editor could not open. Your site is unchanged, and the design draft was preserved locally.",
+            "handoffFailedReason": "The design editor could not open: {{reason}}. Your site is unchanged, and the design draft was preserved locally."
         },
         "review": {
             "title": "Review changes",
@@ -1338,7 +1353,15 @@
                 "apply_disabled_for_type": "Apply is disabled for this proposal type.",
                 "editApproval": "Edit ownership and approval",
                 "addApproval": "Add ownership and approval",
-                "editApprovalHint": "Opens the editor on its Approval tab. Saving creates a replacement proposal; acceptances of this one do not carry over."
+                "editApprovalHint": "Opens the editor on its Approval tab. Saving creates a replacement proposal; acceptances of this one do not carry over.",
+                "applyFailed": "Could not apply this proposal: {{reason}}",
+                "applyFailedUnknown": "Could not apply this proposal. Please try again.",
+                "applyUnavailable": "This proposal cannot be applied to the map.",
+                "applyUnsupported": "This proposal type does not support map application.",
+                "missingProposal": "No proposal was selected to apply.",
+                "unapplyFailed": "Could not remove this proposal from the map: {{reason}}",
+                "unapplyFailedUnknown": "Could not remove this proposal from the map. Please try again.",
+                "unapplyUnavailable": "This proposal cannot be removed from the map."
             },
             "expiry": {
                 "expired": "Proposal expired",
@@ -1981,8 +2004,6 @@
             "closeLabel": "Close single building modal",
             "cancel": "Cancel",
             "more": "Site & details",
-            "modelView": "3D model",
-            "mapView": "2D map",
             "mapHint": "Drag the building or its corners. Tap an edge to add a corner.",
             "modelHint": "Adjust the height and orbit to see the fit. Use 2D to reshape the footprint.",
             "previewLabel": "3D preview",
@@ -3354,6 +3375,7 @@
     },
     "reparcellization": {
         "modal": {
+            "mapHint": "Adjust plot boundaries on the map; review ownership and shares here.",
             "savedRecipientUnresolved": "Saved output recipient has no matching current input contribution.",
             "ownerReview": "Review one owner",
             "allOwners": "All owners",

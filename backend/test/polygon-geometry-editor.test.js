@@ -6,6 +6,7 @@ import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
 
 const require = createRequire(import.meta.url);
+const History = require('../../frontend/js/geometry-edit/history.js');
 const {
     coordinateOnEdge,
     constrainRingToBoundary,
@@ -95,6 +96,21 @@ function fakeMap() {
         getContainer() {
             return null;
         }
+    };
+}
+
+function fakeDocument() {
+    const listeners = new Map();
+    return {
+        addEventListener(name, handler) {
+            const handlers = listeners.get(name) || [];
+            handlers.push(handler);
+            listeners.set(name, handlers);
+        },
+        removeEventListener(name, handler) {
+            listeners.set(name, (listeners.get(name) || []).filter(item => item !== handler));
+        },
+        fire(name, event) { (listeners.get(name) || []).forEach(handler => handler(event)); }
     };
 }
 
@@ -250,6 +266,60 @@ describe('shared Leaflet interaction model', () => {
         expect(commits[0].ring[1][0]).toBeCloseTo(1, 10);
         expect(commits[0].ring[1][1]).toBeCloseTo(0.4, 3);
         expect(openRing(editor.ring)).toHaveLength(4);
+        editor.destroy();
+    });
+
+    it('undoes the complete vertex drag and does not create an undo step for a no-op drag', () => {
+        const document = fakeDocument();
+        const commits = [];
+        const editor = create({
+            map: fakeMap(), leaflet: fakeLeaflet(), turf, ring: square,
+            history: History, document, showUndoButton: false,
+            onCommit: payload => commits.push(payload)
+        });
+        const original = openRing(square);
+        const marker = editor.vertexMarkers[1];
+
+        marker.handlers.dragstart({ target: marker });
+        marker.setLatLng({ lng: 1.2, lat: 0.3 });
+        marker.handlers.drag({ target: marker });
+        marker.handlers.dragend({ target: marker });
+        expect(editor.ring[1]).toEqual([1.2, 0.3]);
+        expect(editor.history.canUndo()).toBe(true);
+
+        const undoEvent = { key: 'z', ctrlKey: true, target: {}, preventDefault() {} };
+        document.fire('keydown', undoEvent);
+        expect(openRing(editor.ring)).toEqual(original);
+        expect(commits.map(commit => commit.reason)).toEqual(['move', 'undo']);
+        expect(editor.history.canUndo()).toBe(false);
+
+        const unchanged = editor.vertexMarkers[0];
+        unchanged.handlers.dragstart({ target: unchanged });
+        unchanged.handlers.dragend({ target: unchanged });
+        expect(editor.history.canUndo()).toBe(false);
+        editor.destroy();
+    });
+
+    it('keeps edge insert and vertex delete undo snapshots before their changes', () => {
+        const document = fakeDocument();
+        const editor = create({
+            map: fakeMap(), leaflet: fakeLeaflet(), turf, ring: square,
+            history: History, document, showUndoButton: false
+        });
+
+        editor.layerGroup.layers.find(layer => layer.kind === 'edge').handlers.click({
+            latlng: { lng: 0.25, lat: 0 }
+        });
+        expect(editor.ring).toHaveLength(5);
+        document.fire('keydown', { key: 'z', ctrlKey: true, target: {}, preventDefault() {} });
+        expect(openRing(editor.ring)).toEqual(openRing(square));
+
+        editor.vertexMarkers[1].handlers.click({});
+        editor.deleteMarker.handlers.click({});
+        expect(editor.ring).toHaveLength(3);
+        document.fire('keydown', { key: 'z', ctrlKey: true, target: {}, preventDefault() {} });
+        expect(editor.ring).toHaveLength(4);
+        expect(openRing(editor.ring)).toEqual(openRing(square));
         editor.destroy();
     });
 

@@ -131,6 +131,13 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     opacity: 1;
     pointer-events: auto;
 }
+/* A live geometry editor owns its preview and handle panes while it is open. Keep other
+   proposal layers click-through in cadastre view, but let its footprint and handles receive input. */
+body.cadastre-view.on-map-editing .leaflet-map-pane > .leaflet-onMapEditor-pane,
+body.cadastre-view.on-map-editing .leaflet-map-pane > .leaflet-onMapEditorHandles-pane {
+    opacity: 1;
+    pointer-events: auto;
+}
 
 /* Claims breadcrumb: the base parcels a proposal stands on, at the top of its details panel. */
 .claim-breadcrumb {
