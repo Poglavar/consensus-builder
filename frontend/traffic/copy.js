@@ -21,6 +21,8 @@
             cars: 'Automobili',
             lights: 'Semafori',
             lanes: 'Kolnik i oznake',
+            trams: 'Tramvajske tračnice',
+            tramData: '{count} OSM tramvajskih dionica',
             sound: 'Zvuk',
             tools: 'Alati',
             inspectTool: 'Pregled',

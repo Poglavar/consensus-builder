@@ -35,6 +35,15 @@ njihove izričito dopuštene veze. Površinska geometrija ne dodaje kretanja u g
 Kolnik prati širinu i putanju svake trake i spremljenog kretanja. Prazni kutovi između krakova
 raskrižja ne popunjavaju se trokutima; proširenja i suženja prate stvarne prijelaze broja traka.
 
+Prekidač **Tramvajske tračnice** prikazuje aktivne OSM središnice iz zajedničkog API-ja
+`/roads/rails`. `tramTracks` zadržava identitet OSM puta, njegovu geometriju i oznake `gauge` i
+`tracks`; putovi se režu na obuhvat prikaza bez spajanja dijelova koji izlaze iz njega.
+Razmak tračnica slijedi izvorni kolosijek od 1000 mm. Ako jedan OSM put opisuje dva kolosijeka,
+njihove središnice razmiču se za 2,8 m prema postojećem standardu Station3D-a.
+Uska tramvajska podloga crta se ispod cestovnog kolnika, a tračnice iznad njega: izdvojeni pojas
+ostaje vidljiv, dok zajedničke prometne trake zadržavaju asfalt. Prikaz ne dodaje trake ni
+dopuštena kretanja u automobilski graf.
+
 Alat **Zatvori traku** zatvara dionice od 5 ili 10 metara; zauzeta dionica čeka da je vozila napuste.
 Vozila obilaze prepreku preko susjednih traka u istom smjeru; bez slobodnog obilaska čekaju.
 Alat **Mjeri protok** broji sve prelaze preko crte po traci; na karti prikazuje zbroj za svaki smjer.

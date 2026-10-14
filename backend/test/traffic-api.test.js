@@ -22,7 +22,7 @@ function network(version = 'snapshot-1') {
             selectedSolutions: 2,
             liveDecisions: 1,
             counts: {
-                surfaceLanes: 5, simulatedLanes: 3, connections: 2,
+                surfaceLanes: 5, simulatedLanes: 3, connections: 2, tramWays: 0, tramTrackPaths: 0,
                 signals: 1, controlledSignals: 1, savedJunctions: 1,
                 partialJunctions: 0, unresolvedNodes: 2
             }

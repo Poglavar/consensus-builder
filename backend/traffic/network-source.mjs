@@ -38,6 +38,7 @@ export async function loadTrafficNetwork({
 
     const root = resolve(topologyRoot);
     const require = createRequire(import.meta.url);
+    const Trams = require('../../frontend/traffic/tram-tracks.js');
     const load = name => require(resolve(root, 'frontend/js', name));
     const Graph = load('lane-topology-graph.js');
     const View = load('lane-topology-view.js');
@@ -57,6 +58,11 @@ export async function loadTrafficNetwork({
     if (evidence.truncated || !evidence.snapshot?.id || !evidence.features?.length) {
         throw new Error('The OSM snapshot is missing or truncated; choose a smaller area.');
     }
+    const railResponse = await fetchImpl(`${api}/roads/rails?bbox=${extent.join(',')}`, {
+        signal: AbortSignal.timeout(60000)
+    });
+    if (!railResponse.ok) throw new Error(`OSM rails API: HTTP ${railResponse.status}`);
+    const tramTracks = Trams.fromGeoJSON(await railResponse.json(), extent);
 
     const signalRows = (await pool.query(`SELECT n.osm_id, n.tags,
         ST_X(n.geom) AS lon, ST_Y(n.geom) AS lat,
@@ -143,6 +149,8 @@ export async function loadTrafficNetwork({
             unsupportedRestrictionWays: unsupportedWays.size,
             counts: {
                 surfaceLanes: surfaceLanes.length, simulatedLanes: lanes.length,
+                tramWays: new Set(tramTracks.map(track => track.sourceWayId)).size,
+                tramTrackPaths: tramTracks.reduce((count, track) => count + track.trackCount, 0),
                 connections: connections.length, signals: signals.length,
                 controlledSignals: signals.filter(signal => signal.controls.length).length,
                 savedJunctions: savedJunctions.length,
@@ -150,9 +158,11 @@ export async function loadTrafficNetwork({
                 unresolvedNodes: display.nodes.filter(node => nodeIds.has(node.id) && unresolved.has(node.id)).length
             },
             signalSource: 'OSM tagged signal nodes, original coordinates and way memberships in the same snapshot.',
+            tramSource: 'OSM tram centerlines from the shared roads/rails API; track counts and gauge from OSM tags.',
             note: 'OSM and saved candidate junction answers; mapped signals with illustrative phase timings.'
         },
         signals,
+        tramTracks,
         nodes: display.nodes.filter(node => nodeIds.has(node.id)).map(node => ({
             id: node.id, point: node.point, degree: node.degree, unresolved: unresolved.has(node.id)
         })),

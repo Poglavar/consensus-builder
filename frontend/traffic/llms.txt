@@ -5,12 +5,14 @@ prikaz dopuštenih obilaznih putanja vozila i usporedbu protoka prije i nakon pr
 Jezik sučelja i sadržaja je hrvatski.
 
 - Stranica: https://zagreb.lol/promet/simulator/
-- Mreža traka, dopuštene veze, kolnik i izvorne OSM oznake semafora: https://zagreb.lol/api/promet/simulator/network
+- Mreža traka, dopuštene veze, kolnik, tramvajske tračnice i izvorne OSM oznake semafora: https://zagreb.lol/api/promet/simulator/network
 - Obuhvat, broj elemenata i vrijeme izvora: https://zagreb.lol/api/promet/simulator/status
 - Povezane snimke prometa: https://zagreb.lol/promet/snimke/
 - Trajanje putovanja: https://zagreb.lol/promet/destinacije/
 
 Podatkovni API čita OSM prometnu topologiju i spremljene odluke o kretanjima iz baze.
+Tramvajske središnice dolaze iz zajedničkog OSM API-ja; razmak tračnica i broj kolosijeka
+prate izvorne oznake. Prikazuju se izdvojeni tramvajski pojasevi i tračnice zajedničke s kolnikom.
 Obuhvat aplikacije je središte Zagreba, a ne cijeli grad. Datum OSM izvora i vrijeme
 izgradnje odgovora nalaze se u API metapodacima; to nisu datumi izgradnje cesta.
 

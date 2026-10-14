@@ -18,6 +18,8 @@ function networkCounts(network) {
     const sourceCounts = network.source?.counts || {};
     return {
         surfaceLanes: sourceCounts.surfaceLanes ?? network.surfaceLanes?.length ?? 0,
+        tramWays: sourceCounts.tramWays ?? 0,
+        tramTrackPaths: sourceCounts.tramTrackPaths ?? 0,
         simulatedLanes: sourceCounts.simulatedLanes ?? network.lanes?.length ?? 0,
         connections: sourceCounts.connections ?? network.connections?.length ?? 0,
         signals: sourceCounts.signals ?? network.signals?.length ?? 0,
@@ -45,6 +47,7 @@ function statusSummary(network) {
             blockedRestrictions: source.blockedRestrictions ?? 0,
             unsupportedRestrictionWays: source.unsupportedRestrictionWays ?? 0,
             signalSource: source.signalSource ?? null,
+            tramSource: source.tramSource ?? null,
             note: source.note ?? null
         },
         bbox: network.bbox,

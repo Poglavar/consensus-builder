@@ -10,6 +10,7 @@
     }
     const Engine = window.TrafficSimulation, G = window.TrafficGeometry;
     const Scenario = window.TrafficScenario, Meters = window.TrafficMeters;
+    const Trams = window.TrafficTramTracks;
     const counters = new Meters.Counters();
     const audio = new window.TrafficAudio.Sound();
     const colors = ['#237e88', '#ce7943', '#e4ae4a', '#5968a0', '#668e69', '#f4f0dc', '#bd6977'];
@@ -31,6 +32,7 @@
     meterCanvas.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:430';
     const guides = guideCanvas.getContext('2d'), ctx = carCanvas.getContext('2d'), meterContext = meterCanvas.getContext('2d');
     let baseNetwork, editor, laneIndex, hover = null, meterHover = null, selectedMeter = null, tool = 'inspect', roadEdges, transitionEdges, surface;
+    let tramTracks = [];
     let network, sim, running = !reduced, rate = 2, seed = 52, selected = null, following = false;
     let selectedInfo = null;
     let signalPopup = null;
@@ -105,6 +107,10 @@
         if (!network || !transform) return;
         const zoom = scene.zoom, metres = Math.abs(transform.sx);
         guides.lineCap = 'butt'; guides.lineJoin = 'round'; guides.setLineDash([]);
+        // Road pavement covers the bed wherever trams share traffic lanes or cross a road.
+        if ($('trams').checked) for (const track of tramTracks) if (routeVisible(track.path)) {
+            guides.strokeStyle = '#9fa49b'; guides.lineWidth = track.bedWidth * metres; line(guides, track.path);
+        }
         if ($('lanes').checked) {
             const visibleLanes = [...baseNetwork.lanes.values()].filter(lane => routeVisible(lane.path));
             // Paint all road surfaces first; then markings, so overlapping joins are continuous.
@@ -133,6 +139,14 @@
                 guides.setLineDash(edge.dashed ? [3 * metres, 5 * metres] : []); line(guides, edge.route);
             }
             guides.setLineDash([]);
+        }
+        if ($('trams').checked) for (const track of tramTracks) if (routeVisible(track.path)) {
+            if (zoom < 17) {
+                guides.strokeStyle = '#536965'; guides.lineWidth = 1.2; line(guides, track.path);
+            } else for (const rail of track.rails) {
+                guides.strokeStyle = '#273a39'; guides.lineWidth = Math.max(.9, (track.railWidth + .08) * metres); line(guides, rail);
+                guides.strokeStyle = '#c4cbc5'; guides.lineWidth = Math.max(.45, track.railWidth * metres); line(guides, rail);
+            }
         }
         if (hover && zoom >= 17) {
             guides.strokeStyle = tool === 'close' ? '#f5ad4a88' : '#68dcda66';
@@ -283,7 +297,7 @@
         $('play-label').textContent = t(running ? 'pause' : 'play'); $('play-icon').textContent = running ? 'Ⅱ' : '▶';
         $('play').setAttribute('aria-pressed', String(running));
         const counts = network.data.source.counts;
-        $('source-detail').textContent = `${t('solved', { count: counts.savedJunctions })}. ${t('coverage', { unresolved: counts.unresolvedNodes, partial: counts.partialJunctions })}. ${t('snapshot', { date: network.data.source.osmTimestamp.slice(0, 10) })}.`;
+        $('source-detail').textContent = `${t('solved', { count: counts.savedJunctions })}. ${t('coverage', { unresolved: counts.unresolvedNodes, partial: counts.partialJunctions })}. ${t('snapshot', { date: network.data.source.osmTimestamp.slice(0, 10) })}. ${t('tramData', { count: counts.tramWays })}.`;
         const car = sim.cars.find(item => item.id === selected);
         if (!car) { selected = null; following = false; }
         document.querySelector('.inspector').hidden = !car;
@@ -516,6 +530,7 @@
     $('density').addEventListener('input', () => { $('density-value').textContent = $('density').value; sim?.setCount(Number($('density').value)); updateUI(); drawCars(); });
     $('lights').addEventListener('change', () => { if (sim) sim.signals = $('lights').checked; updateUI(); drawCars(); });
     $('lanes').addEventListener('change', drawGuides);
+    $('trams').addEventListener('change', drawGuides);
     $('follow').addEventListener('click', () => {
         if (following) following = false;
         else {
@@ -542,6 +557,7 @@
             network = baseNetwork = Engine.createNetwork(data);
             laneIndex = new Meters.LaneIndex(baseNetwork); buildRoadEdges();
             surface = window.TrafficSurface.build(baseNetwork, data.surfaceLanes);
+            tramTracks = Trams.build(data.tramTracks, baseNetwork.project, offsetPolylinePlanar);
             sim = new Engine.Simulation(network, { count: Number($('density').value), seed });
             editor = new Scenario.Editor(baseNetwork, sim); attachCounters();
             if (!network.spawnLanes.length) throw new Error('The exported graph has no usable starting lanes.');
@@ -562,7 +578,7 @@
     // Read-only diagnostics expose the rendered artifact for manual browser verification.
     window.trafficPreview = {
         get simulation() { return sim; }, get network() { return network; }, get baseNetwork() { return baseNetwork; }, get editor() { return editor; }, counters, laneIndex: () => laneIndex, scene, map,
-        get audio() { return audio; },
+        get audio() { return audio; }, get tramTracks() { return tramTracks; },
         inspect: () => ({ ...sim?.stats(), frameCount, tileErrors, visibleCars: screenCars.length,
             running, selected, following, tileCount: document.querySelectorAll('.leaflet-tile-loaded').length })
     };
