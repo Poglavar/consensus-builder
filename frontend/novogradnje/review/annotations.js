@@ -59,5 +59,13 @@
         validateDocument(document);
         return JSON.stringify(document, null, 2) + '\n';
     }
-    return { SCHEMA, MAX_SHAPES, MAX_SHAPE_NOTE, MAX_NOTE, pointFromClient, sourcePointToClient, validateDocument, newDocument, restoreContent, exportDocument };
+    async function flushChanges({ isBusy, isDirty, persist, wait }) {
+        // A save can finish while newer edits are still pending in the same page.
+        do {
+            while (isBusy()) await wait();
+            if (isDirty() && !await persist()) return false;
+        } while (isDirty());
+        return true;
+    }
+    return { SCHEMA, MAX_SHAPES, MAX_SHAPE_NOTE, MAX_NOTE, pointFromClient, sourcePointToClient, validateDocument, newDocument, restoreContent, exportDocument, flushChanges };
 });

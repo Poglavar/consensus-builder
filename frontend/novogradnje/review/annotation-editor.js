@@ -115,7 +115,7 @@
         noteInput.addEventListener('input', () => { const shape = documentValue?.shapes.find(item => item.id === selectedId); if (shape) { const before = clone(documentValue); shape.note = noteInput.value.slice(0, A.MAX_SHAPE_NOTE); setDirty(before); draw(); } });
         globalInput.addEventListener('input', () => { if (documentValue) { const before = clone(documentValue); documentValue.note = globalInput.value.slice(0, A.MAX_NOTE); setDirty(before); } });
         remove.addEventListener('click', () => { if (!selectedId || !documentValue) return; const before = clone(documentValue); documentValue.shapes = documentValue.shapes.filter(shape => shape.id !== selectedId); selectedId = null; noteInput.value = ''; draw(); setDirty(before); });
-        undo.addEventListener('click', () => { if (!undoStack.length || !documentValue) return; documentValue = A.restoreContent(documentValue, undoStack.pop()); dirty = true; globalInput.value = documentValue.note; if (!documentValue.shapes.some(shape => shape.id === selectedId)) { selectedId = null; noteInput.value = ''; } draw(); setStatus(`Unsaved changes · revision ${documentValue.revision}`); clearTimeout(timer); timer = setTimeout(() => persist(), 350); });
+        undo.addEventListener('click', () => { if (!undoStack.length || !documentValue) return; documentValue = A.restoreContent(documentValue, undoStack.pop()); dirty = true; globalInput.value = documentValue.note; const selected = documentValue.shapes.find(shape => shape.id === selectedId); if (!selected) selectedId = null; noteInput.value = selected?.note || ''; draw(); setStatus(`Unsaved changes · revision ${documentValue.revision}`); clearTimeout(timer); timer = setTimeout(() => persist(), 350); });
         function doDownload() { if (!documentValue) return; const blob = new Blob([A.exportDocument(documentValue)], { type: 'application/json' }), url = URL.createObjectURL(blob), a = el('a'); a.href = url; a.download = `novogradnje-plan-annotations-${metadata.unitId}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }
         download.addEventListener('click', doDownload);
         async function load({ replace = false } = {}) {
@@ -152,7 +152,11 @@
         }
         save.addEventListener('click', persist);
         reload.addEventListener('click', async () => { if (await load({ replace: true })) reload.hidden = true; });
-        const onNavigation = event => { const link = event.target.closest('a'); if (!link || link.download || !documentValue || (!dirty && !busy)) return; event.preventDefault(); event.stopImmediatePropagation(); (async () => { while (busy) await new Promise(resolve => setTimeout(resolve, 50)); const ok = dirty ? await persist() : true; if (ok) location.href = link.href; })(); };
+        const onNavigation = event => { const link = event.target.closest('a'); if (!link || link.download || !documentValue || (!dirty && !busy)) return; event.preventDefault(); event.stopImmediatePropagation(); (async () => {
+            const ok = await A.flushChanges({ isBusy: () => busy, isDirty: () => dirty,
+                persist, wait: () => new Promise(resolve => setTimeout(resolve, 50)) });
+            if (ok && !destroyed) location.href = link.href;
+        })(); };
         document.addEventListener('click', onNavigation, true);
         const beforeUnload = event => { if (dirty || busy) { event.preventDefault(); event.returnValue = ''; } };
         addEventListener('beforeunload', beforeUnload);

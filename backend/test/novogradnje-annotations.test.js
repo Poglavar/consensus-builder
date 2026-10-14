@@ -39,6 +39,24 @@ describe('draft plan annotations', () => {
             note: document.note, shapes: document.shapes });
     });
 
+    it('flushes edits made during a save before allowing navigation', async () => {
+        let busy = true, dirty = true, saves = 0, waits = 0;
+        const ok = await A.flushChanges({ isBusy: () => busy, isDirty: () => dirty,
+            wait: async () => { waits++; busy = false; },
+            persist: async () => { saves++; dirty = saves === 1; return true; } });
+        expect(ok).toBe(true);
+        expect(waits).toBe(1);
+        expect(saves).toBe(2);
+        expect(dirty).toBe(false);
+    });
+
+    it('keeps the page open when a save cannot be confirmed', async () => {
+        let saves = 0;
+        expect(await A.flushChanges({ isBusy: () => false, isDirty: () => true,
+            wait: async () => {}, persist: async () => { saves++; return false; } })).toBe(false);
+        expect(saves).toBe(1);
+    });
+
     it('undoes content while retaining the current server revision and update timestamp', () => {
         const current = { ...A.newDocument(metadata), revision: 8, updatedAt: '2026-10-14T10:00:00Z',
             note: 'edited', shapes: [{ id: 'line-1', type: 'wall', points: [[0, 0], [1, 1]], note: '' }] };
