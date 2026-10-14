@@ -16,6 +16,7 @@ import { createCatastroWfsParcelSource } from './catastro-wfs-source.js';
 import { createFrankfurtWfsParcelSource } from './frankfurt-wfs-source.js';
 import { createHamburgAlkisParcelSource } from './hamburg-alkis-source.js';
 import { createBevTileParcelSource } from './bev-tile-source.js';
+import { createVectorTileParcelSource } from './vector-tile-source.js';
 import { createDlrsSheetParcelSource } from './dlrs-sheet-source.js';
 import { createKeralaParcelSource } from './kerala-source.js';
 import { createNairobiOutlineSource } from './nairobi-outline-source.js';
@@ -44,7 +45,7 @@ export const browserParcelFactories = Object.freeze({
     'shapefile-snapshot': createShapefileSnapshotParcelSource, 'shapefile-zip': createShapefileSnapshotParcelSource,
     'gml-snapshot': createGmlSnapshotParcelSource, 'gml-wfs': createGmlWfsParcelSource,
     'catastro-wfs': createCatastroWfsParcelSource, 'frankfurt-wfs': createFrankfurtWfsParcelSource,
-    'hamburg-alkis-wfs': createHamburgAlkisParcelSource, 'bev-tiles': createBevTileParcelSource,
+    'hamburg-alkis-wfs': createHamburgAlkisParcelSource, 'bev-tiles': createBevTileParcelSource, 'vector-tiles': createVectorTileParcelSource,
     'dlrs-sheet': createDlrsSheetParcelSource, 'kerala-entebhoomi': createKeralaParcelSource,
     'nairobi-outlines': createNairobiOutlineSource, 'kazakhstan-pkk': createKazakhstanPkkSource,
     'msda-point': createMsdaPointSource, 'tkgm-point': createTkgmPointSource, 'pl-uldk-point': createUldkPointSource });

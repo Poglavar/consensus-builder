@@ -10368,6 +10368,510 @@
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-matribhoomi-goradih-ground', idPrefix: 'IN-BR-MB-GORADIH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        munger: {
+            id: 'munger', wupCityCode: '11363',
+            label: translateCityText('city.labels.munger', 'Munger, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.33947, 86.48067], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.33947, 86.48067], fallbackDataset: [86.48067, 25.33947] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-ncog-tiles', idPrefix: 'IN-BR-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Bihar cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        srinagar: {
+            id: 'srinagar', wupCityCode: '1967',
+            label: translateCityText('city.labels.srinagar', 'Srinagar, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [34.14251, 74.82934], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [34.14251, 74.82934], fallbackDataset: [74.82934, 34.14251] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-jk-lris-khasra-tiles', idPrefix: 'IN-JK-LRIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'J&K Land Records Information System khasra maps (landrecords.jk.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        jammu: {
+            id: 'jammu', wupCityCode: '3577',
+            label: translateCityText('city.labels.jammu', 'Jammu, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [32.71807, 74.85718999999999], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [32.71807, 74.85718999999999], fallbackDataset: [74.85718999999999, 32.71807] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-jk-lris-khasra-tiles', idPrefix: 'IN-JK-LRIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'J&K Land Records Information System khasra maps (landrecords.jk.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        anand: {
+            id: 'anand', wupCityCode: '6960',
+            label: translateCityText('city.labels.anand', 'Anand, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [22.55099, 72.94366], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [22.55099, 72.94366], fallbackDataset: [72.94366, 22.55099] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-gj-ncog-tiles', idPrefix: 'IN-GJ-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Gujarat cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        udaipur: {
+            id: 'udaipur', wupCityCode: '6990',
+            label: translateCityText('city.labels.udaipur', 'Udaipur, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [24.58311, 73.70953], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [24.58311, 73.70953], fallbackDataset: [73.70953, 24.58311] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-rj-ncog-tiles', idPrefix: 'IN-RJ-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Rajasthan cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        vadodara: {
+            id: 'vadodara', wupCityCode: '7337',
+            label: translateCityText('city.labels.vadodara', 'Vadodara, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [22.30803, 73.18349], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [22.30803, 73.18349], fallbackDataset: [73.18349, 22.30803] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-gj-ncog-tiles', idPrefix: 'IN-GJ-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Gujarat cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        rasoi: {
+            id: 'rasoi', wupCityCode: '8430',
+            label: translateCityText('city.labels.rasoi', 'Rasoi, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.8271, 77.08399], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.8271, 77.08399], fallbackDataset: [77.08399, 28.8271] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-dl-gsdl-tiles', idPrefix: 'IN-DL-GSDL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Geospatial Delhi Limited khasra maps (gsdl.org.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        malegaon: {
+            id: 'malegaon', wupCityCode: '8697',
+            label: translateCityText('city.labels.malegaon', 'Malegaon, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [20.55619, 74.53214], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [20.55619, 74.53214], fallbackDataset: [74.53214, 20.55619] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mh-mrsac-tiles', idPrefix: 'IN-MH-MRSAC-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MRSAC cadastral maps (mrsac.gov.in, now token-protected). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        hapur: {
+            id: 'hapur', wupCityCode: '8730',
+            label: translateCityText('city.labels.hapur', 'Hapur, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.73099, 77.76106], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.73099, 77.76106], fallbackDataset: [77.76106, 28.73099] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ujjain: {
+            id: 'ujjain', wupCityCode: '8820',
+            label: translateCityText('city.labels.ujjain', 'Ujjain, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [23.17678, 75.79203], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [23.17678, 75.79203], fallbackDataset: [75.79203, 23.17678] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mp-bhulekh-survey-tiles', idPrefix: 'IN-MP-BHULEKH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MP Bhulekh survey parcels (webgis2.mpbhulekh.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        indore: {
+            id: 'indore', wupCityCode: '8886',
+            label: translateCityText('city.labels.indore', 'Indore, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [22.69918, 75.85567], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [22.69918, 75.85567], fallbackDataset: [75.85567, 22.69918] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mp-bhulekh-survey-tiles', idPrefix: 'IN-MP-BHULEKH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MP Bhulekh survey parcels (webgis2.mpbhulekh.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ahmednagar: {
+            id: 'ahmednagar', wupCityCode: '8893',
+            label: translateCityText('city.labels.ahmednagar', 'Ahmednagar, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [19.11567, 74.72795], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [19.11567, 74.72795], fallbackDataset: [74.72795, 19.11567] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mh-mrsac-tiles', idPrefix: 'IN-MH-MRSAC-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MRSAC cadastral maps (mrsac.gov.in, now token-protected). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        kolhapur: {
+            id: 'kolhapur', wupCityCode: '8925',
+            label: translateCityText('city.labels.kolhapur', 'Kolhapur, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [16.69067, 74.2379], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [16.69067, 74.2379], fallbackDataset: [74.2379, 16.69067] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mh-mrsac-tiles', idPrefix: 'IN-MH-MRSAC-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MRSAC cadastral maps (mrsac.gov.in, now token-protected). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        sangli: {
+            id: 'sangli', wupCityCode: '9007',
+            label: translateCityText('city.labels.sangli', 'Sangli, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [16.85178, 74.60587], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [16.85178, 74.60587], fallbackDataset: [74.60587, 16.85178] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mh-mrsac-tiles', idPrefix: 'IN-MH-MRSAC-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MRSAC cadastral maps (mrsac.gov.in, now token-protected). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        gwalior: {
+            id: 'gwalior', wupCityCode: '9121',
+            label: translateCityText('city.labels.gwalior', 'Gwalior, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.21757, 78.17678], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.21757, 78.17678], fallbackDataset: [78.17678, 26.21757] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mp-bhulekh-survey-tiles', idPrefix: 'IN-MP-BHULEKH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MP Bhulekh survey parcels (webgis2.mpbhulekh.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        dharwad: {
+            id: 'dharwad', wupCityCode: '9189',
+            label: translateCityText('city.labels.dharwad', 'Dharwad, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [15.45055, 75.00913], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [15.45055, 75.00913], fallbackDataset: [75.00913, 15.45055] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-ka-kgis-tiles', idPrefix: 'IN-KA-KGIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'KGIS (Karnataka GIS) cadastral maps (kgis.ksrsac.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bhopal: {
+            id: 'bhopal', wupCityCode: '9213',
+            label: translateCityText('city.labels.bhopal', 'Bhopal, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [23.23991, 77.42391], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [23.23991, 77.42391], fallbackDataset: [77.42391, 23.23991] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mp-bhulekh-survey-tiles', idPrefix: 'IN-MP-BHULEKH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MP Bhulekh survey parcels (webgis2.mpbhulekh.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        farrukhabad: {
+            id: 'farrukhabad', wupCityCode: '9349',
+            label: translateCityText('city.labels.farrukhabad', 'Farrukhabad, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [27.38944, 79.6071], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [27.38944, 79.6071], fallbackDataset: [79.6071, 27.38944] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        davanagere: {
+            id: 'davanagere', wupCityCode: '9475',
+            label: translateCityText('city.labels.davanagere', 'Davanagere, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [14.45816, 75.91845], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [14.45816, 75.91845], fallbackDataset: [75.91845, 14.45816] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-ka-kgis-tiles', idPrefix: 'IN-KA-KGIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'KGIS (Karnataka GIS) cadastral maps (kgis.ksrsac.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        hardoi: {
+            id: 'hardoi', wupCityCode: '9485',
+            label: translateCityText('city.labels.hardoi', 'Hardoi, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [27.39404, 80.13208], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [27.39404, 80.13208], fallbackDataset: [80.13208, 27.39404] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        nanded: {
+            id: 'nanded', wupCityCode: '9521',
+            label: translateCityText('city.labels.nanded', 'Nanded, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [19.15958, 77.31427], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [19.15958, 77.31427], fallbackDataset: [77.31427, 19.15958] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mh-mrsac-tiles', idPrefix: 'IN-MH-MRSAC-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MRSAC cadastral maps (mrsac.gov.in, now token-protected). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ballari: {
+            id: 'ballari', wupCityCode: '9701',
+            label: translateCityText('city.labels.ballari', 'Ballari, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [15.14251, 76.92076], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [15.14251, 76.92076], fallbackDataset: [76.92076, 15.14251] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-ka-kgis-tiles', idPrefix: 'IN-KA-KGIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'KGIS (Karnataka GIS) cadastral maps (kgis.ksrsac.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        fatehpur: {
+            id: 'fatehpur', wupCityCode: '9797',
+            label: translateCityText('city.labels.fatehpur', 'Fatehpur, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.90518, 80.80773], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.90518, 80.80773], fallbackDataset: [80.80773, 25.90518] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        jabalpur: {
+            id: 'jabalpur', wupCityCode: '9851',
+            label: translateCityText('city.labels.jabalpur', 'Jabalpur, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [23.17368, 79.93486], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [23.17368, 79.93486], fallbackDataset: [79.93486, 23.17368] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mp-bhulekh-survey-tiles', idPrefix: 'IN-MP-BHULEKH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MP Bhulekh survey parcels (webgis2.mpbhulekh.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        coimbatore: {
+            id: 'coimbatore', wupCityCode: '9895',
+            label: translateCityText('city.labels.coimbatore', 'Coimbatore, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [10.98782, 76.97956], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [10.98782, 76.97956], fallbackDataset: [76.97956, 10.98782] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-tn-tngis-tiles', idPrefix: 'IN-TN-TNGIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'TNGIS cadastral maps (tngis.tn.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        satna: {
+            id: 'satna', wupCityCode: '9969',
+            label: translateCityText('city.labels.satna', 'Satna, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [24.5736, 80.83787], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [24.5736, 80.83787], fallbackDataset: [80.83787, 24.5736] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mp-bhulekh-survey-tiles', idPrefix: 'IN-MP-BHULEKH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'MP Bhulekh survey parcels (webgis2.mpbhulekh.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        tiruppur: {
+            id: 'tiruppur', wupCityCode: '10021',
+            label: translateCityText('city.labels.tiruppur', 'Tiruppur, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [11.11168, 77.34312], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [11.11168, 77.34312], fallbackDataset: [77.34312, 11.11168] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-tn-tngis-tiles', idPrefix: 'IN-TN-TNGIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'TNGIS cadastral maps (tngis.tn.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        faizabad: {
+            id: 'faizabad', wupCityCode: '10065',
+            label: translateCityText('city.labels.faizabad', 'Faizabad, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.77457, 82.16537000000001], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.77457, 82.16537000000001], fallbackDataset: [82.16537000000001, 26.77457] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        sultanpur: {
+            id: 'sultanpur', wupCityCode: '10097',
+            label: translateCityText('city.labels.sultanpur', 'Sultanpur, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.25846, 82.08081], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.25846, 82.08081], fallbackDataset: [82.08081, 26.25846] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        erode: {
+            id: 'erode', wupCityCode: '10121',
+            label: translateCityText('city.labels.erode', 'Erode, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [11.3664, 77.71108], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [11.3664, 77.71108], fallbackDataset: [77.71108, 11.3664] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-tn-tngis-tiles', idPrefix: 'IN-TN-TNGIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'TNGIS cadastral maps (tngis.tn.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        gyanpur: {
+            id: 'gyanpur', wupCityCode: '10281',
+            label: translateCityText('city.labels.gyanpur', 'Gyanpur, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.30548, 82.43381], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.30548, 82.43381], fallbackDataset: [82.43381, 25.30548] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        mehdawal: {
+            id: 'mehdawal', wupCityCode: '10311',
+            label: translateCityText('city.labels.mehdawal', 'Mehdawal, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.96987, 83.11209000000001], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.96987, 83.11209000000001], fallbackDataset: [83.11209000000001, 26.96987] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        gorakhpur: {
+            id: 'gorakhpur', wupCityCode: '10399',
+            label: translateCityText('city.labels.gorakhpur', 'Gorakhpur, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.76432, 83.3817], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.76432, 83.3817], fallbackDataset: [83.3817, 26.76432] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        jianpur: {
+            id: 'jianpur', wupCityCode: '10427',
+            label: translateCityText('city.labels.jianpur', 'Jianpur, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.17732, 83.25448], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.17732, 83.25448], fallbackDataset: [83.25448, 26.17732] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        azamgarh: {
+            id: 'azamgarh', wupCityCode: '10429',
+            label: translateCityText('city.labels.azamgarh', 'Azamgarh, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.06242, 83.17996], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.06242, 83.17996], fallbackDataset: [83.17996, 26.06242] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        vellore: {
+            id: 'vellore', wupCityCode: '10445',
+            label: translateCityText('city.labels.vellore', 'Vellore, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [12.93128, 79.13938], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [12.93128, 79.13938], fallbackDataset: [79.13938, 12.93128] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-tn-tngis-tiles', idPrefix: 'IN-TN-TNGIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'TNGIS cadastral maps (tngis.tn.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        chauri_chaura: {
+            id: 'chauri_chaura', wupCityCode: '10479',
+            label: translateCityText('city.labels.chauri_chaura', 'Chauri Chaura, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.63855, 83.57778], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.63855, 83.57778], fallbackDataset: [83.57778, 26.63855] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        dohrighat: {
+            id: 'dohrighat', wupCityCode: '10481',
+            label: translateCityText('city.labels.dohrighat', 'Dohrighat, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.29384, 83.49962], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.29384, 83.49962], fallbackDataset: [83.49962, 26.29384] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        tirupati: {
+            id: 'tirupati', wupCityCode: '10489',
+            label: translateCityText('city.labels.tirupati', 'Tirupati, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [13.62843, 79.43088], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [13.62843, 79.43088], fallbackDataset: [79.43088, 13.62843] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-ap-apsac-tiles', idPrefix: 'IN-AP-APSAC-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'APSAC cadastral maps (apsac.ap.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        saidpur: {
+            id: 'saidpur', wupCityCode: '10501',
+            label: translateCityText('city.labels.saidpur', 'Saidpur, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.550880000000003, 83.21689], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.550880000000003, 83.21689], fallbackDataset: [83.21689, 25.550880000000003] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-up-ncog-tiles', idPrefix: 'IN-UP-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bhore: {
+            id: 'bhore', wupCityCode: '10681',
+            label: translateCityText('city.labels.bhore', 'Bhore, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.42586, 84.18041], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.42586, 84.18041], fallbackDataset: [84.18041, 26.42586] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-ncog-tiles', idPrefix: 'IN-BR-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Bihar cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        dighwara: {
+            id: 'dighwara', wupCityCode: '10889',
+            label: translateCityText('city.labels.dighwara', 'Dighwara, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.92209, 84.85027], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.92209, 84.85027], fallbackDataset: [84.85027, 25.92209] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-ncog-tiles', idPrefix: 'IN-BR-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Bihar cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ekangar_sarai: {
+            id: 'ekangar_sarai', wupCityCode: '11117',
+            label: translateCityText('city.labels.ekangar_sarai', 'Ekangar Sarai, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.22131, 85.23557], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.22131, 85.23557], fallbackDataset: [85.23557, 25.22131] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-ncog-tiles', idPrefix: 'IN-BR-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Bihar cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bibhutpur: {
+            id: 'bibhutpur', wupCityCode: '11221',
+            label: translateCityText('city.labels.bibhutpur', 'Bibhutpur, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.73947, 86.1123], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.73947, 86.1123], fallbackDataset: [86.1123, 25.73947] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-ncog-tiles', idPrefix: 'IN-BR-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Bihar cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        rourkela: {
+            id: 'rourkela', wupCityCode: '11301',
+            label: translateCityText('city.labels.rourkela', 'Rourkela, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [22.23844, 84.85513], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [22.23844, 84.85513], fallbackDataset: [84.85513, 22.23844] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-od-odisha4kgeo-tiles', idPrefix: 'IN-OD-4KGEO-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Odisha Geospatial Portal revenue plots (odisha4kgeo.in, no bounding-box access). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        asarganj: {
+            id: 'asarganj', wupCityCode: '11415',
+            label: translateCityText('city.labels.asarganj', 'Asarganj, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.09546, 86.66972], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.09546, 86.66972], fallbackDataset: [86.66972, 25.09546] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-ncog-tiles', idPrefix: 'IN-BR-NCOG-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'NCOG (BISAG-N) Bihar cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        dhanbad: {
+            id: 'dhanbad', wupCityCode: '11445',
+            label: translateCityText('city.labels.dhanbad', 'Dhanbad, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [23.77136, 86.41461], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [23.77136, 86.41461], fallbackDataset: [86.41461, 23.77136] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-jh-jsac-tiles', idPrefix: 'IN-JH-JSAC-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Jharkhand Space Applications Centre cadastral maps (gis.jharkhand.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        brahmapur: {
+            id: 'brahmapur', wupCityCode: '11467',
+            label: translateCityText('city.labels.brahmapur', 'Brahmapur, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [19.30992, 84.79202], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [19.30992, 84.79202], fallbackDataset: [84.79202, 19.30992] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-od-odisha4kgeo-tiles', idPrefix: 'IN-OD-4KGEO-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Odisha Geospatial Portal revenue plots (odisha4kgeo.in, no bounding-box access). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        asansol: {
+            id: 'asansol', wupCityCode: '11531',
+            label: translateCityText('city.labels.asansol', 'Asansol, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [23.69795, 86.91141], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [23.69795, 86.91141], fallbackDataset: [86.91141, 23.69795] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-wb-amrut-tiles', idPrefix: 'IN-WB-AMRUT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'West Bengal AMRUT urban cadastral maps (nagargispariseva.wb.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        siliguri: {
+            id: 'siliguri', wupCityCode: '11561',
+            label: translateCityText('city.labels.siliguri', 'Siliguri, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.71109, 88.43178999999999], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.71109, 88.43178999999999], fallbackDataset: [88.43178999999999, 26.71109] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-wb-amrut-tiles', idPrefix: 'IN-WB-AMRUT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'West Bengal AMRUT urban cadastral maps (nagargispariseva.wb.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        cuttack: {
+            id: 'cuttack', wupCityCode: '11569',
+            label: translateCityText('city.labels.cuttack', 'Cuttack, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [20.46494, 85.8789], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [20.46494, 85.8789], fallbackDataset: [85.8789, 20.46494] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-od-odisha4kgeo-tiles', idPrefix: 'IN-OD-4KGEO-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Odisha Geospatial Portal revenue plots (odisha4kgeo.in, no bounding-box access). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bhubaneshwar: {
+            id: 'bhubaneshwar', wupCityCode: '11573',
+            label: translateCityText('city.labels.bhubaneshwar', 'Bhubaneshwar, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [20.28854, 85.82895], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [20.28854, 85.82895], fallbackDataset: [85.82895, 20.28854] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-od-odisha4kgeo-tiles', idPrefix: 'IN-OD-4KGEO-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Odisha Geospatial Portal revenue plots (odisha4kgeo.in, no bounding-box access). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        choudwar: {
+            id: 'choudwar', wupCityCode: '11581',
+            label: translateCityText('city.labels.choudwar', 'Choudwar, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [20.49967, 85.93307], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [20.49967, 85.93307], fallbackDataset: [85.93307, 20.49967] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-od-odisha4kgeo-tiles', idPrefix: 'IN-OD-4KGEO-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Odisha Geospatial Portal revenue plots (odisha4kgeo.in, no bounding-box access). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        jalpaiguri: {
+            id: 'jalpaiguri', wupCityCode: '11623',
+            label: translateCityText('city.labels.jalpaiguri', 'Jalpaiguri, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.52752, 88.71379], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.52752, 88.71379], fallbackDataset: [88.71379, 26.52752] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-wb-amrut-tiles', idPrefix: 'IN-WB-AMRUT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'West Bengal AMRUT urban cadastral maps (nagargispariseva.wb.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        kharagpur: {
+            id: 'kharagpur', wupCityCode: '11711',
+            label: translateCityText('city.labels.kharagpur', 'Kharagpur, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [22.33021, 87.31294], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [22.33021, 87.31294], fallbackDataset: [87.31294, 22.33021] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-wb-amrut-tiles', idPrefix: 'IN-WB-AMRUT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'West Bengal AMRUT urban cadastral maps (nagargispariseva.wb.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        krishnanagar: {
+            id: 'krishnanagar', wupCityCode: '11829',
+            label: translateCityText('city.labels.krishnanagar', 'Krishnanagar, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [23.39808, 88.49602], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [23.39808, 88.49602], fallbackDataset: [88.49602, 23.39808] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-wb-amrut-tiles', idPrefix: 'IN-WB-AMRUT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'West Bengal AMRUT urban cadastral maps (nagargispariseva.wb.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
     };
 
     function ensureProjectionDefinitions() {

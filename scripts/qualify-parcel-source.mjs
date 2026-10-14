@@ -523,6 +523,9 @@ async function main() {
                     if (!evidencePassed) throw new Error('HMLR immutable release ID/date, repeated exact IDs, explicit absence, or complete repeated cells failed.');
                 } else if (['geojson-snapshot', 'gml-snapshot'].includes(candidate.descriptor.adapter)) {
                     checks.completeness = checkWithDetails(checks.completeness.passed, checks.completeness, { pagingRequired:false, reason:'Complete immutable snapshot loader; pagination is not part of the source protocol.' });
+                } else if (candidate.descriptor.adapter === 'vector-tiles') {
+                    checks.completeness = checkWithDetails(checks.completeness.passed, checks.completeness, { pagingRequired:false,
+                        reason:'Fixed tile snapshot: every tile is read whole and each row cut at a tile edge is followed into the neighbouring tile until it closes; pagination is not part of the protocol.' });
                 } else if (candidate.descriptor.adapter === 'catastro-wfs') {
                     const manifestComplete = complete1 && pass1.length === cells.length && pass1.every(cell => cell.complete);
                     checks.completeness = checkWithDetails(checks.completeness.passed && manifestComplete, checks.completeness,

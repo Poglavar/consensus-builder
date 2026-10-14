@@ -1,0 +1,807 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "11623",
+  "cityName": "Jalpaiguri",
+  "sourceId": "in-wb-amrut-tiles",
+  "candidateSha256": "136bc32e56239282fe1c7911c322c3fcf5382976562f219e2342c829095dfe35",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 93,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 93,
+      "collectedUniqueCount": 93
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 256
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "pagingRequired": false,
+      "reason": "Fixed tile snapshot: every tile is read whole and each row cut at a tile edge is followed into the neighbouring tile until it closes; pagination is not part of the protocol."
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "c55e25591692f477e89099003371ac5a82b33f5b413f32800753d6f676e4cc40",
+      "featureCount": 93,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32645",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "c55e25591692f477e89099003371ac5a82b33f5b413f32800753d6f676e4cc40",
+  "featureCount": 93,
+  "sampleIds": [
+    "IN-WB-AMRUT-g1~887107050~265275902~a1e223104afa6d5e3a0229056826a0296ef7c73020c3d85072908003cf113a2c",
+    "IN-WB-AMRUT-g1~887136635~265270502~dc2a74acd44b4d242c8994036309096e8c2911c776fb42225ecd8f910e5fc84f",
+    "IN-WB-AMRUT-g1~887147766~265281950~6b52ca25fba5fbe775a739175002b8ddfeb4680fb3e5950fb4638e98459324d1"
+  ],
+  "cellSizeDegrees": 0.0005,
+  "densityProbe": [
+    {
+      "cellSizeDegrees": 0.001,
+      "footprintBbox": [
+        88.711,
+        26.525,
+        88.716,
+        26.53
+      ],
+      "footprintFeatures": 438,
+      "perIdCost": 1.3333333333333333
+    },
+    {
+      "cellSizeDegrees": 0.0005,
+      "footprintBbox": [
+        88.7125,
+        26.5265,
+        88.715,
+        26.529
+      ],
+      "footprintFeatures": 135,
+      "perIdCost": 1.3333333333333333
+    }
+  ],
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        88.713,
+        26.527,
+        88.7135,
+        26.5275
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "IN-WB-AMRUT-g1~887128213~265270886~4e38c7ccde22b4b2c9bb737157ca54ab965cbc995e6805d1ae838222911effc7",
+        "IN-WB-AMRUT-g1~887129554~265274822~bb03dd1ea8821593cf95cf1b6bae24f172317672e55741b50b0e78c0224d2e30",
+        "IN-WB-AMRUT-g1~887129983~265270262~8a1b5b7479460f6d17b18ed27caef8569c9a594bb937ecf18a8ba5479403e09d",
+        "IN-WB-AMRUT-g1~887131512~265268990~69e99cd230c5dccd552c3d9226745fb849ece1210573b62755f2f9f655077ac9",
+        "IN-WB-AMRUT-g1~887133014~265270262~abb05018e88054e038b2a5002fddb0073a8bcaab4522402f9a77b07feaa10a02",
+        "IN-WB-AMRUT-g1~887133256~265275086~0c1f94dc23cce2e74e62ba705d35706357b16978ab2170ec9b4f893a3931d8e2",
+        "IN-WB-AMRUT-g1~887133282~265271390~b80bbfe70cd7a1eb7c19ef2abb1e518612d4d104786fe905d7ddb4259d5c6f83",
+        "IN-WB-AMRUT-g1~887134033~265269254~1d5b54c70c7a657c0b49f4b3cea64a6bd32eba24b5b1eb0b9bb77e1c7d3159b0",
+        "IN-WB-AMRUT-g1~887134892~265273334~f87a15b2208e46b475c52e7161bf591955f5ca3106a91856d24cfe41ad8c4867"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        88.7135,
+        26.527,
+        88.714,
+        26.5275
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "IN-WB-AMRUT-g1~887128213~265270886~4e38c7ccde22b4b2c9bb737157ca54ab965cbc995e6805d1ae838222911effc7",
+        "IN-WB-AMRUT-g1~887133256~265275086~0c1f94dc23cce2e74e62ba705d35706357b16978ab2170ec9b4f893a3931d8e2",
+        "IN-WB-AMRUT-g1~887134033~265269254~1d5b54c70c7a657c0b49f4b3cea64a6bd32eba24b5b1eb0b9bb77e1c7d3159b0",
+        "IN-WB-AMRUT-g1~887134892~265273334~f87a15b2208e46b475c52e7161bf591955f5ca3106a91856d24cfe41ad8c4867",
+        "IN-WB-AMRUT-g1~887136608~265273310~c7981cb1f0c22412a2bc599b3227909639f2e1c3aaa7a3155aa9e37fc8c74e8d",
+        "IN-WB-AMRUT-g1~887136635~265270502~dc2a74acd44b4d242c8994036309096e8c2911c776fb42225ecd8f910e5fc84f",
+        "IN-WB-AMRUT-g1~887137842~265273382~0addd5bff2f9e242b3554ed4b512750794b7a6c4ab5346f198db17644702f6b9",
+        "IN-WB-AMRUT-g1~887139076~265273454~d03da3d789ed11c1c7b94484d633cbcb4557eadf0def2546b9ad0a3f48121a23"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        88.714,
+        26.527,
+        88.7145,
+        26.5275
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "IN-WB-AMRUT-g1~887128213~265270886~4e38c7ccde22b4b2c9bb737157ca54ab965cbc995e6805d1ae838222911effc7",
+        "IN-WB-AMRUT-g1~887133256~265275086~0c1f94dc23cce2e74e62ba705d35706357b16978ab2170ec9b4f893a3931d8e2",
+        "IN-WB-AMRUT-g1~887136635~265270502~dc2a74acd44b4d242c8994036309096e8c2911c776fb42225ecd8f910e5fc84f",
+        "IN-WB-AMRUT-g1~887139076~265273454~d03da3d789ed11c1c7b94484d633cbcb4557eadf0def2546b9ad0a3f48121a23",
+        "IN-WB-AMRUT-g1~887140042~265269950~d4a1fcb8d8420ed9b2330abf3b10417a03138fe5f99b6faf11b498231296e480",
+        "IN-WB-AMRUT-g1~887140095~265273502~3455f8f0c14f030a038d4c5825b2bd90a2acb4bed03a8d3f4f61cdfbe5788fd7",
+        "IN-WB-AMRUT-g1~887141249~265275278~b76eb08fde2ad37be70ebc3f04df3f03eb4b68a723c457f8c2049f473d91ee42",
+        "IN-WB-AMRUT-g1~887141436~265272494~29ed63327279e3753b4aba90043174dc5a197a90e1e2ed25c7c92edaf785ed80",
+        "IN-WB-AMRUT-g1~887141436~265272494~5a17244e4a02caf020de168aee48f46bdf8b1d76a7353bd4d3ea8372f4d33d25",
+        "IN-WB-AMRUT-g1~887141570~265270838~75df14a46cdcb54ddebadd245801789d5a21ee1351daa067faf705918ea6cc24",
+        "IN-WB-AMRUT-g1~887143394~265273550~f32c9aa7418ac7a10306a3cd22c5d1ae80fffc9ccaf6fec6535c311514fc1426",
+        "IN-WB-AMRUT-g1~887143743~265271030~d04dbaa4b6fb482c908e6193e62700b257c6b441bf4dd7eb38761267dbcf325b"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        88.713,
+        26.5275,
+        88.7135,
+        26.528
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "IN-WB-AMRUT-g1~887127596~265278062~576850b8d9b54068468c0848cf7d3608849d5491add834e153f8b65d0ffcd90e",
+        "IN-WB-AMRUT-g1~887127998~265281494~b74496f8b63c16c53ec0d945498330a5b9590475476ec452eece737304031958",
+        "IN-WB-AMRUT-g1~887129527~265275782~21339e179309a7a313fcd698df91bb51c5d42e76b21b65a1a410eaa722489cc5",
+        "IN-WB-AMRUT-g1~887129554~265274822~bb03dd1ea8821593cf95cf1b6bae24f172317672e55741b50b0e78c0224d2e30",
+        "IN-WB-AMRUT-g1~887129608~265276238~356b5c3363f94711e06cceb603fb145307eac35c61f4d14ee7a18cfe251b493b",
+        "IN-WB-AMRUT-g1~887129635~265279406~3ccc67c9c2e63cd1e72f9857746ecd5b3e28577af2d9857abc429ac3e24fee24",
+        "IN-WB-AMRUT-g1~887130171~265281710~be49c7e4d7a3c615c8459a6c93f0d367efbeb06c7469894de35eac4d6a5ca2c5",
+        "IN-WB-AMRUT-g1~887132585~265280150~3a267e21dbf0a150dbdb081fff2f219ce64c63d3282857e54e6cf0b12f0204d0",
+        "IN-WB-AMRUT-g1~887133202~265276646~0e9580d22a7fea337e4b595e51e1d2ee256dfd389380f016f1870c743db234b8",
+        "IN-WB-AMRUT-g1~887133256~265275086~0c1f94dc23cce2e74e62ba705d35706357b16978ab2170ec9b4f893a3931d8e2",
+        "IN-WB-AMRUT-g1~887133980~265280294~5d260eb991972808ea8922f81d3650041cfb65ed717845d42dcb236ec599d77d"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        88.7135,
+        26.5275,
+        88.714,
+        26.528
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "IN-WB-AMRUT-g1~887129608~265276238~356b5c3363f94711e06cceb603fb145307eac35c61f4d14ee7a18cfe251b493b",
+        "IN-WB-AMRUT-g1~887133202~265276646~0e9580d22a7fea337e4b595e51e1d2ee256dfd389380f016f1870c743db234b8",
+        "IN-WB-AMRUT-g1~887133256~265275086~0c1f94dc23cce2e74e62ba705d35706357b16978ab2170ec9b4f893a3931d8e2",
+        "IN-WB-AMRUT-g1~887133980~265280294~5d260eb991972808ea8922f81d3650041cfb65ed717845d42dcb236ec599d77d",
+        "IN-WB-AMRUT-g1~887135589~265280510~4c2080c5dc0db1d08062eb7298022b50b589c3d8fce1666544cce1cd9975d24a",
+        "IN-WB-AMRUT-g1~887135884~265279286~42dbdfd69edf3cea91c7a66409e2b342342fd00890ef2280ed5b8ae702fbdb6b",
+        "IN-WB-AMRUT-g1~887136957~265280678~778da3f1ebb24c0f4b68e14b6b731093b50bdad3f1c27fc9ae2836326576c716",
+        "IN-WB-AMRUT-g1~887139076~265280894~839cbd15ed982782512d9d7812fe6039629510705d14fef8100c617f950f0380"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        88.714,
+        26.5275,
+        88.7145,
+        26.528
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "IN-WB-AMRUT-g1~887129608~265276238~356b5c3363f94711e06cceb603fb145307eac35c61f4d14ee7a18cfe251b493b",
+        "IN-WB-AMRUT-g1~887133202~265276646~0e9580d22a7fea337e4b595e51e1d2ee256dfd389380f016f1870c743db234b8",
+        "IN-WB-AMRUT-g1~887133256~265275086~0c1f94dc23cce2e74e62ba705d35706357b16978ab2170ec9b4f893a3931d8e2",
+        "IN-WB-AMRUT-g1~887139076~265280894~839cbd15ed982782512d9d7812fe6039629510705d14fef8100c617f950f0380",
+        "IN-WB-AMRUT-g1~887140042~265276622~e6e3105cc3536427f0e5cd3dafd79f38fb42be698f84f4f61fe19b9ebad0d891",
+        "IN-WB-AMRUT-g1~887140363~265281014~0ad21359031891f5a3e18aa42b1a127698f183a49ef9b13e45c18642bda84f44",
+        "IN-WB-AMRUT-g1~887140873~265277102~154d522687d009666b0c7c51d4c0be4bc2a396e04fa93cf25ebde12e3534828b",
+        "IN-WB-AMRUT-g1~887141249~265275278~b76eb08fde2ad37be70ebc3f04df3f03eb4b68a723c457f8c2049f473d91ee42",
+        "IN-WB-AMRUT-g1~887141651~265277294~ce038c9e1d0e257ef31df33c27c76f6bf025ae5008020928a0ece550f57bd202",
+        "IN-WB-AMRUT-g1~887142965~265281278~1da630f113d512193d4335cbdc89cbc0610d671d09f420038c40d9cd54394ea7",
+        "IN-WB-AMRUT-g1~887143877~265277630~d9b3dc3fdff9bbee23afd60bb382afab5f27222dbc5695d2dfeab8c14b0d534a"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        88.713,
+        26.528,
+        88.7135,
+        26.5285
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "IN-WB-AMRUT-g1~887120005~265280918~026d8b6a996abae5115c95df5b01d93ce8dce1ceb78e5f1b0b569fd29cb648c1",
+        "IN-WB-AMRUT-g1~887124324~265285405~5d9edaefa3f46f974d3cc38b95e54c69b0077fa695e13a10a69bfa4e4f9d43f1",
+        "IN-WB-AMRUT-g1~887127998~265281494~b74496f8b63c16c53ec0d945498330a5b9590475476ec452eece737304031958",
+        "IN-WB-AMRUT-g1~887129635~265279406~3ccc67c9c2e63cd1e72f9857746ecd5b3e28577af2d9857abc429ac3e24fee24",
+        "IN-WB-AMRUT-g1~887130171~265281710~be49c7e4d7a3c615c8459a6c93f0d367efbeb06c7469894de35eac4d6a5ca2c5",
+        "IN-WB-AMRUT-g1~887132585~265280150~3a267e21dbf0a150dbdb081fff2f219ce64c63d3282857e54e6cf0b12f0204d0",
+        "IN-WB-AMRUT-g1~887133712~265282046~109fa9fd48fb869aa5f8410294a3df3d2bbabaace374c0d4c4b1375897ee4d6e",
+        "IN-WB-AMRUT-g1~887133980~265280294~5d260eb991972808ea8922f81d3650041cfb65ed717845d42dcb236ec599d77d"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        88.7135,
+        26.528,
+        88.714,
+        26.5285
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "IN-WB-AMRUT-g1~887120005~265280918~026d8b6a996abae5115c95df5b01d93ce8dce1ceb78e5f1b0b569fd29cb648c1",
+        "IN-WB-AMRUT-g1~887124324~265285405~5d9edaefa3f46f974d3cc38b95e54c69b0077fa695e13a10a69bfa4e4f9d43f1",
+        "IN-WB-AMRUT-g1~887133712~265282046~109fa9fd48fb869aa5f8410294a3df3d2bbabaace374c0d4c4b1375897ee4d6e",
+        "IN-WB-AMRUT-g1~887133980~265280294~5d260eb991972808ea8922f81d3650041cfb65ed717845d42dcb236ec599d77d",
+        "IN-WB-AMRUT-g1~887135294~265282190~9fdbfeb0c39bc7fce66f9429dc091f2ec4906ebe0a52388d00898a1f6f8b6143",
+        "IN-WB-AMRUT-g1~887135589~265280510~4c2080c5dc0db1d08062eb7298022b50b589c3d8fce1666544cce1cd9975d24a",
+        "IN-WB-AMRUT-g1~887135750~265282238~f053624a5d3fc9fbf9c491d2721d83729fcf33b74bf08d50253e143bd2cb35b5",
+        "IN-WB-AMRUT-g1~887136716~265286005~3ae630237f7e313be97720cfcec0682678691c7a78371ff2ffc4104b7a0a11de",
+        "IN-WB-AMRUT-g1~887136957~265280678~778da3f1ebb24c0f4b68e14b6b731093b50bdad3f1c27fc9ae2836326576c716",
+        "IN-WB-AMRUT-g1~887137252~265282382~62dab817f71fca2ed91df861e2aec7385a4fd1ecd59ba9004140847a3e580890",
+        "IN-WB-AMRUT-g1~887139076~265280894~839cbd15ed982782512d9d7812fe6039629510705d14fef8100c617f950f0380",
+        "IN-WB-AMRUT-g1~887139586~265282645~fc1291dccfc16f975141dcbf161e9052cb6967b0c945ff60d2ed376b57b8e8ec"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        88.714,
+        26.528,
+        88.7145,
+        26.5285
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "IN-WB-AMRUT-g1~887120005~265280918~026d8b6a996abae5115c95df5b01d93ce8dce1ceb78e5f1b0b569fd29cb648c1",
+        "IN-WB-AMRUT-g1~887136716~265286005~3ae630237f7e313be97720cfcec0682678691c7a78371ff2ffc4104b7a0a11de",
+        "IN-WB-AMRUT-g1~887139076~265280894~839cbd15ed982782512d9d7812fe6039629510705d14fef8100c617f950f0380",
+        "IN-WB-AMRUT-g1~887139586~265282645~fc1291dccfc16f975141dcbf161e9052cb6967b0c945ff60d2ed376b57b8e8ec",
+        "IN-WB-AMRUT-g1~887140363~265281014~0ad21359031891f5a3e18aa42b1a127698f183a49ef9b13e45c18642bda84f44",
+        "IN-WB-AMRUT-g1~887140739~265282789~eec6a7827359db171ec634023014c4046ecdc64564c95f1e879663e28c6269b3",
+        "IN-WB-AMRUT-g1~887142000~265282933~bd02cc7280666e81112ca8bf16d1a8879053c92961d5937dfc05a0b2210d8163",
+        "IN-WB-AMRUT-g1~887142965~265281278~1da630f113d512193d4335cbdc89cbc0610d671d09f420038c40d9cd54394ea7",
+        "IN-WB-AMRUT-g1~887143448~265283053~ba69bca4f1d2fd7333af0c33dc7a33c246d31e59bff78af7e96c1dbe384ec373"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        88.7135,
+        26.5265,
+        88.714,
+        26.527
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "IN-WB-AMRUT-g1~887129340~265265463~144203b29263320b990448fb423156434ffe8fb85ec7fbe011e273fbdab5c21d",
+        "IN-WB-AMRUT-g1~887134033~265269254~1d5b54c70c7a657c0b49f4b3cea64a6bd32eba24b5b1eb0b9bb77e1c7d3159b0",
+        "IN-WB-AMRUT-g1~887134248~265268127~0a589067f0a49e381de2bbcc84875b7afbdbe23b993c146888829d7321f5f111",
+        "IN-WB-AMRUT-g1~887134275~265267335~b7bcfd2199a54c2e5ec0ef5a77ee52e766e3012706ce777eb8d459121dede615",
+        "IN-WB-AMRUT-g1~887135214~265264959~9f87484e7fe877fb0ffb69ade7ea5fccde007ad8d33978938bfe725c0adbdbdd",
+        "IN-WB-AMRUT-g1~887135589~265268367~202829e1dc047384fafb3d1adaea51ae2257578b41935719b72f2107ac6bbb9f",
+        "IN-WB-AMRUT-g1~887136635~265270502~dc2a74acd44b4d242c8994036309096e8c2911c776fb42225ecd8f910e5fc84f",
+        "IN-WB-AMRUT-g1~887137467~265268511~2cdda3397c6b1c3ac5a1854f93bc69d6243cf26c09b4a5e84cbb3ca2fe896fdc",
+        "IN-WB-AMRUT-g1~887137708~265267095~36b80dbd69423893674460b75c86f764b55a3f33438537759ca43f0aabc86036",
+        "IN-WB-AMRUT-g1~887138218~265263711~40add86f09ded6acbde0dd67b84f2d47b9cd62b4d28ec268af07f14795b4ce2a",
+        "IN-WB-AMRUT-g1~887138620~265263903~023773b7042af417d5110c08e38d49005427cd1d3f28671ec2f830c2b7c91df4"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        88.7135,
+        26.5285,
+        88.714,
+        26.529
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "IN-WB-AMRUT-g1~887106889~265280006~67f1a857137638d4766d08e5859411cf4566eaa58ef0879b0522b4ac402d31ef",
+        "IN-WB-AMRUT-g1~887124324~265285405~5d9edaefa3f46f974d3cc38b95e54c69b0077fa695e13a10a69bfa4e4f9d43f1",
+        "IN-WB-AMRUT-g1~887129608~265289749~a7bbe1aa5287ea6f3a6a77c0eb5ec577f4a043b9cb48079575da49060e18aa06",
+        "IN-WB-AMRUT-g1~887133765~265291861~f8ed6ad303b8cd77b680d91d9b8661915f9ff575f5fd355906828ca6b94d1006",
+        "IN-WB-AMRUT-g1~887134275~265289581~6ba13405cf15f5f79de21ef5ad796a29aab06e0055ad1f00b51f1cc38c5b2108",
+        "IN-WB-AMRUT-g1~887135589~265293373~801116bdede5fec4ca2fff0e05390a92e6c57c3550f8e60f7f1b89ce009035e8",
+        "IN-WB-AMRUT-g1~887136716~265286005~3ae630237f7e313be97720cfcec0682678691c7a78371ff2ffc4104b7a0a11de",
+        "IN-WB-AMRUT-g1~887137145~265289749~ea7b452d42fd6aabcd7a5a796526d1fb226632ccf40d5deed1107e544cfaaa60",
+        "IN-WB-AMRUT-g1~887138620~265293853~50be889f6bcb5c4b8ac2dc28729c4f7fe39f80d02c0adea0706a59687f76fe43"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        88.7125,
+        26.5275,
+        88.713,
+        26.528
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "IN-WB-AMRUT-g1~887107050~265275902~a1e223104afa6d5e3a0229056826a0296ef7c73020c3d85072908003cf113a2c",
+        "IN-WB-AMRUT-g1~887123814~265276646~ed10aeffb86ca609f32e9397e3ba8624953c4f7401b4621b79b0078b8083446c",
+        "IN-WB-AMRUT-g1~887123975~265275446~23af47bd9e27887f1b729195c73164b9f4fe11a91d2d6105ee53d097e09229fd",
+        "IN-WB-AMRUT-g1~887124431~265279526~7dcbb1f063dce83f2a7fcbcb08e46ac299aaba9ac8fe8ccc31d3d9c31c9580a5",
+        "IN-WB-AMRUT-g1~887125263~265276430~8a763bdb32870868fba380f989040baac7dea9338a25c1127e67dcc964fd5723",
+        "IN-WB-AMRUT-g1~887126389~265281350~5e7e4ee4ce902be293445a9b488d9d374afb1495dde60d9e61145c502496ef97",
+        "IN-WB-AMRUT-g1~887126550~265279382~f6e4bd9c1c88e11d9408adbac50c07ded1f26560fea1fdea970d539be394d12f",
+        "IN-WB-AMRUT-g1~887127167~265274870~bc9030549e4ba8b8c50803e109ae7022bb73ff725148e2c969f068d4f909f9f1",
+        "IN-WB-AMRUT-g1~887127596~265278062~576850b8d9b54068468c0848cf7d3608849d5491add834e153f8b65d0ffcd90e",
+        "IN-WB-AMRUT-g1~887127998~265281494~b74496f8b63c16c53ec0d945498330a5b9590475476ec452eece737304031958",
+        "IN-WB-AMRUT-g1~887129527~265275782~21339e179309a7a313fcd698df91bb51c5d42e76b21b65a1a410eaa722489cc5",
+        "IN-WB-AMRUT-g1~887129554~265274822~bb03dd1ea8821593cf95cf1b6bae24f172317672e55741b50b0e78c0224d2e30",
+        "IN-WB-AMRUT-g1~887129608~265276238~356b5c3363f94711e06cceb603fb145307eac35c61f4d14ee7a18cfe251b493b",
+        "IN-WB-AMRUT-g1~887129635~265279406~3ccc67c9c2e63cd1e72f9857746ecd5b3e28577af2d9857abc429ac3e24fee24"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        88.7145,
+        26.5275,
+        88.715,
+        26.528
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "IN-WB-AMRUT-g1~887129608~265276238~356b5c3363f94711e06cceb603fb145307eac35c61f4d14ee7a18cfe251b493b",
+        "IN-WB-AMRUT-g1~887141249~265275278~b76eb08fde2ad37be70ebc3f04df3f03eb4b68a723c457f8c2049f473d91ee42",
+        "IN-WB-AMRUT-g1~887142965~265281278~1da630f113d512193d4335cbdc89cbc0610d671d09f420038c40d9cd54394ea7",
+        "IN-WB-AMRUT-g1~887143877~265277630~d9b3dc3fdff9bbee23afd60bb382afab5f27222dbc5695d2dfeab8c14b0d534a",
+        "IN-WB-AMRUT-g1~887145513~265281686~398aced88bf1c421304dcef0080bf1045e724d8500ac9f83ea3fd47c1b34b6c7",
+        "IN-WB-AMRUT-g1~887148115~265280294~af95ba252ad9c6fb2d065006ff1562d7924ec36b74a71c0885b436936f8ab99e"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 37,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:21:57.545Z",
+      "queryHash": "5abd7283bc3529df90b32d3e333970915e65281b93e5bc0cfa514eeb045aa63a",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 223
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:21:57.923Z",
+      "queryHash": "c151cf4cbc5f978011351cdac0cab6f1525e4c2d92697b306f2d28508a4e9a37",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 850
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:21:58.994Z",
+      "queryHash": "009bdcaa6cb82812bb0a676f6b7740cc72c3de5cd232d95b6a5e30495b42d85f",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 874
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:21:59.961Z",
+      "queryHash": "8a129dfaff31d294476a7d28e8346eee0f449597128592d319f188e9d114f861",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1015
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:01.715Z",
+      "queryHash": "5abd7283bc3529df90b32d3e333970915e65281b93e5bc0cfa514eeb045aa63a",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 360
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:02.410Z",
+      "queryHash": "c151cf4cbc5f978011351cdac0cab6f1525e4c2d92697b306f2d28508a4e9a37",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 761
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:03.365Z",
+      "queryHash": "009bdcaa6cb82812bb0a676f6b7740cc72c3de5cd232d95b6a5e30495b42d85f",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 903
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:04.353Z",
+      "queryHash": "8a129dfaff31d294476a7d28e8346eee0f449597128592d319f188e9d114f861",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1023
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:05.475Z",
+      "queryHash": "5abd7283bc3529df90b32d3e333970915e65281b93e5bc0cfa514eeb045aa63a",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1026
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:06.610Z",
+      "queryHash": "c151cf4cbc5f978011351cdac0cab6f1525e4c2d92697b306f2d28508a4e9a37",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 991
+    },
+    {
+      "stage": "density-probe",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:07.769Z",
+      "queryHash": "c151cf4cbc5f978011351cdac0cab6f1525e4c2d92697b306f2d28508a4e9a37",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 920
+    },
+    {
+      "stage": "density-probe",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:07.769Z",
+      "queryHash": "5abd7283bc3529df90b32d3e333970915e65281b93e5bc0cfa514eeb045aa63a",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 2022
+    },
+    {
+      "stage": "density-probe",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:07.769Z",
+      "queryHash": "8a129dfaff31d294476a7d28e8346eee0f449597128592d319f188e9d114f861",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 3123
+    },
+    {
+      "stage": "density-probe",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:10.944Z",
+      "queryHash": "009bdcaa6cb82812bb0a676f6b7740cc72c3de5cd232d95b6a5e30495b42d85f",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1057
+    },
+    {
+      "stage": "density-probe",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:12.491Z",
+      "queryHash": "c151cf4cbc5f978011351cdac0cab6f1525e4c2d92697b306f2d28508a4e9a37",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 604
+    },
+    {
+      "stage": "density-probe",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:12.491Z",
+      "queryHash": "5abd7283bc3529df90b32d3e333970915e65281b93e5bc0cfa514eeb045aa63a",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1700
+    },
+    {
+      "stage": "density-probe",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:12.491Z",
+      "queryHash": "8a129dfaff31d294476a7d28e8346eee0f449597128592d319f188e9d114f861",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 2807
+    },
+    {
+      "stage": "density-probe",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:15.361Z",
+      "queryHash": "009bdcaa6cb82812bb0a676f6b7740cc72c3de5cd232d95b6a5e30495b42d85f",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1037
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:16.569Z",
+      "queryHash": "5abd7283bc3529df90b32d3e333970915e65281b93e5bc0cfa514eeb045aa63a",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 931
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:16.569Z",
+      "queryHash": "009bdcaa6cb82812bb0a676f6b7740cc72c3de5cd232d95b6a5e30495b42d85f",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 2037
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:18.720Z",
+      "queryHash": "c151cf4cbc5f978011351cdac0cab6f1525e4c2d92697b306f2d28508a4e9a37",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 981
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:19.936Z",
+      "queryHash": "8a129dfaff31d294476a7d28e8346eee0f449597128592d319f188e9d114f861",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 865
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:21.076Z",
+      "queryHash": "5abd7283bc3529df90b32d3e333970915e65281b93e5bc0cfa514eeb045aa63a",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 828
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:21.076Z",
+      "queryHash": "009bdcaa6cb82812bb0a676f6b7740cc72c3de5cd232d95b6a5e30495b42d85f",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1932
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:23.205Z",
+      "queryHash": "c151cf4cbc5f978011351cdac0cab6f1525e4c2d92697b306f2d28508a4e9a37",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 913
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:24.461Z",
+      "queryHash": "8a129dfaff31d294476a7d28e8346eee0f449597128592d319f188e9d114f861",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 755
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:25.949Z",
+      "queryHash": "5abd7283bc3529df90b32d3e333970915e65281b93e5bc0cfa514eeb045aa63a",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 384
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:26.497Z",
+      "queryHash": "c151cf4cbc5f978011351cdac0cab6f1525e4c2d92697b306f2d28508a4e9a37",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 915
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:27.572Z",
+      "queryHash": "009bdcaa6cb82812bb0a676f6b7740cc72c3de5cd232d95b6a5e30495b42d85f",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 944
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:28.571Z",
+      "queryHash": "8a129dfaff31d294476a7d28e8346eee0f449597128592d319f188e9d114f861",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1048
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:29.711Z",
+      "queryHash": "5abd7283bc3529df90b32d3e333970915e65281b93e5bc0cfa514eeb045aa63a",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1184
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:31.005Z",
+      "queryHash": "c151cf4cbc5f978011351cdac0cab6f1525e4c2d92697b306f2d28508a4e9a37",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 833
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:31.005Z",
+      "queryHash": "009bdcaa6cb82812bb0a676f6b7740cc72c3de5cd232d95b6a5e30495b42d85f",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1931
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:33.241Z",
+      "queryHash": "5abd7283bc3529df90b32d3e333970915e65281b93e5bc0cfa514eeb045aa63a",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 3316
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:36.684Z",
+      "queryHash": "c151cf4cbc5f978011351cdac0cab6f1525e4c2d92697b306f2d28508a4e9a37",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 165
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:37.036Z",
+      "queryHash": "009bdcaa6cb82812bb0a676f6b7740cc72c3de5cd232d95b6a5e30495b42d85f",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 878
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:22:38.607Z",
+      "queryHash": "8a129dfaff31d294476a7d28e8346eee0f449597128592d319f188e9d114f861",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 400
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

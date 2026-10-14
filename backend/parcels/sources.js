@@ -19,6 +19,7 @@ import { createMsdaPointSource } from './msda-point-source.js';
 import { createTkgmPointSource } from './tkgm-point-source.js';
 import { createUldkPointSource } from './pl-uldk-point-source.js';
 import { createBevTileParcelSource } from './bev-tile-source.js';
+import { createVectorTileParcelSource } from './vector-tile-source.js';
 import { createHamburgAlkisParcelSource } from './hamburg-alkis-source.js';
 import { createFrankfurtWfsParcelSource } from './frankfurt-wfs-source.js';
 import { createGmlWfsParcelSource } from './gml-wfs-source.js';
@@ -80,6 +81,7 @@ export function createParcelSource(descriptor, options = {}) {
         'tkgm-point': createTkgmPointSource,
         'pl-uldk-point': createUldkPointSource,
         'bev-tiles': createBevTileParcelSource,
+        'vector-tiles': createVectorTileParcelSource,
         'hamburg-alkis-wfs': createHamburgAlkisParcelSource,
         'frankfurt-wfs': createFrankfurtWfsParcelSource,
         'gml-wfs': createGmlWfsParcelSource,

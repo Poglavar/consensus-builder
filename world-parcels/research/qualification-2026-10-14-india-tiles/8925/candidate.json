@@ -1,0 +1,68 @@
+{
+ "city": {
+  "code": "8925",
+  "name": "Kolhapur",
+  "point": [
+   74.2379,
+   16.69067
+  ]
+ },
+ "sampleIds": [
+  "IN-MH-MRSAC-g1~742323446~166908621~1930287e7d366335eb434567d952cb8c05ef3fdc15ebd932313306000d9293bf",
+  "IN-MH-MRSAC-g1~742360890~166906873~2ec54714d1494db215a090374f2a243ce3063cf3f84cb7d59b8f7778acc78ade",
+  "IN-MH-MRSAC-g1~742384601~166904510~43b0d2e3ad3c12974e41f12c35e036e81a6bce61a944caa401d4815b58d4a3a6"
+ ],
+ "absentId": "IN-MH-MRSAC-g1~742323446~166908621~0000000000000000000000000000000000000000000000000000000000000000",
+ "metricEpsg": "EPSG:32643",
+ "sourceClassification": {
+  "isParcel": true,
+  "evidence": [
+   "https://indianopenmaps.com/not-so-open/cadastrals/maharashtra/mrsac/tiles.json",
+   "https://github.com/ramSeraph/indian_cadastrals",
+   "world-parcels/research/indian-cadastrals-sources-2026-10-13.json"
+  ]
+ },
+ "cellSizeDegrees": 0.001,
+ "descriptor": {
+  "id": "in-mh-mrsac-tiles",
+  "name": "Maharashtra cadastral maps — indianopenmaps tile snapshot (MRSAC_Cadastrals)",
+  "adapter": "vector-tiles",
+  "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/maharashtra/mrsac/{z}/{x}/{y}.pbf",
+  "zoom": 13,
+  "layer": "MRSAC_Cadastrals",
+  "groupFields": [
+   "OBJECTID"
+  ],
+  "parcelNumberField": "PIN",
+  "outFields": [
+   "OBJECTID",
+   "PIN",
+   "VIL_NAME",
+   "THENAME",
+   "DTENAME"
+  ],
+  "idPrefix": "IN-MH-MRSAC-",
+  "identityKind": "geometry-sha256-v1",
+  "lookupCellSize": 0.002,
+  "maxBboxKm2": 4,
+  "maxTiles": 36,
+  "maxFeatures": 4000,
+  "maxConcurrentQueries": 2,
+  "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+  "countryCode": "IN",
+  "stateCode": "MH",
+  "cityIds": [],
+  "scope": "Cadastral parcels of Maharashtra from the MRSAC_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-13 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+  "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+  "attribution": "MRSAC cadastral maps (mrsac.gov.in, now token-protected). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+  "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+  "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+  "caveats": [
+   "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+   "Geometry is rebuilt from zoom-13 vector tiles: outlines are snapped to a grid of about 1.1 m and may be lightly simplified compared with the original.",
+   "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+   "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+   "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+  ]
+ }
+}

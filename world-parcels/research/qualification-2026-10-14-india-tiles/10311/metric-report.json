@@ -1,0 +1,2484 @@
+{
+  "schemaVersion": 1,
+  "inputSha256": "4e2530670cad3bbc378d7519fccf0f5ca4217e67b241a86b4a88cc03b888718c",
+  "sourceCrs": "EPSG:4326",
+  "metricCrs": "EPSG:32644",
+  "method": "Shapely/GEOS validity, equality and STRtree candidate-pair intersections after pyproj transform; source geometry is never repaired, clipped or unioned.",
+  "featureCount": 159,
+  "validFeatureCount": 159,
+  "perFeature": [
+    {
+      "id": "11831ccfe49dab2164de7c01bd8b905457d5c402256a16e94e644af3bda5ce29",
+      "geometrySha256": "fa125d06efba625f405db2c47fbebe816376137483daaa312d1158e2f634bfef",
+      "boundsMetric": {
+        "minX": 709329.427887547,
+        "minY": 2984861.6502161454,
+        "maxX": 709532.7094591868,
+        "maxY": 2985027.3673462695,
+        "widthM": 203.28157163981814,
+        "heightM": 165.71713012410328,
+        "aspectRatio": 1.2266780838383056
+      },
+      "areaM2": 16209.302673600088,
+      "invalidReasons": []
+    },
+    {
+      "id": "b90d450eda46e706b818d6b64aae63eeb7f24ba82f2c358e6c8e42c5001bdbdb",
+      "geometrySha256": "79d3466c4f333c4e0e5c83868166ee76f4a01bd0daf623bc9b0e0b6579ee141c",
+      "boundsMetric": {
+        "minX": 709354.9105161206,
+        "minY": 2984724.9833729966,
+        "maxX": 709455.3022190141,
+        "maxY": 2984821.366624553,
+        "widthM": 100.39170289353933,
+        "heightM": 96.38325155666098,
+        "aspectRatio": 1.0415886709790227
+      },
+      "areaM2": 6033.080155153129,
+      "invalidReasons": []
+    },
+    {
+      "id": "1c1c07127542f12efbf0e0d2488dd3ee8bc470a2c3c78e32d301ff221c138aad",
+      "geometrySha256": "99afeb8b708f9cbb2233529f0b8258ec2181fee7a4917e04cd660035894b78d4",
+      "boundsMetric": {
+        "minX": 709380.3876245037,
+        "minY": 2984813.034566925,
+        "maxX": 709431.7252545214,
+        "maxY": 2984850.098454064,
+        "widthM": 51.33763001766056,
+        "heightM": 37.06388713931665,
+        "aspectRatio": 1.3851118698017673
+      },
+      "areaM2": 1271.9969437961997,
+      "invalidReasons": []
+    },
+    {
+      "id": "d77bae6d818c9623d6c794ffa3a47948fc7d1384884cd12fdecc470db9141401",
+      "geometrySha256": "39d57886ea193a7933843a3e3ed655385438227f6c4bf44ca67fea6601d3ecbf",
+      "boundsMetric": {
+        "minX": 709405.982713256,
+        "minY": 2984701.124858705,
+        "maxX": 709491.6619283172,
+        "maxY": 2984803.0202617007,
+        "widthM": 85.67921506112907,
+        "heightM": 101.89540299586952,
+        "aspectRatio": 1.1892662989871088
+      },
+      "areaM2": 3766.018548782702,
+      "invalidReasons": []
+    },
+    {
+      "id": "d149ecaf50423a33338a1d1aa35cd567efae31e5805c88575bb4d3b3e4f92024",
+      "geometrySha256": "ecc0f717202d2428f358ff96792a8446f6960ac2dec4edfd31207be2780df582",
+      "boundsMetric": {
+        "minX": 709411.9126438727,
+        "minY": 2984836.9060208844,
+        "maxX": 709467.4650341013,
+        "maxY": 2984882.67102268,
+        "widthM": 55.55239022860769,
+        "heightM": 45.76500179572031,
+        "aspectRatio": 1.2138618605670555
+      },
+      "areaM2": 1490.7296877702574,
+      "invalidReasons": []
+    },
+    {
+      "id": "17f9df6e2e42cc73251092887c4e4c970e4e61e1a70f53dfcf0ac07e9498017d",
+      "geometrySha256": "5b4fa0fe74761abd6ce9f3cdce5e66a151a8495225ff01645e6f191bdfb26a11",
+      "boundsMetric": {
+        "minX": 709420.0061055883,
+        "minY": 2984804.010676442,
+        "maxX": 709452.595612433,
+        "maxY": 2984813.034566925,
+        "widthM": 32.589506844757125,
+        "heightM": 9.023890482727438,
+        "aspectRatio": 3.6114696767582073
+      },
+      "areaM2": 55.2892596747969,
+      "invalidReasons": []
+    },
+    {
+      "id": "b70ba0a1cc787ad32204faa9198d860e2555042dc01c8a851f08b3f1f7d22b40",
+      "geometrySha256": "168feebfb741a6fd7f25041b0ff4b4ff9e4a0f6d0431de27bd866cd2e5281a65",
+      "boundsMetric": {
+        "minX": 709420.5056397002,
+        "minY": 2984810.0592208575,
+        "maxX": 709442.9668946426,
+        "maxY": 2984842.8923474094,
+        "widthM": 22.461254942347296,
+        "heightM": 32.83312655193731,
+        "aspectRatio": 1.461767235900761
+      },
+      "areaM2": 379.29276975508094,
+      "invalidReasons": []
+    },
+    {
+      "id": "e577a1c247f54c0d8f1be0056f77b243854f04fb3e0bf89cae3e7cbd0050dbb5",
+      "geometrySha256": "8d7c8c61c6f6a48865d25231875e176f17d8177da1e43bf3b672eee0b89c7c2a",
+      "boundsMetric": {
+        "minX": 709432.8101492729,
+        "minY": 2984807.5979904965,
+        "maxX": 709454.1996756543,
+        "maxY": 2984839.897998603,
+        "widthM": 21.38952638139017,
+        "heightM": 32.300008106511086,
+        "aspectRatio": 1.5100852412802144
+      },
+      "areaM2": 364.435227808592,
+      "invalidReasons": []
+    },
+    {
+      "id": "64da922d7e645b9e3c5bef6ce263168ce3bf66e326897322e23ebf8785402b83",
+      "geometrySha256": "39a65124680bca8b04d08553d8366d044af0517f0fe560cc20e5fe412fa32388",
+      "boundsMetric": {
+        "minX": 709433.7319786246,
+        "minY": 2984872.1069894386,
+        "maxX": 709478.184766562,
+        "maxY": 2984911.4672335205,
+        "widthM": 44.45278793736361,
+        "heightM": 39.36024408182129,
+        "aspectRatio": 1.129382933829273
+      },
+      "areaM2": 1148.244463413038,
+      "invalidReasons": []
+    },
+    {
+      "id": "8774f6ca3b497fbba00083298239dd93709d4482d9ec87f83fc3e2667e5d614c",
+      "geometrySha256": "b7f8de7579581ae88435dbe24a8cbc78786411e23da9a2dd8a7057db53ace173",
+      "boundsMetric": {
+        "minX": 709444.0434623864,
+        "minY": 2984801.665108569,
+        "maxX": 709489.1869529681,
+        "maxY": 2984855.0384412715,
+        "widthM": 45.14349058177322,
+        "heightM": 53.37333270255476,
+        "aspectRatio": 1.1823040711899304
+      },
+      "areaM2": 1365.5626541713964,
+      "invalidReasons": []
+    },
+    {
+      "id": "2235c5330f0a983fc84186b9b84bcf7b6eaf8819a11e35563bc9458bd91a4938",
+      "geometrySha256": "9acfa542a1982a4fe33d69bbaad3556c4c34d140e63699509ae89626df70ae0d",
+      "boundsMetric": {
+        "minX": 709451.5615580323,
+        "minY": 2984796.121591403,
+        "maxX": 709486.8490161833,
+        "maxY": 2984805.6215059785,
+        "widthM": 35.28745815099683,
+        "heightM": 9.499914575368166,
+        "aspectRatio": 3.7145026801074446
+      },
+      "areaM2": 66.80769936685991,
+      "invalidReasons": []
+    },
+    {
+      "id": "d2af7725198fdf271ea343e33dca7e4bf691a3d03d2eb1e280d3195bb85cfe7b",
+      "geometrySha256": "275395600ec16d9d5796bc202f57bd318a4f682bb21d81766d1791d280413ad9",
+      "boundsMetric": {
+        "minX": 709451.3716607451,
+        "minY": 2984906.5891167168,
+        "maxX": 709476.3472585751,
+        "maxY": 2984920.669196567,
+        "widthM": 24.975597830023617,
+        "heightM": 14.08007985027507,
+        "aspectRatio": 1.7738250134665032
+      },
+      "areaM2": 204.78283339989358,
+      "invalidReasons": []
+    },
+    {
+      "id": "7a6c2affcc7769f3f3a0a2a3b24730d0c4043e4db108c5432c748d42bdb402a4",
+      "geometrySha256": "a7d0041e75035c784426cfd9453fee37c74188d33a8a69b8474e58911952a96b",
+      "boundsMetric": {
+        "minX": 709460.8284409959,
+        "minY": 2984842.1379342983,
+        "maxX": 709532.7495115076,
+        "maxY": 2984900.3715432687,
+        "widthM": 71.92107051168568,
+        "heightM": 58.23360897041857,
+        "aspectRatio": 1.235044019824017
+      },
+      "areaM2": 2666.843864881334,
+      "invalidReasons": []
+    },
+    {
+      "id": "561803e565be003b76ab9de6ecae135e1a1f1dfa8eeab13b0b9bc04e929a9139",
+      "geometrySha256": "ce957f13d979066552cabf0c18f123b9a2c38cf383c2cb47e1693e8235f4cd04",
+      "boundsMetric": {
+        "minX": 709469.4609581484,
+        "minY": 2984576.038690177,
+        "maxX": 709554.4100159189,
+        "maxY": 2984684.690401706,
+        "widthM": 84.94905777054373,
+        "heightM": 108.6517115291208,
+        "aspectRatio": 1.2790219736468462
+      },
+      "areaM2": 4546.283055730729,
+      "invalidReasons": []
+    },
+    {
+      "id": "30000b6ab46b6418a86e8527d30e6634b0421a7104e640ba6639f6ee77c9986f",
+      "geometrySha256": "b9e3937d7bd8f207676ec0c2d9d9db103d2b6b000fc0eef014da345ddcb28a60",
+      "boundsMetric": {
+        "minX": 709469.5190194647,
+        "minY": 2984736.0809595655,
+        "maxX": 709514.8095407448,
+        "maxY": 2984762.0289525096,
+        "widthM": 45.29052128002513,
+        "heightM": 25.947992944158614,
+        "aspectRatio": 1.7454344687657581
+      },
+      "areaM2": 624.4283857113733,
+      "invalidReasons": []
+    },
+    {
+      "id": "4ffa3f04e710eb856cbe4cffd5e4c70ea379fd229ef2cd5577a36ecaf5e6a2dc",
+      "geometrySha256": "069173e2772f2b26cc64363ee7684e77169f98ffcb046de902a15696950719bd",
+      "boundsMetric": {
+        "minX": 709469.7148299677,
+        "minY": 2984796.2462116145,
+        "maxX": 709513.2509451302,
+        "maxY": 2984847.5655839765,
+        "widthM": 43.53611516254023,
+        "heightM": 51.319372361991554,
+        "aspectRatio": 1.1787770261630572
+      },
+      "areaM2": 1210.4148572176593,
+      "invalidReasons": []
+    },
+    {
+      "id": "014a7211c3f937e8cd4d5f606d5b64645147e6ff66859479a86d137ba3efdaa1",
+      "geometrySha256": "26ab045372071b3e80e816c7fbf5936f4e56d64ced07e152df01b5f34b033937",
+      "boundsMetric": {
+        "minX": 709469.5502220124,
+        "minY": 2984886.4429263817,
+        "maxX": 709541.502106344,
+        "maxY": 2984925.952233835,
+        "widthM": 71.95188433153089,
+        "heightM": 39.50930745340884,
+        "aspectRatio": 1.8211375741369247
+      },
+      "areaM2": 1488.1833912141785,
+      "invalidReasons": []
+    },
+    {
+      "id": "23f48cdf08ed159ee0e2f1b9fe28dda237fc4287b6736d84444673c62be44ed2",
+      "geometrySha256": "525184883b34d4faf7c535f0f59c49de3d1f53409ef562a0b880b97540348d42",
+      "boundsMetric": {
+        "minX": 709476.2365236896,
+        "minY": 2984748.896969294,
+        "maxX": 709521.5079968319,
+        "maxY": 2984776.449306848,
+        "widthM": 45.27147314231843,
+        "heightM": 27.55233755381778,
+        "aspectRatio": 1.6431082500310543
+      },
+      "areaM2": 583.3824090483951,
+      "invalidReasons": []
+    },
+    {
+      "id": "8fc064fbe41f7704947d595a021cb915b7e0986b37cb90161e6f46e58403a17d",
+      "geometrySha256": "ccc08375b79cba698c6900ec28f04af9ef6a526d6cdaacd1b52b941cb9ea4798",
+      "boundsMetric": {
+        "minX": 709482.9174179883,
+        "minY": 2984762.2647151495,
+        "maxX": 709532.8436876589,
+        "maxY": 2984795.1491083195,
+        "widthM": 49.92626967059914,
+        "heightM": 32.8843931700103,
+        "aspectRatio": 1.5182360037019198
+      },
+      "areaM2": 982.0223593623539,
+      "invalidReasons": []
+    },
+    {
+      "id": "bacafadd5b8b43ef10d59aa659d9928efab96ab65de75a357b820916789e87d8",
+      "geometrySha256": "7b850f15e79367e205ec00b9d5753f68e2710ac617cde53e209778d935752527",
+      "boundsMetric": {
+        "minX": 709487.5396927452,
+        "minY": 2984690.712322649,
+        "maxX": 709534.9772150011,
+        "maxY": 2984785.7626536363,
+        "widthM": 47.43752225593198,
+        "heightM": 95.05033098720014,
+        "aspectRatio": 2.003695101830793
+      },
+      "areaM2": 185.0304310021112,
+      "invalidReasons": []
+    },
+    {
+      "id": "fc3f4273d7139c453486f52be115fbe09b3110da0c3e3ad2619eccdf5a06b23d",
+      "geometrySha256": "07f3845f123210379d5622e1e68ffcf85aa9a4ce4a94a51bfbaf58d50a8962f6",
+      "boundsMetric": {
+        "minX": 709488.6373891389,
+        "minY": 2984671.852464104,
+        "maxX": 709566.6704250064,
+        "maxY": 2984690.712322649,
+        "widthM": 78.03303586749826,
+        "heightM": 18.859858545009047,
+        "aspectRatio": 4.137519678701325
+      },
+      "areaM2": 151.06216855557267,
+      "invalidReasons": []
+    },
+    {
+      "id": "d734869559e820ae5ef4689e30e58fed8f06f2599424bf57177cf0653c3b8c68",
+      "geometrySha256": "8272a3e9998da2d0ee5f177160ccbd2b3ec18cc7b30dfcf3a141efada9b6a087",
+      "boundsMetric": {
+        "minX": 709486.8136444298,
+        "minY": 2984786.7639603196,
+        "maxX": 709529.6025354756,
+        "maxY": 2984798.237933947,
+        "widthM": 42.78889104584232,
+        "heightM": 11.473973627202213,
+        "aspectRatio": 3.729212950638084
+      },
+      "areaM2": 73.03608413932317,
+      "invalidReasons": []
+    },
+    {
+      "id": "f0dba53cef18f003f062fd7575abf9192f8cc7c4b0c8e4ab5077f1df29d1ee5a",
+      "geometrySha256": "ccc61df068596be22665a74382405d44a29adcb1332e24fddc69548969515c15",
+      "boundsMetric": {
+        "minX": 709489.1470345759,
+        "minY": 2984673.9865681874,
+        "maxX": 709584.1417493313,
+        "maxY": 2984733.9735783204,
+        "widthM": 94.9947147553321,
+        "heightM": 59.98701013298705,
+        "aspectRatio": 1.5835880892335754
+      },
+      "areaM2": 3512.740782567036,
+      "invalidReasons": []
+    },
+    {
+      "id": "3788a55d8cfd038ed8e006f3bd7b4f537b0738a12f723bfbcf80f7dba681da21",
+      "geometrySha256": "7cd70d24dae7e691a59d23804c513901f83ba97def854460ecdc396e39d8669b",
+      "boundsMetric": {
+        "minX": 709486.8141689704,
+        "minY": 2984917.317814449,
+        "maxX": 709526.9546131534,
+        "maxY": 2984953.3577257944,
+        "widthM": 40.14044418290723,
+        "heightM": 36.03991134557873,
+        "aspectRatio": 1.1137775506162986
+      },
+      "areaM2": 710.2707068341763,
+      "invalidReasons": []
+    },
+    {
+      "id": "4c11364c0c066a9aa2c7853a5e8afb92f3b38adbf036bb8644ccee9f52bf1d6d",
+      "geometrySha256": "9e5e9112c460f47e9669a57ec2c5d88a587569bf39ef01b7df5f792ee4560990",
+      "boundsMetric": {
+        "minX": 709494.3050910912,
+        "minY": 2984791.3149059485,
+        "maxX": 709562.9413159962,
+        "maxY": 2984904.610919039,
+        "widthM": 68.63622490502894,
+        "heightM": 113.29601309075952,
+        "aspectRatio": 1.6506737258280995
+      },
+      "areaM2": 2782.886712795664,
+      "invalidReasons": []
+    },
+    {
+      "id": "0d81a47dc1e8b42008480f0252d2e3276ab48017288076e2ba0c1850ba4c4d14",
+      "geometrySha256": "dc248a15173bafb0ad816d2ccd4a1b67cbdbc88391f7723454601e8af2bcb519",
+      "boundsMetric": {
+        "minX": 709509.1996909379,
+        "minY": 2984712.4389296137,
+        "maxX": 709608.3027994151,
+        "maxY": 2984785.266316014,
+        "widthM": 99.10310847719666,
+        "heightM": 72.8273864001967,
+        "aspectRatio": 1.3607945221679545
+      },
+      "areaM2": 4379.228449098365,
+      "invalidReasons": []
+    },
+    {
+      "id": "f907715ea262714ba1d28166867facc6a458ed8d77dd7e568af9e758e9ae5a6f",
+      "geometrySha256": "808a0e6965cb41309dccc62d37b1fba7d3b4309fe82d8889c4879ee12fac329f",
+      "boundsMetric": {
+        "minX": 709509.3327474311,
+        "minY": 2984894.470169725,
+        "maxX": 709570.0784770857,
+        "maxY": 2984946.750728758,
+        "widthM": 60.74572965456173,
+        "heightM": 52.28055903315544,
+        "aspectRatio": 1.1619181351147723
+      },
+      "areaM2": 1879.2986384035567,
+      "invalidReasons": []
+    },
+    {
+      "id": "fd38421f8b80fc2eb94ad7409d490a0b07a61376f468d88b5f0939185594f943",
+      "geometrySha256": "ba9355d2fa627586a869f618596aaebd7dc3fc7fe2c78f9861931d911a1c8ce9",
+      "boundsMetric": {
+        "minX": 709509.7928942711,
+        "minY": 2984931.0419493048,
+        "maxX": 709569.8305790506,
+        "maxY": 2984974.2985498677,
+        "widthM": 60.037684779497795,
+        "heightM": 43.256600562948734,
+        "aspectRatio": 1.3879427416430599
+      },
+      "areaM2": 1301.0336288465542,
+      "invalidReasons": []
+    },
+    {
+      "id": "624c6b5bb8f1a63bf589122e0267afce39ae418533fd58c3610d885bc3341f33",
+      "geometrySha256": "843ca076c37aec609bc1db6970bbd67d2c48d276b8d46a9222c471118716aeb4",
+      "boundsMetric": {
+        "minX": 709516.2356569517,
+        "minY": 2984788.357409727,
+        "maxX": 709569.3794903911,
+        "maxY": 2984897.022542827,
+        "widthM": 53.14383343944792,
+        "heightM": 108.665133100003,
+        "aspectRatio": 2.0447364457405213
+      },
+      "areaM2": 1343.4229721283668,
+      "invalidReasons": []
+    },
+    {
+      "id": "07e4e64c0635c58c16ee41b4c513de7f09f175cf15aa9dc73d0fd098317da04b",
+      "geometrySha256": "811d77d1d106f725460cc27d248e27fe73e3326fef25b7c3b66492e5056bd63a",
+      "boundsMetric": {
+        "minX": 709527.5741040403,
+        "minY": 2984590.1766266185,
+        "maxX": 709566.7147007185,
+        "maxY": 2984671.852464104,
+        "widthM": 39.140596678247675,
+        "heightM": 81.67583748558536,
+        "aspectRatio": 2.086729493599585
+      },
+      "areaM2": 125.9590503682501,
+      "invalidReasons": []
+    },
+    {
+      "id": "f3954ced3bb7a2a205c09bc08280d963df13bdf08424cc2cc2ad19e701b99cd8",
+      "geometrySha256": "8488be4b87ebbdb770efbf69683214ebf62f8598738a175fa28ae88a9ccdb70d",
+      "boundsMetric": {
+        "minX": 709528.6906331992,
+        "minY": 2984559.7809149115,
+        "maxX": 709645.807549783,
+        "maxY": 2984590.1766266185,
+        "widthM": 117.11691658385098,
+        "heightM": 30.39571170695126,
+        "aspectRatio": 3.8530736741086824
+      },
+      "areaM2": 252.40792217956934,
+      "invalidReasons": []
+    },
+    {
+      "id": "83408c68ed712f2dc61da7aafc5668f4d2eb67539f373d1cbbbc3e92c54d87f7",
+      "geometrySha256": "1b6af13b67d4ad48947329e1713dd73f8f61c9cf6550ee499ba23e93ab7b3590",
+      "boundsMetric": {
+        "minX": 709529.7184101779,
+        "minY": 2984616.8565643486,
+        "maxX": 709553.30745056,
+        "maxY": 2984648.679590202,
+        "widthM": 23.589040382183157,
+        "heightM": 31.82302585337311,
+        "aspectRatio": 1.349059789537225
+      },
+      "areaM2": 351.10466006675824,
+      "invalidReasons": []
+    },
+    {
+      "id": "568a54a1fe16fd61adf3686dad5bd70da4486b8dbeb821b8cc369b936621c8f4",
+      "geometrySha256": "ad2edf96eb869af264c7604c7351f8bd6d745c6e132ab50cf1a397ed62a30c4b",
+      "boundsMetric": {
+        "minX": 709529.0929002289,
+        "minY": 2984764.7688177302,
+        "maxX": 709609.3307615432,
+        "maxY": 2984788.357409727,
+        "widthM": 80.2378613143228,
+        "heightM": 23.588591996580362,
+        "aspectRatio": 3.40155365466302
+      },
+      "areaM2": 191.75183165040045,
+      "invalidReasons": []
+    },
+    {
+      "id": "a76c7805a7dcb42f8255513df5b62e46f3bf1ed0e28cb952e0eb100951e2190c",
+      "geometrySha256": "64c6f1f1167f8d242b9916dffe81a42aa76ad0f4b319ebf0aaef16b4d69790c7",
+      "boundsMetric": {
+        "minX": 709525.957807451,
+        "minY": 2984963.7170121493,
+        "maxX": 709559.9257741314,
+        "maxY": 2984984.47517844,
+        "widthM": 33.967966680414975,
+        "heightM": 20.758166290819645,
+        "aspectRatio": 1.6363664402976383
+      },
+      "areaM2": 448.38797982881255,
+      "invalidReasons": []
+    },
+    {
+      "id": "ff5946b4e9dc84c7479e3a0c89d3e72b9845a3c9895d929c5efcdd1ad75608f7",
+      "geometrySha256": "62b8b48be0bb044599b50675e39112606c9e9858638a06f7c30c7943d0a171e1",
+      "boundsMetric": {
+        "minX": 709529.6025354756,
+        "minY": 2984781.0093581066,
+        "maxX": 709592.1502963358,
+        "maxY": 2984871.7268143403,
+        "widthM": 62.54776086017955,
+        "heightM": 90.7174562336877,
+        "aspectRatio": 1.4503709643016514
+      },
+      "areaM2": 2789.442226834816,
+      "invalidReasons": []
+    },
+    {
+      "id": "ead60434dec6db17f97c440eb8b3f809598e3e586a2528ff75688e5dc857836c",
+      "geometrySha256": "6e9ea72bba839d14f137f4d1baf1d30a12206b0ef736848956ffaa56425d49ff",
+      "boundsMetric": {
+        "minX": 709542.593534694,
+        "minY": 2984644.624832015,
+        "maxX": 709565.6434806412,
+        "maxY": 2984674.313594541,
+        "widthM": 23.049945947132073,
+        "heightM": 29.68876252602786,
+        "aspectRatio": 1.2880187482488132
+      },
+      "areaM2": 332.8548299200513,
+      "invalidReasons": []
+    },
+    {
+      "id": "95a2c16099de27890c6879eebab5b0a4a927fe71877985c1a0b7717908a1a704",
+      "geometrySha256": "5ea0a8ada71a771be0c6065c1c54a70ee1b4dfd365c5bb651db360bc1edcb2ab",
+      "boundsMetric": {
+        "minX": 709547.2069496243,
+        "minY": 2984615.5572601384,
+        "maxX": 709601.4009068493,
+        "maxY": 2984647.317679668,
+        "widthM": 54.19395722495392,
+        "heightM": 31.76041952939704,
+        "aspectRatio": 1.706336315072686
+      },
+      "areaM2": 1019.5225194767107,
+      "invalidReasons": []
+    },
+    {
+      "id": "fcf202ed88b2dcbfa0df272a3e00009cd1185fb5574dca22beba61a7d43ad3d3",
+      "geometrySha256": "938caa23e89011b68d9f64772312100f30b3eee93dcc22001012217ec13c7947",
+      "boundsMetric": {
+        "minX": 709555.9338953828,
+        "minY": 2984618.0193754123,
+        "maxX": 709674.6666064875,
+        "maxY": 2984649.9836384216,
+        "widthM": 118.73271110467613,
+        "heightM": 31.9642630093731,
+        "aspectRatio": 3.71454555576205
+      },
+      "areaM2": 206.99553537535294,
+      "invalidReasons": []
+    },
+    {
+      "id": "6698b83521723549f94cbe74bd7ce01e8c763f51b139b965177f594b6ccf95fb",
+      "geometrySha256": "32ca9da9205eb326022f907b9002f67f074de0092fb70b49709097ccaed9f77a",
+      "boundsMetric": {
+        "minX": 709556.951952054,
+        "minY": 2984639.996405408,
+        "maxX": 709621.449077722,
+        "maxY": 2984720.481473377,
+        "widthM": 64.49712566798553,
+        "heightM": 80.4850679691881,
+        "aspectRatio": 1.2478861210576164
+      },
+      "areaM2": 2732.1325389786316,
+      "invalidReasons": []
+    },
+    {
+      "id": "a43cfe5a14f14d6f78e5f68fdc820f36a410b3dba554ea452a7e0a774f0b6d38",
+      "geometrySha256": "ab0ab8a05ac51921cc94f6d3e0d201d3d505bfeb0fb20c8c946438fc4380b1af",
+      "boundsMetric": {
+        "minX": 709558.066845387,
+        "minY": 2984934.988053596,
+        "maxX": 709622.2484551597,
+        "maxY": 2985014.175404002,
+        "widthM": 64.18160977272782,
+        "heightM": 79.18735040584579,
+        "aspectRatio": 1.2338012506425826
+      },
+      "areaM2": 3339.9823138909583,
+      "invalidReasons": []
+    },
+    {
+      "id": "1bf66c7b60c1d53af45becc32ba06a5d5adfa7329af848ead1eb93f82cd904a6",
+      "geometrySha256": "e41cfc1512a83edb8079326afb2355ec3347e82b9966aa80abf281e1a7f46504",
+      "boundsMetric": {
+        "minX": 709570.9013807703,
+        "minY": 2984505.236987498,
+        "maxX": 709644.7617837369,
+        "maxY": 2984574.6014112667,
+        "widthM": 73.86040296661668,
+        "heightM": 69.36442376859486,
+        "aspectRatio": 1.0648167886901325
+      },
+      "areaM2": 3082.6391363909365,
+      "invalidReasons": []
+    },
+    {
+      "id": "dfe2ee70fe027605a4fc4c4c53b834cc3196fd2ccd49773ff3b51c77f7e3f790",
+      "geometrySha256": "d5a0c208195c5eab65d211a77cf9a0df89f5254d67adf7517b6754c8aa07cd82",
+      "boundsMetric": {
+        "minX": 709561.7906647355,
+        "minY": 2984772.090025035,
+        "maxX": 709573.4703889771,
+        "maxY": 2984778.3254698347,
+        "widthM": 11.679724241606891,
+        "heightM": 6.235444799531251,
+        "aspectRatio": 1.8731180560663312
+      },
+      "areaM2": 48.28194725994327,
+      "invalidReasons": []
+    },
+    {
+      "id": "e2c767d5b461f9acb243daa3a75bcf384135365f6cd17f15a93ef7f9a234a2c2",
+      "geometrySha256": "61f366502fb67c424ed089cf1c7bab02409cf72848248b44f8cccfb319d0537a",
+      "boundsMetric": {
+        "minX": 709565.6434806412,
+        "minY": 2984671.338369505,
+        "maxX": 709609.918847287,
+        "maxY": 2984764.7688177302,
+        "widthM": 44.27536664577201,
+        "heightM": 93.4304482252337,
+        "aspectRatio": 2.1102128633452133
+      },
+      "areaM2": 177.34027673307997,
+      "invalidReasons": []
+    },
+    {
+      "id": "6cf86c51484d9e742b96130f044fb5e5db3bbaa2c6a57c3835379ae39748d1ad",
+      "geometrySha256": "f9f65709b169e5f60c29186c2362346458e10789dea4ee3991294af7beac2d05",
+      "boundsMetric": {
+        "minX": 709565.4173345672,
+        "minY": 2984776.574336273,
+        "maxX": 709612.4648022711,
+        "maxY": 2984838.691190855,
+        "widthM": 47.047467703931034,
+        "heightM": 62.1168545819819,
+        "aspectRatio": 1.3203017635908116
+      },
+      "areaM2": 1224.6204379757232,
+      "invalidReasons": []
+    },
+    {
+      "id": "48b3ca84fd45b78d462de0c4ec13c5937c000e396877c03cf403a4636f638472",
+      "geometrySha256": "326294dbcdfa3de3305cece730025e1e06fc3225531d91fbc07364ca14ed7bbb",
+      "boundsMetric": {
+        "minX": 709564.4288128794,
+        "minY": 2984869.381424539,
+        "maxX": 709594.6208190947,
+        "maxY": 2984887.5803191247,
+        "widthM": 30.192006215336733,
+        "heightM": 18.198894585948437,
+        "aspectRatio": 1.6590022032793303
+      },
+      "areaM2": 363.9167411557619,
+      "invalidReasons": []
+    },
+    {
+      "id": "28a1808801e8d3e32083ed5e6b51f9ee4da2241af04462acb28686aa29286c1b",
+      "geometrySha256": "938b81094bd4a6c4def6ecde927193c274cb032aa9522d2ea67d12d5accad950",
+      "boundsMetric": {
+        "minX": 709566.877488389,
+        "minY": 2984898.1667098515,
+        "maxX": 709615.5856176333,
+        "maxY": 2984948.48222423,
+        "widthM": 48.70812924427446,
+        "heightM": 50.31551437871531,
+        "aspectRatio": 1.0330003463360233
+      },
+      "areaM2": 1611.0178130439408,
+      "invalidReasons": []
+    },
+    {
+      "id": "6d98bed01fa3c81d850ca4d7f6609cfd181ed9b6ca34fc0caf3ce8a2c00cd919",
+      "geometrySha256": "8fa437ab8219606d138e0ebf7e861aee8a636a2eb3bd94811720dac4a9b836c1",
+      "boundsMetric": {
+        "minX": 709568.9584255859,
+        "minY": 2984882.1795550203,
+        "maxX": 709600.2126980142,
+        "maxY": 2984905.6148680467,
+        "widthM": 31.25427242834121,
+        "heightM": 23.435313026420772,
+        "aspectRatio": 1.3336400667277373
+      },
+      "areaM2": 485.7206729244152,
+      "invalidReasons": []
+    },
+    {
+      "id": "2668072c911df18d4d80f06404912dee553ad837a5442a152be95184593bc7bf",
+      "geometrySha256": "eff234ee60f52645b91fdf194e72ebf2595544905a7a811c2d821df4e04154ff",
+      "boundsMetric": {
+        "minX": 709573.4176740778,
+        "minY": 2984835.2643501186,
+        "maxX": 709610.0821223819,
+        "maxY": 2984870.7610478997,
+        "widthM": 36.664448304101825,
+        "heightM": 35.49669778114185,
+        "aspectRatio": 1.0328974410566258
+      },
+      "areaM2": 918.2028002720529,
+      "invalidReasons": []
+    },
+    {
+      "id": "b47a8b6f0a126f57811ab7f0f1277db2d846b000c04f5ddc9f2f31d2cbee7e06",
+      "geometrySha256": "d7f9369c11836d0ed684ddcbf1b8f30561c7dc1e7485360315afbef182804a42",
+      "boundsMetric": {
+        "minX": 709588.5794212391,
+        "minY": 2984568.315062629,
+        "maxX": 709633.9094547414,
+        "maxY": 2984611.042071935,
+        "widthM": 45.33003350230865,
+        "heightM": 42.72700930573046,
+        "aspectRatio": 1.0609222184953881
+      },
+      "areaM2": 1154.2171205459076,
+      "invalidReasons": []
+    },
+    {
+      "id": "6e2541fdcdb6235130aedd6d331afd4811a58564cc57c593e110c8ba503b0786",
+      "geometrySha256": "4e8ffdc1875dad43c968299c7580af627a5b79df76a3488f16562a62f029f8b2",
+      "boundsMetric": {
+        "minX": 709585.2045046695,
+        "minY": 2984767.434948496,
+        "maxX": 709634.3943330015,
+        "maxY": 2984834.7859578263,
+        "widthM": 49.189828331931494,
+        "heightM": 67.3510093302466,
+        "aspectRatio": 1.369206025192119
+      },
+      "areaM2": 1604.906064372727,
+      "invalidReasons": []
+    },
+    {
+      "id": "53577cac176015e5bee529f5926fc0102036198f39d4df3913f0915a4293e94a",
+      "geometrySha256": "9758fafb84f87aec3bf599e73063a4c765847a363eb9195430966eaf3ea86fcb",
+      "boundsMetric": {
+        "minX": 709589.8665826546,
+        "minY": 2984706.491016323,
+        "maxX": 709660.1996766657,
+        "maxY": 2984763.7429172127,
+        "widthM": 70.3330940110609,
+        "heightM": 57.251900889445096,
+        "aspectRatio": 1.2284848698190112
+      },
+      "areaM2": 2517.3361692598523,
+      "invalidReasons": []
+    },
+    {
+      "id": "173689e35eb18306f95cfe3b69ea5551aa7e31b3658b3f56d2d1b9662e27d8e2",
+      "geometrySha256": "ef8e20f17523eae397e68966033cc2bcfe02a66673efd8ad50a3afe1502e0601",
+      "boundsMetric": {
+        "minX": 709593.3475706325,
+        "minY": 2984627.5547289844,
+        "maxX": 709671.7477344801,
+        "maxY": 2984711.4667806188,
+        "widthM": 78.40016384760384,
+        "heightM": 83.91205163439736,
+        "aspectRatio": 1.0703045442291124
+      },
+      "areaM2": 3870.3342552658733,
+      "invalidReasons": []
+    },
+    {
+      "id": "044edbef7785e78b59c564261e79d27237271276d129079c2a1f3210d6af1656",
+      "geometrySha256": "85ae964b804a3a8dba1c0dcc539014fcf026e85da91b37b07d59ee0b05844320",
+      "boundsMetric": {
+        "minX": 709589.5118662084,
+        "minY": 2984865.8476581955,
+        "maxX": 709602.7725100142,
+        "maxY": 2984882.1795550203,
+        "widthM": 13.260643805842847,
+        "heightM": 16.331896824762225,
+        "aspectRatio": 1.2316066296544468
+      },
+      "areaM2": 112.01954369166818,
+      "invalidReasons": []
+    },
+    {
+      "id": "ff374528de6f88dead1407836f5c625ebabfb44e5199e228256e066f9d1b6f4a",
+      "geometrySha256": "1f9089b9d17c36aa5d30987ed339955591adef0b9d39a4c67a292b3d49edd742",
+      "boundsMetric": {
+        "minX": 709594.6208190947,
+        "minY": 2984862.438597243,
+        "maxX": 709627.5089141019,
+        "maxY": 2984896.166257745,
+        "widthM": 32.88809500716161,
+        "heightM": 33.72766050230712,
+        "aspectRatio": 1.0255279454453865
+      },
+      "areaM2": 689.3238222786292,
+      "invalidReasons": []
+    },
+    {
+      "id": "ae9a997e9d7308e92145e6a56ee98148cc9c4a5f48ac2fff48b6134cf24c3feb",
+      "geometrySha256": "e26638fd783b89d6e4f76a6bae264ddf73cebb7238b5645dc7ecdc0030a970ce",
+      "boundsMetric": {
+        "minX": 709596.6490077854,
+        "minY": 2984886.033919857,
+        "maxX": 709607.1779196255,
+        "maxY": 2984898.1667098515,
+        "widthM": 10.528911840170622,
+        "heightM": 12.132789994589984,
+        "aspectRatio": 1.1523308561004506
+      },
+      "areaM2": 73.36379306928872,
+      "invalidReasons": []
+    },
+    {
+      "id": "fdac383e97a255e4957dfb804394205184eac16a2e4277abd01db4ce3202fbe7",
+      "geometrySha256": "028f3383d2f6cf1231af40901bd69b00c12a5d1bb535347f90bdc7375fecff67",
+      "boundsMetric": {
+        "minX": 709600.4039825465,
+        "minY": 2984833.8045570045,
+        "maxX": 709625.3442784678,
+        "maxY": 2984865.3690980715,
+        "widthM": 24.940295921289362,
+        "heightM": 31.564541066996753,
+        "aspectRatio": 1.2656041117801191
+      },
+      "areaM2": 429.2418551575648,
+      "invalidReasons": []
+    },
+    {
+      "id": "bae182260b2295c55e8b68d78b5bcb9b502e7270fa32d10e0f8d2307e3b24b21",
+      "geometrySha256": "5796e4a2160cd1de5eee74769482e01b8f437702afcfbf653ac972f6e18a0d99",
+      "boundsMetric": {
+        "minX": 709600.2038036148,
+        "minY": 2984890.676400584,
+        "maxX": 709648.473561013,
+        "maxY": 2984950.4722137772,
+        "widthM": 48.26975739817135,
+        "heightM": 59.795813193079084,
+        "aspectRatio": 1.2387842080876998
+      },
+      "areaM2": 1525.6358625953671,
+      "invalidReasons": []
+    },
+    {
+      "id": "83a1326e43d34d6328e840140e503dab1d092d5b6e3cd4dcd64bd62d506d6541",
+      "geometrySha256": "7a8bc1831305e807012aeb16011e6a16c3e0457932f3e947d2816ae34bc9ec7f",
+      "boundsMetric": {
+        "minX": 709602.7762096289,
+        "minY": 2984952.995711511,
+        "maxX": 709631.4614816143,
+        "maxY": 2985010.690837948,
+        "widthM": 28.685271985363215,
+        "heightM": 57.695126437116414,
+        "aspectRatio": 2.011315300289138
+      },
+      "areaM2": 975.5120825335129,
+      "invalidReasons": []
+    },
+    {
+      "id": "d16f39072a6d616717cfb7c02d43fbb7278b97c30fb352f69a0c47969fc1c525",
+      "geometrySha256": "63f10c3fdd675b340890fa92a5f194c83e2316c029297f20b1391fff1d1c0180",
+      "boundsMetric": {
+        "minX": 709608.3027994151,
+        "minY": 2984763.7429172127,
+        "maxX": 709643.191772546,
+        "maxY": 2984845.859801618,
+        "widthM": 34.88897313096095,
+        "heightM": 82.11688440525904,
+        "aspectRatio": 2.353662978185718
+      },
+      "areaM2": 177.2942211325042,
+      "invalidReasons": []
+    },
+    {
+      "id": "d94e1ce018d56af2f948efac97d57a7dfc9337c073b40d64ab2b834be2a23ec7",
+      "geometrySha256": "6c4c0cee7025f7769ba23f7e80965cae875fc27faf81f538ce8e906b8be636d2",
+      "boundsMetric": {
+        "minX": 709617.688582785,
+        "minY": 2984484.732142459,
+        "maxX": 709712.7749871209,
+        "maxY": 2984614.2719240314,
+        "widthM": 95.0864043359179,
+        "heightM": 129.53978157229722,
+        "aspectRatio": 1.3623375757764868
+      },
+      "areaM2": 5351.887797640975,
+      "invalidReasons": []
+    },
+    {
+      "id": "f6c00b0d59a6c4350ac0affee6f470f3fb52965c1c6a888482184c1effbd9c22",
+      "geometrySha256": "30cde0d62e66dde42b6680a377db1c311c93267c0f7ce5c50acde0573896441c",
+      "boundsMetric": {
+        "minX": 709611.9706456405,
+        "minY": 2984596.114928494,
+        "maxX": 709673.6208495158,
+        "maxY": 2984630.928245556,
+        "widthM": 61.650203875266016,
+        "heightM": 34.813317061867565,
+        "aspectRatio": 1.7708799125836239
+      },
+      "areaM2": 1258.2051538616674,
+      "invalidReasons": []
+    },
+    {
+      "id": "360d22326abb6a3c5ee499187352f7002009909c2ee5a8a787a54bd488cdcbb0",
+      "geometrySha256": "5f4e4fa404bbdd556c5db854c7bf398eb14b0f997f1b2d3de8f4612f675fdecb",
+      "boundsMetric": {
+        "minX": 709609.918847287,
+        "minY": 2984725.0596402045,
+        "maxX": 709770.3687737152,
+        "maxY": 2984766.4178478783,
+        "widthM": 160.449926428264,
+        "heightM": 41.35820767376572,
+        "aspectRatio": 3.8795183701841216
+      },
+      "areaM2": 355.1790810385702,
+      "invalidReasons": []
+    },
+    {
+      "id": "d3c1a374c6c4ef3fc812e9dce7588871ce49cd6b38b4d49b69d58a2f6994a973",
+      "geometrySha256": "b24d339c3ffbfa85c10d4caa6fbd1daf61d3500b7f8de4b2dbf2fa6f615bb5e9",
+      "boundsMetric": {
+        "minX": 709611.4730051346,
+        "minY": 2984754.4905229197,
+        "maxX": 709672.3923415891,
+        "maxY": 2984803.751000151,
+        "widthM": 60.91933645447716,
+        "heightM": 49.260477231349796,
+        "aspectRatio": 1.236677756254208
+      },
+      "areaM2": 1867.6414298333543,
+      "invalidReasons": []
+    },
+    {
+      "id": "161ec6b4d8f0339344974ec22ff26cdc25ea61feef7086ea866333956dd08c2f",
+      "geometrySha256": "0cca9351087686f2d3d6745d9554c75c7bb284d8ba9b8cbcd858b20dce8ef02a",
+      "boundsMetric": {
+        "minX": 709608.9694522324,
+        "minY": 2984937.9506666316,
+        "maxX": 709752.9621774731,
+        "maxY": 2985049.530415629,
+        "widthM": 143.99272524076514,
+        "heightM": 111.57974899746478,
+        "aspectRatio": 1.2904915679998243
+      },
+      "areaM2": 9993.298986781088,
+      "invalidReasons": []
+    },
+    {
+      "id": "75ac566b6d30d8e16668e14e4a87b784c3451e43156311f88d803a6e78a1e6e4",
+      "geometrySha256": "a5a61e2249ca7e3f23cebb75060e1f542f843dc41c327cf7b749eea95de095a7",
+      "boundsMetric": {
+        "minX": 709616.921047128,
+        "minY": 2984565.8450156287,
+        "maxX": 709644.0707401299,
+        "maxY": 2984603.5784680094,
+        "widthM": 27.149693001876585,
+        "heightM": 37.733452380634844,
+        "aspectRatio": 1.3898297994760644
+      },
+      "areaM2": 409.10302613456787,
+      "invalidReasons": []
+    },
+    {
+      "id": "6aaa62f13ccadb3215829c5a2d49667619ad0dd5008213a8193d55e452117af7",
+      "geometrySha256": "5c3d72f3c9200e57fb4e5aedf51b23ed052e2944d8ed0c7b0ad6f619a6bf50e1",
+      "boundsMetric": {
+        "minX": 709616.741592237,
+        "minY": 2984829.32283778,
+        "maxX": 709645.1491464966,
+        "maxY": 2984860.9698438444,
+        "widthM": 28.40755425952375,
+        "heightM": 31.647006064187735,
+        "aspectRatio": 1.1140348716777666
+      },
+      "areaM2": 552.8427928943812,
+      "invalidReasons": []
+    },
+    {
+      "id": "6898d9b3e4b3644f95e4c0a918720e800f583dc5bbc4bb444092fc8ce3888e10",
+      "geometrySha256": "eaab32fc635ddfc32a05a557023ed418c480c18ffaaec9a428323c8947b1b610",
+      "boundsMetric": {
+        "minX": 709618.3978573512,
+        "minY": 2984855.471210738,
+        "maxX": 709660.5387661032,
+        "maxY": 2984893.7077046162,
+        "widthM": 42.14090875198599,
+        "heightM": 38.23649387806654,
+        "aspectRatio": 1.1021122618190453
+      },
+      "areaM2": 725.6571123466442,
+      "invalidReasons": []
+    },
+    {
+      "id": "73d58d8463133ae410f52ef9e7439afd31e9aebb7cd354fcb8b52e82a3839096",
+      "geometrySha256": "2f4a5971b2c23ef9df789263a144ed1464a7110493d6cca786f7ebb0460faf7b",
+      "boundsMetric": {
+        "minX": 709627.6184887006,
+        "minY": 2984561.383335605,
+        "maxX": 709662.8047867403,
+        "maxY": 2984601.09947037,
+        "widthM": 35.186298039741814,
+        "heightM": 39.716134765185416,
+        "aspectRatio": 1.128738656175972
+      },
+      "areaM2": 725.0184158490179,
+      "invalidReasons": []
+    },
+    {
+      "id": "ede8e098837e3f4e46251b7514bded396711b7d3439577e599f33371207cd525",
+      "geometrySha256": "bd53375543f0c3ff190dab2acf484a331ef947108ff8b602829a6488b57859be",
+      "boundsMetric": {
+        "minX": 709623.9541367558,
+        "minY": 2984877.5778762284,
+        "maxX": 709644.4669180962,
+        "maxY": 2984902.9329857132,
+        "widthM": 20.51278134039603,
+        "heightM": 25.35510948486626,
+        "aspectRatio": 1.2360639478437858
+      },
+      "areaM2": 283.8634136741715,
+      "invalidReasons": []
+    },
+    {
+      "id": "15cd8303ce5baf955a66d4d7a97f11057dab95ec57863321457c58ae25e420b4",
+      "geometrySha256": "d08e1281ed7ef7e1969581a005b39612235903b05f18161a7c6be948262a3b96",
+      "boundsMetric": {
+        "minX": 709626.3012598737,
+        "minY": 2984787.0433698623,
+        "maxX": 709678.0284800795,
+        "maxY": 2984817.092081618,
+        "widthM": 51.72722020582296,
+        "heightM": 30.04871175577864,
+        "aspectRatio": 1.7214455190703923
+      },
+      "areaM2": 684.3205937990786,
+      "invalidReasons": []
+    },
+    {
+      "id": "073515386471d53a20b048745940ad1faf0ebcbde95c45820278e7c35fc6e221",
+      "geometrySha256": "e445e096ee00a553f0d4dfb2be6240293bbd9a8e6937ca81ca62613df88ae918",
+      "boundsMetric": {
+        "minX": 709631.401129023,
+        "minY": 2984800.3823609133,
+        "maxX": 709689.8190434224,
+        "maxY": 2984836.722638505,
+        "widthM": 58.417914399295114,
+        "heightM": 36.34027759172022,
+        "aspectRatio": 1.6075252659216082
+      },
+      "areaM2": 1093.3721068473271,
+      "invalidReasons": []
+    },
+    {
+      "id": "43723f4dac8154db5bbac9c6f6c99c86c39f427f845b9d55bc70e2598e3132fd",
+      "geometrySha256": "5a831865c00d05e84926cc2e538f9e5fb1d5f97c64402541ae0b5d3d0415a5f6",
+      "boundsMetric": {
+        "minX": 709631.567993399,
+        "minY": 2984890.6968782656,
+        "maxX": 709671.1694529639,
+        "maxY": 2984937.9506666316,
+        "widthM": 39.60145956487395,
+        "heightM": 47.25378836598247,
+        "aspectRatio": 1.1932335041483182
+      },
+      "areaM2": 932.9644454144429,
+      "invalidReasons": []
+    },
+    {
+      "id": "909bbe9be177d86578d52d50f648f3c13d527c12bb2b3ff6e8a988872b9330bc",
+      "geometrySha256": "34a3d2925b0a340da8ff2e70e2304c30bf1ac4ca1f856221e12b0c666770b945",
+      "boundsMetric": {
+        "minX": 709632.0827326709,
+        "minY": 2984903.997605016,
+        "maxX": 709648.819044705,
+        "maxY": 2984924.264252719,
+        "widthM": 16.736312034074217,
+        "heightM": 20.266647703014314,
+        "aspectRatio": 1.210938685999193
+      },
+      "areaM2": 166.48303151095928,
+      "invalidReasons": []
+    },
+    {
+      "id": "2c591c0e7607fa142169f29a40d7a5b8d535419af445f2466ce26f4310b41219",
+      "geometrySha256": "2b9b189bc6a98e591202e839121bbeaa6a08defeb0489b310e0c72ae1bc3ac2d",
+      "boundsMetric": {
+        "minX": 709636.0103754889,
+        "minY": 2984823.80644624,
+        "maxX": 709664.6394101304,
+        "maxY": 2984844.842707017,
+        "widthM": 28.62903464154806,
+        "heightM": 21.036260777153075,
+        "aspectRatio": 1.3609374282258992
+      },
+      "areaM2": 371.5772903081367,
+      "invalidReasons": []
+    },
+    {
+      "id": "a6b46751391a4da158f24b05d1eb31b869df3d787d4f3e392c88d6b6ece058d7",
+      "geometrySha256": "5a4a8a7104e3a82fc1bb1295f15f1b82104d674ce9bde7ab20c7fdd121dc40af",
+      "boundsMetric": {
+        "minX": 709636.2487180886,
+        "minY": 2984876.0825629453,
+        "maxX": 709650.3688086853,
+        "maxY": 2984896.2579244557,
+        "widthM": 14.120090596727096,
+        "heightM": 20.1753615103662,
+        "aspectRatio": 1.4288407975967705
+      },
+      "areaM2": 125.1468193274026,
+      "invalidReasons": []
+    },
+    {
+      "id": "726af9bf04c94f7dc57524396533adb5fec23f654ac220b6140518487e6c575a",
+      "geometrySha256": "4e6a35a7a311f03904beec463e89209e2a5bbac85bded0cf2b8ba6c73e825e5f",
+      "boundsMetric": {
+        "minX": 709642.0293678056,
+        "minY": 2984619.621799181,
+        "maxX": 709706.5270832372,
+        "maxY": 2984698.5313570425,
+        "widthM": 64.49771543161478,
+        "heightM": 78.90955786127597,
+        "aspectRatio": 1.2234473319437444
+      },
+      "areaM2": 2635.8439842257485,
+      "invalidReasons": []
+    },
+    {
+      "id": "dab7188c63d27cb05cfa5f11849f799f83d753202a4e552ca99db3c2a02e7c9d",
+      "geometrySha256": "a3ebd1993814d169e105648a557c190981336ca769ccd7e55c672f0bce7ab9a5",
+      "boundsMetric": {
+        "minX": 709640.709150715,
+        "minY": 2984690.1022047135,
+        "maxX": 709729.1778696509,
+        "maxY": 2984751.8600926218,
+        "widthM": 88.46871893585194,
+        "heightM": 61.757887908257544,
+        "aspectRatio": 1.4325088168052933
+      },
+      "areaM2": 3514.673140578601,
+      "invalidReasons": []
+    },
+    {
+      "id": "c4815f4978c997f9c04265c92a9c96e89972472dd184d0e672de6f24287aa239",
+      "geometrySha256": "0b4ed51235843f8d1d1211d750ed3ebb6dfdb60015b762721d8666adaf43d5c2",
+      "boundsMetric": {
+        "minX": 709641.0495387015,
+        "minY": 2984844.842707017,
+        "maxX": 709673.3470818882,
+        "maxY": 2984936.951514536,
+        "widthM": 32.297543186694384,
+        "heightM": 92.10880751907825,
+        "aspectRatio": 2.851882788317605
+      },
+      "areaM2": 211.8550929779283,
+      "invalidReasons": []
+    },
+    {
+      "id": "bfca3b0324a385c3198659de958047e482f2ee268c11fb24390d4a13429e44e4",
+      "geometrySha256": "1d656cccab35679ef72acc9b50acd8c87ffc4657d4a78901e5e7777c7418d27f",
+      "boundsMetric": {
+        "minX": 709643.191772546,
+        "minY": 2984809.8630602686,
+        "maxX": 709726.0855486135,
+        "maxY": 2984876.8438059273,
+        "widthM": 82.89377606741618,
+        "heightM": 66.98074565874413,
+        "aspectRatio": 1.2375761907719918
+      },
+      "areaM2": 3003.2651109036483,
+      "invalidReasons": []
+    },
+    {
+      "id": "d19718c2329eecfaafab024b2001a81f5ea1b49f2d1f32d5f4f91e53c0981379",
+      "geometrySha256": "f0648b9388754ce5eac601ce35a0f585cf1b529bf01b0345b5f9ee9dd75150f3",
+      "boundsMetric": {
+        "minX": 709654.4704507217,
+        "minY": 2984483.9328171806,
+        "maxX": 709772.5023235615,
+        "maxY": 2984726.681960145,
+        "widthM": 118.03187283978332,
+        "heightM": 242.74914296437055,
+        "aspectRatio": 2.0566406100653736
+      },
+      "areaM2": 432.64040861769354,
+      "invalidReasons": []
+    },
+    {
+      "id": "b678b6dfc4ea12066428e597dec24ba8e488fe5b7ea8e8d365e3e3e5e5b6e633",
+      "geometrySha256": "aa9b42d8317230dea8ecac50e9d2b5209081f4be39e1df3407c2c0e29f3e52c0",
+      "boundsMetric": {
+        "minX": 709643.8287922656,
+        "minY": 2984922.9647417166,
+        "maxX": 709666.1437756515,
+        "maxY": 2984943.4849645677,
+        "widthM": 22.31498338584788,
+        "heightM": 20.520222851075232,
+        "aspectRatio": 1.0874630138180301
+      },
+      "areaM2": 280.9881293851428,
+      "invalidReasons": []
+    },
+    {
+      "id": "82bf116ea3941f05c2e5933152b49514064ccf2a9d7b47676db701a71d6d4896",
+      "geometrySha256": "69215d615afc38bad3ba25644578ee1318281576782f9f9ffef56e4d28735dbc",
+      "boundsMetric": {
+        "minX": 709655.9738673437,
+        "minY": 2984857.8892754554,
+        "maxX": 709732.212370398,
+        "maxY": 2984935.9323140224,
+        "widthM": 76.23850305425003,
+        "heightM": 78.04303856706247,
+        "aspectRatio": 1.02366960840677
+      },
+      "areaM2": 3441.5943692685223,
+      "invalidReasons": []
+    },
+    {
+      "id": "d047ec52c4aee58efc8c55570afc203eebe9e4ef5422e3b3101c27f57daedbbf",
+      "geometrySha256": "a2ca7595fa1190fff048f1bb8514fa59efdf4cf03ef2d0b6c11779b6a9df7d91",
+      "boundsMetric": {
+        "minX": 709659.0930584141,
+        "minY": 2984750.6497830083,
+        "maxX": 709706.1135682759,
+        "maxY": 2984819.0534663247,
+        "widthM": 47.020509861875325,
+        "heightM": 68.40368331642821,
+        "aspectRatio": 1.4547626879709905
+      },
+      "areaM2": 1521.4572553277999,
+      "invalidReasons": []
+    },
+    {
+      "id": "137a05ef93f2511fabd16b9df74a3564ad13e50bf49a0921db36ac81e405d896",
+      "geometrySha256": "ab5a31c42fddf39413bd9519a4ac161fbfcaaa3c06648f09c4fac9cb60ff2710",
+      "boundsMetric": {
+        "minX": 709671.5582732151,
+        "minY": 2984602.2487293053,
+        "maxX": 709722.0378339046,
+        "maxY": 2984635.646802942,
+        "widthM": 50.47956068953499,
+        "heightM": 33.39807363646105,
+        "aspectRatio": 1.5114512662917747
+      },
+      "areaM2": 958.7275271528947,
+      "invalidReasons": []
+    },
+    {
+      "id": "3e56b41cb8303cb5573a0d3e1236191cc2a243dcd00e6922b7af8b069173cb41",
+      "geometrySha256": "5fb796cd33187843d157c7b5add6f691bb5b0b286d322f5c7a4492e4238bc68e",
+      "boundsMetric": {
+        "minX": 709666.1437756515,
+        "minY": 2984927.8478497593,
+        "maxX": 709703.8977747215,
+        "maxY": 2984950.777854411,
+        "widthM": 37.75399907003157,
+        "heightM": 22.930004651658237,
+        "aspectRatio": 1.6464889407382348
+      },
+      "areaM2": 484.8219448214307,
+      "invalidReasons": []
+    },
+    {
+      "id": "7c483d7cc883fd1288e330ebab2a4a7e83ee5b4e8eac7ccd3670d2be4d7b9e24",
+      "geometrySha256": "e0fd23fd7cefea7b43892d5478a6255e0ec618d204ce05576e630ff2d1b188d9",
+      "boundsMetric": {
+        "minX": 709677.2797119301,
+        "minY": 2984514.553612491,
+        "maxX": 709755.7865280617,
+        "maxY": 2984591.593640879,
+        "widthM": 78.50681613164488,
+        "heightM": 77.04002838768065,
+        "aspectRatio": 1.0190392939185207
+      },
+      "areaM2": 3596.974066121567,
+      "invalidReasons": []
+    },
+    {
+      "id": "f508958888ecfb63e0502a09267b8553b9829735f8484bed9f9ccc1a564ce8d3",
+      "geometrySha256": "81fcb2ed4891294d300026c60b6dbbabbb4295cd00a07417d1c67409c16c11c0",
+      "boundsMetric": {
+        "minX": 709681.8568125449,
+        "minY": 2984631.616789474,
+        "maxX": 709698.7698204332,
+        "maxY": 2984646.8515107683,
+        "widthM": 16.91300788836088,
+        "heightM": 15.23472129413858,
+        "aspectRatio": 1.1101619492617831
+      },
+      "areaM2": 163.98766758999713,
+      "invalidReasons": []
+    },
+    {
+      "id": "1f1dfd9d4710f43995f7556d55682fbe15f45fc6b31191ffd42b4cb2261d5243",
+      "geometrySha256": "f6ca47cef2173a05289adf2e2e8658e087a909dc814eef5cc6e6e35116b6fe85",
+      "boundsMetric": {
+        "minX": 709682.5945079031,
+        "minY": 2984735.11093208,
+        "maxX": 709768.4761548294,
+        "maxY": 2984824.7953622187,
+        "widthM": 85.88164692628197,
+        "heightM": 89.68443013867363,
+        "aspectRatio": 1.044279346618211
+      },
+      "areaM2": 4510.015294240448,
+      "invalidReasons": []
+    },
+    {
+      "id": "03afe0c5afd57ae81933cfbafb4b4b2e66238488e659caaaf14750f537517f7b",
+      "geometrySha256": "dd33abb5c825ca013bb3825f45ad6cc104a3b0c8fdbcd0dc254afdc9074958d9",
+      "boundsMetric": {
+        "minX": 709686.4561697801,
+        "minY": 2984633.765130406,
+        "maxX": 709728.727445812,
+        "maxY": 2984648.9857919603,
+        "widthM": 42.27127603185363,
+        "heightM": 15.22066155448556,
+        "aspectRatio": 2.7772298779875437
+      },
+      "areaM2": 97.67986541097738,
+      "invalidReasons": []
+    },
+    {
+      "id": "10ed5d2fe2cdff0224a6edcba8f9ef7a6c25fc9627e931d8e737efac1dd2f742",
+      "geometrySha256": "23a5b2f1c8b93c154789e7c8d8989addc4dce423b671994b1d36307754b5014d",
+      "boundsMetric": {
+        "minX": 709687.493025197,
+        "minY": 2984635.89894324,
+        "maxX": 709733.8728204342,
+        "maxY": 2984660.7402966865,
+        "widthM": 46.37979523721151,
+        "heightM": 24.841353446710855,
+        "aspectRatio": 1.86703978656817
+      },
+      "areaM2": 555.1870802675263,
+      "invalidReasons": []
+    },
+    {
+      "id": "667bab38ad23c67ee1d6b11c0d0c4a791a1c012b4034d7c0ada3ab82db48107a",
+      "geometrySha256": "2012a136f42994a0d06fda146c53c5d35d9efc0feedfda54892a82f6347d844a",
+      "boundsMetric": {
+        "minX": 709693.1557318713,
+        "minY": 2984647.1128077866,
+        "maxX": 709739.0082567264,
+        "maxY": 2984670.3406389365,
+        "widthM": 45.852524855174124,
+        "heightM": 23.227831149939448,
+        "aspectRatio": 1.9740338458286777
+      },
+      "areaM2": 485.9325639239872,
+      "invalidReasons": []
+    },
+    {
+      "id": "55b6a392bab9305b8abcd8ade192548b94c2fd2d34bf0b2e5f3e98a061aba39f",
+      "geometrySha256": "a1b9035b22b1b77d1d0670e2853690174641adffc9f88ea216d2501dd4fb2b6f",
+      "boundsMetric": {
+        "minX": 709694.7055715248,
+        "minY": 2984626.0557861356,
+        "maxX": 709716.4504009058,
+        "maxY": 2984643.3445555484,
+        "widthM": 21.744829381001182,
+        "heightM": 17.28876941278577,
+        "aspectRatio": 1.2577430389533666
+      },
+      "areaM2": 220.26803437292722,
+      "invalidReasons": []
+    },
+    {
+      "id": "436796f6fb02c3e3471906bc3aee2b0de4ee3795246250c4b2b5f8ee806f7356",
+      "geometrySha256": "50197abdc456086d999006c801d97d1047c3d107749e8b24c39623b1fb8dbd3b",
+      "boundsMetric": {
+        "minX": 709697.2555609848,
+        "minY": 2984658.3265090683,
+        "maxX": 709743.6352820266,
+        "maxY": 2984680.50169222,
+        "widthM": 46.37972104176879,
+        "heightM": 22.175183151848614,
+        "aspectRatio": 2.0915146776545286
+      },
+      "areaM2": 465.9692631003606,
+      "invalidReasons": []
+    },
+    {
+      "id": "0579bf203a3eaefcb0a1226474a87505254590313458fd203edc2219d23975c9",
+      "geometrySha256": "acfb92c5d5d83951daf1b7eab9482a5cfe06e421d7b6241a612d3000b336f83c",
+      "boundsMetric": {
+        "minX": 709702.4086278037,
+        "minY": 2984668.467695823,
+        "maxX": 709747.7437852448,
+        "maxY": 2984689.581428951,
+        "widthM": 45.335157441091724,
+        "heightM": 21.113733128178865,
+        "aspectRatio": 2.147188143653592
+      },
+      "areaM2": 404.0697517874919,
+      "invalidReasons": []
+    },
+    {
+      "id": "455963143f19b2f5e0dafe48f43879cf1f15fef575c9d71be497754fbfe4ce79",
+      "geometrySha256": "9c2da328df011255329e5e65206819e764698167b5eb669f6784e3a2d750d7fc",
+      "boundsMetric": {
+        "minX": 709698.7347239864,
+        "minY": 2984922.31361557,
+        "maxX": 709720.495787429,
+        "maxY": 2984942.2952565835,
+        "widthM": 21.761063442681916,
+        "heightM": 19.98164101364091,
+        "aspectRatio": 1.0890528674710072
+      },
+      "areaM2": 245.8559777721031,
+      "invalidReasons": []
+    },
+    {
+      "id": "8c10104cdd2871d620230b7790b51c9575569a38e24ca2176263408436995e79",
+      "geometrySha256": "3380e198d8705921f40685daea0cfd3b8ecccdcc410c89b394bf373815875181",
+      "boundsMetric": {
+        "minX": 709706.5183704295,
+        "minY": 2984677.547281492,
+        "maxX": 709751.3349823771,
+        "maxY": 2984698.120175464,
+        "widthM": 44.81661194760818,
+        "heightM": 20.572893972042948,
+        "aspectRatio": 2.178430123078973
+      },
+      "areaM2": 394.0032409005882,
+      "invalidReasons": []
+    },
+    {
+      "id": "86abfaf3c916f8c9edebacf42abdfc2febd847c12eac540aab476f0152e37610",
+      "geometrySha256": "d8fb265b1f728eb853a307af98ff7dca9a931e24976d1240157e5d6fd1007e32",
+      "boundsMetric": {
+        "minX": 709709.229069883,
+        "minY": 2984587.129803407,
+        "maxX": 709752.088516805,
+        "maxY": 2984645.0142389406,
+        "widthM": 42.8594469219679,
+        "heightM": 57.88443553354591,
+        "aspectRatio": 1.350564220740722
+      },
+      "areaM2": 1055.0770341460984,
+      "invalidReasons": []
+    },
+    {
+      "id": "52ae9e3582ff8654aab6a527b8ae4cca442cc0836110ea2f5e9264ec2e02e6b1",
+      "geometrySha256": "66ee62769a72bff5f0d1123e64656627adecbdfd99cd3878ef71ddf31211f101",
+      "boundsMetric": {
+        "minX": 709710.7777743813,
+        "minY": 2984622.0103031807,
+        "maxX": 709727.6996732487,
+        "maxY": 2984637.8104678867,
+        "widthM": 16.921898867352866,
+        "heightM": 15.800164706073701,
+        "aspectRatio": 1.0709950929086176
+      },
+      "areaM2": 155.22211690904345,
+      "invalidReasons": []
+    },
+    {
+      "id": "610467e2616b4492b53fe01d6927bd80d9f0b896488cb13a6249267a0b526070",
+      "geometrySha256": "a053572d20ccefde493497365db2bcf6313ccafad377bb78c1fe413cb2250b3a",
+      "boundsMetric": {
+        "minX": 709710.108374912,
+        "minY": 2984686.0862073763,
+        "maxX": 709763.1609388274,
+        "maxY": 2984723.222674316,
+        "widthM": 53.05256391549483,
+        "heightM": 37.13646693946794,
+        "aspectRatio": 1.4285840384862127
+      },
+      "areaM2": 1191.499988990291,
+      "invalidReasons": []
+    },
+    {
+      "id": "eacec624f178732b2dbba731e44e99cb6009c2a0af20e58d664d65b27452c97a",
+      "geometrySha256": "fe53dc731518d3619acdc5a499133ef2010e2681bf273ead99b88d0f8b35e80e",
+      "boundsMetric": {
+        "minX": 709705.7284909153,
+        "minY": 2985002.8523817523,
+        "maxX": 709728.2646988805,
+        "maxY": 2985023.4012610037,
+        "widthM": 22.536207965225913,
+        "heightM": 20.548879251349717,
+        "aspectRatio": 1.0967122678355152
+      },
+      "areaM2": 251.58082751581804,
+      "invalidReasons": []
+    },
+    {
+      "id": "c964f1dbe9335e6e333bcb2efc4227bbe177050ee81d2ee50a1f9cdf006fa602",
+      "geometrySha256": "624962dd17b634a027904fd9752c5d1117078f867ffbb7e900665b7f1f0372f9",
+      "boundsMetric": {
+        "minX": 709712.2493420616,
+        "minY": 2984797.171478419,
+        "maxX": 709824.387012535,
+        "maxY": 2984870.68747009,
+        "widthM": 112.13767047342844,
+        "heightM": 73.51599167101085,
+        "aspectRatio": 1.5253507151920398
+      },
+      "areaM2": 4700.835075271099,
+      "invalidReasons": []
+    },
+    {
+      "id": "b4e51889f8e3a748be6353d1374ffc4c8393b1fa3d654204e8048b00a1d253f8",
+      "geometrySha256": "71557833a0daf3d6daa2489b62f2267d0872bb4314fa1fd2b232cd34f8d4b8f4",
+      "boundsMetric": {
+        "minX": 709713.2791415143,
+        "minY": 2984913.0074666776,
+        "maxX": 709731.7733821323,
+        "maxY": 2984936.743093133,
+        "widthM": 18.494240617961623,
+        "heightM": 23.735626455396414,
+        "aspectRatio": 1.2834063828684241
+      },
+      "areaM2": 246.66641069418353,
+      "invalidReasons": []
+    },
+    {
+      "id": "687f9579e8c08892b04177c0f5d87f8f5bc970e855669d135d172323c3bca519",
+      "geometrySha256": "e0ec27db3f8a6cfbf6665c370562104a48c1e1258e080280a3de805cbdde7150",
+      "boundsMetric": {
+        "minX": 709715.0692513158,
+        "minY": 2984867.296374863,
+        "maxX": 709750.4277481812,
+        "maxY": 2984893.281584512,
+        "widthM": 35.358496865374036,
+        "heightM": 25.985209648963064,
+        "aspectRatio": 1.3607162437030795
+      },
+      "areaM2": 280.72004025759526,
+      "invalidReasons": []
+    },
+    {
+      "id": "7584c102132d3985b03088924abde6f6b9bf89722feab238f530049f1b8b1c47",
+      "geometrySha256": "01fa8b804ad3250f721e8750064c263937e076f5bb2bb5d159dcc612df259a2d",
+      "boundsMetric": {
+        "minX": 709715.130016331,
+        "minY": 2984934.193075305,
+        "maxX": 709733.1146280126,
+        "maxY": 2984951.633161331,
+        "widthM": 17.9846116816625,
+        "heightM": 17.440086026210338,
+        "aspectRatio": 1.0312226473329207
+      },
+      "areaM2": 169.2343770215852,
+      "invalidReasons": []
+    },
+    {
+      "id": "fed50c056db125d717ccea2cc0301a98e4fd68caefd5ff321c77449d926d1c93",
+      "geometrySha256": "9b1d56a36385a9c7af00e23d62fcc391b5ac6bea0937d8c2467f34992d4b64cf",
+      "boundsMetric": {
+        "minX": 709721.9432975838,
+        "minY": 2984719.6712357323,
+        "maxX": 709737.2322272332,
+        "maxY": 2984736.5884341444,
+        "widthM": 15.288929649395868,
+        "heightM": 16.917198412120342,
+        "aspectRatio": 1.1064998531659025
+      },
+      "areaM2": 137.41397985319654,
+      "invalidReasons": []
+    },
+    {
+      "id": "660437ddff0caf8de72b6c424e6bc5bb7656a38c8e8a8588085ecfbc68264811",
+      "geometrySha256": "8821a8374805c42e4afee564e4172153bbf727e494ef40529c16c449118d14c7",
+      "boundsMetric": {
+        "minX": 709719.6340853745,
+        "minY": 2984879.7850005617,
+        "maxX": 709743.0201574564,
+        "maxY": 2984900.7388530336,
+        "widthM": 23.38607208186295,
+        "heightM": 20.953852471895516,
+        "aspectRatio": 1.1160750565190656
+      },
+      "areaM2": 269.97674092195024,
+      "invalidReasons": []
+    },
+    {
+      "id": "b74594066742e925ee2354d84df6605ab09a001c5fb1e5099cdbdb3a9220e74e",
+      "geometrySha256": "dbcac660a67ecb02012105fd663578bf788795773a19eb9958d183807e5a2e82",
+      "boundsMetric": {
+        "minX": 709722.1707865467,
+        "minY": 2984896.3218638413,
+        "maxX": 709755.8462606854,
+        "maxY": 2984931.633922562,
+        "widthM": 33.67547413869761,
+        "heightM": 35.312058720737696,
+        "aspectRatio": 1.0485987094138471
+      },
+      "areaM2": 722.2201239535095,
+      "invalidReasons": []
+    },
+    {
+      "id": "b431018e48ff618d4dabe856ee1939aac8487fc5be731d38b486e110a7df2bb0",
+      "geometrySha256": "24ca197fc7a16ea4089670e97c26129d1c134a49202ea92c35d10d747d8f57a3",
+      "boundsMetric": {
+        "minX": 709727.9445224103,
+        "minY": 2984584.1191899576,
+        "maxX": 709743.2688511059,
+        "maxY": 2984598.8755217,
+        "widthM": 15.324328695656732,
+        "heightM": 14.756331742275506,
+        "aspectRatio": 1.03849174464911
+      },
+      "areaM2": 137.0724079026153,
+      "invalidReasons": []
+    },
+    {
+      "id": "2155c3af0c83f1911e978502231dd09a83862b24cbac73f8be0687748db1973f",
+      "geometrySha256": "7486931769c664eb8186dd3cc748317c33a2bcef053da57020c62206baad1ffc",
+      "boundsMetric": {
+        "minX": 709723.4443672091,
+        "minY": 2984930.6882842155,
+        "maxX": 709755.2344920787,
+        "maxY": 2984971.4392953124,
+        "widthM": 31.790124869556166,
+        "heightM": 40.75101109687239,
+        "aspectRatio": 1.2818764086044099
+      },
+      "areaM2": 691.517967509765,
+      "invalidReasons": []
+    },
+    {
+      "id": "372a4d06ed5360106b92f498eaa87f8e53cb288f31e05d1ac121dd23d262e380",
+      "geometrySha256": "fcc2c7a426e64a544afe7f6471df876f981fb227f9f6b2210500a0749b4ebc41",
+      "boundsMetric": {
+        "minX": 709731.5961121694,
+        "minY": 2984717.724177885,
+        "maxX": 709747.9285355075,
+        "maxY": 2984733.010254371,
+        "widthM": 16.33242333808448,
+        "heightM": 15.286076486110687,
+        "aspectRatio": 1.0684509758226404
+      },
+      "areaM2": 151.21675918731023,
+      "invalidReasons": []
+    },
+    {
+      "id": "43619039c2300499d838284b9d0eac3646c984132237958bcbdf13c1149d66db",
+      "geometrySha256": "a351a1e0c282c4f8d56e8c73a8a151d23166aa4d7e87e2e07598c3a66226fee1",
+      "boundsMetric": {
+        "minX": 709734.9705629068,
+        "minY": 2984595.516334674,
+        "maxX": 709979.0011798306,
+        "maxY": 2984675.0572917545,
+        "widthM": 244.03061692381743,
+        "heightM": 79.54095708066598,
+        "aspectRatio": 3.067986932522515
+      },
+      "areaM2": 641.0776407900116,
+      "invalidReasons": []
+    },
+    {
+      "id": "46846bd0260417747f5ca57248847f48244c892c3906118725139f7f97d714e0",
+      "geometrySha256": "2017d0a236c9ae5b52a40a0a2f204755b7bdf51ca17f6f93f4cb81e85b0dfdc9",
+      "boundsMetric": {
+        "minX": 709731.1943725968,
+        "minY": 2984840.9808572885,
+        "maxX": 709824.8964228912,
+        "maxY": 2984873.3534473977,
+        "widthM": 93.70205029437784,
+        "heightM": 32.372590109240264,
+        "aspectRatio": 2.8944872800780934
+      },
+      "areaM2": 202.9375379534337,
+      "invalidReasons": []
+    },
+    {
+      "id": "132808f05e951d0b24cd40c87438cf8c358a2398159e57179390d30f4d20e8c5",
+      "geometrySha256": "c81b9a6b534451c3157bccc0eb0b2efafd97d00a35a9f1644c655c0098227b7a",
+      "boundsMetric": {
+        "minX": 709735.4712809646,
+        "minY": 2984637.7202424384,
+        "maxX": 709786.8092123892,
+        "maxY": 2984677.5830010665,
+        "widthM": 51.33793142461218,
+        "heightM": 39.862758628092706,
+        "aspectRatio": 1.2878670014681952
+      },
+      "areaM2": 1267.000705536517,
+      "invalidReasons": []
+    },
+    {
+      "id": "a4afcb8eb1a8434d57c6961791601e7937ce4e5570571bee02fe2a40ada6f114",
+      "geometrySha256": "2318529cd007a6a17d77e8987b5d51ce624bdc7f0312eb5a4cabbbdc11ae1947",
+      "boundsMetric": {
+        "minX": 709735.5981793453,
+        "minY": 2984726.681960145,
+        "maxX": 709788.3479859058,
+        "maxY": 2984777.829707112,
+        "widthM": 52.74980656057596,
+        "heightM": 51.14774696715176,
+        "aspectRatio": 1.031322192831936
+      },
+      "areaM2": 1561.7415421491908,
+      "invalidReasons": []
+    },
+    {
+      "id": "578a74b3693df2086004146ce2dd95ebce7ad169b579bdf07fdcdde6ad2d0ca5",
+      "geometrySha256": "644d2c8a17474f7b5baff19548fdc8f9217825832dbb80273e9d1cdf3010db5e",
+      "boundsMetric": {
+        "minX": 709736.3750431745,
+        "minY": 2984868.3333376297,
+        "maxX": 709759.1009604845,
+        "maxY": 2984896.3218638413,
+        "widthM": 22.72591730998829,
+        "heightM": 27.98852621158585,
+        "aspectRatio": 1.2315686020420653
+      },
+      "areaM2": 353.2538719864189,
+      "invalidReasons": []
+    },
+    {
+      "id": "dd9ec5131085d03d919f99977fefa5413bb2e1e040048a37a5f39ce41221d81d",
+      "geometrySha256": "9dde96e61401acdc8e13e5531f2b23078a663cb66911623fa9c3db0570e1a777",
+      "boundsMetric": {
+        "minX": 709735.3676082201,
+        "minY": 2984962.2289291094,
+        "maxX": 709760.879164536,
+        "maxY": 2984982.6799263144,
+        "widthM": 25.511556315934286,
+        "heightM": 20.45099720498547,
+        "aspectRatio": 1.2474480368964684
+      },
+      "areaM2": 281.65034931362914,
+      "invalidReasons": []
+    },
+    {
+      "id": "04a572d58d2276a95d720cbf09da3fb27018919cd851615437c3c16072325ac6",
+      "geometrySha256": "1c4222c4a77ac576e2f78d91658bb55241ebffb3a3613b775c5739688d30cad7",
+      "boundsMetric": {
+        "minX": 709741.7484318108,
+        "minY": 2984714.2172801327,
+        "maxX": 709759.1620035535,
+        "maxY": 2984730.0082946685,
+        "widthM": 17.41357174271252,
+        "heightM": 15.791014535818249,
+        "aspectRatio": 1.1027519291565389
+      },
+      "areaM2": 165.06173478073578,
+      "invalidReasons": []
+    },
+    {
+      "id": "4dc3a9a64014269f74fdbabe374ca0c60d78c09acb985b4dff8b0831d454998c",
+      "geometrySha256": "4e2462ab09703cdb7e6d59a1c10aa90413928d62bb872a7a55beb0ae1d81f1b0",
+      "boundsMetric": {
+        "minX": 709738.1846943593,
+        "minY": 2984930.1919825003,
+        "maxX": 709763.5576899038,
+        "maxY": 2984975.0471950686,
+        "widthM": 25.372995544457808,
+        "heightM": 44.85521256830543,
+        "aspectRatio": 1.7678327531217772
+      },
+      "areaM2": 87.03401086408567,
+      "invalidReasons": []
+    },
+    {
+      "id": "54263d793ced7ae2b4894d5fcb1d47a88be9f4eb0c410b7dc95f34eb550015c7",
+      "geometrySha256": "3af0b5c179e422816d693d3743a7c4979585b5a5017e84dcd0eb888884b53655",
+      "boundsMetric": {
+        "minX": 709740.3182086013,
+        "minY": 2984920.6815633606,
+        "maxX": 709798.7129836017,
+        "maxY": 2984990.0777430427,
+        "widthM": 58.39477500040084,
+        "heightM": 69.3961796821095,
+        "aspectRatio": 1.1883970728825164
+      },
+      "areaM2": 2090.9008644633464,
+      "invalidReasons": []
+    },
+    {
+      "id": "17daae57e7c0bad8b6a3fe054c834e7d07e87eb9a0cd2bf08ce2709e95c661c1",
+      "geometrySha256": "28ebe639a3cbba080773c5b8caf6910d1dad7a147cf446b3e7473f7ca3a95bc6",
+      "boundsMetric": {
+        "minX": 709743.0201574564,
+        "minY": 2984888.69809897,
+        "maxX": 709774.0437755247,
+        "maxY": 2984925.6748850374,
+        "widthM": 31.023618068313226,
+        "heightM": 36.976786067243665,
+        "aspectRatio": 1.1918914804141063
+      },
+      "areaM2": 648.6207885890897,
+      "invalidReasons": []
+    },
+    {
+      "id": "46248192ad7a3886ce739f5fae0d78e67999f0458164f9ca4187458bf0026eb5",
+      "geometrySha256": "3120e6c6abf01bf1395eb3bc673072978daff2792504cf726ea9dbc5986d8f34",
+      "boundsMetric": {
+        "minX": 709742.1112277408,
+        "minY": 2984974.0280140974,
+        "maxX": 709774.445065119,
+        "maxY": 2985002.46813757,
+        "widthM": 32.333837378188036,
+        "heightM": 28.440123472828418,
+        "aspectRatio": 1.136909177243188
+      },
+      "areaM2": 508.8647418539829,
+      "invalidReasons": []
+    },
+    {
+      "id": "0f48513cf3d10617ea4bdd780805be1235fdee9e64dba8e94ffed342b02fa2f9",
+      "geometrySha256": "4c64f390a6fb76d7aa3fe4edd3f63742ac20b75ca84864505bd52fd225f72136",
+      "boundsMetric": {
+        "minX": 709749.8783703642,
+        "minY": 2984669.0826079412,
+        "maxX": 709800.8880690947,
+        "maxY": 2984724.5833943384,
+        "widthM": 51.00969873054419,
+        "heightM": 55.50078639714047,
+        "aspectRatio": 1.088043799088487
+      },
+      "areaM2": 1576.7793445728805,
+      "invalidReasons": []
+    },
+    {
+      "id": "af8c255fcc8a50e9f352c24672a5f89c3ebcfd6be0e6b47c4c380764f62364a2",
+      "geometrySha256": "b5c343f48d5057c828328db403cbbd873aa23a9f06031ed408349a60576a0bd9",
+      "boundsMetric": {
+        "minX": 709748.811514415,
+        "minY": 2984859.221020036,
+        "maxX": 709782.1913703638,
+        "maxY": 2984890.2290847874,
+        "widthM": 33.37985594884958,
+        "heightM": 31.008064751513302,
+        "aspectRatio": 1.07648949447
+      },
+      "areaM2": 604.6222408035757,
+      "invalidReasons": []
+    },
+    {
+      "id": "7a53de39d52a4ca357211a700b64c3873438ea8cd398c5727776ea5cc76e3d79",
+      "geometrySha256": "97dd631091f5456d29c59dfbf391d9b2a2164fa916c5bfda9d2ee5b63e1674fc",
+      "boundsMetric": {
+        "minX": 709754.0620347685,
+        "minY": 2984711.720605575,
+        "maxX": 709768.797025905,
+        "maxY": 2984727.5473381407,
+        "widthM": 14.734991136472672,
+        "heightM": 15.826732565648854,
+        "aspectRatio": 1.0740917601554478
+      },
+      "areaM2": 139.71101885622187,
+      "invalidReasons": []
+    },
+    {
+      "id": "a5d167a5746c14dfe08fa3efea1ac5d25e245b490923cd522d2d3b9466d2270c",
+      "geometrySha256": "ebd7e706538db5e1c8f09f248c53d760438ce50efda4ea89ea2ec545dacab8f5",
+      "boundsMetric": {
+        "minX": 709755.6590183061,
+        "minY": 2984766.196092433,
+        "maxX": 709802.7458841751,
+        "maxY": 2984807.7256675735,
+        "widthM": 47.086865869001485,
+        "heightM": 41.52957514068112,
+        "aspectRatio": 1.1338152559831178
+      },
+      "areaM2": 1171.2653623879512,
+      "invalidReasons": []
+    },
+    {
+      "id": "beaa8e9b90ced28de6a76d8d7371d184b9f48352ae76039d96bb8fbb38816ae1",
+      "geometrySha256": "7c581124ec3d362c9f6fe6557d4a14cae7bf994d29c6b4336b2c089c3072e207",
+      "boundsMetric": {
+        "minX": 709762.3243382395,
+        "minY": 2984861.283208123,
+        "maxX": 709845.483976606,
+        "maxY": 2984913.5986776236,
+        "widthM": 83.15963836654555,
+        "heightM": 52.31546950060874,
+        "aspectRatio": 1.5895802744459344
+      },
+      "areaM2": 2038.210123007279,
+      "invalidReasons": []
+    },
+    {
+      "id": "8394f2053bc13eab1222d380dd77d4cfa010309f1cd9d45471e8f0dccfacb3ee",
+      "geometrySha256": "71596ad3fbed3e9a6541cc0557cea442cc3f0a89543f071253bc67d623d24b9e",
+      "boundsMetric": {
+        "minX": 709765.3617148163,
+        "minY": 2984887.955254166,
+        "maxX": 709788.2481042776,
+        "maxY": 2984920.6815633606,
+        "widthM": 22.88638946134597,
+        "heightM": 32.726309194695204,
+        "aspectRatio": 1.4299463552330258
+      },
+      "areaM2": 401.98232162181677,
+      "invalidReasons": []
+    },
+    {
+      "id": "58752627d22b29b7a168471d6662fac9f6ac4e968a3b2dacb5bb7aecdaf13203",
+      "geometrySha256": "add2b230d72f4970bbf5f912f44cbda68603eb5bc51d8d5d3b41f268b0bd783a",
+      "boundsMetric": {
+        "minX": 709770.3687737152,
+        "minY": 2984726.1856617033,
+        "maxX": 709848.1623431265,
+        "maxY": 2984885.845188767,
+        "widthM": 77.79356941126753,
+        "heightM": 159.6595270638354,
+        "aspectRatio": 2.052348648765183
+      },
+      "areaM2": 458.878109008917,
+      "invalidReasons": []
+    },
+    {
+      "id": "9e802eeec62566b34d78f731410fa468b9c5a48349748e3e9666f4c030fecf67",
+      "geometrySha256": "ed347b81fb530395c97094d90b3d84cabe5aa672cd9f40464c4f2b81ee94bf3b",
+      "boundsMetric": {
+        "minX": 709771.4665169041,
+        "minY": 2984666.117013856,
+        "maxX": 710014.7988412296,
+        "maxY": 2984726.1856617033,
+        "widthM": 243.3323243255727,
+        "heightM": 60.068647847510874,
+        "aspectRatio": 4.050903974787172
+      },
+      "areaM2": 534.6780385148151,
+      "invalidReasons": []
+    },
+    {
+      "id": "06ed15e528dc69097daf53286f21e639bb5acdb29c09764711ae6ff754df5c76",
+      "geometrySha256": "5d0578afd48157fa3f8d3cba56b9e5a4c48f93ffe1493c8a20335704e1da5069",
+      "boundsMetric": {
+        "minX": 709773.9828549763,
+        "minY": 2984632.760374786,
+        "maxX": 709808.204026461,
+        "maxY": 2984667.0732733393,
+        "widthM": 34.22117148467805,
+        "heightM": 34.31289855344221,
+        "aspectRatio": 1.002680418722814
+      },
+      "areaM2": 691.3623028361968,
+      "invalidReasons": []
+    },
+    {
+      "id": "9e3c5db7a6a25daa27f18633de13b70db023a619e8e81522df351768964b2913",
+      "geometrySha256": "a3bf31cc5f0f5651628401c712ca328d59421968a612a40d2c5ee1aa5039a118",
+      "boundsMetric": {
+        "minX": 709772.5023235615,
+        "minY": 2984723.20167728,
+        "maxX": 709795.5784295391,
+        "maxY": 2984751.2882301016,
+        "widthM": 23.07610597764142,
+        "heightM": 28.08655282156542,
+        "aspectRatio": 1.2171270511922008
+      },
+      "areaM2": 323.34998775552197,
+      "invalidReasons": []
+    },
+    {
+      "id": "08d99e37b7bf6dee308d069b416328597879ab183934cccdd883036399300038",
+      "geometrySha256": "9ae998c17d9be0b303b0043df85b39d4695d3d8a7ffc25cbe41f6ebc33476f11",
+      "boundsMetric": {
+        "minX": 709774.5361801201,
+        "minY": 2984851.6597841512,
+        "maxX": 709805.7725878923,
+        "maxY": 2984879.4877666654,
+        "widthM": 31.236407772172242,
+        "heightM": 27.827982514165342,
+        "aspectRatio": 1.1224819390436191
+      },
+      "areaM2": 523.5923938848933,
+      "invalidReasons": []
+    },
+    {
+      "id": "b83aecea589c5986eaa92d61748a38c5ff7977b897e6ca77c328f7ad99f40e55",
+      "geometrySha256": "821e88ab737e258deb6a176a5e0e8eb0de8710f3da36737ee27acde5084570e6",
+      "boundsMetric": {
+        "minX": 709774.0437755247,
+        "minY": 2984913.580729646,
+        "maxX": 709806.226960554,
+        "maxY": 2984950.0634853207,
+        "widthM": 32.18318502930924,
+        "heightM": 36.48275567451492,
+        "aspectRatio": 1.1335968034639845
+      },
+      "areaM2": 652.3428021409013,
+      "invalidReasons": []
+    },
+    {
+      "id": "73cb60da7bea61099d6f0cfdbf30c92eff6cb16948703cd62e97cd4f4ecca285",
+      "geometrySha256": "c5598839e19d6469bb0230fa0056eb31756f06152e5b2e97d90b8547dd9323a8",
+      "boundsMetric": {
+        "minX": 709772.8822564906,
+        "minY": 2984869.2021321305,
+        "maxX": 709997.3718456784,
+        "maxY": 2984992.231922642,
+        "widthM": 224.48958918778226,
+        "heightM": 123.0297905113548,
+        "aspectRatio": 1.824676675906909
+      },
+      "areaM2": 2056.3725013005223,
+      "invalidReasons": []
+    },
+    {
+      "id": "5d7c69b372f781e587c53b6b88ebdc94a9ff3f1d909b69b2217a8c7fd75205fe",
+      "geometrySha256": "1c35919c752bbd6fbcbaf9093ffd5bf5af546dfa668588cd6521ec445b49e8bc",
+      "boundsMetric": {
+        "minX": 709780.3799592624,
+        "minY": 2984649.005707204,
+        "maxX": 709894.5027399937,
+        "maxY": 2984717.117910536,
+        "widthM": 114.1227807312971,
+        "heightM": 68.11220333212987,
+        "aspectRatio": 1.6755115111283316
+      },
+      "areaM2": 4967.17103989518,
+      "invalidReasons": []
+    },
+    {
+      "id": "4fb2539baf38ed6d746fc36b1cd6d59a8d34b70f6b402376635549fb0e279fa1",
+      "geometrySha256": "8b183415c75734ea7fcb46fc350b501443a40591634837fd4c4019fc6e06d7b0",
+      "boundsMetric": {
+        "minX": 709779.1228057868,
+        "minY": 2984900.1793572176,
+        "maxX": 709793.8751587773,
+        "maxY": 2984916.1220762655,
+        "widthM": 14.752352990559302,
+        "heightM": 15.942719047889113,
+        "aspectRatio": 1.0806899115071054
+      },
+      "areaM2": 125.97089866444938,
+      "invalidReasons": []
+    },
+    {
+      "id": "c40c354c7e30560fb9b5a31b49bd8e0d810d5b1775adccb43487f1660afddf24",
+      "geometrySha256": "8d512b1b908f52760af1488d850a49934f13be40fb7a7867502c8b50aa719dd2",
+      "boundsMetric": {
+        "minX": 709784.2709013838,
+        "minY": 2984714.7550533097,
+        "maxX": 709828.7771191484,
+        "maxY": 2984747.763428078,
+        "widthM": 44.5062177645741,
+        "heightM": 33.008374768309295,
+        "aspectRatio": 1.3483310849737342
+      },
+      "areaM2": 892.5057544210543,
+      "invalidReasons": []
+    },
+    {
+      "id": "98313180e8ef5a901e13066a93561ca261b0240469a11824423919398d5bea3a",
+      "geometrySha256": "c6e33d3a29b43ba11a9311601cb8f127f8eba2a477228521ed23db1d2aac1f7d",
+      "boundsMetric": {
+        "minX": 709784.3370942381,
+        "minY": 2984737.723374195,
+        "maxX": 709840.1120985377,
+        "maxY": 2984775.8499834733,
+        "widthM": 55.775004299590364,
+        "heightM": 38.126609278377146,
+        "aspectRatio": 1.4628891830468178
+      },
+      "areaM2": 1254.6844999284504,
+      "invalidReasons": []
+    },
+    {
+      "id": "a69d46daf8a3b6329e11b24f243209a53fed7c3ddd042eca0fcd59ae06fda1f5",
+      "geometrySha256": "6919f00f75b0476ead39e1031e6c2759a46d9b3de62c25b18b8897bc0c904cb6",
+      "boundsMetric": {
+        "minX": 709787.9318983058,
+        "minY": 2984939.241951167,
+        "maxX": 709809.8091233289,
+        "maxY": 2984958.6112403157,
+        "widthM": 21.87722502311226,
+        "heightM": 19.36928914859891,
+        "aspectRatio": 1.1294800162913963
+      },
+      "areaM2": 194.0555329686811,
+      "invalidReasons": []
+    },
+    {
+      "id": "d147e7cea2ba633c73b0c7ab8ef30a60f5ae7eba1efe6dc5cf82445c5cc2725e",
+      "geometrySha256": "f426d9e305da494689115d1f781b5a6116f7fcc250312c097b51102d4d312b0d",
+      "boundsMetric": {
+        "minX": 709794.8417661601,
+        "minY": 2984623.8465041867,
+        "maxX": 709845.0720057269,
+        "maxY": 2984662.1334839175,
+        "widthM": 50.230239566764794,
+        "heightM": 38.28697973070666,
+        "aspectRatio": 1.3119405061475633
+      },
+      "areaM2": 1217.5008439657447,
+      "invalidReasons": []
+    },
+    {
+      "id": "b3b652d77d0da950487b9b01b00303837c23afb89b731fd3ec6a88366cf30c0d",
+      "geometrySha256": "b24d4e12e5e9e43e8233f5837e20e99e67ef0826dfdc92a4d190b80167fcc4ee",
+      "boundsMetric": {
+        "minX": 709792.0491611098,
+        "minY": 2984944.681120929,
+        "maxX": 709822.3649041357,
+        "maxY": 2984974.616451911,
+        "widthM": 30.315743025857955,
+        "heightM": 29.93533098232001,
+        "aspectRatio": 1.0127077948048284
+      },
+      "areaM2": 475.7994090330636,
+      "invalidReasons": []
+    },
+    {
+      "id": "89722ac820548a0f3da14642178eb8c1b2b97d7e8fc5d32eaf39f1ac1164e1b1",
+      "geometrySha256": "4b5ff8284799f96844995e13b8e6d0b78965c8a716a9e2762fefcb8fbe36c904",
+      "boundsMetric": {
+        "minX": 709795.6445915349,
+        "minY": 2984761.232705779,
+        "maxX": 709874.0606299669,
+        "maxY": 2984860.7960636765,
+        "widthM": 78.41603843204211,
+        "heightM": 99.5633578975685,
+        "aspectRatio": 1.2696810485249561
+      },
+      "areaM2": 3981.480029214164,
+      "invalidReasons": []
+    },
+    {
+      "id": "58a8e78f4859964437a10f87542083a123c88b9e94707067683a26875c7bd674",
+      "geometrySha256": "5493d3ca1ea0fa74586b27ba5b58d0342bc8b9668759d598a2d43cb18499d17b",
+      "boundsMetric": {
+        "minX": 709793.8751587773,
+        "minY": 2984905.380643381,
+        "maxX": 709827.7406197785,
+        "maxY": 2984961.7676769127,
+        "widthM": 33.86546100117266,
+        "heightM": 56.387033531907946,
+        "aspectRatio": 1.6650307382484895
+      },
+      "areaM2": 729.5404440701778,
+      "invalidReasons": []
+    },
+    {
+      "id": "e8ccb68a4fdb7cf3e2888ae9b2616c88602bf27e6d60b20025a6d18983209623",
+      "geometrySha256": "cf5ccf3a6b0513586439fb22b26bc2f00a912e9f738d3decfac349d7e4d15132",
+      "boundsMetric": {
+        "minX": 709797.573429784,
+        "minY": 2984842.5854017125,
+        "maxX": 709834.1667653847,
+        "maxY": 2984870.8716421346,
+        "widthM": 36.59333560068626,
+        "heightM": 28.286240422166884,
+        "aspectRatio": 1.293679720406018
+      },
+      "areaM2": 607.7396508804487,
+      "invalidReasons": []
+    },
+    {
+      "id": "8a47c5621b93673663f01af4697c79b0366b24f71d611244a31c9e22b0f528bc",
+      "geometrySha256": "3030a76cf123e0d6e5194bcd44c653434b94bd273ffba818aebcc0fee32e39ea",
+      "boundsMetric": {
+        "minX": 709809.4552795676,
+        "minY": 2984894.5858959258,
+        "maxX": 709887.4113346908,
+        "maxY": 2984959.208730846,
+        "widthM": 77.95605512312613,
+        "heightM": 64.62283492041752,
+        "aspectRatio": 1.2063236659166743
+      },
+      "areaM2": 2393.7007772861657,
+      "invalidReasons": []
+    },
+    {
+      "id": "2d053bb48232207354420c0fd18a8baa5d56508d33bbbc9098fb7b77c9319d7a",
+      "geometrySha256": "ed98464a1de4d50e18a8501640402f7cdfe197ab3bda16c791e23ed0835dfcbd",
+      "boundsMetric": {
+        "minX": 709817.9792460324,
+        "minY": 2984704.3793410524,
+        "maxX": 709897.3868570495,
+        "maxY": 2984833.3336928166,
+        "widthM": 79.40761101711541,
+        "heightM": 128.95435176417232,
+        "aspectRatio": 1.6239545569048497
+      },
+      "areaM2": 4804.706680450626,
+      "invalidReasons": []
+    },
+    {
+      "id": "6a2c30ad410f4843179c8f5d51411e8381bbc173fb4f08760e9fe1d32fa2260b",
+      "geometrySha256": "93c1bf125aa38af85c9594c7cf18afe7e4e6be8997dce134a69bb42b5f095aee",
+      "boundsMetric": {
+        "minX": 709836.8463452056,
+        "minY": 2984851.109617631,
+        "maxX": 709869.6013559431,
+        "maxY": 2984884.837104645,
+        "widthM": 32.755010737571865,
+        "heightM": 33.727487014140934,
+        "aspectRatio": 1.0296893896436303
+      },
+      "areaM2": 640.2734353634071,
+      "invalidReasons": []
+    },
+    {
+      "id": "2b12f20cad08894aef32e102f438955c64c2b9c3eddbb473e142857dc137be9a",
+      "geometrySha256": "6161412f47f34b2bef1acbe8b9775c9e99ec6cbc4686bedb02ebf5f2921ae397",
+      "boundsMetric": {
+        "minX": 709856.336912069,
+        "minY": 2984825.178262244,
+        "maxX": 709912.211776807,
+        "maxY": 2984893.2543271305,
+        "widthM": 55.87486473796889,
+        "heightM": 68.07606488652527,
+        "aspectRatio": 1.2183665268054822
+      },
+      "areaM2": 2270.538072673982,
+      "invalidReasons": []
+    },
+    {
+      "id": "461921ddecbc12eedfe47f17889477c1cb6f480e6e0e5d41e8f945282932a672",
+      "geometrySha256": "fe9aaa5df5dcfd004e3a0c94e4597f1a23b61fe0b7f84ca220f8fdc167f6c9f2",
+      "boundsMetric": {
+        "minX": 709862.9023264728,
+        "minY": 2984700.9281919096,
+        "maxX": 709909.7359027496,
+        "maxY": 2984776.5004415354,
+        "widthM": 46.83357627678197,
+        "heightM": 75.57224962580949,
+        "aspectRatio": 1.6136339701923403
+      },
+      "areaM2": 1154.5772638721842,
+      "invalidReasons": []
+    },
+    {
+      "id": "ce2c44439bb76e343d3449b0d1f689dcf62276392305ee0b56933838b389a510",
+      "geometrySha256": "ea7659e7065d44af931b91c3bbed977fbf40076c17761bfe5fee4dd419a2d43a",
+      "boundsMetric": {
+        "minX": 709877.8765821704,
+        "minY": 2984698.916637952,
+        "maxX": 709917.2452678587,
+        "maxY": 2984770.877351331,
+        "widthM": 39.3686856883578,
+        "heightM": 71.96071337908506,
+        "aspectRatio": 1.8278667961822626
+      },
+      "areaM2": 566.5631916024983,
+      "invalidReasons": []
+    },
+    {
+      "id": "41b6f26b012a12fc92945496a133ff680a682dfc71d961b66f6358fb1dc0e1ff",
+      "geometrySha256": "8258f3eb33896146a91cb8f619a6c2b970fc91242817780b8b4c4999f059b005",
+      "boundsMetric": {
+        "minX": 709879.6365118353,
+        "minY": 2984768.8323358987,
+        "maxX": 709920.0842842907,
+        "maxY": 2984803.858973189,
+        "widthM": 40.44777245540172,
+        "heightM": 35.02663729013875,
+        "aspectRatio": 1.154771784695107
+      },
+      "areaM2": 769.010415166577,
+      "invalidReasons": []
+    },
+    {
+      "id": "af14febd22b37c99743691f67aa8b8b3abc8b3b0479ed829b59dfbf4b738a7f6",
+      "geometrySha256": "bd1daaf17645eda34a5cc63802ffd847206afac4d3dcaee23e331cbc4f431f7f",
+      "boundsMetric": {
+        "minX": 709884.8322242413,
+        "minY": 2984696.9251456666,
+        "maxX": 709923.1472821895,
+        "maxY": 2984767.8221631167,
+        "widthM": 38.31505794811528,
+        "heightM": 70.89701745007187,
+        "aspectRatio": 1.8503695739173298
+      },
+      "areaM2": 535.8340298268505,
+      "invalidReasons": []
+    },
+    {
+      "id": "2693ae4d8d9a84a0c5948fdd84f9aedcea1c4af10caee61d0315a76ef7fabca3",
+      "geometrySha256": "eb321ef4cb821609896659a7a2b095a07cb30dfe186e12cab133d72d94c65e2c",
+      "boundsMetric": {
+        "minX": 709885.7464035477,
+        "minY": 2984789.0627859067,
+        "maxX": 709926.6701131709,
+        "maxY": 2984822.512270054,
+        "widthM": 40.92370962316636,
+        "heightM": 33.44948414713144,
+        "aspectRatio": 1.2234481537341104
+      },
+      "areaM2": 758.8829021702664,
+      "invalidReasons": []
+    },
+    {
+      "id": "c3ccede0c48d47208427a10d733294fb0c9898e1be5970848a6b0fd26d026692",
+      "geometrySha256": "d03249bd4818d0081b3be436b6e48850fad2a7db30a707811363be31e970c723",
+      "boundsMetric": {
+        "minX": 709892.3238112095,
+        "minY": 2984696.4380113264,
+        "maxX": 709925.2996697638,
+        "maxY": 2984765.2720645457,
+        "widthM": 32.97585855424404,
+        "heightM": 68.83405321929604,
+        "aspectRatio": 2.0874074622216923
+      },
+      "areaM2": 179.9821565034165,
+      "invalidReasons": []
+    },
+    {
+      "id": "d90ba37127d48748081faf54ad7274590d8214d3849fceb04df9ab2b20b37d76",
+      "geometrySha256": "3784f0db4f830fa8107c5e49782dec248eb71394cce75fd8cb66c523fb1b6e98",
+      "boundsMetric": {
+        "minX": 709892.3559369803,
+        "minY": 2984809.310212285,
+        "maxX": 709936.2988500735,
+        "maxY": 2984850.236409336,
+        "widthM": 43.942913093138486,
+        "heightM": 40.92619705107063,
+        "aspectRatio": 1.073711125377796
+      },
+      "areaM2": 1123.3391238924687,
+      "invalidReasons": []
+    },
+    {
+      "id": "3a7a1f65564922c49c19bdfa87be76ee5e8a14152a6da5adf9813bc446147c30",
+      "geometrySha256": "95f7cedf3a2efc81b1fb8ba634fc60cb78fea13155654c74e779c9fc729ba3b5",
+      "boundsMetric": {
+        "minX": 709902.5475812157,
+        "minY": 2984839.6558127776,
+        "maxX": 709950.6608452069,
+        "maxY": 2984884.959454751,
+        "widthM": 48.11326399119571,
+        "heightM": 45.30364197352901,
+        "aspectRatio": 1.0620175750838832
+      },
+      "areaM2": 1331.2581066054759,
+      "invalidReasons": []
+    },
+    {
+      "id": "2399f598b01d2e3c2268122b2fd32710e71353cede7075333446090d5ea218c0",
+      "geometrySha256": "b954094489a20f1536494db53de2a20c1810069e81779cd421af70a298b9f688",
+      "boundsMetric": {
+        "minX": 709914.030560062,
+        "minY": 2984756.186858233,
+        "maxX": 709960.0196794271,
+        "maxY": 2984801.8528965903,
+        "widthM": 45.989119365112856,
+        "heightM": 45.66603835718706,
+        "aspectRatio": 1.0070748639371505
+      },
+      "areaM2": 1342.954728102325,
+      "invalidReasons": []
+    },
+    {
+      "id": "1c79f30c94594b173fbbca4a1b303b0d7b45fc4e996fa99a6fa9e02cc2250e07",
+      "geometrySha256": "617acc0a1c6a80ace0dc7d081475f1252b6034649e5b6790e3ba0367eb5492a3",
+      "boundsMetric": {
+        "minX": 709921.6997069927,
+        "minY": 2984747.656844619,
+        "maxX": 709950.470755957,
+        "maxY": 2984764.244101794,
+        "widthM": 28.77104896423407,
+        "heightM": 16.587257174775004,
+        "aspectRatio": 1.734527213335036
+      },
+      "areaM2": 239.17318302082424,
+      "invalidReasons": []
+    },
+    {
+      "id": "c27465775efba36ff771a0ba640ec9ec3acc8a2efce678a96892e986fecf2c97",
+      "geometrySha256": "53a4138bec0ebcb53e82561f3ec3c756946a5adb2e18099e38f853296b8d6714",
+      "boundsMetric": {
+        "minX": 709924.1335062906,
+        "minY": 2984790.262185865,
+        "maxX": 709968.5062253176,
+        "maxY": 2984838.62097327,
+        "widthM": 44.37271902698558,
+        "heightM": 48.35878740483895,
+        "aspectRatio": 1.0898315105601082
+      },
+      "areaM2": 1347.2383900203472,
+      "invalidReasons": []
+    }
+  ],
+  "invalidCount": 0,
+  "invalid": [],
+  "duplicateIdCount": 0,
+  "duplicateIds": [],
+  "conflictingSameIdGeometryCount": 0,
+  "conflictingSameIdGeometry": [],
+  "exactGeometryDuplicateCount": 0,
+  "exactGeometryDuplicates": [],
+  "overlapThresholdM2": 0.01,
+  "overlapPairCount": 0,
+  "totalMaterialOverlapM2": 0,
+  "maxMaterialOverlapM2": 0,
+  "maxOverlapFractionOfSmaller": 0,
+  "overlaps": [],
+  "subthresholdPositiveIntersectionPairCount": 6,
+  "subthresholdPositiveIntersectionTotalM2": 0.00005054164991297118,
+  "subthresholdPositiveIntersections": [
+    {
+      "ids": [
+        "2693ae4d8d9a84a0c5948fdd84f9aedcea1c4af10caee61d0315a76ef7fabca3",
+        "2399f598b01d2e3c2268122b2fd32710e71353cede7075333446090d5ea218c0"
+      ],
+      "featureIndexes": [
+        152,
+        156
+      ],
+      "areaM2": 0.000024159622557076173
+    },
+    {
+      "ids": [
+        "41b6f26b012a12fc92945496a133ff680a682dfc71d961b66f6358fb1dc0e1ff",
+        "2399f598b01d2e3c2268122b2fd32710e71353cede7075333446090d5ea218c0"
+      ],
+      "featureIndexes": [
+        150,
+        156
+      ],
+      "areaM2": 0.00001810369725707979
+    },
+    {
+      "ids": [
+        "d19718c2329eecfaafab024b2001a81f5ea1b49f2d1f32d5f4f91e53c0981379",
+        "52ae9e3582ff8654aab6a527b8ae4cca442cc0836110ea2f5e9264ec2e02e6b1"
+      ],
+      "featureIndexes": [
+        79,
+        97
+      ],
+      "areaM2": 0.000007002651743527838
+    },
+    {
+      "ids": [
+        "d19718c2329eecfaafab024b2001a81f5ea1b49f2d1f32d5f4f91e53c0981379",
+        "03afe0c5afd57ae81933cfbafb4b4b2e66238488e659caaaf14750f537517f7b"
+      ],
+      "featureIndexes": [
+        79,
+        88
+      ],
+      "areaM2": 0.0000012711667178866293
+    },
+    {
+      "ids": [
+        "014a7211c3f937e8cd4d5f606d5b64645147e6ff66859479a86d137ba3efdaa1",
+        "4c11364c0c066a9aa2c7853a5e8afb92f3b38adbf036bb8644ccee9f52bf1d6d"
+      ],
+      "featureIndexes": [
+        16,
+        24
+      ],
+      "areaM2": 4.5112617657607715e-9
+    },
+    {
+      "ids": [
+        "4c11364c0c066a9aa2c7853a5e8afb92f3b38adbf036bb8644ccee9f52bf1d6d",
+        "f907715ea262714ba1d28166867facc6a458ed8d77dd7e568af9e758e9ae5a6f"
+      ],
+      "featureIndexes": [
+        24,
+        26
+      ],
+      "areaM2": 3.756349886089444e-13
+    }
+  ],
+  "operationErrorCount": 0,
+  "operationErrors": [],
+  "geometryChangedOrRepaired": false,
+  "geometryPass": true
+}

@@ -12905,6 +12905,767 @@
       ],
       "identityKind": "geometry-sha256-v1",
       "lookupCellSize": 0.001
+    },
+    {
+      "id": "in-mp-bhulekh-survey-tiles",
+      "name": "Madhya Pradesh cadastral maps — indianopenmaps tile snapshot (MPBhulekh_MP_Survey_Cadastrals)",
+      "adapter": "vector-tiles",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/madhya-pradesh/surveys/mpbhulekh/{z}/{x}/{y}.pbf",
+      "zoom": 14,
+      "layer": "MPBhulekh_MP_Survey_Cadastrals",
+      "groupFields": [
+        "ulpin"
+      ],
+      "parcelNumberField": "parcel_no",
+      "outFields": [
+        "ulpin",
+        "parcel_no",
+        "parcel_type",
+        "village_name_en",
+        "tehsil_name_en",
+        "district_name_en"
+      ],
+      "idPrefix": "IN-MP-BHULEKH-",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.002,
+      "maxBboxKm2": 4,
+      "maxTiles": 36,
+      "maxFeatures": 10000,
+      "maxConcurrentQueries": 2,
+      "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+      "countryCode": "IN",
+      "stateCode": "MP",
+      "cityIds": [
+        "ujjain",
+        "indore",
+        "gwalior",
+        "bhopal",
+        "jabalpur",
+        "satna"
+      ],
+      "scope": "Cadastral parcels of Madhya Pradesh from the MPBhulekh_MP_Survey_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-14 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "MP Bhulekh survey parcels (webgis2.mpbhulekh.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+      "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+      "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+      "caveats": [
+        "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+        "Geometry is rebuilt from zoom-14 vector tiles: outlines are snapped to a grid of about 0.6 m and may be lightly simplified compared with the original.",
+        "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+        "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+        "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+      ],
+      "metricSridByCity": {
+        "ujjain": 32643,
+        "indore": 32643,
+        "gwalior": 32644,
+        "bhopal": 32643,
+        "jabalpur": 32644,
+        "satna": 32644
+      },
+      "metricSrid": 32643
+    },
+    {
+      "id": "in-jk-lris-khasra-tiles",
+      "name": "Jammu and Kashmir cadastral maps — indianopenmaps tile snapshot (LRIS_JK_Khasra_Cadastrals)",
+      "adapter": "vector-tiles",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/jammu-and-kashmir/khasras/lris/{z}/{x}/{y}.pbf",
+      "zoom": 15,
+      "layer": "LRIS_JK_Khasra_Cadastrals",
+      "groupFields": [
+        "OBJECTID"
+      ],
+      "parcelNumberField": "KHASRA_NO",
+      "outFields": [
+        "OBJECTID",
+        "KHASRA_NO",
+        "KHEWAT_NO",
+        "VILL_NAME",
+        "DIST_E"
+      ],
+      "idPrefix": "IN-JK-LRIS-",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.002,
+      "maxBboxKm2": 2,
+      "maxTiles": 36,
+      "maxFeatures": 10000,
+      "maxConcurrentQueries": 2,
+      "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+      "countryCode": "IN",
+      "stateCode": "JK",
+      "cityIds": [
+        "srinagar",
+        "jammu"
+      ],
+      "scope": "Cadastral parcels of Jammu and Kashmir from the LRIS_JK_Khasra_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-15 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "J&K Land Records Information System khasra maps (landrecords.jk.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+      "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+      "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+      "caveats": [
+        "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+        "Geometry is rebuilt from zoom-15 vector tiles: outlines are snapped to a grid of about 0.3 m and may be lightly simplified compared with the original.",
+        "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+        "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+        "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+      ],
+      "metricSridByCity": {
+        "srinagar": 32643,
+        "jammu": 32643
+      },
+      "metricSrid": 32643
+    },
+    {
+      "id": "in-od-odisha4kgeo-tiles",
+      "name": "Odisha cadastral maps — indianopenmaps tile snapshot (Odisha4kgeo_OD_Cadastrals)",
+      "adapter": "vector-tiles",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/odisha/odisha4kgeo/{z}/{x}/{y}.pbf",
+      "zoom": 14,
+      "layer": "Odisha4kgeo_OD_Cadastrals",
+      "groupFields": [
+        "v_id",
+        "revenue_plot"
+      ],
+      "parcelNumberField": "revenue_plot",
+      "outFields": [
+        "v_id",
+        "revenue_plot",
+        "v_name",
+        "p_name",
+        "b_name",
+        "d_name"
+      ],
+      "idPrefix": "IN-OD-4KGEO-",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.002,
+      "maxBboxKm2": 4,
+      "maxTiles": 36,
+      "maxFeatures": 10000,
+      "maxConcurrentQueries": 2,
+      "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+      "countryCode": "IN",
+      "stateCode": "OD",
+      "cityIds": [
+        "rourkela",
+        "brahmapur",
+        "cuttack",
+        "bhubaneshwar",
+        "choudwar"
+      ],
+      "scope": "Cadastral parcels of Odisha from the Odisha4kgeo_OD_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-14 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Odisha Geospatial Portal revenue plots (odisha4kgeo.in, no bounding-box access). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+      "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+      "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+      "caveats": [
+        "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+        "Geometry is rebuilt from zoom-14 vector tiles: outlines are snapped to a grid of about 0.6 m and may be lightly simplified compared with the original.",
+        "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+        "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+        "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+      ],
+      "metricSridByCity": {
+        "rourkela": 32645,
+        "brahmapur": 32645,
+        "cuttack": 32645,
+        "bhubaneshwar": 32645,
+        "choudwar": 32645
+      },
+      "metricSrid": 32645
+    },
+    {
+      "id": "in-jh-jsac-tiles",
+      "name": "Jharkhand cadastral maps — indianopenmaps tile snapshot (JSAC_JH_Cadastrals)",
+      "adapter": "vector-tiles",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/jharkhand/jsac/{z}/{x}/{y}.pbf",
+      "zoom": 15,
+      "layer": "JSAC_JH_Cadastrals",
+      "groupFields": [
+        "BHUCODE",
+        "OBJECTID"
+      ],
+      "parcelNumberField": "KIDE",
+      "outFields": [
+        "OBJECTID",
+        "BHUCODE",
+        "KIDE",
+        "VILLAGE_NA",
+        "BLOCK_NAME",
+        "DIST_NAME"
+      ],
+      "idPrefix": "IN-JH-JSAC-",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.002,
+      "maxBboxKm2": 2,
+      "maxTiles": 36,
+      "maxFeatures": 10000,
+      "maxConcurrentQueries": 2,
+      "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+      "countryCode": "IN",
+      "stateCode": "JH",
+      "cityIds": [
+        "dhanbad"
+      ],
+      "scope": "Cadastral parcels of Jharkhand from the JSAC_JH_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-15 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Jharkhand Space Applications Centre cadastral maps (gis.jharkhand.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+      "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+      "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+      "caveats": [
+        "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+        "Geometry is rebuilt from zoom-15 vector tiles: outlines are snapped to a grid of about 0.3 m and may be lightly simplified compared with the original.",
+        "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+        "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+        "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+      ],
+      "metricSridByCity": {
+        "dhanbad": 32645
+      },
+      "metricSrid": 32645
+    },
+    {
+      "id": "in-wb-amrut-tiles",
+      "name": "West Bengal cadastral maps — indianopenmaps tile snapshot (WB_AMRUT_Cadastrals)",
+      "adapter": "vector-tiles",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/west-bengal/urban/wb-amrut/{z}/{x}/{y}.pbf",
+      "zoom": 15,
+      "layer": "WB_AMRUT_Cadastrals",
+      "groupFields": [
+        "Cad_ID"
+      ],
+      "parcelNumberField": "Plot_No",
+      "outFields": [
+        "Cad_ID",
+        "Plot_No",
+        "Mouza_Name",
+        "JL_No_Sector",
+        "ULB_Code"
+      ],
+      "idPrefix": "IN-WB-AMRUT-",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.002,
+      "maxBboxKm2": 2,
+      "maxTiles": 36,
+      "maxFeatures": 10000,
+      "maxConcurrentQueries": 2,
+      "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+      "countryCode": "IN",
+      "stateCode": "WB",
+      "cityIds": [
+        "asansol",
+        "siliguri",
+        "jalpaiguri",
+        "kharagpur",
+        "krishnanagar"
+      ],
+      "scope": "Cadastral parcels of West Bengal from the WB_AMRUT_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-15 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "West Bengal AMRUT urban cadastral maps (nagargispariseva.wb.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+      "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+      "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+      "caveats": [
+        "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+        "Geometry is rebuilt from zoom-15 vector tiles: outlines are snapped to a grid of about 0.3 m and may be lightly simplified compared with the original.",
+        "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+        "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+        "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+      ],
+      "metricSridByCity": {
+        "asansol": 32645,
+        "siliguri": 32645,
+        "jalpaiguri": 32645,
+        "kharagpur": 32645,
+        "krishnanagar": 32645
+      },
+      "metricSrid": 32645
+    },
+    {
+      "id": "in-tn-tngis-tiles",
+      "name": "Tamil Nadu cadastral maps — indianopenmaps tile snapshot (TNGIS_TN_Cadastrals)",
+      "adapter": "vector-tiles",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/tamil-nadu/tngis/{z}/{x}/{y}.pbf",
+      "zoom": 14,
+      "layer": "TNGIS_TN_Cadastrals",
+      "groupFields": [
+        "id"
+      ],
+      "parcelNumberField": "survey_number",
+      "outFields": [
+        "id",
+        "survey_number",
+        "lgd_village_code",
+        "lgd_taluk_code",
+        "lgd_district_code"
+      ],
+      "idPrefix": "IN-TN-TNGIS-",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.002,
+      "maxBboxKm2": 4,
+      "maxTiles": 36,
+      "maxFeatures": 10000,
+      "maxConcurrentQueries": 2,
+      "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+      "countryCode": "IN",
+      "stateCode": "TN",
+      "cityIds": [
+        "coimbatore",
+        "tiruppur",
+        "erode",
+        "vellore"
+      ],
+      "scope": "Cadastral parcels of Tamil Nadu from the TNGIS_TN_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-14 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "TNGIS cadastral maps (tngis.tn.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+      "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+      "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+      "caveats": [
+        "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+        "Geometry is rebuilt from zoom-14 vector tiles: outlines are snapped to a grid of about 0.6 m and may be lightly simplified compared with the original.",
+        "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+        "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+        "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+      ],
+      "metricSridByCity": {
+        "coimbatore": 32643,
+        "tiruppur": 32643,
+        "erode": 32643,
+        "vellore": 32644
+      },
+      "metricSrid": 32643
+    },
+    {
+      "id": "in-ka-kgis-tiles",
+      "name": "Karnataka cadastral maps — indianopenmaps tile snapshot (KGISMAPS_KN_Cadastrals)",
+      "adapter": "vector-tiles",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/karnataka/kgismaps/{z}/{x}/{y}.pbf",
+      "zoom": 13,
+      "layer": "KGISMAPS_KN_Cadastrals",
+      "groupFields": [
+        "OBJECTID"
+      ],
+      "parcelNumberField": "Label",
+      "outFields": [
+        "OBJECTID",
+        "KGISCadastralID",
+        "Label",
+        "KGISVillageCode",
+        "Category"
+      ],
+      "idPrefix": "IN-KA-KGIS-",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.002,
+      "maxBboxKm2": 9,
+      "maxTiles": 36,
+      "maxFeatures": 10000,
+      "maxConcurrentQueries": 2,
+      "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+      "countryCode": "IN",
+      "stateCode": "KA",
+      "cityIds": [
+        "dharwad",
+        "davanagere",
+        "ballari"
+      ],
+      "scope": "Cadastral parcels of Karnataka from the KGISMAPS_KN_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-13 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "KGIS (Karnataka GIS) cadastral maps (kgis.ksrsac.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+      "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+      "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+      "caveats": [
+        "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+        "Geometry is rebuilt from zoom-13 vector tiles: outlines are snapped to a grid of about 1.1 m and may be lightly simplified compared with the original.",
+        "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+        "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+        "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+      ],
+      "metricSridByCity": {
+        "dharwad": 32643,
+        "davanagere": 32643,
+        "ballari": 32643
+      },
+      "metricSrid": 32643
+    },
+    {
+      "id": "in-up-ncog-tiles",
+      "name": "Uttar Pradesh cadastral maps — indianopenmaps tile snapshot (NCOG_UttarPradesh_Cadastrals)",
+      "adapter": "vector-tiles",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/uttar-pradesh/ncog/{z}/{x}/{y}.pbf",
+      "zoom": 14,
+      "layer": "NCOG_UttarPradesh_Cadastrals",
+      "groupFields": [
+        "gid"
+      ],
+      "parcelNumberField": "khasra",
+      "outFields": [
+        "gid",
+        "khasra",
+        "village",
+        "tahsil",
+        "district"
+      ],
+      "idPrefix": "IN-UP-NCOG-",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.002,
+      "maxBboxKm2": 4,
+      "maxTiles": 36,
+      "maxFeatures": 10000,
+      "maxConcurrentQueries": 2,
+      "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+      "countryCode": "IN",
+      "stateCode": "UP",
+      "cityIds": [
+        "hapur",
+        "farrukhabad",
+        "hardoi",
+        "fatehpur",
+        "faizabad",
+        "sultanpur",
+        "gyanpur",
+        "mehdawal",
+        "gorakhpur",
+        "jianpur",
+        "azamgarh",
+        "chauri_chaura",
+        "dohrighat",
+        "saidpur"
+      ],
+      "scope": "Cadastral parcels of Uttar Pradesh from the NCOG_UttarPradesh_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-14 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+      "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+      "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+      "caveats": [
+        "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+        "Geometry is rebuilt from zoom-14 vector tiles: outlines are snapped to a grid of about 0.6 m and may be lightly simplified compared with the original.",
+        "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+        "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+        "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+      ],
+      "metricSridByCity": {
+        "hapur": 32643,
+        "farrukhabad": 32644,
+        "hardoi": 32644,
+        "fatehpur": 32644,
+        "faizabad": 32644,
+        "sultanpur": 32644,
+        "gyanpur": 32644,
+        "mehdawal": 32644,
+        "gorakhpur": 32644,
+        "jianpur": 32644,
+        "azamgarh": 32644,
+        "chauri_chaura": 32644,
+        "dohrighat": 32644,
+        "saidpur": 32644
+      },
+      "metricSrid": 32643
+    },
+    {
+      "id": "in-rj-ncog-tiles",
+      "name": "Rajasthan cadastral maps — indianopenmaps tile snapshot (NCOG_Rajasthan_Cadastrals)",
+      "adapter": "vector-tiles",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/rajasthan/ncog/{z}/{x}/{y}.pbf",
+      "zoom": 15,
+      "layer": "NCOG_Rajasthan_Cadastrals",
+      "groupFields": [
+        "gid"
+      ],
+      "parcelNumberField": "khasra_no",
+      "outFields": [
+        "gid",
+        "khasra_no",
+        "village",
+        "tehsil",
+        "district"
+      ],
+      "idPrefix": "IN-RJ-NCOG-",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.002,
+      "maxBboxKm2": 2,
+      "maxTiles": 36,
+      "maxFeatures": 10000,
+      "maxConcurrentQueries": 2,
+      "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+      "countryCode": "IN",
+      "stateCode": "RJ",
+      "cityIds": [
+        "udaipur"
+      ],
+      "scope": "Cadastral parcels of Rajasthan from the NCOG_Rajasthan_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-15 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "NCOG (BISAG-N) Rajasthan cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+      "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+      "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+      "caveats": [
+        "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+        "Geometry is rebuilt from zoom-15 vector tiles: outlines are snapped to a grid of about 0.3 m and may be lightly simplified compared with the original.",
+        "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+        "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+        "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+      ],
+      "metricSridByCity": {
+        "udaipur": 32643
+      },
+      "metricSrid": 32643
+    },
+    {
+      "id": "in-br-ncog-tiles",
+      "name": "Bihar cadastral maps — indianopenmaps tile snapshot (NCOG_Bihar_Cadastrals)",
+      "adapter": "vector-tiles",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/bihar/ncog/{z}/{x}/{y}.pbf",
+      "zoom": 15,
+      "layer": "NCOG_Bihar_Cadastrals",
+      "groupFields": [
+        "gid"
+      ],
+      "parcelNumberField": "kid",
+      "outFields": [
+        "gid",
+        "kid",
+        "bhucode",
+        "vname",
+        "dname"
+      ],
+      "idPrefix": "IN-BR-NCOG-",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.002,
+      "maxBboxKm2": 2,
+      "maxTiles": 36,
+      "maxFeatures": 10000,
+      "maxConcurrentQueries": 2,
+      "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+      "countryCode": "IN",
+      "stateCode": "BR",
+      "cityIds": [
+        "munger",
+        "bhore",
+        "dighwara",
+        "ekangar_sarai",
+        "bibhutpur",
+        "asarganj"
+      ],
+      "scope": "Cadastral parcels of Bihar from the NCOG_Bihar_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-15 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "NCOG (BISAG-N) Bihar cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+      "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+      "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+      "caveats": [
+        "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+        "Geometry is rebuilt from zoom-15 vector tiles: outlines are snapped to a grid of about 0.3 m and may be lightly simplified compared with the original.",
+        "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+        "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+        "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+      ],
+      "metricSridByCity": {
+        "munger": 32645,
+        "bhore": 32645,
+        "dighwara": 32645,
+        "ekangar_sarai": 32645,
+        "bibhutpur": 32645,
+        "asarganj": 32645
+      },
+      "metricSrid": 32645
+    },
+    {
+      "id": "in-gj-ncog-tiles",
+      "name": "Gujarat cadastral maps — indianopenmaps tile snapshot (NCOG_Gujarat_Cadastrals)",
+      "adapter": "vector-tiles",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/gujarat/ncog/{z}/{x}/{y}.pbf",
+      "zoom": 13,
+      "layer": "NCOG_Gujarat_Cadastrals",
+      "groupFields": [
+        "gid"
+      ],
+      "parcelNumberField": "kid",
+      "outFields": [
+        "gid",
+        "kid",
+        "bhucode",
+        "name",
+        "district"
+      ],
+      "idPrefix": "IN-GJ-NCOG-",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.002,
+      "maxBboxKm2": 9,
+      "maxTiles": 36,
+      "maxFeatures": 10000,
+      "maxConcurrentQueries": 2,
+      "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+      "countryCode": "IN",
+      "stateCode": "GJ",
+      "cityIds": [
+        "anand",
+        "vadodara"
+      ],
+      "scope": "Cadastral parcels of Gujarat from the NCOG_Gujarat_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-13 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "NCOG (BISAG-N) Gujarat cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+      "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+      "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+      "caveats": [
+        "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+        "Geometry is rebuilt from zoom-13 vector tiles: outlines are snapped to a grid of about 1.1 m and may be lightly simplified compared with the original.",
+        "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+        "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+        "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+      ],
+      "metricSridByCity": {
+        "anand": 32643,
+        "vadodara": 32643
+      },
+      "metricSrid": 32643
+    },
+    {
+      "id": "in-mh-mrsac-tiles",
+      "name": "Maharashtra cadastral maps — indianopenmaps tile snapshot (MRSAC_Cadastrals)",
+      "adapter": "vector-tiles",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/maharashtra/mrsac/{z}/{x}/{y}.pbf",
+      "zoom": 13,
+      "layer": "MRSAC_Cadastrals",
+      "groupFields": [
+        "OBJECTID"
+      ],
+      "parcelNumberField": "PIN",
+      "outFields": [
+        "OBJECTID",
+        "PIN",
+        "VIL_NAME",
+        "THENAME",
+        "DTENAME"
+      ],
+      "idPrefix": "IN-MH-MRSAC-",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.002,
+      "maxBboxKm2": 9,
+      "maxTiles": 36,
+      "maxFeatures": 10000,
+      "maxConcurrentQueries": 2,
+      "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+      "countryCode": "IN",
+      "stateCode": "MH",
+      "cityIds": [
+        "malegaon",
+        "ahmednagar",
+        "kolhapur",
+        "sangli",
+        "nanded"
+      ],
+      "scope": "Cadastral parcels of Maharashtra from the MRSAC_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-13 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "MRSAC cadastral maps (mrsac.gov.in, now token-protected). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+      "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+      "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+      "caveats": [
+        "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+        "Geometry is rebuilt from zoom-13 vector tiles: outlines are snapped to a grid of about 1.1 m and may be lightly simplified compared with the original.",
+        "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+        "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+        "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+      ],
+      "metricSridByCity": {
+        "malegaon": 32643,
+        "ahmednagar": 32643,
+        "kolhapur": 32643,
+        "sangli": 32643,
+        "nanded": 32643
+      },
+      "metricSrid": 32643
+    },
+    {
+      "id": "in-dl-gsdl-tiles",
+      "name": "Delhi cadastral maps — indianopenmaps tile snapshot (GSDL_Cadastrals)",
+      "adapter": "vector-tiles",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/delhi/urban/gsdl/{z}/{x}/{y}.pbf",
+      "zoom": 13,
+      "layer": "GSDL_Cadastrals",
+      "groupFields": [
+        "FID"
+      ],
+      "parcelNumberField": "M_KHASRA_N",
+      "outFields": [
+        "FID",
+        "M_KHASRA_N",
+        "M_MIN_NO",
+        "SUBDIV_NM",
+        "DIST_NM"
+      ],
+      "idPrefix": "IN-DL-GSDL-",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.002,
+      "maxBboxKm2": 9,
+      "maxTiles": 36,
+      "maxFeatures": 10000,
+      "maxConcurrentQueries": 2,
+      "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+      "countryCode": "IN",
+      "stateCode": "DL",
+      "cityIds": [
+        "rasoi"
+      ],
+      "scope": "Cadastral parcels of Delhi from the GSDL_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-13 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "Geospatial Delhi Limited khasra maps (gsdl.org.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+      "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+      "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+      "caveats": [
+        "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+        "Geometry is rebuilt from zoom-13 vector tiles: outlines are snapped to a grid of about 1.1 m and may be lightly simplified compared with the original.",
+        "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+        "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+        "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+      ],
+      "metricSridByCity": {
+        "rasoi": 32643
+      },
+      "metricSrid": 32643
+    },
+    {
+      "id": "in-ap-apsac-tiles",
+      "name": "Andhra Pradesh cadastral maps — indianopenmaps tile snapshot (APSAC_AP_Cadastrals)",
+      "adapter": "vector-tiles",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/andhra-pradesh/apsac/{z}/{x}/{y}.pbf",
+      "zoom": 13,
+      "layer": "APSAC_AP_Cadastrals",
+      "groupFields": [
+        "objectid_1"
+      ],
+      "parcelNumberField": "parcel_num",
+      "outFields": [
+        "objectid_1",
+        "parcel_num",
+        "v_name",
+        "m_name",
+        "d_name"
+      ],
+      "idPrefix": "IN-AP-APSAC-",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.002,
+      "maxBboxKm2": 9,
+      "maxTiles": 36,
+      "maxFeatures": 10000,
+      "maxConcurrentQueries": 2,
+      "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+      "countryCode": "IN",
+      "stateCode": "AP",
+      "cityIds": [
+        "tirupati"
+      ],
+      "scope": "Cadastral parcels of Andhra Pradesh from the APSAC_AP_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-13 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+      "attribution": "APSAC cadastral maps (apsac.ap.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+      "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+      "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+      "caveats": [
+        "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+        "Geometry is rebuilt from zoom-13 vector tiles: outlines are snapped to a grid of about 1.1 m and may be lightly simplified compared with the original.",
+        "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+        "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+        "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+      ],
+      "metricSridByCity": {
+        "tirupati": 32644
+      },
+      "metricSrid": 32644
     }
   ]
 }
