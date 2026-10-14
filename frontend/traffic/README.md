@@ -5,12 +5,14 @@ povezane stranice i izvore nalaze se u podnožju. Simulator omogućuje zatvaranj
 vozila, pregled razloga zaustavljanja i mjerenje protoka. Kretanje koristi spremljene odgovore za
 raskrižja i izričito dopuštene veze; nedostajući izlazi i skretanja ne izmišljaju se.
 
-Slijeđenje se računa po putanji, pa paralelne putanje mogu napredovati istodobno uz siguran razmak.
-Kod putanja koje se geometrijski sijeku vozila se propuštaju u blizini zajedničkog prozora
-preklapanja. Red čeka izvan tog prostora, a ulazak ostavlja dovoljno mjesta u izlaznoj traci
-da se prostor oslobodi. Na uskim dionicama gdje se karoserije suprotnih smjerova preklapaju
-propušta se jedan smjer; vozila istog smjera i dalje mogu slijediti jedno drugo.
-Pri velikoj gustoći mogu nastati zastoji i potpune blokade; simulator ne optimizira tok prometa.
+Vozila napreduju prema prostoru koji je trenutačno slobodan ispred njih. Provjeravaju sljedeću
+stvarnu crtu zaustavljanja, razmak iza vozila i fizičko preklapanje karoserija u svakom koraku.
+Na zelenom ulaze i kada je nizvodno red; prolaze slobodni dio koraka pa čekaju ako je put zauzet.
+Već prijeđeni semafor ne zaustavlja ih ponovno. Pri velikoj gustoći mogu nastati zastoji i potpune
+blokade; simulator ne optimizira tok prometa.
+
+Prekidač **Zvuk** uključuje tihu, udaljenu buku motora i guma vozila u vidljivom području.
+Zvuk počinje nakon interakcije sa stranicom i utiša se pri pauziranju ili skrivanju kartice.
 
 ## Prometni signali
 

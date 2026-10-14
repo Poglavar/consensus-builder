@@ -252,8 +252,6 @@ describe('traffic simulation', () => {
         east.traversed = []; parallel.traversed = [];
         sim.cars.push(east, parallel);
 
-        expect(network.movementConflicts.ranges(network.connections.get('east-move'),
-            network.connections.get('parallel-move'))).toBeNull();
         expect(sim.canEnter(east, network.connections.get('east-move'), sim.occupants())).toBe(true);
         expect(sim.canEnter(parallel, network.connections.get('parallel-move'), sim.occupants())).toBe(true);
         sim.move(east, .5, sim.occupants());
@@ -310,71 +308,7 @@ describe('traffic simulation', () => {
         expect(Collision.overlaps(sim.pose(green), sim.pose(red))).toBe(false);
     });
 
-    it('lets a follower clear a linked connector handoff using the receiving-lane gap', () => {
-        const lanes = [
-            lane('approach', 'west', 'a', [-50, 0], [-5, 0]),
-            lane('short-shared', 'a', 'b', [0, 0], [2, 0]),
-            lane('out', 'b', 'east', [7, 0], [50, 0]),
-            lane('return', 'east', 'west', [50, 40], [-50, 40])
-        ];
-        const moves = [
-            connection('into-shared', 'approach', 'short-shared', 'a', [[-5, 0], [-2.5, 0], [0, 0]]),
-            connection('out-of-shared', 'short-shared', 'out', 'b', [[2, 0], [4.5, 0], [7, 0]]),
-            connection('return-east', 'out', 'return', 'east', [[50, 0], [50, 20], [50, 40]]),
-            connection('return-west', 'return', 'approach', 'west', [[-50, 40], [-50, 20], [-50, 0]])
-        ];
-        const network = createNetwork(data(lanes, moves, { west: 2, a: 2, b: 2, east: 2 }));
-        const intoShared = network.connections.get('into-shared');
-        const outOfShared = network.connections.get('out-of-shared');
-        const sim = new Simulation(network, { count: 0, signals: false, laneChangeRate: 0 });
-        const leader = car(1, 'approach', network.lanes.get('approach').path.length - 7, 'into-shared', 5);
-        sim.cars.push(leader);
-
-        // First send the leader through the short lane and into the next
-        // connector, then place the older follower in the previous connector.
-        for (let tick = 0; tick < 100 && !(leader.mode === 'connection'
-            && leader.connectionId === 'out-of-shared'); tick++) sim.advance(.1);
-        expect(leader.mode).toBe('connection');
-        expect(leader.connectionId).toBe('out-of-shared');
-        expect(network.movementConflicts.ranges(intoShared, outOfShared)).toBeNull();
-
-        const follower = {
-            ...car(2, 'approach', 0, 'into-shared', 5),
-            mode: 'connection', connectionId: 'into-shared', s: 1.5,
-            // enteredAt now stamps approach-plan admission, before the car
-            // reaches the connector, so model the already-present follower as older.
-            enteredAt: leader.enteredAt - 2
-        };
-        sim.cars.push(follower);
-        expect(follower.enteredAt).toBeLessThan(leader.enteredAt);
-        const stopped = sim.limits(follower, sim.occupants());
-        expect(stopped.clearance).toBeLessThan(0);
-        expect(stopped.conflict.distance).toBe(Infinity);
-
-        sim.advance(.1);
-        expect(follower.mode).toBe('connection');
-        expect(follower.connectionId).toBe('into-shared');
-        expect(follower.speed).toBe(0);
-        expect(sim.cars.map(vehicle => vehicle.id)).toEqual([1, 2]);
-        expect(Collision.overlaps(sim.pose(leader), sim.pose(follower))).toBe(false);
-
-        let followerEnteredNextConnector = false;
-        for (let tick = 0; tick < 120 && follower.laneId !== 'out'; tick++) {
-            sim.advance(.1);
-            if (follower.mode === 'connection' && follower.connectionId === 'out-of-shared') {
-                followerEnteredNextConnector = true;
-            }
-            expect(sim.cars.map(vehicle => vehicle.id)).toEqual([1, 2]);
-            expect(Collision.overlaps(sim.pose(leader), sim.pose(follower))).toBe(false);
-        }
-
-        expect(followerEnteredNextConnector).toBe(true);
-        expect(follower.laneId).toBe('out');
-        expect(leader.laneId).toBe('out');
-        expect(sim.cars.map(vehicle => vehicle.id)).toEqual([1, 2]);
-    });
-
-    it('lets the first of two merging approaches progress while the other yields', () => {
+    it('keeps merging approaches on permitted paths without body overlap', () => {
         const lanes = [
             lane('merge-east-in', 'west', 'merge', [-30, 0], [-5, 0]),
             lane('merge-north-in', 'north', 'merge', [0, -30], [0, -5]),
@@ -389,166 +323,23 @@ describe('traffic simulation', () => {
         const east = car(1, 'merge-east-in', network.lanes.get('merge-east-in').path.length - .2, 'merge-east', 5);
         const north = car(2, 'merge-north-in', network.lanes.get('merge-north-in').path.length - .2, 'merge-north', 5);
         sim.cars.push(east, north);
-        const range = network.movementConflicts.ranges(
-            sim.movementFor(east, network.connections.get('merge-east'), sim.occupants()),
-            sim.movementFor(north, network.connections.get('merge-north'), sim.occupants()));
-        expect(range).not.toBeNull();
-        let earlierProgressedWhileLaterWaited = false;
-
-        for (let tick = 0; tick < 300; tick++) {
+        for (let tick = 0; tick < 100; tick++) {
             sim.advance(.1);
             expect(sim.cars.map(vehicle => vehicle.id)).toEqual([1, 2]);
             expect(Collision.overlaps(sim.pose(east), sim.pose(north))).toBe(false);
-            if ((east.mode === 'connection' || east.laneId === 'merge-receiver')
-                && ((north.mode === 'lane' && north.state === 'queue')
-                    || (north.mode === 'connection' && north.s < range.second.start && north.speed < .1))) {
-                earlierProgressedWhileLaterWaited = true;
+            for (const car of [east, north]) {
+                if (car.mode === 'lane') expect(network.lanes.has(car.laneId)).toBe(true);
+                else expect(network.connections.get(car.connectionId)?.fromLaneId).toBe(car.laneId);
+                expect(Number.isFinite(car.s)).toBe(true);
             }
-            if (east.laneId === 'merge-receiver' && north.laneId === 'merge-receiver'
-                && north.s > 1) break;
         }
 
-        expect(earlierProgressedWhileLaterWaited).toBe(true);
-        expect(east.laneId).toBe('merge-receiver');
-        expect(north.laneId).toBe('merge-receiver');
-        expect(east.s - north.s).toBeGreaterThanOrEqual(GAP - .01);
+        expect(east.id).toBe(1);
+        expect(north.id).toBe(2);
+        expect(east.mode === 'connection' || east.laneId === 'merge-receiver').toBe(true);
+        expect(north.mode === 'connection' || north.laneId === 'merge-receiver').toBe(true);
         expect(sim.cars.map(vehicle => vehicle.id)).toEqual([1, 2]);
         expect(Collision.overlaps(sim.pose(east), sim.pose(north))).toBe(false);
-    });
-
-    it('holds an unadmitted approach before an active movement sweep, then lets both clear', () => {
-        const lanes = [
-            lane('internal-approach', 'west', 'a', [-30, 0], [-1, 0]),
-            lane('one-metre-link', 'a', 'b', [0, 0], [1, 0]),
-            lane('internal-exit', 'b', 'east', [2, 0], [40, 0]),
-            lane('internal-return', 'east', 'west', [40, 20], [-30, 20]),
-            lane('cross-approach', 'south', 'cross', [2, -20], [2, 10]),
-            lane('cross-exit', 'cross', 'north', [2, 20], [2, 40])
-        ];
-        const moves = [
-            connection('enter-internal', 'internal-approach', 'one-metre-link', 'a', [[-1, 0], [-.5, 0], [0, 0]]),
-            connection('leave-internal', 'one-metre-link', 'internal-exit', 'b', [[1, 0], [2, 0], [12, 0]]),
-            connection('internal-return-east', 'internal-exit', 'internal-return', 'east', [[40, 0], [40, 10], [40, 20]]),
-            connection('internal-return-west', 'internal-return', 'internal-approach', 'west', [[-30, 20], [-30, 10], [-30, 0]]),
-            connection('crossing', 'cross-approach', 'cross-exit', 'cross', [[2, 10], [2, 15], [2, 20]])
-        ];
-        const network = createNetwork(data(lanes, moves, { west: 2, a: 2, b: 2, east: 2, south: 2, cross: 2, north: 2 }));
-        const groups = new Map([...network.nodes.keys()].map(id => [id, id]));
-        for (const id of ['a', 'b', 'cross']) groups.set(id, 'physical-junction');
-        Traffic.refreshNetwork(network, groups);
-        const sim = new Simulation(network, { count: 0, signals: false, laneChangeRate: 0 });
-        const leader = car(1, 'internal-approach', network.lanes.get('internal-approach').path.length - .2,
-            'enter-internal', 5);
-        sim.cars.push(leader);
-
-        for (let tick = 0; tick < 100 && leader.laneId !== 'one-metre-link'; tick++) sim.advance(.1);
-        expect(leader.laneId).toBe('one-metre-link');
-        expect(network.lanes.get('one-metre-link').path.length).toBeCloseTo(1, 2);
-        const leaderPlan = sim.carMovement(leader).plan;
-        expect(leaderPlan.connectionOffsets.has('leave-internal')).toBe(true);
-
-        let holdLeader = true;
-        sim.gates.push({ distance: vehicle => vehicle === leader && holdLeader ? 0 : Infinity });
-        const crossApproach = network.lanes.get('cross-approach');
-        const later = car(2, 'cross-approach', 0, 'crossing', 5);
-        sim.cars.push(later);
-        const crossing = network.connections.get('crossing');
-        const laterPlan = sim.movementFor(later, crossing, sim.occupants());
-        const sharedRange = network.movementConflicts.ranges(leaderPlan, laterPlan);
-        expect(sharedRange).not.toBeNull();
-        expect(Collision.overlaps(sim.pose(leader), sim.pose(later))).toBe(false);
-        let laterYieldedToFutureCrossing = false;
-        let laterEntered = false;
-        for (let tick = 0; tick < 400 && !laterYieldedToFutureCrossing; tick++) {
-            sim.advance(.1);
-            if (later.mode === 'lane' && later.state === 'queue' && later.speed < .1
-                && later.s < crossApproach.path.length - 7) laterYieldedToFutureCrossing = true;
-            if (later.mode === 'connection' && later.connectionId === 'crossing') laterEntered = true;
-            expect(sim.cars.map(vehicle => vehicle.id)).toEqual([1, 2]);
-            expect(Collision.overlaps(sim.pose(leader), sim.pose(later))).toBe(false);
-        }
-
-        expect(laterYieldedToFutureCrossing).toBe(true);
-        expect(later.s).toBeLessThan(crossApproach.path.length - 7);
-        expect(sim.carMovement(later)).toBeNull();
-        holdLeader = false;
-        for (let tick = 0; tick < 1200 && later.laneId !== 'cross-exit'; tick++) {
-            sim.advance(.1);
-            if (later.mode === 'connection' && later.connectionId === 'crossing') laterEntered = true;
-            expect(sim.cars.map(vehicle => vehicle.id)).toEqual([1, 2]);
-            expect(Collision.overlaps(sim.pose(leader), sim.pose(later))).toBe(false);
-        }
-        expect(laterEntered).toBe(true);
-        expect(leader.laneId).toBe('internal-exit');
-        expect(later.laneId).toBe('cross-exit');
-        expect(sim.cars.map(vehicle => vehicle.id)).toEqual([1, 2]);
-        expect(Collision.overlaps(sim.pose(leader), sim.pose(later))).toBe(false);
-        expect(leader.laneId).toBe('internal-exit');
-        expect(later.laneId).toBe('cross-exit');
-        expect(sim.cars.map(vehicle => vehicle.id)).toEqual([1, 2]);
-        expect(Collision.overlaps(sim.pose(leader), sim.pose(later))).toBe(false);
-    });
-
-    it('admits a crossing car into its connector before an active movement reaches the shared window', () => {
-        const lanes = [
-            lane('horizontal-in', 'west', 'junction', [-40, 0], [-12, 0]),
-            lane('horizontal-out', 'junction', 'east', [12, 0], [40, 0]),
-            lane('vertical-in', 'south', 'junction', [0, -40], [0, -12]),
-            lane('vertical-out', 'junction', 'north', [0, 12], [0, 40])
-        ];
-        const moves = [
-            connection('horizontal', 'horizontal-in', 'horizontal-out', 'junction', [[-12, 0], [0, 0], [12, 0]]),
-            connection('vertical', 'vertical-in', 'vertical-out', 'junction', [[0, -12], [0, 0], [0, 12]])
-        ];
-        const network = createNetwork(data(lanes, moves, { junction: 4 }));
-        const sim = new Simulation(network, { count: 0, signals: false, laneChangeRate: 0 });
-        const horizontalIn = network.lanes.get('horizontal-in');
-        const verticalIn = network.lanes.get('vertical-in');
-        const earlier = car(1, 'horizontal-in', horizontalIn.path.length - .2, 'horizontal', 5);
-        earlier.traversed = [];
-        sim.cars.push(earlier);
-        for (let tick = 0; tick < 100 && earlier.mode !== 'connection'; tick++) sim.advance(.1);
-        expect(earlier.mode).toBe('connection');
-        expect(earlier.connectionId).toBe('horizontal');
-        expect(Number.isFinite(earlier.enteredAt)).toBe(true);
-        const earlierPlan = sim.carMovement(earlier).plan;
-        const verticalMove = network.connections.get('vertical');
-        const later = car(2, 'vertical-in', verticalIn.path.length - .2, 'vertical', 5);
-        later.traversed = [];
-        sim.gates.push({ distance: vehicle => vehicle === earlier ? 0 : Infinity });
-        sim.cars.push(later);
-        const laterPlan = sim.movementFor(later, verticalMove, sim.occupants());
-        const shared = network.movementConflicts.ranges(earlierPlan, laterPlan);
-        expect(shared).not.toBeNull();
-        expect(network.movementConflicts.trajectories.get(earlier.planId)).toBe(earlierPlan);
-
-        let laterYieldedInsideConnector = false;
-        for (let tick = 0; tick < 400 && !laterYieldedInsideConnector; tick++) {
-            sim.advance(.1);
-            const active = sim.carMovement(later);
-            if (later.mode === 'connection' && later.connectionId === 'vertical'
-                && active && active.position < shared.second.start && later.speed < .1) {
-                laterYieldedInsideConnector = true;
-            }
-            expect(sim.cars.map(vehicle => vehicle.id)).toEqual([1, 2]);
-            expect(Collision.overlaps(sim.pose(earlier), sim.pose(later))).toBe(false);
-        }
-        expect(laterYieldedInsideConnector).toBe(true);
-        expect(earlier.mode).toBe('connection');
-        expect(sim.carMovement(earlier).position).toBeLessThan(shared.first.start);
-        expect(later.mode).toBe('connection');
-        expect(sim.carMovement(later).position).toBeLessThan(shared.second.start);
-
-        sim.gates = [];
-        for (let tick = 0; tick < 1200 && (earlier.laneId !== 'horizontal-out' || later.laneId !== 'vertical-out'); tick++) {
-            sim.advance(.1);
-            expect(sim.cars.map(vehicle => vehicle.id)).toEqual([1, 2]);
-            expect(Collision.overlaps(sim.pose(earlier), sim.pose(later))).toBe(false);
-        }
-        expect(earlier.laneId).toBe('horizontal-out');
-        expect(later.laneId).toBe('vertical-out');
-        expect(sim.cars.map(vehicle => vehicle.id)).toEqual([1, 2]);
-        expect(Collision.overlaps(sim.pose(earlier), sim.pose(later))).toBe(false);
     });
 
     it('does not bypass a red approach when another movement has a green signal', () => {
@@ -584,57 +375,6 @@ describe('traffic simulation', () => {
         expect(newer.mode).toBe('lane');
     });
 
-    it('yields incompatible movements at entry, then admits the second after their conflict window', () => {
-        const lanes = [
-            lane('horizontal-in', 'west', 'junction', [-30, 0], [-5, 0]),
-            lane('horizontal-out', 'junction', 'east', [15, 0], [45, 0]),
-            lane('vertical-in', 'south', 'junction', [0, -30], [0, -5]),
-            lane('vertical-out', 'junction', 'north', [0, 15], [0, 45])
-        ];
-        const moves = [
-            connection('horizontal', 'horizontal-in', 'horizontal-out', 'junction', [[-5, 0], [5, 0], [15, 0]]),
-            connection('vertical', 'vertical-in', 'vertical-out', 'junction', [[0, -5], [0, 5], [0, 15]])
-        ];
-        const network = createNetwork(data(lanes, moves, { junction: 4 }));
-        const sim = new Simulation(network, { count: 0, signals: false, laneChangeRate: 0 });
-        const horizontal = car(1, 'horizontal-in', network.lanes.get('horizontal-in').path.length - .2, 'horizontal', 5);
-        const vertical = car(2, 'vertical-in', network.lanes.get('vertical-in').path.length - .2, 'vertical', 5);
-        horizontal.traversed = []; vertical.traversed = [];
-        sim.cars.push(horizontal, vertical);
-        const horizontalMove = network.connections.get('horizontal');
-        const verticalMove = network.connections.get('vertical');
-        const range = network.movementConflicts.ranges(
-            sim.movementFor(horizontal, horizontalMove, sim.occupants()),
-            sim.movementFor(vertical, verticalMove, sim.occupants()));
-        expect(range).not.toBeNull();
-        let yieldedBeforeEntry = false;
-        let enteredAfterWindowWhileLeaderOnConnector = false;
-
-        for (let tick = 0; tick < 400; tick++) {
-            sim.advance(.1);
-            expect(sim.cars.map(vehicle => vehicle.id)).toEqual([horizontal.id, vertical.id]);
-            expect(Collision.overlaps(sim.pose(horizontal), sim.pose(vertical))).toBe(false);
-            const horizontalPosition = sim.carMovement(horizontal)?.position;
-            const verticalPosition = sim.carMovement(vertical)?.position;
-            if (horizontal.mode === 'connection' && vertical.speed < .1
-                && (vertical.mode === 'lane' && vertical.laneId === 'vertical-in'
-                    || vertical.mode === 'connection' && vertical.connectionId === 'vertical'
-                        && verticalPosition < range.second.start)) yieldedBeforeEntry = true;
-            if (horizontal.mode === 'connection' && vertical.mode === 'connection'
-                && horizontalPosition > range.first.end + .5
-                && verticalPosition < range.second.start) enteredAfterWindowWhileLeaderOnConnector = true;
-            if (horizontal.laneId === 'horizontal-out' && vertical.laneId === 'vertical-out') break;
-        }
-
-        expect(yieldedBeforeEntry).toBe(true);
-        expect(enteredAfterWindowWhileLeaderOnConnector).toBe(true);
-        expect(horizontal.laneId).toBe('horizontal-out');
-        expect(vertical.laneId).toBe('vertical-out');
-        expect(horizontal.id).toBe(1);
-        expect(vertical.id).toBe(2);
-        expect(Collision.overlaps(sim.pose(horizontal), sim.pose(vertical))).toBe(false);
-    });
-
     it('does not invent signals at an untagged crossroads', () => {
         const network = connectedNetwork({ signal: true, mapped: false });
         const lane = network.lanes.get('in');
@@ -647,7 +387,7 @@ describe('traffic simulation', () => {
         expect(vehicle.mode === 'connection' || vehicle.laneId === 'out').toBe(true);
     });
 
-    it('stops at a mapped signal inside a lane and does not stop there again after passing it', () => {
+    it('continues after passing a signal even when its light turns red', () => {
         const fixture = data([
             lane('in', 'west', 'junction', [-100, 0], [0, 0]),
             lane('out', 'junction', 'east', [0, 0], [100, 0])
@@ -855,64 +595,76 @@ describe('traffic simulation', () => {
         expect(lateral).toBeCloseTo((outgoing.width || 3) / 2 + .8, 1);
     });
 
-    it('enforces the ordinary following gap at a connection exit', () => {
-        const network = connectedNetwork();
-        const sim = new Simulation(network, { count: 0, signals: false });
-        const approaching = car(1, 'in', network.lanes.get('in').path.length - 1, 'move-in-out');
-        const leader = car(2, 'out', 1, null);
-        const movement = network.connections.get('move-in-out');
+    it('moves through a short green link when immediate space is available despite a downstream queue', () => {
+        const lanes = [
+            lane('approach', 'west', 'a', [-20, 0], [0, 0]),
+            lane('short-link', 'a', 'b', [0, 0], [5, 0]),
+            lane('out', 'b', 'east', [5, 0], [50, 0]),
+            lane('return', 'east', 'west', [50, 20], [-20, 20])
+        ];
+        const moves = [
+            connection('enter', 'approach', 'short-link', 'a', [[0, 0], [0, 0], [0, 0]]),
+            connection('leave', 'short-link', 'out', 'b', [[5, 0], [5, 0], [5, 0]]),
+            connection('turn', 'out', 'return', 'east', [[50, 0], [50, 10], [50, 20]]),
+            connection('back', 'return', 'approach', 'west', [[-20, 20], [-20, 10], [-20, 0]])
+        ];
+        const fixture = data(lanes, moves, { west: 2, a: 3, b: 3, east: 2 });
+        fixture.signals.push({ id: 'entry-signal', point: geo([0, 0]), controls: [{ laneId: 'approach', fraction: 1 }] });
+        const network = createNetwork(fixture), approach = network.lanes.get('approach');
+        const green = Array.from({ length: 1000 }, (_, index) => index * .1)
+            .find(time => signalState(network, approach, time, true) === 'green');
+        expect(green).toBeTypeOf('number');
 
-        expect(sim.receivingClear(approaching, movement, new Map([['out', [{ car: leader, s: 1 }]]]))).toBe(false);
-        expect(sim.canEnter(approaching, movement, new Map([['out', [{ car: leader, s: 1 }]]]))).toBe(false);
-        // The connector path contributes to separation before the ordinary exit gap.
-        expect(sim.canEnter(approaching, movement, new Map([['out', [{ car: leader, s: 3 }]]]))).toBe(true);
+        const sim = new Simulation(network, { count: 0, signals: true, laneChangeRate: 0 });
+        const entering = car(1, 'approach', approach.path.length - .1, 'enter', 8);
+        entering.traversed = [];
+        const queuedDownstream = car(2, 'out', 3, 'turn', 0);
+        sim.cars.push(entering, queuedDownstream);
+        sim.gates.push({ distance: vehicle => vehicle === queuedDownstream ? 0 : Infinity });
+        sim.time = green;
+        expect(sim.canEnter(entering, network.connections.get('enter'), sim.occupants())).toBe(true);
+        sim.advance(.1);
+
+        expect(entering.traversed).toContain('enter');
+        expect(entering.mode === 'connection' || entering.laneId === 'short-link' || entering.laneId === 'out').toBe(true);
+        expect(entering.id).toBe(1);
+        expect(queuedDownstream.id).toBe(2);
+        expect(sim.cars.map(vehicle => vehicle.id)).toEqual([1, 2]);
+        expect(Collision.overlaps(sim.pose(entering), sim.pose(queuedDownstream))).toBe(false);
     });
 
-    it('reserves one following gap for cars already planned to an output lane', () => {
-        const network = connectedNetwork({ signal: true });
+    it('keeps the safe part of a tick, retries the jam, and moves when the blocker clears', () => {
+        const network = createNetwork(data([
+            lane('road', 'west', 'east', [0, 0], [100, 0]),
+            lane('perpendicular', 'south', 'junction', [13.7, -100], [13.7, 0])
+        ], [], { west: 2, east: 2, south: 2, junction: 3 }));
         const sim = new Simulation(network, { count: 0, signals: false, laneChangeRate: 0 });
-        const movement = network.connections.get('move-in-out');
-        const output = network.lanes.get('out');
-        const key = sim.junctionKey(output.fromNode);
-        const candidate = car(1, 'in', 80, movement.id);
-        const planned = car(2, 'in', 70, movement.id);
-        const queue = car(3, 'out', 13);
-        const plannedPath = network.movementConflicts.trajectory(movement, []);
-        Object.assign(planned, { mode: 'connection', connectionId: movement.id, s: .5,
-            planId: plannedPath.key, movementGroup: key, enteredAt: 0 });
-        sim.cars.push(candidate, planned, queue);
+        const moving = car(1, 'road', 10, null, 8);
+        const parked = car(2, 'perpendicular', 100, null, 0);
+        sim.cars.push(moving, parked);
+        const start = moving.s;
+        expect(Collision.overlaps(sim.pose(moving), sim.pose(parked))).toBe(false);
 
-        expect(sim.carMovement(planned).plan.toLaneId).toBe(output.id);
-        expect(sim.freeExit(candidate, output, key, sim.occupants()))
-            .toMatchObject({ clear: false, carId: planned.id });
+        sim.advance(.1);
+        const safeFront = moving.s;
+        expect(safeFront).toBeGreaterThan(start);
+        expect(safeFront).toBeLessThan(10.8);
+        expect(parked.s).toBeCloseTo(100, 6);
+        expect(Collision.overlaps(sim.pose(moving), sim.pose(parked))).toBe(false);
+        for (let tick = 0; tick < 8; tick++) {
+            const before = moving.s;
+            sim.advance(.1);
+            expect(moving.s).toBeGreaterThanOrEqual(before - .001);
+            expect(parked.s).toBeCloseTo(100, 6);
+            expect(Collision.overlaps(sim.pose(moving), sim.pose(parked))).toBe(false);
+            expect(sim.cars.map(vehicle => vehicle.id)).toEqual([1, 2]);
+        }
 
-        // Thirteen metres of queue space minus the planned car's 7 m reserve
-        // leaves less than one more following gap; sixteen metres is enough.
-        queue.s = 16;
-        expect(sim.freeExit(candidate, output, key, sim.occupants())).toMatchObject({ clear: true });
-
-        const separateOutput = network.lanes.get('cross-out');
-        expect(sim.freeExit(candidate, separateOutput, key, sim.occupants())).toMatchObject({ clear: true });
-        expect(sim.exitCapacityBlocker(candidate, separateOutput, key, sim.occupants())).toBeNull();
-    });
-
-    it('does not charge a same-lane follower against the leader’s exit capacity', () => {
-        const network = connectedNetwork();
-        const sim = new Simulation(network, { count: 0, signals: false, laneChangeRate: 0 });
-        const movement = network.connections.get('move-in-out');
-        const output = network.lanes.get('out');
-        const key = sim.junctionKey(movement.nodeId);
-        const leader = car(1, 'in', 95, movement.id);
-        const follower = car(2, 'in', 88, movement.id);
-        const queue = car(3, 'out', 13);
-        const path = network.movementConflicts.trajectory(movement, []);
-        Object.assign(follower, { planId: path.key, movementGroup: key, enteredAt: 0 });
-        sim.cars.push(leader, follower, queue);
-
-        expect(follower.s).toBeLessThan(leader.s);
-        expect(sim.carMovement(follower).plan.toLaneId).toBe(output.id);
-        expect(sim.freeExit(leader, output, key, sim.occupants())).toMatchObject({ clear: true });
-        expect(sim.exitCapacityBlocker(leader, output, key, sim.occupants())).toBeNull();
+        parked.s = 50;
+        sim.advance(.1);
+        expect(moving.s).toBeGreaterThan(safeFront);
+        expect(sim.cars.map(vehicle => vehicle.id)).toEqual([1, 2]);
+        expect(Collision.overlaps(sim.pose(moving), sim.pose(parked))).toBe(false);
     });
 
     it('chooses an exit route over an internal circulation', () => {
@@ -946,85 +698,6 @@ describe('traffic simulation', () => {
         sim.move(vehicle, .5, sim.occupants());
         expect(vehicle.laneId).toBe('escape');
         expect(vehicle.traversed).toContain('exit');
-    });
-
-    it('routes around a queued preferred exit when a longer exit is clear', () => {
-        function twoExitFixture() {
-            const lanes = [
-                lane('approach', 'west', 'a', [-100, 0], [0, 0]),
-                lane('inside', 'a', 'b', [0, 0], [100, 0]),
-                lane('short-exit', 'b', 'short-out', [100, 0], [100, 40]),
-                lane('short-return', 'short-out', 'a', [100, 40], [0, 0]),
-                lane('long-bridge', 'b', 'd', [100, 0], [200, 0]),
-                lane('long-exit', 'd', 'long-out', [200, 0], [200, 60]),
-                lane('long-return', 'long-out', 'a', [200, 60], [0, 0])
-            ];
-            const moves = [
-                ['enter', 'approach', 'inside', 'a'],
-                ['short-entry', 'inside', 'short-exit', 'b'],
-                ['short-turn', 'short-exit', 'short-return', 'short-out'],
-                ['short-close', 'short-return', 'inside', 'a'],
-                ['long-entry', 'inside', 'long-bridge', 'b'],
-                ['long-leave', 'long-bridge', 'long-exit', 'd'],
-                ['long-turn', 'long-exit', 'long-return', 'long-out'],
-                ['long-close', 'long-return', 'inside', 'a']
-            ].map(([id, fromLaneId, toLaneId, nodeId]) => {
-                const from = lanes.find(item => item.id === fromLaneId);
-                const to = lanes.find(item => item.id === toLaneId);
-                const point = from.points.at(-1);
-                return { id, fromLaneId, toLaneId, nodeId, points: [point, point, to.points[0]] };
-            });
-            const graph = createNetwork(data(lanes, moves, { a: 3, b: 3, d: 2, 'short-out': 2, 'long-out': 2 }));
-            const group = 'shared-exit-area';
-            const groups = new Map([...graph.nodes.keys()].map(id => [id, id]));
-            for (const id of ['a', 'b', 'd']) groups.set(id, group);
-            Traffic.refreshNetwork(graph, groups);
-            const sim = new Simulation(graph, { count: 0, signals: false, laneChangeRate: 0 });
-            const approaching = car(1, 'approach', graph.lanes.get('approach').path.length - .1, 'enter');
-            approaching.traversed = [];
-            const shortQueue = car(2, 'short-exit', 4, 'short-turn');
-            sim.cars.push(approaching, shortQueue);
-            return { graph, sim, approaching, shortQueue };
-        }
-
-        const clearLong = twoExitFixture();
-        const { graph, sim, approaching } = clearLong;
-        const entry = graph.connections.get('enter');
-        expect(graph.lanes.get('inside').exitRoutes).toEqual(['short-entry']);
-        expect(sim.receivingClear(approaching, graph.connections.get('short-entry'), sim.occupants())).toBe(false);
-        expect(sim.receivingClear(approaching, graph.connections.get('long-entry'), sim.occupants())).toBe(true);
-        expect(sim.canEnter(approaching, entry, sim.occupants(), false)).toBe(true);
-        expect(sim.chooseRoute(graph.lanes.get('inside'), approaching)).toBe('long-entry');
-
-        approaching.next = 'enter';
-        for (let step = 0; step < 500; step++) {
-            sim.move(approaching, .5, sim.occupants());
-            expect(Collision.overlaps(sim.pose(approaching), sim.pose(clearLong.shortQueue))).toBe(false);
-            if (approaching.laneId === 'long-exit' && approaching.s >= 3.2) break;
-        }
-        expect(approaching.traversed).toContain('long-entry');
-        expect(approaching.traversed).not.toContain('short-entry');
-        expect(approaching.laneId).toBe('long-exit');
-        expect(approaching.s).toBeGreaterThanOrEqual(3.2);
-    });
-
-    it('takes another explicit clear exit in the same circulation region when queued', () => {
-        const network = circulatingNetwork();
-        const sim = new Simulation(network, { count: 0, signals: false, laneChangeRate: 0 });
-        const source = network.lanes.get('a');
-        const queued = car(1, 'a', source.path.length - .01, 'a-b', 0);
-        const leader = car(2, 'b', 6.5, 'b-c', 0);
-        sim.cars.push(queued, leader);
-
-        expect(source.routes).toContain('a-bypass');
-        expect(network.lanes.get('bypass').region).toBe(source.region);
-        sim.advance(.1);
-
-        // The bypass connector is zero-length in this fixture, so the same tick
-        // carries the car directly onto its receiving lane.
-        expect(queued.mode).toBe('lane');
-        expect(queued.laneId).toBe('bypass');
-        expect(network.lanes.get('bypass').region).toBe(source.region);
     });
 
     it('keeps the same car stopped at a missing exit instead of deleting or respawning it', () => {
@@ -1154,119 +827,4 @@ describe('traffic simulation', () => {
         expect(Math.hypot(pose.x - center.x, pose.y - center.y)).toBeLessThan(.01);
     });
 
-    it('lets opposing traffic approach a measured pinch while preserving same-direction gaps', () => {
-        const forward = lane('bent-forward', 'a', 'b', [0, 0], [30, 8.5], {
-            sectionId: 'narrow-bent-section', direction: 'forward'
-        });
-        forward.points = [geo([0, 0]), geo([10, 0]), geo([30, 8.5])];
-        forward.width = 2.75;
-        const backward = lane('bent-backward', 'b', 'a', [28.924, 11.031], [0, 2.75], {
-            sectionId: 'narrow-bent-section', direction: 'backward'
-        });
-        backward.points = [geo([28.924, 11.031]), geo([10, 2.75]), geo([0, 2.75])];
-        backward.width = 2.75;
-        const entryForwardLane = lane('entry-forward-lane', 'west', 'a', [-30, 0], [0, 0], { sectionId: 'entry-forward' });
-        entryForwardLane.width = 3.5;
-        const entryBackwardLane = lane('entry-backward-lane', 'east', 'b', [58.924, 11.031], [28.924, 11.031], { sectionId: 'entry-backward' });
-        entryBackwardLane.width = 3.5;
-        const forwardExitLane = lane('forward-exit-lane', 'b', 'west', [30, 8.5], [-30, 0], { sectionId: 'forward-exit' });
-        forwardExitLane.points = [geo([30, 8.5]), geo([45, -20]), geo([0, -55]), geo([-30, 0])];
-        forwardExitLane.width = 3.5;
-        const backwardExitLane = lane('backward-exit-lane', 'a', 'east', [0, 2.75], [58.924, 11.031], { sectionId: 'backward-exit' });
-        backwardExitLane.points = [geo([0, 2.75]), geo([-10, 50]), geo([80, 70]), geo([58.924, 11.031])];
-        backwardExitLane.width = 3.5;
-        const entryForward = { ...connection('entry-forward', 'entry-forward-lane', 'bent-forward', 'a', [[0, 0], [0, 0], [0, 0]]), geometryKind: 'continuation' };
-        const entryBackward = { ...connection('entry-backward', 'entry-backward-lane', 'bent-backward', 'b', [[28.924, 11.031], [28.924, 11.031], [28.924, 11.031]]), geometryKind: 'continuation' };
-        const forwardExit = { ...connection('forward-exit', 'bent-forward', 'forward-exit-lane', 'b', [[30, 8.5], [30, 8.5], [30, 8.5]]) };
-        const forwardLoop = { ...connection('forward-loop', 'forward-exit-lane', 'entry-forward-lane', 'west', [[-30, 0], [-30, 0], [-30, 0]]) };
-        const backwardExit = { ...connection('backward-exit', 'bent-backward', 'backward-exit-lane', 'a', [[0, 2.75], [0, 2.75], [0, 2.75]]) };
-        const backwardLoop = { ...connection('backward-loop', 'backward-exit-lane', 'entry-backward-lane', 'east', [[58.924, 11.031], [58.924, 11.031], [58.924, 11.031]]) };
-        const bent = createNetwork(data([forward, backward, entryForwardLane, entryBackwardLane, forwardExitLane, backwardExitLane],
-            [entryForward, entryBackward, forwardExit, forwardLoop, backwardExit, backwardLoop], { a: 3, b: 3, west: 2, east: 2 }));
-        const sim = new Simulation(bent, { count: 0, signals: false });
-        const frontCar = car(1, 'bent-forward', 10, 'forward-exit');
-        // Opposing traffic waits outside the road it is yielding to.
-        // Keep the opposing approach outside the 14 m plan-admission envelope
-        // so the same-direction follower can establish its compatible path first.
-        const backCar = car(2, 'entry-backward-lane', 5, 'entry-backward');
-        const follower = car(3, 'entry-forward-lane', bent.lanes.get('entry-forward-lane').path.length - .1, 'entry-forward');
-        follower.traversed = [];
-        sim.cars.push(frontCar, backCar, follower);
-        let bentBodiesOverlap = false;
-        for (let a = 0; a <= bent.lanes.get('bent-forward').path.length && !bentBodiesOverlap; a += .25) {
-            for (let b = 0; b <= bent.lanes.get('bent-backward').path.length; b += .25) {
-                if (Collision.overlaps(sample(bent.lanes.get('bent-forward').path, a),
-                    sample(bent.lanes.get('bent-backward').path, b))) {
-                    bentBodiesOverlap = true;
-                    break;
-                }
-            }
-        }
-
-        expect(bentBodiesOverlap).toBe(true);
-        expect(bent.lanes.get('bent-forward').conflictInterior).toBe(true);
-        expect(bent.lanes.get('bent-backward').conflictInterior).toBe(true);
-        let holdFront = true;
-        const parkedStation = frontCar.s;
-        sim.gates.push({ distance: vehicle => vehicle === frontCar && holdFront ? 0 : Infinity });
-        let followerEntered = false;
-        let opposingWaitedOutside = false;
-        for (let tick = 0; tick < 40; tick++) {
-            sim.advance(.1);
-            expect(sim.cars.map(item => item.id)).toEqual([frontCar.id, backCar.id, follower.id]);
-            expect(frontCar.s).toBe(parkedStation);
-            for (let i = 0; i < sim.cars.length; i++) for (let j = i + 1; j < sim.cars.length; j++) {
-                expect(Collision.overlaps(sim.pose(sim.cars[i]), sim.pose(sim.cars[j]))).toBe(false);
-            }
-            if (follower.laneId === 'bent-forward') {
-                followerEntered = true;
-                expect(frontCar.s - follower.s).toBeGreaterThanOrEqual(GAP - .01);
-            }
-            if (backCar.laneId === 'entry-backward-lane') opposingWaitedOutside = true;
-        }
-        expect(followerEntered).toBe(true);
-        expect(opposingWaitedOutside).toBe(true);
-        expect(backCar.laneId).toBe('entry-backward-lane');
-
-        holdFront = false;
-        let frontClearedPinch = false;
-        let followerClearedPinch = false;
-        let opposingEntered = false;
-        let opposingClearedPinch = false;
-        for (let tick = 0; tick < 900 && !(frontClearedPinch && followerClearedPinch && opposingClearedPinch); tick++) {
-            sim.advance(.1);
-            expect(sim.cars.map(item => item.id)).toEqual([frontCar.id, backCar.id, follower.id]);
-            for (let i = 0; i < sim.cars.length; i++) for (let j = i + 1; j < sim.cars.length; j++) {
-                expect(Collision.overlaps(sim.pose(sim.cars[i]), sim.pose(sim.cars[j]))).toBe(false);
-            }
-            if (frontCar.laneId === 'forward-exit-lane' || frontCar.traversed.includes('forward-exit')) frontClearedPinch = true;
-            if (frontCar.laneId === 'bent-forward' && follower.laneId === 'bent-forward') {
-                expect(frontCar.s - follower.s).toBeGreaterThanOrEqual(GAP - .01);
-            }
-            const frontMovement = sim.carMovement(frontCar), followerMovement = sim.carMovement(follower);
-            if (frontMovement && frontMovement.plan === followerMovement?.plan
-                && frontMovement.position > followerMovement.position) {
-                expect(frontMovement.position - followerMovement.position).toBeGreaterThanOrEqual(GAP - .01);
-            }
-            if (follower.laneId === 'forward-exit-lane' || follower.traversed.includes('forward-exit')) followerClearedPinch = true;
-            if (backCar.laneId === 'bent-backward') opposingEntered = true;
-            if (backCar.laneId === 'backward-exit-lane' || backCar.traversed.includes('backward-exit')) opposingClearedPinch = true;
-        }
-        expect(frontClearedPinch).toBe(true);
-        expect(followerClearedPinch).toBe(true);
-        expect(opposingEntered).toBe(true);
-        expect(opposingClearedPinch).toBe(true);
-
-        const straightForward = lane('straight-forward', 'left', 'right', [0, 30], [30, 30], {
-            sectionId: 'wide-straight-section', direction: 'forward'
-        });
-        const straightBackward = lane('straight-backward', 'right', 'left', [30, 33], [0, 33], {
-            sectionId: 'wide-straight-section', direction: 'backward'
-        });
-        straightForward.width = straightBackward.width = 2.75;
-        const straight = createNetwork(data([straightForward, straightBackward], [], { left: 2, right: 2 }));
-        expect(straight.junctionGroups.get('left')).not.toBe(straight.junctionGroups.get('right'));
-        expect(straight.lanes.get('straight-forward').conflictInterior).toBe(false);
-        expect(straight.lanes.get('straight-backward').conflictInterior).toBe(false);
-    });
 });

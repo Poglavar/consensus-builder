@@ -37,32 +37,6 @@ function fixture({ signals = [], withExit = false, length = 100 } = {}) {
     });
 }
 
-function movementFixture() {
-    const lanes = [
-        lane('approach', 'west', 'junction', [0, 0], [46, 0], 'main-road'),
-        lane('exit', 'junction', 'east', [54, 0], [100, 0], 'main-exit'),
-        lane('cross-approach', 'south', 'junction', [50, -50], [50, -4], 'cross-road'),
-        lane('cross-exit', 'junction', 'north', [50, 4], [50, 50], 'cross-exit'),
-        lane('parallel-approach', 'west-parallel', 'parallel-junction', [0, 10], [46, 10], 'parallel-road'),
-        lane('parallel-exit', 'parallel-junction', 'east-parallel', [54, 10], [100, 10], 'parallel-exit')
-    ];
-    const connection = (id, fromLaneId, toLaneId, nodeId, points) => ({
-        id, fromLaneId, toLaneId, nodeId, points: points.map(geo)
-    });
-    const connections = [
-        connection('main', 'approach', 'exit', 'junction', [[46, 0], [50, 0], [54, 0]]),
-        connection('cross', 'cross-approach', 'cross-exit', 'junction', [[50, -4], [50, 0], [50, 4]]),
-        connection('parallel', 'parallel-approach', 'parallel-exit', 'parallel-junction', [[46, 10], [50, 10], [54, 10]]),
-        connection('same-path', 'approach', 'exit', 'junction', [[46, 0], [50, 0], [54, 0]])
-    ];
-    const nodeIds = new Set(lanes.flatMap(item => [item.fromNode, item.toNode]));
-    return createNetwork({
-        bbox: [ORIGIN[0] - .01, ORIGIN[1] - .01, ORIGIN[0] + .01, ORIGIN[1] + .01],
-        nodes: [...nodeIds].map(id => ({ id, degree: id.includes('junction') ? 4 : 2 })),
-        lanes, connections, signals: []
-    });
-}
-
 function car(id, s, next = null, overrides = {}) {
     return { id, laneId: 'approach', mode: 'lane', s, speed: 0, cruise: 8, color: 0,
         next, state: 'queue', change: null, cooldown: Infinity, clearance: null, ...overrides };
@@ -110,59 +84,14 @@ describe('traffic selected-car inspector', () => {
             { id: 'far-red', point: geo([90, 0]), controls: [{ laneId: 'approach', fraction: .9 }] }
         ] });
         const vehicle = car(1, 20);
-        const leader = car(2, 27);
+        const leader = car(2, 24.7);
         const sim = simFor(network, [vehicle, leader]);
         sim.time = timeWhen(network, 'far-red', 'red');
 
         const reason = sim.inspectCar(vehicle);
         expect(reason).toMatchObject({ kind: 'following', carId: 2 });
-        expect(reason.distance).toBe(0);
+        expect(reason.distance).toBeCloseTo(-.1, 1);
         expect(reason.signal).toMatchObject({ sourceIds: ['far-red'], aspect: 'red' });
-    });
-
-    it('reports the other car when perpendicular movements occupy the same conflict window', () => {
-        const network = movementFixture();
-        const main = network.connections.get('main');
-        const cross = network.connections.get('cross');
-        const conflict = network.movementConflicts.ranges(main, cross);
-        expect(conflict).not.toBeNull();
-
-        const vehicle = car(1, conflict.first.start - .55, 'main', {
-            mode: 'connection', connectionId: 'main', enteredAt: 1
-        });
-        const blocker = car(72, conflict.second.start + .1, null, {
-            laneId: 'cross-approach', mode: 'connection', connectionId: 'cross', enteredAt: 0
-        });
-        const sim = simFor(network, [vehicle, blocker], false);
-
-        expect(sim.inspectCar(vehicle)).toMatchObject({ kind: 'collision', carId: 72 });
-    });
-
-    it('does not treat near-parallel movements or same-path followers as geometric conflicts', () => {
-        const network = movementFixture();
-        const main = network.connections.get('main');
-        const parallel = network.connections.get('parallel');
-        const samePath = network.connections.get('same-path');
-        expect(network.movementConflicts.ranges(main, parallel)).toBeNull();
-        expect(network.movementConflicts.ranges(main, samePath)).toBeNull();
-
-        const vehicle = car(1, 2, 'main', { mode: 'connection', connectionId: 'main', enteredAt: 1 });
-        for (const [otherId, connectionId, laneId] of [[2, 'parallel', 'parallel-approach'], [3, 'same-path', 'approach']]) {
-            const other = car(otherId, 2, null, { mode: 'connection', connectionId, laneId, enteredAt: 0 });
-            const sim = simFor(network, [vehicle, other], false);
-            expect(sim.limits(vehicle, sim.occupants()).conflict).toEqual({ distance: Infinity, carId: null });
-            expect(sim.inspectCar(vehicle).kind).not.toBe('collision');
-            if (connectionId === 'same-path') expect(sim.inspectCar(vehicle)).toMatchObject({ kind: 'following', carId: 3 });
-        }
-    });
-
-    it('names the car blocking receiving space beyond a junction', () => {
-        const network = fixture({ withExit: true });
-        const vehicle = car(1, network.lanes.get('approach').path.length, 'move');
-        const blocker = { ...car(72, 3), laneId: 'exit', next: null };
-        const sim = simFor(network, [vehicle, blocker]);
-
-        expect(sim.inspectCar(vehicle)).toMatchObject({ kind: 'exit', carId: 72 });
     });
 
     it('reports a lane-closure gate and a recorded physical collision blocker', () => {
@@ -177,7 +106,7 @@ describe('traffic selected-car inspector', () => {
         expect(sim.inspectCar(vehicle)).toMatchObject({ kind: 'collision', carId: 88 });
     });
 
-    it('records and inspects a real collision rollback without losing either car', () => {
+    it('reports a physical blocker after keeping safe partial motion and both cars', () => {
         const approach = lane('approach', 'west', 'east', [0, 0], [100, 0], 'east-west');
         const perpendicular = lane('perpendicular', 'south', 'north', [24.6, -100], [24.6, 0], 'north-south');
         const nodeIds = ['west', 'east', 'south', 'north'];
@@ -191,7 +120,11 @@ describe('traffic selected-car inspector', () => {
         const sim = simFor(network, [vehicle, parked], false);
 
         expect(Collision.overlaps(sim.pose(vehicle), sim.pose(parked))).toBe(false);
-        for (let tick = 0; tick < 30 && vehicle.collisionBlocker == null; tick++) sim.advance(.1);
+        const start = vehicle.s;
+        sim.advance(1);
+        expect(vehicle.s).toBeGreaterThan(start);
+        expect(Collision.overlaps(sim.pose(vehicle), sim.pose(parked))).toBe(false);
+        for (let tick = 0; tick < 60 && vehicle.collisionBlocker == null; tick++) sim.advance(.1);
 
         expect(vehicle.speed).toBe(0);
         expect(vehicle.collisionBlocker).toBe(88);

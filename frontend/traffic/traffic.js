@@ -11,6 +11,7 @@
     const Engine = window.TrafficSimulation, G = window.TrafficGeometry;
     const Scenario = window.TrafficScenario, Meters = window.TrafficMeters;
     const counters = new Meters.Counters();
+    const audio = new window.TrafficAudio.Sound();
     const colors = ['#237e88', '#ce7943', '#e4ae4a', '#5968a0', '#668e69', '#f4f0dc', '#bd6977'];
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || new URLSearchParams(location.search).has('reduceMotion');
     const map = L.map('map', { zoomControl: false, preferCanvas: true, minZoom: 13, maxZoom: 20 });
@@ -384,6 +385,31 @@
     $('reset-meter').addEventListener('click', () => { counters.reset(selectedMeter, sim.time); updateUI(); });
     $('remove-meter').addEventListener('click', () => { counters.remove(selectedMeter); selectedMeter = counters.meters[0]?.id; updateUI(); drawGuides(); });
 
+    function updateAudio() {
+        if (!sim || !transform) return;
+        const bounds = map.getBounds();
+        const southwest = network.project([bounds.getWest(), bounds.getSouth()]);
+        const northeast = network.project([bounds.getEast(), bounds.getNorth()]);
+        const center = network.project([map.getCenter().lng, map.getCenter().lat]);
+        audio.update(window.TrafficAudio.mix(sim.cars.map(car => ({ pose: sim.pose(car), speed: car.speed })), {
+            center: { x: center[0], y: center[1] },
+            extent: { minX: southwest[0], minY: southwest[1], maxX: northeast[0], maxY: northeast[1] }
+        }, running && !document.hidden && $('sound').checked));
+    }
+    function soundError(error) {
+        $('sound').checked = false;
+        console.error(`[${new Date().toISOString()}] Traffic sound:`, error);
+    }
+    function syncSound(gesture = false) {
+        if (running && !document.hidden && $('sound').checked && (gesture || audio.context)) {
+            if (!audio.active) audio.start().then(updateAudio).catch(soundError);
+        } else if (audio.active) audio.stop().catch(soundError);
+    }
+    document.addEventListener('pointerdown', () => syncSound(true), { passive: true });
+    $('sound').addEventListener('change', () => { syncSound(true); updateAudio(); });
+    document.addEventListener('visibilitychange', () => syncSound());
+    window.addEventListener('pagehide', () => { audio.dispose().catch(soundError); });
+
     function animate(now) {
         frameId = null;
         if (previousFrame != null && running) sim?.advance(Math.min((now - previousFrame) / 1000, .12) * rate);
@@ -394,7 +420,7 @@
         }
         drawCars();
         if (editor?.update()) { network = sim.network; drawGuides(); }
-        if (now - uiTime > 250) { updateUI(); uiTime = now; }
+        if (now - uiTime > 250) { updateUI(); updateAudio(); uiTime = now; }
         if (running && !document.hidden) frameId = requestAnimationFrame(animate);
     }
     function wake() { previousFrame = null; if (frameId == null && !document.hidden) frameId = requestAnimationFrame(animate); }
@@ -448,7 +474,7 @@
     new ResizeObserver(() => { map.invalidateSize({ animate: false }); resize(); }).observe(document.querySelector('.map-stage'));
     document.addEventListener('visibilitychange', () => { if (document.hidden) { cancelAnimationFrame(frameId); frameId = null; previousFrame = null; } else wake(); });
     $('play').addEventListener('click', () => {
-        running = !running;
+        running = !running; syncSound(true);
         if (!running) { cancelAnimationFrame(frameId); frameId = null; } else wake();
         $('status').hidden = true; updateUI();
     });
@@ -508,6 +534,7 @@
     // Read-only diagnostics expose the rendered artifact for manual browser verification.
     window.trafficPreview = {
         get simulation() { return sim; }, get network() { return network; }, get baseNetwork() { return baseNetwork; }, get editor() { return editor; }, counters, laneIndex: () => laneIndex, scene, map,
+        get audio() { return audio; },
         inspect: () => ({ ...sim?.stats(), frameCount, tileErrors, visibleCars: screenCars.length,
             running, selected, following, tileCount: document.querySelectorAll('.leaflet-tile-loaded').length })
     };
