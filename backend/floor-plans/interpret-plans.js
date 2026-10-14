@@ -22,6 +22,29 @@ export function taskContext(row) {
     const listingUrl=row.listing_url||row.url;
     return {listingUrl,facts:{floor:facts.floor??null,unitId:listingUnitId(facts,listingUrl),areaM2:facts.areaM2??null}};
 }
+class PaidGeometryValidationError extends Error {
+    constructor(cause) {
+        super(`Paid model geometry failed validation: ${cause.message}`,{cause});
+        this.name='PaidGeometryValidationError';
+    }
+}
+function isPaidGeometryValidationError(error) {
+    return error instanceof Error&&(
+        error.message==='Geometry exceeds the measured source frame.'
+        ||error.message==='Slab boundary contains a point that is not a measured source anchor.'
+        ||error.message==='Selected geometry is outside the source image.'
+        ||/^architecture\.[a-z][a-zA-Z]*:/.test(error.message));
+}
+function parsePaidReading(item,task,image) {
+    try {
+        const raw=typeof item.data==='string'?JSON.parse(item.data):item.data??JSON.parse(item.text);
+        return parseReading(JSON.stringify(selectListingUnitReading(raw,task.context.facts?.unitId)),task,
+            {...image,model:item.model});
+    } catch(error) {
+        if(!isPaidGeometryValidationError(error))throw error;
+        throw new PaidGeometryValidationError(error);
+    }
+}
 // A drawing is read once per page and per stated facts. The same project published under several
 // URLs (hosts, languages) states the same facts and shares one reading; units that reuse one sheet
 // with different floors or areas still get their own.
@@ -182,9 +205,15 @@ export async function interpretPlans(db,{render=renderTask,verifyRaster=verifyRa
                     issues:[associationCurrent?'A current building location is required before processing this floor plan.':'The source drawing does not match this listing unit, or its association changed after submission.']});
                 return {needsReview:1,...(associationCurrent?{locationReview:1}:{associationReview:1})};
             }
-            const raw=typeof item.data==='string'?JSON.parse(item.data):item.data??JSON.parse(item.text);
-            const reading=parseReading(JSON.stringify(selectListingUnitReading(raw,task.context.facts?.unitId)),task,
-                {...task.result.image,model:item.model});
+            let reading;
+            try {
+                reading=parsePaidReading(item,task,task.result.image);
+            } catch(error) {
+                if(!(error instanceof PaidGeometryValidationError))throw error;
+                const saved=await storeReading(db,task,{method:'model-validation-review',notPlan:false,plans:[],
+                    issues:[error.message]},{associationCurrent:await currentTaskContext(db,task)});
+                return {...saved,needsReview:1,modelValidationReview:1};
+            }
             if(reading.plans.length) {
                 try {
                     const cleanImage=await render(db,task,{deadline,includeEvidence:false});
