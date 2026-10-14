@@ -264,6 +264,65 @@ describe('durable tasks and spend accounting',()=>{
         expect(inserts.map(args=>JSON.parse(args[5]).listingUrl)).toEqual(['https://agency.test/listing/1','https://agency.test/listing/2']);
         expect(inserts.every(args=>JSON.parse(args[5]).building===undefined)).toBe(true);
     });
+    it.each([[],[1,1],[0],[1001],[1.5],['4'],'4',{}])('rejects invalid selected pages before reading or changing sources: %j',async pages=>{
+        const db={query:vi.fn()};
+        await expect(enqueuePlanTasks(db,{pages})).rejects.toThrow(/nonempty unique array/);
+        expect(db.query).not.toHaveBeenCalled();
+    });
+    it('rejects a selected page beyond the declared page count before mutating that source',async()=>{
+        const row={sha256:task.source_sha256,model:{totalPages:14},source_url:task.source_url,
+            listing_url:context.listingUrl,listing_owns_asset:true,building_located:true,facts:context.facts};
+        const db={query:vi.fn(async()=>({rows:[row]}))};
+        await expect(enqueuePlanTasks(db,{pages:[4,15]})).rejects.toThrow(/exceeds source page count \(14\)/);
+        expect(db.query).toHaveBeenCalledTimes(1);
+        expect(db.query.mock.calls[0][0]).toContain('SELECT e.sha256');
+    });
+    it.each([0,-1,1001,'14'])('rejects invalid declared page count %j before a source mutation',async totalPages=>{
+        const row={sha256:task.source_sha256,model:{totalPages},source_url:task.source_url,
+            listing_url:context.listingUrl,listing_owns_asset:true,building_located:true,facts:context.facts};
+        const db={query:vi.fn(async()=>({rows:[row]}))};
+        await expect(enqueuePlanTasks(db,{pages:[1]})).rejects.toThrow(/Invalid or oversized source page count/);
+        expect(db.query).toHaveBeenCalledTimes(1);
+    });
+    it('queues only selected brochure pages with existing stable IDs and deduplicates on another pass',async()=>{
+        const row={sha256:task.source_sha256,model:{totalPages:14},source_url:task.source_url,
+            listing_url:context.listingUrl,listing_owns_asset:true,building_located:true,facts:context.facts};
+        const inserts=[],ids=new Set();
+        const db={query:vi.fn(async(sql,args=[])=>{
+            if(sql.includes('FROM floor_plan.extraction e'))return {rows:[row]};
+            if(sql.includes('INSERT INTO floor_plan.plan_task')){
+                inserts.push(args);const existed=ids.has(args[0]);ids.add(args[0]);return {rows:[],rowCount:existed?0:1};
+            }
+            return {rows:[],rowCount:1};
+        })};
+        expect(await enqueuePlanTasks(db,{pages:[7,4]})).toMatchObject({sources:1,enqueued:2});
+        expect(inserts.map(args=>args[3])).toEqual([4,7]);
+        expect(inserts.map(args=>args[0])).toEqual([taskId(row.sha256,4,context),taskId(row.sha256,7,context)]);
+        expect(await enqueuePlanTasks(db,{pages:[4,7]})).toMatchObject({enqueued:0});
+        expect(ids.size).toBe(2);
+        inserts.length=0;
+        expect(await enqueuePlanTasks(db)).toMatchObject({enqueued:12});
+        expect(inserts.map(args=>args[3])).toEqual(Array.from({length:14},(_,i)=>i+1));
+        expect(ids.size).toBe(14);
+    });
+    it('maps eleven owners of one fourteen-page brochure to eleven individual page tasks',async()=>{
+        const inserts=[];
+        const db={query:vi.fn(async(sql,args=[])=>{
+            if(sql.includes('FROM floor_plan.extraction e'))return {rows:[{sha256:task.source_sha256,model:{totalPages:14},
+                source_url:'https://agency.test/brochure.pdf',listing_url:args[2][0],listing_owns_asset:true,building_located:true,
+                facts:{unitId:new URL(args[2][0]).pathname.split('/').at(-1)}}]};
+            if(sql.includes('INSERT INTO floor_plan.plan_task'))inserts.push(args);
+            return {rows:[],rowCount:1};
+        })};
+        for(let unit=1;unit<=11;unit++){
+            const page=unit<=3?4:unit<=6?5:unit<=9?6:7;
+            expect(await enqueuePlanTasks(db,{sourceHash:task.source_sha256,urls:[`https://agency.test/S${unit}`],pages:[page]}))
+                .toMatchObject({enqueued:1});
+        }
+        expect(inserts).toHaveLength(11);
+        expect(new Set(inserts.map(args=>args[0])).size).toBe(11);
+        expect(inserts.map(args=>args[3])).toEqual([4,4,4,5,5,5,6,6,6,7,7]);
+    });
     it('does not let an explicit source hash enqueue an unlocated listing',async()=>{
         const source={sha256:task.source_sha256,model:{totalPages:1},source_url:task.source_url,
             listing_url:context.listingUrl,listing_owns_asset:true,building_located:false,facts:context.facts};

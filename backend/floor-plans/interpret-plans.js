@@ -14,7 +14,7 @@ import { sourceGeometry } from './source-geometry.js';
 import {runBatchStage,reservationUsd,budgetUsed} from './batch-worker.js';
 import {locatedListingSql,LOCATED_PLAN_TASK_SQL} from './building-location.js';
 import { readBlob } from './blob-store.js';
-import { listingUnitId, sourceUnitMatches } from './original-plan-sources.js';
+import { listingUnitId, selectListingUnitReading, sourceUnitMatches } from './original-plan-sources.js';
 
 const exec=promisify(execFile);
 export function taskContext(row) {
@@ -31,9 +31,11 @@ function contextIdentity(context) {
 }
 export function taskId(hash,page,context) { return fingerprint([PROCESSOR,hash,page,contextIdentity(context)]); }
 
-export async function enqueuePlanTasks(db,{limit=100,sourceHash=null,urls=null,deadline=Infinity}={}) {
+export async function enqueuePlanTasks(db,{limit=100,sourceHash=null,urls=null,pages=null,deadline=Infinity}={}) {
     if(sourceHash!==null&&!/^[a-f0-9]{64}$/i.test(sourceHash))throw new Error('Invalid source SHA-256.');
     if(urls!==null&&(!Array.isArray(urls)||urls.some(url=>typeof url!=='string'||!/^https?:\/\//.test(url))))throw new Error('Invalid source URL filter.');
+    if(pages!==null&&(!Array.isArray(pages)||!pages.length||new Set(pages).size!==pages.length
+        ||pages.some(page=>!Number.isInteger(page)||page<1||page>1000)))throw new Error('Pages must be a nonempty unique array of integers from 1 to 1000.');
     const rows=(await db.query(`SELECT e.sha256,e.model,t.url AS source_url,l.url AS listing_url,l.facts,
         ${locatedListingSql()} AS building_located,
         (l.asset_urls @> jsonb_build_array(jsonb_build_object('url',t.url,'listingOwned',true))) AS listing_owns_asset
@@ -51,7 +53,10 @@ export async function enqueuePlanTasks(db,{limit=100,sourceHash=null,urls=null,d
         if(row.listing_owns_asset!==true||!row.listing_url||!row.source_url) {ambiguous++;continue;}
         if(!sourceUnitMatches(row.facts,row.listing_url,row.source_url)) {ambiguous++;continue;}
         if(row.building_located!==true) {deferredLocation++;continue;}
-        const context=taskContext(row),pages=row.model?.totalPages||1;
+        const context=taskContext(row),totalPages=row.model?.totalPages??1;
+        if(!Number.isInteger(totalPages)||totalPages<1||totalPages>1000) throw new Error('Invalid or oversized source page count.');
+        if(pages?.some(page=>page>totalPages))throw new Error(`Requested page exceeds source page count (${totalPages}).`);
+        const selectedPages=pages?[...pages].sort((a,b)=>a-b):Array.from({length:totalPages},(_,index)=>index+1);
         const contextKey=fingerprint([row.sha256,contextIdentity(context)]);
         if(seenContexts.has(contextKey))continue;
         seenContexts.add(contextKey);
@@ -59,8 +64,7 @@ export async function enqueuePlanTasks(db,{limit=100,sourceHash=null,urls=null,d
             sources.add(row.sha256);
             await db.query('UPDATE floor_plan.extraction SET vision_checked_at=now() WHERE sha256=$1',[row.sha256]);
         }
-        if(!Number.isInteger(pages)||pages<1||pages>1000) throw new Error('Invalid or oversized source page count.');
-        for(let page=1;page<=pages;page++) {
+        for(const page of selectedPages) {
             if(Date.now()>=deadline) {deferred++;break;}
             const id=taskId(row.sha256,page,context);
             const saved=await db.query(`INSERT INTO floor_plan.plan_task(id,source_sha256,source_url,page,listing_url,context,processor)
@@ -178,7 +182,8 @@ export async function interpretPlans(db,{render=renderTask,verifyRaster=verifyRa
                     issues:[associationCurrent?'A current building location is required before processing this floor plan.':'The source drawing does not match this listing unit, or its association changed after submission.']});
                 return {needsReview:1,...(associationCurrent?{locationReview:1}:{associationReview:1})};
             }
-            const reading=parseReading(typeof item.data==='string'?item.data:JSON.stringify(item.data??JSON.parse(item.text)),task,
+            const raw=typeof item.data==='string'?JSON.parse(item.data):item.data??JSON.parse(item.text);
+            const reading=parseReading(JSON.stringify(selectListingUnitReading(raw,task.context.facts?.unitId)),task,
                 {...task.result.image,model:item.model});
             if(reading.plans.length) {
                 try {

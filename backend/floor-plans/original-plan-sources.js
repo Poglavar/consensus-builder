@@ -26,6 +26,26 @@ export function sourceUnitMatches(facts = {}, listingUrl = '', sourceUrl = '', u
         .every(sourceUnit => sourceUnit === normalizeUnitId(unit));
 }
 
+// A shared brochure may contain other offers. Keep the paid response, but only attach the
+// requested unit's geometry; a whole-floor drawing is not an individual apartment.
+export function selectListingUnitReading(reading, unitId) {
+    const expected = normalizeUnitId(unitId);
+    if (!expected || reading?.notPlan === true || !Array.isArray(reading?.plans)
+        || !Array.isArray(reading?.issues) || !reading.plans.length) return reading;
+    const namedUnit = plan => normalizeUnitId(listingUnitId({ title: plan.id }));
+    let selected = reading.plans.filter(plan => plan.scope === 'unit'
+        && [normalizeUnitId(plan.id), namedUnit(plan)].includes(expected));
+    if (!selected.length && reading.plans.length === 1) {
+        const plan = reading.plans[0];
+        if (plan.scope === 'unit' && /^(?:plan|unit|apartment|region)(?:[\s_-]|$)/i.test(plan.id || '')
+            && !namedUnit(plan)) selected = [plan];
+    }
+    if (selected.length === reading.plans.length) return reading;
+    const issue = selected.length ? `Only listing unit ${unitId} was selected from this shared page.`
+        : `The reading did not isolate listing unit ${unitId}; geometry remains unassigned.`;
+    return { ...reading, plans: selected, issues: [...(reading.issues || []), issue] };
+}
+
 // Only failures that invalidate the boundary suppress geometry; other review notes remain visible.
 const UNSAFE_BOUNDARY_ISSUES = new Set(['Wall geometry extends outside the slab outline.', 'Slab outline intersects itself.']);
 export function hasUsableGeometry(model = {}) {
