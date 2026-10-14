@@ -68,7 +68,13 @@
             if (event.button !== undefined && event.button !== 0) return;
             pointerActive = true;
             pointerId = event.pointerId === undefined ? null : event.pointerId;
+            if (typeof event.stopPropagation === 'function') event.stopPropagation();
             if (event.cancelable && typeof event.preventDefault === 'function') event.preventDefault();
+            // Keep release/click targeted at this control even when the pointer leaves its grip.
+            if (pointerId !== null && typeof handle.setPointerCapture === 'function') {
+                try { handle.setPointerCapture(pointerId); }
+                catch (_) { /* Synthetic events have no active native pointer to capture. */ }
+            }
             if (typeof handle.focus === 'function') {
                 try { handle.focus({ preventScroll: true }); }
                 catch (_) { handle.focus(); }
@@ -88,12 +94,22 @@
         function onPointerEnd(event) {
             if (!pointerActive) return;
             if (pointerId !== null && event.pointerId !== undefined && event.pointerId !== pointerId) return;
+            const releasedId = pointerId;
             pointerActive = false;
             pointerId = null;
             doc.removeEventListener('pointermove', onPointerMove);
             doc.removeEventListener('pointerup', onPointerEnd);
             doc.removeEventListener('pointercancel', onPointerEnd);
+            if (releasedId !== null && typeof handle.hasPointerCapture === 'function'
+                && handle.hasPointerCapture(releasedId)) handle.releasePointerCapture(releasedId);
         }
+
+        function onLostPointerCapture(event) {
+            if (event.target === handle) onPointerEnd(event);
+        }
+
+        // preventDefault on pointerdown does not suppress the browser's later click.
+        function onClick(event) { event.stopPropagation(); }
 
         function onKeyDown(event) {
             const next = keyboardPercent(value, event.key, options);
@@ -106,6 +122,8 @@
 
         handle.addEventListener('pointerdown', onPointerDown);
         handle.addEventListener('keydown', onKeyDown);
+        handle.addEventListener('click', onClick);
+        handle.addEventListener('lostpointercapture', onLostPointerCapture);
         if (win && typeof win.addEventListener === 'function') win.addEventListener('resize', onResize);
 
         return {
@@ -117,6 +135,8 @@
                 onPointerEnd({});
                 handle.removeEventListener('pointerdown', onPointerDown);
                 handle.removeEventListener('keydown', onKeyDown);
+                handle.removeEventListener('click', onClick);
+                handle.removeEventListener('lostpointercapture', onLostPointerCapture);
                 if (win && typeof win.removeEventListener === 'function') win.removeEventListener('resize', onResize);
             }
         };
