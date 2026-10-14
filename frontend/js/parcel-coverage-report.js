@@ -1,6 +1,6 @@
 // Renders the research snapshot; every table shares numeric-aware, reversible header sorting.
 import { nextSort, sortRows, filterCities, filterCountries, countSupportedCities } from './parcel-coverage-report-model.mjs?v=4';
-import { reportMessages } from './parcel-coverage-report-i18n.mjs?v=4';
+import { reportMessages } from './parcel-coverage-report-i18n.mjs?v=5';
 
 const params = new URLSearchParams(location.search);
 let language = Object.hasOwn(reportMessages, params.get('lang')) ? params.get('lang') : 'en';
@@ -82,11 +82,43 @@ function renderHeader(kind) {
     byId(tableId[kind]).tHead.replaceChildren(row);
 }
 
+function showIntegrationDetails(city) {
+    const dialog = byId('integration-dialog');
+    byId('integration-city-name').textContent = city.name;
+    const current = node('p', undefined, 'integration-current');
+    current.append(node('strong', tr('integrationCurrent')), node('span', tr(city.appCityIds.length ? 'integrationAvailable' : 'integrationUnavailable')));
+    const attempts = node('ol', undefined, 'integration-attempts');
+    for (const attempt of city.integrationAttempts) {
+        const item = node('li');
+        const header = node('div', undefined, 'integration-attempt-heading');
+        const label = { qualified: 'integrationPassed', held: 'integrationHeld', unchecked: 'integrationUnchecked' }[attempt.outcome];
+        header.append(node('strong', tr(label)));
+        const date = node('time', attempt.checkedAt?.slice(0, 10) || tr('integrationDateMissing'));
+        if (attempt.checkedAt) { date.dateTime = attempt.checkedAt; date.title = attempt.checkedAt; }
+        header.append(date);
+        item.append(header, node('p', attempt.summary || tr('integrationReasonMissing')));
+        if (attempt.sources.length) item.append(node('p', tr('integrationSources', { sources: attempt.sources.map(source => source.name).join(' · ') }), 'integration-sources'));
+        const links = node('div', undefined, 'integration-evidence');
+        links.append(safeLink(attempt.evidenceUrl, tr('integrationRecord')));
+        if (attempt.diagnosticsUrl) links.append(safeLink(attempt.diagnosticsUrl, tr('integrationDiagnostics')));
+        item.append(links); attempts.append(item);
+    }
+    byId('integration-content').replaceChildren(current, node('p', tr('integrationHistoryNote'), 'small-note'), attempts);
+    dialog.showModal();
+}
+
 function cityCell(city, key, className) {
     const td = node('td', undefined, className);
     if (key === 'name') {
         td.append(node('strong', city.name));
         if (city.appCityIds.length) td.append(node('span', tr('inApp'), 'cell-detail'));
+        if (city.integrationAttempts.length) {
+            const button = node('button', tr('integrationDetails'), 'cb-link cb-link--quiet city-integration-button'); button.type = 'button';
+            button.setAttribute('aria-label', tr('integrationDetailsFor', { city: city.name }));
+            button.setAttribute('aria-haspopup', 'dialog'); button.setAttribute('aria-controls', 'integration-dialog');
+            button.addEventListener('click', () => showIntegrationDetails(city));
+            td.append(button);
+        }
     } else if (key === 'population2025' || key === 'annualGrowthPct2015To2025') {
         td.textContent = key === 'population2025' ? number(city[key]) : percentage(city[key]);
         td.title = city.population2025 !== null ? tr('populationMatch', { name: city.wupName || city.name, quality: city.populationPlausibility2025 || tr('unknown') }) : tr('unknownValue');
@@ -211,6 +243,10 @@ byId('report-language').addEventListener('change', event => {
     if (report) render(); else applyLanguage();
 });
 byId('print-report').addEventListener('click', () => window.print());
+byId('integration-close').addEventListener('click', () => byId('integration-dialog').close());
+byId('integration-dialog').addEventListener('click', event => {
+    if (event.target === event.currentTarget) event.currentTarget.close();
+});
 function updateCityFilterUrl(hash) {
     const url = new URL(location.href);
     for (const key of ['cohort', 'support', 'country']) {
