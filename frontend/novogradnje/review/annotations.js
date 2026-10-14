@@ -19,6 +19,18 @@
             || ![rect?.left, rect?.top, rect?.width, rect?.height].every(finite)) return null;
         return { x: rect.left + point[0] * rect.width, y: rect.top + point[1] * rect.height };
     }
+    function popoverPosition(point, stage, viewport, scroll, popover, gap = 12, origin = { left: 0, top: 0 }) {
+        if (!Array.isArray(point) || point.length !== 2 || !point.every(finite) || point.some(n => n < 0 || n > 1)
+            || ![stage?.width, stage?.height, viewport?.width, viewport?.height, scroll?.left, scroll?.top, popover?.width, popover?.height, gap, origin?.left, origin?.top].every(finite)
+            || stage.width <= 0 || stage.height <= 0 || viewport.width <= 0 || viewport.height <= 0) return null;
+        const clamp = (n, max) => Math.max(0, Math.min(max, n));
+        const anchorX = origin.left + point[0] * stage.width - scroll.left, anchorY = origin.top + point[1] * stage.height - scroll.top;
+        const maxX = Math.max(0, viewport.width - popover.width), maxY = Math.max(0, viewport.height - popover.height);
+        const preferredX = anchorX + gap + popover.width > viewport.width ? anchorX - gap - popover.width : anchorX + gap;
+        const preferredY = anchorY + gap + popover.height > viewport.height ? anchorY - gap - popover.height : anchorY + gap;
+        const left = clamp(preferredX, maxX), top = clamp(preferredY, maxY);
+        return { left: left + scroll.left - origin.left, top: top + scroll.top - origin.top, visibleLeft: left, visibleTop: top };
+    }
     function validateDocument(value, expected = {}) {
         if (!value || typeof value !== 'object' || Array.isArray(value)) throw new TypeError('Annotation document must be an object.');
         if (value.schema !== SCHEMA) throw new TypeError('Unsupported annotation schema.');
@@ -67,5 +79,5 @@
         } while (isDirty());
         return true;
     }
-    return { SCHEMA, MAX_SHAPES, MAX_SHAPE_NOTE, MAX_NOTE, pointFromClient, sourcePointToClient, validateDocument, newDocument, restoreContent, exportDocument, flushChanges };
+    return { SCHEMA, MAX_SHAPES, MAX_SHAPE_NOTE, MAX_NOTE, pointFromClient, sourcePointToClient, popoverPosition, validateDocument, newDocument, restoreContent, exportDocument, flushChanges };
 });

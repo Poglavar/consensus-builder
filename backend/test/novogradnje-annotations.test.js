@@ -15,6 +15,27 @@ describe('draft plan annotations', () => {
         expect(A.pointFromClient(10, 40, rectAt100)).toBeNull();
     });
 
+    it('keeps the pin comment popover inside a small visible viewport after zoom and scroll', () => {
+        const viewport = { width: 360, height: 500 }, popover = { width: 270, height: 180 };
+        const stage = { width: 2880, height: 2240 }, scroll = { left: 2400, top: 1800 };
+        const pin = [0.95, 0.95];
+        const placed = A.popoverPosition(pin, stage, viewport, scroll, popover);
+        expect(placed).toEqual({ left: 2454, top: 1936, visibleLeft: 54, visibleTop: 136 });
+        expect(placed.visibleLeft).toBeGreaterThanOrEqual(0);
+        expect(placed.visibleTop).toBeGreaterThanOrEqual(0);
+        expect(placed.visibleLeft + popover.width).toBeLessThanOrEqual(viewport.width);
+        expect(placed.visibleTop + popover.height).toBeLessThanOrEqual(viewport.height);
+        const mobileEdge = A.popoverPosition([0.99, 0.99], { width: 720, height: 900 }, { width: 320, height: 250 }, { left: 400, top: 640 }, { width: 250, height: 160 });
+        expect(mobileEdge.visibleLeft + 250).toBeLessThanOrEqual(320);
+        expect(mobileEdge.visibleTop + 160).toBeLessThanOrEqual(250);
+        const centered = A.popoverPosition([0.9, 0.9], { width: 300, height: 220 }, { width: 420, height: 300 },
+            { left: 0, top: 0 }, { width: 280, height: 180 }, 12, { left: 60, top: 40 });
+        expect(centered.visibleLeft).toBeGreaterThanOrEqual(0);
+        expect(centered.visibleLeft + 280).toBeLessThanOrEqual(420);
+        expect(centered.left + 60).toBe(centered.visibleLeft);
+        expect(centered.top + 40).toBe(centered.visibleTop);
+    });
+
     it('validates shape types, point counts, normalized bounds, and identity caps', () => {
         const document = A.newDocument(metadata);
         document.shapes = [

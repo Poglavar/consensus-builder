@@ -22,7 +22,7 @@
         const toolButtons = new Map(); let tool = 'select';
         for (const [key, label] of Object.entries(LABELS)) {
             const b = el('button', 'annotation-tool', label); b.type = 'button'; b.dataset.tool = key; b.setAttribute('aria-pressed', String(key === tool));
-            b.addEventListener('click', () => { tool = key; for (const [name, button] of toolButtons) button.setAttribute('aria-pressed', String(name === tool)); });
+            b.addEventListener('click', () => { closeComment(); tool = key; for (const [name, button] of toolButtons) button.setAttribute('aria-pressed', String(name === tool)); });
             toolButtons.set(key, b); toolbar.append(b);
         }
         const zoomLabel = el('div', 'annotation-zoom'), zoomOut = el('button', '', '−'), zoomIn = el('button', '', '+'), fit = el('button', '', 'Fit'), zoomValue = el('span', '', '100%');
@@ -33,20 +33,42 @@
         const download = el('button', '', 'Download JSON'); download.type = 'button';
         const reload = el('button', '', 'Reload server version'); reload.type = 'button'; reload.hidden = true;
         toolbar.append(zoomLabel, undo, remove, save, download, reload);
-        const noteRow = el('div', 'annotation-note-row'), noteLabel = el('label', '', 'Selected shape note'), noteInput = el('input');
-        noteInput.type = 'text'; noteInput.maxLength = A.MAX_SHAPE_NOTE; noteInput.placeholder = 'Optional, up to 500 characters'; noteLabel.append(noteInput);
-        const globalLabel = el('label', 'annotation-global-note', 'General note'), globalInput = el('textarea'); globalInput.maxLength = A.MAX_NOTE; globalInput.rows = 2; globalInput.placeholder = 'Optional context, up to 2,000 characters'; globalLabel.append(globalInput); noteRow.append(noteLabel, globalLabel);
+        const markNoteLabel = el('label', 'annotation-mark-note', 'Selected shape note'), markNoteInput = el('input'); markNoteInput.type = 'text'; markNoteInput.maxLength = A.MAX_SHAPE_NOTE; markNoteInput.placeholder = 'Optional note, up to 500 characters'; markNoteLabel.append(markNoteInput);
+        const globalLabel = el('label', 'annotation-global-note', 'General note'), globalInput = el('textarea'); globalInput.maxLength = A.MAX_NOTE; globalInput.rows = 2; globalInput.placeholder = 'Optional context, up to 2,000 characters'; globalLabel.append(globalInput);
         const viewport = el('div', 'annotation-scroll'); viewport.setAttribute('aria-label', 'Zoomable source drawing; drag to annotate');
         const stage = el('div', 'annotation-stage'), source = el('img', 'annotation-source'); source.alt = image.alt || `Original drawing for ${metadata.unitId}`; source.draggable = false;
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.classList.add('annotation-overlay'); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Drawing annotations');
-        stage.append(source, svg); viewport.append(stage);
+        const commentPopover = el('div', 'annotation-comment-popover'); commentPopover.hidden = true;
+        const commentLabel = el('label', '', 'Pin comment'), commentInput = el('textarea'); commentInput.maxLength = A.MAX_SHAPE_NOTE; commentInput.rows = 3; commentInput.setAttribute('aria-label', 'Pin comment'); commentInput.placeholder = 'Add a comment about this point…';
+        const commentDone = el('button', 'annotation-comment-done', 'Done'); commentDone.type = 'button'; commentLabel.append(commentInput); commentPopover.append(commentLabel, commentDone);
+        stage.append(source, svg, commentPopover); viewport.append(stage);
         const instructions = el('p', 'annotation-help', 'Choose a tool, then drag on the drawing. Tap to place a note pin. Select a mark to edit its note; drag empty space in Select mode to pan. Changes save automatically.');
-        ui.append(heading, toolbar, instructions, viewport, noteRow, globalLabel); host.replaceChildren(ui);
-        let documentValue = null, selectedId = null, start = null, live = null, pan = null, timer = null, busy = false, conflict = false, destroyed = false, dirty = false;
+        ui.append(heading, toolbar, instructions, viewport, markNoteLabel, globalLabel); host.replaceChildren(ui);
+        let documentValue = null, selectedId = null, start = null, live = null, pan = null, pendingCommentId = null, pendingPointerId = null, timer = null, busy = false, conflict = false, destroyed = false, dirty = false;
         const undoStack = [];
         const setStatus = value => { status.textContent = value; };
         const setDirty = before => { if (documentValue) { if (before) { undoStack.push(before); if (undoStack.length > 40) undoStack.shift(); } dirty = true; setStatus(`Unsaved changes · revision ${documentValue.revision}`); clearTimeout(timer); timer = setTimeout(() => persist(), 350); } };
         const rect = () => stage.getBoundingClientRect();
+        function positionComment() {
+            if (commentPopover.hidden || !selectedId || !source.naturalWidth) return;
+            const shape = documentValue?.shapes.find(item => item.id === selectedId); if (shape?.type !== 'note') return;
+            commentPopover.style.width = `${Math.max(80, Math.min(280, stage.clientWidth, viewport.clientWidth - 12))}px`;
+            commentPopover.style.maxHeight = `${Math.max(80, viewport.clientHeight - 12)}px`;
+            const placed = A.popoverPosition(shape.points[0], { width: stage.clientWidth, height: stage.clientHeight },
+                { width: viewport.clientWidth, height: viewport.clientHeight }, { left: viewport.scrollLeft, top: viewport.scrollTop },
+                { width: commentPopover.offsetWidth, height: commentPopover.offsetHeight }, 12, { left: stage.offsetLeft, top: stage.offsetTop });
+            if (placed) { commentPopover.style.left = `${placed.left}px`; commentPopover.style.top = `${placed.top}px`; }
+        }
+        function closeComment({ returnToSelect = false } = {}) {
+            commentPopover.hidden = true;
+            if (returnToSelect) { tool = 'select'; for (const [name, button] of toolButtons) button.setAttribute('aria-pressed', String(name === tool)); }
+        }
+        function openComment(shape, focus = false) {
+            shape = documentValue?.shapes.find(item => item.id === shape.id);
+            if (!shape) return;
+            selectedId = shape.id; commentInput.value = shape.note || ''; markNoteInput.value = shape.note || ''; draw(); commentPopover.hidden = false; positionComment();
+            if (focus) { commentInput.focus({ preventScroll: true }); commentInput.setSelectionRange(commentInput.value.length, commentInput.value.length); }
+        }
         let showGeometry = false;
         function draw() {
             if (!documentValue) return;
@@ -61,17 +83,25 @@
             for (const shape of shapes) {
                 const color = COLORS[shape.type], group = document.createElementNS(svg.namespaceURI, 'g'); group.dataset.shapeId = shape.id; group.classList.toggle('is-selected', shape.id === selectedId);
                 if (shape.type === 'note') {
-                    const c = document.createElementNS(svg.namespaceURI, 'circle'); c.setAttribute('cx', String(shape.points[0][0] * source.naturalWidth)); c.setAttribute('cy', String(shape.points[0][1] * source.naturalHeight)); c.setAttribute('r', '14'); c.setAttribute('fill', color); c.setAttribute('stroke', '#fff'); c.setAttribute('stroke-width', '4'); group.append(c);
-                    const t = document.createElementNS(svg.namespaceURI, 'text'); t.textContent = 'N'; t.setAttribute('x', String(shape.points[0][0] * source.naturalWidth)); t.setAttribute('y', String(shape.points[0][1] * source.naturalHeight + 5)); t.setAttribute('text-anchor', 'middle'); t.setAttribute('fill', 'white'); t.setAttribute('font-size', '15'); t.setAttribute('font-weight', '700'); group.append(t);
+                    const pixel = source.naturalWidth / Math.max(1, stage.clientWidth);
+                    group.setAttribute('tabindex', '0'); group.setAttribute('role', 'button'); group.setAttribute('aria-label', shape.note ? `Pin comment: ${shape.note}` : 'Add pin comment');
+                    const hit = document.createElementNS(svg.namespaceURI, 'circle'); hit.setAttribute('cx', String(shape.points[0][0] * source.naturalWidth)); hit.setAttribute('cy', String(shape.points[0][1] * source.naturalHeight)); hit.setAttribute('r', String(20 * pixel)); hit.setAttribute('fill', 'transparent'); group.append(hit);
+                    const c = document.createElementNS(svg.namespaceURI, 'circle'); c.setAttribute('cx', String(shape.points[0][0] * source.naturalWidth)); c.setAttribute('cy', String(shape.points[0][1] * source.naturalHeight)); c.setAttribute('r', String(10 * pixel)); c.setAttribute('fill', color); c.setAttribute('stroke', '#fff'); c.setAttribute('stroke-width', String(2 * pixel)); group.append(c);
+                    const t = document.createElementNS(svg.namespaceURI, 'text'); t.textContent = 'N'; t.setAttribute('x', String(shape.points[0][0] * source.naturalWidth)); t.setAttribute('y', String(shape.points[0][1] * source.naturalHeight + 4 * pixel)); t.setAttribute('text-anchor', 'middle'); t.setAttribute('fill', 'white'); t.setAttribute('font-size', String(12 * pixel)); t.setAttribute('font-weight', '700'); group.append(t);
                 } else {
                     const line = document.createElementNS(svg.namespaceURI, 'line'); line.setAttribute('x1', String(shape.points[0][0] * source.naturalWidth)); line.setAttribute('y1', String(shape.points[0][1] * source.naturalHeight)); line.setAttribute('x2', String(shape.points[1][0] * source.naturalWidth)); line.setAttribute('y2', String(shape.points[1][1] * source.naturalHeight)); line.setAttribute('stroke', color); line.setAttribute('stroke-width', shape.id === selectedId ? '12' : '8'); line.setAttribute('stroke-linecap', 'round'); group.append(line);
                 }
-                group.addEventListener('pointerdown', event => { if (tool !== 'select') return; event.stopPropagation(); selectedId = shape.id; noteInput.value = shape.note; draw(); });
+                group.addEventListener('pointerdown', event => {
+                    if (shape.type === 'note') { event.stopPropagation(); pendingCommentId = shape.id; pendingPointerId = event.pointerId; svg.setPointerCapture(event.pointerId); return; }
+                    if (tool !== 'select') return; event.stopPropagation(); closeComment(); selectedId = shape.id; markNoteInput.value = shape.note || ''; draw();
+                });
+                group.addEventListener('click', event => { if (shape.type === 'note' && event.detail === 0) openComment(shape, true); });
+                group.addEventListener('keydown', event => { if (shape.type === 'note' && ['Enter', ' '].includes(event.key)) { event.preventDefault(); openComment(shape, true); } });
                 svg.append(group);
             }
             svg.setAttribute('viewBox', `0 0 ${source.naturalWidth || 1} ${source.naturalHeight || 1}`);
         }
-        function syncSize() { if (!source.naturalWidth || !source.naturalHeight) return; const scale = Number(stage.dataset.zoom || 1); stage.style.width = `${source.naturalWidth * scale}px`; stage.style.height = `${source.naturalHeight * scale}px`; draw(); }
+        function syncSize() { if (!source.naturalWidth || !source.naturalHeight) return; const scale = Number(stage.dataset.zoom || 1); stage.style.width = `${source.naturalWidth * scale}px`; stage.style.height = `${source.naturalHeight * scale}px`; draw(); positionComment(); }
         function setZoom(value, anchor = null) {
             const next = Math.max(.1, Math.min(4, value)), old = Number(stage.dataset.zoom || 1); if (next === old) return;
             const before = anchor ? { x: (anchor.x + viewport.scrollLeft) / old, y: (anchor.y + viewport.scrollTop) / old } : null;
@@ -85,42 +115,52 @@
         source.addEventListener('load', imageReady); source.addEventListener('error', () => setStatus('Could not load the source drawing.'));
         source.src = typeof image === 'string' ? image : image?.src || '';
         if (source.complete && source.naturalWidth) imageReady();
-        function select(id) { selectedId = id; const shape = documentValue.shapes.find(item => item.id === id); noteInput.value = shape?.note || ''; draw(); }
+        function select(id) { selectedId = id; const shape = documentValue.shapes.find(item => item.id === id); if (shape?.type === 'note') openComment(shape, true); else { closeComment(); draw(); } }
+        viewport.addEventListener('scroll', positionComment, { passive: true }); addEventListener('resize', positionComment);
         svg.addEventListener('pointerdown', event => {
             if (!documentValue) return;
             const existingShape = event.target.closest('[data-shape-id]');
+            if (existingShape) return;
             if (tool === 'select') {
-                if (existingShape) return;
-                selectedId = null; noteInput.value = ''; draw(); event.preventDefault();
+                selectedId = null; markNoteInput.value = ''; closeComment(); draw(); event.preventDefault();
                 pan = { x: event.clientX, y: event.clientY, left: viewport.scrollLeft, top: viewport.scrollTop }; svg.setPointerCapture(event.pointerId); viewport.classList.add('is-panning'); return;
             }
-            if (existingShape) return;
             const point = A.pointFromClient(event.clientX, event.clientY, rect()); if (!point) return;
             event.preventDefault(); svg.setPointerCapture(event.pointerId);
-            if (tool === 'note') { if (documentValue.shapes.length >= A.MAX_SHAPES) { setStatus(`Maximum ${A.MAX_SHAPES} annotations reached.`); return; } const before = clone(documentValue), shape = { id: crypto.randomUUID(), type: 'note', points: [point], note: '' }; documentValue.shapes.push(shape); select(shape.id); setDirty(before); return; }
+            if (tool === 'note') { if (documentValue.shapes.length >= A.MAX_SHAPES) { setStatus(`Maximum ${A.MAX_SHAPES} annotations reached.`); return; } const before = clone(documentValue), shape = { id: crypto.randomUUID(), type: 'note', points: [point], note: '' }; documentValue.shapes.push(shape); setDirty(before); selectedId = shape.id; pendingCommentId = shape.id; pendingPointerId = event.pointerId; return; }
             start = point; live = { id: 'preview', type: tool, points: [point, point], note: '' }; draw();
         });
         svg.addEventListener('pointermove', event => { if (pan) { viewport.scrollLeft = pan.left - (event.clientX - pan.x); viewport.scrollTop = pan.top - (event.clientY - pan.y); return; } if (!start || !live) return; const point = A.pointFromClient(event.clientX, event.clientY, rect()); if (!point) return; live.points[1] = point; draw(); });
         svg.addEventListener('pointerup', event => {
             if (pan) { pan = null; viewport.classList.remove('is-panning'); return; }
+            if (pendingCommentId && (pendingPointerId === null || pendingPointerId === event.pointerId)) {
+                const shape = documentValue.shapes.find(item => item.id === pendingCommentId && item.type === 'note');
+                pendingCommentId = null; pendingPointerId = null;
+                if (svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
+                if (shape) openComment(shape, true);
+                return;
+            }
             if (!start || !live) return; const point = A.pointFromClient(event.clientX, event.clientY, rect());
             if (point) live.points[1] = point;
             const dist = Math.hypot(live.points[0][0] - live.points[1][0], live.points[0][1] - live.points[1][1]);
             const before = point && dist > .001 && documentValue.shapes.length < A.MAX_SHAPES ? clone(documentValue) : null;
             if (before) { live.id = crypto.randomUUID(); documentValue.shapes.push(live); selectedId = live.id; }
             else if (point && dist > .001 && documentValue.shapes.length >= A.MAX_SHAPES) setStatus(`Maximum ${A.MAX_SHAPES} annotations reached.`);
-            start = null; live = null; draw(); if (selectedId) noteInput.value = documentValue.shapes.find(item => item.id === selectedId)?.note || ''; if (before) setDirty(before);
+            start = null; live = null; draw(); if (before) setDirty(before);
         });
-        svg.addEventListener('pointercancel', () => { start = null; live = null; pan = null; viewport.classList.remove('is-panning'); draw(); });
-        noteInput.addEventListener('input', () => { const shape = documentValue?.shapes.find(item => item.id === selectedId); if (shape) { const before = clone(documentValue); shape.note = noteInput.value.slice(0, A.MAX_SHAPE_NOTE); setDirty(before); draw(); } });
+        svg.addEventListener('pointercancel', () => { start = null; live = null; pan = null; pendingCommentId = null; pendingPointerId = null; viewport.classList.remove('is-panning'); draw(); });
+        function updateShapeNote(value) { const shape = documentValue?.shapes.find(item => item.id === selectedId); if (!shape) return; const before = clone(documentValue); shape.note = value.slice(0, A.MAX_SHAPE_NOTE); if (shape.type === 'note' && commentInput.value !== shape.note) commentInput.value = shape.note; if (markNoteInput.value !== shape.note) markNoteInput.value = shape.note; setDirty(before); }
+        commentInput.addEventListener('input', () => { const shape = documentValue?.shapes.find(item => item.id === selectedId && item.type === 'note'); if (shape) updateShapeNote(commentInput.value); });
+        markNoteInput.addEventListener('input', () => updateShapeNote(markNoteInput.value));
+        commentDone.addEventListener('click', () => closeComment({ returnToSelect: true }));
         globalInput.addEventListener('input', () => { if (documentValue) { const before = clone(documentValue); documentValue.note = globalInput.value.slice(0, A.MAX_NOTE); setDirty(before); } });
-        remove.addEventListener('click', () => { if (!selectedId || !documentValue) return; const before = clone(documentValue); documentValue.shapes = documentValue.shapes.filter(shape => shape.id !== selectedId); selectedId = null; noteInput.value = ''; draw(); setDirty(before); });
-        undo.addEventListener('click', () => { if (!undoStack.length || !documentValue) return; documentValue = A.restoreContent(documentValue, undoStack.pop()); dirty = true; globalInput.value = documentValue.note; const selected = documentValue.shapes.find(shape => shape.id === selectedId); if (!selected) selectedId = null; noteInput.value = selected?.note || ''; draw(); setStatus(`Unsaved changes · revision ${documentValue.revision}`); clearTimeout(timer); timer = setTimeout(() => persist(), 350); });
+        remove.addEventListener('click', () => { if (!selectedId || !documentValue) return; const before = clone(documentValue); documentValue.shapes = documentValue.shapes.filter(shape => shape.id !== selectedId); selectedId = null; markNoteInput.value = ''; closeComment(); draw(); setDirty(before); });
+        undo.addEventListener('click', () => { if (!undoStack.length || !documentValue) return; closeComment(); documentValue = A.restoreContent(documentValue, undoStack.pop()); dirty = true; globalInput.value = documentValue.note; const selected = documentValue.shapes.find(shape => shape.id === selectedId); if (!selected) selectedId = null; markNoteInput.value = selected?.note || ''; draw(); setStatus(`Unsaved changes · revision ${documentValue.revision}`); clearTimeout(timer); timer = setTimeout(() => persist(), 350); });
         function doDownload() { if (!documentValue) return; const blob = new Blob([A.exportDocument(documentValue)], { type: 'application/json' }), url = URL.createObjectURL(blob), a = el('a'); a.href = url; a.download = `novogradnje-plan-annotations-${metadata.unitId}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }
         download.addEventListener('click', doDownload);
         async function load({ replace = false } = {}) {
             try { const response = await fetch(`${base}/${encodeURIComponent(metadata.unitId)}`, { cache: 'no-store', signal: AbortSignal.timeout(15000) }); if (!response.ok) throw new Error(`Load failed (${response.status})`); const saved = await response.json(); A.validateDocument(saved, expected);
-                if (replace) { clearTimeout(timer); undoStack.length = 0; selectedId = null; noteInput.value = ''; dirty = false; conflict = false; }
+                if (replace) { clearTimeout(timer); undoStack.length = 0; selectedId = null; pendingCommentId = null; pendingPointerId = null; commentInput.value = ''; markNoteInput.value = ''; closeComment(); dirty = false; conflict = false; }
                 documentValue = saved; globalInput.value = saved.note; draw(); setStatus(`Saved · revision ${saved.revision}`); return true; }
             catch (error) { setStatus(`Could not load annotations: ${error.message}`); if (!documentValue) save.disabled = true; return false; }
         }
@@ -162,7 +202,7 @@
         addEventListener('beforeunload', beforeUnload);
         if (!metadata.draftId || !metadata.sourceSha256) { setStatus('Annotations need sourceSha256 and draftId in draft metadata.'); save.disabled = true; }
         else load();
-        return { destroy() { destroyed = true; clearTimeout(timer); removeEventListener('beforeunload', beforeUnload); document.removeEventListener('click', onNavigation, true); }, save: persist, getDocument: () => documentValue && clone(documentValue), setGeometryVisible(value) { showGeometry = Boolean(value); draw(); } };
+        return { destroy() { destroyed = true; clearTimeout(timer); removeEventListener('beforeunload', beforeUnload); removeEventListener('resize', positionComment); viewport.removeEventListener('scroll', positionComment); document.removeEventListener('click', onNavigation, true); }, save: persist, getDocument: () => documentValue && clone(documentValue), setGeometryVisible(value) { showGeometry = Boolean(value); draw(); positionComment(); } };
     }
     return { mount };
 });
