@@ -94,7 +94,7 @@ export function originalPlanSource(row) {
     return { id: `original-${identity}`, kind: 'original', listing_url: row.listing_url,
         sha256: row.sha256, source_sha256: row.sha256, media_type: type, byte_count: row.byte_count || 0,
         reviewStatus: row.review_status || 'source_only', model: { scope: 'unit', unitId,
-            floor: facts.floor ?? null, architecture: null,
+            floor: facts.floor ?? reviewed?.floor ?? processed?.floor ?? null, architecture: null,
             quality: reviewed?.quality || processed?.quality || { issues: [] },
             source: { url: row.source_url, sha256: row.sha256, page } } };
 }

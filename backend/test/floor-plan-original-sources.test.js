@@ -101,11 +101,12 @@ describe('original and geometry inventory selection', () => {
     it('inherits the exact intrinsic source unit from current processed evidence even when its geometry is held', async () => {
         const url = 'https://example.test/apartment/123', imageUrl = 'https://example.test/189201.png';
         const row = source({ listing_url: url, source_url: imageUrl, asset: { url: imageUrl, listingOwned: true } });
-        const held = { ...geometry({ unitId: 'S1-3', quality: { issues: ['Wall geometry extends outside the slab outline.'] } }),
+        const held = { ...geometry({ unitId: 'S1-3', floor: 1, quality: { issues: ['Wall geometry extends outside the slab outline.'] } }),
             source_sha256: sha, listing_url: url, page: 1 };
         const db = { async query() { return { rows: [row] }; } };
         const [original] = await currentOriginalPlans(db, [url], { processedPlans: [held] });
         expect(original.model.unitId).toBe('S1-3');
+        expect(original.model.floor).toBe(1);
         const offer = { ...posting, url };
         const before = projectInventory([offer], [held, original]).apartments;
         const after = projectInventory([offer], [{ ...held, model: { ...held.model, quality: { issues: [] } } }, original]).apartments;
