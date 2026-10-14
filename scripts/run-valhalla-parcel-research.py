@@ -231,7 +231,8 @@ def systemic_codex_failure(returncode: int | None, stdout_text: str, stderr_text
         if code in SYSTEMIC_ERROR_CODES:
             return True
         message = " ".join(str(error.get(key, "")) for key in ("message", "detail", "reason"))
-        if SYSTEMIC_ERROR.search(message):
+        if SYSTEMIC_ERROR.search(message) or re.search(
+                r"model.{0,100}(?:not supported|not found|does not exist)", message, re.I):
             return True
     return False
 
@@ -644,6 +645,9 @@ class Runner:
         city_file = f"city-{code}-{slug}.json"
         review_file = f"{slug}-service-review.json"
         retry_block = ""
+        learning_files = getattr(self.args, "learning_file", [])
+        learning_block = "\nRead these current integration learning files before investigating this city:\n" + "\n".join(
+            f"- `{path}`" for path in learning_files) if learning_files else ""
         if previous_errors:
             retry_block = """
 
@@ -657,6 +661,7 @@ Your single immutable WUP queue record is:
 {json.dumps(city, ensure_ascii=False, indent=2)}
 ```
 Attempt {attempt} of {self.args.max_retries}. Cohort directory: `{cohort_dir.relative_to(self.root)}`.
+{learning_block}
 
 Write only `{city_file}`, `{review_file}`, and at most one sample GeoJSON containing no more than three full parcel polygons in this cohort directory. Scratch/request caches and temporary qualification evidence belong under `tmp/valhalla-parcel-research/` (ignored); never clear prior logs or artifacts. Do not edit registry/catalog/runtime city config, global/generated reports, queue/identity ledgers, or another city's files. Do not commit, push, deploy, email, or contact anyone.
 
@@ -669,7 +674,7 @@ Use the queue's `priorEvidence` and `appBindings` as starting evidence, includin
 Apply these integration lessons explicitly:
 - Identify the actual cadastral layer rather than roads, buildings, planning zones, tax tables or a screenshot. A national registry or viewable raster alone does not prove accessible parcel polygons for this city.
 - Check the service extent against the exact WUP city and distinguish centre-point coverage from nearby/district/partial-city coverage. Use small bounded windows near that city, record each window and do not claim all-city coverage from a sample.
-- Inspect CRS, coordinate order, paging limits, maximum bbox area, stable IDs, duplicate geometries and overlapping/invalid parcels. Check WFS version/type names and ArcGIS layer IDs, ID-list/page support, current/historic validity fields and response transfer limits. Filter historic duplicates only with evidenced field semantics; do not suppress genuine overlaps.
+- Inspect CRS, coordinate order, paging limits, maximum bbox area, stable IDs, duplicate geometries and overlapping/invalid parcels. Read exact case-sensitive field names from actual responses (for example objectid may differ from OBJECTID). Check WFS version/type names and ArcGIS layer IDs, ID-list/page support, current/historic validity fields and response transfer limits. Filter historic duplicates only with evidenced field semantics; do not suppress genuine overlaps.
 - Retain at most three full polygons unchanged, preserving rings, holes, multipolygons and precision. Attribute minimization must never simplify geometry. Record source authority, licence/reuse evidence or uncertainty, attribution, observation time and safe field allowlist.
 - Run one request at a time per provider host, honour Retry-After, use bounded timeouts and at most two retries for transient failures. Stop repeated 403/429/5xx or CAPTCHA failures and record them. Use official viewer configuration, WFS/ArcGIS/OGC endpoints or official downloadable polygon files as alternative routes; do not bypass access controls.
 - Record access failure, unsupported format, wrong extent, provider unavailability and geometry defects separately from unestablished registry presence. Include the next concrete qualification action where a source is promising. Discovery evidence alone never admits a source to the app.
@@ -1444,6 +1449,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--codex", help="Codex CLI executable (default: codex from PATH)")
     parser.add_argument("--research-model", help="override the shared cheap Codex research model")
     parser.add_argument("--review-model", help="override the shared Codex review model")
+    parser.add_argument("--learning-file", action="append", default=[], help="repository-relative integration evidence to read before discovery")
     parser.add_argument("--max-turn-minutes", type=int, default=90, help="per Codex turn timeout, capped at 90 minutes")
     parser.add_argument("--max-retries", type=int, default=3, help="per-city/per-review retry cap (maximum 3)")
     parser.add_argument("--range-size", type=int, default=100, help="rank range generated after the first fixed queue")

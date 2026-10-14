@@ -1,4 +1,5 @@
 'use strict';
+// Verify subscription usage receipts and model selection without provider calls or real ledger writes.
 
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -160,4 +161,19 @@ test('requires parent-established subscription billing', async (t) => {
   const stdoutPath = outputFile(root, 'call-metered');
   const { accounting } = harness(root);
   await assert.rejects(accounting.record({ ...request(stdoutPath), billing: 'metered' }), /billing must be subscription/);
+});
+
+test('delegates default tiers and explicit model overrides to shared model configuration', async () => {
+  const calls = [];
+  const shared = { models: { resolveCall: (provider, options) => {
+    calls.push({ provider, options });
+    return { model: options.model || (options.tier === 'cheap' ? 'cheap-test' : 'review-test') };
+  } } };
+  const result = await helper.runOperation({ operation: 'models', researchModel: 'override-test' }, { shared });
+  assert.equal(result.research.model, 'override-test');
+  assert.equal(result.review.model, 'review-test');
+  assert.deepEqual(calls, [
+    { provider: 'openai', options: { tier: 'cheap', model: 'override-test' } },
+    { provider: 'openai', options: { model: undefined } },
+  ]);
 });

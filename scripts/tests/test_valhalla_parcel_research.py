@@ -329,6 +329,11 @@ class FiniteDiscoveryTests(unittest.TestCase):
             command = instance._command({"model": "test", "effort": "low"}, Path("schema"), Path("answer"))
             self.assertIn('forced_login_method="chatgpt"', command)
 
+    def test_unavailable_subscription_model_is_a_systemic_failure(self):
+        event = json.dumps({"type": "turn.failed", "error": {"message":
+                           "The requested model is not supported when using Codex with a ChatGPT account."}})
+        self.assertTrue(runner.systemic_codex_failure(1, event, ""))
+
 
 if __name__ == "__main__":
     unittest.main()
