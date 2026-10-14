@@ -7,6 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import numpy as np
 from PIL import Image, ImageDraw
 
 SCRIPT = Path(__file__).resolve().parents[1] / 'scripts' / 'extract-floor-plan-evidence.py'
@@ -52,6 +53,36 @@ class FloorPlanEvidence(unittest.TestCase):
         horizontal = [w for w in result['wallCandidates'] if abs(w['a'][1]-w['b'][1]) < 1]
         self.assertEqual(len(horizontal), 2)
         self.assertLess(horizontal[0]['b'][0], horizontal[1]['a'][0])
+
+    def test_connected_rectangular_walls_and_partition_keep_stroke_bands_separate(self):
+        image = Image.new('L', (360, 280), 255)
+        draw = ImageDraw.Draw(image)
+        draw.rectangle((48, 48, 292, 212), fill=205)
+        draw.line((40, 40, 300, 40), fill=0, width=8)
+        draw.line((40, 40, 40, 220), fill=0, width=8)
+        draw.line((300, 40, 300, 220), fill=0, width=8)
+        draw.line((40, 220, 120, 220), fill=0, width=8)
+        draw.line((200, 220, 300, 220), fill=0, width=8)
+        draw.line((160, 40, 160, 155), fill=0, width=8)
+        draw.line((160, 155, 260, 155), fill=0, width=8)
+
+        walls = evidence.axis_candidates(np.array(image))
+        horizontal = [wall for wall in walls if wall['orientation'] == 'H']
+        vertical = [wall for wall in walls if wall['orientation'] == 'V']
+        self.assertEqual(len(horizontal), 4)
+        self.assertEqual(len(vertical), 3)
+        self.assertTrue(all(6 <= wall['widthPx'] <= 10 for wall in walls))
+        self.assertTrue(all((wall['b'][0] - wall['a'][0] + 1) / wall['widthPx'] >= 3
+                            for wall in horizontal))
+        bottom = sorted((wall for wall in horizontal if wall['a'][1] > 210), key=lambda wall: wall['a'][0])
+        self.assertEqual(len(bottom), 2)
+        self.assertLess(bottom[0]['b'][0], bottom[1]['a'][0])
+        self.assertFalse(any(wall['a'][0] < 120 and wall['b'][0] > 200 for wall in bottom))
+
+    def test_gray_room_fill_does_not_become_wall_candidate(self):
+        image = Image.new('L', (320, 220), 255)
+        ImageDraw.Draw(image).rectangle((40, 40, 280, 180), fill=190)
+        self.assertEqual(evidence.axis_candidates(np.array(image)), [])
 
     def test_blank_photo_like_image_is_explicitly_inconclusive(self):
         image = Image.new('RGB', (320, 200), (120, 140, 160))

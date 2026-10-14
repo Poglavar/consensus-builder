@@ -26,43 +26,86 @@ def components(mask, min_area=40):
 
 
 def axis_candidates(gray):
-    dark = (gray < 150).astype(np.uint8) * 255
+    dark = gray < 150
     candidates = []
-    for orientation, kernel in [('H', (19, 3)), ('V', (3, 19))]:
-        opened = cv2.morphologyEx(dark, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, kernel))
-        for x, y, w, h, area, component in components(opened):
-            along, across = (w, h) if orientation == 'H' else (h, w)
-            if across == 0 or along / across > 200:
+    min_run = 19
+    min_band = 3
+    endpoint_tolerance = 4
+    min_aspect = 3
+    max_aspect = 200
+
+    def runs(row):
+        padded = np.concatenate(([False], row, [False]))
+        edges = np.flatnonzero(padded[1:] != padded[:-1])
+        return [(int(start), int(end - 1)) for start, end in zip(edges[::2], edges[1::2])
+                if end - start >= min_run]
+
+    def bands(mask):
+        active = []
+        finished = []
+        for scan, row in enumerate(mask):
+            row_runs = runs(row)
+            pairs = []
+            for track_index, track in enumerate(active):
+                if track['last'] != scan - 1:
+                    continue
+                old_start = float(np.median(track['starts']))
+                old_end = float(np.median(track['ends']))
+                for run_index, (start, end) in enumerate(row_runs):
+                    start_delta = abs(start - old_start)
+                    end_delta = abs(end - old_end)
+                    if start_delta <= endpoint_tolerance and end_delta <= endpoint_tolerance:
+                        pairs.append((start_delta + end_delta, track_index, run_index))
+
+            matched_tracks = set()
+            matched_runs = set()
+            assignments = {}
+            for _, track_index, run_index in sorted(pairs):
+                if track_index in matched_tracks or run_index in matched_runs:
+                    continue
+                matched_tracks.add(track_index)
+                matched_runs.add(run_index)
+                assignments[track_index] = run_index
+
+            for track_index, track in enumerate(active):
+                if track_index in assignments:
+                    start, end = row_runs[assignments[track_index]]
+                    track['last'] = scan
+                    track['starts'].append(start)
+                    track['ends'].append(end)
+                else:
+                    finished.append(track)
+
+            for run_index, (start, end) in enumerate(row_runs):
+                if run_index not in matched_runs:
+                    active.append({'first': scan, 'last': scan, 'starts': [start], 'ends': [end]})
+
+            # Only bands reaching this row can continue into the next scanline.
+            active = [track for track in active if track['last'] == scan]
+
+        finished.extend(active)
+        return finished
+
+    # Transposing lets both directions use identical run and band rules. Each output
+    # band is formed from contiguous scanlines with stable endpoints; no gaps are filled.
+    for orientation, mask in [('H', dark), ('V', dark.T)]:
+        for band in bands(mask):
+            thickness = band['last'] - band['first'] + 1
+            if thickness < min_band:
                 continue
-            ys, xs = np.where(component)
-            if not len(xs):
+            lo = int(round(float(np.median(band['starts']))))
+            hi = int(round(float(np.median(band['ends']))))
+            length = hi - lo + 1
+            aspect = length / thickness if thickness else 0
+            if length < min_run or not np.isfinite(aspect) or not min_aspect <= aspect <= max_aspect:
                 continue
+            center = round((band['first'] + band['last']) / 2, 2)
             if orientation == 'H':
-                lo, hi = int(x + xs.min()), int(x + xs.max())
-                mids, thicknesses = [], []
-                for col in range(lo, hi + 1):
-                    rows = np.flatnonzero(gray[max(0, y-2):min(gray.shape[0], y+h+2), col] < 150)
-                    if len(rows):
-                        mids.append(float(np.median(rows + max(0, y-2))))
-                        thicknesses.append(float(rows.max() - rows.min() + 1))
-                if len(mids) < max(3, int((hi-lo+1)*.5)):
-                    continue
-                center = float(np.median(mids)); thick = float(np.median(thicknesses))
-                item = {'orientation': 'H', 'a': [lo, round(center, 2)], 'b': [hi, round(center, 2)],
-                        'widthPx': round(thick, 2), 'bounds': [lo, int(y), hi, int(y+h-1)]}
+                item = {'orientation': 'H', 'a': [lo, center], 'b': [hi, center],
+                        'widthPx': float(thickness), 'bounds': [lo, band['first'], hi, band['last']]}
             else:
-                lo, hi = int(y + ys.min()), int(y + ys.max())
-                mids, thicknesses = [], []
-                for row in range(lo, hi + 1):
-                    cols = np.flatnonzero(gray[row, max(0, x-2):min(gray.shape[1], x+w+2)] < 150)
-                    if len(cols):
-                        mids.append(float(np.median(cols + max(0, x-2))))
-                        thicknesses.append(float(cols.max() - cols.min() + 1))
-                if len(mids) < max(3, int((hi-lo+1)*.5)):
-                    continue
-                center = float(np.median(mids)); thick = float(np.median(thicknesses))
-                item = {'orientation': 'V', 'a': [round(center, 2), lo], 'b': [round(center, 2), hi],
-                        'widthPx': round(thick, 2), 'bounds': [int(x), lo, int(x+w-1), hi]}
+                item = {'orientation': 'V', 'a': [center, lo], 'b': [center, hi],
+                        'widthPx': float(thickness), 'bounds': [band['first'], lo, band['last'], hi]}
             candidates.append(item)
     candidates.sort(key=lambda c: (c['orientation'], c['a'][1], c['a'][0], c['b'][1], c['b'][0]))
     return candidates
@@ -157,7 +200,7 @@ def extract_evidence(image_path, evidence_path, annotation_path, scale_annotatio
         issues.append(f'Wall candidates truncated to {MAX_CANDIDATES}.')
     if not walls:
         issues.append('No confident orthogonal wall candidates were found; evidence is inconclusive.')
-    evidence = {'version': 'floor-plan-evidence-v1', 'widthPx': width, 'heightPx': height,
+    evidence = {'version': 'floor-plan-evidence-v2', 'widthPx': width, 'heightPx': height,
                 'wallCandidates': walls, 'scaleCandidates': scales, 'issues': issues,
                 'candidateFramePx': candidate_frame(walls, width, height)}
     Path(evidence_path).write_text(json.dumps(evidence, separators=(',', ':')) + '\n', encoding='utf8')

@@ -5,7 +5,7 @@ import {READING_SCHEMA} from './reading-schema.js';
 import {DEFAULT_MAX_TOKENS} from '../../../agents/lib/llm-cost/llm.mjs';
 import {wallCorners,candidateFrame,selectedCandidates} from './source-geometry.js';
 const {validateArchitecture}=createRequire(import.meta.url)('../../frontend/js/building-floor-plans.js');
-export const PROCESSOR='floor-plan-vision-v12';
+export const PROCESSOR='floor-plan-vision-v13';
 // The model and its reasoning effort come from the shared layer (agents/lib/llm-cost/defaults.json),
 // never from here. Its output cap also bounds the reasoning the model always does first, so a
 // reading is not paid for and then truncated; the daily budget reserves this full allowance.
