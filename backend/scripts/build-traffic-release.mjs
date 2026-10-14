@@ -27,6 +27,8 @@ const STORED_SOLUTIONS_PATH = 'backend/scripts/lib/stored-solutions.js';
 const STORED_SOLUTIONS_EXPORTS = ['isUnsafeComparedWithParent', 'nodesWithMissingIncomingAssignments'];
 const BACKEND_FILES = [
     ['backend/traffic/network-source.mjs', 'backend/traffic/network-source.mjs'],
+    ['backend/traffic/ecosystem.config.cjs', 'backend/traffic/ecosystem.config.cjs'],
+    ['backend/traffic/nginx.locations.conf', 'backend/traffic/nginx.locations.conf'],
     ['backend/routes/traffic-simulator.js', 'backend/routes/traffic-simulator.js'],
     ['backend/scripts/lib/traffic-snapshot.mjs', 'backend/scripts/lib/traffic-snapshot.mjs'],
     ['backend/scripts/serve-traffic-simulator.mjs', 'backend/scripts/serve-traffic-simulator.mjs']

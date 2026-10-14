@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
-  <title id="title">Dzepni simulator prometa</title>
-  <desc id="desc">Dzepni simulator prometa. Uredite trake. Mjerite protok.</desc>
+  <title id="title">Džepni simulator prometa</title>
+  <desc id="desc">Džepni simulator prometa. Uredite trake. Mjerite protok.</desc>
   <rect width="1200" height="630" fill="#f5f4ef"/>
   <circle cx="74" cy="77" r="3" fill="#126e67"/>
   <text x="91" y="83" fill="#697878" font-family="Arial, 'DejaVu Sans', sans-serif" font-size="16" font-weight="700" letter-spacing="3">ZAGREB.LOL  /  PROMET</text>
 
-  <text x="74" y="223" fill="#172d2d" font-family="Arial, 'DejaVu Sans', sans-serif" font-size="65" font-weight="700" letter-spacing="-2.2">Dzepni simulator</text>
+  <text x="74" y="223" fill="#172d2d" font-family="Arial, 'DejaVu Sans', sans-serif" font-size="65" font-weight="700" letter-spacing="-2.2">Džepni simulator</text>
   <text x="74" y="301" fill="#172d2d" font-family="Arial, 'DejaVu Sans', sans-serif" font-size="65" font-weight="700" letter-spacing="-2.2">prometa</text>
   <rect x="77" y="344" width="49" height="5" rx="2.5" fill="#126e67"/>
   <text x="74" y="401" fill="#536966" font-family="Arial, 'DejaVu Sans', sans-serif" font-size="26" font-weight="400">Uredite trake. Mjerite protok.</text>

@@ -1,9 +1,16 @@
-# Dzepni simulator prometa
+# Džepni simulator prometa
 
-Hrvatski simulator prikazuje kretanje vozila kroz odabrano područje Zagreba. Možete zatvarati
-trake, pratiti vozila, pregledati razlog njihova zaustavljanja i mjeriti protok. Kretanje koristi
-spremljene odgovore za raskrižja i izričito dopuštene veze; nedostajući izlazi i skretanja ne
-izmišljaju se.
+Naslov **Džepni simulator prometa** prikazan je kompaktno, bez zasebnog uvodnog bloka; poveznice na
+povezane stranice i izvore nalaze se u podnožju. Simulator omogućuje zatvaranje traka, praćenje
+vozila, pregled razloga zaustavljanja i mjerenje protoka. Kretanje koristi spremljene odgovore za
+raskrižja i izričito dopuštene veze; nedostajući izlazi i skretanja ne izmišljaju se.
+
+Slijeđenje se računa po putanji, pa paralelne putanje mogu napredovati istodobno uz siguran razmak.
+Kod putanja koje se geometrijski sijeku vozila se propuštaju u blizini zajedničkog prozora
+preklapanja. Red čeka izvan tog prostora, a ulazak ostavlja dovoljno mjesta u izlaznoj traci
+da se prostor oslobodi. Na uskim dionicama gdje se karoserije suprotnih smjerova preklapaju
+propušta se jedan smjer; vozila istog smjera i dalje mogu slijediti jedno drugo.
+Pri velikoj gustoći mogu nastati zastoji i potpune blokade; simulator ne optimizira tok prometa.
 
 ## Prometni signali
 
@@ -83,3 +90,9 @@ Poslužitelj sluša na localhostu i servira stranicu pod `/promet/simulator/` te
 `/api/promet/simulator/`. Za javnu objavu potrebno je zasebno konfigurirati reverse proxy za ta dva
 prefiksa i postupak deploya. `sitemap.xml` sadrži kanonsku stranicu; pri objavi je treba uključiti u
 glavni sitemap zagreb.lol. `llms.txt` opisuje API, izvore, obuhvat i ograničenja simulacije.
+
+Paket sadrži `backend/traffic/ecosystem.config.cjs` za zaseban PM2 proces
+`zagreb-traffic-simulator` na lokalnom portu 8192 te `backend/traffic/nginx.locations.conf`
+za navedena dva URL prefiksa. PostgreSQL pristupni podaci ostaju u datoteci
+`/etc/traffic-simulator/database.env` na poslužitelju. Pri izmjeni izdanja ponovno učitajte
+PM2 konfiguraciju i provjerite API prije ponovnog učitavanja nginx konfiguracije.

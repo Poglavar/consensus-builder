@@ -85,13 +85,15 @@
         }
         transitionEdges = [];
         for (const connection of baseNetwork.connections.values()) {
-            if (!connection.geometryKind || connection.path.length < 1) continue;
+            if (connection.path.length < 1) continue;
             const from = baseNetwork.lanes.get(connection.fromLaneId), to = baseNetwork.lanes.get(connection.toLaneId);
+            if (!from || !to) continue;
             for (const [index, side] of [-1, 1].entries()) {
                 const width = ((from.width || 3) + (to.width || 3)) / 2;
                 const points = offsetPolylinePlanar(connection.path.points, side * width / 2);
                 transitionEdges.push({ route: G.path(points || connection.path.points),
-                    dashed: roadEdges.get(from.id)[index].dashed || roadEdges.get(to.id)[index].dashed });
+                    dashed: !connection.geometryKind
+                        || roadEdges.get(from.id)[index].dashed || roadEdges.get(to.id)[index].dashed });
             }
         }
     }
@@ -162,10 +164,6 @@
                 guides.setLineDash([.5 * metres, .5 * metres]); guides.strokeStyle = '#d66c33'; line(guides, edge); guides.setLineDash([]);
             }
         }
-        if (editor?.closures.some(c => c.status === 'active')) for (const c of network.connections.values()) {
-            if (c.type !== 'bypass' || !routeVisible(c.path)) continue;
-            guides.lineWidth = Math.max(.7, metres * .1); guides.strokeStyle = '#93d3b75a'; guides.setLineDash([2 * metres, 3 * metres]); line(guides, c.path);
-        }
         guides.setLineDash([]);
         for (const meter of [...counters.meters, ...(meterHover ? [meterHover] : [])]) {
             guides.strokeStyle = meter.id === selectedMeter ? '#4dd9dc' : '#98eeee'; guides.lineWidth = 2;
@@ -180,17 +178,12 @@
         for (const signal of network.signals.values()) {
             const p = screen(network.project(signal.point));
             if (!visible(p)) continue;
-            const radius = map.getZoom() >= 19 ? 4 : 3;
-            const states = [Engine.signalAspect(signal, signal.phase, sim.time)];
-            for (let index = 0; index < states.length; index++) {
-                const start = index * Math.PI * 2 / states.length - Math.PI / 2;
-                ctx.beginPath(); ctx.moveTo(p.x, p.y);
-                ctx.arc(p.x, p.y, radius, start, start + Math.PI * 2 / states.length); ctx.closePath();
-                ctx.fillStyle = { green: '#308868', red: '#c26354', amber: '#d7a13a', unknown: '#74827c' }[states[index]];
-                ctx.fill();
-            }
+            const radius = map.getZoom() >= 19 ? 8 : 6;
+            const aspect = Engine.signalAspect(signal, signal.phase, sim.time);
             ctx.beginPath(); ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
-            ctx.strokeStyle = '#ffffffdd'; ctx.lineWidth = 1; ctx.stroke();
+            ctx.fillStyle = { green: '#308868', red: '#c26354', amber: '#d7a13a', unknown: '#74827c' }[aspect];
+            ctx.fill();
+            ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
         }
     }
 
@@ -261,11 +254,11 @@
         $('clock').textContent = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
         $('play-label').textContent = t(running ? 'pause' : 'play'); $('play-icon').textContent = running ? 'Ⅱ' : '▶';
         $('play').setAttribute('aria-pressed', String(running));
-        $('network-label').textContent = t('network', { lanes: network.lanes.size.toLocaleString('hr-HR'), connections: network.connections.size.toLocaleString('hr-HR') });
         const counts = network.data.source.counts;
         $('source-detail').textContent = `${t('solved', { count: counts.savedJunctions })}. ${t('coverage', { unresolved: counts.unresolvedNodes, partial: counts.partialJunctions })}. ${t('snapshot', { date: network.data.source.osmTimestamp.slice(0, 10) })}.`;
         const car = sim.cars.find(item => item.id === selected);
         if (!car) { selected = null; following = false; }
+        document.querySelector('.inspector').hidden = !car;
         selectedInfo = car ? sim.inspectCar(car) : null;
         $('selected-title').textContent = car ? t('selected', { id: car.id }) : t('follow');
         $('follow').textContent = t(following ? 'unfollow' : 'follow');
@@ -289,17 +282,18 @@
                 aspect: t(`aspect${signal.aspect[0].toUpperCase()}${signal.aspect.slice(1)}`)
             }) : t(sim.signals ? 'signalNone' : 'signalDisabled');
             $('show-signal').hidden = !signal;
-        } else $('selected-detail').textContent = t('selectHint');
+        } else $('selected-detail').textContent = '';
         updateTools();
     }
 
     function attachCounters() { sim.listeners.add((car, before, after, time) => counters.observe(car, before, after, time)); }
     function updateTools() {
-        $('tool-hint').textContent = t(`${tool}Hint`);
         const active = editor.closures.filter(c => c.status === 'active').length;
+        document.querySelector('.closure-status').hidden = !editor.closures.length;
         $('closure-count').textContent = t('closureCount', { active, pending: editor.closures.length - active });
         $('clear-closures').disabled = !editor.closures.length;
         $('chunk-size').disabled = tool !== 'close';
+        document.querySelector('.chunk-control').hidden = tool !== 'close';
         $('meter-panel').hidden = !counters.meters.length;
         const select = $('meter-select');
         if (select.options.length !== counters.meters.length || [...select.options].some((o, i) => o.value !== String(counters.meters[i].id))) {
@@ -501,8 +495,7 @@
                 color: '#557d68', weight: 1, dashArray: '5 7', fill: false, interactive: false
             }).addTo(map);
             $('play').disabled = false; $('reset').disabled = false; $('follow').disabled = false;
-            $('status').hidden = !reduced;
-            if (reduced) $('status').textContent = t('reduceMotion');
+            $('status').hidden = true;
             resize(); updateUI(); wake();
         } catch (error) {
             console.error(`[${new Date().toISOString()}] Traffic preview:`, error);

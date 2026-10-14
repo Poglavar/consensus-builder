@@ -1,4 +1,4 @@
-# Dzepni simulator prometa — zagreb.lol
+# Džepni simulator prometa — zagreb.lol
 
 Interaktivna web-aplikacija za zatvaranje prometnih traka u odsječcima od 5 ili 10 metara,
 prikaz dopuštenih obilaznih putanja vozila i usporedbu protoka prije i nakon promjene.

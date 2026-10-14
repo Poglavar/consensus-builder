@@ -37,6 +37,32 @@ function fixture({ signals = [], withExit = false, length = 100 } = {}) {
     });
 }
 
+function movementFixture() {
+    const lanes = [
+        lane('approach', 'west', 'junction', [0, 0], [46, 0], 'main-road'),
+        lane('exit', 'junction', 'east', [54, 0], [100, 0], 'main-exit'),
+        lane('cross-approach', 'south', 'junction', [50, -50], [50, -4], 'cross-road'),
+        lane('cross-exit', 'junction', 'north', [50, 4], [50, 50], 'cross-exit'),
+        lane('parallel-approach', 'west-parallel', 'parallel-junction', [0, 10], [46, 10], 'parallel-road'),
+        lane('parallel-exit', 'parallel-junction', 'east-parallel', [54, 10], [100, 10], 'parallel-exit')
+    ];
+    const connection = (id, fromLaneId, toLaneId, nodeId, points) => ({
+        id, fromLaneId, toLaneId, nodeId, points: points.map(geo)
+    });
+    const connections = [
+        connection('main', 'approach', 'exit', 'junction', [[46, 0], [50, 0], [54, 0]]),
+        connection('cross', 'cross-approach', 'cross-exit', 'junction', [[50, -4], [50, 0], [50, 4]]),
+        connection('parallel', 'parallel-approach', 'parallel-exit', 'parallel-junction', [[46, 10], [50, 10], [54, 10]]),
+        connection('same-path', 'approach', 'exit', 'junction', [[46, 0], [50, 0], [54, 0]])
+    ];
+    const nodeIds = new Set(lanes.flatMap(item => [item.fromNode, item.toNode]));
+    return createNetwork({
+        bbox: [ORIGIN[0] - .01, ORIGIN[1] - .01, ORIGIN[0] + .01, ORIGIN[1] + .01],
+        nodes: [...nodeIds].map(id => ({ id, degree: id.includes('junction') ? 4 : 2 })),
+        lanes, connections, signals: []
+    });
+}
+
 function car(id, s, next = null, overrides = {}) {
     return { id, laneId: 'approach', mode: 'lane', s, speed: 0, cruise: 8, color: 0,
         next, state: 'queue', change: null, cooldown: Infinity, clearance: null, ...overrides };
@@ -94,16 +120,40 @@ describe('traffic selected-car inspector', () => {
         expect(reason.signal).toMatchObject({ sourceIds: ['far-red'], aspect: 'red' });
     });
 
-    it('identifies a junction owner and a longer-waiting priority car', () => {
-        const network = fixture({ withExit: true });
-        const vehicle = car(1, network.lanes.get('approach').path.length, 'move');
-        const sim = simFor(network, [vehicle]);
-        sim.reservations.set('junction', 44);
-        expect(sim.inspectCar(vehicle)).toMatchObject({ kind: 'junction', carId: 44 });
+    it('reports the other car when perpendicular movements occupy the same conflict window', () => {
+        const network = movementFixture();
+        const main = network.connections.get('main');
+        const cross = network.connections.get('cross');
+        const conflict = network.movementConflicts.ranges(main, cross);
+        expect(conflict).not.toBeNull();
 
-        sim.reservations.clear();
-        sim.waitingPriorities.set('junction', { id: 55, queuedAt: 1 });
-        expect(sim.inspectCar(vehicle)).toMatchObject({ kind: 'priority', carId: 55 });
+        const vehicle = car(1, conflict.first.start - .55, 'main', {
+            mode: 'connection', connectionId: 'main', enteredAt: 1
+        });
+        const blocker = car(72, conflict.second.start + .1, null, {
+            laneId: 'cross-approach', mode: 'connection', connectionId: 'cross', enteredAt: 0
+        });
+        const sim = simFor(network, [vehicle, blocker], false);
+
+        expect(sim.inspectCar(vehicle)).toMatchObject({ kind: 'collision', carId: 72 });
+    });
+
+    it('does not treat near-parallel movements or same-path followers as geometric conflicts', () => {
+        const network = movementFixture();
+        const main = network.connections.get('main');
+        const parallel = network.connections.get('parallel');
+        const samePath = network.connections.get('same-path');
+        expect(network.movementConflicts.ranges(main, parallel)).toBeNull();
+        expect(network.movementConflicts.ranges(main, samePath)).toBeNull();
+
+        const vehicle = car(1, 2, 'main', { mode: 'connection', connectionId: 'main', enteredAt: 1 });
+        for (const [otherId, connectionId, laneId] of [[2, 'parallel', 'parallel-approach'], [3, 'same-path', 'approach']]) {
+            const other = car(otherId, 2, null, { mode: 'connection', connectionId, laneId, enteredAt: 0 });
+            const sim = simFor(network, [vehicle, other], false);
+            expect(sim.limits(vehicle, sim.occupants()).conflict).toEqual({ distance: Infinity, carId: null });
+            expect(sim.inspectCar(vehicle).kind).not.toBe('collision');
+            if (connectionId === 'same-path') expect(sim.inspectCar(vehicle)).toMatchObject({ kind: 'following', carId: 3 });
+        }
     });
 
     it('names the car blocking receiving space beyond a junction', () => {
@@ -204,7 +254,7 @@ describe('traffic selected-car inspector', () => {
         expect(signal.distance).toBeCloseTo((control.stopS - vehicle.s * ratio) / ratio, 6);
     });
 
-    it('does not mutate simulation state, reservations, priorities, or randomness', () => {
+    it('does not mutate simulation time, cars, or randomness during inspection', () => {
         const network = fixture({ withExit: true, signals: [
             { id: 'read-only-signal', point: geo([80, 0]), controls: [{ laneId: 'approach', fraction: .8 }] }
         ] });
@@ -212,18 +262,14 @@ describe('traffic selected-car inspector', () => {
         const blocker = { ...car(2, 15), laneId: 'exit' };
         const sim = simFor(network, [vehicle, blocker]);
         sim.time = timeWhen(network, 'read-only-signal', 'red');
-        sim.reservations.set('junction', 17);
-        sim.waitingPriorities.set('junction', { id: 19, queuedAt: 2 });
         const control = simFor(network);
         const expectedRandom = control.random();
-        const before = JSON.stringify({ time: sim.time, cars: sim.cars,
-            reservations: [...sim.reservations], priorities: [...sim.waitingPriorities], crossings: sim.crossings });
+        const before = JSON.stringify({ time: sim.time, cars: sim.cars, crossings: sim.crossings, nextId: sim.nextId });
 
         sim.inspectCar(vehicle);
         sim.inspectCar(vehicle);
 
         expect(sim.random()).toBe(expectedRandom);
-        expect(JSON.stringify({ time: sim.time, cars: sim.cars,
-            reservations: [...sim.reservations], priorities: [...sim.waitingPriorities], crossings: sim.crossings })).toBe(before);
+        expect(JSON.stringify({ time: sim.time, cars: sim.cars, crossings: sim.crossings, nextId: sim.nextId })).toBe(before);
     });
 });

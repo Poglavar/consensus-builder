@@ -6,16 +6,29 @@
 })(typeof window !== 'undefined' ? window : null, function () {
     'use strict';
     const LENGTH = 4.4, WIDTH = 1.8, MARGIN = .12;
+    const headings = new WeakMap();
+    function heading(pose) {
+        let value = headings.get(pose);
+        if (!value || value.angle !== pose.angle) {
+            value = { angle: pose.angle, cos: Math.cos(pose.angle), sin: Math.sin(pose.angle) };
+            headings.set(pose, value);
+        }
+        return value;
+    }
     function overlaps(a, b, margin = MARGIN) {
         const dx = b.x - a.x, dy = b.y - a.y;
-        if (dx * dx + dy * dy > 30) return false;
-        const axes = [a.angle, a.angle + Math.PI / 2, b.angle, b.angle + Math.PI / 2];
-        for (const angle of axes) {
-            const radius = p => Math.abs(Math.cos(p.angle - angle)) * (LENGTH / 2 + margin)
-                + Math.abs(Math.sin(p.angle - angle)) * (WIDTH / 2 + margin);
-            if (Math.abs(dx * Math.cos(angle) + dy * Math.sin(angle)) >= radius(a) + radius(b) - 1e-7) return false;
-        }
-        return true;
+        const halfLength = LENGTH / 2 + margin, halfWidth = WIDTH / 2 + margin;
+        const radius2 = halfLength ** 2 + halfWidth ** 2;
+        if (dx * dx + dy * dy > 4 * radius2) return false;
+        const aa = heading(a), bb = heading(b);
+        const aligned = Math.abs(aa.cos * bb.cos + aa.sin * bb.sin);
+        const crossed = Math.abs(aa.cos * bb.sin - aa.sin * bb.cos);
+        const lengthRadius = halfLength * (1 + aligned) + halfWidth * crossed - 1e-7;
+        const widthRadius = halfWidth * (1 + aligned) + halfLength * crossed - 1e-7;
+        return Math.abs(dx * aa.cos + dy * aa.sin) < lengthRadius
+            && Math.abs(-dx * aa.sin + dy * aa.cos) < widthRadius
+            && Math.abs(dx * bb.cos + dy * bb.sin) < lengthRadius
+            && Math.abs(-dx * bb.sin + dy * bb.cos) < widthRadius;
     }
     class Index {
         constructor() { this.cells = new Map(); this.positions = new Map(); }

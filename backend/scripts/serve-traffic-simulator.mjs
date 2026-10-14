@@ -48,7 +48,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     const app = createTrafficSimulatorApp({ pool, env,
         trafficDir: args.get('--traffic-dir') || resolve(project, 'frontend/traffic'),
         assetsDir: args.get('--assets-dir') || resolve(project, 'frontend/traffic/assets') });
-    const server = app.listen(port, 'localhost', () => console.log(`Simulator prometa: http://localhost:${port}/promet/simulator/`));
+    const server = app.listen(port, '127.0.0.1', () => console.log(`Simulator prometa: http://localhost:${port}/promet/simulator/`));
     const stop = () => server.close(() => pool.end().finally(() => process.exit(0)));
     process.on('SIGTERM', stop); process.on('SIGINT', stop);
 }

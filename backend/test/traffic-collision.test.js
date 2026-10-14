@@ -4,6 +4,28 @@ import Collision from '../../frontend/traffic/collision.js';
 const { LENGTH, WIDTH, overlaps, Index } = Collision;
 const pose = (x, y, angle = 0) => ({ x, y, angle });
 
+function polygonOverlap(a, b, margin) {
+    const corners = body => {
+        const along = [Math.cos(body.angle), Math.sin(body.angle)];
+        const across = [-along[1], along[0]];
+        const halfLength = LENGTH / 2 + margin, halfWidth = WIDTH / 2 + margin;
+        return [-1, 1].flatMap(longitudinal => [-1, 1].map(lateral => [
+            body.x + longitudinal * halfLength * along[0] + lateral * halfWidth * across[0],
+            body.y + longitudinal * halfLength * along[1] + lateral * halfWidth * across[1]
+        ]));
+    };
+    const first = corners(a), second = corners(b);
+    const axes = [a.angle, a.angle + Math.PI / 2, b.angle, b.angle + Math.PI / 2];
+    for (const angle of axes) {
+        const axis = [Math.cos(angle), Math.sin(angle)];
+        const project = points => points.map(point => point[0] * axis[0] + point[1] * axis[1]);
+        const firstProjection = project(first), secondProjection = project(second);
+        if (Math.min(...secondProjection) - Math.max(...firstProjection) >= -1e-7
+            || Math.min(...firstProjection) - Math.max(...secondProjection) >= -1e-7) return false;
+    }
+    return true;
+}
+
 describe('traffic vehicle collision geometry', () => {
     it('uses the configured vehicle footprint in oriented-box overlap checks', () => {
         expect(LENGTH).toBe(4.4);
@@ -21,6 +43,35 @@ describe('traffic vehicle collision geometry', () => {
         index.set('northbound', pose(0, 0));
         index.set('southbound', pose(0, 3));
         expect(index.blocked('northbound', pose(0.2, 0))).toBe(false);
+    });
+
+    it('keeps the broadphase bound in sync with an enlarged overlap margin', () => {
+        const first = pose(0, 0), second = pose(5, 2.4);
+        expect(overlaps(first, second)).toBe(false);
+        expect(overlaps(first, second, .37)).toBe(true);
+    });
+
+    it('matches polygon-corner SAT across margins and refreshes a mutated heading', () => {
+        let state = 0x6d2b79f5;
+        const random = () => {
+            state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+            return state / 0x100000000;
+        };
+        const margins = [0, .12, .37];
+        for (let pair = 0; pair < 1000; pair++) {
+            const first = pose(random() * 20 - 10, random() * 20 - 10, random() * Math.PI * 2 - Math.PI);
+            const second = pose(random() * 20 - 10, random() * 20 - 10, random() * Math.PI * 2 - Math.PI);
+            for (const margin of margins) {
+                expect(overlaps(first, second, margin)).toBe(polygonOverlap(first, second, margin));
+            }
+        }
+
+        const mutable = pose(0, 0), other = pose(5, 2.4);
+        expect(overlaps(mutable, other, .37)).toBe(polygonOverlap(mutable, other, .37));
+        expect(overlaps(mutable, other, .37)).toBe(true);
+        mutable.angle = Math.PI / 2;
+        expect(overlaps(mutable, other, .37)).toBe(polygonOverlap(mutable, other, .37));
+        expect(overlaps(mutable, other, .37)).toBe(false);
     });
 
     it('rejects a swept movement whose endpoints are clear but whose middle crosses another car', () => {
