@@ -2654,6 +2654,9 @@ body.site-intro-open { overflow: hidden; }
     border-radius: 3px;  /* square-ish to read as a vertex, not a gap/wing dot */
 }
 .polygon-geometry-editor__vertex {
+    /* Leaflet sets marker z-index from projected y, which can be negative after panning.
+       Keep handles above this pane's SVG edge hit targets (z-index: 200). */
+    z-index: 300 !important;
     display: flex !important;
     align-items: center;
     justify-content: center;
@@ -2662,12 +2665,16 @@ body.site-intro-open { overflow: hidden; }
     pointer-events: auto !important;
     touch-action: none;
 }
+.polygon-geometry-editor__vertex.is-selected {
+    z-index: 350 !important;
+}
 .polygon-geometry-editor__vertex.is-selected span {
     background: var(--cb-surface);
     border-color: #0d6efd;
     box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.22), 0 2px 7px rgba(0, 0, 0, 0.5);
 }
 .polygon-geometry-editor__delete-marker {
+    z-index: 400 !important;
     background: transparent;
     border: 0;
 }
