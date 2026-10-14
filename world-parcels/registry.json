@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-12",
+  "updatedAt": "2026-10-14",
   "queueSource": "UN DESA WUP 2025 city identifiers; qualification-admission-2026-10-12.json",
   "sources": [
     {
@@ -18066,6 +18066,29 @@
       "appCityIds": [
         "kotwali"
       ]
+    },
+    {
+      "sourceId": "rw-nla-rsdi-kigali-parcels",
+      "name": "Rwanda NLA / RSDI — Kigali LAIS parcels",
+      "operator": "National Land Authority, Rwanda Spatial Data Infrastructure",
+      "countryCode": "RW",
+      "scope": "City of Kigali layer; fresh tests cover 13 bounded cells near the WUP centre and exact sample identities. Citywide completeness is unverified.",
+      "endpoint": "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11",
+      "method": "GET",
+      "responseFormat": "ArcGIS JSON polygon geometry with native UPI references",
+      "verificationStatus": "verified_nonempty_sample",
+      "reuseStatus": "terms_unconfirmed",
+      "verifiedCityIds": [
+        "wup2025:580"
+      ],
+      "evidenceFile": "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
+      "liveIntegration": {
+        "status": "held_quality_review",
+        "evidenceFile": "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
+        "technicalBlockers": [
+          "All protocol checks passed at the WUP centre, but 82 unchanged features contain one material overlap of 6.96 m² (0.463% of the smaller parcel). No geometry was repaired or filtered."
+        ]
+      }
     }
   ],
   "countryCoverage": [
@@ -91103,6 +91126,47 @@
       "population2015": 209700,
       "appCityId": "rewari",
       "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:580",
+      "wupCityCode": 580,
+      "name": "Kigali",
+      "country": "Rwanda",
+      "countryCode": "RW",
+      "centerLatLon": [
+        -1.95092395958257,
+        30.0945497299371
+      ],
+      "citySource": "UN DESA WUP 2025 City_Code 580; exact 2025 population-weighted centre from the archived bulk source.",
+      "aliases": [
+        "capital:RW:kigali",
+        "Kigali"
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "rw-nla-rsdi-kigali-parcels"
+      ],
+      "researchFile": "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
+      "latestAssessmentFile": "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
+      "qualificationEvidenceFile": "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
+      "runtimeReadiness": "held_quality_review",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The official NLA/RSDI Kigali LAIS FeatureServer returned full parcel polygons with native UPI references at the exact WUP centre. Fresh two-pass 13-cell sampling and exact ID rereads verified 82 unchanged features; coverage is bounded and topology remains held.",
+        "registryEvidenceUrls": [
+          "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11"
+        ],
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true,
+        "reason": "All protocol checks passed at the WUP centre, but 82 unchanged features contain one material overlap of 6.96 m² (0.463% of the smaller parcel). No geometry was repaired or filtered."
+      },
+      "liveIntegration": {
+        "status": "held_quality_review",
+        "evidenceFile": "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
+        "technicalBlockers": [
+          "All protocol checks passed at the WUP centre, but 82 unchanged features contain one material overlap of 6.96 m² (0.463% of the smaller parcel). No geometry was repaired or filtered."
+        ]
+      }
     }
   ],
   "countryProbes": [

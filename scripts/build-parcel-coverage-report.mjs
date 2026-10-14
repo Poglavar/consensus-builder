@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { collectReportEvidence } from './parcel-report-evidence.mjs';
-import { readIntegrationOutcomeBatches, indexIntegrationHistory, integrationCityKey, integrationHistoryForCity } from './parcel-integration-history.mjs';
+import { readIntegrationOutcomeBatches, indexIntegrationHistory, integrationCityKeys, integrationOutcomeKeys, integrationHistoryForCity } from './parcel-integration-history.mjs';
 import { countryCategory, mapLinks, summarizeJurisdictions } from '../frontend/js/parcel-coverage-report-model.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -43,19 +43,22 @@ export function buildParcelReport({ registry, evidence, enrichment, countryData,
     }
     // Failed candidates need a row too. Admission/enrichment only contain some of the cities
     // attempted; use their explicit outcome identities without inventing app bindings or statistics.
-    const knownOutcomeCities = new Set(inputCities.map(integrationCityKey).filter(Boolean));
+    const knownOutcomeCities = new Set(inputCities.flatMap(integrationCityKeys));
     for (const { data } of integrationOutcomeBatches) {
         for (const record of data.cities) {
-            const key = `${record.countryCode}:${Number(record.cityCode)}`;
-            if (knownOutcomeCities.has(key)) continue;
+            const keys = integrationOutcomeKeys(record);
+            const key = keys[0] || `${record.countryCode}:invalid-identity`;
+            if (keys.some(candidate => knownOutcomeCities.has(candidate))) continue;
             if (typeof record.cityName !== 'string' || !record.cityName.trim()) throw new Error(`Missing outcome city name: ${key}`);
+            const code = /^\d+$/.test(String(record.cityCode ?? '')) ? Number(record.cityCode) : null;
+            const registryId = typeof record.registryCityId === 'string' ? record.registryCityId : null;
             inputCities.push({
-                id: `wup2025:${Number(record.cityCode)}`, wupCityCode: Number(record.cityCode),
+                id: code ? `wup2025:${code}` : registryId, wupCityCode: code,
                 name: record.cityName, countryCode: record.countryCode,
                 latitude: record.point?.[0], longitude: record.point?.[1],
-                registryCityIds: [], appCityIds: [], cohorts: ['integration-attempt']
+                registryCityIds: registryId ? [registryId] : [], appCityIds: [], cohorts: ['integration-attempt']
             });
-            knownOutcomeCities.add(key);
+            for (const candidate of integrationCityKeys(inputCities.at(-1))) knownOutcomeCities.add(candidate);
         }
     }
     // Registry source integrations are explicit links when a source verifies exactly one registry
@@ -173,7 +176,7 @@ export function buildParcelReport({ registry, evidence, enrichment, countryData,
             growthRanking: 'Saved UN WUP 2025 queue: average annual exponential population growth during 2015–2025, at least 50,000 people at both endpoints, and Moderate or High 2025 population plausibility. Rank is among this quality-filtered urban-centre cohort, not municipalities or a forecast.',
             nationalCadastreFound: 'Identified national, parent-country, credentialed or viewer-only cadastre, or a recorded multi-region sample. This is not a claim of territorial completeness.',
             impliedParcelsTried: 'True only for a documented inferred-parcel experiment. A missing historical record remains null.',
-            integrationAttempts: 'Recorded qualification outcomes matched by exact country and WUP city identity, newest first. Historical failures remain visible after later success; current app availability comes from appCityIds. Unscoped provider attempts are not assigned to individual cities.',
+            integrationAttempts: 'Recorded qualification outcomes matched by exact country and WUP city identity or exact country and explicit registry city ID, newest first. Historical failures remain visible after later success; current app availability comes from appCityIds. Unscoped provider attempts are not assigned to individual cities.',
             cityPopulationAggregation: 'City populations are not added to estimate world coverage. WUP urban centres can overlap municipal identities; jurisdiction statistics supply the additive denominators.',
             countryRoster: countryData.scope,
             rebuild: 'node scripts/build-parcel-coverage-report.mjs --run'

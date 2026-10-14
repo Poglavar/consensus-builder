@@ -5,13 +5,13 @@
     "asOf": "2026-10-14",
     "demographicSnapshotDate": "2026-10-12",
     "statisticsYear": 2025,
-    "cityCount": 2131,
+    "cityCount": 2132,
     "countryCount": 255,
     "statisticalJurisdictions": 237,
-    "checkedCityCount": 2004,
+    "checkedCityCount": 2005,
     "uncheckedCityCount": 127,
-    "cityRegistryFoundCount": 1390,
-    "verifiedCitySampleCount": 667,
+    "cityRegistryFoundCount": 1391,
+    "verifiedCitySampleCount": 668,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
     "populationMatchedCount": 1536,
@@ -24,7 +24,9 @@
       "builtUpAreaKm2": 0.003000000084284693,
       "population": 2
     },
-    "warnings": []
+    "warnings": [
+      "Zagreb guess-spike records were not available at report build time"
+    ]
   },
   "world": {
     "landAreaKm2": 134735851,
@@ -62156,6 +62158,77 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:580",
+      "name": "Kigali",
+      "country": "Rwanda",
+      "countryCode": "RW",
+      "latitude": -1.95092395958257,
+      "longitude": 30.0945497299371,
+      "registryCityIds": [
+        "wup2025:580"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-14",
+      "checkedDateEvidence": {
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-outcomes/2026-10-14-africa-capitals.json",
+        "field": "$.cities[0].finishedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The official NLA/RSDI Kigali LAIS FeatureServer returned full parcel polygons with native UPI references at the exact WUP centre. Fresh two-pass 13-cell sampling and exact ID rereads verified 82 unchanged features; coverage is bounded and topology remains held.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [
+        {
+          "outcome": "held",
+          "registryCityId": "capital:RW:kigali",
+          "summary": "Held after 43 requests: exact ID rereads, stable geometry, 13 cells twice, forced paging and binding passed for 82 features, but the independent metric audit found one material overlap (6.96 m², 0.463% of the smaller parcel). No geometry was repaired or filtered. A separate nearby neighbourhood check was clean and does not override this WUP-centre hold.",
+          "checkedAt": "2026-10-14T07:45:32.770462Z",
+          "sources": [
+            {
+              "id": "rw-nla-rsdi-kigali-parcels",
+              "name": "Rwanda NLA / RSDI — Kigali LAIS parcels"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-africa-capitals.json",
+          "diagnosticsUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-africa-capitals.json",
+            "field": "$.cities[0].finishedAt"
+          }
+        }
+      ],
+      "sourceIds": [
+        "rw-nla-rsdi-kigali-parcels"
+      ],
+      "evidenceUrls": [
+        "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11"
+      ],
+      "evidenceFiles": [
+        "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-1.95092&mlon=30.09455#map=12/-1.95092/30.09455",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-1.95092%2C30.09455",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:2756",
       "name": "Kikwit",
       "country": "Democratic Republic of the Congo",
@@ -98005,18 +98078,38 @@
       "populationPlausibility2025": null,
       "populationMatch": null,
       "checked": true,
-      "checkedDate": "2026-10-08",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-08",
-        "path": "research/africa-capitals-2026-10-08/city-porto-novo.json",
-        "field": "$.checkedAt"
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-outcomes/2026-10-14-africa-capitals.json",
+        "field": "$.cities[1].finishedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": "ANDF’s official 2 December 2024 notice names Porto-Novo as one of 12 communes whose land-formalization records were integrated into the e-Foncier cadastral database from January 2025. ANDF/TERRA reporting also identifies Porto-Novo among pilot communes. This is city-specific coverage evidence, separately confirmed by the bounded public WFS sample.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
-      "integrationAttempts": [],
+      "integrationAttempts": [
+        {
+          "outcome": "held",
+          "registryCityId": "capital:BJ:porto-novo",
+          "summary": "Held: protocol, exact ID rereads, 13-cell sampling, forced paging and binding passed in a bounded Porto-Novo neighbourhood, but the 264-feature metric audit found one invalid polygon and nine material overlaps (largest 25,095 m², 98.9% of the smaller parcel). The tested point differs from the WUP centre and is recorded in diagnostics; citywide coverage is unverified.",
+          "checkedAt": "2026-10-14T07:39:45.913286Z",
+          "sources": [
+            {
+              "id": "bj-andf-efoncier-geoserver",
+              "name": "ANDF e-Foncier cadastral parcels — Cotonou"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-africa-capitals.json",
+          "diagnosticsUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/africa-capital-qualification-2026-10-14/porto-novo/qualification.json",
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-africa-capitals.json",
+            "field": "$.cities[1].finishedAt"
+          }
+        }
+      ],
       "sourceIds": [
         "bj-andf-efoncier-geoserver"
       ],
@@ -127673,18 +127766,38 @@
       "populationPlausibility2025": null,
       "populationMatch": null,
       "checked": true,
-      "checkedDate": "2026-10-08",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-08",
-        "path": "research/africa-capitals-2026-10-08/city-victoria.json",
-        "field": "$.checkedAt"
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-outcomes/2026-10-14-africa-capitals.json",
+        "field": "$.cities[2].finishedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": "The official public Seychelles WebGIS links a parcel FeatureServer that returned complete parcel polygons and references around Victoria. Current-subset topology retains unresolved older/newer overlaps, so geometry is verified but runtime is held.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
-      "integrationAttempts": [],
+      "integrationAttempts": [
+        {
+          "outcome": "held",
+          "registryCityId": "capital:SC:victoria",
+          "summary": "Held: exact IDs, fresh stable geometry, explicit absence and binding passed; 11 unchanged features passed the metric audit. Provider HTTP 504 responses and 15-second timeouts prevented density and 13-cell sampling, so completeness remains unverified. No absence or citywide coverage claim follows from the access failure.",
+          "checkedAt": "2026-10-14T07:43:10.116027Z",
+          "sources": [
+            {
+              "id": "sc-mlh-current-parcels-arcgis",
+              "name": "Seychelles public cadastral parcels — Victoria"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-africa-capitals.json",
+          "diagnosticsUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/africa-capital-qualification-2026-10-14/victoria/qualification.json",
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-africa-capitals.json",
+            "field": "$.cities[2].finishedAt"
+          }
+        }
+      ],
       "sourceIds": [
         "sc-mlh-current-parcels-arcgis"
       ],
@@ -134121,7 +134234,7 @@
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
       "verifiedSample": true,
-      "impliedParcelsTried": true,
+      "impliedParcelsTried": null,
       "integrationAttempts": [],
       "sourceIds": [
         "hr-dgu-oss-dkp-cestice"
@@ -142996,8 +143109,8 @@
       "population": 14569340,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": true,
@@ -145760,7 +145873,7 @@
     "growthRanking": "Saved UN WUP 2025 queue: average annual exponential population growth during 2015–2025, at least 50,000 people at both endpoints, and Moderate or High 2025 population plausibility. Rank is among this quality-filtered urban-centre cohort, not municipalities or a forecast.",
     "nationalCadastreFound": "Identified national, parent-country, credentialed or viewer-only cadastre, or a recorded multi-region sample. This is not a claim of territorial completeness.",
     "impliedParcelsTried": "True only for a documented inferred-parcel experiment. A missing historical record remains null.",
-    "integrationAttempts": "Recorded qualification outcomes matched by exact country and WUP city identity, newest first. Historical failures remain visible after later success; current app availability comes from appCityIds. Unscoped provider attempts are not assigned to individual cities.",
+    "integrationAttempts": "Recorded qualification outcomes matched by exact country and WUP city identity or exact country and explicit registry city ID, newest first. Historical failures remain visible after later success; current app availability comes from appCityIds. Unscoped provider attempts are not assigned to individual cities.",
     "cityPopulationAggregation": "City populations are not added to estimate world coverage. WUP urban centres can overlap municipal identities; jurisdiction statistics supply the additive denominators.",
     "countryRoster": {
       "iso3166_1_alpha2_rows": 249,

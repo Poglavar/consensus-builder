@@ -6,7 +6,9 @@ import { fileURLToPath } from 'node:url';
 import {
     indexIntegrationHistory,
     integrationCityKey,
+    integrationCityKeys,
     integrationHistoryForCity,
+    integrationOutcomeKeys,
     readIntegrationOutcomeBatches
 } from '../../scripts/parcel-integration-history.mjs';
 import { buildParcelReport } from '../../scripts/build-parcel-coverage-report.mjs';
@@ -57,10 +59,12 @@ describe('parcel integration outcome history', () => {
         const repoRoot = fileURLToPath(new URL('../../', import.meta.url));
         const report = JSON.parse(readFileSync(path.join(repoRoot, 'frontend/data/parcel-coverage-report.json'), 'utf8'));
         const expected = readIntegrationOutcomeBatches(repoRoot).flatMap(({ evidenceFile, data }) => data.cities.map(record =>
-            JSON.stringify([`${record.countryCode}:${Number(record.cityCode)}`, evidenceFile, record.outcome, record.finishedAt || null])));
+            JSON.stringify([record.registryCityId ? `${record.countryCode}:registry:${record.registryCityId}`
+                : `${record.countryCode}:${Number(record.cityCode)}`, evidenceFile, record.outcome, record.finishedAt || null])));
         const actual = report.cities.flatMap(city => city.integrationAttempts.map(attempt => {
             const evidenceFile = decodeURIComponent(new URL(attempt.evidenceUrl).pathname.split('/blob/colosseum-worlds-fair/')[1]);
-            return JSON.stringify([integrationCityKey(city), evidenceFile, attempt.outcome, attempt.checkedAt]);
+            const key = attempt.registryCityId ? `${city.countryCode}:registry:${attempt.registryCityId}` : integrationCityKey(city);
+            return JSON.stringify([key, evidenceFile, attempt.outcome, attempt.checkedAt]);
         }));
         expect(actual.sort()).toEqual(expected.sort());
     });
@@ -94,6 +98,44 @@ describe('parcel integration outcome history', () => {
         expect(integrationHistoryForCity({
             countryCode: 'AA', wupCityCode: 222, id: 'wup2025:111', registryCityIds: ['wup2025:111']
         }, index).map(item => item.outcome)).toEqual(['qualified']);
+    });
+
+    it('attaches a mixed WUP and explicit registry identity once to the exact city aliases', () => {
+        const index = indexIntegrationHistory([
+            batch('mixed-identity.json', [
+                { ...outcome(2241, 'held', '2026-10-14T07:39:45Z', { countryCode: 'BJ' }), registryCityId: 'capital:BJ:porto-novo' }
+            ])
+        ]);
+        const porto = {
+            id: 'capital:BJ:porto-novo', countryCode: 'BJ', wupCityCode: null,
+            registryCityIds: ['capital:BJ:porto-novo']
+        };
+        const wupCrosswalk = {
+            id: 'wup2025:2241', countryCode: 'BJ', wupCityCode: 2241,
+            registryCityIds: ['capital:BJ:porto-novo']
+        };
+        expect(integrationCityKey(porto)).toBe('BJ:registry:capital:BJ:porto-novo');
+        expect(integrationCityKeys(wupCrosswalk)).toEqual(['BJ:2241', 'BJ:registry:capital:BJ:porto-novo']);
+        const attempts = integrationHistoryForCity(wupCrosswalk, index);
+        expect(attempts).toHaveLength(1);
+        expect(attempts[0]).toMatchObject({ outcome: 'held', registryCityId: 'capital:BJ:porto-novo' });
+    });
+
+    it('accepts registry-only outcomes and never joins by name or provider across countries', () => {
+        const index = indexIntegrationHistory([
+            batch('registry-only.json', [
+                { registryCityId: 'capital:SC:victoria', countryCode: 'SC', cityName: 'Victoria', outcome: 'held', finishedAt: '2026-10-14' },
+                { registryCityId: 'capital:BJ:porto-novo', countryCode: 'SC', cityName: 'Porto-Novo', outcome: 'qualified', finishedAt: '2026-10-14', sourceIds: ['shared'] }
+            ])
+        ]);
+        expect(integrationOutcomeKeys({ registryCityId: 'capital:SC:victoria', countryCode: 'SC' }))
+            .toEqual(['SC:registry:capital:SC:victoria']);
+        expect(integrationHistoryForCity({ id: 'capital:SC:victoria', countryCode: 'SC', registryCityIds: ['capital:SC:victoria'] }, index))
+            .toHaveLength(1);
+        expect(integrationHistoryForCity({ id: 'capital:BJ:porto-novo', countryCode: 'BJ', registryCityIds: ['capital:BJ:porto-novo'], name: 'Porto-Novo', sourceIds: ['shared'] }, index))
+            .toEqual([]);
+        expect(() => indexIntegrationHistory([batch('invalid.json', [{ countryCode: 'SC', outcome: 'held' }])]))
+            .toThrow(/Invalid city outcome/);
     });
 
     it('does not join on names or shared source IDs and omits ambiguous WUP fallback IDs', () => {
@@ -214,5 +256,43 @@ describe('parcel integration outcome history', () => {
                 { outcome: 'held', summary: 'First attempt failed.', checkedAt: '2026-02-01T10:00:00Z' }
             ]
         });
+    });
+
+    it('does not append a WUP duplicate when an existing capital row matches the explicit registry alias', () => {
+        const report = smallReport({
+            cities: [{
+                id: 'capital:BJ:porto-novo', name: 'Porto-Novo', countryCode: 'BJ',
+                wupCityCode: null, latitude: 6.4969, longitude: 2.6289,
+                registryCityIds: ['capital:BJ:porto-novo'], appCityIds: [], cohorts: ['capital']
+            }],
+            countryCodes: ['BJ'],
+            integrationOutcomeBatches: [batch('porto.json', [
+                { cityCode: 2241, registryCityId: 'capital:BJ:porto-novo', cityName: 'Porto-Novo', countryCode: 'BJ',
+                    point: [6.50766879735021, 2.62222651952885], outcome: 'held', finishedAt: '2026-10-14T07:39:45Z' }
+            ])]
+        });
+        const portoRows = report.cities.filter(city => city.countryCode === 'BJ' && city.name === 'Porto-Novo');
+        expect(portoRows).toHaveLength(1);
+        expect(portoRows[0]).toMatchObject({
+            id: 'capital:BJ:porto-novo', wupCityCode: null,
+            integrationAttempts: [{ outcome: 'held', registryCityId: 'capital:BJ:porto-novo' }]
+        });
+    });
+
+    it('adds registry-only city outcomes without inventing a WUP code', () => {
+        const report = smallReport({
+            cities: [], countryCodes: ['SC'],
+            integrationOutcomeBatches: [batch('victoria.json', [
+                { registryCityId: 'capital:SC:victoria', cityName: 'Victoria', countryCode: 'SC',
+                    point: [-4.6191, 55.4513], outcome: 'held', finishedAt: '2026-10-14T08:00:00Z' }
+            ])]
+        });
+        const victoria = report.cities.find(city => city.id === 'capital:SC:victoria');
+        expect(victoria).toMatchObject({
+            wupCityCode: null, registryCityIds: ['capital:SC:victoria'],
+            latitude: -4.6191, longitude: 55.4513,
+            integrationAttempts: [{ outcome: 'held', registryCityId: 'capital:SC:victoria' }]
+        });
+        expect(report.cities.some(city => city.id === 'wup2025:undefined')).toBe(false);
     });
 });
