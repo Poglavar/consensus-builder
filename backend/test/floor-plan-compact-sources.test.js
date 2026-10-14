@@ -20,6 +20,15 @@ const isWellFormed=value=>{
 };
 
 describe('processed source evidence',()=>{
+ it('serializes in-crawl cleanup without upgrading the shared crawl gate',async()=>{
+  const db={query:vi.fn(async()=>({rows:[]}))};
+  await compactSources(db,{apply:true,crawlLockHeld:true});
+  const sql=db.query.mock.calls.map(([s])=>s);
+  expect(sql[0]).toContain("pg_advisory_lock(hashtext('floor-plan-crawl-write'))");
+  expect(sql.at(-1)).toContain("pg_advisory_unlock(hashtext('floor-plan-crawl-write'))");
+  expect(sql.some(s=>s.includes('pg_try_advisory_lock'))).toBe(false);
+ });
+
  it('binds a bounded evidence packet to the exact page URL and source hash',()=>{
   const packet=prepareSourceEvidence({url:'https://agency.test/listing/1',sha256:'a'.repeat(64),
    html:'<html><title>Example</title><body><main><h1>Ilica 12</h1></main><p>OIB: 12345678901</p></body></html>',facts:{title:'Example'}});

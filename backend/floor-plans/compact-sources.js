@@ -2,6 +2,7 @@
 import * as cheerio from 'cheerio';
 import { buildingEvidenceFacts, prepareBuildingEvidence, unicodeSafeSlice } from './building-reading.js';
 import { pruneDiscardedFiles,readBlob,readBlobRow } from './blob-store.js';
+import { withCrawlMutation } from './crawl-locks.js';
 
 export const PROCESSED_SOURCE_REASON = 'processed-source.v1';
 export const SOURCE_EVIDENCE_SCHEMA = 'processed-source-evidence.v1';
@@ -139,13 +140,19 @@ function emptyRetentionResult(apply) {
 
 // Compact complete content-hash groups only. Shared bytes stay available if any current reference
 // is unsupported or cannot be given its own exact-URL evidence packet.
-export async function compactSources(db, { apply = false, limit = 50000, deadline = Infinity, signal, prune = pruneDiscardedFiles, log = () => {} } = {}) {
+export async function compactSources(db, options = {}) {
+    if (options.apply && options.crawlLockHeld)
+        return withCrawlMutation(db, () => compactSourcesLocked(db, options));
+    return compactSourcesLocked(db, options);
+}
+
+async function compactSourcesLocked(db, { apply = false, crawlLockHeld = false, limit = 50000, deadline = Infinity, signal, prune = pruneDiscardedFiles, log = () => {} } = {}) {
     if (!Number.isInteger(limit) || limit < 1 || limit > 100000) throw new Error('Retention limit must be 1..100000.');
     const expired = () => Boolean(signal?.aborted) || (Number.isFinite(deadline) && Date.now() >= deadline);
     let locked = false, inTransaction = false;
     const result = emptyRetentionResult(apply), htmlHashes = new Map(), sourcePackets = [];
     try {
-        if (apply) {
+        if (apply && !crawlLockHeld) {
             locked = Boolean((await db.query(`SELECT pg_try_advisory_lock(hashtext('floor-plan-crawl')) AS locked`)).rows[0]?.locked);
             if (!locked) throw new Error('Stop the active crawl before applying source retention.');
         }

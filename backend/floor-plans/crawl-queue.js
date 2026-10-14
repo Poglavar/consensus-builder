@@ -4,6 +4,21 @@ import { NEGATIVE_IMAGE_CACHE_SQL } from './image-retention.js';
 import { ALLOWED_TARGET_SQL } from './source-policy.js';
 const hostSql = url => `regexp_replace(lower(split_part(${url},'/',3)),'^www\\.','')`;
 const HOST_SQL = hostSql('t.url');
+const TARGET_CACHE_COLUMNS = `t.*,COALESCE(b.bytes_available,false) AS cached_bytes_available,
+      (b.discard_reason='processed-source.v1' AND EXISTS(SELECT 1 FROM floor_plan.observation o
+        WHERE o.url=t.url AND o.sha256=t.current_sha256
+          AND o.evidence->'sourcePacket'->>'schema'='processed-source-evidence.v1'
+          AND o.evidence->'sourcePacket'->'source'->>'sha256'=t.current_sha256
+          AND o.evidence->'sourcePacket'->'source'->>'url'=t.url
+          AND o.evidence->'sourcePacket'->'building'->'source'->>'sha256'=t.current_sha256
+          AND o.evidence->'sourcePacket'->'building'->'source'->>'url'=t.url)) AS cached_processed,
+      b.storage_path AS cached_storage_path,b.byte_count AS cached_byte_count`;
+
+export async function readDueTarget(db, url) {
+  return (await db.query(`SELECT ${TARGET_CACHE_COLUMNS} FROM floor_plan.target t
+    LEFT JOIN floor_plan.blob b ON b.sha256=t.current_sha256
+    WHERE t.url=$1 AND t.next_check_at<=now() AND ${ALLOWED_TARGET_SQL}`, [url])).rows[0] || null;
+}
 export function normalizeSiteHost(site) {
   if (site == null) return null;
   if (typeof site !== 'string' || !/^(?:[a-z0-9-]+\.)+[a-z0-9-]+$/i.test(site))
@@ -79,15 +94,7 @@ export function createTargetSelector({ agencyId = null, site = null, discoveryOn
 
   async function choose(db, current) {
     const excluded = [...(visitedHosts.get(current) || [])];
-    const sql = `SELECT t.*,COALESCE(b.bytes_available,false) AS cached_bytes_available,
-      (b.discard_reason='processed-source.v1' AND EXISTS(SELECT 1 FROM floor_plan.observation o
-        WHERE o.url=t.url AND o.sha256=t.current_sha256
-          AND o.evidence->'sourcePacket'->>'schema'='processed-source-evidence.v1'
-          AND o.evidence->'sourcePacket'->'source'->>'sha256'=t.current_sha256
-          AND o.evidence->'sourcePacket'->'source'->>'url'=t.url
-          AND o.evidence->'sourcePacket'->'building'->'source'->>'sha256'=t.current_sha256
-          AND o.evidence->'sourcePacket'->'building'->'source'->>'url'=t.url)) AS cached_processed,
-      b.storage_path AS cached_storage_path,b.byte_count AS cached_byte_count FROM floor_plan.target t
+    const sql = `SELECT ${TARGET_CACHE_COLUMNS} FROM floor_plan.target t
       LEFT JOIN floor_plan.blob b ON b.sha256=t.current_sha256
       WHERE t.next_check_at<=now()
         AND ${ALLOWED_TARGET_SQL}

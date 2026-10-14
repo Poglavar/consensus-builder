@@ -12,6 +12,7 @@ import { crawl } from '../floor-plans/crawler.js';
 import { countPendingTargets, createTargetSelector, normalizeSiteHost, revisitKnownTargets } from '../floor-plans/crawl-queue.js';
 import { fetchPublic } from '../floor-plans/fetch-public.js';
 import { zagrebStreetIndex } from '../floor-plans/site-candidates.js';
+import { acquireCrawlLock } from '../floor-plans/crawl-locks.js';
 
 const CHUNK_REQUESTS = 500;
 const HELP = [
@@ -225,10 +226,9 @@ export async function runSiteCrawl(options, dependencies = {}) {
   const stop = () => controller.abort();
   process.once('SIGTERM', stop);
   process.once('SIGINT', stop);
-  let locked = false;
+  let releaseLock;
   try {
-    locked = Boolean((await db.query("SELECT pg_try_advisory_lock(hashtext('floor-plan-crawl')) AS locked")).rows[0]?.locked);
-    if (!locked) throw new Error('Another floor-plan crawl is already running.');
+    releaseLock = await acquireCrawlLock(db, options.site);
     // Page qualification reads street-name mentions from this index; load it once per run.
     await zagrebStreetIndex(db);
 
@@ -471,8 +471,8 @@ export async function runSiteCrawl(options, dependencies = {}) {
   } finally {
     process.removeListener('SIGTERM', stop);
     process.removeListener('SIGINT', stop);
-    if (locked) await db.query("SELECT pg_advisory_unlock(hashtext('floor-plan-crawl'))");
-    await db.end();
+    try { if (releaseLock) await releaseLock(); }
+    finally { await db.end(); }
   }
 }
 

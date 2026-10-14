@@ -8,7 +8,8 @@ import { performance } from 'node:perf_hooks';
 import dotenv from 'dotenv';
 import pg from 'pg';
 import { normalizeSiteHost } from '../floor-plans/crawl-queue.js';
-import { drainSourceRetention } from '../floor-plans/compact-sources.js';
+import { compactSources, drainSourceRetention } from '../floor-plans/compact-sources.js';
+import { acquireCrawlLock } from '../floor-plans/crawl-locks.js';
 import { runSiteCrawl } from './floor-plan-site-crawl.mjs';
 
 const DEFAULTS = Object.freeze({ maxTotalPages: 10000, maxTotalMinutes: 360, maxSitePages: 150, maxSiteMinutes: 15 });
@@ -111,7 +112,7 @@ export function calculateHostLimits({
   };
 }
 
-async function boundedRetention({ deadline, limit, log }) {
+async function boundedRetention({ host, deadline, limit, log }) {
   const timeoutMs = Math.max(0, Math.floor(deadline - Date.now()));
   if (!timeoutMs) return { status: 'partial', partial: true, remaining: true, deferred: 0, stopReason: 'deadline' };
   const connectionString = process.env.DATABASE_URL;
@@ -124,12 +125,16 @@ async function boundedRetention({ deadline, limit, log }) {
   };
   const client = new pg.Client(connection);
   let connected = false;
+  let releaseLock;
   try {
     await client.connect();
     connected = true;
-    return await drainSourceRetention(client, { limit, deadline, log });
+    releaseLock = await acquireCrawlLock(client, host);
+    return await drainSourceRetention(client, { limit, deadline, log,
+      compact: (db, options) => compactSources(db, { ...options, crawlLockHeld: true }) });
   } finally {
-    if (connected) await client.end();
+    try { if (releaseLock) await releaseLock(); }
+    finally { if (connected) await client.end(); }
   }
 }
 
