@@ -219,6 +219,7 @@
     let proposalInteractionGroup = null; // selectable applied/unapplied proposal surfaces
     let proposalDraftGroup = null; // source-vs-draft comparison overlay; never mutates proposal state
     let latestProposalDraftPreviewDetail = null;
+    let onMapEditorModelPreviewGeneration = 0;
     let treesEnabled = true; // user toggle (default ON); real value loaded from storage on 3D init
     // Plots an applied urban rule left out, drawn as see-through volumes. Default OFF: it answers
     // "why is there nothing on this plot", it is not part of the plan being looked at.
@@ -1907,15 +1908,23 @@
         }
     }
 
-    function addDraftPreviewFeature3D(feature, target, style, kind) {
+    function addDraftPreviewFeature3D(feature, target, style, kind, options = {}) {
         if (!feature?.geometry || !target) return;
-        const color = style === 'source' ? 0x64748b : 0x2563eb;
-        const opacity = style === 'source' ? 0.2 : 0.55;
+        if (kind === 'buildings' && feature.properties?.modelUrl && typeof options.isCurrent === 'function') {
+            placeUploadedModel(feature, target, buildingMaterials.ghost, {
+                isCurrent: options.isCurrent,
+                fitToFootprint: true,
+                cloneGeometry: true
+            });
+            return;
+        }
+        const color = { source: 0x64748b, envelope: 0x996600, excluded: 0x9a3412, draft: 0x2563eb }[style];
+        const opacity = { source: 0.2, envelope: 0.10, excluded: 0.28, draft: 0.55 }[style];
         const fill = new THREE.MeshLambertMaterial({
             color,
             transparent: true,
             opacity,
-            depthWrite: style !== 'source',
+            depthWrite: style === 'draft',
             polygonOffset: true,
             polygonOffsetFactor: -5,
             polygonOffsetUnits: -5,
@@ -1934,13 +1943,13 @@
             .forEach(border => { markOwnedMaterial(border, line); border.renderOrder = style === 'source' ? 9101 : 9201; target.add(border); });
     }
 
-    function activeSingleBuildingPreviewDetail() {
-        const editor = window.SingleBuildingMapEditor;
+    function activeOnMapEditorPreviewDetail() {
+        const editor = window.OnMapEditor;
         if (!editor || typeof editor.isActive !== 'function' || typeof editor.getPreview !== 'function') return null;
         try { return editor.isActive() ? (editor.getPreview() || null) : null; } catch (_) { return null; }
     }
 
-    function addSingleBuildingContextPreview3D(detail, target) {
+    function addOnMapEditorContextPreview3D(detail, target) {
         if (!detail || !target) return;
         const surface = detail.groundSurface;
         if (surface?.polygon) {
@@ -1961,6 +1970,8 @@
                 target.add(mesh);
             });
         }
+        (detail.envelopes || []).forEach(feature => addDraftPreviewFeature3D(feature, target, 'envelope', 'buildings'));
+        (detail.excluded || []).forEach(feature => addDraftPreviewFeature3D(feature, target, 'excluded', 'buildings'));
         if (detail.boundary?.geometry) {
             const material = new THREE.LineBasicMaterial({ color: 0x64748b, transparent: true, opacity: 0.9, depthWrite: false });
             polygonFeatureToBorderLines(detail.boundary, material, 0.12).forEach(border => {
@@ -1971,19 +1982,20 @@
         }
     }
 
-    function resolvedProposalDraftPreviewDetail(detail, singleBuildingDetail) {
-        if (!singleBuildingDetail?.draftPreview) return detail || null;
-        // The live building editor owns the preview while it is open. The comparison detail stays
+    function resolvedProposalDraftPreviewDetail(detail, editorDetail) {
+        if (!editorDetail?.draftPreview) return detail || null;
+        // The live map editor owns the preview while it is open. The comparison detail stays
         // cached so it can be restored as soon as that editor closes.
-        return { draftPreview: singleBuildingDetail.draftPreview, singleBuilding: singleBuildingDetail };
+        return { draftPreview: editorDetail.draftPreview, onMapEditor: editorDetail };
     }
 
     function rebuildProposalDraftPreview3D(detail = latestProposalDraftPreviewDetail) {
         latestProposalDraftPreviewDetail = detail || null;
+        const modelPreviewGeneration = ++onMapEditorModelPreviewGeneration;
         if (!isActive || !proposalDraftGroup) return;
         disposeDraftPreviewChildren(proposalDraftGroup);
-        const singleBuildingDetail = activeSingleBuildingPreviewDetail();
-        const previewDetail = resolvedProposalDraftPreviewDetail(latestProposalDraftPreviewDetail, singleBuildingDetail);
+        const editorDetail = activeOnMapEditorPreviewDetail();
+        const previewDetail = resolvedProposalDraftPreviewDetail(latestProposalDraftPreviewDetail, editorDetail);
         if (!previewDetail) { invalidateThreeView(); return; }
         const sourceGroup = new THREE.Group();
         const draftGroup = new THREE.Group();
@@ -1993,15 +2005,20 @@
                 .forEach(feature => addDraftPreviewFeature3D(feature, sourceGroup, 'source', 'source'));
         }
         if (previewDetail.draftPreview) {
-            if (previewDetail.singleBuilding) addSingleBuildingContextPreview3D(previewDetail.singleBuilding, draftGroup);
-            const draft = previewDetail.singleBuilding ? null : (window.proposalDraftStore?.getDraft?.(previewDetail.draftId) || null);
+            if (previewDetail.onMapEditor) addOnMapEditorContextPreview3D(previewDetail.onMapEditor, draftGroup);
+            const draft = previewDetail.onMapEditor ? null : (window.proposalDraftStore?.getDraft?.(previewDetail.draftId) || null);
+            const modelPreviewOptions = previewDetail.onMapEditor ? {
+                isCurrent: () => modelPreviewGeneration === onMapEditorModelPreviewGeneration
+                    && !!activeOnMapEditorPreviewDetail()
+                    && draftGroup.parent === proposalDraftGroup
+            } : {};
             collectDraftPreviewFeatures(previewDetail.draftPreview, draft)
-                .forEach(feature => addDraftPreviewFeature3D(feature, draftGroup, 'draft', previewDetail.draftPreview.kind));
+                .forEach(feature => addDraftPreviewFeature3D(feature, draftGroup, 'draft', previewDetail.draftPreview.kind, modelPreviewOptions));
         }
         invalidateThreeView();
     }
 
-    function handleSingleBuildingPreviewChange() {
+    function handleOnMapEditorPreviewChange() {
         // Read the current editor state here rather than retaining event.detail: the event's null
         // close notification means "restore the general preview", and late-loaded 3D gets the same
         // result by asking the editor directly during scene construction.
@@ -5437,6 +5454,42 @@
         }));
     }
 
+    // Fit an uploaded glTF's native XY footprint to the authored polygon. Polygon coordinates
+    // already include the scene's Web-Mercator scale, so each horizontal axis is fitted directly;
+    // vertical scale uses the authored height in metres. `rotation` is counter-clockwise degrees,
+    // matching the single-building footprint editor.
+    function uploadedModelFit(feature, centerXY, nativeSize) {
+        const geometry = feature?.geometry;
+        if (!geometry || !centerXY || !nativeSize) return null;
+        const properties = feature.properties || {};
+        const rotationDeg = Number(properties.rotation) || 0;
+        const radians = rotationDeg * Math.PI / 180;
+        const cos = Math.cos(radians), sin = Math.sin(radians);
+        const points = [];
+        const coordinates = geometry.type === 'Polygon' ? [geometry.coordinates]
+            : geometry.type === 'MultiPolygon' ? geometry.coordinates : [];
+        coordinates.forEach(polygon => polygon.forEach(ring => ring.forEach(coordinate => {
+            const xy = latLngToXY(coordinate[1], coordinate[0]);
+            const dx = xy[0] - centerXY[0], dy = xy[1] - centerXY[1];
+            points.push([dx * cos + dy * sin, -dx * sin + dy * cos]);
+        })));
+        if (!points.length) return null;
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        points.forEach(([x, y]) => {
+            minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+            minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+        });
+        const width = maxX - minX, depth = maxY - minY;
+        const modelWidth = Number(nativeSize.x), modelDepth = Number(nativeSize.y), modelHeight = Number(nativeSize.z);
+        const requestedHeight = Number(properties.heightMeters ?? properties.height);
+        if (!(width > 0) || !(depth > 0) || !(modelWidth > 0) || !(modelDepth > 0) || !(modelHeight > 0)) return null;
+        const height = requestedHeight > 0 ? requestedHeight : null;
+        return {
+            scale: [width / modelWidth, depth / modelDepth, height ? height / modelHeight : 1],
+            rotation: radians
+        };
+    }
+
     function disposeGltfCache() {
         gltfModelCache.clear();
     }
@@ -5447,7 +5500,7 @@
 
     // Loads an uploaded building model and places it at the footprint centroid, grounded and
     // oriented (glTF Y-up → scene Z-up). Async: meshes pop in when the file finishes loading.
-    function placeUploadedModel(feat, targetGroup, buildingMaterial) {
+    function placeUploadedModel(feat, targetGroup, buildingMaterial, options = {}) {
         let cx = 0, cy = 0, lat = 0;
         try {
             const c = turf.centroid(feat);
@@ -5462,16 +5515,20 @@
             ? (resolveBackendAssetUrl(feat.properties.modelUrl) || feat.properties.modelUrl)
             : feat.properties.modelUrl;
         const gen = buildingsRenderGeneration;
+        const isCurrent = typeof options.isCurrent === 'function' ? options.isCurrent : () => true;
         const buildingOpacity = buildingOpacityOf(buildingMaterial);
-        const stale = () => !isActive || gen !== buildingsRenderGeneration || targetGroup !== proposedBuildingsGroup;
+        const isProposedBuilding = targetGroup === proposedBuildingsGroup;
+        const stale = () => !isActive || !isCurrent() || (isProposedBuilding && gen !== buildingsRenderGeneration);
         // The scene's XY is Web-Mercator (EPSG:3857), which inflates horizontal distance by
         // ~1/cos(lat) vs real meters, while extrude heights use raw meters. The glTF model is in
         // real meters, so scale its footprint (X/Y) by this factor to match surrounding buildings;
         // height (Z) stays 1:1.
-        const horizScale = 1 / Math.max(0.1, Math.cos(lat * Math.PI / 180));
+        const trackLoading = isProposedBuilding;
 
-        pendingModelLoads++;
-        updateBuildingsLoader();
+        if (trackLoading) {
+            pendingModelLoads++;
+            updateBuildingsLoader();
+        }
         loadGltfScene(url).then((scene) => {
             if (stale() || !scene) return;
             const inner = scene.clone(true);
@@ -5482,12 +5539,26 @@
             if (box.isEmpty()) return;
             const center = new THREE.Vector3();
             box.getCenter(center);
+            const size = new THREE.Vector3();
+            box.getSize(size);
             // Center the footprint on the origin and sit the base on the ground (z=0).
             inner.position.set(-center.x, -center.y, -box.min.z);
 
             const wrapper = new THREE.Group();
             wrapper.add(inner);
-            wrapper.scale.set(horizScale, horizScale, 1);
+            let fit = null;
+            if (options.fitToFootprint !== false) {
+                const nativeSize = { x: size.x, y: size.y, z: size.z };
+                const xyFit = uploadedModelFit(feat, [cx, cy], nativeSize);
+                if (xyFit) fit = xyFit;
+            }
+            if (fit) {
+                wrapper.scale.set(...fit.scale);
+                wrapper.rotation.z = fit.rotation;
+            } else {
+                const horizScale = 1 / Math.max(0.1, Math.cos(lat * Math.PI / 180));
+                wrapper.scale.set(horizScale, horizScale, 1);
+            }
             wrapper.position.set(cx, cy, 0);
 
             // Collect before attaching depth children: mutating an Object3D hierarchy during
@@ -5497,6 +5568,9 @@
                 if (node.isMesh && node.material) modelMeshes.push(node);
             });
             modelMeshes.forEach((node) => {
+                if (options.cloneGeometry && node.geometry?.clone) {
+                    node.geometry = markOwnedGeometry(node, node.geometry.clone());
+                }
                 // scene.clone(true) still shares glTF materials with the cache and other
                 // placements. Clone each one before applying this display mode, then use the
                 // same stable transparency path as generated building geometry.
@@ -5518,14 +5592,16 @@
             if (stale()) return;
             try {
                 const height = estimateBuildingHeightMeters(feat);
-                createBuildingSlices(feat, height, buildingMaterial, targetGroup);
+                const fallbackMaterial = isProposedBuilding ? buildingMaterial : cloneBuildingMaterial(buildingMaterial);
+                createBuildingSlices(feat, height, fallbackMaterial, targetGroup);
             } catch (_) { }
             if (typeof console !== 'undefined') console.warn('Building model load failed, used box fallback:', url, err);
         }).finally(() => {
-            if (stale()) return;
-            pendingModelLoads = Math.max(0, pendingModelLoads - 1);
-            updateBuildingsLoader();
-            invalidateThreeView();
+            if (trackLoading && !stale()) {
+                pendingModelLoads = Math.max(0, pendingModelLoads - 1);
+                updateBuildingsLoader();
+            }
+            if (!stale()) invalidateThreeView();
         });
     }
 
@@ -7248,14 +7324,14 @@
         try { typeof hideRoadAnalysisPanel === 'function' && hideRoadAnalysisPanel(); } catch (_) { }
         try { typeof hideOSMRoadSegmentListPopup === 'function' && hideOSMRoadSegmentListPopup(); } catch (_) { }
         try { typeof hideBlocksList === 'function' && hideBlocksList(); } catch (_) { }
-        // The proposal form is suspended underneath the on-map single-building editor. Closing it
+        // The proposal form is suspended underneath the active on-map editor. Closing it
         // here would clear the parcel context that the editor is preparing for Done.
-        let singleBuildingEditorActive = false;
-        try { singleBuildingEditorActive = window.SingleBuildingMapEditor?.isActive?.() === true; } catch (_) { }
-        try { !singleBuildingEditorActive && typeof closeProposalDialog === 'function' && closeProposalDialog(); } catch (_) { }
+        let onMapEditorActive = false;
+        try { onMapEditorActive = window.OnMapEditor?.isActive?.() === true; } catch (_) { }
+        try { !onMapEditorActive && typeof closeProposalDialog === 'function' && closeProposalDialog(); } catch (_) { }
         try {
             const blockifyModal = document.getElementById('blockify-modal');
-            if (blockifyModal && typeof closeBlockifyModal === 'function') closeBlockifyModal();
+            if (!onMapEditorActive && blockifyModal && typeof closeBlockifyModal === 'function') closeBlockifyModal();
         } catch (_) { }
         // Close share modals (e.g., shared proposal inspector/summary) so they don't block 3D controls.
         // They are CbDialogs (js/proposals/dialog-share.js): their header close-circle-btn is the
@@ -8119,7 +8195,7 @@
         rebuildProposalDraftPreview3D(event.detail || null);
     });
 
-    document.addEventListener('single-building-preview-change', handleSingleBuildingPreviewChange);
+    document.addEventListener('on-map-editor-preview-change', handleOnMapEditorPreviewChange);
 
     document.addEventListener('mapshell:sheetclosed', event => {
         if (event.detail?.id === 'layers-sheet') stopBuildingRadiusPreview?.();

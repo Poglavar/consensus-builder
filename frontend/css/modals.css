@@ -936,215 +936,7 @@ body.site-intro-open { overflow: hidden; }
     }
 }
 
-/* Land readjustment editor (reparcellization.js)
-   .reparcel-modal is a .cb-dialog--xl: the overlay, card, header, title, close, footer (Cancel and
-   Done), stacking and phone bottom sheet are the primitive's (css/primitives.css). These rules lay
-   out what is inside: the subtitle under the title, the tools, the map and the ledger. */
-.reparcel-header__text {
-    flex: 1;
-    min-width: 0;
-}
-
-.reparcel-subtitle {
-    margin: 6px 0 0;
-    color: var(--cb-text-muted);
-    font-size: var(--cb-text-base);
-}
-
-.reparcel-content {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    padding: var(--cb-space-4) var(--cb-space-5) var(--cb-space-5);
-}
-
-.reparcel-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
-    grid-template-areas: "map legend";
-    grid-auto-rows: auto;
-    gap: 16px;
-    align-items: stretch;
-}
-
-/* Grid items default to min-width:auto, so a wide child (the 5-col ledger table)
-   would blow the track past the viewport. Let items shrink; tables scroll inside. */
-.reparcel-map-panel,
-.reparcel-legend-panel {
-    min-width: 0;
-}
-
-.reparcel-map-panel {
-    grid-area: map;
-    align-self: start;
-    background: var(--cb-surface-2);
-    border: 1px solid var(--cb-line);
-    border-radius: var(--cb-radius-lg);
-    padding: 12px;
-    min-height: 420px;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-}
-
-/* Before/After swipe comparison: a .btn .btn-sm over the map's corner, pressed (aria-pressed)
-   while the comparison runs. */
-.reparcel-compare-btn {
-    position: absolute;
-    top: 18px;
-    right: 18px;
-    z-index: var(--cb-z-map-chrome);
-}
-.reparcel-map {
-    width: 100%;
-    height: 460px;
-    border-radius: var(--cb-radius-md);
-    overflow: hidden;
-    background: var(--cb-surface-3);
-    flex: 1;
-}
-
-.reparcel-legend-panel {
-    grid-area: legend;
-    container: reparcel-legend / inline-size;
-    background: var(--cb-surface-2);
-    border: 1px solid var(--cb-line);
-    border-radius: var(--cb-radius-lg);
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    min-height: 320px;
-}
-
-.reparcel-legend-list {
-    overflow-y: auto;
-    overflow-x: auto;
-    max-height: 240px;
-    padding-right: 6px;
-}
-
-.legend-color {
-    width: 14px;
-    height: 14px;
-    border-radius: 4px;
-    flex-shrink: 0;
-}
-
-/* Public land's swatch is pale; an outline keeps it visible on the popup. */
-.legend-color--public {
-    border: 1px solid var(--cb-text-faint);
-}
-
-.single-owner-slider {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.single-owner-slider input[type="range"] {
-    width: 100%;
-}
-
-/* The two decisions (Cancel, Done) are the dialog footer; closing is a decision, not a shortcut,
-   so it sits beside Done rather than only as the X. */
-.reparcel-actions [data-reparcel-cancel],
-.reparcel-actions [data-reparcel-commit] {
-    min-width: 120px;
-}
-
-/* Ownership tools sit on their own row, above the decisions. Assigning is a MODE, not a one-off
-   action, so it reads as a toggle and its companion shortcut sits beside it — while Cancel and
-   Done keep a row to themselves, where a decision is not competing with a tool. */
-/* Assigning is not editing: the drawing tools stand down so the mode is unmistakable, the same
-   way the old-plots view does it. */
-.reparcel-assign-mode .reparcel-legend-actions > *:not([data-reparcel-assign]):not([data-reparcel-all-public]),
-.reparcel-assign-mode .reparcel-draw-toolbar,
-.reparcel-assign-mode .reparcel-alg-options {
-    opacity: 0.4;
-    pointer-events: none;
-}
-
-@media (max-width: 1024px) {
-    .reparcel-layout {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-            "map"
-            "legend";
-    }
-
-    .reparcel-map {
-        height: 400px;
-    }
-
-    .reparcel-legend-panel {
-        min-height: 0;
-    }
-}
-
-@media (max-width: 767.98px) {
-    .reparcel-content {
-        gap: 16px;
-    }
-
-    .reparcel-layout {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-            "map"
-            "legend";
-    }
-
-    .reparcel-map-panel {
-        min-height: 320px;
-    }
-
-    .reparcel-map {
-        height: 320px;
-    }
-
-    /* Phones: the two decisions stay side by side and share the footer row. */
-    .reparcel-actions [data-reparcel-cancel],
-    .reparcel-actions [data-reparcel-commit] {
-        flex: 1 1 40%;
-    }
-}
-
-/* Narrow phones: tighten paddings and shrink the map. The ledger's own container
-   query below also handles a narrow desktop sidebar. */
-@media (max-width: 480px) {
-    .reparcel-subtitle {
-        font-size: var(--cb-text-sm);
-    }
-    .reparcel-content {
-        padding: var(--cb-space-3) 10px 14px;
-        gap: 12px;
-    }
-    .reparcel-map-panel {
-        padding: 8px;
-        min-height: 260px;
-    }
-    .reparcel-map {
-        height: 260px;
-    }
-    .reparcel-legend-panel {
-        padding: 10px;
-    }
-    .reparcel-owners-table,
-    .reparcel-newplots-table {
-        font-size: 11px;
-    }
-    .reparcel-owners-table th,
-    .reparcel-owners-table td,
-    .reparcel-newplots-table th,
-    .reparcel-newplots-table td {
-        padding: 4px 5px;
-    }
-    .cash-offer-cell input.cash-offer-input {
-        width: 54px;
-    }
-}
-
-/* Reparcellization: owners & new plots tables */
+/* Reparcellization ledger and ownership controls. */
 .reparcel-owners-table,
 .reparcel-newplots-table {
     width: 100%;
@@ -2398,61 +2190,6 @@ body.site-intro-open { overflow: hidden; }
     to { transform: rotate(360deg); }
 }
 
-/* Urban rule editor (#blockify-container, a .cb-dialog--xl): main | sidebar side by side in the
-   dialog body, the map edge to edge. The card, header, footer and phone sheet are the primitive's;
-   the workspace height and the footer row are the "Editor workspaces" block after the parcel-based
-   editor. */
-#blockify-body {
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    min-height: 0;
-    padding: 0;
-}
-
-#blockify-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    border-right: 1px solid var(--cb-line);
-}
-
-/* The one #blockify-sidebar rule (utilities.css used to redefine width and padding). */
-#blockify-sidebar {
-    width: 300px;
-    flex: 0 0 auto;
-    display: flex;
-    flex-direction: column;
-    padding: var(--cb-space-5);
-    overflow-y: auto;
-    box-sizing: border-box;
-}
-
-#blockify-map {
-    flex: 1 1 auto;
-    width: 100%;
-    min-height: 240px;
-}
-
-/* 3D preview container */
-#blockify-3d {
-    width: 100%;
-    height: 300px;
-    background: var(--cb-surface-2);
-    position: relative;
-    z-index: var(--cb-z-local-1);
-}
-
-#blockify-3d canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100% !important;
-    height: 100% !important;
-    display: block;
-}
-
 /* Live regulatory indicators shared by the Urban Rule and Freeform geometry editors. */
 .building-density-card {
     margin: 0 0 18px;
@@ -3095,148 +2832,74 @@ body.site-intro-open { overflow: hidden; }
     white-space: pre-wrap;
 }
 
-/* Urban rule editor on phones. */
-@media (max-width: 767.98px) {
-    #blockify-body {
-        flex-direction: column;
-    }
-
-    #blockify-main {
-        flex: 0 0 auto;
-        border-right: 0;
-    }
-
-    #blockify-map {
-        flex: 0 0 auto;
-        height: 36vh;
-        min-height: 180px;
-    }
-
-    #blockify-3d {
-        flex: 0 0 auto;
-        height: 28vh;
-        min-height: 160px;
-    }
-
-    #blockify-sidebar {
-        width: 100%;
-        max-width: 100%;
-        flex: 0 0 auto;
-        min-height: fit-content;
-        max-height: none;
-        overflow-y: visible;
-        border-top: 1px solid var(--cb-line);
-    }
-}
-
-/* ========== Row houses editor ==========
-   #rowhouse-container is a .cb-dialog--xl: main | sidebar side by side in the dialog body, the map
-   edge to edge. The card, header, footer and phone sheet are the primitive's; the workspace height
-   and the footer row are the "Editor workspaces" block after the parcel-based editor. */
-#rowhouse-body {
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    min-height: 0;
-    padding: 0;
-}
-
-#rowhouse-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+/* Controls mounted in the shared 320px panel. Keep ids for the editors' scripts; let the
+   shared panel own width, padding and scrolling instead of reserving a second sidebar column. */
+#blockify-sidebar,
+#rowhouse-sidebar,
+#parcelbased-sidebar {
     min-width: 0;
-    border-right: 1px solid var(--cb-line);
 }
 
-#rowhouse-sidebar {
-    width: 280px;
-    flex: 0 0 auto;
-    padding: var(--cb-space-5);
-    overflow-y: auto;
-    box-sizing: border-box;
+#blockify-sidebar .parameter-group,
+#rowhouse-sidebar .parameter-group,
+#parcelbased-sidebar .parameter-group {
+    margin-bottom: var(--cb-space-2);
 }
 
-#rowhouse-sidebar .parameter-group {
-    margin-bottom: 15px;
-}
-
-#rowhouse-sidebar .parameter-group label {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
-    font-size: var(--cb-text-base);
-    color: var(--cb-text);
-}
-
-#rowhouse-sidebar .parameter-group input[type="range"] {
-    width: 100%;
-}
-
-#rowhouse-sidebar .parameter-metrics {
-    margin: 15px 0;
-    padding: 12px;
-    background: var(--cb-surface-2);
-    border-radius: var(--cb-radius-sm);
-    border: 1px solid var(--cb-line);
-}
-
-#rowhouse-sidebar .parameter-metrics .metric-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-    font-size: var(--cb-text-md);
-    color: var(--cb-text-muted);
-}
-
-#rowhouse-sidebar .parameter-metrics .metric-row:last-child {
-    margin-bottom: 0;
-}
-
-#rowhouse-sidebar .parameter-metrics .metric-row span:last-child {
-    font-weight: var(--cb-weight-semibold);
-    color: var(--cb-text-strong);
-}
-
-#rowhouse-sidebar .parameter-info {
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid var(--cb-line);
-}
-
-#rowhouse-sidebar .parameter-info p {
-    font-size: var(--cb-text-sm);
-    color: var(--cb-text-muted);
-    margin: 0 0 8px 0;
+#blockify-sidebar .parameter-info,
+#rowhouse-sidebar .parameter-info,
+#parcelbased-sidebar .parameter-info {
+    margin-top: var(--cb-space-2);
+    padding: var(--cb-space-2);
     line-height: 1.4;
 }
 
-#rowhouse-map {
-    flex: 1 1 auto;
-    width: 100%;
-    min-height: 240px;
+#blockify-sidebar .parameter-info p,
+#rowhouse-sidebar .parameter-info p,
+#parcelbased-sidebar .parameter-info p {
+    margin-bottom: var(--cb-space-2);
+    font-size: var(--cb-text-xs);
 }
 
-#rowhouse-3d {
-    width: 100%;
-    height: 300px;
+#rowhouse-sidebar .parameter-metrics,
+#parcelbased-sidebar .parameter-metrics {
+    margin: var(--cb-space-2) 0;
+    padding: var(--cb-space-2);
     background: var(--cb-surface-2);
-    position: relative;
-    z-index: var(--cb-z-local-1);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-sm);
 }
 
-#rowhouse-3d canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
+#rowhouse-sidebar .parameter-metrics .metric-row,
+#parcelbased-sidebar .parameter-metrics .metric-row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--cb-space-2);
+    margin-bottom: var(--cb-space-1);
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-xs);
 }
 
-/* Row Houses Interaction Styles */
-#rowhouse-map .leaflet-interactive {
-    cursor: move;
+#rowhouse-sidebar .parameter-metrics .metric-row:last-child,
+#parcelbased-sidebar .parameter-metrics .metric-row:last-child {
+    margin-bottom: 0;
+}
+
+#rowhouse-sidebar .parameter-metrics .metric-row span:last-child,
+#parcelbased-sidebar .parameter-metrics .metric-row span:last-child {
+    color: var(--cb-text-strong);
+    font-weight: var(--cb-weight-semibold);
+    text-align: right;
+}
+
+#blockify-sidebar .algorithm-description {
+    margin-bottom: var(--cb-space-2);
+    padding: var(--cb-space-2);
+}
+
+.on-map-editor__tools .single-building-rotation-buttons {
+    display: flex;
+    gap: var(--cb-space-1);
 }
 
 .rowhouse-vertex-marker {
@@ -3245,193 +2908,6 @@ body.site-intro-open { overflow: hidden; }
 
 .rowhouse-vertex-marker:active {
     cursor: grabbing;
-}
-
-/* Row houses on phones: the primitive's bottom sheet, its body scrolling map, 3D and sidebar in
-   one column. Same as the Urban rule editor: map + 3D are sized so the slider section peeks below
-   them and becomes the scroll grip. */
-@media (max-width: 767.98px) {
-    #rowhouse-body {
-        flex-direction: column;
-    }
-
-    #rowhouse-main {
-        flex: 0 0 auto;
-        border-right: 0;
-    }
-
-    #rowhouse-map {
-        flex: 0 0 auto;
-        height: 36vh;
-        min-height: 180px;
-    }
-
-    #rowhouse-3d {
-        flex: 0 0 auto;
-        height: 26vh;
-        min-height: 150px;
-    }
-
-    #rowhouse-sidebar {
-        width: 100%;
-        max-height: none;
-        overflow-y: visible;
-        border-top: 1px solid var(--cb-line);
-        flex: 0 0 auto;
-    }
-}
-
-/* ========== Detached houses editor ==========
-   #parcelbased-container is a .cb-dialog--xl: main | sidebar side by side in the dialog body, the
-   map edge to edge. The card, header, footer and phone sheet are the primitive's; the workspace
-   height and the footer row are the "Editor workspaces" block right after this editor. */
-#parcelbased-body {
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    min-height: 0;
-    padding: 0;
-}
-
-#parcelbased-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    border-right: 1px solid var(--cb-line);
-}
-
-#parcelbased-sidebar {
-    width: 280px;
-    flex: 0 0 auto;
-    padding: var(--cb-space-5);
-    overflow-y: auto;
-    box-sizing: border-box;
-}
-
-#parcelbased-sidebar .parameter-group {
-    margin-bottom: 15px;
-}
-
-#parcelbased-sidebar .parameter-group label {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
-    font-size: var(--cb-text-base);
-    color: var(--cb-text);
-}
-
-#parcelbased-sidebar .parameter-group input[type="range"] {
-    width: 100%;
-}
-
-#parcelbased-sidebar .parameter-metrics {
-    margin: 15px 0;
-    padding: 12px;
-    background: var(--cb-surface-2);
-    border-radius: var(--cb-radius-sm);
-    border: 1px solid var(--cb-line);
-}
-
-#parcelbased-sidebar .parameter-metrics .metric-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-    font-size: var(--cb-text-md);
-    color: var(--cb-text-muted);
-}
-
-#parcelbased-sidebar .parameter-metrics .metric-row:last-child {
-    margin-bottom: 0;
-}
-
-#parcelbased-sidebar .parameter-metrics .metric-row span:last-child {
-    font-weight: var(--cb-weight-semibold);
-    color: var(--cb-text-strong);
-}
-
-#parcelbased-sidebar .parameter-info {
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid var(--cb-line);
-}
-
-#parcelbased-sidebar .parameter-info p {
-    font-size: var(--cb-text-sm);
-    color: var(--cb-text-muted);
-    margin: 0 0 8px 0;
-    line-height: 1.4;
-}
-
-#parcelbased-map {
-    flex: 1 1 auto;
-    width: 100%;
-    min-height: 240px;
-}
-
-#parcelbased-3d {
-    width: 100%;
-    height: 300px;
-    background: var(--cb-surface-2);
-    position: relative;
-    z-index: var(--cb-z-local-1);
-}
-
-#parcelbased-3d canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-}
-
-/* Detached houses on phones: the primitive's bottom sheet, its body scrolling map, 3D and sidebar
-   in one column. */
-@media (max-width: 767.98px) {
-    #parcelbased-body {
-        flex-direction: column;
-    }
-
-    #parcelbased-main {
-        flex: 0 0 auto;
-        border-right: 0;
-    }
-
-    #parcelbased-map {
-        flex: 0 0 auto;
-        height: 36vh;
-        min-height: 180px;
-    }
-
-    #parcelbased-3d {
-        flex: 0 0 auto;
-        height: 200px;
-    }
-
-    #parcelbased-sidebar {
-        width: 100%;
-        max-height: none;
-        overflow-y: visible;
-        border-top: 1px solid var(--cb-line);
-        flex: 0 0 auto;
-    }
-}
-
-/* ========== Editor workspaces ==========
-   The building editors (Urban rule, Row houses, Detached houses, Freeform) wear the dialog
-   primitive (css/primitives.css: overlay, card, header, body, footer, the phone bottom sheet) and
-   keep their ids for their scripts. What is theirs is laid out here: on a wide screen the card
-   takes the height the dialog allows so the map and 3D preview fill it, and the footer is the
-   decision row, what the design delivers on the left and the decisions on the right. On a phone
-   the line takes the width and the buttons share the row under it. */
-@media (min-width: 768px) {
-    #blockify-container,
-    #rowhouse-container,
-    #parcelbased-container {
-        height: calc(100dvh - 2 * var(--cb-space-4));
-    }
-
 }
 
 #blockify-controls,
@@ -3472,6 +2948,7 @@ body.site-intro-open { overflow: hidden; }
         flex: 1 1 100%;
     }
 
+    #blockify-buttons .btn,
     #rowhouse-buttons .btn,
     #parcelbased-buttons .btn {
         flex: 1 1 0;
@@ -3589,11 +3066,6 @@ body.site-intro-open { overflow: hidden; }
 /* Kill the browser focus ring on plot paths: on an SVG <path> it is drawn around the element's
    BOUNDING BOX, so clicking a plot flashed a rectangle that looked like a selection but was not
    the plot's shape. Hover and selection are carried by the boundary style instead (drawPreview). */
-#reparcel-map path:focus,
-#reparcel-map path:focus-visible {
-    outline: none;
-}
-
 /* Node/edge editing handles for the manual layout. Shared nodes move every plot that touches
    them, so the handle has to read as a grab target, not a decoration. */
 .reparcel-node-handle {

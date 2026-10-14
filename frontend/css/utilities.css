@@ -857,11 +857,6 @@ button.status-log-message {
     color: rgba(255, 255, 255, 0.8);
 }
 
-#blockify-buttons .btn {
-    flex: 1 1 auto;
-    width: 100%;
-}
-
 /* Blockify Sidebar Styles
    The parameter rows every editor sidebar shares (Urban Rule, Row houses, Detached houses,
    Freeform). The sidebar box itself and its section labels are in modals.css; the selects take

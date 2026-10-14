@@ -1,4 +1,11 @@
 {
+  "onMapEditor": {
+    "missingSite": "Este edificio guardado no tiene un límite de terreno válido, por lo que su geometría no se puede editar de forma segura.",
+    "cancel": "Cancelar",
+    "view": "Vista",
+    "mapView": "Mapa 2D",
+    "modelView": "Modelo 3D"
+  },
     "optionalTools": {
         "loadFailed": "No se pudo cargar esta herramienta. Inténtalo de nuevo."
     },
@@ -3170,6 +3177,7 @@
     },
     "blockify": {
         "modal": {
+            "mapHint": "Edita las parcelas y sus límites en el mapa; revisa la titularidad y las participaciones en el panel.",
             "title": "Regla urbana",
             "closeAria": "Cerrar modal de edificios",
             "generating": "Generando edificio…",
@@ -4943,6 +4951,14 @@
         }
     },
     "structureEditor": {
+    "titleLake": "Editor del límite del lago",
+    "instructionsLake": "Arrastra los puntos del límite para cambiar la forma del lago. Toca un borde para añadir un punto.",
+    "lakeBoundaryHint": "La orilla y el agua se actualizan con el contorno.",
+    "hintLake": "Selecciona un punto del límite para moverlo o eliminarlo.",
+    "lakeInvalid": "El límite del lago debe formar una sola zona conectada. Ajusta el contorno e inténtalo de nuevo.",
+    "lakeVertexTitle": "Arrastra para cambiar el límite del lago",
+    "lakeDeleteVertexTitle": "Eliminar este punto del límite",
+    "lakeUndoTitle": "Deshacer cambio del límite del lago",
         "ariaLabel": "Editor de geometría de la estructura",
         "titlePark": "Editor de parque",
         "titleSquare": "Editor de plaza",

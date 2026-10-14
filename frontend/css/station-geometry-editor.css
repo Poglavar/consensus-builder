@@ -1,54 +1,8 @@
-/* Fixed-centre editor for transit-station orientation and type-specific parameters. A docked editor
-   on the --cb-z-editor rung; its close is a close-circle-btn and Done the one .btn-primary
-   (css/primitives.css). */
-.station-geometry-editor {
-    position: fixed;
-    z-index: var(--cb-z-editor);
-    right: max(18px, env(safe-area-inset-right));
-    bottom: max(18px, env(safe-area-inset-bottom));
-    display: none;
-    width: min(520px, calc(100vw - 36px));
-    color: var(--cb-text);
-    background: var(--cb-glass);
-    border: 1px solid var(--cb-line-glass);
-    border-radius: var(--cb-radius-lg);
-    box-shadow: var(--cb-shadow-lg);
-    backdrop-filter: blur(12px);
-}
-
-.station-geometry-editor.is-open {
-    display: block;
-}
-
-.station-geometry-editor header,
-.station-geometry-editor footer {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 14px;
-}
-
-.station-geometry-editor header {
-    border-bottom: 1px solid var(--cb-line);
-}
-
-.station-geometry-editor header > div {
-    display: grid;
-    gap: 2px;
-}
-
-.station-geometry-editor header small,
-.station-geometry-editor footer > span,
-.station-editor-body p {
-    color: var(--cb-text-muted);
-    font-size: 12px;
-}
-
+/* Station-specific controls within the shared map editor. */
 .station-editor-body {
     display: grid;
     gap: 14px;
-    padding: 14px;
+    padding: var(--cb-space-2) 0;
 }
 
 .station-editor-body p {
@@ -57,7 +11,7 @@
 
 .station-editor-field {
     display: grid;
-    grid-template-columns: minmax(118px, auto) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 10px;
     align-items: center;
     font-size: 13px;
@@ -65,7 +19,7 @@
 }
 
 .station-editor-bearing {
-    grid-template-columns: minmax(72px, auto) minmax(120px, 1fr) 88px;
+    grid-template-columns: minmax(0, 1fr) 88px;
 }
 
 .station-editor-field input[type='range'] {
@@ -85,28 +39,5 @@
     font-weight: 600;
 }
 
-.station-geometry-editor footer {
-    border-top: 1px solid var(--cb-line);
-}
 
-.station-geometry-editor footer > div {
-    display: flex;
-    gap: 8px;
-}
-
-@media (max-width: 767.98px) {
-    .station-geometry-editor {
-        right: 8px;
-        bottom: 8px;
-        width: calc(100vw - 16px);
-    }
-
-    .station-editor-bearing,
-    .station-editor-field {
-        grid-template-columns: 1fr;
-    }
-
-    .station-geometry-editor footer > span {
-        display: none;
-    }
-}
+.station-editor-bearing > span:first-child { grid-column: 1 / -1; }

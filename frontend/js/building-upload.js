@@ -1,7 +1,7 @@
 // Building upload modal: lets a proposer upload a glTF 2.0 (.glb/.gltf) building model,
 // preview it in a three.js scene, and turn its footprint + height into a single-building
-// proposal (via window.createSingleBuildingFromUpload). The mesh is shown for review here;
-// the proposal itself stores the standard footprint box that flows through the building pipeline.
+// placement (via window.createSingleBuildingFromUpload). Review the asset here, then place
+// its editable footprint on the main map; the saved model reference supplies its 3D mesh.
 
 (function () {
     let modalEl = null;
@@ -322,12 +322,11 @@
             length: loadedDims.length,
             height: loadedDims.height,
             modelName: loadedName,
-            modelUrl
+            modelUrl,
+            onConfirm: onConfirmCb
         });
         if (!created) { setConfirmEnabled(true); return; } // single-building.js surfaces its own status
-        const cb = onConfirmCb;
         close();
-        if (typeof cb === 'function') cb();
     }
 
     function disposeScene() {

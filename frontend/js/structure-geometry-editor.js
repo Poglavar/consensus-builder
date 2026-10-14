@@ -12,24 +12,18 @@
         pathCursor: null,
         rubberBand: null,
         geometryDrag: null,
+        polygonEditor: null,
         layer: null,
         panel: null,
+        session: null,
         reselectKey: null
     };
 
     // Everything the editor draws lives in its own pane ABOVE the structure panes (squares
     // surface z=630, icons 632; parks 625/627) — default marker/overlay panes sit BELOW them,
     // which buried the editor's icons under the square's semi-transparent surface.
-    const EDITOR_PANE = 'structureGeometryEditorPane';
+    const EDITOR_PANE = 'onMapEditorPane';
     const EDIT_LOCK_OWNER = 'structure-geometry-editor';
-    function ensureEditorPane() {
-        if (!global.map || typeof global.map.getPane !== 'function') return;
-        let pane = global.map.getPane(EDITOR_PANE);
-        if (!pane && typeof global.map.createPane === 'function') {
-            pane = global.map.createPane(EDITOR_PANE);
-            if (pane) pane.style.zIndex = '655';
-        }
-    }
 
     // The panel is built in JS, so it translates at build time: same fallback-aware helper the
     // other JS-built panels use (window.i18n.t returns the key itself when a string is missing).
@@ -99,6 +93,29 @@
         const geometry = raw?.type === 'Feature' ? raw.geometry : (raw?.geometry || raw);
         if (!geometry || !['Polygon', 'MultiPolygon'].includes(geometry.type)) return null;
         return { type: 'Feature', properties: {}, geometry: clone(geometry) };
+    }
+
+    function lakeOuterRing(boundary) {
+        const geometry = boundary?.geometry;
+        if (geometry?.type === 'Polygon') return geometry.coordinates?.[0] || null;
+        if (geometry?.type === 'MultiPolygon' && geometry.coordinates?.length === 1) {
+            return geometry.coordinates[0]?.[0] || null;
+        }
+        return null;
+    }
+
+    function closeRing(ring) {
+        if (!Array.isArray(ring) || ring.length < 3) return null;
+        const points = ring.map(coordinate).filter(Boolean);
+        if (points.length < 3) return null;
+        points.push(points[0].slice());
+        return points;
+    }
+
+    function oneConnectedLakeGeometry(geometry) {
+        const value = geometry?.type === 'Feature' ? geometry.geometry : geometry;
+        return value?.type === 'Polygon'
+            || (value?.type === 'MultiPolygon' && Array.isArray(value.coordinates) && value.coordinates.length === 1);
     }
 
     function hasExplicitDecorationDesign(kind, decorations) {
@@ -374,9 +391,43 @@
             interactive: false,
             pane: EDITOR_PANE
         }).addTo(state.layer);
+        if (state.kind === 'lake') {
+            renderLakePreview();
+            updatePanelState();
+            return;
+        }
         if (state.kind === 'park') renderPark(state.layer);
         else renderSquare(state.layer);
         updatePanelState();
+    }
+
+    function renderLakePreview() {
+        const graphics = global.buildLakeGraphicsFromGeometry?.(state.boundary?.geometry);
+        if (!graphics) return;
+        [
+            [graphics.shore, { color: '#c48b4a', weight: 2, opacity: 0.9, fillColor: '#f3d7a0', fillOpacity: 0.9 }],
+            [graphics.transition, { color: '#2c7abf', weight: 1.2, opacity: 0.55, fillColor: '#3c92d6', fillOpacity: 0.45 }],
+            [graphics.water, { color: '#1769aa', weight: 1, opacity: 0.75, fillColor: '#258bd2', fillOpacity: 0.85 }]
+        ].forEach(([geometry, style]) => {
+            if (!geometry) return;
+            global.L.geoJSON(geometry, { style: { ...style, pane: EDITOR_PANE }, pane: EDITOR_PANE, interactive: false }).addTo(state.layer);
+        });
+    }
+
+    function commitLakeOuterRing(ring) {
+        const closed = closeRing(ring);
+        const geometry = clone(state.boundary?.geometry);
+        if (!closed || !geometry) return false;
+        if (geometry.type === 'Polygon') {
+            geometry.coordinates = [closed, ...(geometry.coordinates || []).slice(1)];
+        } else if (geometry.type === 'MultiPolygon' && geometry.coordinates?.length === 1) {
+            geometry.coordinates = [[closed, ...(geometry.coordinates[0] || []).slice(1)]];
+        } else {
+            return false;
+        }
+        state.boundary.geometry = geometry;
+        render();
+        return true;
     }
 
     function circleRing(center, radiusMeters) {
@@ -456,18 +507,13 @@
         return `<button type="button" class="btn btn-sm" data-tool="${tool}" aria-pressed="false"><i class="fa-solid ${icon}" aria-hidden="true"></i>${label}</button>`;
     }
 
-    function ensurePanel() {
-        if (state.panel || !global.document?.body) return state.panel;
-        const panel = global.document.createElement('section');
-        panel.className = 'structure-geometry-editor';
-        panel.setAttribute('aria-label', t('ariaLabel', 'Structure geometry editor'));
-        panel.addEventListener('click', handlePanelClick);
-        global.document.body.appendChild(panel);
-        state.panel = panel;
-        return panel;
-    }
-
     function panelMarkup() {
+        if (state.kind === 'lake') {
+            return `
+                <p class="on-map-editor__hint">${t('instructionsLake', 'Drag boundary points to reshape the lake. Click an edge to add a point; select a point to remove it.')}</p>
+                <p class="structure-geometry-options">${t('lakeBoundaryHint', 'The lake shape and its generated shore and water graphics will be saved together.')}</p>
+                <p class="on-map-editor__hint" data-role="hint"></p>`;
+        }
         const tools = state.kind === 'park'
             ? [
                 toolButton('tree', 'fa-tree', t('tools.tree', 'Tree')),
@@ -487,12 +533,15 @@
             ? t('titlePark', 'Park editor')
             : t('titleSquare', 'Square editor');
         return `
-            <header><div><strong>${title}</strong><small>${t('instructions', 'Choose an item, then click inside the boundary. Drag any item to move it.')}</small></div><button type="button" class="close-circle-btn" data-action="cancel" aria-label="${t('closeLabel', 'Close')}">×</button></header>
+            <p class="on-map-editor__hint">${title}. ${t('instructions', 'Choose an item, then click inside the boundary. Drag any item to move it.')}</p>
             <div class="structure-geometry-tools">${tools}${toolButton('erase', 'fa-eraser', t('tools.erase', 'Remove'))}</div>
             <div class="structure-geometry-options">
                 <button type="button" class="btn btn-sm" data-action="finish-path">${t('finishPath', 'Finish path')}</button>
-            </div>
-            <footer><span data-role="hint"></span><div><button type="button" class="btn" data-action="cancel">${t('cancel', 'Cancel')}</button><button type="button" class="btn btn-primary" data-action="save">${t('save', 'Save design')}</button></div></footer>`;
+            </div><p class="on-map-editor__hint" data-role="hint"></p>`;
+    }
+
+    function footerMarkup() {
+        return `<button type="button" class="btn" data-action="cancel">${t('cancel', 'Cancel')}</button><button type="button" class="btn btn-primary" data-action="save">${t('save', 'Save design')}</button>`;
     }
 
     function updatePanelState() {
@@ -508,11 +557,13 @@
             finish.disabled = state.pathPoints.length < 2;
         }
         const hint = panel.querySelector('[data-role="hint"]');
-        if (hint) hint.textContent = state.tool === 'erase'
+        if (hint) hint.textContent = state.kind === 'lake'
+            ? t('hintLake', 'Use the map points to reshape the lake boundary. Undo is available on the map.')
+            : (state.tool === 'erase'
             ? t('hintErase', 'Click an item to remove it.')
             : (state.tool
                 ? t('hintPlace', 'Click the map to place the selected item.')
-                : t('hintSelect', 'Select an item to begin.'));
+                : t('hintSelect', 'Select an item to begin.')));
     }
 
     function handlePanelClick(event) {
@@ -532,10 +583,7 @@
 
     function onKeyDown(event) {
         if (!state.draftId) return;
-        if (event.key === 'Escape') {
-            event.preventDefault();
-            closeEditor(false);
-        } else if (event.key === 'Enter' && state.tool === 'path') {
+        if (event.key === 'Enter' && state.tool === 'path') {
             event.preventDefault();
             finishPath();
         }
@@ -546,13 +594,20 @@
         const reselectKey = state.reselectKey || null;
         state.reselectKey = null;
         if (state.geometryDrag) endGeometryDrag();
+        if (state.polygonEditor) {
+            try { state.polygonEditor.destroy(); } catch (_) { }
+            state.polygonEditor = null;
+        }
         if (global.map) {
             global.map.off('click', onMapClick);
             global.map.off('mousemove', onMapMouseMove);
             if (state.layer) global.map.removeLayer(state.layer);
         }
         global.document?.removeEventListener('keydown', onKeyDown, true);
-        if (state.panel) state.panel.classList.remove('is-open');
+        state.panel?.removeEventListener?.('click', handlePanelClick);
+        const session = state.session;
+        state.session = null;
+        state.panel = null;
         state.draftId = null;
         state.kind = null;
         state.boundary = null;
@@ -564,9 +619,11 @@
         state.rubberBand = null;
         state.geometryDrag = null;
         state.layer = null;
+        state.polygonEditor = null;
         // Hand the map back BEFORE anything below re-selects a proposal — those calls are the
         // editor's own, and must not be turned away by the lock it just held.
-        global.__mapEditLock?.release(EDIT_LOCK_OWNER);
+        if (session?.close) session.close();
+        else global.__mapEditLock?.release(EDIT_LOCK_OWNER);
         if (draftId && typeof global.finishProposalDraftDesignSession === 'function') {
             global.finishProposalDraftDesignSession(draftId);
         }
@@ -575,6 +632,7 @@
             global.structureGeometryEditorEditingProposalId = null;
             try { global.updateParksLayer?.(); } catch (_) { }
             try { global.updateSquaresLayer?.(); } catch (_) { }
+            try { global.updateLakesLayer?.(); } catch (_) { }
         }
         if (saved && typeof global.updateStatus === 'function') global.updateStatus(t('statusSaved', 'Structure design saved.'));
         // The editor replaced the proposal card for its duration — on cancel, bring the card
@@ -593,59 +651,100 @@
         const current = clone(draft.editorPayload?.structureProposal || {});
         current.kind = state.kind;
         current.geometry = clone(state.boundary.geometry);
-        current.decorations = clone(state.decorations);
+        if (state.kind === 'lake') {
+            const graphics = global.buildLakeGraphicsFromGeometry?.(current.geometry);
+            const derivedGeometry = graphics?.geometry || current.geometry;
+            if (!graphics || !oneConnectedLakeGeometry(derivedGeometry)) {
+                if (typeof global.updateStatus === 'function') {
+                    global.updateStatus(t('lakeInvalid', 'A lake boundary must form one connected area. Adjust the outline and try again.'));
+                }
+                return false;
+            }
+            current.lakeGraphics = clone(graphics);
+            delete current.decorations;
+        } else {
+            current.decorations = clone(state.decorations);
+        }
         global.syncActiveProposalDraftFromEditor?.('structure', { structureProposal: current }, { coalesceKey: 'editor:structure' });
         closeEditor(true);
         return true;
     }
 
     function openStructureGeometryEditor(draftOrId) {
-        if (!global.map || !global.L || !global.turf) return false;
+        if (!global.map || !global.L || !global.turf || !global.OnMapEditor?.open || state.draftId) return false;
         const draft = typeof draftOrId === 'string' ? global.proposalDraftStore?.getDraft?.(draftOrId) : draftOrId;
         const kind = draft?.adapterKey || draft?.goal;
-        if (!draft || !['park', 'square'].includes(kind)) return false;
+        if (!draft || !['park', 'square', 'lake'].includes(kind)) return false;
         const rawGeometry = draft.editorPayload?.structureProposal?.geometry || draft.editorPayload?.geometry || draft.previewGeometry;
         const boundary = boundaryFeature(rawGeometry);
         if (!boundary) return false;
-        if (state.draftId) closeEditor(false);
-        state.draftId = draft.id;
+        const initialLakeRing = kind === 'lake' ? lakeOuterRing(boundary) : null;
+        if (kind === 'lake' && (!oneConnectedLakeGeometry(boundary.geometry)
+            || !Array.isArray(initialLakeRing) || initialLakeRing.length < 4
+            || typeof global.PolygonGeometryEditor?.create !== 'function')) return false;
         state.kind = kind;
         state.boundary = boundary;
-        state.decorations = normalizeDecorations(kind, sourceDecorations(draft));
+        state.decorations = kind === 'lake' ? null : normalizeDecorations(kind, sourceDecorations(draft));
         state.tool = null;
         state.pathPoints = [];
         state.pathCursor = null;
         state.rubberBand = null;
-        ensureEditorPane();
-        state.layer = global.L.layerGroup().addTo(global.map);
-        // The editor owns the map and the UI for its duration: remember which proposal card was
-        // open (restored on cancel), then close the proposal card and any parcel panel — the
-        // editor panel replaces them. Parcel hover/click stays suppressed via
-        // isStructureGeometryEditorActive (checked in the parcel handlers).
-        // Exclusive from here on: while this editor is open the map answers to it alone, so no
-        // other proposal, parcel or structure can be selected or hovered behind the panel.
-        global.__mapEditLock?.claim(EDIT_LOCK_OWNER, t('title', 'Structure editor'));
         state.reselectKey = global.ProposalSelection?.getKey?.() || null;
-        try { global.hideProposalDetailsPanel?.(true); } catch (_) { }
-        try { global.hideParcelInfoPanel?.(); } catch (_) { }
-        try { global.__drillUi?.hidePanel?.(); } catch (_) { }
+        const title = kind === 'lake'
+            ? t('titleLake', 'Lake boundary editor')
+            : (kind === 'park' ? t('titlePark', 'Park editor') : t('titleSquare', 'Square editor'));
+        let session = null;
+        session = global.OnMapEditor.open({
+            owner: EDIT_LOCK_OWNER,
+            id: 'structure-geometry-editor',
+            title,
+            content: panelMarkup(),
+            footer: footerMarkup(),
+            modes: ['2d'],
+            onCancel: () => closeEditor(false),
+            onModeChange: mode => {
+                if (mode === '2d' && state.session === session) session.fitFeature(boundary, { maxZoom: 20 });
+            }
+        });
+        if (!session) {
+            state.kind = null;
+            state.boundary = null;
+            state.decorations = null;
+            state.reselectKey = null;
+            return false;
+        }
+        state.session = session;
+        state.draftId = draft.id;
+        state.panel = session.root;
+        state.panel.addEventListener('click', handlePanelClick);
+        state.layer = global.L.layerGroup().addTo(global.map);
         // Hide the applied structure's own decoration rendering for the duration — the editor
         // shows the live editable copy, and static duplicates read as "objects I cannot drag".
         global.structureGeometryEditorEditingProposalId = draft?.sourceProposalId
             || draft?.sourceSnapshot?.proposalId || draft?.sourceSnapshot?.id || null;
         try { global.updateParksLayer?.(); } catch (_) { }
         try { global.updateSquaresLayer?.(); } catch (_) { }
-        const panel = ensurePanel();
-        panel.innerHTML = panelMarkup();
-        panel.classList.add('is-open');
-        global.map.on('click', onMapClick);
-        global.map.on('mousemove', onMapMouseMove);
+        try { global.updateLakesLayer?.(); } catch (_) { }
+        if (kind !== 'lake') {
+            global.map.on('click', onMapClick);
+            global.map.on('mousemove', onMapMouseMove);
+        }
         global.document?.addEventListener('keydown', onKeyDown, true);
         render();
-        try {
-            const bounds = global.L.geoJSON(boundary).getBounds();
-            if (bounds?.isValid?.()) global.map.fitBounds(bounds, { padding: [80, 80], maxZoom: 20 });
-        } catch (_) { }
+        if (kind === 'lake') {
+            state.polygonEditor = global.PolygonGeometryEditor.create({
+                map: global.map,
+                pane: session.handlePane || EDITOR_PANE,
+                leaflet: global.L,
+                turf: global.turf,
+                ring: initialLakeRing,
+                vertexTitle: t('lakeVertexTitle', 'Drag to reshape the lake boundary'),
+                deleteTitle: t('lakeDeleteVertexTitle', 'Delete this boundary point'),
+                undoTitle: t('lakeUndoTitle', 'Undo lake boundary edit'),
+                onCommit: ({ ring }) => commitLakeOuterRing(ring)
+            });
+        }
+        if (!global.isThreeModeActive?.()) session.fitFeature(boundary, { maxZoom: 20 });
         return true;
     }
 

@@ -1138,6 +1138,7 @@
     }
 
     async function editProposalGeometry(proposalIdOrHash) {
+        if (global.OnMapEditor?.isActive?.()) return false;
         const proposal = proposalById(proposalIdOrHash);
         if (!proposal) {
             return reportGeometryEditFailure(
@@ -1191,6 +1192,7 @@
     // design commits it as an applied object, exactly like a geometry edit does. Terms and minting
     // come later via "Create proposal" on the object.
     async function startInstantProposalDesign(adapterKey, parcelIds) {
+        if (global.OnMapEditor?.isActive?.()) return false;
         const ids = (parcelIds || []).map(String).filter(Boolean);
         if (!ids.length) return false;
         const draft = global.proposalDraftStore.createDraft({
@@ -1288,6 +1290,7 @@
     // selection it came from, the whole site as one synthetic superparcel, or synthetic plots cut
     // along a frontage), and Done commits the draft as for any Build-palette creation.
     async function startInstantSiteDesign(adapterKey, siteContext, designParcelIds) {
+        if (global.OnMapEditor?.isActive?.()) return false;
         const ids = (designParcelIds || []).map(String).filter(Boolean);
         if (!ids.length || !siteContext || !siteContext.site) return false;
         const draft = global.proposalDraftStore.createDraft({
@@ -1322,6 +1325,7 @@
     // its pool — the bound parcels' part with their owners, the open ground with none. No live
     // selection: the declaration is the site's binding (replaced by the server's at publish).
     async function startSiteSubdivision(siteContext) {
+        if (global.OnMapEditor?.isActive?.()) return false;
         if (!siteContext || !siteContext.site) return false;
         const site = JSON.parse(JSON.stringify(siteContext.site));
         const draft = global.proposalDraftStore.createDraft({
@@ -2005,13 +2009,14 @@
                 editorPayload: { typology, context: JSON.parse(JSON.stringify(payload)) },
                 previewGeometry: JSON.parse(JSON.stringify(payload.buildings?.length ? payload.buildings : [payload.buildingFeature].filter(Boolean)))
             };
-            if (Array.isArray(payload.parcelIds)) fields.selectedParcelIds = payload.parcelIds.map(String);
+            const savedBuildingGeometryEdit = Boolean(draft.sourceProposalId);
+            if (!savedBuildingGeometryEdit && Array.isArray(payload.parcelIds)) fields.selectedParcelIds = payload.parcelIds.map(String);
         } else if (kind === 'reparcellization') {
             if (draft.goal !== 'reparcellization') return null;
             patch = { editorPayload: { plan: JSON.parse(JSON.stringify(payload)) }, previewGeometry: JSON.parse(JSON.stringify(payload.polygons || [])) };
             if (Array.isArray(payload.parcelIds)) fields.selectedParcelIds = payload.parcelIds.map(String);
         } else if (kind === 'structure') {
-            if (!['park', 'square'].includes(draft.adapterKey || draft.goal)) return null;
+            if (!['park', 'square', 'lake'].includes(draft.adapterKey || draft.goal)) return null;
             const structureProposal = JSON.parse(JSON.stringify(payload.structureProposal || payload));
             const geometry = structureProposal.geometry || draft.editorPayload?.geometry || null;
             patch = {

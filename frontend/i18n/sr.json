@@ -1,4 +1,11 @@
 {
+  "onMapEditor": {
+    "missingSite": "Ova sačuvana zgrada nema važeću granicu izvorne lokacije pa nije moguće bezbedno uređivati njenu geometriju.",
+    "cancel": "Odustani",
+    "view": "Prikaz",
+    "mapView": "2D mapa",
+    "modelView": "3D model"
+  },
     "optionalTools": {
         "loadFailed": "Alat nije mogao da se učita. Pokušajte ponovo."
     },
@@ -3158,6 +3165,7 @@
     },
     "blockify": {
         "modal": {
+            "mapHint": "Uredite parcele i granice na mapi; u panelu pregledajte vlasništvo i udele.",
             "title": "Urbano pravilo",
             "closeAria": "Zatvori blockify modal",
             "generating": "Generišem zgradu…",
@@ -4935,6 +4943,14 @@
         }
     },
     "structureEditor": {
+    "titleLake": "Uređivanje granice jezera",
+    "instructionsLake": "Prevucite tačke granice da promenite oblik jezera. Dodirnite ivicu da dodate tačku.",
+    "lakeBoundaryHint": "Obala i voda prate promene obrisa.",
+    "hintLake": "Izaberite tačku granice da je pomerite ili izbrišete.",
+    "lakeInvalid": "Granica jezera mora da čini jednu povezanu površinu. Prilagodite obris i pokušajte ponovo.",
+    "lakeVertexTitle": "Prevucite da promenite granicu jezera",
+    "lakeDeleteVertexTitle": "Izbriši ovu tačku granice",
+    "lakeUndoTitle": "Poništi promenu granice jezera",
         "ariaLabel": "Uređivač geometrije strukture",
         "titlePark": "Uređivanje parka",
         "titleSquare": "Uređivanje trga",

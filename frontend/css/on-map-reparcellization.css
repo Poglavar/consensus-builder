@@ -1,0 +1,436 @@
+/* Repartition tools stay fixed beside the shared map; plot ownership stays in the dock. */
+.on-map-editor__tools.reparcel-tools-map {
+    position: fixed;
+    box-sizing: border-box;
+    top: 82px;
+    left: 16px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 8px;
+    width: min(720px, calc(100vw - 520px));
+    max-height: calc(100dvh - 100px);
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 10px;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-glass);
+    box-shadow: var(--cb-shadow-md);
+    pointer-events: auto;
+}
+
+.on-map-editor__tools.reparcel-tools-map > .reparcel-tools {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    width: 100%;
+}
+
+.reparcel-tools-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.reparcel-tools .reparcel-subtitle {
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+.reparcel-tools .reparcel-compare-btn {
+    position: static;
+    align-self: flex-start;
+    z-index: auto;
+}
+
+.reparcel-controls,
+.reparcel-legend-panel {
+    min-width: 0;
+}
+
+.reparcel-alg-options {
+    flex-wrap: wrap;
+}
+
+.reparcel-courtyard-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.reparcel-courtyard-label {
+    flex: 0 0 auto;
+    font-weight: 600;
+    color: var(--cb-text);
+}
+
+.reparcel-courtyard-hint {
+    flex: 1 1 100%;
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-xs);
+    line-height: 1.35;
+}
+
+.reparcel-courtyard-tools[hidden],
+.reparcel-old-plots-view .reparcel-courtyard-tools {
+    display: none;
+}
+
+.reparcel-courtyard-tools > .btn {
+    min-height: 40px;
+}
+
+.reparcel-edit-tools {
+    margin-top: 8px;
+}
+
+.reparcel-legend-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.reparcel-tools-spacer {
+    flex: 1 1 auto;
+}
+
+.reparcel-legend-actions .reparcel-allpublic-btn {
+    white-space: nowrap;
+}
+
+.reparcel-draw-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0 0;
+}
+
+.reparcel-draw-toolbar[hidden] {
+    display: none;
+}
+
+.reparcel-draw-toolbar .btn {
+    flex: 1 1 auto;
+    white-space: nowrap;
+}
+
+.reparcel-assign-mode .reparcel-legend-actions > *:not([data-reparcel-assign]):not([data-reparcel-all-public]),
+.reparcel-assign-mode .reparcel-draw-toolbar,
+.reparcel-assign-mode .reparcel-alg-options,
+.reparcel-old-plots-view .reparcel-edit-tools,
+.reparcel-old-plots-view .reparcel-alg-options {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.reparcel-content {
+    min-width: 0;
+    padding: 0;
+}
+
+.reparcel-legend-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.reparcel-legend-list,
+.reparcel-newplots-list {
+    max-height: min(28vh, 240px);
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding-right: 4px;
+}
+
+.reparcel-owners-table,
+.reparcel-newplots-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--cb-text-sm);
+}
+
+.reparcel-owners-table th,
+.reparcel-newplots-table th {
+    padding: 4px 6px 6px;
+    border-bottom: 1px solid var(--cb-line);
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-xs);
+    font-weight: var(--cb-weight-semibold);
+    letter-spacing: 0.03em;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.reparcel-owners-table td,
+.reparcel-newplots-table td {
+    padding: 5px 6px;
+    border-bottom: 1px solid var(--cb-line);
+    color: var(--cb-text-strong);
+    vertical-align: top;
+}
+
+.reparcel-owners-table td:first-child,
+.reparcel-newplots-table td:first-child,
+.plot-cell {
+    white-space: nowrap;
+}
+
+.reparcel-owners-table td .legend-color,
+.reparcel-newplots-table td .legend-color {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 5px;
+    border-radius: 3px;
+    vertical-align: middle;
+}
+
+.legend-color {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    border-radius: 4px;
+}
+
+.legend-color--public {
+    border: 1px solid var(--cb-text-faint);
+}
+
+.area-cell {
+    color: var(--cb-text-muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.plot-cell strong {
+    margin-right: 4px;
+}
+
+.newplot-owner {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-right: 8px;
+    white-space: nowrap;
+}
+
+.reparcel-newplots-header,
+.reparcel-legend-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--cb-line);
+}
+
+.reparcel-legend-panel > .reparcel-newplots-header:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+}
+
+.reparcel-oldplots-empty,
+.reparcel-coverage,
+.reparcel-status,
+.reparcel-agreement-hint {
+    margin: 6px 0 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+.reparcel-cashtotal {
+    margin-top: 6px;
+    color: var(--cb-text-strong);
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.reparcel-cashtotal:empty {
+    display: none;
+}
+
+.cash-offer-cell input.cash-offer-input {
+    width: 70px;
+    padding: 2px 4px;
+    font-size: var(--cb-text-sm);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.reparcel-newplot-row {
+    cursor: pointer;
+}
+
+.reparcel-newplot-row:hover {
+    background: var(--cb-success-soft);
+}
+
+.reparcel-owner-popup__joint {
+    width: 100%;
+    min-height: 40px;
+    margin-top: 8px;
+}
+
+.reparcel-agreement-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.reparcel-agreement-options label {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    box-sizing: border-box;
+    min-height: 44px;
+    padding: 9px 10px;
+    border: 1px solid var(--cb-line-strong);
+    border-radius: 8px;
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    cursor: pointer;
+}
+
+.reparcel-agreement-options label:focus-within {
+    outline: 3px solid rgba(27, 153, 139, 0.35);
+    outline-offset: 2px;
+}
+
+.reparcel-agreement-options input[type="radio"] {
+    flex: 0 0 auto;
+    margin-top: 3px;
+    accent-color: var(--cb-primary);
+}
+
+.reparcel-agreement-options span {
+    line-height: 1.3;
+}
+
+.reparcel-agreement-options label:has(input:disabled),
+.reparcel-alg-option:has(input:disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.reparcel-oldplot-tip {
+    border: 1px solid var(--cb-warning-soft-ink);
+    background: var(--cb-glass);
+    color: var(--cb-warning-soft-ink);
+    font-size: var(--cb-text-xs);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.reparcel-sweep-handle {
+    width: 22px;
+    height: 22px;
+    box-sizing: border-box;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    background: #7a1cac;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+    cursor: grab;
+}
+
+.reparcel-sweep-handle:active {
+    background: #5c1382;
+    cursor: grabbing;
+}
+
+.reparcel-vertex-handle {
+    width: 14px;
+    height: 14px;
+    box-sizing: border-box;
+    border: 2px solid #137547;
+    border-radius: 50%;
+    background: var(--cb-surface);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    cursor: grab;
+}
+
+.reparcel-vertex-handle:active {
+    background: #d1fae5;
+    cursor: grabbing;
+}
+
+.reparcel-node-popup-wrap .leaflet-popup-content-wrapper {
+    max-width: min(360px, calc(100vw - 32px));
+}
+
+.reparcel-tools .reparcel-draw-toolbar[hidden] {
+    display: none;
+}
+
+.reparcel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--cb-space-2);
+}
+
+.reparcel-actions [data-reparcel-cancel],
+.reparcel-actions [data-reparcel-commit] {
+    min-width: 120px;
+}
+
+@media (max-width: 639.98px) {
+    .on-map-editor__tools.reparcel-tools-map {
+        top: 68px;
+        left: 12px;
+        width: calc(100vw - 24px);
+        max-height: min(32dvh, 300px);
+        padding: 8px;
+    }
+
+    .on-map-reparcellization .on-map-editor__panel { max-height: min(32dvh, 280px); }
+    .on-map-reparcellization .on-map-editor__hint { display: none; }
+    .reparcel-alg-options { flex-wrap: nowrap; gap: 4px; }
+    .reparcel-alg-option { flex: 1 1 0; padding: 4px; white-space: normal; text-align: center; font-size: 12px; }
+    .reparcel-legend-actions { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; }
+    .reparcel-legend-actions > * { flex-shrink: 0; }
+
+    .reparcel-legend-list,
+    .reparcel-newplots-list {
+        max-height: min(24vh, 190px);
+    }
+
+    .reparcel-actions [data-reparcel-cancel],
+    .reparcel-actions [data-reparcel-commit] {
+        flex: 1 1 40%;
+    }
+}
+
+@media (max-width: 480px) {
+    .reparcel-owners-table,
+    .reparcel-newplots-table {
+        font-size: 11px;
+    }
+
+    .reparcel-owners-table th,
+    .reparcel-owners-table td,
+    .reparcel-newplots-table th,
+    .reparcel-newplots-table td {
+        padding: 4px 5px;
+    }
+
+    .cash-offer-cell input.cash-offer-input {
+        width: 54px;
+    }
+}
+
+@media (max-width: 639.98px) and (max-height: 650px) {
+    .on-map-reparcellization .on-map-editor__panel { max-height: 150px; }
+}

@@ -342,7 +342,7 @@ describe('station geometry editing', () => {
         const keys = [
             'map', 'L', 'document', 'turf', 'proposalDraftStore', 'ProposalSelection',
             'hideProposalDetailsPanel', 'hideParcelInfoPanel', 'isProposalDesignCommitSession',
-            'finishProposalDraftDesignSession'
+            'finishProposalDraftDesignSession', 'OnMapEditor'
         ];
         const originals = new Map(keys.map(key => [key, globalThis[key]]));
         let panel = null;
@@ -370,6 +370,12 @@ describe('station geometry editing', () => {
             }),
             addEventListener() {}, removeEventListener() {}, getElementById: () => null
         };
+        const closeSession = vi.fn();
+        globalThis.OnMapEditor = { open: vi.fn(options => {
+            panel = globalThis.document.createElement('section');
+            panel.innerHTML = options.content + options.footer;
+            return { root: panel, close: closeSession, fitFeature: vi.fn() };
+        }) };
         globalThis.turf = turf;
         globalThis.ProposalSelection = { getKey: () => 'station-1' };
         globalThis.hideProposalDetailsPanel = () => {};
@@ -388,6 +394,7 @@ describe('station geometry editing', () => {
 
         try {
             expect(stations.openStationGeometryEditor(draft)).toBe(true);
+            expect(globalThis.OnMapEditor.open).toHaveBeenCalledWith(expect.objectContaining({ owner: 'station-geometry-editor', modes: ['2d'] }));
             expect(globalThis.transitStationGeometryEditorActive).toBe(true);
             expect(panel.innerHTML).toContain('data-station-editor-bearing');
             expect(panel.innerHTML).toContain('data-station-editor-height');

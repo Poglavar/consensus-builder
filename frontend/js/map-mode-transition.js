@@ -23,14 +23,17 @@
             const ticket = { signal: abort.signal, isCurrent: live };
             const entry = { abort, promise: null };
             current = entry;
-            publish(mode, mode !== '2d');
-            // Teardown is synchronous, including cancellation before a library has loaded.
-            if (mode !== 'photo') deps.leavePhoto({ destination: mode });
+            // A completed 2D transition is published after the model view has restored Leaflet.
+            // Editors may frame their geometry in that notification.
             if (mode === '2d') {
+                deps.leavePhoto({ destination: mode });
                 deps.leaveModel();
+                publish(mode, false);
                 entry.promise = Promise.resolve(true);
                 return entry.promise;
             }
+            publish(mode, true);
+            if (mode !== 'photo') deps.leavePhoto({ destination: mode });
             entry.promise = (async () => {
                 try {
                     if (!await deps.loadModel() || !live()) return false;

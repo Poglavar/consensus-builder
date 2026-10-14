@@ -1,29 +1,10 @@
+/* The section editor temporarily owns the road drawing controls. */
+body.corridor-editor-open #road-drawing-controls,
+body.corridor-editor-open #road-info-panel { display: none; }
+
 /* The corridor cross-section editor: a scale diagram of the street plus one row per lane. Its
    controls are the shared vocabulary (css/primitives.css): .cb-tabs, .cb-segmented limit and
    survey toggles, .btn .btn-icon lane buttons, .cb-badge obstacle chips; this file lays them out. */
-
-/* Docked beside a live map, not a blocking modal: the road being edited stays visible in the
-   remaining viewport and every edit previews on it as it is made. The dock takes only the panel's
-   own box, so the map beside it keeps panning and zooming. Desktop docks the panel to the right
-   edge, mobile to the bottom (media query). */
-.corridor-editor-overlay {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: stretch;
-    width: min(480px, 42vw);
-    z-index: var(--cb-z-editor);
-}
-
-.corridor-editor {
-    background: var(--cb-surface);
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    box-shadow: var(--cb-shadow-lg);
-}
 
 /* While the editor is open the map is a viewport, not a control surface: panning and zooming
    stay live, but no object on it takes a click — roads, parcels, buildings, markers, none. This
@@ -35,22 +16,6 @@
 body.corridor-editor-open .leaflet-pane > svg path.leaflet-interactive,
 body.corridor-editor-open .leaflet-interactive {
     pointer-events: none;
-}
-
-.corridor-editor-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 14px 16px 8px;
-}
-
-.corridor-editor-title {
-    margin: 0;
-    font-weight: var(--cb-weight-semibold);
-    font-size: var(--cb-text-xl);
-    line-height: 1.25;
-    color: var(--cb-text-strong);
 }
 
 .corridor-editor-subtitle {
@@ -145,11 +110,6 @@ body.corridor-editor-open .leaflet-interactive {
 }
 
 .corridor-editor-body {
-    /* The one flexible region of the full-height panel: header/meta/footer keep their size,
-       the lane list scrolls. min-height 0 lets it actually shrink inside the flex column. */
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
     /* The top padding is not decoration: without it the scroll container clips the first group label. */
     padding: 6px 16px 12px;
 }
@@ -420,33 +380,6 @@ body.corridor-editor-open .leaflet-interactive {
     font-size: var(--cb-text-xs);
     color: var(--cb-text-faint);
     margin: 8px 0 4px;
-}
-
-.corridor-editor-footer {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-    padding: 10px 16px 14px;
-    border-top: 1px solid var(--cb-line);
-}
-
-/* Mobile: the editor takes the lower half of the screen and the map keeps the upper half —
-   the same docked-beside-a-live-map arrangement as desktop, rotated 90°. */
-@media (max-width: 767.98px) {
-    .corridor-editor-overlay {
-        top: auto;
-        left: 0;
-        width: 100%;
-    }
-
-    .corridor-editor {
-        width: 100%;
-        height: 50vh;
-        /* Half of the VISIBLE viewport where supported — 50vh overshoots under mobile Safari's
-           dynamic toolbar and would hide the footer buttons. */
-        height: 50dvh;
-        border-radius: var(--cb-radius-xl) var(--cb-radius-xl) 0 0;
-    }
 }
 
 /* Mobile: the row wraps of its own accord (flex), so only the spacing needs tightening. */

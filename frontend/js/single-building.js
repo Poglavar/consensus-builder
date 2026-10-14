@@ -3,6 +3,8 @@
 
 (function () {
     let singleEditor = null;
+    let singleSession = null;
+    let singleUploadOnConfirm = null;
     let singleMap = null;
     let singleBlockLayer = null;
     let singleParcelBorderLayer = null;
@@ -21,13 +23,9 @@
     let rectDragStartFeature = null;
     let rectDragLastValidFeature = null;
     const EDIT_LOCK_OWNER = 'single-building';
-    const EDIT_PANE = 'singleBuildingEditPane';
-    const HANDLE_PANE = 'singleBuildingHandlePane';
+    const EDIT_PANE = 'onMapEditorPane';
+    const HANDLE_PANE = 'onMapEditorHandles';
     let dragMapHandlers = null;
-    let threeControls = null;
-    let editorFocusReturn = null;
-    let disabledViewButtons = [];
-    let suspendedPanels = [];
     let singleGroundPreviewLayer = null;
 
     // Rotation state
@@ -361,6 +359,13 @@
     function getSelectedBlockFeature() {
         try {
             const context = getSingleBuildingContext();
+            const authoredSite = context?.site;
+            const siteGeometry = authoredSite?.type === 'Feature' ? authoredSite.geometry : authoredSite;
+            if (['Polygon', 'MultiPolygon'].includes(siteGeometry?.type)) {
+                return authoredSite?.type === 'Feature'
+                    ? cloneSingleFeature(authoredSite)
+                    : { type: 'Feature', properties: {}, geometry: cloneSingleFeature(siteGeometry) };
+            }
             if (!context || !Array.isArray(context.parcels) || context.parcels.length === 0) return null;
             const parcelFeatures = context.parcels.map(p => p.feature);
             // Use robust union and reduce to largest polygon if available from building-blocks.js
@@ -544,54 +549,17 @@
 
     function updateSingleBuildingPreview() {
         refreshSingleBuildingDensityStats();
-        document.dispatchEvent(new CustomEvent('single-building-preview-change', { detail: singleBuildingPreview() }));
+        singleSession?.setPreview(singleBuildingPreview());
         positionSingleBuildingToolbar();
     }
 
     function positionSingleBuildingToolbar() {
-        const toolbar = singleEditor?.querySelector('.on-map-building__tools');
         const center = featureCenterLatLng(singleRectFeature);
-        if (!toolbar || !center || !singleMap) return;
-        let point;
-        if (window.isThreeModeActive?.()) {
-            const view = window.getThreeModeInternals?.();
-            if (!view) return;
-            const [x, y] = view.latLngToXY(center.lat, center.lng);
-            const projected = new window.THREE.Vector3(x, y, currentHeightM).project(view.camera);
-            const rect = view.renderer.domElement.getBoundingClientRect();
-            toolbar.hidden = projected.z < -1 || projected.z > 1;
-            point = { x: rect.left + (projected.x + 1) * rect.width / 2, y: rect.top + (1 - projected.y) * rect.height / 2 };
-        } else {
-            const rect = singleMap.getContainer().getBoundingClientRect();
-            const pixel = singleMap.latLngToContainerPoint(center);
-            point = { x: rect.left + pixel.x, y: rect.top + pixel.y };
-            toolbar.hidden = false;
-        }
-        const panel = singleEditor.querySelector('.on-map-building__panel').getBoundingClientRect();
-        const width = toolbar.offsetWidth || 160;
-        const height = toolbar.offsetHeight || 44;
-        const mobile = window.innerWidth < 640;
-        const right = mobile ? window.innerWidth - 12 : panel.left - 12;
-        const bottom = mobile ? panel.top - 12 : window.innerHeight - 100;
-        const left = Math.max(12, Math.min(point.x - width / 2, right - width));
-        const top = Math.max(76, Math.min(point.y + 28, bottom - height));
-        toolbar.style.left = `${left}px`;
-        toolbar.style.top = `${top}px`;
+        singleSession?.setAnchor(center ? { lat: center.lat, lng: center.lng, height: currentHeightM } : null);
     }
 
     function syncSingleBuildingView() {
         if (!singleEditor) return;
-        const state = window.__mapModeState || { desired: '2d', pending: false };
-        singleEditor.querySelectorAll('[data-building-view]').forEach(button => {
-            button.setAttribute('aria-pressed', String(button.dataset.buildingView === state.desired));
-        });
-        const hint = singleEditor.querySelector('.on-map-building__hint');
-        hint.textContent = translateSingleBuildingText(
-            state.desired === '2d' ? 'modal.singleBuilding.mapHint' : 'modal.singleBuilding.modelHint',
-            state.desired === '2d' ? 'Drag the building or its corners. Tap an edge to add a corner.' : 'Adjust the height and orbit to see the fit. Use 2D to reshape the footprint.');
-        if (threeControls) threeControls.removeEventListener('change', positionSingleBuildingToolbar);
-        threeControls = window.getThreeModeInternals?.()?.controls || null;
-        if (threeControls) threeControls.addEventListener('change', positionSingleBuildingToolbar);
         renderSharedPolygonEditor();
         updateSingleBuildingPreview();
     }
@@ -1110,21 +1078,10 @@
         closeSingleBuildingMapEditor();
     }
 
-    // Escape closes the editor exactly like the X does. The shared polygon editor owns vertex
-    // Delete/Backspace handling so block manual mode and this editor behave identically.
-    function handleSingleBuildingKeydown(event) {
-        if (!singleEditor) return;
-        if (event.key === 'Escape') {
-            event.preventDefault();
-            requestCloseSingleBuildingMapEditor();
-        }
-    }
-
     // Pure teardown: the design is committed (or not) by the caller — "Done" saves first,
     // X/Esc discards the design session first.
     function closeSingleBuildingMapEditor(options = {}) {
         const { preservePending = false } = options;
-        document.removeEventListener('keydown', handleSingleBuildingKeydown);
         if (singleBuildingDesignChangeTracker) singleBuildingDesignChangeTracker.stop();
         handleRectDragEnd();
         singlePendingVertexActionIndex = null;
@@ -1140,7 +1097,6 @@
             singleActivePolygonLayer = null;
             singleMap.off('mousedown', tryStartDragFromMap);
             singleMap.off('touchstart', tryStartDragFromMap);
-            singleMap.off('move zoom resize', positionSingleBuildingToolbar);
             singleMap = null;
             singleBlockLayer = null;
             singleParcelBorderLayer = null;
@@ -1155,25 +1111,10 @@
             clearSingleBuildingPendingState();
         }
 
-        if (singleEditor) {
-            try { document.body.removeChild(singleEditor); } catch (_) { }
-            singleEditor = null;
-        }
-        window.removeEventListener('resize', positionSingleBuildingToolbar);
-        window.removeEventListener('mapmodechange', syncSingleBuildingView);
-        window.removeEventListener('threeModeReady', syncSingleBuildingView);
-        if (threeControls) threeControls.removeEventListener('change', positionSingleBuildingToolbar);
-        threeControls = null;
-        disabledViewButtons.forEach(({ button, disabled }) => { button.disabled = disabled; });
-        disabledViewButtons = [];
-        suspendedPanels.forEach(({ panel, display }) => { if (panel.isConnected) panel.style.display = display; });
-        suspendedPanels = [];
-        document.body.classList.remove('single-building-editing');
-        window.__mapEditLock?.release(EDIT_LOCK_OWNER);
-        updateSingleBuildingPreview();
-        if (editorFocusReturn?.isConnected) editorFocusReturn.focus({ preventScroll: true });
-        editorFocusReturn = null;
-        if (map && map.invalidateSize) map.invalidateSize({ pan: false });
+        singleEditor = null;
+        singleUploadOnConfirm = null;
+        singleSession?.close();
+        singleSession = null;
         if (typeof window !== 'undefined') {
             // Only "Done" commits — it tears down with preservePending after saving. Every other
             // close abandons the design session, leaving the edited object exactly as it was.
@@ -1307,7 +1248,9 @@
             window.pendingBuildingFromBlockify = buildingFeatures[0] || null;
         }
 
+        const afterConfirm = singleUploadOnConfirm;
         closeSingleBuildingMapEditor({ preservePending: true });
+        afterConfirm?.();
 
         setSingleBuildingStatus('single_building_design_saved_complete_the_proposal_form_to_submit', 'Single building design saved. Complete the proposal form to submit.');
 
@@ -1584,7 +1527,6 @@
 
     function showSingleBuildingMapEditor() {
         if (singleEditor) return false;
-        if (!window.__mapEditLock?.claim(EDIT_LOCK_OWNER, translateSingleBuildingText('modal.singleBuilding.title', 'Freeform'))) return false;
         try {
             const opened = mountSingleBuildingMapEditor();
             if (!opened) closeSingleBuildingMapEditor();
@@ -1654,28 +1596,22 @@
         };
 
         if (!singleEditor) {
-            // Controls float over the real map; only their own boxes intercept pointers.
-            const editor = document.createElement('section');
-            editor.id = 'single-building-editor';
-            editor.className = 'on-map-building';
-            editor.setAttribute('aria-label', modalText.title);
-            editor.innerHTML = `
-                <div class="on-map-building__tools" role="toolbar" aria-label="${modalText.rotationLabel}">
+            singleSession = window.OnMapEditor.open({
+                owner: EDIT_LOCK_OWNER,
+                id: 'single-building-editor',
+                title: modalText.title,
+                modes: ['2d', 'model'],
+                onCancel: requestCloseSingleBuildingMapEditor,
+                onModeChange: syncSingleBuildingView,
+                hints: {
+                    '2d': translateSingleBuildingText('modal.singleBuilding.mapHint', 'Drag the building or its corners. Tap an edge to add a corner.'),
+                    model: translateSingleBuildingText('modal.singleBuilding.modelHint', 'Adjust the height and orbit to see the fit. Use 2D to reshape the footprint.')
+                },
+                tools: `
                     <button id="single-rotate-counterclockwise" class="btn btn-quiet" type="button" title="${modalText.rotateCounterclockwiseLabel}" aria-label="${modalText.rotateCounterclockwiseLabel}"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> 5°</button>
                     <button id="single-rotate-clockwise" class="btn btn-quiet" type="button" title="${modalText.rotateClockwiseLabel}" aria-label="${modalText.rotateClockwiseLabel}"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i> 5°</button>
-                </div>
-                <aside class="on-map-building__panel" aria-labelledby="single-building-title">
-                    <header class="on-map-building__header">
-                        <h2 id="single-building-title">${modalText.title}</h2>
-                        <button id="single-building-close" type="button" class="close-circle-btn" aria-label="${modalText.cancel}">×</button>
-                    </header>
-                    <div class="on-map-building__content">
-                        <div class="on-map-building__views" role="group" aria-label="${modalText.title}">
-                            <button type="button" class="btn btn-quiet" data-building-view="2d">${modalText.mapView}</button>
-                            <button type="button" class="btn btn-quiet" data-building-view="model">${modalText.modelView}</button>
-                        </div>
-                        <p class="on-map-building__hint"></p>
-                        <div class="on-map-building__height">
+                `,
+                content: `                        <div class="on-map-building__height">
                             <label for="single-height-slider">${modalText.heightLabel} <strong id="single-height-value">${DEFAULT_HEIGHT_M}</strong></label>
                             <input type="range" id="single-height-slider" min="3" max="250" step="1" value="${DEFAULT_HEIGHT_M}">
                         </div>
@@ -1715,37 +1651,18 @@
                                 <input id="single-building-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
                             </div>
                         </details>
-                    </div>
-                    <footer class="on-map-building__footer">
+`,
+                footer: `
                         <button id="single-building-cancel" type="button" class="btn btn-quiet">${modalText.cancel}</button>
                         <button id="single-building-confirm" type="button" class="btn btn-primary">${modalText.confirm}</button>
-                    </footer>
-                </aside>`;
-            editorFocusReturn = document.activeElement;
-            document.body.appendChild(editor);
-            singleEditor = editor;
-            document.body.classList.add('single-building-editing');
-            window.hideProposalDetailsPanel?.(true);
-            window.hideParcelInfoPanel?.();
-            window.clearParcelHover?.();
-            window.releaseEditorSeededMultiSelection?.();
-            window.__drillUi?.hidePanel?.();
-            // Keep the proposal form's pending context intact while its design owns the map.
-            suspendedPanels = [...document.querySelectorAll('.create-proposal-modal, #proposal-editor-shell.is-open')]
-                .map(panel => { const saved = { panel, display: panel.style.display }; panel.style.display = 'none'; return saved; });
-            window.MapShell?.closeSheet?.({ restoreFocus: false });
-            editor.querySelectorAll('[data-building-view]').forEach(button => {
-                button.addEventListener('click', () => window.requestMapMode(button.dataset.buildingView));
+                    `
             });
-            editor.querySelector('details').addEventListener('toggle', positionSingleBuildingToolbar);
+            if (!singleSession) return false;
+            singleEditor = singleSession.root;
+            singleSession.tools.setAttribute('role', 'toolbar');
+            singleSession.tools.setAttribute('aria-label', modalText.rotationLabel);
+            singleEditor.querySelector('details').addEventListener('toggle', positionSingleBuildingToolbar);
             document.getElementById('single-building-cancel').addEventListener('click', requestCloseSingleBuildingMapEditor);
-            disabledViewButtons = ['mode-realistic-toggle', 'mode-ai-toggle'].map(id => document.getElementById(id)).filter(Boolean)
-                .map(button => { const previous = { button, disabled: button.disabled }; button.disabled = true; return previous; });
-            window.addEventListener('resize', positionSingleBuildingToolbar);
-            window.addEventListener('mapmodechange', syncSingleBuildingView);
-            window.addEventListener('threeModeReady', syncSingleBuildingView);
-            document.getElementById('single-building-close').addEventListener('click', requestCloseSingleBuildingMapEditor);
-            document.addEventListener('keydown', handleSingleBuildingKeydown);
             singleBuildingDesignChanges().start(document);
             document.getElementById('single-building-confirm').addEventListener('click', confirmSingleBuilding);
 
@@ -1877,14 +1794,9 @@
             // The editor is left only via the X (discard, after confirming) or Done (save).
         }
 
-        singleMap = map;
-        for (const [name, z] of [[EDIT_PANE, 655], [HANDLE_PANE, 675]]) {
-            const pane = singleMap.getPane(name) || singleMap.createPane(name);
-            pane.style.zIndex = String(z);
-        }
+        singleMap = singleSession.map;
         singleMap.on('mousedown', tryStartDragFromMap);
         singleMap.on('touchstart', tryStartDragFromMap);
-        singleMap.on('move zoom resize', positionSingleBuildingToolbar);
         drawBlockOnMap(singleBlockFeature);
         buildingEntries = [];
         activeBuildingId = null;
@@ -1935,16 +1847,9 @@
         setActiveBuilding(initialEntry.id, { refreshUI: true });
 
         // Frame the editable object once. Later edits leave the user's camera alone.
-        if (!window.isThreeModeActive?.()) {
-            const mobile = window.innerWidth < 640;
-            singleMap.fitBounds(L.geoJSON(singleRectFeature).getBounds().pad(1), {
-                paddingTopLeft: [60, 90], paddingBottomRight: mobile ? [35, 320] : [350, 100],
-                maxZoom: 21, animate: false
-            });
-        }
+        singleSession.fitFeature(singleRectFeature);
         syncSingleBuildingView();
         singleBuildingDesignChanges().capture();
-        if (window.__mapModeState?.desired === 'photo') window.requestMapMode('model');
         document.getElementById('single-height-slider').focus({ preventScroll: true });
         return true;
     }
@@ -1952,7 +1857,7 @@
     // `initialBuildings` (optional) reopens the editor on previously-saved building features
     // instead of one default building — used by "Copy into new proposal".
     // `initialGroundTreatment` restores the proposal's surroundings choice the same way.
-    function openSingleBuildingForParcels({ blockName, parcelIds, initialBuildings = null, initialGroundTreatment = null, initialTakeWholeParcels = null }) {
+    function openSingleBuildingForParcels({ blockName, parcelIds, initialBuildings = null, site = null, initialGroundTreatment = null, initialTakeWholeParcels = null }) {
         if (singleEditor) return false;
         const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
         if (!ids.length) {
@@ -1970,7 +1875,8 @@
         singleBuildingOverrideContext = {
             blockName: blockName || describeSingleBuildingSelection(ids),
             parcels: liveParcels,
-            parcelIds: ids
+            parcelIds: ids,
+            site: cloneSingleFeature(site)
         };
         return showSingleBuildingMapEditor();
     }
@@ -1991,12 +1897,10 @@
         showSingleBuildingMapEditor();
     }
 
-    // Headless entry for the "Upload" geometry path: turns an uploaded 3D model's
-    // footprint + height into a single-building proposal without opening the placement modal.
-    // The model mesh itself is previewed in the upload modal; the proposal stores the standard
-    // footprint box (auto-fit to the block) so it flows through the existing building pipeline.
-    function createSingleBuildingFromUpload({ blockName, parcelIds, width, length, height, modelName, modelUrl } = {}) {
-        if (singleEditor) return false;
+    // Uploads enter the same placement editor; only Done saves the design and completes the
+    // upload caller's form status. The mesh reference stays attached to the editable footprint.
+    function createSingleBuildingFromUpload({ blockName, parcelIds, width, length, height, modelName, modelUrl, onConfirm } = {}) {
+        if (singleEditor || window.OnMapEditor?.isActive?.()) return false;
         const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
         if (!ids.length) {
             setSingleBuildingStatus('select_parcels_before_launching_the_single_building_tool', 'Select parcels before uploading a building.');
@@ -2043,11 +1947,11 @@
         entry.height = safeHeight;
         entry.feature.properties.height = safeHeight;
 
-        confirmSingleBuilding();
-        return true;
+        singleBuildingSeedBuildings = [cloneSingleFeature(entry.feature)];
+        singleUploadOnConfirm = typeof onConfirm === 'function' ? onConfirm : null;
+        return showSingleBuildingMapEditor();
     }
 
-    window.SingleBuildingMapEditor = { isActive: () => !!singleEditor, getPreview: singleBuildingPreview };
     window.singleBuildingOnSelectedBlock = singleBuildingOnSelectedBlock;
     window.openSingleBuildingForParcels = openSingleBuildingForParcels;
     window.createSingleBuildingProposal = createSingleBuildingProposal;

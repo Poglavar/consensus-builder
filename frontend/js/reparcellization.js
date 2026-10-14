@@ -53,8 +53,8 @@
 
     const state = {
         modal: null,
+        session: null,
         map: null,
-        baseLayer: null,
         previewLayer: null,
         boundaryLayer: null,
         legendListEl: null,
@@ -348,14 +348,7 @@
             state.boundaryLayer.remove();
             state.boundaryLayer = null;
         }
-        if (state.baseLayer) {
-            state.baseLayer.remove();
-            state.baseLayer = null;
-        }
-        if (state.map) {
-            state.map.remove();
-            state.map = null;
-        }
+        // The map belongs to the app. The editor owns only the overlays it added above it.
         state.hasFitBounds = false;
     }
 
@@ -424,9 +417,11 @@
         state.eraseBtn = null;
         destroyMap();
         if (state.modal) {
-            state.modal.remove();
+            state.session?.close?.();
             state.modal = null;
         }
+        state.session = null;
+        state.map = null;
         if (state.resizeHandler) {
             window.removeEventListener('resize', state.resizeHandler);
             state.resizeHandler = null;
@@ -434,9 +429,6 @@
         if (state.escHandler) {
             window.removeEventListener('keydown', state.escHandler);
             state.escHandler = null;
-        }
-        if (typeof setProposalModalDimmed === 'function') {
-            setProposalModalDimmed(false);
         }
         state.ownerShares = [];
         state.ownerReviewEl = null;
@@ -485,10 +477,6 @@
     }
 
     function buildModalStructure() {
-        // The editor wears the dialog primitive (css/primitives.css: overlay, card, header, body,
-        // footer, the phone bottom sheet); css/modals.css lays out the tools, map and ledger inside.
-        const overlay = document.createElement('div');
-        overlay.className = 'reparcel-modal-overlay cb-dialog-overlay';
         const parcelCount = state.selection.ids.length;
         const algorithmOption = getAlgorithmOptionByKey(state.algorithm) || getAlgorithmOptionByKey('sweep-line');
         const algorithmLabel = algorithmOption ? algorithmOption.label : t('reparcellization.modal.algorithms.sweepLine', 'Sweep line algorithm');
@@ -496,12 +484,10 @@
             algorithm: algorithmLabel,
             parcels: { key: 'reparcellization.modal.parcelCount', count: parcelCount }
         };
-        const titleKey = state.sitePool ? 'reparcellization.modal.subdivisionTitle' : 'reparcellization.modal.title';
         const titleText = state.sitePool
             ? t('reparcellization.modal.subdivisionTitle', 'Subdivision')
             : t('reparcellization.modal.title', 'Reparcellization');
         const subtitleText = t('reparcellization.modal.subtitle', '{{algorithm}} · {{parcels}}', subtitleParams);
-        const closeLabel = t('reparcellization.modal.closeAria', 'Close');
         const doneLabel = t('reparcellization.modal.done', 'Done');
         const cancelLabel = t('reparcellization.modal.cancel', 'Cancel');
         const allPublicLabel = t('reparcellization.modal.allPublic', 'All public');
@@ -565,72 +551,80 @@
                             <div class="reparcel-coverage" data-reparcel-coverage></div>
                             <div class="reparcel-status" data-reparcel-status></div>
                         </section>`;
-        overlay.innerHTML = `
-            <div class="reparcel-modal cb-dialog cb-dialog--xl" role="dialog" aria-modal="true" aria-labelledby="reparcel-title">
-                <div class="reparcel-header cb-dialog__header">
-                    <div class="reparcel-header__text">
-                        <h2 id="reparcel-title" class="cb-dialog__title" data-i18n-key="${titleKey}">${titleText}</h2>
-                        <p class="reparcel-subtitle" data-i18n-key="reparcellization.modal.subtitle" data-i18n-params='${JSON.stringify(subtitleParams)}'>${subtitleText}</p>
-                    </div>
-                    <button type="button" class="reparcel-close-btn close-circle-btn close-circle-btn--lg" data-i18n-key="reparcellization.modal.closeAria" data-i18n-attr="aria-label" aria-label="${closeLabel}">&times;</button>
-                </div>
-                <div class="reparcel-content cb-dialog__body">
-                    ${algorithmControls}
-                    <div class="reparcel-layout">
-                        <section class="reparcel-map-panel">
-                            <button type="button" class="btn btn-sm reparcel-compare-btn" data-reparcel-compare aria-pressed="false" hidden>${t('mapCompare.toggle', 'Before / After')}</button>
-                            <div id="reparcel-map" class="reparcel-map" aria-live="polite"></div>
-                        </section>
-                        ${sidePanel}
-                    </div>
-                </div>
-                <div class="reparcel-actions reparcel-actions--commit cb-dialog__footer">
-                    <button type="button" class="btn" data-reparcel-cancel data-i18n-key="reparcellization.modal.cancel" data-i18n-attr="text">${cancelLabel}</button>
-                    <button type="button" class="btn btn-primary" data-reparcel-commit disabled data-i18n-key="reparcellization.modal.done" data-i18n-attr="text">${doneLabel}</button>
-                </div>
-            </div>`;
-        document.body.appendChild(overlay);
-        state.modal = overlay;
-        state.legendListEl = overlay.querySelector('[data-reparcel-owners-table]');
-        state.ownerReviewEl = overlay.querySelector('[data-reparcel-owner-review]');
-        state.newPlotsListEl = overlay.querySelector('[data-reparcel-newplots-table]');
-        state.oldPlotsListEl = overlay.querySelector('[data-reparcel-oldplots-table]');
-        state.assignBtn = overlay.querySelector('[data-reparcel-assign]');
+        const tools = document.createElement('div');
+        tools.className = 'reparcel-tools';
+        tools.innerHTML = `
+            <div class="reparcel-tools-header"><p class="reparcel-subtitle" data-i18n-key="reparcellization.modal.subtitle" data-i18n-params='${JSON.stringify(subtitleParams)}'>${subtitleText}</p>
+            <button type="button" class="btn btn-sm reparcel-compare-btn" data-reparcel-compare aria-pressed="false" hidden>${t('mapCompare.toggle', 'Before / After')}</button></div>
+            ${algorithmControls}`;
+        const content = document.createElement('div');
+        content.className = 'reparcel-content';
+        content.innerHTML = sidePanel;
+        const footer = document.createElement('div');
+        footer.className = 'reparcel-actions reparcel-actions--commit';
+        footer.innerHTML = `
+            <button type="button" class="btn" data-reparcel-cancel data-i18n-key="reparcellization.modal.cancel" data-i18n-attr="text">${cancelLabel}</button>
+            <button type="button" class="btn btn-primary" data-reparcel-commit disabled data-i18n-key="reparcellization.modal.done" data-i18n-attr="text">${doneLabel}</button>`;
+        const session = window.OnMapEditor?.open?.({
+            owner: 'reparcellization',
+            reserveToolsSpace: true,
+            id: window.getActiveProposalDesignDraft?.()?.id || 'reparcellization',
+            title: titleText,
+            content,
+            footer,
+            tools,
+            modes: ['2d'],
+            wide: true,
+            hints: { '2d': t('reparcellization.modal.mapHint', 'Edit plots and boundaries on the map; use the panel to review ownership and shares.') },
+            handleEscape: false,
+            onCancel: cancelModal
+        });
+        if (!session) return null;
+        session.root.classList.add('on-map-reparcellization');
+        session.tools?.classList?.add('reparcel-tools-map');
+        if (session.tools) session.tools.hidden = false;
+        state.session = session;
+        state.modal = session.root;
+        state.map = session.map;
+        const root = session.root;
+        state.legendListEl = root.querySelector('[data-reparcel-owners-table]');
+        state.ownerReviewEl = root.querySelector('[data-reparcel-owner-review]');
+        state.newPlotsListEl = root.querySelector('[data-reparcel-newplots-table]');
+        state.oldPlotsListEl = root.querySelector('[data-reparcel-oldplots-table]');
+        state.assignBtn = root.querySelector('[data-reparcel-assign]');
         if (state.assignBtn) state.assignBtn.addEventListener('click', () => toggleAssignMode());
-        state.plotsTabBtns = Array.from(overlay.querySelectorAll('[data-reparcel-plots-tab]'));
+        state.plotsTabBtns = Array.from(root.querySelectorAll('[data-reparcel-plots-tab]'));
         state.plotsTabBtns.forEach(btn => {
             btn.addEventListener('click', () => setPlotsTab(btn.getAttribute('data-reparcel-plots-tab')));
         });
-        state.coverageEl = overlay.querySelector('[data-reparcel-coverage]');
-        state.cashTotalEl = overlay.querySelector('[data-reparcel-cashtotal]');
-        state.nodesBtn = overlay.querySelector('[data-reparcel-nodes]');
-        state.undoEditBtn = overlay.querySelector('[data-reparcel-undo-edit]');
-        state.drawBtn = overlay.querySelector('[data-reparcel-draw]');
-        state.courtyardToolsEl = overlay.querySelector('[data-reparcel-courtyard-tools]');
-        overlay.querySelector('[data-reparcel-courtyard-building]').addEventListener('click', openBuiltFormPicker);
-        overlay.querySelector('[data-reparcel-courtyard-draw]').addEventListener('click', () => {
+        state.coverageEl = root.querySelector('[data-reparcel-coverage]');
+        state.cashTotalEl = root.querySelector('[data-reparcel-cashtotal]');
+        state.nodesBtn = root.querySelector('[data-reparcel-nodes]');
+        state.undoEditBtn = root.querySelector('[data-reparcel-undo-edit]');
+        state.drawBtn = root.querySelector('[data-reparcel-draw]');
+        state.courtyardToolsEl = root.querySelector('[data-reparcel-courtyard-tools]');
+        root.querySelector('[data-reparcel-courtyard-building]').addEventListener('click', openBuiltFormPicker);
+        root.querySelector('[data-reparcel-courtyard-draw]').addEventListener('click', () => {
             cancelDraw();
             clearNodeHandles();
             startDraw('polygon', { joint: true });
         });
-        state.lineBtn = overlay.querySelector('[data-reparcel-line]');
-        state.eraseBtn = overlay.querySelector('[data-reparcel-erase]');
-        state.compareBtn = overlay.querySelector('[data-reparcel-compare]');
+        state.lineBtn = root.querySelector('[data-reparcel-line]');
+        state.eraseBtn = root.querySelector('[data-reparcel-erase]');
+        state.compareBtn = root.querySelector('[data-reparcel-compare]');
         if (state.compareBtn) state.compareBtn.hidden = false;
-        state.drawToolbar = overlay.querySelector('[data-reparcel-draw-toolbar]');
-        state.finishBtn = overlay.querySelector('[data-reparcel-finish]');
-        state.undoBtn = overlay.querySelector('[data-reparcel-undo]');
-        state.subtitleEl = overlay.querySelector('.reparcel-subtitle');
+        state.drawToolbar = root.querySelector('[data-reparcel-draw-toolbar]');
+        state.finishBtn = root.querySelector('[data-reparcel-finish]');
+        state.undoBtn = root.querySelector('[data-reparcel-undo]');
+        state.subtitleEl = root.querySelector('.reparcel-subtitle');
         state.subtitleData = { algorithmLabel: subtitleParams.algorithm, parcelCount };
-        state.statusEl = overlay.querySelector('[data-reparcel-status]');
+        state.statusEl = root.querySelector('[data-reparcel-status]');
 
-        const closeBtn = overlay.querySelector('.reparcel-close-btn');
-        const commitBtns = Array.from(overlay.querySelectorAll('[data-reparcel-commit]'));
+        const commitBtns = Array.from(root.querySelectorAll('[data-reparcel-commit]'));
         state.commitBtns = commitBtns;
 
         // X and Cancel are the same act: discard and leave (with a warning when there is work).
-        closeBtn.addEventListener('click', () => { cancelModal(); });
-        const cancelBtn = overlay.querySelector('[data-reparcel-cancel]');
+        const cancelBtn = root.querySelector('[data-reparcel-cancel]');
         if (cancelBtn) cancelBtn.addEventListener('click', () => { cancelModal(); });
         commitBtns.forEach((btn) => {
             btn.addEventListener('click', () => {
@@ -651,17 +645,9 @@
             });
         });
 
-        Array.from(overlay.querySelectorAll('[data-reparcel-all-public]')).forEach((btn) => {
+        Array.from(root.querySelectorAll('[data-reparcel-all-public]')).forEach((btn) => {
             btn.addEventListener('click', assignPublicToAllSlices);
         });
-
-        state.resizeHandler = () => {
-            if (state.map) {
-                state.map.invalidateSize();
-            }
-            if (state.compare.active && state.compare.session) state.compare.session.sync();
-        };
-        window.addEventListener('resize', state.resizeHandler);
 
         state.escHandler = (event) => {
             if (event.key === 'Escape') {
@@ -698,7 +684,7 @@
         };
         window.addEventListener('keydown', state.escHandler);
 
-        const algorithmGroupEl = overlay.querySelector('[data-reparcel-alg-group]');
+        const algorithmGroupEl = root.querySelector('[data-reparcel-alg-group]');
         if (algorithmGroupEl) {
             algorithmGroupEl.addEventListener('change', (event) => {
                 const target = event.target;
@@ -726,7 +712,7 @@
             });
         }
 
-        const shuffleBtn = overlay.querySelector('[data-reparcel-shuffle]');
+        const shuffleBtn = root.querySelector('[data-reparcel-shuffle]');
         if (shuffleBtn) {
             shuffleBtn.addEventListener('click', shuffleOwnership);
         }
@@ -756,7 +742,7 @@
         if (state.undoBtn) {
             state.undoBtn.addEventListener('click', undoLastPoint);
         }
-        const cancelDrawBtn = overlay.querySelector('[data-reparcel-cancel-draw]');
+        const cancelDrawBtn = root.querySelector('[data-reparcel-cancel-draw]');
         if (cancelDrawBtn) {
             cancelDrawBtn.addEventListener('click', () => { cancelDraw(); setStatus('', 'info'); });
         }
@@ -765,7 +751,7 @@
             state.compareBtn.addEventListener('click', toggleCompare);
         }
 
-        const uploadInput = overlay.querySelector('[data-reparcel-upload]');
+        const uploadInput = root.querySelector('[data-reparcel-upload]');
         if (uploadInput) {
             uploadInput.addEventListener('change', (e) => {
                 const file = e.target.files && e.target.files[0];
@@ -774,40 +760,26 @@
             });
         }
 
-        if (typeof setProposalModalDimmed === 'function') {
-            setProposalModalDimmed(true);
-        }
+        applyTranslations(root);
 
-        applyTranslations(overlay);
-
-        return overlay;
+        return session;
     }
 
     function initMap() {
-        const mapContainer = state.modal.querySelector('#reparcel-map');
-        const map = L.map(mapContainer, {
-            zoomControl: false,
-            attributionControl: false,
-            maxZoom: 23,
-            zoomSnap: 0.5,      // half-steps, so "a bit closer" is available
-            wheelPxPerZoomLevel: 80
-        });
-        // Zoom past the tile source: editing a boundary means placing a vertex to the metre, and
-        // z19 is not enough for that. maxNativeZoom keeps requesting z19 tiles and Leaflet scales
-        // them, so the imagery blurs but the geometry stays crisp and the handles stay separable.
-        const baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 23,
-            maxNativeZoom: 19,
-            minZoom: 3
-        });
-        baseLayer.addTo(map);
+        const map = state.session?.map || window.map;
+        if (!map) return false;
         // A pane above the plots for the editing tools. Insertion order is not enough to keep them
         // there: the preview layer calls bringToFront() on hover, so the moment the cursor crossed
         // a plot that plot jumped over the erase lines and swallowed their clicks — the eraser then
         // read as a tool for selecting parcels. A pane cannot be jumped over.
-        map.createPane('reparcelTools');
-        map.getPane('reparcelTools').style.zIndex = 620;
-        state.baseLayer = baseLayer;
+        const ensurePane = (name, zIndex) => {
+            let pane = map.getPane(name);
+            if (!pane && typeof map.createPane === 'function') pane = map.createPane(name);
+            if (pane?.style) pane.style.zIndex = String(zIndex);
+            return pane;
+        };
+        ensurePane('reparcelPlots', 655);
+        ensurePane('reparcelTools', 675);
         state.map = map;
         map.whenReady(() => {
             if (state.algorithm === 'sweep-line') {
@@ -815,10 +787,7 @@
                 updateSweepDirLine();
             }
         });
-        state.resizeTimer = setTimeout(() => {
-            state.resizeTimer = null;
-            if (state.map === map) map.invalidateSize();
-        }, 150);
+        return true;
     }
 
     function formatArea(area) {
@@ -1402,7 +1371,8 @@
         if (!on || !state.map || !feature) return;
         state.inputHighlightLayer = L.geoJSON(feature, {
             style: { color: '#b45309', weight: 3, fillColor: '#f59e0b', fillOpacity: 0.35 },
-            interactive: false
+            interactive: false,
+            pane: 'reparcelTools'
         }).addTo(state.map);
     }
 
@@ -1864,11 +1834,12 @@
             }).addTo(state.map);
         } else if (latlngs.length >= 3) {
             state.drawing.tempLayer = L.polygon(latlngs, {
-                color: '#1B998B', weight: 2, dashArray: '5 4', fillColor: '#1B998B', fillOpacity: 0.25, interactive: false
+                color: '#1B998B', weight: 2, dashArray: '5 4', fillColor: '#1B998B', fillOpacity: 0.25,
+                interactive: false, pane: 'reparcelTools'
             }).addTo(state.map);
         } else {
             state.drawing.tempLayer = L.polyline(latlngs, {
-                color: '#1B998B', weight: 2, dashArray: '5 4', interactive: false
+                color: '#1B998B', weight: 2, dashArray: '5 4', interactive: false, pane: 'reparcelTools'
             }).addTo(state.map);
         }
     }
@@ -1882,7 +1853,8 @@
             const marker = L.marker(L.latLng(pt[1], pt[0]), {
                 draggable: true,
                 keyboard: false,
-                icon: getVertexIcon()
+                icon: getVertexIcon(),
+                pane: 'onMapEditorHandles'
             });
             marker.on('drag', () => {
                 const ll = marker.getLatLng();
@@ -2695,6 +2667,7 @@
         state.nodeEdit.layer = factory.create({
             map: state.map,
             leaflet: L,
+            pane: 'onMapEditorHandles',
             getShapes: () => state.slices,
             topologyOf: list => topo.annotateBoundary(topo.buildTopology(list), boundaryIndex),
             classes: {
@@ -3494,7 +3467,7 @@
             state.sweepDirLayer.setLatLngs(latlngs);
         } else {
             state.sweepDirLayer = L.polyline(latlngs, {
-                color: '#7A1CAC', weight: 2, dashArray: '4 4', interactive: false
+                color: '#7A1CAC', weight: 2, dashArray: '4 4', interactive: false, pane: 'reparcelTools'
             }).addTo(state.map);
         }
         // bringToFront throws if the path isn't attached to the DOM yet (map not laid
@@ -3520,7 +3493,8 @@
         // Default due north of the centroid → bearing 0 → unchanged vertical cuts.
         state.sweepHandle = L.marker(L.latLng(c[1] + offset, c[0]), {
             draggable: true, keyboard: false, icon: getSweepIcon(), riseOnHover: true,
-            title: t('reparcellization.modal.sweepHandleHint', 'Drag to rotate the parcel lines')
+            title: t('reparcellization.modal.sweepHandleHint', 'Drag to rotate the parcel lines'),
+            pane: 'onMapEditorHandles'
         });
         state.sweepHandle.on('drag', onSweepDrag);
         state.sweepHandle.addTo(state.map);
@@ -3658,6 +3632,7 @@
             { type: 'FeatureCollection', features: footprints },
             {
                 interactive: false,
+                pane: 'reparcelTools',
                 style: {
                     color: '#b91c1c',
                     weight: 2,
@@ -3684,6 +3659,7 @@
         if (!features.length) return;
         const showing = state.plotsTab === 'old';
         state.inputLayer = L.geoJSON({ type: 'FeatureCollection', features }, {
+            pane: 'reparcelPlots',
             style: showing
                 ? { color: '#92400e', weight: 2, fillColor: '#fde68a', fillOpacity: 0.45 }
                 : { color: '#9ca3af', weight: 1, dashArray: '4,4', fillOpacity: 0.06, fillColor: '#6b7280' },
@@ -3719,7 +3695,7 @@
             // selection — nothing here is editable, and offering the affordance would lie.
             state.previewLayer = L.geoJSON(
                 { type: 'FeatureCollection', features: state.slices.map(slice => ({ type: 'Feature', properties: {}, geometry: slice.geometry })) },
-                { style: { color: '#6b7280', weight: 1, opacity: 0.5, fillOpacity: 0.05, fillColor: '#6b7280' }, interactive: false }
+                { style: { color: '#6b7280', weight: 1, opacity: 0.5, fillOpacity: 0.05, fillColor: '#6b7280' }, interactive: false, pane: 'reparcelPlots' }
             ).addTo(state.map);
         } else if (state.slices.length) {
             const collection = {
@@ -3755,6 +3731,7 @@
                 };
             };
             state.previewLayer = L.geoJSON(collection, {
+                pane: 'reparcelPlots',
                 style: feature => {
                     const props = feature.properties || {};
                     const selected = state.selectedSliceIndex === props.sliceIndex;
@@ -3799,6 +3776,7 @@
         // moved, so it must not look like the plot boundaries that can. Drawn after the plots so it
         // is never buried under a fill.
         state.boundaryLayer = L.geoJSON(state.superParcel, {
+            pane: 'reparcelTools',
             style: {
                 color: '#dc2626',
                 weight: 4,
@@ -3808,13 +3786,13 @@
             interactive: false
         }).addTo(state.map);
 
-        if (!state.hasFitBounds && state.boundaryLayer) {
-            try {
-                state.map.fitBounds(state.boundaryLayer.getBounds(), { padding: [20, 20] });
-                state.hasFitBounds = true;
-            } catch (err) {
-                console.warn('Failed to fit bounds for reparcellization preview', err);
+        if (!state.hasFitBounds && state.superParcel) {
+            if (state.session?.fitFeature) state.session.fitFeature(state.superParcel, { maxZoom: 21 });
+            else if (state.boundaryLayer) {
+                try { state.map.fitBounds(state.boundaryLayer.getBounds(), { padding: [20, 20] }); }
+                catch (err) { console.warn('Failed to fit bounds for reparcellization preview', err); }
             }
+            state.hasFitBounds = true;
         }
 
         // Building-footprint guide on top of the plots (outlines guide the layout).
@@ -4694,14 +4672,22 @@
             state.algorithm = 'manual';
         }
         state.totalArea = computeFeatureArea(superParcel);
-        buildModalStructure();
-        initMap();
+        const session = buildModalStructure();
+        if (!session || !initMap()) {
+            session?.close?.();
+            state.session = null;
+            state.modal = null;
+            state.map = null;
+            return false;
+        }
         await refreshPreview();
         // Manual IS the node/edge system — there are not two manual modes, one with handles and
         // one without. Draw-plot and split-with-line are tools used inside it.
         if (state.algorithm === 'manual' || state.algorithm === 'amend') toggleNodeEditing(true);
         // Baseline for "did anything change?" — taken AFTER the opening layout is generated, so
         // simply opening and closing is never treated as unsaved work.
+        state.session?.fitFeature?.(state.superParcel, { maxZoom: 21 });
+        state.hasFitBounds = true;
         state.openSignature = layoutSignature();
         if (state.historyCtl) state.historyCtl.clear();
         updateUndoAffordance();

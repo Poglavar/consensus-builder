@@ -640,7 +640,10 @@
         if (Array.isArray(draftOrParcelIds)) return prepareParcelSelection(draftOrParcelIds);
         const draft = draftOrParcelIds || {};
         const originalIds = (draft.fields?.selectedParcelIds || []).map(String);
-        const footprint = draft.editorPayload?.structureProposal?.geometry
+        const authoredBuildingSite = draft.sourceProposalId
+            && ['buildings', 'row', 'parcelBased', 'single'].includes(draft.adapterKey || draft.goal)
+            ? draft.fields?.site : null;
+        const footprint = authoredBuildingSite || draft.editorPayload?.structureProposal?.geometry
             || draft.editorPayload?.definition?.polygon
             || draft.editorPayload?.plan?.poolGeometry
             || draft.editorPayload?.geometry
@@ -1016,20 +1019,26 @@
             },
             async openDesignEditor(draft) {
                 const context = clone(draft.editorPayload?.context || {});
+                const typology = draft.editorPayload?.typology || key;
+                const savedBuildingEdit = Boolean(draft.sourceProposalId);
+                const authoredSite = draft.fields?.site || null;
+                if (savedBuildingEdit && !siteDraftApi().isPolygonal(authoredSite)) {
+                    throw new Error(global.i18n?.t?.('onMapEditor.missingSite') || 'This saved building has no valid authored site boundary, so its geometry cannot be edited safely.');
+                }
                 const selection = await prepareProposalDraftParcelSelection(draft);
                 if (!selection.ids.length) throw new Error('The source parcels are not available in this city view.');
                 context.parcelIds = selection.ids;
                 global.pendingBuildingProposalContext = context;
                 if (typeof global.setPendingBuildingProposalContext === 'function') global.setPendingBuildingProposalContext(context, { fromDraft: true });
-                const typology = draft.editorPayload?.typology || key;
                 const features = context.buildings?.length ? context.buildings : [context.buildingFeature].filter(Boolean);
                 if (typology === 'single' && typeof global.openSingleBuildingForParcels === 'function') {
                     const opened = await global.openSingleBuildingForParcels({
                         blockName: context.blockName,
                         parcelIds: selection.ids,
                         initialBuildings: features,
+                        site: authoredSite,
                         initialGroundTreatment: context.groundSurface?.treatment || null,
-                    initialTakeWholeParcels: context.takeWholeParcels === true
+                        initialTakeWholeParcels: context.takeWholeParcels === true
                     });
                     return opened !== false;
                 }
@@ -1038,18 +1047,19 @@
                         blockName: context.blockName,
                         parcelIds: selection.ids,
                         initialParameters: context.parameters || null,
+                        site: authoredSite,
                         initialFeature: features[0] || null
                     });
                     return opened !== false;
                 }
                 if (typology === 'parcelBased' && typeof global.openParcelBasedForParcels === 'function') {
-                    const opened = await global.openParcelBasedForParcels({ blockName: context.blockName, parcelIds: selection.ids, initialParameters: context.parameters || null });
+                    const opened = await global.openParcelBasedForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: authoredSite, initialParameters: context.parameters || null });
                     return opened !== false;
                 }
                 if (typeof global.openUrbanRuleForParcels === 'function') {
                     const seed = typeof global.buildBlockifySeed === 'function' ? global.buildBlockifySeed(context) : context.parameters;
-                    global.openUrbanRuleForParcels({ blockName: context.blockName, parcelIds: selection.ids, initialState: seed || null });
-                    return true;
+                    const opened = await global.openUrbanRuleForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: authoredSite, initialState: seed || null });
+                    return opened !== false;
                 }
                 return false;
             },
@@ -1327,6 +1337,7 @@
     }
 
     async function openProposalDraftDesign(draftOrId) {
+        if (global.OnMapEditor?.isActive?.()) return false;
         const draft = typeof draftOrId === 'string'
             ? global.proposalDraftStore?.getDraft(draftOrId)
             : draftOrId;

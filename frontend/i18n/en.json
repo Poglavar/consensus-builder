@@ -1,4 +1,11 @@
 {
+  "onMapEditor": {
+    "missingSite": "This saved building has no valid authored site boundary, so its geometry cannot be edited safely.",
+    "cancel": "Cancel",
+    "view": "View",
+    "mapView": "2D map",
+    "modelView": "3D model"
+  },
     "optionalTools": {
         "loadFailed": "Could not load this tool. Please try again."
     },
@@ -3119,6 +3126,7 @@
     },
     "blockify": {
         "modal": {
+            "mapHint": "Edit plots and boundaries on the map; use the panel to review ownership and shares.",
             "title": "Urban rule",
             "closeAria": "Close blockify modal",
             "generating": "Generating building…",
@@ -4892,6 +4900,14 @@
         }
     },
     "structureEditor": {
+    "titleLake": "Lake boundary editor",
+    "instructionsLake": "Drag boundary points to reshape the lake. Tap an edge to add a point.",
+    "lakeBoundaryHint": "The shore and water update with the outline.",
+    "hintLake": "Select a boundary point to move or delete it.",
+    "lakeInvalid": "A lake boundary must form one connected area. Adjust the outline and try again.",
+    "lakeVertexTitle": "Drag to reshape the lake boundary",
+    "lakeDeleteVertexTitle": "Delete this boundary point",
+    "lakeUndoTitle": "Undo lake boundary edit",
         "ariaLabel": "Structure geometry editor",
         "titlePark": "Park editor",
         "titleSquare": "Square editor",

@@ -1,57 +1,12 @@
-/* Purpose: compact map toolbar for editing park and square furniture geometry. A docked editor on
-   the --cb-z-editor rung; its tools are .btn toggles (the chosen one aria-pressed), its close a
-   close-circle-btn and Save design the one .btn-primary (css/primitives.css). */
-.structure-geometry-editor {
-    position: fixed;
-    z-index: var(--cb-z-editor);
-    right: max(18px, env(safe-area-inset-right));
-    bottom: max(18px, env(safe-area-inset-bottom));
-    display: none;
-    width: min(560px, calc(100vw - 36px));
-    color: var(--cb-text);
-    background: var(--cb-glass);
-    border: 1px solid var(--cb-line-glass);
-    border-radius: var(--cb-radius-lg);
-    box-shadow: var(--cb-shadow-lg);
-    backdrop-filter: blur(12px);
-}
-
-.structure-geometry-editor.is-open {
-    display: block;
-}
-
-.structure-geometry-editor header,
-.structure-geometry-editor footer {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 14px;
-}
-
-.structure-geometry-editor header {
-    border-bottom: 1px solid var(--cb-line);
-}
-
-.structure-geometry-editor header div {
+/* Park, square and lake tools inside the shared floating map editor. */
+.structure-geometry-tools {
     display: grid;
-    gap: 2px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--cb-space-2);
+    padding-block: var(--cb-space-2);
 }
-
-.structure-geometry-editor header small,
-.structure-geometry-editor footer > span {
-    color: var(--cb-text-muted);
-    font-size: 12px;
-}
-
-.structure-geometry-tools,
-.structure-geometry-options {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    padding: 11px 14px 0;
-    overflow-x: auto;
-}
+.structure-geometry-options { margin: var(--cb-space-2) 0; }
+.structure-geometry-tools .btn { min-width: 0; white-space: normal; }
 
 .structure-geometry-tools .btn {
     flex: 0 0 auto;
@@ -72,11 +27,6 @@
 
 .structure-geometry-options input[type='range'] {
     width: 170px;
-}
-
-.structure-geometry-editor footer div {
-    display: flex;
-    gap: 8px;
 }
 
 .structure-geometry-icon {
@@ -124,17 +74,4 @@
     color: #7c2d12;
     filter: drop-shadow(0 1px 1px #fff);
     font-size: 21px;
-}
-
-@media (max-width: 767.98px) {
-    .structure-geometry-editor {
-        right: 8px;
-        bottom: 8px;
-        width: calc(100vw - 16px);
-    }
-
-    .structure-geometry-editor header small,
-    .structure-geometry-editor footer > span {
-        display: none;
-    }
 }

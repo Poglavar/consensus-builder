@@ -1,4 +1,4 @@
-// Regression tests for live single-building previews entering, updating, and leaving 3D mode.
+// Regression tests for live on-map editor previews entering, updating, and leaving 3D mode.
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
@@ -22,7 +22,7 @@ collectFunctions(ast);
 function group() {
     return {
         children: [],
-        add(...children) { this.children.push(...children); }
+        add(...children) { children.forEach(child => { child.parent = this; this.children.push(child); }); }
     };
 }
 
@@ -36,11 +36,13 @@ function previewHarness() {
     const calls = {
         added: [],
         context: [],
+        modelOptions: [],
         invalidations: 0
     };
     const disposeDraftPreviewChildren = vi.fn(target => { target.children.length = 0; });
-    const addDraftPreviewFeature3D = vi.fn((feature, target, style, kind) => {
+    const addDraftPreviewFeature3D = vi.fn((feature, target, style, kind, options) => {
         calls.added.push({ feature, style, kind });
+        if (options?.isCurrent) calls.modelOptions.push(options);
         target.add({ feature });
     });
     const polygonFeatureToMeshes = vi.fn((feature, material, z, depth) => {
@@ -53,7 +55,7 @@ function previewHarness() {
     });
     const stubs = {
         window: {
-            SingleBuildingMapEditor: editor,
+            OnMapEditor: editor,
             __mapEditLock: mapEditLock,
             proposalDraftStore: { getDraft: () => null }
         },
@@ -74,10 +76,10 @@ function previewHarness() {
     };
     const context = { console, ...stubs };
     const bindings = Object.keys(stubs).map(name => `const ${name}=this.${name};`).join('\n');
-    const names = ['activeSingleBuildingPreviewDetail', 'addSingleBuildingContextPreview3D',
-        'resolvedProposalDraftPreviewDetail', 'rebuildProposalDraftPreview3D', 'handleSingleBuildingPreviewChange',
+    const names = ['activeOnMapEditorPreviewDetail', 'addOnMapEditorContextPreview3D',
+        'resolvedProposalDraftPreviewDetail', 'rebuildProposalDraftPreview3D', 'handleOnMapEditorPreviewChange',
         'mapSelectionBlockedByEditor'];
-    const code = `let isActive=true; let proposalDraftGroup=this.previewGroup; let latestProposalDraftPreviewDetail=null;\n${bindings}\n${names.map(name => declarations.get(name)).join('\n')}\nthis.api={${names.join(',')}};`;
+    const code = `let isActive=true; let proposalDraftGroup=this.previewGroup; let latestProposalDraftPreviewDetail=null; let onMapEditorModelPreviewGeneration=0;\n${bindings}\n${names.map(name => declarations.get(name)).join('\n')}\nthis.api={${names.join(',')}};`;
     context.previewGroup = group();
     vm.runInNewContext(code, context);
     return {
@@ -96,7 +98,7 @@ function cleanupHarness(editorActive) {
     const calls = { proposalClose: 0, blockifyClose: 0, detailHide: 0 };
     const blockifyModal = {};
     const stubs = {
-        window: { SingleBuildingMapEditor: { isActive: () => editorActive } },
+        window: { OnMapEditor: { isActive: () => editorActive } },
         document: { getElementById: () => blockifyModal, querySelectorAll: () => [] },
         hideParcelInfoPanel: vi.fn(), hideProposalDetailsPanel: vi.fn(() => { calls.detailHide += 1; }),
         hideBlockInfo: vi.fn(), hideRoadInfoPanel: vi.fn(), hideRoadAnalysisPanel: vi.fn(),
@@ -110,12 +112,12 @@ function cleanupHarness(editorActive) {
     return { calls, pendingContext, stubs };
 }
 
-describe('three-mode single-building live preview', () => {
+describe('three-mode on-map editor live preview', () => {
     it('keeps the suspended proposal form and parcel context while the building editor is active', () => {
         const active = cleanupHarness(true);
         expect(active.calls.proposalClose).toBe(0);
         expect(active.pendingContext.parcelIds).toEqual(['parcel-77']);
-        expect(active.calls.blockifyClose).toBe(1);
+        expect(active.calls.blockifyClose).toBe(0);
         expect(active.stubs.hideProposalDetailsPanel).toHaveBeenCalledOnce();
 
         const inactive = cleanupHarness(false);
@@ -148,20 +150,55 @@ describe('three-mode single-building live preview', () => {
 
         const movedBuilding = { id: 'moved-building', geometry: { type: 'Polygon', coordinates: [] } };
         harness.editor.getPreview = () => ({ draftPreview: { kind: 'buildings', features: [movedBuilding] }, boundary, groundSurface });
-        harness.api.handleSingleBuildingPreviewChange();
+        harness.api.handleOnMapEditorPreviewChange();
         expect(harness.calls.added.at(-1).feature).toBe(movedBuilding);
         expect(harness.calls.invalidations).toBe(2);
 
         harness.editor.isActive = () => false;
         harness.editor.getPreview = () => null;
-        harness.api.handleSingleBuildingPreviewChange();
+        harness.api.handleOnMapEditorPreviewChange();
         expect(harness.calls.added.slice(-1)[0]).toMatchObject({ feature: { id: 'comparison' }, style: 'draft' });
         expect(harness.calls.added.slice(-2, -1)[0]).toMatchObject({ feature: { id: 'source' }, style: 'source' });
         expect(harness.calls.invalidations).toBe(3);
     });
 
+    it('keeps permitted envelopes and excluded parcels distinct from actual buildout', () => {
+        const harness = previewHarness();
+        const features = [{ id: 'actual-building' }];
+        const envelope = { id: 'permitted-envelope' };
+        const excluded = { id: 'excluded-parcel' };
+        harness.editor.isActive = () => true;
+        harness.editor.getPreview = () => ({ draftPreview: { kind: 'buildings', features }, envelopes: [envelope], excluded: [excluded] });
+        harness.api.rebuildProposalDraftPreview3D();
+        expect(harness.calls.added).toEqual([
+            { feature: envelope, style: 'envelope', kind: 'buildings' },
+            { feature: excluded, style: 'excluded', kind: 'buildings' },
+            { feature: features[0], style: 'draft', kind: 'buildings' }
+        ]);
+    });
+
+    it('invalidates pending uploaded-model loads on preview replacement and editor close', () => {
+        const harness = previewHarness();
+        harness.editor.isActive = () => true;
+        const model = { id: 'uploaded', properties: { modelUrl: '/building.glb' }, geometry: { type: 'Polygon', coordinates: [] } };
+        harness.editor.getPreview = () => ({ draftPreview: { kind: 'buildings', features: [model] } });
+        harness.api.rebuildProposalDraftPreview3D();
+        const first = harness.calls.modelOptions[0].isCurrent;
+        expect(first()).toBe(true);
+
+        harness.api.rebuildProposalDraftPreview3D();
+        const second = harness.calls.modelOptions[1].isCurrent;
+        expect(first()).toBe(false);
+        expect(second()).toBe(true);
+
+        harness.editor.isActive = () => false;
+        harness.editor.getPreview = () => null;
+        harness.api.handleOnMapEditorPreviewChange();
+        expect(second()).toBe(false);
+    });
+
     it('wires the editor lifecycle event and blocks 3D selection through the shared map edit lock', () => {
-        expect(source).toContain("document.addEventListener('single-building-preview-change', handleSingleBuildingPreviewChange);");
+        expect(source).toContain("document.addEventListener('on-map-editor-preview-change', handleOnMapEditorPreviewChange);");
         const clickStart = source.indexOf('function handleParcelClick(evt)');
         const clickBody = source.slice(clickStart, source.indexOf('\n    }', clickStart));
         expect(clickBody).toContain('mapSelectionBlockedByEditor()');

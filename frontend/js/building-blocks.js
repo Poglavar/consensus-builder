@@ -43,11 +43,10 @@ function blockifyFeaturesForBlock(block) {
 }
 // Add blockify modal variables
 let blockifyMap = null;
-// Whether the map has been framed on its block yet. The framing retries until it lands (see
-// fitBlockifyMapToBlock), and stops the moment it does so it can never fight the user's own panning.
-let blockifyMapFitted = false;
-let blockifyMapResizeObserver = null;
+let blockifyModal = null;
 let blockifyParcelLayer = null;
+let blockifyBoundaryLayer = null;
+let blockifyAuthoredSite = null;
 let blockifyBuildingLayer = null;
 let blockifyPieceLayers = [];      // one per constituent parcel
 let blockifyExcludedLayers = [];   // parcels the rule leaves out, drawn hatched
@@ -163,7 +162,7 @@ function refreshBlockifyDensityStats(buildings = null) {
     let stats = null;
     try {
         stats = api.summarizeDensity({
-            parcelFeature: lastSuperparcel,
+            parcelFeature: blockifyDesignBoundary(),
             buildings: candidates,
             turf,
             floorHeightM,
@@ -242,73 +241,25 @@ function getActiveBlockifyBlock() {
     return null;
 }
 
+function normalizeBlockifySite(site) {
+    if (!site || typeof site !== 'object') return null;
+    const feature = site.type === 'Feature'
+        ? deepCloneBuildingFeature(site)
+        : (['Polygon', 'MultiPolygon'].includes(site.type)
+            ? { type: 'Feature', properties: {}, geometry: deepCloneBuildingFeature(site) }
+            : null);
+    return feature && ['Polygon', 'MultiPolygon'].includes(feature.geometry?.type) ? feature : null;
+}
+
+function blockifyDesignBoundary() {
+    return blockifyAuthoredSite?.geometry ? blockifyAuthoredSite : lastSuperparcel;
+}
+
 function describeParcelSelection(ids) {
     if (!Array.isArray(ids) || ids.length === 0) return translateBuildingText('blockify.modal.messages.selectedParcels', 'Selected Parcels');
     if (ids.length === 1) return translateBuildingText('blockify.modal.messages.singleParcelLabel', 'Parcel {{id}}', { id: ids[0] });
     // The shared plural key: Croatian and Serbian need a different form for 2–4 parcels.
     return translateBuildingText('proposals.autoName.parcels', '{{count}} parcels', { count: ids.length });
-}
-
-// --- 3D preview state ---
-let blockify3D = {
-    renderer: null,
-    scene: null,
-    camera: null,
-    controls: null,
-    frameId: null,
-    container: null,
-    originHTRS: null,
-    modelGroup: null,
-    parcelLinesGroup: null,
-    contextGroup: null,
-    resizeHandler: null,
-    hasCenteredOnce: false,
-    anchorLngLat: { lng: 0, lat: 0 }
-};
-
-function loadBlockifyContextBuildings(buildingFeature, anchor) {
-    if (!blockify3D.contextGroup || !window.ContextBuildings3D || !buildingFeature || !buildingFeature.geometry) return;
-    let queryGeom = buildingFeature.geometry;
-    // Prefer the active block's parcels as a stable, bigger query area when available.
-    try {
-        const block = (typeof getActiveBlockifyBlock === 'function') ? getActiveBlockifyBlock() : null;
-        const fc = turf.featureCollection(blockifyFeaturesForBlock(block));
-        if (fc.features.length > 0) {
-            const bbox = turf.bbox(fc);
-            if (bbox && bbox.every(v => isFinite(v))) {
-                const [minX, minY, maxX, maxY] = bbox;
-                queryGeom = {
-                    type: 'Polygon',
-                    coordinates: [[[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY], [minX, minY]]]
-                };
-            }
-        }
-    } catch (_) { }
-
-    const latLngToLocalXY = (lng, lat) => {
-        const xy = projectToLocalMeters(lng, lat, anchor);
-        return xy || [NaN, NaN];
-    };
-    try {
-        window.ContextBuildings3D.loadInto(blockify3D.contextGroup, {
-            geometry: queryGeom,
-            latLngToLocalXY
-        });
-    } catch (e) {
-        console.warn('[building-blocks] context buildings load failed:', e);
-    }
-}
-
-function setBlockify3DAnchor(lng, lat) {
-    const safeLng = Number.isFinite(lng) ? lng : 0;
-    const safeLat = Number.isFinite(lat) ? lat : 0;
-    blockify3D.anchorLngLat = { lng: safeLng, lat: safeLat };
-}
-
-// The ground-metres frame lives in frontend/js/local-frame.js (loaded first). Same formula as
-// before — this is a de-dup, not a behaviour change.
-function projectToLocalMeters(lng, lat, anchor) {
-    return window.LocalFrame.projectToLocalMeters(lng, lat, anchor);
 }
 
 const BLOCKIFY_ALGORITHMS = {
@@ -687,430 +638,6 @@ if (typeof window !== 'undefined') {
     window.markProposedBuildingState = markProposedBuildingState;
 }
 let blockifyDebugLayer = null;
-
-async function ensureThreeForBlockify() {
-    if (typeof THREE !== 'undefined') return true;
-    // THREE comes from index.html's ESM bootstrap — never load a second copy here, an old
-    // UMD build would clobber the r184 global for the whole app.
-    if (typeof window.whenThreeReady === 'function') await window.whenThreeReady();
-    return typeof THREE !== 'undefined';
-}
-
-// --- 3D helper functions ---
-
-function refitBlockifyCamera(bboxOverride) {
-    try {
-        if (!blockify3D || !blockify3D.camera || !blockify3D.controls) return;
-        const camera = blockify3D.camera;
-        const controls = blockify3D.controls;
-        let bbox = bboxOverride || null;
-        if (!bbox) {
-            if (blockify3D.modelGroup) {
-                bbox = new THREE.Box3().setFromObject(blockify3D.modelGroup);
-            }
-        }
-        if (!bbox || bbox.isEmpty()) return;
-        const size = bbox.getSize(new THREE.Vector3());
-        const center = bbox.getCenter(new THREE.Vector3());
-        controls.target.copy(center);
-        const maxDim = Math.max(size.x, size.y, size.z, 1);
-        const fov = camera.fov * (Math.PI / 180);
-        const minDist = 50;
-        const dist = Math.max(minDist, (maxDim / 2) / Math.tan(fov / 2) * 1.3);
-        camera.near = Math.max(0.1, dist / 100);
-        camera.far = Math.max(2000, dist * 40);
-        camera.updateProjectionMatrix();
-        camera.position.set(center.x + dist, center.y + dist, center.z + dist);
-        camera.lookAt(center);
-    } catch (err) {
-        console.warn('[3D] refitBlockifyCamera failed', err);
-    }
-}
-
-function stringToColor(str) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    let color = '#';
-    for (let i = 0; i < 3; i++) {
-        let value = (hash >> (i * 8)) & 0xFF;
-        color += ('00' + value.toString(16)).substr(-2);
-    }
-    return color;
-}
-
-function buildExtrudedMeshes(geometry, depth, material, roofMaterial = null, anchor = null) {
-    const meshes = [];
-    const polygons = [];
-    if (!geometry) return meshes;
-    if (geometry.type === 'Polygon') {
-        polygons.push(geometry.coordinates);
-    } else if (geometry.type === 'MultiPolygon') {
-        polygons.push(...geometry.coordinates);
-    }
-
-    // Use provided anchor (block-level) for consistent alignment
-    const safeAnchor = anchor && typeof anchor === 'object' ? anchor : { lng: 0, lat: 0 };
-    const toFlat = (coord) => {
-        if (!Array.isArray(coord) || coord.length < 2) return null;
-        const projected = projectToLocalMeters(coord[0], coord[1], safeAnchor);
-        if (!projected || projected.some(v => !isFinite(v))) return null;
-        return projected;
-    };
-
-    polygons.forEach((rings, polyIdx) => {
-        if (!Array.isArray(rings) || rings.length === 0) return;
-
-        const flatOuter = (rings[0] || []).map(toFlat).filter(Boolean);
-        if (flatOuter.length < 3) return;
-        const flatHoles = rings.slice(1).map(ring => ring.map(toFlat).filter(Boolean)).filter(h => h.length >= 3);
-        const shape = new THREE.Shape();
-        flatOuter.forEach(([x, y], idx) => {
-            if (idx === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
-        });
-        flatHoles.forEach(hole => {
-            const holePath = new THREE.Path();
-            hole.forEach(([x, y], idx) => {
-                if (idx === 0) holePath.moveTo(x, y); else holePath.lineTo(x, y);
-            });
-            shape.holes.push(holePath);
-        });
-
-        try {
-            const extrudeSettings = { depth, bevelEnabled: false, steps: 1 };
-            const extrudeGeom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-            meshes.push(new THREE.Mesh(extrudeGeom, material));
-
-            const roofGeom = new THREE.ShapeGeometry(shape);
-            roofGeom.translate(0, 0, depth);
-            const roofMat = roofMaterial || material;
-            meshes.push(new THREE.Mesh(roofGeom, roofMat));
-        } catch (e) {
-            console.warn('[3D] Failed to extrude polygon', polyIdx, e);
-        }
-    });
-    return meshes;
-}
-
-// --- Simplified 3D rendering (override legacy) ---
-function initBlockify3D(block) {
-    // Legacy entrypoint now delegates to the simplified renderer
-    initBlockify3DSimple();
-}
-
-function initBlockify3DSimple() {
-    const container = document.getElementById('blockify-3d');
-    if (!container) return;
-    if (!container.style.minHeight) container.style.minHeight = '260px';
-    if (!container.style.height) container.style.height = '260px';
-
-    if (typeof THREE === 'undefined') {
-        // three.js loads on first use. The building was computed before it arrived, so the init
-        // that follows the load starts with an empty scene: push the current massing again, or the
-        // preview stays blank until a slider moves (it did, on every first open).
-        ensureThreeForBlockify().then(ok => {
-            if (!ok) return;
-            initBlockify3DSimple();
-            if (generatedBuildingFeature) {
-                try {
-                    updateBlockify3DScene(blockBuildOut.length
-                        ? blockBuildOut.concat(blockIneligibleGhosts())
-                        : generatedBuildingFeature);
-                } catch (e) { console.warn('3D update after three.js load failed', e); }
-            }
-        });
-        return;
-    }
-
-    try { if (blockify3D.frameId) cancelAnimationFrame(blockify3D.frameId); } catch (_) { }
-    try { if (blockify3D.controls && blockify3D.controls.dispose) blockify3D.controls.dispose(); } catch (_) { }
-    try { if (blockify3D.resizeHandler) window.removeEventListener('resize', blockify3D.resizeHandler); } catch (_) { }
-    try { if (blockify3D.renderer) { blockify3D.renderer.dispose(); if (blockify3D.renderer.forceContextLoss) blockify3D.renderer.forceContextLoss(); } } catch (_) { }
-    try { container.innerHTML = ''; } catch (_) { }
-
-    const width = Math.max(1, container.clientWidth || 600);
-    const height = Math.max(1, container.clientHeight || 300);
-
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf7f9fb);
-
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 5000);
-    camera.up.set(0, 0, 1);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    container.appendChild(renderer.domElement);
-    renderer.domElement.style.touchAction = 'none';
-    renderer.domElement.style.cursor = 'grab';
-
-    const OrbitControlsCtor = THREE.OrbitControls || (typeof window !== 'undefined' ? window.OrbitControls : null);
-    const controls = OrbitControlsCtor ? new OrbitControlsCtor(camera, renderer.domElement) : { update: () => { }, dispose: () => { } };
-    if (controls.enableDamping !== undefined) {
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.08;
-        controls.enablePan = true;
-    }
-
-    // ×π: three r155+ dropped the implicit π factor legacy lighting applied.
-    const amb = new THREE.AmbientLight(0xffffff, 0.9 * Math.PI);
-    const dir = new THREE.DirectionalLight(0xffffff, 0.7 * Math.PI);
-    dir.position.set(300, 300, 500);
-    scene.add(amb);
-    scene.add(dir);
-
-    const grid = new THREE.GridHelper(500, 20, 0xcccccc, 0xeeeeee);
-    grid.rotation.x = Math.PI / 2;
-    grid.position.z = 0;
-    scene.add(grid);
-
-    // Context buildings (existing neighbours) sit underneath the proposal as
-    // ghost reference geometry. Kept out of modelGroup so the camera fit ignores them.
-    const contextGroup = new THREE.Group();
-    scene.add(contextGroup);
-
-    // Parcels group for outlines
-    const parcelLinesGroup = new THREE.Group();
-    scene.add(parcelLinesGroup);
-
-    const modelGroup = new THREE.Group();
-    scene.add(modelGroup);
-
-    function handleResize() {
-        const w = container.clientWidth || width;
-        const h = container.clientHeight || height;
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-        renderer.setSize(w, h);
-    }
-    window.addEventListener('resize', handleResize);
-
-    function animate() {
-        controls.update();
-        renderer.render(scene, camera);
-        blockify3D.frameId = requestAnimationFrame(animate);
-    }
-    animate();
-
-    blockify3D.renderer = renderer;
-    blockify3D.scene = scene;
-    blockify3D.camera = camera;
-    blockify3D.controls = controls;
-    blockify3D.container = container;
-    blockify3D.modelGroup = modelGroup;
-    blockify3D.parcelLinesGroup = parcelLinesGroup;
-    blockify3D.contextGroup = contextGroup;
-    blockify3D.originHTRS = [0, 0];
-    blockify3D.resizeHandler = handleResize;
-}
-
-function updateBlockify3DScene(buildingFeatureOrFeatures) {
-    // Accepts a single Feature (freeform/manual mode) or an array of Features with per-building
-    // properties.height (existing-buildings mode). An empty array clears the proposal meshes.
-    const features = Array.isArray(buildingFeatureOrFeatures)
-        ? buildingFeatureOrFeatures.filter(f => f && f.geometry)
-        : (buildingFeatureOrFeatures && buildingFeatureOrFeatures.geometry ? [buildingFeatureOrFeatures] : []);
-    if (!Array.isArray(buildingFeatureOrFeatures) && !features.length) return;
-    if (typeof THREE === 'undefined') return;
-    if (!blockify3D || !blockify3D.renderer) {
-        initBlockify3DSimple();
-    }
-    if (!blockify3D || !blockify3D.modelGroup || !blockify3D.scene) return;
-
-    const prevCamPos = blockify3D.camera ? blockify3D.camera.position.clone() : null;
-    const prevTarget = blockify3D.controls && blockify3D.controls.target ? blockify3D.controls.target.clone() : null;
-
-    const group = blockify3D.modelGroup;
-    // clear
-    for (let i = group.children.length - 1; i >= 0; i--) {
-        const ch = group.children[i];
-        if (ch.geometry) ch.geometry.dispose();
-        if (ch.material) ch.material.dispose();
-        group.remove(ch);
-    }
-
-    if (!features.length) return; // scene stays cleared (e.g. no buildings left to raise)
-
-    let fallbackHeightMeters = Number.isFinite(currentBuildingHeight) ? currentBuildingHeight : DEFAULT_BUILDING_HEIGHT;
-    fallbackHeightMeters = Math.max(3, Math.min(80, Math.round(fallbackHeightMeters))) || 20;
-
-    // Compute anchor from active block parcels or building footprint
-    let anchor = blockify3D.anchorLngLat;
-    try {
-        const activeBlock = getActiveBlockifyBlock();
-        const coords = blockifyFeaturesForBlock(activeBlock).flatMap(feature => feature.geometry?.coordinates || []);
-        let sx = 0, sy = 0, c = 0;
-        const pushCoord = (pair) => {
-            if (!Array.isArray(pair)) return;
-            const lng = Number(pair[0]);
-            const lat = Number(pair[1]);
-            if (!isFinite(lng) || !isFinite(lat)) return;
-            sx += lng; sy += lat; c += 1;
-        };
-        coords.forEach(poly => {
-            if (Array.isArray(poly)) {
-                poly.forEach(ring => {
-                    if (Array.isArray(ring)) {
-                        ring.forEach(pushCoord);
-                    }
-                });
-            }
-        });
-        if (c > 0) {
-            anchor = { lng: sx / c, lat: sy / c };
-        } else {
-            // Fallback: compute anchor from building feature coordinates
-            // Handle both Polygon and MultiPolygon
-            const geom = features[0].geometry;
-            let firstCoord = null;
-            if (geom.type === 'Polygon' && geom.coordinates?.[0]?.[0]) {
-                firstCoord = geom.coordinates[0][0];
-            } else if (geom.type === 'MultiPolygon' && geom.coordinates?.[0]?.[0]?.[0]) {
-                firstCoord = geom.coordinates[0][0][0];
-            }
-            if (Array.isArray(firstCoord) && firstCoord.length >= 2) {
-                anchor = { lng: Number(firstCoord[0]) || 0, lat: Number(firstCoord[1]) || 0 };
-            }
-        }
-        setBlockify3DAnchor(anchor.lng, anchor.lat);
-    } catch (_) { }
-
-    loadBlockifyContextBuildings(features[0], anchor);
-
-    const mat = new THREE.MeshPhongMaterial({
-        color: 0x1e3a8a, // deeper blue
-        emissive: 0x0a1f33,
-        transparent: false,
-        opacity: 1,
-        depthTest: true,
-        depthWrite: true,
-        side: THREE.DoubleSide
-    });
-    const roofMat = new THREE.MeshPhongMaterial({
-        color: 0x1d4ed8, // roof blue
-        emissive: 0x0a1f33,
-        transparent: false,
-        opacity: 1,
-        depthTest: true,
-        depthWrite: true,
-        side: THREE.DoubleSide
-    });
-
-    // Each parcel's building gets its own shade, so a block reads as a street of separately owned
-    // buildings rather than one extruded ring. Materials are cached per colour, not per building.
-    const shadeMaterials = new Map();
-    const materialsFor = (color) => {
-        if (!color) return [mat, roofMat];
-        if (!shadeMaterials.has(color)) {
-            const base = new THREE.Color(color);
-            const wall = new THREE.MeshPhongMaterial({
-                color: base, emissive: 0x111111, depthTest: true, depthWrite: true, side: THREE.DoubleSide
-            });
-            const roof = new THREE.MeshPhongMaterial({
-                color: base.clone().multiplyScalar(0.85), emissive: 0x111111, depthTest: true, depthWrite: true, side: THREE.DoubleSide
-            });
-            shadeMaterials.set(color, [wall, roof]);
-        }
-        return shadeMaterials.get(color);
-    };
-
-    // A plot the rule leaves out still shows what it would carry — as a grey, see-through volume,
-    // unmistakably not one of the buildings. Merge it with a neighbour or buy it and this is what
-    // stands there; as it is, nothing does.
-    const ineligibleMat = new THREE.MeshPhongMaterial({
-        color: 0x9aa0a6, emissive: 0x1a1a1a, transparent: true, opacity: 0.28,
-        depthTest: true, depthWrite: false, side: THREE.DoubleSide
-    });
-
-    const meshes = [];
-    features.forEach(feature => {
-        const props = feature.properties || {};
-        // A feature carries its own height when it is a raised existing building or a per-parcel
-        // piece of a block. A plain freeform outline does not: its height slider moves
-        // currentBuildingHeight without regenerating the feature, so properties.height goes stale
-        // and the fallback is what keeps the slider live.
-        const propH = Number(props.height);
-        const ownHeight = (props.basedOnExisting || props.parcelId) && Number.isFinite(propH) && propH > 0;
-        const heightMeters = ownHeight ? Math.min(propH, 400) : fallbackHeightMeters;
-        const [wallMat, roofMatForPiece] = props.ineligible
-            ? [ineligibleMat, ineligibleMat]
-            : materialsFor(props.color);
-        meshes.push(...buildExtrudedMeshes(feature.geometry, heightMeters, wallMat, roofMatForPiece, anchor));
-    });
-    if (!meshes.length) {
-        console.warn('[3D] No meshes built for building features');
-        return;
-    }
-    meshes.forEach(mesh => {
-        mesh.position.z = 0.05;
-        group.add(mesh);
-        try {
-            const edges = new THREE.EdgesGeometry(mesh.geometry);
-            const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000, depthTest: true }));
-            group.add(line);
-        } catch (_) { }
-    });
-
-    // reset scale before measuring
-    group.scale.set(1, 1, 1);
-
-    let bbox = new THREE.Box3().setFromObject(group);
-    const size = bbox.getSize(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z, 0);
-    if (maxDim < 5) {
-        const scale = 50 / Math.max(maxDim, 0.0001);
-        group.scale.set(scale, scale, scale);
-        bbox = new THREE.Box3().setFromObject(group);
-    }
-
-    // Draw parcel outlines in 3D
-    if (blockify3D.parcelLinesGroup) {
-        const linesGroup = blockify3D.parcelLinesGroup;
-        for (let i = linesGroup.children.length - 1; i >= 0; i--) {
-            const ch = linesGroup.children[i];
-            if (ch.geometry) ch.geometry.dispose();
-            linesGroup.remove(ch);
-        }
-        const parcels = blockifyFeaturesForBlock(getActiveBlockifyBlock());
-        const lineMat = new THREE.LineBasicMaterial({ color: 0x555555, linewidth: 1, depthTest: true });
-        parcels.forEach(feature => {
-            const geom = feature.geometry;
-            if (!geom) return;
-            const addRing = (coords) => {
-                const pts = coords
-                    .map(([lng, lat]) => {
-                        const projected = projectToLocalMeters(lng, lat, anchor);
-                        if (!projected || projected.some(v => !isFinite(v))) return null;
-                        return new THREE.Vector3(projected[0], projected[1], 0.02);
-                    })
-                    .filter(Boolean);
-                if (pts.length < 3) return;
-                const g = new THREE.BufferGeometry().setFromPoints([...pts, pts[0]]);
-                const line = new THREE.Line(g, lineMat);
-                linesGroup.add(line);
-            };
-            if (geom.type === 'Polygon') {
-                geom.coordinates.forEach(ring => addRing(ring));
-            } else if (geom.type === 'MultiPolygon') {
-                geom.coordinates.forEach(poly => poly.forEach(ring => addRing(ring)));
-            }
-        });
-    }
-
-    if (!bbox.isEmpty()) {
-        if (!blockify3D.hasCenteredOnce) {
-            refitBlockifyCamera(bbox);
-            blockify3D.hasCenteredOnce = true;
-        } else if (prevCamPos && prevTarget) {
-            try {
-                blockify3D.camera.position.copy(prevCamPos);
-                blockify3D.controls.target.copy(prevTarget);
-                blockify3D.camera.updateProjectionMatrix();
-            } catch (_) { }
-        }
-    }
-}
 
 function deepCloneBuildingFeature(raw) {
     if (!raw || typeof raw !== 'object') return null;
@@ -1599,7 +1126,7 @@ function showBlockifyModal() {
     const block = getActiveBlockifyBlock();
     if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
         updateStatus(translateBuildingText('status.messages.no_block_selected', 'No block selected'));
-        return;
+        return false;
     }
 
     // Store the block globally for the modal
@@ -1608,21 +1135,10 @@ function showBlockifyModal() {
 
     console.log('[Blockify] showBlockifyModal called for block:', blockLabel, 'with', block.parcels.length, 'parcels');
 
-    // Create modal elements
-    if (!document.getElementById('blockify-modal')) {
-        // The editor wears the dialog primitive (css/primitives.css: overlay, card, header, body,
-        // footer, the phone bottom sheet); css/modals.css only lays out its map, 3D preview and
-        // sidebar inside it.
-        const modalDiv = document.createElement('div');
-        modalDiv.id = 'blockify-modal';
-        modalDiv.className = 'cb-dialog-overlay';
-
+    // Build the specialized controls, then let the shared editor own the floating panel and map.
+    if (!blockifyModal) {
         const container = document.createElement('div');
         container.id = 'blockify-container';
-        container.className = 'cb-dialog cb-dialog--xl';
-        container.setAttribute('role', 'dialog');
-        container.setAttribute('aria-modal', 'true');
-        container.setAttribute('aria-labelledby', 'blockify-title');
 
         const algorithmKeys = Object.keys(BLOCKIFY_ALGORITHMS);
         const defaultAlgo = algorithmKeys[0];
@@ -1638,15 +1154,6 @@ function showBlockifyModal() {
         const defaultDesc = getBlockifyAlgorithmDescription(defaultAlgo);
 
         container.innerHTML = `
-            <div id="blockify-header" class="cb-dialog__header">
-                <h2 id="blockify-title" class="cb-dialog__title" data-i18n-key="blockify.modal.title">Urban rule</h2>
-                <button id="blockify-close" type="button" class="close-circle-btn close-circle-btn--lg" data-i18n-key="blockify.modal.closeAria" data-i18n-attr="aria-label" aria-label="Close blockify modal">×</button>
-            </div>
-            <div id="blockify-body" class="cb-dialog__body">
-            <div id="blockify-main">
-                <div id="blockify-map"></div>
-                <div id="blockify-3d"></div>
-            </div>
             <div id="blockify-sidebar">
                 <div class="parameter-group blockify-freeform-only">
                     <label for="algorithm-select" data-i18n-key="blockify.modal.algorithmLabel">Algorithm:</label>
@@ -1802,23 +1309,55 @@ function showBlockifyModal() {
                     <p class="blockify-existing-only" style="display:none" data-i18n-key="blockify.modal.existing.helper">Each existing building is raised by the additional floors, up to the maximum height. Buildings already at or above the maximum stay unchanged.</p>
                 </div>
             </div>
-        </div>
         <div id="blockify-controls" class="cb-dialog__footer">
             <div id="blockify-info" data-i18n-attr="text" role="status" aria-live="polite"></div>
             <div id="blockify-buttons">
+                <button type="button" class="btn" id="btn-blockify-cancel" data-i18n-key="onMapEditor.cancel" data-i18n-attr="text">Cancel</button>
                 <button type="button" class="btn" id="btn-blockify-regenerate" hidden data-i18n-key="blockify.modal.regenerate" data-i18n-attr="text">Regenerate</button>
                 <button type="button" class="btn btn-primary" id="btn-blockify-done" data-i18n-key="blockify.modal.done" data-i18n-attr="text">Done</button>
             </div>
         </div>
         `;
 
-        modalDiv.appendChild(container);
-        document.body.appendChild(modalDiv);
-
+        const content = container.querySelector('#blockify-sidebar');
+        const footer = container.querySelector('#blockify-controls');
+        footer.classList.remove('cb-dialog__footer');
+        // Keep the frequently adjusted dimensions visible; secondary reference material expands
+        // in place without taking the map away from the design.
+        for (const [selector, label] of [
+            ['#blockify-density-stats', translateBuildingText('densityStats.title', 'Geometry statistics')],
+            ['.blockify-freeform-only', translateBuildingText('blockify.modal.algorithmLabel', 'Algorithm')]
+        ]) {
+            const reference = content.querySelector(selector);
+            if (!reference) continue;
+            const details = document.createElement('details');
+            const summary = document.createElement('summary');
+            summary.textContent = label;
+            details.appendChild(summary);
+            details.appendChild(reference);
+            content.appendChild(details);
+        }
+        blockifyModal = window.OnMapEditor?.open({
+            owner: 'urban-rule',
+            id: 'blockify-modal',
+            title: translateBuildingText('blockify.modal.title', 'Urban rule'),
+            content,
+            footer,
+            modes: ['2d', 'model'],
+            wide: true,
+            hints: {
+                '2d': translateBuildingText('blockify.modal.helper.adjust', 'Adjust parameters using the sliders to modify the building shape.'),
+                model: translateBuildingText('blockify.modal.helper.width', 'Building width is the thickness of the building from outer to inner edge.')
+            },
+            onCancel: requestCloseBlockifyModal,
+            onModeChange: mode => { if (mode === '2d' && blockifyMode === 'manual') renderManualPolygonEditor(); }
+        });
+        if (!blockifyModal) return false;
+        blockifyMap = blockifyModal.map;
         setBlockifyInfo('blockify.modal.generating', 'Generating building...');
         try {
             if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.applyTranslations === 'function') {
-                window.i18n.applyTranslations(container);
+                window.i18n.applyTranslations(blockifyModal.root);
             }
         } catch (_) { }
 
@@ -1827,14 +1366,14 @@ function showBlockifyModal() {
         document.dispatchEvent(new CustomEvent('urbanRuleModalOpened'));
 
         // Add event listeners
-        document.getElementById('blockify-close').addEventListener('click', requestCloseBlockifyModal);
-        document.addEventListener('keydown', handleBlockifyKeydown);
         blockifyDesignChanges().start(document);
         const doneButton = document.getElementById('btn-blockify-done');
         if (doneButton) {
             doneButton.addEventListener('click', saveBlockifyDesignForProposal);
             doneButton.disabled = true;
         }
+        const cancelButton = document.getElementById('btn-blockify-cancel');
+        if (cancelButton) cancelButton.addEventListener('click', requestCloseBlockifyModal);
 
         // Add slider event listeners
         document.getElementById('setback-slider').addEventListener('input', function (e) {
@@ -1883,9 +1422,11 @@ function showBlockifyModal() {
                     }
                     refreshBlockPieceHeights();
                     syncBlockMinHeightSlider();
-                    updateBlockify3DScene(blockBuildOut.length
-                        ? blockBuildOut.concat(blockIneligibleGhosts())
-                        : generatedBuildingFeature);
+                    publishBlockifyPreview({
+                        exampleBuildings: blockBuildOut,
+                        envelopes: blockMassingPieces,
+                        excluded: blockExcludedParcels.map(entry => entry?.feature).filter(feature => feature?.geometry)
+                    });
                     // The draft carries its own copy of the feature and it is what gets published
                     // (serializeProposal reads editorPayload.context.buildings). Nothing regenerates
                     // the footprint here, so without this autosave a height-only edit was dropped.
@@ -2048,36 +1589,10 @@ function showBlockifyModal() {
             });
         }
 
-        // No outside-click close: a stray click on the backdrop would throw the design away.
-        // The editor is left only via the X (discard, after confirming) or Done (save).
-        // Prevent the 3D canvas from being occluded by map interactions
-        const threeDiv = document.getElementById('blockify-3d');
-        if (threeDiv) {
-            threeDiv.style.pointerEvents = 'auto';
-            console.log('[Blockify] 3D div found and styled:', threeDiv);
-        } else {
-            console.warn('[Blockify] 3D div NOT found after modal creation');
-        }
-    }
-
-    // Initialize the blockify map if needed
-    if (!blockifyMap) {
-        blockifyMap = L.map('blockify-map', {
-            zoomControl: true,
-            dragging: true,
-            scrollWheelZoom: true
-        });
-
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(blockifyMap);
     }
 
     // Display the block on the map
-    blockifyMapFitted = false;
     displayBlockOnMap(block);
-    watchBlockifyMapUntilFitted();
 
     // Reset parameter values
     currentSetback = DEFAULT_SETBACK;
@@ -2129,6 +1644,7 @@ function showBlockifyModal() {
         }
         generateBuildingInModal();
     }, 500); // Small delay to ensure the map is fully initialized
+    return !!blockifyModal;
 }
 
 // Push a saved blockify design back into the editor's module state. Anything the seed omits keeps
@@ -2252,44 +1768,30 @@ async function requestCloseBlockifyModal() {
     closeBlockifyModal();
 }
 
-// Escape closes the editor exactly like the X does (discard, after confirming).
-function handleBlockifyKeydown(event) {
-    if (event.key !== 'Escape') return;
-    if (!document.getElementById('blockify-modal')) return;
-    event.preventDefault();
-    requestCloseBlockifyModal();
-}
-
 // Tear the blockify modal down. This is pure teardown: the design is committed (or not) by the
 // caller — "Done" saves first, X/Esc discards the design session first.
 function closeBlockifyModal(options = {}) {
     const { preservePending = false } = options;
-    document.removeEventListener('keydown', handleBlockifyKeydown);
+    const hadModal = !!blockifyModal;
     if (blockifyDesignChangeTracker) blockifyDesignChangeTracker.stop();
     blockifyPendingVertexActionIndex = null;
     clearGapWingHandles();
-    if (blockifyMapResizeObserver) {
-        try { blockifyMapResizeObserver.disconnect(); } catch (_) { }
-        blockifyMapResizeObserver = null;
-    }
-    blockifyMapFitted = false;
-    // Remove the map instance properly
     if (blockifyMap) {
-        if (blockifyParcelLayer) {
-            blockifyMap.removeLayer(blockifyParcelLayer);
-            blockifyParcelLayer = null;
-        }
-        if (blockifyBuildingLayer) {
-            blockifyMap.removeLayer(blockifyBuildingLayer);
-            blockifyBuildingLayer = null;
-        }
-        if (blockifyFootprintLayer) {
-            blockifyMap.removeLayer(blockifyFootprintLayer);
-            blockifyFootprintLayer = null;
-        }
-        blockifyMap.remove();
-        blockifyMap = null;
+        [blockifyParcelLayer, blockifyBoundaryLayer, blockifyBuildingLayer, blockifyFootprintLayer, blockifyDebugLayer,
+            ...blockifyPieceLayers, ...blockifyExcludedLayers].forEach(layer => {
+            if (layer && blockifyMap.hasLayer(layer)) blockifyMap.removeLayer(layer);
+        });
     }
+    blockifyParcelLayer = null;
+    blockifyBoundaryLayer = null;
+    blockifyBuildingLayer = null;
+    blockifyFootprintLayer = null;
+    blockifyDebugLayer = null;
+    blockifyPieceLayers = [];
+    blockifyExcludedLayers = [];
+    blockifyModal?.close();
+    blockifyModal = null;
+    blockifyMap = null;
 
     // Clear the generated building
     generatedBuildingFeature = null;
@@ -2298,43 +1800,11 @@ function closeBlockifyModal(options = {}) {
     existingFootprintsPromise = null;
     blockifyBlock = null;
     blockifyBlockNameOverride = null;
+    blockifyAuthoredSite = null;
 
-    // Dispose 3D resources
-    try {
-        if (blockify3D && blockify3D.renderer) {
-            if (blockify3D.frameId) cancelAnimationFrame(blockify3D.frameId);
-            if (blockify3D.controls && blockify3D.controls.dispose) blockify3D.controls.dispose();
-            try { if (blockify3D.renderer && blockify3D.renderer.forceContextLoss) blockify3D.renderer.forceContextLoss(); } catch (_) { }
-            if (blockify3D.renderer && blockify3D.renderer.dispose) blockify3D.renderer.dispose();
-            if (blockify3D.resizeHandler) window.removeEventListener('resize', blockify3D.resizeHandler);
-            try { if (blockify3D.container) blockify3D.container.innerHTML = ''; } catch (_) { }
-        }
-        blockify3D = { renderer: null, scene: null, camera: null, controls: null, frameId: null, container: null, originHTRS: null, modelGroup: null, contextGroup: null, resizeHandler: null };
-    } catch (_) { }
-
-    // Remove the modal from DOM
-    const modal = document.getElementById('blockify-modal');
-    if (modal) {
-        // Remove all event listeners
-        const closeBtn = document.getElementById('blockify-close');
-        const doneBtn = document.getElementById('btn-blockify-done');
-        const setbackSlider = document.getElementById('setback-slider');
-        const widthSlider = document.getElementById('width-slider');
-
-        if (closeBtn) closeBtn.removeEventListener('click', requestCloseBlockifyModal);
-        if (doneBtn) doneBtn.removeEventListener('click', saveBlockifyDesignForProposal);
-        if (setbackSlider) setbackSlider.removeEventListener('input', null);
-        if (widthSlider) widthSlider.removeEventListener('input', null);
-
-        // Remove the modal
-        modal.remove();
+    if (hadModal) {
         document.dispatchEvent(new CustomEvent('blockifyModalClosed'));
         document.dispatchEvent(new CustomEvent('urbanRuleModalClosed'));
-    }
-
-    // Force a reflow of the main map
-    if (map) {
-        map.invalidateSize();
     }
 
     // Reset parameters to defaults
@@ -2355,7 +1825,7 @@ function closeBlockifyModal(options = {}) {
     }
 }
 
-// Display the block on the blockify map
+// Display the selected block on the shared application map.
 function displayBlockOnMap(block) {
     console.log('[Blockify] displayBlockOnMap called with block:', block);
     // Clear existing layers
@@ -2383,6 +1853,7 @@ function displayBlockOnMap(block) {
 
     // Add the parcels to the map
     blockifyParcelLayer = L.geoJSON(featureCollection, {
+        pane: blockifyModal?.pane,
         style: {
             fillColor: 'red',
             fillOpacity: 0.2,
@@ -2391,102 +1862,15 @@ function displayBlockOnMap(block) {
         }
     }).addTo(blockifyMap);
 
-    // Frame the map on the block — but only once the panel has a size to frame it in.
-    fitBlockifyMapToBlock();
-
-    // Initialize 3D preview after map bounds fit
-    try { initBlockify3DSimple(); } catch (e) { console.warn('3D init failed', e); }
-}
-
-// Frame the editor's 2D map on its block.
-//
-// The editor opening on a map of the whole world — the block an orange speck near the equator — is
-// a fit to bounds that span the globe, which happens when one parcel of the block carries a
-// coordinate that is not a WGS84 degree (see blockify-map-fit.js for the measurements). Such bounds
-// are refused and reported here rather than zoomed to; retrying them would only hide the cause.
-//
-// The other refusal is a panel that has not been laid out. That one is worth waiting for: the fit
-// ran once, at open, and the map was never told its size changed, so a map created against a
-// collapsed panel kept that size for the rest of the session — which also puts every click and every
-// dragged vertex at the wrong latlng.
-function fitBlockifyMapToBlock() {
-    const fit = (typeof window !== 'undefined') ? window.__blockifyMapFit : null;
-    if (!blockifyMap || !blockifyParcelLayer || !fit) return false;
-
-    let bounds = null;
-    try { bounds = blockifyParcelLayer.getBounds(); } catch (_) { bounds = null; }
-    if (!bounds || !bounds.isValid || !bounds.isValid()) {
-        console.error('[Blockify] the block has no usable bounds — the map cannot be framed on it');
-        return false;
+    if (blockifyAuthoredSite?.geometry) {
+        blockifyBoundaryLayer = L.geoJSON(blockifyAuthoredSite, {
+            pane: blockifyModal?.pane,
+            interactive: false,
+            style: { color: '#6d28d9', weight: 3, opacity: 0.9, fillOpacity: 0, dashArray: '8 5' }
+        }).addTo(blockifyMap);
     }
-
-    // Ask the CONTAINER, not the map. Leaflet measures once and caches, and `invalidateSize` refuses
-    // to re-measure while the map has no view yet — so a map created against a zero-height panel
-    // reports zero for ever, and every later fit is decided by a size that stopped being true. That
-    // deadlock is why the world view never recovered on its own.
-    const container = (typeof blockifyMap.getContainer === 'function') ? blockifyMap.getContainer() : null;
-    const verdict = fit.fitReadiness({
-        width: container ? container.clientWidth : 0,
-        height: container ? container.clientHeight : 0,
-        bounds: { west: bounds.getWest(), south: bounds.getSouth(), east: bounds.getEast(), north: bounds.getNorth() }
-    });
-
-    if (verdict.ok) {
-        // A provisional view first when there is none: it is what lets invalidateSize re-measure,
-        // so fitBounds computes the zoom from the panel's real size.
-        let hasView = true;
-        try { blockifyMap.getCenter(); } catch (_) { hasView = false; }
-        if (!hasView) blockifyMap.setView(bounds.getCenter(), 16, { animate: false });
-        try { blockifyMap.invalidateSize({ animate: false }); } catch (_) { }
-        blockifyMap.fitBounds(bounds, { padding: [50, 50] });
-        blockifyMapFitted = true;
-        return true;
-    }
-    if (verdict.reason === 'span-too-large') {
-        console.error('[Blockify] refusing to frame the map: this "block" spans '
-            + `${verdict.spanDeg.toFixed(3)}° — its parcels are not in WGS84 degrees`,
-            { parcelIds: (getActiveBlockifyBlock() || {}).parcelIds || null });
-        return false;
-    }
-    console.warn('[Blockify] map panel is not laid out yet '
-        + `(${container ? container.clientWidth : 0}×${container ? container.clientHeight : 0} px)`
-        + ' — framing the block once it is');
-    return false;
-}
-
-// Keep asking until a fit lands: a frame-by-frame retry for the layout that is a moment late, and a
-// ResizeObserver for the panel that resizes later (or never, until the window does). Both stop at
-// the first successful fit, so they can never fight the user's own panning and zooming.
-function watchBlockifyMapUntilFitted() {
-    if (!blockifyMap) return;
-    // Reopening without a close would otherwise leave the previous observer watching a dead map.
-    if (blockifyMapResizeObserver) {
-        try { blockifyMapResizeObserver.disconnect(); } catch (_) { }
-        blockifyMapResizeObserver = null;
-    }
-    let frames = 0;
-    const tryFit = () => {
-        if (blockifyMapFitted || !blockifyMap) return;
-        if (fitBlockifyMapToBlock()) return;
-        frames += 1;
-        if (frames > 60) return; // ~1 s of layout is as long as this is worth waiting
-        requestAnimationFrame(tryFit);
-    };
-    requestAnimationFrame(tryFit);
-
-    const container = document.getElementById('blockify-map');
-    if (!container || typeof ResizeObserver !== 'function') return;
-    blockifyMapResizeObserver = new ResizeObserver(() => {
-        if (!blockifyMap) return;
-        if (blockifyMapFitted) {
-            // Framed already: the map only needs to be told its size changed, or every click and
-            // every dragged vertex lands at the wrong latlng.
-            try { blockifyMap.invalidateSize({ animate: false }); } catch (_) { }
-            return;
-        }
-        fitBlockifyMapToBlock();
-    });
-    blockifyMapResizeObserver.observe(container);
+    const initialBoundary = blockifyAuthoredSite?.geometry ? blockifyAuthoredSite : featureCollection;
+    if (blockifyAuthoredSite?.geometry || split.usable.length) blockifyModal?.fitFeature(initialBoundary, { maxZoom: 19 });
 }
 
 // Function to generate building in the modal only
@@ -2727,9 +2111,6 @@ function generateBuildingInModal() {
     setBlockifyInfo('blockify.modal.generating', 'Generating building...');
 
     try {
-        // Ensure 3D is initialized (in case init earlier was skipped)
-        try { if (!blockify3D || !blockify3D.renderer) initBlockify3DSimple(); } catch (_) { }
-
         // Clear previous debug overlays
         if (blockifyDebugLayer && blockifyMap) {
             blockifyMap.removeLayer(blockifyDebugLayer);
@@ -2738,7 +2119,10 @@ function generateBuildingInModal() {
         // Create a superparcel by merging all parcels in the block (robust)
         console.log(`Creating superparcel from ${block.parcels.length} parcels`);
         const parcelFeatures = blockifyFeaturesForBlock(block);
-        let superparcel = robustUnion(parcelFeatures);
+        // The authored site remains the design boundary after it has been cut into child plots.
+        // Keep those plots as the owner/constraint inputs below, but don't silently shrink a
+        // copied site's building rule to the union of its produced children.
+        let superparcel = blockifyAuthoredSite || robustUnion(parcelFeatures);
 
         if (!superparcel) {
             throw new Error('Failed to create superparcel');
@@ -2789,7 +2173,7 @@ function generateBuildingInModal() {
                     const a = [inc.minEdgePair[0][1], inc.minEdgePair[0][0]];
                     const b = [inc.minEdgePair[1][1], inc.minEdgePair[1][0]];
                     blockifyDebugLayer = L.featureGroup().addTo(blockifyMap);
-                    L.polyline([a, b], { color: '#ff0000', weight: 5, opacity: 0.8 }).addTo(blockifyDebugLayer)
+                    L.polyline([a, b], { pane: blockifyModal?.pane, color: '#ff0000', weight: 5, opacity: 0.8 }).addTo(blockifyDebugLayer)
                         .bindTooltip(`Narrow edge: ${(inc.minEdgeValue || 0).toFixed(2)} m`, { permanent: false });
                 } catch (_) { }
             }
@@ -3326,6 +2710,19 @@ function refreshBlockPieceHeights() {
     refreshBlockifyDensityStats(blockMassingPieces);
 }
 
+function publishBlockifyPreview({ exampleBuildings = [], envelopes = [], excluded = [] } = {}) {
+    if (!blockifyModal) return;
+    blockifyModal.setPreview({
+        draftPreview: {
+            kind: 'buildings',
+            features: (Array.isArray(exampleBuildings) ? exampleBuildings : []).filter(feature => feature?.geometry)
+        },
+        boundary: blockifyDesignBoundary()?.geometry ? blockifyDesignBoundary() : null,
+        envelopes: blockRuleKind === 'exact' ? [] : (Array.isArray(envelopes) ? envelopes : []).filter(feature => feature?.geometry),
+        excluded: (Array.isArray(excluded) ? excluded : []).filter(feature => feature?.geometry)
+    });
+}
+
 function displayBuildingInModal(buildingFeature) {
     [blockifyBuildingLayer, blockifyPieceLayers, blockifyExcludedLayers].forEach(entry => {
         (Array.isArray(entry) ? entry : [entry]).forEach(layer => {
@@ -3338,6 +2735,7 @@ function displayBuildingInModal(buildingFeature) {
 
     if (!buildingFeature) {
         refreshBlockifyDensityStats([]);
+        publishBlockifyPreview({ exampleBuildings: [], envelopes: [], excluded: [] });
         return;
     }
     if (buildingFeature.geometry.type === 'MultiLineString' || buildingFeature.geometry.type === 'MultiPolygon' || buildingFeature.geometry.type === 'Polygon') {
@@ -3346,6 +2744,7 @@ function displayBuildingInModal(buildingFeature) {
         // The massing outline stays as the block's overall shape; the per-parcel buildings are
         // drawn inside it so the ownership fabric is visible while the outline is being edited.
         blockifyBuildingLayer = L.geoJSON(buildingFeature, {
+            pane: blockifyModal?.pane,
             style: { color: '#007bff', weight: 4, opacity: 1, fillOpacity: blockMassingPieces.length ? 0 : 0.2 }
         }).addTo(blockifyMap);
 
@@ -3355,6 +2754,7 @@ function displayBuildingInModal(buildingFeature) {
             // What the rule COMPELS is drawn solid; what it merely permits is drawn lighter. Two
             // tones, so the mandatory building line is visible as a line and not just a number.
             const layer = L.geoJSON(piece, {
+                pane: blockifyModal?.pane,
                 style: { fillColor: color, fillOpacity: compelled ? 0.35 : 0.75, color: '#33465c', weight: 1 }
             }).addTo(blockifyMap);
             const height = piece.properties?.height || 0;
@@ -3363,6 +2763,7 @@ function displayBuildingInModal(buildingFeature) {
 
             if (compelled) {
                 blockifyPieceLayers.push(L.geoJSON({ type: 'Feature', properties: {}, geometry: compelled }, {
+                    pane: blockifyModal?.pane,
                     style: { fillColor: color, fillOpacity: 0.85, color: '#1b2a3a', weight: 1.5 }
                 }).addTo(blockifyMap));
             }
@@ -3380,6 +2781,7 @@ function displayBuildingInModal(buildingFeature) {
         blockExcludedParcels.forEach(entry => {
             if (!entry || !entry.feature) return;
             const layer = L.geoJSON(entry.feature, {
+                pane: blockifyModal?.pane,
                 style: { fillColor: '#b0453a', fillOpacity: 0.16, color: '#b0453a', weight: 1.5, dashArray: '2, 5' }
             }).addTo(blockifyMap);
             layer.bindTooltip(blockExclusionReason(entry.status), { direction: 'center' });
@@ -3387,17 +2789,18 @@ function displayBuildingInModal(buildingFeature) {
 
             if (!entry.wouldBe) return;
             const ghost = L.geoJSON({ type: 'Feature', properties: {}, geometry: entry.wouldBe }, {
+                pane: blockifyModal?.pane,
                 style: { fillColor: '#8a8f98', fillOpacity: 0.28, color: '#4b5563', weight: 2, dashArray: '6, 4' }
             }).addTo(blockifyMap);
             ghost.bindTooltip(blockExclusionReason(entry.status), { direction: 'center' });
             blockifyExcludedLayers.push(ghost);
         });
 
-        try {
-            updateBlockify3DScene(blockBuildOut.length
-                ? blockBuildOut.concat(blockIneligibleGhosts())
-                : buildingFeature);
-        } catch (e) { console.warn('3D update failed', e); }
+        publishBlockifyPreview({
+            exampleBuildings: blockBuildOut,
+            envelopes: blockMassingPieces,
+            excluded: blockExcludedParcels.map(entry => entry?.feature).filter(feature => feature?.geometry)
+        });
         reportBlockRuleRange();
         refreshBlockifyDensityStats(blockMassingPieces.length ? blockMassingPieces : [buildingFeature]);
         autosaveBlockifyDraft(blockMassingPieces.length ? blockMassingPieces : buildingFeature);
@@ -3482,24 +2885,6 @@ function syncBlockMinHeightSlider() {
     if (label) label.textContent = CbFormat.formatNumber(blockMinHeightM, { maxFractionDigits: 1, minFractionDigits: 1 });
 }
 
-// The block's massing over the plots the rule leaves out, as features the 3D preview draws grey and
-// see-through. They are never saved and never counted as buildings — they are the answer to "what
-// would be here if this plot could take it", which is the difference between a plot that is not
-// buildable AS IT STANDS and a hole in the block.
-function blockIneligibleGhosts() {
-    const rule = currentBlockRule();
-    const height = (rule && Number.isFinite(rule.maxHeightM) && rule.maxHeightM > 0)
-        ? rule.maxHeightM
-        : (Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT);
-    return blockExcludedParcels
-        .filter(entry => entry && entry.wouldBe)
-        .map(entry => ({
-            type: 'Feature',
-            properties: { parcelId: entry.parcelId, height, ineligible: true, exclusionStatus: entry.status },
-            geometry: entry.wouldBe
-        }));
-}
-
 function blockExclusionReason(status) {
     if (status === 'below-min-plot') {
         return translateBuildingText('blockify.modal.messages.excludedBelowMinPlot',
@@ -3547,6 +2932,7 @@ function renderGapWingHandles() {
         try { coord = turf.along(ringLine, frac * ringLenM, { units: 'meters' }).geometry.coordinates; }
         catch (_) { return; }
         const marker = L.marker([coord[1], coord[0]], {
+            pane: blockifyModal?.handlePane,
             draggable: true,
             title: kind === 'gap'
                 ? translateBuildingText('blockify.modal.handles.gap', 'Drag to move gap')
@@ -3668,6 +3054,7 @@ function getBackendBaseForBlockify() {
 // that one is reduced to the single largest polygon for ring generation, which would drop
 // buildings on disjoint parcels.
 function getBlockQueryGeometry() {
+    if (blockifyAuthoredSite?.geometry) return blockifyAuthoredSite.geometry;
     const block = getActiveBlockifyBlock();
     if (!block || !Array.isArray(block.parcels) || !block.parcels.length) return null;
     try {
@@ -3825,6 +3212,7 @@ function renderExistingFootprintsLayer() {
         type: 'FeatureCollection',
         features: list.map(f => ({ type: 'Feature', properties: {}, geometry: f.geometry }))
     }, {
+        pane: blockifyModal?.pane,
         style: { color: '#555555', weight: 1.5, dashArray: '4 3', fillOpacity: 0.08 },
         interactive: false
     }).addTo(blockifyMap);
@@ -3905,11 +3293,12 @@ function displayBuildingsInModal(features) {
         blockifyBuildingLayer = null;
     }
     if (!Array.isArray(features) || !features.length) {
-        try { updateBlockify3DScene([]); } catch (_) { } // clear the 3D proposal meshes
         refreshBlockifyDensityStats([]);
+        publishBlockifyPreview({ exampleBuildings: [], envelopes: [], excluded: [] });
         return;
     }
     blockifyBuildingLayer = L.geoJSON({ type: 'FeatureCollection', features }, {
+        pane: blockifyModal?.pane,
         style: {
             color: '#007bff',
             weight: 4,
@@ -3917,7 +3306,7 @@ function displayBuildingsInModal(features) {
             fillOpacity: 0.2
         }
     }).addTo(blockifyMap);
-    try { updateBlockify3DScene(features); } catch (e) { console.warn('3D update failed', e); }
+    publishBlockifyPreview({ exampleBuildings: features, envelopes: [], excluded: [] });
     refreshBlockifyDensityStats(features);
     autosaveBlockifyDraft(features);
 }
@@ -3940,7 +3329,7 @@ function generateManualBuilding() {
         if (!outerBuilding || !outerBuilding.geometry) throw new Error('Invalid manual outline');
         // Guarantee the outline stays inside the parcel (an edge between two inside-vertices can still
         // cross outside a concave parcel). No auto-simplify here — the user controls the vertices.
-        outerBuilding = simplifyAndClipOutline(outerBuilding, 0, lastSuperparcel);
+        outerBuilding = simplifyAndClipOutline(outerBuilding, 0, blockifyDesignBoundary());
 
         const cleanOuter = ensureClosed(outerBuilding.geometry.coordinates[0]);
         const width = Number(currentBuildingWidth) || DEFAULT_BUILDING_WIDTH;
@@ -4007,8 +3396,10 @@ function renderManualPolygonEditor() {
         map: blockifyMap,
         leaflet: L,
         turf,
+        pane: blockifyModal?.pane,
+        handlePane: blockifyModal?.handlePane,
         ring: manualOuterRing,
-        boundary: () => lastSuperparcel,
+        boundary: () => blockifyDesignBoundary(),
         initialSelectedVertexIndex,
         showInitialDeleteAction: Number.isInteger(initialSelectedVertexIndex),
         vertexTitle: translateBuildingText('blockify.modal.manual.vertex', 'Drag to reshape'),
@@ -4127,20 +3518,21 @@ function blockifySelectedBlock() {
 
 // `initialState` (optional) restores a previously-saved design instead of the defaults — see
 // applyBlockifySeedState. Used by "Copy into new proposal" to reopen a fork's original building.
-function openUrbanRuleForParcels({ blockName, parcelIds, initialState = null }) {
+function openUrbanRuleForParcels({ blockName, parcelIds, initialState = null, site = null }) {
     const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
     if (!ids.length) {
         updateStatus(translateBuildingText('status.messages.select_parcels_before_launching_the_buildings_tool', 'Select parcels before launching the buildings tool.'));
-        return;
+        return false;
     }
     blockifySeedState = initialState || null;
+    blockifyAuthoredSite = normalizeBlockifySite(site);
     const resolve = typeof window.resolveDesignParcelFeature === 'function'
         ? window.resolveDesignParcelFeature
         : id => window.LiveParcelFabric?.get?.(id);
     const features = ids.map(id => resolve(id)).filter(Boolean);
     if (features.length !== ids.length) {
         updateStatus(translateBuildingText('status.messages.could_not_resolve_parcel_data_for_the_selected_parcels', 'Could not resolve parcel data for the selected parcels.'));
-        return;
+        return false;
     }
 
     blockifyBlock = {
@@ -4150,7 +3542,7 @@ function openUrbanRuleForParcels({ blockName, parcelIds, initialState = null }) 
         polygon: null
     };
     blockifyBlockNameOverride = blockName || describeParcelSelection(ids);
-    showBlockifyModal();
+    return showBlockifyModal();
 }
 
 window.openUrbanRuleForParcels = openUrbanRuleForParcels;
@@ -4162,7 +3554,7 @@ window.openUrbanRuleForParcels = openUrbanRuleForParcels;
 async function confirmBlockSizeIfOversized(block) {
     try {
         if (typeof ProposalWarnings === 'undefined' || typeof turf === 'undefined') return true;
-        let outline = (lastSuperparcel && lastSuperparcel.geometry) ? lastSuperparcel : null;
+        let outline = blockifyDesignBoundary()?.geometry ? blockifyDesignBoundary() : null;
         if (!outline && block && Array.isArray(block.parcels)) {
             outline = robustUnion(blockifyFeaturesForBlock(block));
         }

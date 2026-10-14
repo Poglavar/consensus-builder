@@ -1,5 +1,5 @@
 // Unit tests for proposal-to-draft editor adapters and exact geometry round trips.
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
@@ -14,6 +14,8 @@ Object.assign(globalThis, require('../../frontend/js/corridor-profile.js'));
 globalThis.turf = require('@turf/turf');
 const turf = globalThis.turf;
 const listUiSource = readFileSync(new URL('../../frontend/js/proposals/list-ui.js', import.meta.url), 'utf8');
+const proposalEditorShellSource = readFileSync(new URL('../../frontend/js/proposal-editor-shell.js', import.meta.url), 'utf8');
+const proposalEditorAdaptersSource = readFileSync(new URL('../../frontend/js/proposal-editor-adapters.js', import.meta.url), 'utf8');
 
 const {
     CREATABLE_PROPOSAL_GOALS,
@@ -31,6 +33,49 @@ function loadListUiFunction(name, values) {
     const context = vm.createContext(values);
     vm.runInContext(`${listUiSource.slice(declaration.start, declaration.end)}\nthis.launcher = ${name};`, context);
     return context.launcher;
+}
+
+function loadProposalEditorShellFunction(name, values, prefix = '') {
+    const ast = parse(proposalEditorShellSource, { sourceType: 'script' });
+    let declaration = null;
+    (function find(node) {
+        if (!node || typeof node !== 'object' || declaration) return;
+        if (node.type === 'FunctionDeclaration' && node.id?.name === name) {
+            declaration = node;
+            return;
+        }
+        Object.keys(node).forEach(key => {
+            if (['loc', 'start', 'end'].includes(key)) return;
+            const value = node[key];
+            if (Array.isArray(value)) value.forEach(find); else find(value);
+        });
+    })(ast);
+    expect(declaration, `${name} declaration exists`).toBeTruthy();
+    const context = vm.createContext(values);
+    vm.runInContext(`${prefix}\n${proposalEditorShellSource.slice(declaration.start, declaration.end)}\nthis.fn = ${name};`, context);
+    context.fn.context = context;
+    return context.fn;
+}
+
+function loadProposalEditorAdaptersFunction(name, values) {
+    const ast = parse(proposalEditorAdaptersSource, { sourceType: 'script' });
+    let declaration = null;
+    (function find(node) {
+        if (!node || typeof node !== 'object' || declaration) return;
+        if (node.type === 'FunctionDeclaration' && node.id?.name === name) {
+            declaration = node;
+            return;
+        }
+        Object.keys(node).forEach(key => {
+            if (['loc', 'start', 'end'].includes(key)) return;
+            const value = node[key];
+            if (Array.isArray(value)) value.forEach(find); else find(value);
+        });
+    })(ast);
+    expect(declaration, `${name} declaration exists`).toBeTruthy();
+    const context = vm.createContext(values);
+    vm.runInContext(`${proposalEditorAdaptersSource.slice(declaration.start, declaration.end)}\nthis.fn = ${name};`, context);
+    return context.fn;
 }
 
 describe('fresh building editor launch results', () => {
@@ -329,14 +374,19 @@ describe('building proposal adapters', () => {
     it.each([
         ['single', 'openSingleBuildingForParcels'],
         ['row', 'openRowHouseForParcels'],
-        ['parcelBased', 'openParcelBasedForParcels']
+        ['parcelBased', 'openParcelBasedForParcels'],
+        ['block', 'openUrbanRuleForParcels']
     ])('waits for the %s editor and propagates a cancelled open', async (typology, openName) => {
-        const adapter = buildBuildingAdapter(typology);
+        const adapter = buildBuildingAdapter(typology === 'block' ? 'buildings' : typology);
         const source = {
             ...proposal,
             proposalId: `building-open-${typology}`,
             goal: typology === 'single' ? 'single' : 'buildings',
             typologyType: typology,
+            site: {
+                type: 'Feature', properties: { authored: true },
+                geometry: { type: 'MultiPolygon', coordinates: [[manualRing], [[[15.92, 45.8], [15.93, 45.8], [15.93, 45.81], [15.92, 45.81], [15.92, 45.8]]] ] }
+            },
             buildingProposal: {
                 ...proposal.buildingProposal,
                 typologyType: typology,
@@ -359,11 +409,12 @@ describe('building proposal adapters', () => {
         const started = new Promise(resolve => { openStarted = resolve; });
         let resolveOpen;
         const pendingOpen = new Promise(resolve => { resolveOpen = resolve; });
+        let openOptions = null;
         try {
             globalThis.LiveParcelFabric = { get: id => id === 'p1' ? feature : null };
             globalThis.ParcelPresenter = { getLayer: id => id === 'p1' ? { id } : null };
             globalThis.multiParcelSelection = null;
-            globalThis[openName] = () => { openStarted(); return pendingOpen; };
+            globalThis[openName] = options => { openOptions = options; openStarted(); return pendingOpen; };
 
             const opening = adapter.openDesignEditor(draft);
             await started;
@@ -371,6 +422,7 @@ describe('building proposal adapters', () => {
             opening.then(() => { settled = true; });
             await Promise.resolve();
             expect(settled).toBe(false);
+            expect(openOptions.site).toEqual(source.site);
 
             resolveOpen(false);
             await expect(opening).resolves.toBe(false);
@@ -380,6 +432,40 @@ describe('building proposal adapters', () => {
                 else delete globalThis[name];
             });
         }
+    });
+
+    it.each(['single', 'row', 'parcelBased', 'block'])('refuses a saved %s geometry edit when its authored site boundary is missing', async typology => {
+        const adapter = buildBuildingAdapter(typology === 'block' ? 'buildings' : typology);
+        const source = {
+            ...proposal,
+            proposalId: `building-open-${typology}-without-site`,
+            goal: typology === 'single' ? 'single' : 'buildings', typologyType: typology,
+            buildingProposal: { ...proposal.buildingProposal, typologyType: typology, parameters: { typology } }
+        };
+        const draft = draftFor(adapter, source);
+        draft.previewGeometry = null;
+
+        await expect(adapter.openDesignEditor(draft)).rejects.toThrow(/no valid authored site boundary/);
+    });
+
+    it.each(['single', 'row', 'parcelBased', 'block'])('keeps the authored MultiPolygon site and cadastral anchors for saved %s edits', typology => {
+        const adapter = buildBuildingAdapter(typology === 'block' ? 'buildings' : typology);
+        const site = {
+            type: 'Feature', properties: { authored: true },
+            geometry: { type: 'MultiPolygon', coordinates: [[manualRing], [[[15.92, 45.8], [15.93, 45.8], [15.93, 45.81], [15.92, 45.81], [15.92, 45.8]]] ] }
+        };
+        const source = {
+            ...proposal, proposalId: `building-site-roundtrip-${typology}`,
+            goal: typology === 'single' ? 'single' : 'buildings', typologyType: typology,
+            cadastreParcelIds: ['cadastre-a', 'cadastre-b'], site,
+            buildingProposal: { ...proposal.buildingProposal, typologyType: typology, parameters: { typology } }
+        };
+        const draft = draftFor(adapter, source);
+        draft.editorPayload.context.buildings[0].geometry.coordinates[0][0][0] += 0.001;
+
+        const replacement = adapter.serializeProposal(draft);
+        expect(replacement.site).toEqual(site.geometry);
+        expect(replacement.cadastreParcelIds).toEqual(['cadastre-a', 'cadastre-b']);
     });
 
     it('preserves manual footprints and every editor parameter', () => {
@@ -491,6 +577,112 @@ describe('building proposal adapters', () => {
             editable: false,
             reason: 'This building proposal does not contain valid footprint geometry.'
         });
+    });
+});
+
+describe('saved single-building geometry edits', () => {
+    it('does not replace source selection anchors with transient live child parcels', () => {
+        const draft = {
+            id: 'saved-single-edit', sourceProposalId: 'proposal-1', adapterKey: 'single', goal: 'single',
+            editorPayload: { typology: 'single', context: {} }, fields: { selectedParcelIds: ['cadastre-a', 'cadastre-b'] }
+        };
+        let savedPatch = null;
+        const store = {
+            updateDraft: (_id, patch) => { savedPatch = patch; return draft; },
+            validateDraft: () => draft
+        };
+        const sync = loadProposalEditorShellFunction('syncActiveProposalDraftFromEditor', {
+            global: { proposalDraftStore: store },
+            getActiveProposalDesignDraft: () => draft,
+            ensureShell: () => ({ classList: { contains: () => false } }),
+            editorState: {}, renderProposalDraftComparison() {}
+        });
+
+        sync('building', {
+            parcelIds: ['rebased-live-child-1', 'rebased-live-child-2'],
+            parameters: { typology: 'single' },
+            buildings: [{ type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } }]
+        });
+
+        expect(savedPatch).not.toHaveProperty('fields');
+        expect(savedPatch.editorPayload.context.parcelIds).toEqual(['rebased-live-child-1', 'rebased-live-child-2']);
+    });
+});
+
+describe('saved lake geometry edits', () => {
+    it('syncs the edited lake boundary and regenerated graphics into its active proposal draft', () => {
+        const geometry = { type: 'Polygon', coordinates: [[[0, 0], [2, 0], [2, 1], [0, 1], [0, 0]]] };
+        const graphics = { geometry, shore: { type: 'Polygon', coordinates: [] }, water: { type: 'Polygon', coordinates: [] } };
+        const draft = {
+            id: 'saved-lake-edit', sourceProposalId: 'lake-1', adapterKey: 'lake', goal: 'lake',
+            editorPayload: { structureProposal: { kind: 'lake', geometry, lakeGraphics: { version: 'stale' } } }
+        };
+        let savedPatch = null;
+        const store = {
+            updateDraft: (_id, patch) => { savedPatch = patch; return draft; },
+            validateDraft: () => draft
+        };
+        const sync = loadProposalEditorShellFunction('syncActiveProposalDraftFromEditor', {
+            global: { proposalDraftStore: store },
+            getActiveProposalDesignDraft: () => draft,
+            ensureShell: () => ({ classList: { contains: () => false } }),
+            editorState: {}, renderProposalDraftComparison() {}
+        });
+
+        const result = sync('structure', { structureProposal: { kind: 'lake', geometry, lakeGraphics: graphics } });
+
+        expect(result).toBe(draft);
+        expect(savedPatch.editorPayload.structureProposal).toMatchObject({ kind: 'lake', geometry, lakeGraphics: graphics });
+        expect(savedPatch.previewGeometry).toEqual(geometry);
+    });
+});
+
+describe('geometry draft starters respect an incumbent map editor', () => {
+    it.each([
+        ['startInstantSiteDesign', (start, site) => start('single', site, ['parcel-1'])],
+        ['startSiteSubdivision', (start, site) => start(site)]
+    ])('%s refuses without replacing the active draft or its commit context', async (name, invoke) => {
+        const activeDraft = { id: 'incumbent-draft', sourceProposalId: 'proposal-1' };
+        const createDraft = vi.fn(() => ({ id: 'unexpected-new-draft' }));
+        const openProposalDraftDesign = vi.fn();
+        const global = {
+            OnMapEditor: { isActive: () => true },
+            proposalDraftStore: { activeDraft, createDraft },
+            openProposalDraftDesign
+        };
+        const prefix = `let geometryEditCommitDraftId='incumbent-draft'; this.getCommitDraftId=()=>geometryEditCommitDraftId;`;
+        const start = loadProposalEditorShellFunction(name, { global }, prefix);
+        const site = { site: { type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } } };
+
+        expect(await invoke(start, site)).toBe(false);
+        expect(global.proposalDraftStore.activeDraft).toBe(activeDraft);
+        expect(createDraft).not.toHaveBeenCalled();
+        expect(openProposalDraftDesign).not.toHaveBeenCalled();
+        expect(start.context.getCommitDraftId()).toBe('incumbent-draft');
+    });
+
+    it('refuses direct draft-design opens before resuming or activating their draft', async () => {
+        const incumbentDraft = { id: 'incumbent-draft' };
+        const getDraft = vi.fn(() => ({ id: 'second-draft', adapterKey: 'single' }));
+        const openDesignEditor = vi.fn();
+        const beginSession = vi.fn();
+        const finishSession = vi.fn();
+        const registry = { get: vi.fn(() => ({ openDesignEditor })) };
+        const global = {
+            OnMapEditor: { isActive: () => true },
+            proposalDraftStore: { getDraft, activeDraft: incumbentDraft },
+            beginProposalDraftDesignSession: beginSession,
+            finishProposalDraftDesignSession: finishSession
+        };
+        const open = loadProposalEditorAdaptersFunction('openProposalDraftDesign', { global, registry });
+
+        expect(await open('second-draft')).toBe(false);
+        expect(global.proposalDraftStore.activeDraft).toBe(incumbentDraft);
+        expect(getDraft).not.toHaveBeenCalled();
+        expect(registry.get).not.toHaveBeenCalled();
+        expect(beginSession).not.toHaveBeenCalled();
+        expect(finishSession).not.toHaveBeenCalled();
+        expect(openDesignEditor).not.toHaveBeenCalled();
     });
 });
 

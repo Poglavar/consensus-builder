@@ -1116,6 +1116,8 @@
 
     function drawLakeDecorations(group, lakeFeature, corridorCutters = null) {
         if (!lakeFeature || !lakeFeature.geometry) return;
+        if (window.structureGeometryEditorEditingProposalId
+            && String(lakeFeature.properties?.proposalId || '') === String(window.structureGeometryEditorEditingProposalId)) return;
         if (!ensureLakeGraphics(lakeFeature)) return;
         const graphics = lakeFeature.properties && lakeFeature.properties.lakeGraphics;
         if (!graphics || !graphics.shore || !graphics.water) return;

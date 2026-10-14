@@ -88,6 +88,23 @@ describe('land-readjustment UI state', () => {
         expect(source).toContain('data-reparcel-cancel-draw>${t(\'reparcellization.modal.drawCancel\', \'Cancel\')} (C)</button>');
         expect(source).toContain('const action = resolveDrawShortcut({');
     });
+
+    it('uses the shared map editor session and never destroys the app map on close', () => {
+        const bodyOf = (name, next) => source.slice(source.indexOf(`function ${name}(`), source.indexOf(`function ${next}(`));
+        const open = bodyOf('buildModalStructure', 'initMap');
+        const init = bodyOf('initMap', 'formatArea');
+        const destroy = bodyOf('destroyMap', 'layoutSignature');
+        const close = bodyOf('closeModal', 'buildModalStructure');
+
+        expect(open).toContain('window.OnMapEditor?.open?.({');
+        expect(open).toContain("modes: ['2d']");
+        expect(open).toContain('handleEscape: false');
+        expect(init).toContain('state.session?.map || window.map');
+        expect(init).not.toMatch(/\bL\.map\s*\(/);
+        expect(destroy).not.toMatch(/(?:state\.)?map\.remove\s*\(/);
+        expect(close).toContain('state.session?.close?.()');
+        expect(source).not.toContain('L.tileLayer(\'https://{s}.tile.openstreetmap.org');
+    });
 });
 
 // A plot's owner is stored twice — the singular ownerKey/displayName and owners[]. Reading only

@@ -692,7 +692,7 @@
         throw new Error('The cadastral coverage rule (proposal-manager.js) is not loaded.');
     }
 
-    const STATION_EDITOR_PANE = 'transitStationEditorPane';
+    const STATION_EDITOR_PANE = 'onMapEditorPane';
 
     function stationEditorText(key, fallback, params = {}) {
         const fullKey = `stationEditor.${key}`;
@@ -752,23 +752,6 @@
         return next;
     }
 
-    function ensureStationEditorPane() {
-        if (!global.map?.getPane) return;
-        let pane = global.map.getPane(STATION_EDITOR_PANE);
-        if (!pane && global.map.createPane) pane = global.map.createPane(STATION_EDITOR_PANE);
-        if (pane?.style) pane.style.zIndex = '656';
-    }
-
-    function ensureStationEditorPanel() {
-        if (stationEditor?.panel || !global.document?.body) return stationEditor?.panel || null;
-        const panel = global.document.createElement('section');
-        panel.className = 'station-geometry-editor';
-        panel.setAttribute('aria-label', stationEditorText('ariaLabel', 'Station geometry editor'));
-        global.document.body.appendChild(panel);
-        stationEditor.panel = panel;
-        return panel;
-    }
-
     function stationEditorMarkup() {
         const type = stationEditor?.type;
         const spec = specFor(type);
@@ -779,10 +762,7 @@
                 <span class="station-editor-input-with-unit"><input type="number" data-station-editor-height min="${bounds.min}" max="${bounds.max}" step="0.5" value="${stationEditor.platformHeightM}"><span>m</span></span>
             </label>` : '';
         return `
-            <header>
-                <div><strong>${stationEditorText('title', 'Edit station geometry')}</strong><small>${spec?.label || stationEditorText('station', 'Station')}</small></div>
-                <button type="button" class="close-circle-btn" data-station-editor-action="cancel" aria-label="${stationEditorText('close', 'Close')}">×</button>
-            </header>
+            <p class="on-map-editor__hint">${spec?.label || stationEditorText('station', 'Station')}</p>
             <div class="station-editor-body">
                 <p>${stationEditorText('fixedPosition', 'The station centre stays fixed. Rotate the station around it.')}</p>
                 <label class="station-editor-field station-editor-bearing">
@@ -792,10 +772,11 @@
                 </label>
                 ${heightControl}
             </div>
-            <footer>
-                <span>${stationEditorText('hint', 'The map preview updates while you edit.')}</span>
-                <div><button type="button" class="btn" data-station-editor-action="cancel">${stationEditorText('cancel', 'Cancel')}</button><button type="button" class="btn btn-primary" data-station-editor-action="save">${stationEditorText('save', 'Done')}</button></div>
-            </footer>`;
+            <p class="on-map-editor__hint">${stationEditorText('hint', 'The map preview updates while you edit.')}</p>`;
+    }
+
+    function stationEditorFooter() {
+        return `<button type="button" class="btn" data-station-editor-action="cancel">${stationEditorText('cancel', 'Cancel')}</button><button type="button" class="btn btn-primary" data-station-editor-action="save">${stationEditorText('save', 'Done')}</button>`;
     }
 
     function renderStationEditorPreview() {
@@ -876,11 +857,9 @@
     function teardownStationEditor() {
         const previous = stationEditor;
         if (!previous) return null;
-        try { previous.unregisterEscape?.(); } catch (_) { }
         try { previous.panel?.removeEventListener('click', previous.onClick); } catch (_) { }
         try { previous.panel?.removeEventListener('input', previous.onInput); } catch (_) { }
-        try { previous.panel?.classList.remove('is-open'); } catch (_) { }
-        try { previous.panel?.remove(); } catch (_) { }
+        previous.session?.close();
         try { global.map?.removeLayer(previous.layer); } catch (_) { }
         stationEditor = null;
         global.transitStationGeometryEditorActive = false;
@@ -918,13 +897,12 @@
     }
 
     function openStationGeometryEditor(draftOrId) {
-        if (!global.map || !global.L || !global.turf) return false;
+        if (!global.map || !global.L || !global.turf || !global.OnMapEditor?.open || stationEditor) return false;
         const draft = typeof draftOrId === 'string' ? global.proposalDraftStore?.getDraft?.(draftOrId) : draftOrId;
         const structure = draft?.editorPayload?.structureProposal;
         const type = normalizeType(structure?.stationType);
         const center = coordinate(structure?.center);
         if (!draft || (draft.adapterKey || draft.goal) !== 'station' || !type || !center) return false;
-        if (stationEditor) teardownStationEditor();
         const sourceProposalId = draft.sourceProposalId || draft.sourceSnapshot?.proposalId || draft.sourceSnapshot?.id || null;
         stationEditor = {
             draftId: draft.id,
@@ -940,14 +918,17 @@
             onClick: null,
             onKey: null
         };
-        ensureStationEditorPane();
+        const session = global.OnMapEditor.open({
+            owner: 'station-geometry-editor', id: 'station-geometry-editor',
+            title: stationEditorText('title', 'Edit station geometry'),
+            modes: ['2d'], content: stationEditorMarkup(), footer: stationEditorFooter(),
+            onCancel: cancelStationGeometryEditor
+        });
+        if (!session) { stationEditor = null; return false; }
+        stationEditor.session = session;
         stationEditor.layer = global.L.layerGroup().addTo(global.map);
-        const panel = ensureStationEditorPanel();
-        if (!panel) {
-            teardownStationEditor();
-            return false;
-        }
-        panel.innerHTML = stationEditorMarkup();
+        const panel = session.root;
+        stationEditor.panel = panel;
         stationEditor.onInput = event => {
             if (event.target?.matches?.('[data-station-editor-bearing-range]')) updateStationEditorInputs('range');
             else if (event.target?.matches?.('[data-station-editor-bearing]')) updateStationEditorInputs('number');
@@ -960,13 +941,8 @@
         };
         panel.addEventListener('input', stationEditor.onInput);
         panel.addEventListener('click', stationEditor.onClick);
-        stationEditor.unregisterEscape = global.ModalEscape?.register(panel, () => {
-            void cancelStationGeometryEditor();
-        });
-        try { global.hideProposalDetailsPanel?.(true); } catch (_) { }
-        try { global.hideParcelInfoPanel?.(); } catch (_) { }
         global.transitStationGeometryEditorActive = true;
-        panel.classList.add('is-open');
+        session.fitFeature({ type: 'Feature', properties: {}, geometry: structure.geometry }, { maxZoom: 20 });
         updateTransitStationsLayer();
         renderStationEditorPreview();
         return true;

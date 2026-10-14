@@ -23,7 +23,14 @@ function makeClassList() {
     };
 }
 
-function makeEditorHarness(decorations) {
+function makeEditorHarness(decorations, options = {}) {
+    const kind = options.kind || 'park';
+    const geometry = options.geometry || { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] };
+    const draft = {
+        id: 'draft-1', adapterKey: kind, goal: kind, sourceProposalId: 'proposal-1',
+        sourceSnapshot: { proposalId: 'proposal-1' },
+        editorPayload: { structureProposal: { kind, geometry, decorations, lakeGraphics: options.lakeGraphics || null } }
+    };
     const historyInstances = [];
     const mapHandlers = new Map();
     const documentHandlers = new Map();
@@ -134,6 +141,18 @@ function makeEditorHarness(decorations) {
         }
     };
     let savedDecorations = null;
+    let savedPayload = null;
+    let polygonEditorOptions = null;
+    let polygonEditorDestroyed = false;
+    const finishedDrafts = [];
+    const mapEditorSessions = [];
+    const mapEditorOptions = [];
+    const fitFeatures = [];
+    let lockAllowed = options.lockAllowed !== false;
+    const editLock = {
+        claim() { return lockAllowed; },
+        release() {}
+    };
     const context = createContext({
         document, map, L, GeometryEditHistory: historyFactory,
         turf: {
@@ -144,9 +163,35 @@ function makeEditorHarness(decorations) {
             booleanEqual: () => false,
             lineString: coordinates => ({ type: 'Feature', geometry: { type: 'LineString', coordinates } })
         },
-        proposalDraftStore: { getDraft: () => ({ id: 'draft-1', adapterKey: 'park', editorPayload: { structureProposal: { decorations } } }) },
-        syncActiveProposalDraftFromEditor(_section, payload) { savedDecorations = payload.structureProposal.decorations; },
-        __mapEditLock: { claim() {}, release() {} },
+        proposalDraftStore: { getDraft: () => draft },
+        syncActiveProposalDraftFromEditor(_section, payload) {
+            savedPayload = payload;
+            savedDecorations = payload.structureProposal.decorations;
+        },
+        finishProposalDraftDesignSession(id) { finishedDrafts.push(id); },
+        updateStatus(message) { context.lastStatus = message; },
+        buildLakeGraphicsFromGeometry(value) { return { geometry: value, shore: { type: 'Polygon', coordinates: [] }, water: { type: 'Polygon', coordinates: [] }, version: 'fresh' }; },
+        PolygonGeometryEditor: {
+            create(value) {
+                polygonEditorOptions = value;
+                return { destroy() { polygonEditorDestroyed = true; } };
+            }
+        },
+        __mapEditLock: editLock,
+        OnMapEditor: {
+            open(value) {
+                mapEditorOptions.push(value);
+                if (!editLock.claim(value.owner, value.title)) return null;
+                panel.innerHTML = `<header><h2>${value.title}</h2></header>${value.content}${value.footer}`;
+                const session = {
+                    root: panel, pane: 'onMapEditorPane', handlePane: 'onMapEditorHandles',
+                    fitFeature(feature) { fitFeatures.push(feature); },
+                    close() { panel.classList.remove('is-open'); }
+                };
+                mapEditorSessions.push(session);
+                return session;
+            }
+        },
         ProposalSelection: { getKey: () => null },
         parks: [], squares: [],
         console
@@ -156,17 +201,25 @@ function makeEditorHarness(decorations) {
 
     return {
         context, panel, groups, markers, historyInstances, document,
+        draft,
+        get polygonEditorOptions() { return polygonEditorOptions; },
+        get polygonEditorDestroyed() { return polygonEditorDestroyed; },
+        get finishedDrafts() { return finishedDrafts; },
+        get savedPayload() { return savedPayload; },
+        mapEditorOptions, mapEditorSessions, fitFeatures,
         open() {
             return context.openStructureGeometryEditor({
-                id: 'draft-1', adapterKey: 'park', editorPayload: {
-                    structureProposal: {
-                        kind: 'park', geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]},
-                        decorations: JSON.parse(JSON.stringify(decorations))
-                    }
-                }
+                ...draft,
+                editorPayload: { structureProposal: JSON.parse(JSON.stringify(draft.editorPayload.structureProposal)) }
             });
         },
-        save() { panel.fireClick({ action: 'save' }); return savedDecorations; },
+        save() {
+            panel.fireClick({ action: 'save' });
+            return savedPayload?.structureProposal?.kind === 'lake'
+                ? savedPayload
+                : (savedPayload?.structureProposal?.decorations || savedDecorations);
+        },
+        cancel() { panel.fireClick({ action: 'cancel' }); },
         undo() { document.fireKey({ key: 'z', ctrlKey: true, preventDefault() {} }); }
     };
 }
@@ -174,6 +227,49 @@ function makeEditorHarness(decorations) {
 const currentMarkers = harness => harness.groups.at(-1).items.filter(item => item.events && typeof item.fire === 'function');
 
 describe('structure geometry editor history wiring', () => {
+    it('edits and saves a lake boundary with freshly derived graphics', () => {
+        const originalRing = [[0, 0], [1, 0], [1, 1], [0, 1]];
+        const geometry = { type: 'Polygon', coordinates: [[...originalRing, originalRing[0]]] };
+        const harness = makeEditorHarness(null, {
+            kind: 'lake', geometry,
+            lakeGraphics: { geometry, shore: { type: 'Polygon', coordinates: [] }, water: null, version: 'stale' }
+        });
+        const editedRing = [[0, 0], [1.25, 0], [1, 1], [0, 1]];
+
+        expect(harness.open()).toBe(true);
+        expect(harness.panel.innerHTML).toContain('Lake boundary editor');
+        expect(harness.panel.innerHTML).not.toContain('data-tool=');
+        expect(harness.polygonEditorOptions.ring).toEqual([...originalRing, originalRing[0]]);
+        expect(harness.polygonEditorOptions.undoTitle).toBe('Undo lake boundary edit');
+        expect(harness.polygonEditorOptions.onCommit({ ring: editedRing, reason: 'move' })).toBe(true);
+
+        const saved = harness.save().structureProposal;
+        expect(saved.kind).toBe('lake');
+        expect(saved.geometry.coordinates[0]).toEqual([...editedRing, editedRing[0]]);
+        expect(saved.lakeGraphics.version).toBe('fresh');
+        expect(saved.lakeGraphics.geometry).toEqual(saved.geometry);
+        expect(saved).not.toHaveProperty('decorations');
+        expect(harness.polygonEditorDestroyed).toBe(true);
+        expect(harness.finishedDrafts).toEqual(['draft-1']);
+    });
+
+    it('keeps lake boundary edits cancellable and routes undo commits back into the outline', () => {
+        const originalRing = [[0, 0], [1, 0], [1, 1], [0, 1]];
+        const geometry = { type: 'Polygon', coordinates: [[...originalRing, originalRing[0]]] };
+        const harness = makeEditorHarness(null, { kind: 'lake', geometry });
+        const movedRing = [[0, 0], [1.2, 0], [1, 1], [0, 1]];
+
+        expect(harness.open()).toBe(true);
+        harness.polygonEditorOptions.onCommit({ ring: movedRing, reason: 'move' });
+        harness.polygonEditorOptions.onCommit({ ring: originalRing, reason: 'undo' });
+        expect(harness.polygonEditorOptions.onCommit({ ring: originalRing, reason: 'undo' })).toBe(true);
+        harness.cancel();
+
+        expect(harness.savedPayload).toBeNull();
+        expect(harness.draft.editorPayload.structureProposal.geometry).toEqual(geometry);
+        expect(harness.polygonEditorDestroyed).toBe(true);
+    });
+
     it('restores an erased tree when the user undoes', () => {
         const harness = makeEditorHarness({ trees: [[0.2, 0.2]], version: 3 });
         expect(harness.open()).toBe(true);

@@ -22,6 +22,8 @@
     // Modal state
     let parcelBasedModal = null;
     let parcelBasedMap = null;
+    let parcelBasedGenerationTimer = null;
+    let parcelBasedBoundary = null;
     let parcelBasedParcelLayer = null;
     let parcelBasedBuildingLayers = [];
     let parcelBasedEnvelopeLayers = [];
@@ -59,22 +61,6 @@
     // Parameters to restore when the modal next opens, instead of the defaults. Set by
     // openParcelBasedForParcels({ initialParameters }); consumed once by showParcelBasedModal().
     let parcelBasedSeedParameters = null;
-
-    // 3D preview state
-    let parcelBased3D = {
-        handle: null,
-        renderer: null,
-        scene: null,
-        camera: null,
-        controls: null,
-        frameId: null,
-        container: null,
-        originHTRS: null,
-        modelGroup: null,
-        contextGroup: null,
-        resizeHandler: null,
-        hasCenteredOnce: false
-    };
 
     // Random colors for buildings
     const BUILDING_COLORS = [
@@ -334,6 +320,34 @@
             'The setback leaves no room to build on this plot.');
     }
 
+    function parcelBasedSiteFeature(features, authoredSite = null) {
+        if (authoredSite?.geometry) {
+            return {
+                type: 'Feature',
+                properties: { ...(authoredSite.properties || {}) },
+                geometry: JSON.parse(JSON.stringify(authoredSite.geometry))
+            };
+        }
+        const valid = (Array.isArray(features) ? features : []).filter(feature => feature?.geometry);
+        if (!valid.length) return null;
+        const asMultiPolygon = () => {
+            const coordinates = [];
+            valid.forEach(feature => {
+                const geometry = feature.geometry;
+                if (geometry.type === 'Polygon') coordinates.push(geometry.coordinates);
+                else if (geometry.type === 'MultiPolygon') coordinates.push(...geometry.coordinates);
+            });
+            return coordinates.length ? {
+                type: 'Feature', properties: {}, geometry: { type: 'MultiPolygon', coordinates }
+            } : null;
+        };
+        let site = valid[0];
+        for (const feature of valid.slice(1)) {
+            try { site = turf.union(site, feature) || site; } catch (_) { return asMultiPolygon(); }
+        }
+        return site;
+    }
+
     // Draw the example build-out solid, inside the permitted envelope drawn as a dashed outline —
     // the classic planning drawing, so the rule and a sample of it read in one picture. Parcels the
     // rule excludes are drawn hatched with the reason on hover, never left silently empty.
@@ -352,26 +366,29 @@
         (Array.isArray(excluded) ? excluded : []).forEach(entry => {
             if (!entry || !entry.feature || !entry.feature.geometry) return;
             const layer = L.geoJSON(entry.feature, {
+                pane: parcelBasedModal?.pane,
                 style: { fillColor: '#b0453a', fillOpacity: 0.16, color: '#b0453a', weight: 1.5, dashArray: '2, 5' }
             }).addTo(parcelBasedMap);
             layer.bindTooltip(excludedParcelReason(entry.status), { permanent: false, direction: 'center' });
             parcelBasedExcludedLayers.push(layer);
         });
 
-        if (!Array.isArray(envelopes) || envelopes.length === 0) return;
+        const permittedEnvelopes = Array.isArray(envelopes) ? envelopes : [];
         const houses = Array.isArray(buildOut) ? buildOut : [];
 
-        envelopes.forEach((envelope, index) => {
+        permittedEnvelopes.forEach((envelope, index) => {
             if (!envelope || !envelope.geometry) return;
             const color = envelope.properties?.color || colorForParcel(envelope.properties?.parcelId, index);
 
             parcelBasedEnvelopeLayers.push(L.geoJSON(envelope, {
+                pane: parcelBasedModal?.pane,
                 style: { fillColor: color, fillOpacity: 0.08, color, weight: 1, dashArray: '4, 4' }
             }).addTo(parcelBasedMap));
 
             const house = houses[index];
             if (!house || !house.geometry) return;
             const layer = L.geoJSON(house, {
+                pane: parcelBasedModal?.pane,
                 style: { fillColor: color, fillOpacity: 0.6, color, weight: 2 }
             }).addTo(parcelBasedMap);
 
@@ -388,8 +405,12 @@
 
         updateBuildingMetrics(envelopes, houses);
 
-        // Update 3D view
-        try { updateParcelBased3DScene(envelopes, houses); } catch (_) { }
+        parcelBasedModal?.setPreview({
+            draftPreview: { kind: 'buildings', features: houses },
+            boundary: parcelBasedBoundary,
+            envelopes: currentRuleKind === 'exact' ? [] : envelopes,
+            excluded: (Array.isArray(excluded) ? excluded : []).filter(entry => entry?.feature?.geometry).map(entry => entry.feature)
+        });
     }
 
     // Footprint and volume are the PERMITTED figures, read off the envelopes — they are what the
@@ -496,9 +517,6 @@
         setParcelBasedInfo('parcelBased.modal.generating', 'Generating buildings...');
 
         try {
-            // Ensure 3D is initialized
-            try { if (!parcelBased3D || !parcelBased3D.renderer) initParcelBased3DSimple(); } catch (_) { }
-
             const { buildings, excluded } = generateBuildingsForBlock(block, currentParcelRule(), currentVariationSeed);
 
             if (!buildings || buildings.length === 0) {
@@ -538,248 +556,6 @@
         }
     }
 
-    // --- 3D Preview ---
-
-    async function ensureThreeForParcelBased() {
-        if (typeof THREE !== 'undefined') return true;
-        // THREE (incl. OrbitControls) comes from index.html's ESM bootstrap — never load a
-        // second copy here, an old UMD build would clobber the r184 global for the whole app.
-        if (typeof window.whenThreeReady === 'function') await window.whenThreeReady();
-        return typeof THREE !== 'undefined';
-    }
-
-    function getParcelBasedProjector() {
-        const crs = (parcelBasedMap && parcelBasedMap.options && parcelBasedMap.options.crs) || L.CRS.EPSG3857;
-        if (!crs || typeof crs.project !== 'function' || typeof crs.unproject !== 'function') return null;
-        return {
-            project: (ll) => {
-                const p = crs.project(L.latLng(ll.lat, ll.lng));
-                return [p.x, p.y];
-            },
-            unproject: (xy) => {
-                const llOut = crs.unproject(L.point(xy[0], xy[1]));
-                return [llOut.lat, llOut.lng];
-            }
-        };
-    }
-
-    function computeParcelBasedOrigin(features, projector) {
-        try {
-            if (!features || !Array.isArray(features) || features.length === 0 || !projector) return [0, 0];
-            const coords = [];
-            features.forEach(feature => {
-                if (!feature || !feature.geometry) return;
-                const geom = feature.geometry;
-                if (geom.type === 'Polygon') {
-                    geom.coordinates.forEach(ring => {
-                        ring.forEach(coord => coords.push(coord));
-                    });
-                } else if (geom.type === 'MultiPolygon') {
-                    geom.coordinates.forEach(poly => {
-                        poly.forEach(ring => {
-                            ring.forEach(coord => coords.push(coord));
-                        });
-                    });
-                }
-            });
-            if (!coords.length) return [0, 0];
-            let sumX = 0, sumY = 0;
-            coords.forEach(([lng, lat]) => {
-                const [x, y] = projector.project(L.latLng(lat, lng));
-                sumX += x;
-                sumY += y;
-            });
-            return [sumX / coords.length, sumY / coords.length];
-        } catch (_) {
-            return [0, 0];
-        }
-    }
-
-    async function initParcelBased3DSimple() {
-        const ok = await ensureThreeForParcelBased();
-        if (!ok) return;
-        const container = document.getElementById('parcelbased-3d');
-        if (!container) return;
-
-        disposeParcelBased3D();
-
-        const handle = window.ThreeEditScene.create({ container, defaultHeight: 200 });
-
-        const modelGroup = new THREE.Group();
-        handle.scene.add(modelGroup);
-
-        parcelBased3D.handle = handle;
-        parcelBased3D.container = handle.container;
-        parcelBased3D.renderer = handle.renderer;
-        parcelBased3D.scene = handle.scene;
-        parcelBased3D.camera = handle.camera;
-        parcelBased3D.controls = handle.controls;
-        parcelBased3D.modelGroup = modelGroup;
-        parcelBased3D.contextGroup = handle.contextGroup;
-        parcelBased3D.cameraFramed = false; // re-frame once on the first render of this fresh scene
-    }
-
-    function disposeParcelBased3D() {
-        if (parcelBased3D.handle && typeof parcelBased3D.handle.dispose === 'function') {
-            parcelBased3D.handle.dispose();
-        }
-        parcelBased3D.handle = null;
-        parcelBased3D.renderer = null;
-        parcelBased3D.scene = null;
-        parcelBased3D.camera = null;
-        parcelBased3D.controls = null;
-        parcelBased3D.frameId = null;
-        parcelBased3D.container = null;
-        parcelBased3D.originHTRS = null;
-        parcelBased3D.modelGroup = null;
-        parcelBased3D.contextGroup = null;
-        parcelBased3D.resizeHandler = null;
-    }
-
-    function loadParcelBasedContextBuildings(features, origin) {
-        if (!parcelBased3D.contextGroup || !window.ContextBuildings3D || !Array.isArray(features) || features.length === 0) return;
-        const projector = getParcelBasedProjector();
-        if (!projector) return;
-        let queryGeom = null;
-        try {
-            const fc = turf.featureCollection(features.filter(f => f && f.geometry));
-            if (fc.features.length === 0) return;
-            const bbox = turf.bbox(fc);
-            if (!bbox || bbox.some(v => !isFinite(v))) return;
-            const [minX, minY, maxX, maxY] = bbox;
-            queryGeom = {
-                type: 'Polygon',
-                coordinates: [[[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY], [minX, minY]]]
-            };
-        } catch (_) { return; }
-
-        const safeOrigin = Array.isArray(origin) ? origin : [0, 0];
-        const latLngToLocalXY = (lng, lat) => {
-            const [x, y] = projector.project(L.latLng(lat, lng));
-            return [x - safeOrigin[0], y - safeOrigin[1]];
-        };
-        try {
-            window.ContextBuildings3D.loadInto(parcelBased3D.contextGroup, {
-                geometry: queryGeom,
-                latLngToLocalXY
-            });
-        } catch (e) {
-            console.warn('[parcel-based] context buildings load failed:', e);
-        }
-    }
-
-    function clearThreeGroup(group) {
-        if (!group) return;
-        for (let i = group.children.length - 1; i >= 0; i--) {
-            const child = group.children[i];
-            try {
-                if (child.geometry && typeof child.geometry.dispose === 'function') child.geometry.dispose();
-            } catch (_) { }
-            try {
-                if (child.material) {
-                    if (Array.isArray(child.material)) {
-                        child.material.forEach(mat => { if (mat && typeof mat.dispose === 'function') mat.dispose(); });
-                    } else if (typeof child.material.dispose === 'function') {
-                        child.material.dispose();
-                    }
-                }
-            } catch (_) { }
-            try { group.remove(child); } catch (_) { }
-        }
-    }
-
-    // Extrude one polygon into the preview scene. `massing` draws the permitted envelope as a
-    // faint hull; the solid volume inside it is the example build-out.
-    function addParcelBasedVolume(feature, projector, origin, massing) {
-        const geom = feature.geometry;
-        if (geom.type !== 'Polygon') return 0;
-
-        const height = feature.properties?.height || DEFAULT_FLOOR_HEIGHT;
-        const color = feature.properties?.color || colorForParcel(feature.properties?.parcelId);
-        const ring = geom.coordinates[0];
-        if (!Array.isArray(ring) || ring.length < 4) return 0;
-
-        const shape = new THREE.Shape();
-        ring.forEach(([lng, lat], i) => {
-            const [x, y] = projector ? projector.project(L.latLng(lat, lng)) : [lng, lat];
-            const px = x - origin[0];
-            const py = y - origin[1];
-            if (i === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
-        });
-
-        const extrudeGeom = new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: false, steps: 1 });
-        const threeColor = new THREE.Color(color);
-        const material = new THREE.MeshLambertMaterial({
-            color: threeColor,
-            transparent: true,
-            opacity: massing ? 0.12 : 0.8,
-            depthWrite: !massing
-        });
-        parcelBased3D.modelGroup.add(new THREE.Mesh(extrudeGeom, material));
-
-        const edgeGeom = new THREE.EdgesGeometry(extrudeGeom);
-        const edgeMaterial = new THREE.LineBasicMaterial({
-            color: massing ? 0x8899aa : 0x333333,
-            transparent: massing,
-            opacity: massing ? 0.5 : 1
-        });
-        parcelBased3D.modelGroup.add(new THREE.LineSegments(edgeGeom, edgeMaterial));
-        return height;
-    }
-
-    function updateParcelBased3DScene(envelopes, buildOut) {
-        if (!parcelBased3D.modelGroup || typeof THREE === 'undefined' || !Array.isArray(envelopes)) return;
-
-        clearThreeGroup(parcelBased3D.modelGroup);
-
-        const projector = getParcelBasedProjector();
-        const origin = computeParcelBasedOrigin(envelopes, projector);
-        parcelBased3D.originHTRS = origin;
-        loadParcelBasedContextBuildings(envelopes, origin);
-
-        const houses = Array.isArray(buildOut) ? buildOut : [];
-        let maxHeight = 0;
-
-        envelopes.forEach((envelope, idx) => {
-            if (!envelope || !envelope.geometry) return;
-            maxHeight = Math.max(maxHeight, addParcelBasedVolume(envelope, projector, origin, true));
-            const house = houses[idx];
-            // Under a build-exactly rule the build-out IS the massing; drawing it twice would just
-            // z-fight with itself.
-            if (house && house.geometry && house !== envelope) {
-                addParcelBasedVolume(house, projector, origin, false);
-            }
-        });
-
-        // Fit the camera only on the first render of the scene. On slider-driven updates
-        // (max floors / min distance regenerate the buildings), preserve the user's current
-        // orbit/zoom instead of re-fitting — re-fitting every input made the 3D view jump and
-        // flicker and made height changes hard to see.
-        if (!parcelBased3D.cameraFramed) {
-            fitParcelBasedCamera(maxHeight);
-            parcelBased3D.cameraFramed = true;
-        }
-    }
-
-    function fitParcelBasedCamera(height = 20) {
-        if (!parcelBased3D.camera || !parcelBased3D.controls || !parcelBased3D.modelGroup) return;
-
-        const box = new THREE.Box3().setFromObject(parcelBased3D.modelGroup);
-        if (box.isEmpty()) return;
-
-        const center = new THREE.Vector3();
-        box.getCenter(center);
-        const size = new THREE.Vector3();
-        box.getSize(size);
-
-        const maxDim = Math.max(size.x, size.y, size.z, 50);
-        const dist = maxDim * 1.5;
-
-        parcelBased3D.camera.position.set(center.x + dist * 0.6, center.y + dist * 0.6, center.z + dist * 0.4);
-        parcelBased3D.controls.target.copy(center);
-        parcelBased3D.camera.lookAt(center);
-    }
-
     // --- Modal management ---
 
     function showParcelBasedModal() {
@@ -788,40 +564,16 @@
             if (typeof updateStatus === 'function') {
                 updateStatus(translateParcelBasedText('proposalDrafts.noParcels', 'No parcels selected'));
             }
-            return;
+            return false;
         }
 
         parcelBasedBlock = block;
         const blockLabel = getParcelBasedDisplayName();
-
         console.log('[ParcelBased] showParcelBasedModal called for block:', blockLabel, 'with', block.parcels.length, 'parcels');
 
-        // Create modal if it doesn't exist
-        if (!document.getElementById('parcelbased-modal')) {
-            // The editor wears the dialog primitive (css/primitives.css: overlay, card, header,
-            // body, footer, the phone bottom sheet); css/modals.css only lays out its map, 3D
-            // preview and sidebar inside it, the same as the Urban rule editor.
-            const modalDiv = document.createElement('div');
-            modalDiv.id = 'parcelbased-modal';
-            modalDiv.className = 'cb-dialog-overlay';
-
+        if (!parcelBasedModal) {
             const container = document.createElement('div');
-            container.id = 'parcelbased-container';
-            container.className = 'cb-dialog cb-dialog--xl';
-            container.setAttribute('role', 'dialog');
-            container.setAttribute('aria-modal', 'true');
-            container.setAttribute('aria-labelledby', 'parcelbased-title');
-
             container.innerHTML = `
-                <div id="parcelbased-header" class="cb-dialog__header">
-                    <h2 id="parcelbased-title" class="cb-dialog__title" data-i18n-key="parcelBased.modal.title">Detached houses</h2>
-                    <button id="parcelbased-close" type="button" class="close-circle-btn close-circle-btn--lg" data-i18n-key="parcelBased.modal.closeAria" data-i18n-attr="aria-label" aria-label="Close parcel-based modal">×</button>
-                </div>
-                <div id="parcelbased-body" class="cb-dialog__body">
-                <div id="parcelbased-main">
-                    <div id="parcelbased-map"></div>
-                    <div id="parcelbased-3d"></div>
-                </div>
                 <div id="parcelbased-sidebar">
                     <h3 class="cb-kicker" data-i18n-key="parcelBased.modal.parametersTitle">Parameters</h3>
                     <div class="parameter-group">
@@ -897,25 +649,41 @@
                         </p>
                     </div>
                 </div>
-                </div>
                 <div id="parcelbased-controls" class="cb-dialog__footer">
                     <div id="parcelbased-info" data-i18n-attr="text" role="status" aria-live="polite"></div>
                     <div id="parcelbased-buttons">
+                        <button type="button" class="btn btn-quiet" id="btn-parcelbased-cancel" data-i18n-key="cancel" data-i18n-attr="text">Cancel</button>
                         <button type="button" class="btn" id="btn-parcelbased-regenerate" data-i18n-key="parcelBased.modal.regenerate" data-i18n-attr="text">Regenerate</button>
                         <button type="button" class="btn btn-primary" id="btn-parcelbased-done" data-i18n-key="parcelBased.modal.done" data-i18n-attr="text">Done</button>
                     </div>
                 </div>
             `;
 
-            modalDiv.appendChild(container);
-            document.body.appendChild(modalDiv);
-
+            const content = container.querySelector('#parcelbased-sidebar');
+            const footer = container.querySelector('#parcelbased-controls');
+            footer?.classList.remove('cb-dialog__footer');
+            parcelBasedModal = window.OnMapEditor?.open({
+                owner: 'parcel-based',
+                id: 'parcelbased',
+                title: translateParcelBasedText('parcelBased.modal.title', 'Detached houses'),
+                content,
+                footer,
+                modes: ['2d', 'model'],
+                wide: false,
+                hints: {
+                    '2d': translateParcelBasedText('parcelBased.modal.helper.minDistance', 'Buildings stay this distance from parcel borders.'),
+                    model: translateParcelBasedText('parcelBased.modal.helper.regenerate', 'Regenerate an example build-out; permitted figures stay the same.')
+                },
+                onCancel: requestCloseParcelBasedModal
+            });
+            if (!parcelBasedModal) return false;
+            parcelBasedMap = parcelBasedModal.map;
             setParcelBasedInfo('parcelBased.modal.generating', 'Generating buildings...');
 
             // Apply translations
             try {
                 if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.applyTranslations === 'function') {
-                    window.i18n.applyTranslations(container);
+                    window.i18n.applyTranslations(parcelBasedModal.content);
                 }
             } catch (_) { }
 
@@ -923,13 +691,14 @@
             document.dispatchEvent(new CustomEvent('urbanRuleModalOpened'));
 
             // Add event listeners
-            document.getElementById('parcelbased-close').addEventListener('click', requestCloseParcelBasedModal);
-            document.addEventListener('keydown', handleParcelBasedKeydown);
             const doneButton = document.getElementById('btn-parcelbased-done');
             if (doneButton) {
                 doneButton.addEventListener('click', saveParcelBasedDesignForProposal);
                 doneButton.disabled = true;
             }
+
+            const cancelButton = document.getElementById('btn-parcelbased-cancel');
+            if (cancelButton) cancelButton.addEventListener('click', requestCloseParcelBasedModal);
 
             const regenerateButton = document.getElementById('btn-parcelbased-regenerate');
             if (regenerateButton) {
@@ -980,25 +749,6 @@
             // No outside-click close: a stray click on the backdrop would throw the design away.
             // The editor is left only via the X (discard, after confirming) or Done (save).
 
-            // Ensure 3D canvas is interactive
-            const threeDiv = document.getElementById('parcelbased-3d');
-            if (threeDiv) {
-                threeDiv.style.pointerEvents = 'auto';
-            }
-        }
-
-        // Initialize the map if needed
-        if (!parcelBasedMap) {
-            parcelBasedMap = L.map('parcelbased-map', {
-                zoomControl: true,
-                dragging: true,
-                scrollWheelZoom: true
-            });
-
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(parcelBasedMap);
         }
 
         // Display the parcels on the map
@@ -1050,9 +800,12 @@
         syncRuleKindControls();
 
         // Generate buildings immediately
-        setTimeout(() => {
+        parcelBasedGenerationTimer = setTimeout(() => {
+            parcelBasedGenerationTimer = null;
+            if (!parcelBasedModal || parcelBasedBlock !== block) return;
             generateBuildingsInModal();
         }, 500);
+        return true;
     }
 
     function displayParcelsOnMap(block) {
@@ -1068,9 +821,11 @@
             type: 'FeatureCollection',
             features: features
         };
+        parcelBasedBoundary = parcelBasedSiteFeature(features, block.site);
 
         // Add the parcels to the map with distinct styling to show borders
         parcelBasedParcelLayer = L.geoJSON(featureCollection, {
+            pane: parcelBasedModal?.pane,
             style: {
                 fillColor: '#f0f0f0',
                 fillOpacity: 0.3,
@@ -1080,13 +835,7 @@
             }
         }).addTo(parcelBasedMap);
 
-        // Fit the map to the bounds of the block
-        parcelBasedMap.fitBounds(parcelBasedParcelLayer.getBounds(), {
-            padding: [50, 50]
-        });
-
-        // Initialize 3D preview
-        try { initParcelBased3DSimple(); } catch (e) { console.warn('3D init failed', e); }
+        parcelBasedModal?.fitFeature(parcelBasedBoundary || featureCollection, { maxZoom: 21 });
     }
 
     // The X / Esc path. Closing NEVER saves — only "Done" (saveParcelBasedDesignForProposal) does.
@@ -1102,37 +851,30 @@
         closeParcelBasedModal();
     }
 
-    // Escape closes the editor exactly like the X does (discard, after confirming).
-    function handleParcelBasedKeydown(event) {
-        if (event.key !== 'Escape') return;
-        if (!document.getElementById('parcelbased-modal')) return;
-        event.preventDefault();
-        requestCloseParcelBasedModal();
-    }
-
-    // Pure teardown: the design is committed (or not) by the caller — "Done" saves first,
-    // X/Esc discards the design session first.
     function closeParcelBasedModal(options = {}) {
         const { preservePending = false } = options;
-        document.removeEventListener('keydown', handleParcelBasedKeydown);
-
-        // Remove the map instance
-        if (parcelBasedMap) {
-            if (parcelBasedParcelLayer) {
-                parcelBasedMap.removeLayer(parcelBasedParcelLayer);
-                parcelBasedParcelLayer = null;
-            }
-            [parcelBasedEnvelopeLayers, parcelBasedBuildingLayers, parcelBasedExcludedLayers].forEach(layers => {
-                layers.forEach(layer => {
-                    if (parcelBasedMap && layer) parcelBasedMap.removeLayer(layer);
-                });
-            });
-            parcelBasedEnvelopeLayers = [];
-            parcelBasedBuildingLayers = [];
-            parcelBasedExcludedLayers = [];
-            parcelBasedMap.remove();
-            parcelBasedMap = null;
+        if (parcelBasedGenerationTimer !== null) {
+            clearTimeout(parcelBasedGenerationTimer);
+            parcelBasedGenerationTimer = null;
         }
+
+        if (parcelBasedMap) {
+            [parcelBasedParcelLayer].forEach(layer => {
+                if (layer) { try { parcelBasedMap.removeLayer(layer); } catch (_) { } }
+            });
+            [parcelBasedEnvelopeLayers, parcelBasedBuildingLayers, parcelBasedExcludedLayers].forEach(layers => {
+                layers.forEach(layer => { if (layer) { try { parcelBasedMap.removeLayer(layer); } catch (_) { } } });
+            });
+        }
+        parcelBasedParcelLayer = null;
+        parcelBasedEnvelopeLayers = [];
+        parcelBasedBuildingLayers = [];
+        parcelBasedExcludedLayers = [];
+        parcelBasedBoundary = null;
+        parcelBasedMap = null;
+        const editorSession = parcelBasedModal;
+        parcelBasedModal = null;
+        editorSession?.close();
 
         // Clear state
         generatedParcelBasedFeatures = [];
@@ -1140,21 +882,8 @@
         parcelBasedBlock = null;
         parcelBasedBlockNameOverride = null;
 
-        // Dispose 3D resources
-        disposeParcelBased3D();
-
-        // Remove the modal from DOM
-        const modal = document.getElementById('parcelbased-modal');
-        if (modal) {
-            modal.remove();
-            document.dispatchEvent(new CustomEvent('parcelBasedModalClosed'));
-            document.dispatchEvent(new CustomEvent('urbanRuleModalClosed'));
-        }
-
-        // Force a reflow of the main map
-        if (typeof map !== 'undefined' && map) {
-            map.invalidateSize();
-        }
+        document.dispatchEvent(new CustomEvent('parcelBasedModalClosed'));
+        document.dispatchEvent(new CustomEvent('urbanRuleModalClosed'));
 
         // Reset parameters to defaults
         currentMaxFloors = DEFAULT_MAX_FLOORS;
@@ -1272,14 +1001,14 @@
 
     // Entry point for opening parcel-based modal from parcels. `initialParameters` (optional)
     // reopens the editor on a previously-saved design — used by "Copy into new proposal".
-    function openParcelBasedForParcels({ blockName, parcelIds, initialParameters = null }) {
+    function openParcelBasedForParcels({ blockName, parcelIds, initialParameters = null, site = null }) {
         parcelBasedSeedParameters = initialParameters || null;
         const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
         if (!ids.length) {
             if (typeof updateStatus === 'function') {
                 updateStatus('Select parcels before launching the parcel-based tool.');
             }
-            return;
+            return false;
         }
 
         const liveParcels = parcelBasedParcelsForIds(ids);
@@ -1287,17 +1016,22 @@
             if (typeof updateStatus === 'function') {
                 updateStatus(translateParcelBasedText('status.messages.could_not_resolve_parcel_data_for_the_selected_parcels', 'Could not resolve parcel data for the selected parcels.'));
             }
-            return;
+            return false;
         }
 
         parcelBasedBlock = {
             parcels: liveParcels,
             parcelIds: ids,
+            site: site?.geometry ? {
+                type: 'Feature',
+                properties: { ...(site.properties || {}) },
+                geometry: JSON.parse(JSON.stringify(site.geometry))
+            } : null,
             valid: true,
             polygon: null
         };
         parcelBasedBlockNameOverride = blockName || describeParcelBasedParcelSelection(ids);
-        showParcelBasedModal();
+        return showParcelBasedModal() === true;
     }
 
     // Export to window
