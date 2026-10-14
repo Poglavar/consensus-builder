@@ -30,10 +30,15 @@ export function sortRows(rows, { key, direction = 'asc' }, locale = 'en') {
 
 export const normalizeSearch = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase();
 
-export function filterCities(rows, { query = '', checked = 'all', registry = 'all', country = '', cohort = 'all' } = {}) {
+export function countSupportedCities(rows) {
+    return new Set(rows.flatMap(row => row.appCityIds || [])).size;
+}
+
+export function filterCities(rows, { query = '', checked = 'all', registry = 'all', country = '', cohort = 'all', support = 'all' } = {}) {
     const needle = normalizeSearch(query).trim();
     return rows.filter(row => (!needle || normalizeSearch(`${row.name} ${row.country} ${row.countryCode}`).includes(needle))
         && (!country || row.countryCode === country)
+        && (support === 'all' || Boolean(row.appCityIds?.length) === (support === 'yes'))
         && (checked === 'all' || row.checked === (checked === 'yes'))
         && (registry === 'all' || (registry === 'unknown' ? row.registryFound === null : row.registryFound === (registry === 'yes')))
         && (cohort === 'all' || (cohort === 'largest200' && row.cohorts?.includes('largest200'))
