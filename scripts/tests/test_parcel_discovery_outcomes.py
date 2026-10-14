@@ -193,6 +193,17 @@ class DiscoveryPipelineTests(unittest.TestCase):
             self.assertTrue(self.instance._advance_candidate([self.city], self.cohort))
         admit.assert_not_called()
 
+    def test_shutdown_with_no_worker_result_preserves_unreviewed_city(self):
+        def interrupted(_calls):
+            self.instance.stop_requested = True
+            return []
+        with patch.object(self.instance, "run_calls", side_effect=interrupted) as calls:
+            success, answer, _systemic = self.instance._complete_review([self.city], [])
+        self.assertFalse(success)
+        self.assertIsNone(answer)
+        self.assertEqual(calls.call_count, 1)
+        self.assertNotIn("discoveryDecision", self.instance._city_entry(self.city))
+
     def test_failed_reclassification_does_not_retry_old_held_forever(self):
         self.instance._city_entry(self.city).update(status="reviewed-held", attempts=1)
         self.path.write_text(json.dumps({"decision": "held"}))

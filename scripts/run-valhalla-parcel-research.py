@@ -1075,7 +1075,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                     self.state.setdefault("rootReviewTasks", {}).setdefault(task_id, {"status": "pending", "attempts": 0})["attempts"] += 1
                 call = self._review_call(call_cities, call_roots, call_identities)
                 self.save_state()
-                result = self.run_calls([call])[0]
+                result = next(iter(self.run_calls([call])), None)
             answer = self._read_review_answer(result) if result else None
             if result:
                 systemic = systemic or bool(result.get("systemic"))
@@ -1356,7 +1356,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                           for item in batch]
             task_ids = [f"identity:{item['cityCode']}" for item in identities]
             call = self._review_call([], [], identities)
-            result = self.run_calls([call])[0]
+            result = next(iter(self.run_calls([call])), None)
             success, answer, systemic = self._complete_review([], [], identities, result)
             if systemic or self.stop_requested:
                 self.state["status"] = "blocked" if systemic else "stopping"
@@ -1446,7 +1446,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
             pending, review_result, systemic = self._record_city_attempts(research, cohort_dir, reviewer_call)
             if reviewer_call is not None and not preexisting_review_items and not research:
                 review_results = self.run_calls([reviewer_call])
-                review_result = review_results[0]
+                review_result = next(iter(review_results), None)
             success = True
             if preexisting_review_items or root_tasks:
                 success, _answer, review_systemic = self._complete_review(preexisting_review_items, root_tasks, first_result=review_result)
@@ -1466,7 +1466,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                     new_review_items.append({**city, "cityPath": str(packet["cityPath"]), "cohortDir": str(packet["cityPath"].parent)})
             if new_review_items:
                 new_reviewer = self._review_call(new_review_items, [])
-                result = self.run_calls([new_reviewer])[0]
+                result = next(iter(self.run_calls([new_reviewer])), None)
                 success, _answer, review_systemic = self._complete_review(new_review_items, [], first_result=result)
                 systemic = systemic or review_systemic
                 if not success:
