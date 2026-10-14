@@ -150,7 +150,7 @@ export async function interpretPlans(db,{render=renderTask,verifyRaster=verifyRa
     const result=await runBatchStage(db,{
         stage:'plans',processor:PROCESSOR,schema:READING_SCHEMA,
         taskFilterSql:LOCATED_PLAN_TASK_SQL,
-        counters:{ready:0,needsReview:0,notPlan:0,preflightNeedsReview:0,locationReview:0},
+        counters:{ready:0,needsReview:0,notPlan:0,preflightNeedsReview:0,locationReview:0,associationReview:0},
         async prepare(db,task,llm,{deadline,maxOutputTokens}) {
             if(task.processor!==PROCESSOR)throw new Error('Historical plan task needs its original reader.');
             if(!await currentTaskContext(db,task))throw new Error('Source or listing association changed before processing.');
@@ -175,7 +175,7 @@ export async function interpretPlans(db,{render=renderTask,verifyRaster=verifyRa
                 const associationCurrent=await currentTaskContext(db,task);
                 await storeReading(db,task,{method:associationCurrent?'location-gate':'association-gate',notPlan:false,plans:[],
                     issues:[associationCurrent?'A current building location is required before processing this floor plan.':'The source drawing does not match this listing unit, or its association changed after submission.']});
-                return {needsReview:1,locationReview:1};
+                return {needsReview:1,...(associationCurrent?{locationReview:1}:{associationReview:1})};
             }
             const reading=parseReading(typeof item.data==='string'?item.data:JSON.stringify(item.data??JSON.parse(item.text)),task,
                 {...task.result.image,model:item.model});
@@ -192,6 +192,6 @@ export async function interpretPlans(db,{render=renderTask,verifyRaster=verifyRa
     },options);
     result.deferredLocation=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.plan_task
         WHERE status='queued' AND processor=$1 AND NOT ${LOCATED_PLAN_TASK_SQL}`,[PROCESSOR])).rows[0].n);
-    if(result.deferredLocation||result.locationReview)result.status='partial';
+    if(result.deferredLocation||result.locationReview||result.associationReview)result.status='partial';
     return result;
 }

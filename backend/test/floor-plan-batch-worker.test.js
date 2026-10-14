@@ -134,6 +134,19 @@ const render=vi.fn(async()=>({data:Buffer.from('png'),annotation:Buffer.from('ma
 const price=vi.fn((_model,usage)=>usage.output_tokens===MAX_OUTPUT_TOKENS?0.25:0.02);
 
 describe('floor-plan paid batch worker',()=>{
+ it('holds an already paid related-unit response without rendering or creating geometry, and accounts it once',async()=>{
+  const url='https://agency.test/stan-s10-73m2';
+  const task={...baseTask(),status:'submitted',batch_id:'unit-batch',listing_url:url,source_url:'https://agency.test/s3-438x280.jpg',
+   context:{listingUrl:url,facts:{floor:'3',unitId:null,areaM2:73,title:'Trosoban stan 73 m²'}}};
+  const db=makeDb({tasks:[task],batches:[{id:'unit-batch',status:'submitted',provider_id:'provider-batch-1',reserved_usd:.25,created_at:new Date().toISOString()}]});
+  const remote=fakeClient(),runRender=vi.fn(),options={submit:false,client:remote.client,render:runRender,price,log:()=>{}};
+  expect(await interpretPlans(db,options)).toMatchObject({collected:1,associationReview:1,locationReview:0,needsReview:1});
+  expect(db.state.tasks[0]).toMatchObject({status:'needs_review',result:{reading:{method:'association-gate',plans:[]}}});
+  expect(runRender).not.toHaveBeenCalled();
+  expect(db.state.calls.some(({sql})=>sql.startsWith('INSERT INTO floor_plan.processed_plan'))).toBe(false);
+  expect(await interpretPlans(db,options)).toMatchObject({collected:0,costUsd:0});
+  expect(remote.results).toHaveBeenCalledOnce();
+ });
  it('writes ledger rows only to the throwaway test ledger',()=>{
   expect(LEDGER.startsWith(ledgerDir)).toBe(true);
  });
