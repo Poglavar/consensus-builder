@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createHash } from 'node:crypto';
 import { listingIdentity } from '../floor-plans/explicit-location.js';
-import { currentOriginalPlans, hasUsableGeometry, originalPlanSource } from '../floor-plans/original-plan-sources.js';
+import { currentOriginalPlans, hasUsableGeometry, listingUnitId, originalPlanSource, sourceUnitMatches } from '../floor-plans/original-plan-sources.js';
 import { projectInventory } from '../floor-plans/project-inventory.js';
 import { sitePlans, siteModel } from '../floor-plans/site-model.js';
 
@@ -19,6 +19,15 @@ const geometry = (model = {}) => ({ id: 'geometry', kind: 'machine', listing_url
 const posting = { url: listingUrl, facts: source().facts };
 
 describe('current original plan eligibility', () => {
+    it('distinguishes marketed square metres from a unit identifier in real offer titles', () => {
+        const facts = { title: 'Trosoban stan 73 m² na 3. katu - Bolnička cesta 37, Vrapče' };
+        expect(listingUnitId(facts, listingUrl)).toBe('S10');
+        expect(listingUnitId({ title: 'Stan 73m2' })).toBeNull();
+        expect(sourceUnitMatches(facts, listingUrl, 'https://example.test/s3-438x280.jpg')).toBe(false);
+        expect(sourceUnitMatches(facts, listingUrl, 'https://example.test/s10-1800x1150.jpg')).toBe(true);
+        expect(originalPlanSource(source({ facts: { ...facts, propertyDetails: { propertyType: 'apartment' } },
+            source_url: 'https://example.test/s3-438x280.jpg', asset: { url: 'https://example.test/s3-438x280.jpg', listingOwned: true } }))).toBeNull();
+    });
     it('admits a retained classified apartment drawing and derives explicit listing URL unit identity', () => {
         expect(originalPlanSource(source())).toMatchObject({ kind: 'original', sha256: sha, reviewStatus: 'source_only',
             model: { scope: 'unit', unitId: 'S10', architecture: null, source: { url: sourceUrl, sha256: sha, page: 1 } } });

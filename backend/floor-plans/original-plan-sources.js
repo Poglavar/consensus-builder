@@ -7,13 +7,23 @@ import { currentProcessedPlans } from '../floor-plan-archive/processed-catalogue
 
 export const normalizeUnitId = value => typeof value === 'string' && value.trim()
     ? value.trim().toUpperCase().replace(/[\s_-]+/g, '') : null;
-const explicitUnits = text => [...String(text || '').matchAll(/(?:^|[^a-z0-9])(?:stan[\s_-]*|s[\s_-]*)(\d{1,3}(?:-\d{1,3})?[a-z]?)(?=$|[^a-z0-9])/gi)]
+const explicitUnits = text => [...String(text || '').replace(/\b\d+(?:[.,]\d+)?\s*m(?:2|²|\b)/gi, ' ')
+    .matchAll(/(?:^|[^a-z0-9])(?:stan[\s_-]*|s[\s_-]*)(\d{1,3}(?:-\d{1,3})?[a-z]?)(?=$|[^a-z0-9])/gi)]
     .map(match => `S${match[1].toUpperCase()}`);
 export function listingUnitId(facts = {}, url = '') {
     let path = '';
     try { path = decodeURIComponent(new URL(url).pathname); } catch { /* Facts may be sufficient. */ }
     const units = [...new Set([...explicitUnits(facts.title), ...explicitUnits(path)])];
     return typeof facts.unitId === 'string' && facts.unitId.trim() ? facts.unitId.trim() : (units.length === 1 ? units[0] : null);
+}
+
+export function sourceUnitMatches(facts = {}, listingUrl = '', sourceUrl = '', unitId = null) {
+    const unit = listingUnitId(facts, listingUrl);
+    if (!unit) return true;
+    let basename;
+    try { basename = decodeURIComponent(new URL(sourceUrl).pathname.split('/').at(-1)); } catch { return false; }
+    return [unitId, ...explicitUnits(basename)].map(normalizeUnitId).filter(Boolean)
+        .every(sourceUnit => sourceUnit === normalizeUnitId(unit));
 }
 
 // Only failures that invalidate the boundary suppress geometry; other review notes remain visible.

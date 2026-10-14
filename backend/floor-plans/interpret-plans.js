@@ -14,6 +14,7 @@ import { sourceGeometry } from './source-geometry.js';
 import {runBatchStage,reservationUsd,budgetUsed} from './batch-worker.js';
 import {locatedListingSql,LOCATED_PLAN_TASK_SQL} from './building-location.js';
 import { readBlob } from './blob-store.js';
+import { sourceUnitMatches } from './original-plan-sources.js';
 
 const exec=promisify(execFile);
 export function taskContext(row) {
@@ -47,6 +48,7 @@ export async function enqueuePlanTasks(db,{limit=100,sourceHash=null,urls=null,d
     for(const row of rows) {
         if(Date.now()>=deadline) {deferred++;break;}
         if(row.listing_owns_asset!==true||!row.listing_url||!row.source_url) {ambiguous++;continue;}
+        if(!sourceUnitMatches(row.facts,row.listing_url,row.source_url)) {ambiguous++;continue;}
         if(row.building_located!==true) {deferredLocation++;continue;}
         const context=taskContext(row),pages=row.model?.totalPages||1;
         const contextKey=fingerprint([row.sha256,contextIdentity(context)]);
@@ -105,6 +107,7 @@ export async function currentTaskListing(db,task,{lock=false,requireLocation=fal
         AND l.asset_urls @> jsonb_build_array(jsonb_build_object('url',t.url,'listingOwned',true)) ${lock?'FOR SHARE OF l,t':''}`,
     [task.listing_url,task.source_url,task.source_sha256])).rows[0];
     if(!row||row.facts?.sourceEvidenceStatus==='not-a-listing')return null;
+    if(!sourceUnitMatches(row.facts,row.url,task.source_url))return null;
     if(requireLocation&&row.building_located!==true)return null;
     if(task.context?.building) {
         if(row.match_status!=='verified')return null;
@@ -169,8 +172,9 @@ export async function interpretPlans(db,{render=renderTask,verifyRaster=verifyRa
             if(task.processor!==PROCESSOR)throw new Error('Historical plan task needs its original reader.');
             if(!await currentTaskContext(db,task,{requireLocation:true})) {
                 // The worker already saved and accounted for this response; retain it without generating geometry.
-                await storeReading(db,task,{method:'location-gate',notPlan:false,plans:[],
-                    issues:['A current building location is required before processing this floor plan.']});
+                const associationCurrent=await currentTaskContext(db,task);
+                await storeReading(db,task,{method:associationCurrent?'location-gate':'association-gate',notPlan:false,plans:[],
+                    issues:[associationCurrent?'A current building location is required before processing this floor plan.':'The source drawing does not match this listing unit, or its association changed after submission.']});
                 return {needsReview:1,locationReview:1};
             }
             const reading=parseReading(typeof item.data==='string'?item.data:JSON.stringify(item.data??JSON.parse(item.text)),task,
