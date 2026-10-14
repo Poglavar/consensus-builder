@@ -11,7 +11,7 @@ import { normalizeSiteHost } from '../floor-plans/crawl-queue.js';
 import { drainSourceRetention } from '../floor-plans/compact-sources.js';
 import { runSiteCrawl } from './floor-plan-site-crawl.mjs';
 
-const DEFAULTS = Object.freeze({ maxTotalPages: 10000, maxTotalMinutes: 360, maxSitePages: 150, maxSiteMinutes: 3 });
+const DEFAULTS = Object.freeze({ maxTotalPages: 10000, maxTotalMinutes: 360, maxSitePages: 150, maxSiteMinutes: 15 });
 const RETENTION_LIMIT = 100;
 const RETENTION_MAX_MS = 15000;
 const HELP = [
@@ -29,7 +29,7 @@ const HELP = [
   '  --max-total-pages N           Across all hosts and resumes (default 10000)',
   '  --max-total-minutes N         Across all hosts and resumes (default 360)',
   '  --max-site-pages N            Per host across resumes (default 150)',
-  '  --max-site-minutes N          Per host active time across resumes (default 3)',
+  '  --max-site-minutes N          Per host active time across resumes (default 15 / 900 seconds)',
   '',
   'The collector uses asset-mode all, interleaved pages/assets, and known-target revisits.',
   'It loads backend/.env; FLOOR_PLAN_ENV_FILE may select another dotenv file.',

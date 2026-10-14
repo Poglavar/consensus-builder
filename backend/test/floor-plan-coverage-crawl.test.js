@@ -320,4 +320,4 @@ describe('portable bounded multi-host crawl',()=>{
  });
 });
 
-const DEFAULTS_FOR_TEST={maxTotalPages:10000,maxTotalMinutes:360,maxSitePages:150,maxSiteMinutes:3};
+const DEFAULTS_FOR_TEST={maxTotalPages:10000,maxTotalMinutes:360,maxSitePages:150,maxSiteMinutes:15};
