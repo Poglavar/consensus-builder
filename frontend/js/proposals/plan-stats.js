@@ -14,6 +14,24 @@
 
     let latestStats = null;
     let epochView = 'added';
+    let planStatsBusy = false;
+
+    function updatePlanStatsButtonState() {
+        const button = document.getElementById('planStatsButton');
+        if (!button) return;
+        let appliedCount = 0;
+        try {
+            const proposals = typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function'
+                ? proposalStorage.getAllProposals() : [];
+            const isApplied = typeof isProposalCurrentlyApplied === 'function'
+                ? isProposalCurrentlyApplied
+                : proposal => proposal && proposal.applied === true;
+            appliedCount = (Array.isArray(proposals) ? proposals : []).filter(isApplied).length;
+        } catch (_) { /* storage may not be ready yet; the empty state is safe */ }
+        const disabled = appliedCount === 0 || planStatsBusy;
+        button.disabled = disabled;
+        button.setAttribute('aria-disabled', String(disabled));
+    }
 
     function yieldApi() {
         return (typeof window !== 'undefined' && window.__planYield) ? window.__planYield : null;
@@ -475,13 +493,14 @@
     }
 
     function setPlanStatsButtonBusy(busy) {
+        planStatsBusy = !!busy;
         const button = document.getElementById('planStatsButton');
         if (!button) return;
         const label = button.querySelector('.plan-stats-label');
         const spinner = button.querySelector('.plan-stats-spinner');
-        button.disabled = !!busy;
         if (label) label.style.display = busy ? 'none' : '';
         if (spinner) spinner.style.display = busy ? 'inline-flex' : 'none';
+        updatePlanStatsButtonState();
     }
 
     // Changing an assumption re-derives EVERY figure, not just the one beside the input: apartments
@@ -645,6 +664,7 @@
                 openPlanStats();
             });
         }
+        updatePlanStatsButtonState();
         if (planStatsRequestedByUrl()) openPlanStatsWhenPlanIsLoaded();
     }
 
@@ -653,4 +673,5 @@
     });
 
     window.showPlanStatsModal = openPlanStats;
+    window.updatePlanStatsButtonState = updatePlanStatsButtonState;
 })();

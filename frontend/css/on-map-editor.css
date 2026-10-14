@@ -58,20 +58,7 @@
 .on-map-editor__tools .btn { min-height: 36px; padding-inline: var(--cb-space-2); box-shadow: var(--cb-shadow-sm); }
 body.on-map-editing .map-shell-slot--tray { display: none; }
 
-/* A 3D editor occupies the left dock. On desktop this leaves the Layers sheet on its usual
-   right-side popover, so both remain visible while the geometry stays editable. */
-@media (min-width: 768px) {
-    body.on-map-editing.three-mode-active .on-map-editor__panel {
-        right: auto;
-        left: var(--map-mode-strip);
-    }
-    body.on-map-editing.three-mode-active:has(.map-sheet:not([hidden])) .on-map-editor__panel {
-        width: min(320px, calc(50vw - var(--map-mode-strip) - 24px));
-    }
-    body.on-map-editing.three-mode-active:has(.map-sheet:not([hidden])) .on-map-editor__panel--wide {
-        width: min(480px, calc(50vw - var(--map-mode-strip) - 24px));
-    }
-}
+/* Keep the editor in the same right-hand dock when switching map modes. */
 
 @media (max-width: 639.98px) {
     .on-map-editor__panel {

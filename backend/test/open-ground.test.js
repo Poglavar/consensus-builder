@@ -164,7 +164,7 @@ describe('a ground piece is never a cadastral parcel', () => {
 
     it('offers no parcel actions in the parcel menu', () => {
         const facts = { parcelId: 'p-1', isGround: true, historyIds: [], siteToolAvailable: true, can3d: true, blocksEnabled: true };
-        expect(menuModel.availableActions(facts)).toEqual(['details', 'view3d', 'useAsSite']);
+        expect(menuModel.availableActions(facts)).toEqual(['details', 'useAsSite']);
         expect(menuModel.availableActions({ ...facts, isGround: false, historyIds: ['HR-1'] }))
             .toEqual(expect.arrayContaining(['offer', 'history', 'propose', 'detectBlock']));
     });

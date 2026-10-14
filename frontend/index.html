@@ -320,10 +320,12 @@
             </div>
         </section>
 
-        <!-- Floating status toast: the latest status line, always visible, small and out of the way.
-             The full status bar and its log live in the Activity sheet. -->
-        <div id="floating-status" class="floating-status cb-toast cb-toast--status">
-            <span class="cb-toast__spinner" aria-hidden="true"></span><span id="floating-status-text"></span>
+        <!-- Shared map feedback stack: measured by normal flow so a wrapped status and the view
+             hint sit above the bottom dock without fixed row offsets. The full status log is in Activity. -->
+        <div id="map-feedback-stack" class="map-feedback-stack">
+            <div id="floating-status" class="floating-status cb-toast cb-toast--status">
+                <span class="cb-toast__spinner" aria-hidden="true"></span><span id="floating-status-text"></span>
+            </div>
         </div>
 
         <!-- ===== Floating map shell (js/ui/map-shell.js, css/map-shell.css) =====
@@ -881,7 +883,7 @@
                     <div class="btn-group">
                         <button id="showProposalsButton" hidden class="btn btn-block btn-primary" onclick="showAllProposalsModal()"
                             data-i18n-key="sidebar.proposals.listButton" data-i18n-params='{"count":0}'>Proposals List (0)</button>
-                        <button id="planStatsButton" class="btn btn-block plan-stats-button">
+                        <button id="planStatsButton" class="btn btn-block plan-stats-button" disabled aria-disabled="true">
                             <i class="fas fa-chart-pie" aria-hidden="true"></i>
                             <span class="plan-stats-label"
                                 data-i18n-key="sidebar.proposals.planStats.buttonLabel">Plan Stats</span>

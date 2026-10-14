@@ -20,14 +20,13 @@ const baseFacts = (overrides = {}) => ({
     selectionCount: 0,
     historyIds: ['HR-335550-1234'],
     blocksEnabled: true,
-    can3d: true,
     ...overrides
 });
 
 describe('parcel menu actions', () => {
     it('offers every action, in menu order, for an ordinary parcel', () => {
         expect(Model.availableActions(baseFacts()))
-            .toEqual(['propose', 'selectMore', 'details', 'history', 'tools', 'offer', 'view3d', 'detectBlock']);
+            .toEqual(['propose', 'selectMore', 'details', 'history', 'tools', 'offer', 'detectBlock']);
     });
 
     it('offers nothing without a parcel', () => {
@@ -43,16 +42,15 @@ describe('parcel menu actions', () => {
         expect(Model.availableActions(baseFacts({ blocksEnabled: undefined }))).not.toContain('detectBlock');
     });
 
-    it('leaves View in 3D out when 3D is not available, and History out without a parcel uid', () => {
-        expect(Model.availableActions(baseFacts({ can3d: false }))).not.toContain('view3d');
-        expect(Model.availableActions(baseFacts({ can3d: undefined }))).not.toContain('view3d');
+    it('does not duplicate the mode buttons, and leaves History out without a parcel uid', () => {
+        expect(Model.availableActions(baseFacts({ can3d: true }))).not.toContain('view3d');
         expect(Model.availableActions(baseFacts({ historyIds: [] }))).not.toContain('history');
         expect(Model.availableActions(baseFacts({ historyIds: [null, ''] }))).not.toContain('history');
     });
 
     it('offers Compare proposals here only with two or more proposals on the parcel', () => {
         expect(Model.availableActions(baseFacts({ compareCount: 2 })))
-            .toEqual(['propose', 'selectMore', 'details', 'history', 'compare', 'tools', 'offer', 'view3d', 'detectBlock']);
+            .toEqual(['propose', 'selectMore', 'details', 'history', 'compare', 'tools', 'offer', 'detectBlock']);
         expect(Model.availableActions(baseFacts({ compareCount: 1 }))).not.toContain('compare');
         expect(Model.availableActions(baseFacts({ compareCount: null }))).not.toContain('compare');
         // Open ground is no cadastral parcel: nothing to compare "on my parcel".
@@ -155,6 +153,39 @@ describe('parcel menu placement', () => {
     });
 });
 
+describe('parcel menu leaves the selected parcel visible', () => {
+    const size = { width: 230, height: 300 };
+    const viewport = { width: 1200, height: 900 };
+    const overlaps = (place, bounds) => place.left < bounds.right && place.left + size.width > bounds.left
+        && place.top < bounds.bottom && place.top + size.height > bounds.top;
+
+    it.each([
+        ['right', { x: 600, y: 400 }, { left: 400, right: 650, top: 300, bottom: 550 }],
+        ['left', { x: 1040, y: 400 }, { left: 950, right: 1150, top: 300, bottom: 550 }],
+        ['nearest left', { x: 410, y: 400 }, { left: 400, right: 650, top: 300, bottom: 550 }],
+        ['above', { x: 600, y: 420 }, { left: 150, right: 1050, top: 400, bottom: 800 }],
+        ['below', { x: 600, y: 470 }, { left: 150, right: 1050, top: 50, bottom: 500 }]
+    ])('uses clear space %s of the whole parcel', (side, point, parcelBounds) => {
+        const place = Model.placeMenuAtPoint(point, size, viewport, { parcelBounds });
+        expect(overlaps(place, parcelBounds)).toBe(false);
+        expect(place.left).toBeGreaterThanOrEqual(8);
+        expect(place.top).toBeGreaterThanOrEqual(8);
+        expect(place.left + size.width).toBeLessThanOrEqual(viewport.width - 8);
+        expect(place.top + size.height).toBeLessThanOrEqual(viewport.height - 8);
+        if (side.includes('left')) expect(place.left + size.width).toBeLessThanOrEqual(parcelBounds.left - 10);
+        if (side === 'right') expect(place.left).toBeGreaterThanOrEqual(parcelBounds.right + 10);
+        if (side === 'above') expect(place.top + size.height).toBeLessThanOrEqual(parcelBounds.top - 10);
+        if (side === 'below') expect(place.top).toBeGreaterThanOrEqual(parcelBounds.bottom + 10);
+    });
+
+    it('allows overlap when the parcel leaves no room for the menu', () => {
+        const point = { x: 600, y: 400 };
+        const parcelBounds = { left: 20, right: 1180, top: 20, bottom: 880 };
+        expect(Model.placeMenuAtPoint(point, size, viewport, { parcelBounds }))
+            .toEqual(Model.placeMenuAtPoint(point, size, viewport));
+    });
+});
+
 describe('parcel menu and selection tray commands', () => {
     const ctx = (extra = {}) => ({ global: {}, isControlAvailable: () => true, ...extra });
 
@@ -168,7 +199,7 @@ describe('parcel menu and selection tray commands', () => {
         expect(UiCommands.commandsFor('parcel-menu', ctx({ parcel: baseFacts({ isRoad: true, can3d: false }) })).map(c => c.id))
             .toEqual(['parcel.propose', 'parcel.selectMore', 'parcel.details', 'parcel.history', 'parcel.tools', 'parcel.offer']);
         // The same commands appear in the palette once a parcel is in hand.
-        expect(UiCommands.commandsFor('palette', ctx({ parcel: baseFacts() })).map(c => c.id)).toContain('parcel.view3d');
+        expect(UiCommands.commandsFor('palette', ctx({ parcel: baseFacts() })).map(c => c.id)).not.toContain('parcel.view3d');
     });
 
     it('runs a parcel action through ParcelMenu with the parcel it was offered for', () => {

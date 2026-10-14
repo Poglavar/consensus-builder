@@ -7399,8 +7399,9 @@
         viewAngleHintTimer = setTimeout(() => {
             viewAngleHintTimer = null;
             const host = document.getElementById('three-container');
+            const feedbackStack = document.getElementById('map-feedback-stack');
             // Gone from 3D while the timer ran: say nothing.
-            if (!host || !isActive) return;
+            if (!host || !feedbackStack || !isActive) return;
             viewAngleHintShown[key] = true;
             hideViewAngleHint();
             const el = document.createElement('div');
@@ -7413,7 +7414,9 @@
             el.textContent = coarsePointer
                 ? threeI18n('threeMode.hints.viewAngleTouch', 'Drag with two fingers to change the view angle')
                 : threeI18n('threeMode.hints.viewAngle', 'Press Ctrl (or Cmd) and drag to change the view angle');
-            host.appendChild(el);
+            const status = document.getElementById('floating-status');
+            if (status && status.parentNode === feedbackStack) feedbackStack.insertBefore(el, status);
+            else feedbackStack.appendChild(el);
             viewAngleHintHideTimer = setTimeout(hideViewAngleHint, VIEW_ANGLE_HINT_VISIBLE_MS);
         }, VIEW_ANGLE_HINT_DELAY_MS);
     }

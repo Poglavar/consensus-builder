@@ -1,6 +1,6 @@
 // ui/parcel-menu-model.js — the pure half of the parcel menu (the popover a parcel click opens):
 // which actions apply to a parcel given what is known about it, the one-line facts it shows, and
-// where the popover goes relative to the click point. No DOM, no Leaflet; UMD so
+// where the popover goes relative to the parcel and click point. No DOM, no Leaflet; UMD so
 // backend/test/frontend-parcel-menu.test.js loads it headlessly. The DOM half is ui/parcel-menu.js.
 (function (root, factory) {
     const api = factory();
@@ -10,9 +10,9 @@
     'use strict';
 
     // Menu order. Each id is also the suffix of its UiCommands command (`parcel.<id>`).
-    const ACTIONS = Object.freeze(['propose', 'selectMore', 'details', 'history', 'compare', 'tools', 'offer', 'view3d', 'detectBlock', 'useAsSite']);
+    const ACTIONS = Object.freeze(['propose', 'selectMore', 'details', 'history', 'compare', 'tools', 'offer', 'detectBlock', 'useAsSite']);
     // What stays available on a piece of open ground (no cadastral parcel under it).
-    const GROUND_ACTIONS = new Set(['details', 'view3d', 'useAsSite']);
+    const GROUND_ACTIONS = new Set(['details', 'useAsSite']);
 
     // The build palette (parcels/ui/proposal-actions.js renderParcelProposalActions) renders — and
     // with it the Ownership "Offer" tool — whenever there is a parcel context: a non-empty
@@ -37,7 +37,7 @@
     }
 
     // facts: { parcelId, isRoad, multiSelectActive, selectionCount, historyIds: [], blocksEnabled,
-    // can3d, compareCount }. Missing facts count as "not available" — never as a guess that it is.
+    // compareCount }. Missing facts count as "not available" — never as a guess that it is.
     function isActionAvailable(action, facts) {
         const f = facts || {};
         const hasParcel = typeof f.parcelId === 'string' ? f.parcelId !== '' : (typeof f.parcelId === 'number');
@@ -63,8 +63,6 @@
                     selectionCount: f.selectionCount,
                     parcelContextId: f.parcelId
                 });
-            case 'view3d':
-                return f.can3d === true;
             case 'useAsSite':
                 // The parcel (or the selection) as an editable site; needs the site tool.
                 return f.siteToolAvailable === true;
@@ -142,13 +140,33 @@
         return parcelId === undefined || parcelId === null ? '' : String(parcelId);
     }
 
-    // Where the popover goes for a click at `point` (container px): right of and below the point,
-    // flipped to the left / above when it would leave the container, then clamped inside it.
+    // Prefer a clear side of the whole parcel, nearest the click, then space above or below it.
+    // If the parcel fills the view, position from the click and allow overlap, clamped in view.
     function placeMenuAtPoint(point, size, viewport, options = {}) {
         const gap = typeof options.gap === 'number' ? options.gap : 10;
         const margin = typeof options.margin === 'number' ? options.margin : 8;
         const width = Math.max(0, size.width);
         const height = Math.max(0, size.height);
+        const bounds = options.parcelBounds;
+        if (bounds && [bounds.left, bounds.top, bounds.right, bounds.bottom].every(Number.isFinite)
+            && bounds.right >= bounds.left && bounds.bottom >= bounds.top) {
+            const clampX = x => Math.max(margin, Math.min(x, viewport.width - margin - width));
+            const clampY = y => Math.max(margin, Math.min(y, viewport.height - margin - height));
+            const fits = candidate => candidate.left >= margin && candidate.top >= margin
+                && candidate.left + width <= viewport.width - margin
+                && candidate.top + height <= viewport.height - margin;
+            const sides = [
+                { left: bounds.right + gap, top: clampY(point.y - height / 2), distance: bounds.right - point.x, flippedX: false, flippedY: false },
+                { left: bounds.left - gap - width, top: clampY(point.y - height / 2), distance: point.x - bounds.left, flippedX: true, flippedY: false }
+            ];
+            const ends = [
+                { left: clampX(point.x - width / 2), top: bounds.bottom + gap, distance: bounds.bottom - point.y, flippedX: false, flippedY: false },
+                { left: clampX(point.x - width / 2), top: bounds.top - gap - height, distance: point.y - bounds.top, flippedX: false, flippedY: true }
+            ];
+            const nearest = candidates => candidates.filter(fits).sort((a, b) => a.distance - b.distance)[0];
+            const clear = nearest(sides) || nearest(ends);
+            if (clear) return { left: Math.round(clear.left), top: Math.round(clear.top), flippedX: clear.flippedX, flippedY: clear.flippedY };
+        }
         let left = point.x + gap;
         let top = point.y + gap;
         let flippedX = false;

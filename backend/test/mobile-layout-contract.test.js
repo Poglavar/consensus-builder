@@ -176,8 +176,18 @@ describe('3D and photo view', () => {
         expect(read('css/parcel-sources.css')).not.toMatch(/\.source-status-stack\s*\{/);
     });
 
-    it('lifts the view hint clear of the Google attribution, and hides the 2D scale bar', () => {
-        expect(photorealCss).toMatch(/#three-container:has\(\.photoreal-attribution\.visible\) \.three-view-hint\s*\{\s*bottom:\s*64px;/);
+    it('stacks map feedback in normal flow above the dock and hides the hint over the tile-load cover', () => {
+        expect(indexHtml).toMatch(/id="map-feedback-stack"[^>]*>[\s\S]*id="floating-status"/);
+        expect(ruleBody(utilitiesCss, '\.map-feedback-stack')).toMatch(/bottom:\s*var\(--map-shell-bottom-clearance\)/);
+        expect(ruleBody(utilitiesCss, '\.map-feedback-stack')).toMatch(/display:\s*flex/);
+        expect(ruleBody(utilitiesCss, '\.map-feedback-stack')).toMatch(/flex-direction:\s*column/);
+        expect(ruleBody(utilitiesCss, '\.map-feedback-stack')).toMatch(/gap:\s*var\(--cb-space-2\)/);
+        expect(utilitiesCss).toMatch(/body:has\(#selection-tray\) \.map-feedback-stack\s*\{\s*bottom:/);
+        expect(photorealCss).toMatch(/\.map-feedback-stack \.three-view-hint\s*\{[^}]*max-width:\s*100%;/s);
+        expect(photorealCss).not.toMatch(/\.three-view-hint\s*\{[^}]*bottom:/s);
+        expect(photorealCss).toMatch(/#map-container:has\(\.photoreal-cover\) \.three-view-hint\s*\{\s*display:\s*none;/);
+        expect(photorealCss).toMatch(/@keyframes three-view-hint-in\s*\{\s*from\s*\{\s*opacity:\s*0;\s*transform:\s*translateY\(6px\);\s*\}\s*to\s*\{\s*opacity:\s*1;\s*transform:\s*translateY\(0\);/);
+        expect(threeMode).toMatch(/feedbackStack\.insertBefore\(el, status\)/);
         expect(mapCss).toMatch(/body\.three-mode-active \.leaflet-control-scale\s*\{\s*display:\s*none;/);
     });
 });
