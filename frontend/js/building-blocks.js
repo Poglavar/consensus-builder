@@ -1322,19 +1322,33 @@ function showBlockifyModal() {
         const content = container.querySelector('#blockify-sidebar');
         const footer = container.querySelector('#blockify-controls');
         footer.classList.remove('cb-dialog__footer');
-        // Keep the frequently adjusted dimensions visible; secondary reference material expands
-        // in place without taking the map away from the design.
-        for (const [selector, label] of [
-            ['#blockify-density-stats', translateBuildingText('densityStats.title', 'Geometry statistics')],
-            ['.blockify-freeform-only', translateBuildingText('blockify.modal.algorithmLabel', 'Algorithm')]
+        // Keep the central rule and dimensions visible. Disabled experimental controls, import
+        // tools and their supporting notes remain available without competing for the first view.
+        const moreOptions = document.createElement('details');
+        moreOptions.className = 'on-map-editor__more-options';
+        const moreSummary = document.createElement('summary');
+        moreSummary.setAttribute('data-i18n-key', 'onMapEditor.moreOptions');
+        moreSummary.textContent = translateBuildingText('onMapEditor.moreOptions', 'More options');
+        moreOptions.appendChild(moreSummary);
+        const secondaryGroups = new Set();
+        for (const selector of [
+            '#algorithm-select', '#chamfer-slider', '#simplify-slider', '#gaps-slider', '#gap-width-slider', '#wings-slider',
+            '#wing-length-slider', '#blockify-manual-toggle', '.parameter-info'
         ]) {
-            const reference = content.querySelector(selector);
-            if (!reference) continue;
+            const node = content.querySelector(selector);
+            const group = node?.closest('.parameter-group') || node;
+            if (group) secondaryGroups.add(group);
+        }
+        secondaryGroups.forEach(group => moreOptions.appendChild(group));
+        content.appendChild(moreOptions);
+
+        const densityStats = content.querySelector('#blockify-density-stats');
+        if (densityStats) {
             const details = document.createElement('details');
             const summary = document.createElement('summary');
-            summary.textContent = label;
+            summary.textContent = translateBuildingText('densityStats.title', 'Geometry statistics');
             details.appendChild(summary);
-            details.appendChild(reference);
+            details.appendChild(densityStats);
             content.appendChild(details);
         }
         blockifyModal = window.OnMapEditor?.open({

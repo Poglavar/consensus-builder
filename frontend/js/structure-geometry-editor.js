@@ -369,9 +369,11 @@
         const factory = global.GeometryEditHistory;
         if (!factory) return null;
         historyCtl = factory.create({
-            capture: () => clone(state.decorations),
+            capture: () => ({ decorations: clone(state.decorations), pathPoints: clone(state.pathPoints) }),
             restore: (snapshot) => {
-                state.decorations = clone(snapshot);
+                state.decorations = clone(snapshot.decorations);
+                state.pathPoints = clone(snapshot.pathPoints);
+                state.pathCursor = null;
                 render();
             }
         });
@@ -546,24 +548,43 @@
     function placeAt(coord) {
         if (!pointInside(coord)) return rejectOutside();
         if (state.kind === 'park') {
-            if (state.tool === 'tree') state.decorations.trees.push(coord);
+            if (state.tool === 'tree') {
+                recordHistory();
+                state.decorations.trees.push(coord);
+            }
             else if (state.tool === 'pond' || state.tool === 'flowerbed') {
                 const ring = circleRing(coord, footprintRadius());
                 if (!ringInside(ring)) return rejectOutside();
+                recordHistory();
                 state.decorations[state.tool === 'pond' ? 'ponds' : 'flowerbeds'].push(ring);
             } else if (state.tool === 'path') {
+                recordHistory();
                 state.pathPoints.push(coord);
             } else if (state.tool === 'bench') {
+                recordHistory();
                 state.decorations.benches.push({ coordinate: coord, bearing: 0 });
             }
         } else {
-            if (state.tool === 'fountain') state.decorations.fountains.push(coord);
-            else if (state.tool === 'tree') state.decorations.trees.push(coord);
+            if (state.tool === 'fountain') {
+                recordHistory();
+                state.decorations.fountains.push(coord);
+            }
+            else if (state.tool === 'tree') {
+                recordHistory();
+                state.decorations.trees.push(coord);
+            }
             else if (state.tool === 'bench') {
+                recordHistory();
                 state.decorations.benches.push({ coordinate: coord, bearing: 0 });
             }
-            else if (state.tool === 'stall') state.decorations.stalls.push(coord);
-            else if (state.tool === 'statue') state.decorations.statues.push(coord);
+            else if (state.tool === 'stall') {
+                recordHistory();
+                state.decorations.stalls.push(coord);
+            }
+            else if (state.tool === 'statue') {
+                recordHistory();
+                state.decorations.statues.push(coord);
+            }
         }
         render();
     }
@@ -574,7 +595,10 @@
             try {
                 valid = global.turf.booleanWithin(global.turf.lineString(state.pathPoints), state.boundary);
             } catch (_) { valid = false; }
-            if (valid) state.decorations.paths.push(state.pathPoints.slice());
+            if (valid) {
+                recordHistory();
+                state.decorations.paths.push(state.pathPoints.slice());
+            }
             else rejectOutside();
         }
         state.pathPoints = [];
@@ -604,10 +628,8 @@
     function panelMarkup() {
         if (state.kind === 'lake') {
             return `
-                <p class="on-map-editor__hint">${t('instructionsLake', 'Drag boundary points to reshape the lake. Click an edge to add a point; select a point to remove it.')}</p>
                 <p class="structure-geometry-options">${t('lakeBoundaryHint', 'The lake shape and its generated shore and water graphics will be saved together.')}</p>
-                <p class="structure-geometry-error" data-role="lake-error" role="alert" hidden></p>
-                <p class="on-map-editor__hint" data-role="hint"></p>`;
+                `;
         }
         const tools = state.kind === 'park'
             ? [
@@ -624,19 +646,22 @@
                 toolButton('stall', 'fa-utensils', t('tools.stall', 'Table')),
                 toolButton('statue', 'fa-monument', t('tools.statue', 'Statue'))
             ].join('');
-        const title = state.kind === 'park'
-            ? t('titlePark', 'Park editor')
-            : t('titleSquare', 'Square editor');
         return `
-            <p class="on-map-editor__hint">${title}. ${t('instructions', 'Choose an item, then click inside the boundary. Drag any item to move it.')}</p>
-            <div class="structure-geometry-tools">${tools}${toolButton('erase', 'fa-eraser', t('tools.erase', 'Remove'))}</div>
-            <div class="structure-geometry-options">
-                <button type="button" class="btn btn-sm" data-action="finish-path">${t('finishPath', 'Finish path')}</button>
-            </div><p class="on-map-editor__hint" data-role="hint"></p>`;
+            <div class="structure-geometry-tools">${tools}${toolButton('erase', 'fa-eraser', t('tools.erase', 'Remove'))}</div>`;
     }
 
     function footerMarkup() {
-        return `<button type="button" class="btn" data-action="cancel">${t('cancel', 'Cancel')}</button><button type="button" class="btn btn-primary" data-action="save">${t('save', 'Save design')}</button>`;
+        const error = state.kind === 'lake'
+            ? '<p class="structure-geometry-error structure-geometry-footer-error" data-role="lake-error" role="status" aria-live="assertive" hidden></p>'
+            : '';
+        const undoLabel = t('undo', 'Undo');
+        const undo = state.kind === 'lake' ? ''
+            : `<button type="button" class="btn btn-sm" data-action="undo" aria-label="${undoLabel}"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i>${undoLabel}</button>`;
+        const finish = state.kind === 'park'
+            ? `<button type="button" class="btn btn-sm" data-action="finish-path" hidden>${t('finishPath', 'Finish path')}</button>`
+            : '';
+        return `${error}<div class="structure-geometry-footer-tools">${undo}${finish}</div>
+            <div class="structure-geometry-footer-actions"><button type="button" class="btn" data-action="cancel">${t('cancel', 'Cancel')}</button><button type="button" class="btn btn-primary" data-action="save">${t('save', 'Save design')}</button></div>`;
     }
 
     function updatePanelState() {
@@ -651,14 +676,27 @@
             finish.hidden = state.kind !== 'park' || state.tool !== 'path';
             finish.disabled = state.pathPoints.length < 2;
         }
-        const hint = panel.querySelector('[data-role="hint"]');
-        if (hint) hint.textContent = state.kind === 'lake'
-            ? t('hintLake', 'Use the map points to reshape the lake boundary. Undo is available on the map.')
-            : (state.tool === 'erase'
-            ? t('hintErase', 'Click an item to remove it.')
-            : (state.tool
-                ? t('hintPlace', 'Click the map to place the selected item.')
-                : t('hintSelect', 'Select an item to begin.')));
+        if (state.session?.setHint) {
+            if (state.kind === 'lake') {
+                state.session.setHint(t('hintLake', 'Use the map points to reshape the lake boundary. Undo is available on the map.'));
+            } else if (!state.tool) {
+                state.session.setHint(t('hintSelect', 'Select an item to begin.'));
+            } else {
+                const toolLabels = {
+                    tree: t('tools.tree', 'Tree'), flowerbed: t('tools.flowerbed', 'Flowerbed'),
+                    pond: t('tools.pond', 'Pond'), path: t('tools.path', 'Footpath'),
+                    bench: t('tools.bench', 'Bench'), fountain: t('tools.fountain', 'Fountain'),
+                    stall: t('tools.stall', 'Table'), statue: t('tools.statue', 'Statue'),
+                    erase: t('tools.erase', 'Remove')
+                };
+                const instruction = state.tool === 'erase'
+                    ? t('hintErase', 'Click an item to remove it.')
+                    : (state.tool === 'path'
+                        ? t('hintPath', 'Click to add path points, then choose Finish path.')
+                        : t('hintPlace', 'Click the map to place the selected item.'));
+                state.session.setHint(`${toolLabels[state.tool] || ''}: ${instruction}`);
+            }
+        }
         if (state.kind === 'lake') {
             const error = panel.querySelector('[data-role="lake-error"]');
             if (error) {
@@ -845,6 +883,7 @@
         try { global.updateSquaresLayer?.(); } catch (_) { }
         try { global.updateLakesLayer?.(); } catch (_) { }
         if (kind !== 'lake') {
+            ensureHistory()?.bindButton(state.panel.querySelector('[data-action="undo"]'));
             global.map.on('click', onMapClick);
             global.map.on('mousemove', onMapMouseMove);
         }

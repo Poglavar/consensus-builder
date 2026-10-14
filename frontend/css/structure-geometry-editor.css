@@ -8,6 +8,32 @@
 .structure-geometry-options { margin: var(--cb-space-2) 0; }
 .structure-geometry-tools .btn { min-width: 0; white-space: normal; }
 
+.structure-geometry-footer-tools,
+.structure-geometry-footer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+    width: 100%;
+    min-width: 0;
+}
+
+.structure-geometry-footer-error {
+    box-sizing: border-box;
+    flex: 1 0 100%;
+    min-width: 0;
+}
+
+.structure-geometry-footer-actions > .btn {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.structure-geometry-footer-tools:empty { display: none; }
+/* Finish path comes and goes with the path tool; a .btn sets its own display. */
+.structure-geometry-footer-tools [hidden] { display: none; }
+
 .structure-geometry-error {
     margin: var(--cb-space-2) 0;
     padding: var(--cb-space-2) var(--cb-space-3);
@@ -20,13 +46,13 @@
 
 .structure-geometry-error[hidden] { display: none; }
 
-.structure-geometry-tools .btn {
-    flex: 0 0 auto;
+@media (max-width: 639.98px) {
+    .structure-geometry-footer-tools > .btn { min-height: 40px; }
+    .structure-geometry-footer-actions > .btn { min-height: 40px; }
 }
 
-/* Finish path comes and goes with the path tool; a .btn sets its own display. */
-.structure-geometry-options [hidden] {
-    display: none;
+.structure-geometry-tools .btn {
+    flex: 0 0 auto;
 }
 
 .structure-geometry-options label {

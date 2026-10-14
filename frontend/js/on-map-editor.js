@@ -40,9 +40,17 @@
             root.setAttribute('aria-label', options.title || '');
             const panel = node('aside', `on-map-editor__panel${options.wide ? ' on-map-editor__panel--wide' : ''}`, root);
             const header = node('header', 'on-map-editor__header', panel);
-            const heading = node('h2', '', header, options.title || '');
+            const title = node('div', 'on-map-editor__heading', header);
+            node('span', 'on-map-editor__state', title, text('editing', 'Editing'));
+            const heading = node('h2', '', title, options.title || '');
             heading.id = `${root.id}-title`;
+            heading.title = options.title || '';
             panel.setAttribute('aria-labelledby', heading.id);
+            const toggle = node('button', 'btn btn-sm on-map-editor__toggle', header);
+            toggle.type = 'button';
+            node('span', '', toggle, text('controls', 'Controls'));
+            node('i', 'fas fa-chevron-up', toggle).setAttribute('aria-hidden', 'true');
+            toggle.addEventListener('click', () => setCollapsed(!collapsed));
             const cancel = node('button', 'close-circle-btn', header, '×');
             cancel.type = 'button';
             cancel.setAttribute('aria-label', text('cancel', 'Cancel'));
@@ -50,6 +58,8 @@
             const content = node('div', 'on-map-editor__content', panel);
             const hint = node('p', 'on-map-editor__hint', content);
             const body = node('div', 'on-map-editor__body', content);
+            body.id = `on-map-editor-controls-${root.id}`;
+            toggle.setAttribute('aria-controls', body.id);
             appendContent(body, options.content);
             const footer = node('footer', 'on-map-editor__footer', panel);
             appendContent(footer, options.footer);
@@ -74,6 +84,8 @@
             const focusReturn = doc.activeElement;
             let controls = null;
             let closed = false;
+            let collapsed = false;
+            let customHint = null;
             let anchor = null;
             let preview = null;
             let pendingFit = null;
@@ -144,7 +156,8 @@
                 const rect = panel.getBoundingClientRect();
                 const mobile = env.innerWidth < 640;
                 const panelIsLeft = !mobile && rect.left < env.innerWidth / 2;
-                const left = panelIsLeft ? rect.right + 12 : 12;
+                const modeStripRight = doc.getElementById(modeButtons['2d'])?.getBoundingClientRect().right || 0;
+                const left = panelIsLeft ? rect.right + 12 : Math.max(12, modeStripRight + 8);
                 const right = mobile ? env.innerWidth - 12 : panelIsLeft ? env.innerWidth - 12 : rect.left - 12;
                 const bottom = mobile ? rect.top - 12 : env.innerHeight - 100;
                 const width = tools.offsetWidth || 160;
@@ -153,10 +166,32 @@
                 tools.style.top = `${Math.max(76, Math.min(point.y + 28, bottom - height))}px`;
             }
 
+            function updateHint() {
+                const mode = env.__mapModeState?.desired || (env.isThreeModeActive?.() ? 'model' : '2d');
+                hint.textContent = customHint ?? options.hints?.[mode] ?? '';
+                hint.hidden = !hint.textContent;
+            }
+
+            // Folding controls changes only their visibility: the live geometry, current tool,
+            // contextual hint and completion actions stay available on the same map.
+            function setCollapsed(value) {
+                if (closed) return;
+                collapsed = value === true;
+                if (collapsed && body.contains(doc.activeElement)) toggle.focus({ preventScroll: true });
+                body.hidden = collapsed;
+                root.classList.toggle('is-collapsed', collapsed);
+                toggle.setAttribute('aria-expanded', String(!collapsed));
+                const label = collapsed ? text('showControls', 'Show controls') : text('hideControls', 'Hide controls');
+                toggle.setAttribute('aria-label', label);
+                toggle.title = label;
+                positionTools();
+            }
+
+            const panelResize = env.ResizeObserver ? new env.ResizeObserver(positionTools) : null;
+
             function syncMode(notify = true) {
                 const mode = env.__mapModeState?.desired || (env.isThreeModeActive?.() ? 'model' : '2d');
-                hint.textContent = options.hints?.[mode] || '';
-                hint.hidden = !hint.textContent;
+                updateHint();
                 disabledButtons.forEach(({ button }) => { button.disabled = true; });
                 const nextControls = env.getThreeModeInternals?.()?.controls || null;
                 if (nextControls !== controls) {
@@ -211,6 +246,7 @@
                 env.removeEventListener('threeModeReady', onModeChange);
                 doc.removeEventListener('keydown', onKeydown);
                 controls?.removeEventListener('change', positionTools);
+                panelResize?.disconnect();
                 disabledButtons.forEach(({ button, disabled }) => { button.disabled = disabled; });
                 suspended.forEach(({ element, display }) => { if (element.isConnected) element.style.display = display; });
                 root.remove();
@@ -225,6 +261,13 @@
             const session = {
                 root, panel, content, body, footer, tools, map, pane, handlePane, modes,
                 owner: options.owner,
+                get collapsed() { return collapsed; },
+                setCollapsed,
+                setHint(value) {
+                    if (closed) return;
+                    customHint = value == null ? null : String(value);
+                    updateHint();
+                },
                 get preview() { return preview; },
                 setPreview(detail) { if (closed) return; preview = detail || null; announce(); },
                 setAnchor(value) { anchor = value; if (!anchor) tools.hidden = true; else positionTools(); },
@@ -278,6 +321,8 @@
                 env.addEventListener('mapmodechange', onModeChange);
                 env.addEventListener('threeModeReady', onModeChange);
                 doc.addEventListener('keydown', onKeydown);
+                panelResize?.observe(panel);
+                setCollapsed(false);
                 syncMode(false);
                 const desired = env.__mapModeState?.desired || '2d';
                 if (!modes.includes(desired)) Promise.resolve().then(() => { if (!closed) env.requestMapMode?.(modes[0]); });

@@ -15,7 +15,7 @@ function fakeElement(tagName = 'div') {
         disabled: false,
         isConnected: false,
         className: '',
-        classList: { add: vi.fn(), remove: vi.fn() },
+        classList: { add: vi.fn(), remove: vi.fn(), toggle: vi.fn() },
         appendChild(child) { child.remove?.(); child.parentNode = this; this.children.push(child); return child; },
         insertBefore(child, next) {
             child.remove?.(); child.parentNode = this;
@@ -29,6 +29,8 @@ function fakeElement(tagName = 'div') {
             const index = siblings.indexOf(this);
             if (index >= 0) siblings.splice(index, 1);
         },
+        contains(target) { return this === target || this.children.some(child => child.contains?.(target)); },
+        focus: vi.fn(),
         setAttribute(name, value) { this.attributes[name] = String(value); },
         addEventListener: vi.fn(),
         removeEventListener: vi.fn(),
@@ -144,6 +146,71 @@ describe('OnMapEditor shared floating-panel lifecycle', () => {
         session.close();
     });
 
+    it('collapses controls without hiding the editing hint, actions or map tools', () => {
+        const { editor, env, map, envListeners } = runtime();
+        env.innerWidth = 390;
+        const actions = fakeElement('div');
+        actions.id = 'rowhouse-controls';
+        const session = editor.open({
+            owner: 'row-house', id: 'rowhouse', title: 'Row houses', content: 'Parameters', footer: actions, tools: 'Rotate',
+            hints: { '2d': 'Drag the footprint.', model: 'Inspect the building.' }
+        });
+        expect(session.body.id).not.toBe(actions.id);
+        const preview = { draftPreview: { kind: 'buildings', features: [] } };
+        session.setPreview(preview);
+        session.setAnchor({ lat: 1, lng: 2 });
+        const toggle = session.panel.children[0].children.find(child => child.attributes['aria-controls'] === session.body.id);
+        expect(toggle.attributes['aria-expanded']).toBe('true');
+        toggle.addEventListener.mock.calls.find(([name]) => name === 'click')[1]();
+        expect(session.collapsed).toBe(true);
+        expect(session.body.hidden).toBe(true);
+        expect(session.content.hidden).toBe(false);
+        expect(session.content.children[0].textContent).toBe('Drag the footprint.');
+        expect(session.footer.hidden).toBe(false);
+        expect(session.tools.hidden).toBe(false);
+        expect(toggle.attributes['aria-expanded']).toBe('false');
+        expect(editor.getPreview()).toBe(preview);
+        expect(map.fitBounds).not.toHaveBeenCalled();
+
+        env.__mapModeState.desired = 'model';
+        env.isThreeModeActive = () => true;
+        envListeners.get('mapmodechange')();
+        expect(session.collapsed).toBe(true);
+        expect(session.content.children[0].textContent).toBe('Inspect the building.');
+        session.setCollapsed(false);
+        expect(session.body.hidden).toBe(false);
+        expect(toggle.attributes['aria-expanded']).toBe('true');
+        session.close();
+    });
+
+    it('moves keyboard focus out of hidden controls and leaves the edit intact', () => {
+        const { editor, env } = runtime();
+        const onCancel = vi.fn();
+        const session = editor.open({ owner: 'single-building', onCancel });
+        const input = fakeElement('input');
+        session.body.appendChild(input);
+        env.document.activeElement = input;
+        session.setCollapsed(true);
+        const toggle = session.panel.children[0].children.find(child => child.attributes['aria-controls'] === session.body.id);
+        expect(toggle.focus).toHaveBeenCalledWith({ preventScroll: true });
+        expect(onCancel).not.toHaveBeenCalled();
+        expect(editor.isActive()).toBe(true);
+        session.close();
+    });
+
+    it('keeps an active-tool hint visible while controls are collapsed and after a mode repaint', () => {
+        const { editor, envListeners } = runtime();
+        const session = editor.open({ owner: 'park', hints: { '2d': 'Choose an item.' } });
+        session.setHint('Tree · Click inside the boundary to place it.');
+        session.setCollapsed(true);
+        envListeners.get('mapmodechange')();
+        expect(session.content.children[0].hidden).toBe(false);
+        expect(session.content.children[0].textContent).toBe('Tree · Click inside the boundary to place it.');
+        session.setHint(null);
+        expect(session.content.children[0].textContent).toBe('Choose an item.');
+        session.close();
+    });
+
     it('keeps anchored tools hidden until geometry is ready, and hides them when it is cleared', () => {
         const { editor } = runtime();
         const session = editor.open({ owner: 'row-house', tools: 'rotate' });
@@ -153,6 +220,20 @@ describe('OnMapEditor shared floating-panel lifecycle', () => {
         expect(session.tools.style.left).toMatch(/px$/);
         session.setAnchor(null);
         expect(session.tools.hidden).toBe(true);
+        session.close();
+    });
+
+    it('keeps anchored tools clear of the map-mode buttons on narrow screens', () => {
+        const { editor, env, map, buttons } = runtime();
+        env.innerWidth = 320;
+        buttons['mode-2d-toggle'].getBoundingClientRect = () => ({ left: 8, right: 52, top: 400, bottom: 444 });
+        map.latLngToContainerPoint = () => ({ x: 0, y: 380 });
+        const session = editor.open({ owner: 'row-house', tools: 'rotate' });
+        session.panel.getBoundingClientRect = () => ({ left: 60, right: 312, width: 252, top: 472 });
+        session.setAnchor({ lat: 1, lng: 2 });
+        expect(session.tools.hidden).toBe(false);
+        expect(Number.parseFloat(session.tools.style.left)).toBeGreaterThanOrEqual(60);
+        expect(Number.parseFloat(session.tools.style.left) + 160).toBeLessThanOrEqual(308);
         session.close();
     });
 

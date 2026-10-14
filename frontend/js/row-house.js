@@ -1382,42 +1382,45 @@
                         <input type="range" id="rowhouse-height-slider" min="3" max="80" value="${DEFAULT_BUILDING_HEIGHT}" step="1">
                     </div>
                     <div class="parameter-group">
-                        <label for="rowhouse-chamfer-slider">
-                            <span data-i18n-key="rowHouses.modal.labels.chamfer" data-i18n-attr="text">Chamfer (m):</span>
-                            <span id="rowhouse-chamfer-value">${CbFormat.formatNumber(DEFAULT_CHAMFER, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
-                        </label>
-                        <input type="range" id="rowhouse-chamfer-slider" min="0" max="10" value="${DEFAULT_CHAMFER}" step="0.5">
-                    </div>
-                    <div class="parameter-group">
                         <label data-i18n-key="rowHouses.modal.labels.rotation" data-i18n-attr="text">Rotate footprint</label>
                         <div class="single-building-rotation-buttons">
                             <button id="rowhouse-rotate-counterclockwise" class="btn" type="button" data-i18n-key="rowHouses.modal.rotateCounterclockwise" data-i18n-attr="aria-label" aria-label="Rotate counterclockwise 5 degrees"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> 5°</button>
                             <button id="rowhouse-rotate-clockwise" class="btn" type="button" data-i18n-key="rowHouses.modal.rotateClockwise" data-i18n-attr="aria-label" aria-label="Rotate clockwise 5 degrees"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i> 5°</button>
                         </div>
                     </div>
-                    <div class="parameter-group">
-                        <button id="rowhouse-geojson-upload" class="btn btn-block" type="button" data-i18n-key="rowHouses.modal.uploadGeojson" data-i18n-attr="text">Upload GeoJSON</button>
-                        <input id="rowhouse-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
-                    </div>
-                    <div class="parameter-metrics">
-                        <div class="metric-row">
-                            <span data-i18n-key="rowHouses.modal.labels.circumference" data-i18n-attr="text">Circumference (m):</span>
-                            <span id="rowhouse-circumference-value">0</span>
+                    <details class="on-map-editor__more-options">
+                        <summary data-i18n-key="onMapEditor.moreOptions">${translateRowHouseText('onMapEditor.moreOptions', 'More options')}</summary>
+                        <div class="parameter-group">
+                            <label for="rowhouse-chamfer-slider">
+                                <span data-i18n-key="rowHouses.modal.labels.chamfer" data-i18n-attr="text">Chamfer (m):</span>
+                                <span id="rowhouse-chamfer-value">${CbFormat.formatNumber(DEFAULT_CHAMFER, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
+                            </label>
+                            <input type="range" id="rowhouse-chamfer-slider" min="0" max="10" value="${DEFAULT_CHAMFER}" step="0.5">
                         </div>
-                        <div class="metric-row">
-                            <span data-i18n-key="rowHouses.modal.labels.area" data-i18n-attr="text">Area (m²):</span>
-                            <span id="rowhouse-area-value">0</span>
+                        <div class="parameter-group">
+                            <button id="rowhouse-geojson-upload" class="btn btn-block" type="button" data-i18n-key="rowHouses.modal.uploadGeojson" data-i18n-attr="text">Upload GeoJSON</button>
+                            <input id="rowhouse-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
                         </div>
-                        <div class="metric-row">
-                            <span data-i18n-key="rowHouses.modal.labels.volume" data-i18n-attr="text">Volume (m³):</span>
-                            <span id="rowhouse-volume-value">0</span>
+                        <div class="parameter-metrics">
+                            <div class="metric-row">
+                                <span data-i18n-key="rowHouses.modal.labels.circumference" data-i18n-attr="text">Circumference (m):</span>
+                                <span id="rowhouse-circumference-value">0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span data-i18n-key="rowHouses.modal.labels.area" data-i18n-attr="text">Area (m²):</span>
+                                <span id="rowhouse-area-value">0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span data-i18n-key="rowHouses.modal.labels.volume" data-i18n-attr="text">Volume (m³):</span>
+                                <span id="rowhouse-volume-value">0</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="parameter-info">
-                        <p data-i18n-key="rowHouses.modal.helper.adjust">Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.</p>
-                        <p data-i18n-key="rowHouses.modal.helper.dimensions">Length is parallel to the longest parcel side. Width is perpendicular.</p>
-                        <p data-i18n-key="rowHouses.modal.helper.chamfer">Chamfer cuts the corners at 45° angles.</p>
-                    </div>
+                        <div class="parameter-info">
+                            <p data-i18n-key="rowHouses.modal.helper.adjust">Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.</p>
+                            <p data-i18n-key="rowHouses.modal.helper.dimensions">Length is parallel to the longest parcel side. Width is perpendicular.</p>
+                            <p data-i18n-key="rowHouses.modal.helper.chamfer">Chamfer cuts the corners at 45° angles.</p>
+                        </div>
+                    </details>
                 </div>
                 <div id="rowhouse-controls" class="cb-dialog__footer">
                     <div id="rowhouse-info" data-i18n-attr="text" role="status" aria-live="polite"></div>

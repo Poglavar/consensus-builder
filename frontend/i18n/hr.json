@@ -1,7 +1,12 @@
 {
   "onMapEditor": {
     "missingSite": "Ova spremljena zgrada nema valjanu granicu izvorne lokacije pa nije moguće sigurno uređivati njezinu geometriju.",
-    "cancel": "Odustani"
+    "cancel": "Odustani",
+    "editing": "Uređivanje",
+    "controls": "Postavke",
+    "showControls": "Prikaži postavke",
+    "hideControls": "Sakrij postavke",
+    "moreOptions": "Više opcija"
   },
     "optionalTools": {
         "loadFailed": "Alat se nije uspio učitati. Pokušajte ponovno."
@@ -3604,6 +3609,7 @@
             "siteUnavailable": "Ovu lokaciju ovdje nije moguće parcelirati.",
             "siteGroundTaken": "Lokacija pokriva tlo koje je već oblikovao drugi prijedlog: {{names}}. Nacrtajte lokaciju izvan njega ili najprije poništite primjenu tog prijedloga.",
             "layoutTitle": "Početni raspored",
+            "activeMode": "Aktivno: {{mode}}",
             "sharedCourtyard": "Zajedničko dvorište",
             "courtyardFromBuilding": "Iz građevnog bloka",
             "courtyardDraw": "Nacrtaj na karti",
@@ -4995,10 +5001,12 @@
             "erase": "Ukloni"
         },
         "finishPath": "Završi stazu",
+        "undo": "Poništi",
         "cancel": "Odustani",
         "save": "Spremi dizajn",
         "hintErase": "Klikni element da ga ukloniš.",
         "hintPlace": "Klikni na kartu da postaviš odabrani element.",
+        "hintPath": "Klikni za dodavanje točaka staze, zatim odaberi „Završi stazu“.",
         "hintSelect": "Odaberi element za početak.",
         "statusOutside": "Elemente postavljaj unutar granice strukture.",
         "statusSaved": "Dizajn strukture je spremljen."

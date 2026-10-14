@@ -1,7 +1,12 @@
 {
   "onMapEditor": {
     "missingSite": "Este edificio guardado no tiene un límite de terreno válido, por lo que su geometría no se puede editar de forma segura.",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "editing": "Editando",
+    "controls": "Controles",
+    "showControls": "Mostrar controles",
+    "hideControls": "Ocultar controles",
+    "moreOptions": "Más opciones"
   },
     "optionalTools": {
         "loadFailed": "No se pudo cargar esta herramienta. Inténtalo de nuevo."
@@ -3466,6 +3471,7 @@
             },
             "algorithmTitle": "Tipo de reparcelación",
             "layoutTitle": "Distribución inicial",
+            "activeMode": "Activo: {{mode}}",
             "sharedCourtyard": "Patio compartido",
             "courtyardFromBuilding": "De un bloque de edificios",
             "courtyardDraw": "Dibujar en el mapa",
@@ -5003,10 +5009,12 @@
             "erase": "Eliminar"
         },
         "finishPath": "Terminar sendero",
+        "undo": "Deshacer",
         "cancel": "Cancelar",
         "save": "Guardar diseño",
         "hintErase": "Haz clic en un elemento para eliminarlo.",
         "hintPlace": "Haz clic en el mapa para colocar el elemento seleccionado.",
+        "hintPath": "Haz clic para añadir puntos al sendero y luego elige Terminar sendero.",
         "hintSelect": "Selecciona un elemento para empezar.",
         "statusOutside": "Coloca los elementos dentro del límite de la estructura.",
         "statusSaved": "Diseño de la estructura guardado."

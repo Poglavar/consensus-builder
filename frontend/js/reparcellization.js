@@ -329,6 +329,30 @@
         }
     }
 
+    // Keep the selected map mode visible when the settings group is collapsed.
+    function updateActiveModeHint() {
+        const mode = state.drawing.active
+            ? (state.drawing.joint ? t('reparcellization.modal.sharedCourtyard', 'Shared courtyard')
+                : state.drawing.mode === 'line'
+                    ? t('reparcellization.modal.drawLine', 'Draw a line')
+                    : t('reparcellization.modal.drawPlot', 'Draw plot'))
+            : state.erase.active
+                ? t('reparcellization.modal.eraseEdge', 'Erase a boundary')
+                : state.assignMode
+                    ? t('reparcellization.modal.assignOwners', 'Assign owners')
+                    : state.nodeEdit.active
+                        ? t('reparcellization.modal.editNodes', 'Edit boundaries (nodes)')
+                        : '';
+        const active = mode
+            ? t('reparcellization.modal.activeMode', '{{mode}} active', { mode })
+            : '';
+        if (state.activeModeEl) {
+            state.activeModeEl.textContent = active;
+            state.activeModeEl.hidden = !active;
+        }
+        state.session?.setHint?.(active || null);
+    }
+
     function destroyMap() {
         clearTimeout(state.resizeTimer);
         state.resizeTimer = null;
@@ -501,6 +525,7 @@
 
         const algorithmControls = `
                     <div class="reparcel-controls" data-reparcel-alg-group>
+                      <div class="reparcel-secondary-controls" data-reparcel-secondary-controls>
                         <div class="cb-segmented reparcel-alg-options" role="radiogroup" aria-label="${t('reparcellization.modal.layoutTitle', 'Starting layout')}">${buildAlgorithmRadios(state.algorithm)}</div>
                         <div class="reparcel-courtyard-tools" data-reparcel-courtyard-tools hidden>
                             <span class="reparcel-courtyard-label">${t('reparcellization.modal.sharedCourtyard', 'Shared courtyard')}</span>
@@ -514,22 +539,25 @@
                                 ${tool('data-reparcel-line aria-pressed="false"', 'reparcellization.modal.drawLine', 'Draw a line', 'fa-slash')}
                                 ${tool('data-reparcel-erase aria-pressed="false"', 'reparcellization.modal.eraseEdge', 'Erase a boundary', 'fa-eraser')}
                                 ${tool('data-reparcel-nodes aria-pressed="false"', 'reparcellization.modal.editNodes', 'Edit boundaries (nodes)', 'fa-bezier-curve')}
-                                ${tool('data-reparcel-undo-edit disabled', 'reparcellization.modal.undoEdit', 'Undo (Cmd/Ctrl+Z)', 'fa-rotate-left')}
                                 ${tool('data-reparcel-shuffle', 'reparcellization.modal.shuffle', 'Shuffle ownership', 'fa-shuffle')}
                                 <label class="btn btn-icon" title="${uploadLabel}">
                                     <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
                                     <input type="file" accept=".geojson,.json,application/geo+json,application/json" data-reparcel-upload aria-label="${uploadLabel}" hidden>
                                 </label>
                                 <button type="button" class="btn btn-icon reparcel-assign-btn" data-reparcel-assign aria-pressed="false" data-i18n-key="reparcellization.modal.assignOwners" data-i18n-attr="title,aria-label" title="${assignOwnersLabel}" aria-label="${assignOwnersLabel}"><i class="fa-solid fa-user-tag" aria-hidden="true"></i></button>
-                                <button type="button" class="btn btn-sm reparcel-allpublic-btn" data-reparcel-all-public hidden data-i18n-key="reparcellization.modal.allPublic" data-i18n-attr="text" title="${allPublicLabel}">${allPublicLabel}</button>
                                 <span class="reparcel-tools-spacer"></span>
                             </div>
-                            <div class="reparcel-draw-toolbar" data-reparcel-draw-toolbar hidden>
-                                <button type="button" class="btn btn-sm" data-reparcel-undo>${t('reparcellization.modal.drawUndo', 'Undo point')} (U)</button>
-                                <button type="button" class="btn btn-sm btn-success" data-reparcel-finish>${t('reparcellization.modal.drawFinish', 'Finish plot')} (F)</button>
-                                <button type="button" class="btn btn-sm" data-reparcel-cancel-draw>${t('reparcellization.modal.drawCancel', 'Cancel')} (C)</button>
-                            </div>
                         </div>
+                      </div>
+                      <div class="reparcel-persistent-controls">
+                          ${tool('data-reparcel-undo-edit disabled', 'reparcellization.modal.undoEdit', 'Undo (Cmd/Ctrl+Z)', 'fa-rotate-left')}
+                          <button type="button" class="btn btn-sm reparcel-allpublic-btn" data-reparcel-all-public hidden data-i18n-key="reparcellization.modal.allPublic" data-i18n-attr="text" title="${allPublicLabel}">${allPublicLabel}</button>
+                      </div>
+                      <div class="reparcel-draw-toolbar" data-reparcel-draw-toolbar hidden>
+                          <button type="button" class="btn btn-sm" data-reparcel-undo>${t('reparcellization.modal.drawUndo', 'Undo point')} (U)</button>
+                          <button type="button" class="btn btn-sm btn-success" data-reparcel-finish>${t('reparcellization.modal.drawFinish', 'Finish plot')} (F)</button>
+                          <button type="button" class="btn btn-sm" data-reparcel-cancel-draw>${t('reparcellization.modal.drawCancel', 'Cancel')} (C)</button>
+                      </div>
                     </div>`;
 
         // Inputs and outputs are the two halves of a readjustment, so the panel shows both: what
@@ -554,7 +582,7 @@
         const tools = document.createElement('div');
         tools.className = 'reparcel-tools';
         tools.innerHTML = `
-            <div class="reparcel-tools-header"><p class="reparcel-subtitle" data-i18n-key="reparcellization.modal.subtitle" data-i18n-params='${JSON.stringify(subtitleParams)}'>${subtitleText}</p>
+            <div class="reparcel-tools-header"><div class="reparcel-tools-heading"><p class="reparcel-subtitle" data-i18n-key="reparcellization.modal.subtitle" data-i18n-params='${JSON.stringify(subtitleParams)}'>${subtitleText}</p><span class="reparcel-active-mode" data-reparcel-active-mode hidden></span></div>
             <button type="button" class="btn btn-sm reparcel-compare-btn" data-reparcel-compare aria-pressed="false" hidden>${t('mapCompare.toggle', 'Before / After')}</button></div>
             ${algorithmControls}`;
         const content = document.createElement('div');
@@ -619,6 +647,7 @@
         state.subtitleEl = root.querySelector('.reparcel-subtitle');
         state.subtitleData = { algorithmLabel: subtitleParams.algorithm, parcelCount };
         state.statusEl = root.querySelector('[data-reparcel-status]');
+        state.activeModeEl = root.querySelector('[data-reparcel-active-mode]');
 
         const commitBtns = Array.from(root.querySelectorAll('[data-reparcel-commit]'));
         state.commitBtns = commitBtns;
@@ -2215,6 +2244,7 @@
         state.map.on('mousemove', onDrawMouseMove);
         setDrawButtonsActive();
         updateDrawToolbar();
+        updateActiveModeHint();
         setStatus(state.drawing.joint
             ? t('reparcellization.modal.status.courtyardDrawHint', 'Draw the shared courtyard. Its ownership shares follow the private land assigned to each recipient.')
             : state.drawing.mode === 'line'
@@ -2255,6 +2285,7 @@
         }
         setDrawButtonsActive();
         updateDrawToolbar();
+        updateActiveModeHint();
         // Back to the one manual system: the handles describe whatever the plots now are.
         if (state.nodeEdit.active) renderNodeHandles();
     }
@@ -2295,6 +2326,7 @@
         if (next === state.erase.active) return;
         if (next && !eraseAvailable()) return;
         state.erase.active = next;
+        updateActiveModeHint();
         if (state.eraseBtn) state.eraseBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
         if (next) {
             exitCompare();
@@ -2583,6 +2615,7 @@
             toggleEraseMode(false);
         }
         state.nodeEdit.active = next;
+        updateActiveModeHint();
         if (state.nodesBtn) state.nodesBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
         if (next) {
             setStatus(t('reparcellization.modal.status.nodeHint',
@@ -2602,6 +2635,7 @@
         const next = typeof force === 'boolean' ? force : !state.assignMode;
         if (next === state.assignMode) return;
         state.assignMode = next;
+        updateActiveModeHint();
         if (state.assignBtn) state.assignBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
         if (state.modal) state.modal.classList.toggle('reparcel-assign-mode', next);
         const allPublicBtn = state.modal && state.modal.querySelector('[data-reparcel-all-public]');

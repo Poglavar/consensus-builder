@@ -621,33 +621,36 @@
                         </label>
                         <input type="range" id="parcelbased-minplot-slider" min="0" max="10000" value="${DEFAULT_MIN_PLOT_AREA_M2}" step="10">
                     </div>
-                    <div class="parameter-metrics">
-                        <div class="metric-row">
-                            <span data-i18n-key="parcelBased.modal.labels.buildingCount" data-i18n-attr="text">Buildings:</span>
-                            <span id="parcelbased-building-count-value">0</span>
+                    <details class="on-map-editor__more-options">
+                        <summary data-i18n-key="onMapEditor.moreOptions">${translateParcelBasedText('onMapEditor.moreOptions', 'More options')}</summary>
+                        <div class="parameter-metrics">
+                            <div class="metric-row">
+                                <span data-i18n-key="parcelBased.modal.labels.buildingCount" data-i18n-attr="text">Buildings:</span>
+                                <span id="parcelbased-building-count-value">0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span data-i18n-key="parcelBased.modal.labels.totalArea" data-i18n-attr="text">Permitted Footprint (m²):</span>
+                                <span id="parcelbased-total-area-value">0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span data-i18n-key="parcelBased.modal.labels.totalVolume" data-i18n-attr="text">Permitted Volume (m³):</span>
+                                <span id="parcelbased-total-volume-value">0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span data-i18n-key="parcelBased.modal.labels.avgFloors" data-i18n-attr="text">Example Floors (avg):</span>
+                                <span id="parcelbased-avg-floors-value">0</span>
+                            </div>
                         </div>
-                        <div class="metric-row">
-                            <span data-i18n-key="parcelBased.modal.labels.totalArea" data-i18n-attr="text">Permitted Footprint (m²):</span>
-                            <span id="parcelbased-total-area-value">0</span>
+                        <div class="parameter-info">
+                            <p>
+                                <span data-i18n-key="parcelBased.modal.helper.ruleType">What the rule compels: at most this (nobody has to build), between a minimum and this, or exactly this (everyone builds the full envelope).</span>
+                                <span data-i18n-key="parcelBased.modal.helper.maxFloors">Max Floors: the permitted ceiling. The example build-out varies from 1 floor up to it.</span>
+                                <span data-i18n-key="parcelBased.modal.helper.minDistance">Min Distance: buildings are set back this distance from parcel borders.</span>
+                                <span data-i18n-key="parcelBased.modal.helper.minPlotArea">Min Plot Size: plots smaller than this cannot be built on under this rule, and are shown hatched. They have to be merged first.</span>
+                                <span data-i18n-key="parcelBased.modal.helper.regenerate">Click Regenerate for another example build-out. The permitted figures above never change.</span>
+                            </p>
                         </div>
-                        <div class="metric-row">
-                            <span data-i18n-key="parcelBased.modal.labels.totalVolume" data-i18n-attr="text">Permitted Volume (m³):</span>
-                            <span id="parcelbased-total-volume-value">0</span>
-                        </div>
-                        <div class="metric-row">
-                            <span data-i18n-key="parcelBased.modal.labels.avgFloors" data-i18n-attr="text">Example Floors (avg):</span>
-                            <span id="parcelbased-avg-floors-value">0</span>
-                        </div>
-                    </div>
-                    <div class="parameter-info">
-                        <p>
-                            <span data-i18n-key="parcelBased.modal.helper.ruleType">What the rule compels: at most this (nobody has to build), between a minimum and this, or exactly this (everyone builds the full envelope).</span>
-                            <span data-i18n-key="parcelBased.modal.helper.maxFloors">Max Floors: the permitted ceiling. The example build-out varies from 1 floor up to it.</span>
-                            <span data-i18n-key="parcelBased.modal.helper.minDistance">Min Distance: buildings are set back this distance from parcel borders.</span>
-                            <span data-i18n-key="parcelBased.modal.helper.minPlotArea">Min Plot Size: plots smaller than this cannot be built on under this rule, and are shown hatched. They have to be merged first.</span>
-                            <span data-i18n-key="parcelBased.modal.helper.regenerate">Click Regenerate for another example build-out. The permitted figures above never change.</span>
-                        </p>
-                    </div>
+                    </details>
                 </div>
                 <div id="parcelbased-controls" class="cb-dialog__footer">
                     <div id="parcelbased-info" data-i18n-attr="text" role="status" aria-live="polite"></div>

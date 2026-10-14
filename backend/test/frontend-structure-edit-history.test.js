@@ -38,6 +38,14 @@ function makeEditorHarness(decorations, options = {}) {
     const groundRecords = [];
     const lakeError = { hidden: true, textContent: '' };
     const lakeSave = { disabled: false };
+    const finishButton = { hidden: true, disabled: true };
+    const undoButton = {
+        disabled: true, attributes: {}, listeners: {},
+        setAttribute(name, value) { this.attributes[name] = value; },
+        addEventListener(type, handler) { this.listeners[type] = handler; },
+        removeEventListener(type) { delete this.listeners[type]; },
+        fire() { this.listeners.click?.(); }
+    };
     const groups = [];
     const previewLayers = [];
     const panel = {
@@ -57,7 +65,8 @@ function makeEditorHarness(decorations, options = {}) {
             const element = { hidden: false, disabled: false, textContent: '', setAttribute() {} };
             if (selector === '[data-role="lake-error"]') return lakeError;
             if (selector === '[data-action="save"]') return lakeSave;
-            return /finish-path/.test(selector) ? element : (/data-role/.test(selector) ? element : null);
+            if (selector === '[data-action="undo"]') return undoButton;
+            return /finish-path/.test(selector) ? finishButton : (/data-role/.test(selector) ? element : null);
         },
         fireClick({ tool, action }) {
             const target = {
@@ -166,11 +175,22 @@ function makeEditorHarness(decorations, options = {}) {
                 if (!event.shiftKey && snapshots.length) options.restore(snapshots.pop());
             };
             const instance = {
-                record() { snapshots.push(JSON.parse(JSON.stringify(options.capture()))); },
-                undo() { if (!snapshots.length) return false; options.restore(snapshots.pop()); return true; },
+                record() { snapshots.push(JSON.parse(JSON.stringify(options.capture()))); announce(); },
+                undo() {
+                    if (!snapshots.length) return false;
+                    options.restore(snapshots.pop()); announce(); return true;
+                },
                 bindKeyboard(target) { target.addEventListener('keydown', handler, true); },
+                bindButton(button) {
+                    button.addEventListener('click', () => instance.undo());
+                    announce();
+                },
                 destroy() { snapshots.length = 0; }
             };
+            function announce() {
+                undoButton.disabled = snapshots.length === 0;
+                undoButton.setAttribute('aria-disabled', String(snapshots.length === 0));
+            }
             historyInstances.push(instance);
             return instance;
         }
@@ -253,6 +273,8 @@ function makeEditorHarness(decorations, options = {}) {
                 panel.innerHTML = `<header><h2>${value.title}</h2></header>${value.content}${value.footer}`;
                 const session = {
                     root: panel, pane: 'onMapEditorPane', handlePane: 'onMapEditorHandles',
+                    hints: [],
+                    setHint(value) { this.hints.push(value); },
                     fitFeature(feature) { fitFeatures.push(feature); },
                     close() { panel.classList.remove('is-open'); }
                 };
@@ -269,6 +291,7 @@ function makeEditorHarness(decorations, options = {}) {
 
     return {
         context, panel, groups, markers, previewLayers, historyInstances, document,
+        undoButton, finishButton,
         draft,
         groundRecords,
         lakeError,
@@ -405,9 +428,68 @@ describe('structure geometry editor history wiring', () => {
         currentMarkers(harness)[0].fire('click', {});
         expect(currentMarkers(harness)).toHaveLength(0);
 
-        harness.undo();
+        expect(harness.undoButton.disabled).toBe(false);
+        harness.undoButton.fire();
         expect(currentMarkers(harness)).toHaveLength(1);
+        expect(harness.undoButton.disabled).toBe(true);
         expect(harness.save().trees).toEqual([[0.2, 0.2]]);
+    });
+
+    it.each([
+        ['park tree', 'park', { trees: [] }, 'tree', 'trees'],
+        ['square fountain', 'square', { fountains: [], trees: [], benches: [], stalls: [], statues: [] }, 'fountain', 'fountains']
+    ])('undo removes a newly placed %s', (_label, kind, decorations, tool, field) => {
+        const harness = makeEditorHarness(decorations, { kind });
+        expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool });
+        harness.fireMap('click', { latlng: { lng: 0.2, lat: 0.2 } });
+        expect(currentMarkers(harness)).toHaveLength(1);
+        expect(harness.undoButton.disabled).toBe(false);
+
+        harness.undoButton.fire();
+
+        expect(currentMarkers(harness)).toHaveLength(0);
+        expect(harness.save()[field]).toEqual([]);
+    });
+
+    it('keeps a contextual hint and path completion available in the shared footer', () => {
+        const harness = makeEditorHarness({ paths: [] }, { kind: 'park' });
+        expect(harness.open()).toBe(true);
+        expect(harness.panel.innerHTML).not.toContain('data-role="hint"');
+        expect(harness.panel.innerHTML).toContain('data-action="finish-path"');
+        expect(harness.mapEditorSessions[0].hints.at(-1)).toBe('Select an item to begin.');
+
+        harness.panel.fireClick({ tool: 'path' });
+        expect(harness.finishButton.hidden).toBe(false);
+        expect(harness.finishButton.disabled).toBe(true);
+        expect(harness.mapEditorSessions[0].hints.at(-1)).toBe('Footpath: Click to add path points, then choose Finish path.');
+
+        harness.fireMap('click', { latlng: { lng: 0.2, lat: 0.2 } });
+        harness.fireMap('click', { latlng: { lng: 0.4, lat: 0.4 } });
+        expect(harness.finishButton.disabled).toBe(false);
+        harness.panel.fireClick({ action: 'finish-path' });
+        expect(harness.finishButton.hidden).toBe(false);
+        expect(harness.finishButton.disabled).toBe(true);
+        expect(harness.save().paths).toEqual([[[0.2, 0.2], [0.4, 0.4]]]);
+    });
+
+    it('undoes individual path points and restores unfinished points after Finish path', () => {
+        const harness = makeEditorHarness({ paths: [] }, { kind: 'park' });
+        expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: 'path' });
+        harness.fireMap('click', { latlng: { lng: 0.2, lat: 0.2 } });
+        harness.fireMap('click', { latlng: { lng: 0.4, lat: 0.4 } });
+        expect(harness.finishButton.disabled).toBe(false);
+
+        harness.undoButton.fire();
+        expect(harness.finishButton.disabled).toBe(true); // The second point was removed.
+        harness.fireMap('click', { latlng: { lng: 0.4, lat: 0.4 } });
+        harness.panel.fireClick({ action: 'finish-path' });
+        expect(harness.finishButton.disabled).toBe(true);
+
+        harness.undoButton.fire();
+        expect(harness.finishButton.disabled).toBe(false); // Undo restored the unfinished path.
+        expect(harness.save().paths).toEqual([[[0.2, 0.2], [0.4, 0.4]]]);
     });
 
     it('restores a tree coordinate after a marker drag is undone', () => {

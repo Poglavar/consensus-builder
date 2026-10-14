@@ -36,6 +36,27 @@
     gap: 8px;
 }
 
+.reparcel-tools-heading { min-width: 0; }
+
+.reparcel-active-mode {
+    display: block;
+    margin-top: 2px;
+    color: var(--cb-text);
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.reparcel-active-mode[hidden] { display: none; }
+
+.reparcel-persistent-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.on-map-editor.is-collapsed .reparcel-secondary-controls { display: none; }
+
 .reparcel-tools .reparcel-subtitle {
     margin: 0;
     color: var(--cb-text-muted);
@@ -397,8 +418,8 @@
 @media (max-width: 639.98px) {
     .on-map-editor__tools.reparcel-tools-map {
         top: 68px;
-        left: 12px;
-        width: calc(100vw - 24px);
+        left: var(--map-mode-strip, 60px);
+        width: calc(100vw - var(--map-mode-strip, 60px) - 12px);
         max-height: min(32dvh, 300px);
         padding: 8px;
     }
@@ -418,6 +439,7 @@
     .reparcel-actions [data-reparcel-cancel],
     .reparcel-actions [data-reparcel-commit] {
         flex: 1 1 40%;
+        min-width: 0;
     }
 }
 

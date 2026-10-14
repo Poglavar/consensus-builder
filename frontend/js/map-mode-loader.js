@@ -63,6 +63,10 @@
             button.classList.toggle('mode-btn-loading', mode === state.desired && state.pending);
         }
     }
+    function canRequestMapMode(mode) {
+        if (root.roadDrawingMode && mode !== '2d') return false;
+        return !root.OnMapEditor || root.OnMapEditor.allowsMode(mode);
+    }
     const controller = root.__mapModeTransition.createController({
         loadModel: root.__ensure3DModeStack,
         loadPhoto: root.__ensurePhotorealMode,
@@ -74,7 +78,7 @@
         onError: error => console.error('[map-mode] Mode transition failed', error)
     });
     root.requestMapMode = (mode, options) => {
-        if (root.OnMapEditor && !root.OnMapEditor.allowsMode(mode)) return Promise.resolve(false);
+        if (!canRequestMapMode(mode)) return Promise.resolve(false);
         return controller.request(mode, options);
     };
     root.enterThreeMode = options => root.requestMapMode('model', options);

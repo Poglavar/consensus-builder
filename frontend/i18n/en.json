@@ -1,7 +1,12 @@
 {
   "onMapEditor": {
     "missingSite": "This saved building has no valid authored site boundary, so its geometry cannot be edited safely.",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "editing": "Editing",
+    "controls": "Controls",
+    "showControls": "Show controls",
+    "hideControls": "Hide controls",
+    "moreOptions": "More options"
   },
     "optionalTools": {
         "loadFailed": "Could not load this tool. Please try again."
@@ -3416,6 +3421,7 @@
             },
             "algorithmTitle": "Land readjustment type",
             "layoutTitle": "Starting layout",
+            "activeMode": "Active: {{mode}}",
             "sharedCourtyard": "Shared courtyard",
             "courtyardFromBuilding": "From a building block",
             "courtyardDraw": "Draw on map",
@@ -4952,10 +4958,12 @@
             "erase": "Remove"
         },
         "finishPath": "Finish path",
+        "undo": "Undo",
         "cancel": "Cancel",
         "save": "Save design",
         "hintErase": "Click an item to remove it.",
         "hintPlace": "Click the map to place the selected item.",
+        "hintPath": "Click to add path points, then choose Finish path.",
         "hintSelect": "Select an item to begin.",
         "statusOutside": "Place items inside the structure boundary.",
         "statusSaved": "Structure design saved."
