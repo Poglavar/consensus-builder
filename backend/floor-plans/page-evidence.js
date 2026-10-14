@@ -22,6 +22,54 @@ export function normalizeUrl(raw, base) {
     return url.href;
 }
 
+const EUROVILLA_PHOTO = /^https:\/\/static\.eurovilla-cdn\.com\/property-photos\/(\d+)\/(\d+)x(\d+)\/([a-f0-9]{32})\.(jpg|webp|avif)$/i;
+const EUROVILLA_REGION = /^https:\/\/static\.eurovilla-cdn\.com\/regions\//i;
+
+function eurovillaPhotoParts(asset) {
+    const match = String(asset?.url || '').match(EUROVILLA_PHOTO);
+    return match ? { propertyId: match[1], width: Number(match[2]), height: Number(match[3]), imageId: match[4].toLowerCase(), format: match[5].toLowerCase() } : null;
+}
+
+/** Group only the observed Eurovilla resized gallery-photo URLs; preserve nonmatching assets verbatim. */
+export function groupEurovillaPhotoVariants(assets = []) {
+    const groups = new Map(), passthrough = [];
+    for (const asset of assets) {
+        const photo = eurovillaPhotoParts(asset);
+        if (EUROVILLA_REGION.test(String(asset?.url || ''))) {
+            const cleaned = { ...asset, listingOwned: false };
+            delete cleaned.ownerSourceId;
+            delete cleaned.ownerListingUrl;
+            passthrough.push(cleaned);
+            continue;
+        }
+        if (!photo || asset?.kind === 'floor-plan' || asset?.kind === 'document') { passthrough.push(asset); continue; }
+        const key = `${photo.propertyId}/${photo.imageId}`;
+        if (!groups.has(key)) groups.set(key, []);
+        const variants = groups.get(key), duplicate = variants.findIndex(item => item.asset.url === asset.url);
+        if (duplicate < 0) variants.push({ asset, photo });
+        else if (asset.listingOwned && !variants[duplicate].asset.listingOwned) variants[duplicate] = { asset, photo };
+    }
+    for (const variants of groups.values()) {
+        variants.sort((a, b) => (b.photo.width * b.photo.height) - (a.photo.width * a.photo.height)
+            || Number(b.photo.width) - Number(a.photo.width) || Number(b.photo.height) - Number(a.photo.height)
+            || Number(a.photo.format !== 'jpg') - Number(b.photo.format !== 'jpg') || a.asset.url.localeCompare(b.asset.url));
+        const chosen = { ...variants[0].asset };
+        const owned = variants.find(({ asset }) => asset.listingOwned);
+        if (owned && !chosen.listingOwned) {
+            chosen.listingOwned = true;
+            for (const key of ['ownerSourceId', 'ownerListingUrl', 'listingGallery']) {
+                if (chosen[key] === undefined && owned.asset[key] !== undefined) chosen[key] = owned.asset[key];
+            }
+        }
+        const alternatives = [...new Set([...variants.slice(1).map(({ asset }) => asset.url),
+            ...variants.flatMap(({ asset }) => asset.alternateUrls || [])])].filter(url => url !== chosen.url);
+        if (alternatives.length) chosen.alternateUrls = alternatives;
+        else delete chosen.alternateUrls;
+        passthrough.push(chosen);
+    }
+    return passthrough;
+}
+
 function jsonScripts($) { const out = []; $('script[type="application/ld+json"]').each((_, el) => { try { const value = JSON.parse($(el).contents().text()); (Array.isArray(value) ? value : [value]).forEach(item => out.push(item)); } catch (_) {} }); return out; }
 function kindFor(url, text) { const parsed=new URL(url); const value = `${parsed.pathname} ${parsed.search} ${text}`; if (/page=|pagina|stranica|next|sljede/i.test(value)) return 'pagination'; if (/kontakt|contact|agent|office/i.test(value)) return 'contact'; if (/projekt|project|development|residence/i.test(value)) return 'project'; if (/oglas|listing|nekretn|property|stan|apartment/i.test(value)) return 'listing'; return 'other'; }
 function imageKind(url, text) { return PLAN_WORD.test(`${url} ${text}`) || PLAN_LABEL.test(`${url} ${text}`) ? 'floor-plan' : 'image'; }
@@ -315,8 +363,13 @@ export function extractPageEvidence(html, pageUrl, { sourceKind = null, discover
     };
     $('img[src], img[data-src], source[srcset], source[data-srcset], a[href]').each((_, el) => {
         const element = $(el);
-        const raw = element.attr('src') || element.attr('data-src') || element.attr('href') || (element.attr('srcset') || element.attr('data-srcset') || '').split(',')[0].trim().split(' ')[0];
-        addAsset(el, raw);
+        const raw = element.attr('src') || element.attr('data-src') || element.attr('href');
+        if (raw) addAsset(el, raw);
+        const srcset = element.attr('srcset') || element.attr('data-srcset') || '';
+        const candidates = srcset.split(',').map(candidate => candidate.trim().split(/\s+/)[0]).filter(Boolean);
+        const eurovillaCandidates = candidates.filter(candidate => EUROVILLA_PHOTO.test(normalizeUrl(candidate, pageUrl) || ''));
+        if (eurovillaCandidates.length) eurovillaCandidates.forEach(candidate => addAsset(el, candidate));
+        else if (!raw && candidates.length) addAsset(el, candidates[0]);
     });
     // Eurovilla's ordinary plan button uses this public URL in its click handler.
     // Keep the exact data-bp value; the fetcher follows the site's redirect to bytes.
@@ -328,7 +381,7 @@ export function extractPageEvidence(html, pageUrl, { sourceKind = null, discover
             }
         });
     }
-    assets.push(...assetsByUrl.values());
+    assets.push(...groupEurovillaPhotoVariants([...assetsByUrl.values()]));
     // Membership is taken only from the project's own unit table, never recommendation cards.
     const projectListings=[];
     if (/\/(?:projekt|project)\//i.test(new URL(pageUrl).pathname)) {

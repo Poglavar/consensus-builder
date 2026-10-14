@@ -127,7 +127,7 @@ export async function sitePlans(db, listingUrls) {
     return [...reviewed, ...machine];
 }
 
-export async function siteModel(db, listingUrl) {
+export async function siteModel(db, listingUrl, { referencesDb = db } = {}) {
     const listing = (await db.query(`SELECT url, facts, location, location_status FROM floor_plan.listing WHERE url = $1`, [listingUrl])).rows[0];
     if (!listing?.location?.candidates?.length) throw new Error('The listing has no located site.');
     const top = listing.location.candidates[0];
@@ -136,7 +136,7 @@ export async function siteModel(db, listingUrl) {
     const siblings = (await db.query(`SELECT url, facts, location FROM floor_plan.listing
         WHERE location_status IN ('located','probable') AND location->'candidates'->0 IS NOT NULL`)).rows
         .filter(row => siteKey(row.location.candidates[0]) === key);
-    const footprint = await siteFootprint(db, top);
+    const footprint = await siteFootprint(referencesDb, top);
     const permitHeights = (top.permits || []).map(p => p.height).filter(Boolean);
     const storeySources = [...permitHeights.map(text => ({ kind: 'permit', text })),
         ...siblings.map(row => row.location?.signals?.floors).filter(Boolean).map(text => ({ kind: 'listing', text }))];
@@ -153,7 +153,7 @@ export async function siteModel(db, listingUrl) {
         ...[...sheets.values()].flatMap(sheet => sheet.elevations || [])];
     const envelope = buildEnvelope({ footprint: footprint?.geometry || null, footprintSource: footprint?.source || null,
         // An existing building's surveyed height informs the storeys whatever the footprint's source.
-        storeySources, surveyHeightM: footprint?.surveyHeightM ?? await surveyHeight(db, top), elevations });
+        storeySources, surveyHeightM: footprint?.surveyHeightM ?? await surveyHeight(referencesDb, top), elevations });
     let placements = [];
     if (footprint) {
         const outer = largestRing(footprint.geometry), origin = outer[0];
@@ -163,7 +163,7 @@ export async function siteModel(db, listingUrl) {
             const sheet = sheets.get(row.sha256);
             const sheetNorth = typeof sheet?.orientation?.northDeg === 'number' ? sheet.orientation.northDeg : null;
             const rotation = northRotationDeg(row.model) ?? sheetNorth
-                ?? (sheet?.orientation?.streets?.length ? await rotationFromStreets(db, footprint.geometry, sheet.orientation.streets) : null);
+                ?? (sheet?.orientation?.streets?.length ? await rotationFromStreets(referencesDb, footprint.geometry, sheet.orientation.streets) : null);
             const positionPrior = sheet?.keyPlan?.unitCenter ? { center: sheet.keyPlan.unitCenter, weight: 0.2 } : null;
             // Plan geometry is stored in metres (dimensionsM), so its own scale is the prior; reviewed
             // unit models carry a unitId but no scope field.
@@ -196,9 +196,23 @@ export async function siteModel(db, listingUrl) {
 // keeps its row; a changed one replaces it. Sites whose postings carry no plans are still stored,
 // because their envelope and location are reviewable on their own. A pass over every site also
 // removes the models of sites no longer located (the table is derived, so nothing is lost).
-export async function buildSiteModels(db, { limit = 500, log = console.log, build = siteModel, deadline = Infinity } = {}) {
+function validateListingUrls(urls) {
+    if (urls === undefined) return;
+    if (!Array.isArray(urls) || urls.length === 0 || urls.some(value => {
+        if (typeof value !== 'string' || !value.trim() || value !== value.trim()) return true;
+        try {
+            const url = new URL(value);
+            return !['http:', 'https:'].includes(url.protocol) || !url.hostname;
+        } catch { return true; }
+    })) throw new Error('Site-model listing URLs must be a non-empty array of absolute HTTP(S) URLs.');
+}
+
+export async function buildSiteModels(db, { limit = 500, log = console.log, build = siteModel, deadline = Infinity,
+    urls = undefined, referencesDb = db } = {}) {
+    validateListingUrls(urls);
     const rows = (await db.query(`SELECT url, location FROM floor_plan.listing
-        WHERE location_status IN ('located','probable') AND location->'candidates'->0 IS NOT NULL ORDER BY url`)).rows;
+        WHERE location_status IN ('located','probable') AND location->'candidates'->0 IS NOT NULL
+          AND ($1::text[] IS NULL OR url = ANY($1::text[])) ORDER BY url`, [urls])).rows;
     const bySite = new Map();
     for (const row of rows) {
         const key = siteKey(row.location.candidates[0]);
@@ -210,7 +224,7 @@ export async function buildSiteModels(db, { limit = 500, log = console.log, buil
         if (Date.now() >= deadline) break;
         index++;
         try {
-            const model = await build(db, url);
+            const model = await build(db, url, { referencesDb });
             const hash = fingerprint(model);
             const saved = await db.query(`INSERT INTO floor_plan.site_model(site_key, listing_urls, model, model_hash) VALUES($1,$2,$3,$4)
                 ON CONFLICT(site_key) DO UPDATE SET listing_urls=excluded.listing_urls, model=excluded.model, model_hash=excluded.model_hash,
@@ -226,7 +240,7 @@ export async function buildSiteModels(db, { limit = 500, log = console.log, buil
     }
     // A truncated pass cannot tell an unvisited site from a retired one.
     result.deferred = bySite.size - result.built - result.failed;
-    if (!result.deferred && !result.failed) {
+    if (urls === undefined && !result.deferred && !result.failed) {
         const retired = await db.query(`DELETE FROM floor_plan.site_model WHERE NOT (site_key = ANY($1::text[]))`, [[...bySite.keys()]]);
         result.retired = retired.rowCount || 0;
     }

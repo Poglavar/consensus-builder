@@ -16,17 +16,19 @@ const PROTECTION_SQL = `SELECT
  EXISTS(SELECT 1 FROM floor_plan.extraction WHERE sha256=$1 AND
   (status IN ('reviewed','published') OR model ? 'architecture')) AS reviewed_extraction,
  EXISTS(SELECT 1 FROM floor_plan.model_revision WHERE source_sha256=$1 AND
-  (model ? 'architecture' OR model->>'schema' IS DISTINCT FROM 'consensus-builder.floor-plan-draft.v1')) AS reviewed_revision,
- EXISTS(SELECT 1 FROM consensus.building_floor_model WHERE floor_plans::text LIKE '%' || $1 || '%') AS registered_model`;
+  (model ? 'architecture' OR model->>'schema' IS DISTINCT FROM 'consensus-builder.floor-plan-draft.v1')) AS reviewed_revision`;
+const REGISTERED_MODEL_SQL=`SELECT EXISTS(SELECT 1 FROM consensus.building_floor_model
+ WHERE floor_plans::text LIKE '%' || $1 || '%') AS registered_model`;
 
-export async function recordImageDisposition(db,{sourceUrl,sha256,kind,classificationId,confirmed=false,confidence=null}={}) {
+export async function recordImageDisposition(db,{sourceUrl,sha256,kind,classificationId,confirmed=false,confidence=null,
+ referencesDb=db,prune=pruneDiscardedFiles}={}) {
  if(typeof sourceUrl!=='string'||!/^https?:\/\//i.test(sourceUrl)) throw new Error('A source URL is required.');
  if(typeof sha256!=='string'||!/^[a-f0-9]{64}$/i.test(sha256)) throw new Error('A source SHA-256 is required.');
  // envelope = exterior views and non-plan drawings kept as evidence of the building's outer form.
  if(!['floor_plan','photo','render','uncertain','envelope'].includes(kind)) throw new Error('Invalid image kind.');
  if(typeof classificationId!=='string'||!classificationId.trim()||classificationId.length>256) throw new Error('A classification ID is required.');
  const negative=kind==='photo'||kind==='render';
- await db.query('BEGIN');
+ await db.query('BEGIN');let committed=false;
  try {
   const blob=(await db.query('SELECT sha256,media_type,bytes_available AS retained FROM floor_plan.blob WHERE sha256=$1 FOR UPDATE',[sha256])).rows[0];
   const targets=(await db.query(`SELECT url FROM floor_plan.target WHERE current_sha256=$1 AND kind='asset' ORDER BY url FOR UPDATE`,[sha256])).rows;
@@ -39,7 +41,9 @@ export async function recordImageDisposition(db,{sourceUrl,sha256,kind,classific
    await db.query('COMMIT');return {status:'needs_review',sha256};
   }
   if(negative) {
-   const protection=(await db.query(PROTECTION_SQL,[sha256])).rows[0];
+   const protection=(await db.query(PROTECTION_SQL,[sha256])).rows[0]||{};
+   const registeredModel=(await referencesDb.query(REGISTERED_MODEL_SQL,[sha256])).rows[0]?.registered_model;
+   if(registeredModel)protection.registered_model=true;
    const reasons=Object.entries(protection||{}).filter(([,used])=>used).map(([name])=>name);
    if(reasons.length) {await db.query('COMMIT');return {status:'protected',sha256,reasons};}
   }
@@ -51,7 +55,8 @@ export async function recordImageDisposition(db,{sourceUrl,sha256,kind,classific
     WHERE sha256=$1 AND bytes_available`,[sha256,reason]);
   }
   await db.query('COMMIT');
-  if(negative) await pruneDiscardedFiles(db,{hashes:[sha256]});
+  committed=true;
+  if(negative) await prune(db,{hashes:[sha256]});
   return {status:negative?'discarded':'retained',sha256,targets:targets.length};
- } catch(error) {await db.query('ROLLBACK');throw error;}
+ } catch(error) {if(!committed)await db.query('ROLLBACK');throw error;}
 }

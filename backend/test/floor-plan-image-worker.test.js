@@ -69,6 +69,24 @@ describe('durable image classification stage',()=>{
   expect(calls.find(([sql])=>sql.includes('UPDATE floor_plan.target SET image_kind'))[1][1]).toBe('uncertain');
  });
 
+ it('threads external retention dependencies through the classifier adapter',async()=>{
+  const calls=[],db={query:vi.fn(async(sql,params)=>{
+   calls.push([sql,params]);
+   if(sql.includes('SELECT t.url AS source_url'))return{rows:[{source_url:sourceUrl,listing_url:'https://agency.test/listing',sha256:sha}]};
+   if(sql.includes('FROM floor_plan.blob WHERE sha256=$1 FOR UPDATE'))return{rows:[{sha256:sha,media_type:'image/jpeg',retained:true}]};
+   if(sql.includes("FROM floor_plan.target WHERE current_sha256=$1 AND kind='asset'"))return{rows:[{url:sourceUrl}]};
+   return{rows:[],rowCount:1};
+  })};
+  const referencesDb={query:vi.fn(async()=>({rows:[{registered_model:false}]}))};
+  const prune=vi.fn(async()=>{expect(calls.at(-1)[0]).toBe('COMMIT');});
+  const reading={kind:'photo',containsPlan:false,envelopeEvidence:false,confidence:'high',reason:'Photo.'};
+  expect(await imageStageAdapter({dispositionOptions:{referencesDb,prune}}).apply(db,task,{data:reading,model:'cheap-model'}))
+   .toMatchObject({classified:1,discarded:1});
+  expect(referencesDb.query).toHaveBeenCalledOnce();
+  expect(prune).toHaveBeenCalledWith(db,{hashes:[sha]});
+  expect(calls.find(([sql])=>sql.includes('UPDATE floor_plan.image_task SET status'))[1][1]).toBe('complete');
+ });
+
  it('can include known plans in a bounded classifier pilot without deleting during preparation',async()=>{
   const db={query:vi.fn(async sql=>sql.includes('SELECT t.url AS source_url')
    ?{rows:[{source_url:sourceUrl,sha256:sha}]}:{rows:[{labelled:true}]})};
@@ -82,6 +100,8 @@ describe('durable image classification stage',()=>{
 
  it('reapplies a completed hash reading to a newly current URL without queueing another task',async()=>{
   const newUrl='https://cdn.example/new.jpg',calls=[];
+  const referencesDb={query:vi.fn(async()=>({rows:[{registered_model:false}]}))};
+  const prune=vi.fn(async()=>{expect(calls.at(-1)[0]).toBe('COMMIT');});
   const completed={...task,status:'complete',result:{reading:{kind:'render',containsPlan:false,envelopeEvidence:false,confidence:'high',reason:'Room render.',discardConfirmed:true}}};
   const db={query:vi.fn(async(sql,params)=>{
    calls.push([sql,params]);
@@ -93,11 +113,13 @@ describe('durable image classification stage',()=>{
    if(sql.includes('AS nonasset_target')) return {rows:[{}]};
    return {rows:[],rowCount:1};
   })};
-  expect(await enqueueImageTasks(db,{limit:1,site:'opereta.hr'})).toMatchObject({reused:1,enqueued:0});
+  expect(await enqueueImageTasks(db,{limit:1,site:'opereta.hr',dispositionOptions:{referencesDb,prune}})).toMatchObject({reused:1,enqueued:0});
   expect(calls.find(([sql])=>sql.includes('FROM floor_plan.image_task it JOIN'))[0])
    .toContain("it.result->'reading'->>'discardConfirmed'='true'");
   expect(calls.some(([sql])=>sql.includes('UPDATE floor_plan.blob SET bytes_available=false'))).toBe(true);
   expect(calls.some(([sql])=>sql.includes('INSERT INTO floor_plan.image_task'))).toBe(false);
+  expect(referencesDb.query).toHaveBeenCalledOnce();
+  expect(prune).toHaveBeenCalledWith(db,{hashes:[sha]});
  });
 
  it('replays a paid negative reading after bytes were discarded but before task completion',async()=>{

@@ -46,6 +46,38 @@ resumes interrupted file pruning. Compacted raw HTML cannot be reparsed as HTML;
 that command reports skipped compacted sources rather than treating them as empty.
 Models, revisions, processing results and cost records are retained.
 
+### Processing a fixed collection cohort
+
+Pin the collected listing URLs before processing. `locateSites({urls})`, the image
+and plan enqueue functions' `urls` option, and `enqueueSheetTasks({listingUrls})`
+can restrict preparation to that cohort. Pass an explicit `taskIds` allowlist to
+each paid worker; a chunk size alone does not restrict its global queue.
+`processAssets({listingUrls})` scopes both extraction and pending-work counts.
+`buildSiteModels({urls})` rebuilds affected sites with all their current sibling
+postings and never retires unrelated site models.
+
+An archive can use a separate read-only spatial connection: pass `referencesDb`
+to `locateSites` and `buildSiteModels`. Archive evidence and writes still use the
+main connection. Image workers accept
+`dispositionOptions: {referencesDb, prune}`: registered-model protection uses the
+reference connection, and `prune` runs after the archive transaction commits.
+When files live on another host, that callback must delete files on the archive
+host. A local processing mirror must not clear remote storage metadata. Keep
+existing credentials on their configured hosts and verify source sizes/hashes
+before using a mirror.
+
+Known Eurovilla photo variants are grouped by property ID and source image ID.
+The parser chooses the largest observed variant, preferring JPEG at equal size,
+and retains other observed URLs in `alternateUrls`; it does not invent an original
+URL. Generic region pictures are not listing-owned. This grouping is separate
+from byte-hash deduplication and keeps resized copies out of future paid queues.
+
+For a partial publication, upsert only the affected `site_model` rows and copy
+only their retained plan originals. The existing `push-site-models-to-prod.sh`
+replaces the whole production model set and must not be used with a partial
+archive. Read back the public catalogue and source hashes after publication.
+These processing steps do not enable recurring scheduling.
+
 Collection now also compacts completed sources every 50 changed responses and at
 the end of each bounded crawl chunk. The file writer checks actual archive usage,
 including temporary and orphaned files, before a new allocation. Defaults are a

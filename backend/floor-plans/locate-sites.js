@@ -18,19 +18,20 @@ function summarize(entry) {
         featureIds: site.featureIds || [], pinDistanceM: site.pinDistanceM === null ? null : Math.round(site.pinDistanceM) };
 }
 
-export async function locateListing(db, listing, { observedAt = Date.now(), streetIndex } = {}) {
+export async function locateListing(db, listing, { observedAt = Date.now(), streetIndex, referencesDb = db } = {}) {
     const evidence = await readSourceEvidence(db,{url:listing.url,sha256:listing.current_sha256,facts:listing.facts||{}});
     if (!evidence) throw new Error('Listing source evidence is unavailable.');
     const signals = listingSignals({ facts: listing.facts || {}, text: evidence.building.text, title: listing.facts?.title || '', streetIndex });
-    const candidates = await siteCandidates(db, signals);
+    const candidates = await siteCandidates(referencesDb, signals);
     const ranking = rankSites(candidates, signals, { observedAt });
     return { schema: LOCATION_SCHEMA, status: ranking.status, margin: ranking.margin, signals,
         sourceSha256: listing.current_sha256, candidates: ranking.ranked.slice(0, MAX_ALTERNATIVES).map(summarize),
         candidateCount: ranking.ranked.length };
 }
 
-export async function locateSites(db, { limit = 100, urls = null, recheck = false, deadline = Infinity, log = console.log } = {}) {
-    const streetIndex = await zagrebStreetIndex(db);
+export async function locateSites(db, { limit = 100, urls = null, recheck = false, deadline = Infinity, log = console.log,
+    referencesDb = db } = {}) {
+    const streetIndex = await zagrebStreetIndex(referencesDb);
     const rows = (await db.query(`SELECT l.url, l.facts, l.last_observed_at, t.current_sha256
         FROM floor_plan.listing l JOIN floor_plan.target t ON t.url = l.url
         JOIN floor_plan.blob b ON b.sha256 = t.current_sha256
@@ -48,7 +49,7 @@ export async function locateSites(db, { limit = 100, urls = null, recheck = fals
         if (Date.now() >= deadline) { result.deferred = rows.length - result.processed - result.failed; break; }
         try {
             const observedAt = listing.last_observed_at ? new Date(listing.last_observed_at).getTime() : Date.now();
-            const location = await locateListing(db, listing, { observedAt, streetIndex });
+            const location = await locateListing(db, listing, { observedAt, streetIndex, referencesDb });
             // The listing's own signals also decide eligibility for retained postings parsed before the relaxed gate.
             const { schema, ...locationSignals } = location.signals;
             const flags = { locationSignals, hasLocationSignal: Boolean(listing.facts?.explicitLocation) || hasLocationSignal(location.signals) };

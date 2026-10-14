@@ -28,10 +28,37 @@ describe('building-located floor-plan extraction',()=>{
   expect(result).toMatchObject({status:'complete',selected:1,processed:1,needsReview:1,failed:0,pending:0});
   const selection=db.calls.find(call=>call.sql.includes('SELECT e.sha256,b.media_type,b.storage_path'));
   expect(selection.sql).toContain('b.bytes_available');
-  expect(selection.args).toEqual([1]);
+  expect(selection.args).toEqual([1,null]);
   expect(selection.sql).toContain('location_asset.current_sha256=e.sha256');
   expect(selection.sql).toContain('location_asset.kind=\'asset\'');
   expect(extractor).toHaveBeenCalledOnce();
+ });
+
+ it('applies the listing cohort alongside ownership and location gates to selection and all pending counts',async()=>{
+  const urls=['https://agency.test/new/1','https://agency.test/new/2'];
+  const db=mockDb([],{pending:2,deferred:3,awaiting:4}),runExtractor=vi.fn();
+  const result=await processAssets(db,{listingUrls:urls,extractor:runExtractor,log:()=>{}});
+  expect(result).toMatchObject({selected:0,pending:2,awaitingImageClassification:4,deferredUnmatched:3});
+  const selection=db.calls.find(call=>call.sql.includes('SELECT e.sha256,b.media_type,b.storage_path'));
+  expect(selection.args).toEqual([100,urls]);
+  expect(selection.sql).toContain('location_asset.current_sha256=e.sha256');
+  expect(selection.sql).toContain('cohort_listing.asset_urls @>');
+  const scopedCounts=db.calls.filter(call=>call.sql.includes('count(*) AS n')&&call.sql.includes('floor_plan.extraction'));
+  expect(scopedCounts).toHaveLength(3);
+  for(const call of scopedCounts) {
+   expect(call.args).toEqual([urls]);
+   expect(call.sql).toContain('cohort_listing.url=ANY($1::text[])');
+   expect(call.sql).toContain('cohort_listing.asset_urls @>');
+  }
+  expect(runExtractor).not.toHaveBeenCalled();
+ });
+
+ it('rejects empty, duplicate, or non-HTTP listing cohorts before querying',async()=>{
+  for(const listingUrls of [[],['https://agency.test/1','https://agency.test/1'],['file:///tmp/listing']]) {
+   const db=mockDb([]);
+   await expect(processAssets(db,{listingUrls})).rejects.toThrow(/listingUrls must be a nonempty array/);
+   expect(db.query).not.toHaveBeenCalled();
+  }
  });
 
  it('records remaining located work and defers unlocated sources when time runs out',async()=>{

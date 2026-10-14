@@ -20,6 +20,7 @@ function fakeDb({urls=[sourceUrl],protectedBy={}}={}) {
    return {rows:[{sha256,media_type:'image/jpeg',retained:true}]};
   if(sql.includes("FROM floor_plan.target WHERE current_sha256=$1 AND kind='asset'"))
    return {rows:urls.map(url=>({url}))};
+  if(sql.includes('AS registered_model')) return {rows:[{registered_model:Boolean(protectedBy.registered_model)}]};
   if(sql.includes('AS nonasset_target')) return {rows:[protectedBy]};
   return {rows:[],rowCount:1};
  })};
@@ -41,6 +42,26 @@ describe('confirmed image retention',()=>{
   expect(NEGATIVE_IMAGE_CACHE_SQL).toContain('t.image_classified_sha256=t.current_sha256');
   expect(NEGATIVE_IMAGE_CACHE_SQL).toContain("t.image_kind IN ('photo','render')");
   expect(NEGATIVE_IMAGE_CACHE_SQL).toMatch(/^COALESCE\(.*false\)$/s);
+ });
+
+ it('checks registered models on the supplied references DB and prunes only after archive commit',async()=>{
+  const {db,queries}=fakeDb();
+  const referencesDb={query:vi.fn(async(sql,params)=>({rows:[{registered_model:false}]}))};
+  const prune=vi.fn(async()=>{expect(queries.at(-1)[0]).toBe('COMMIT');});
+  expect(await recordImageDisposition(db,{sourceUrl,sha256,kind:'photo',classificationId:'screen-ref',confirmed:true,
+   referencesDb,prune})).toMatchObject({status:'discarded'});
+  expect(referencesDb.query).toHaveBeenCalledOnce();
+  expect(referencesDb.query.mock.calls[0][0]).toContain('consensus.building_floor_model');
+  expect(referencesDb.query.mock.calls[0][1]).toEqual([sha256]);
+  expect(queries.find(([sql])=>sql.includes('AS nonasset_target'))[0]).not.toContain('consensus.building_floor_model');
+  expect(prune).toHaveBeenCalledWith(db,{hashes:[sha256]});
+ });
+
+ it('keeps protection queries on the archive DB by default',async()=>{
+  const {db,queries}=fakeDb({protectedBy:{registered_model:true}});
+  expect(await recordImageDisposition(db,{sourceUrl,sha256,kind:'photo',classificationId:'screen-default',confirmed:true}))
+   .toMatchObject({status:'protected',reasons:['registered_model']});
+  expect(queries.some(([sql])=>sql.includes('AS registered_model')&&sql.includes('consensus.building_floor_model'))).toBe(true);
  });
 
  it.each(['labelled_plan','plan_task','building_task','processed_plan','reviewed_extraction','reviewed_revision','registered_model','nonasset_target','nonasset_observation'])
