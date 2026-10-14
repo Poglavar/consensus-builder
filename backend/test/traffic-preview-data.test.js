@@ -165,10 +165,24 @@ describe('exported traffic preview', () => {
         const sim = new Traffic.Simulation(network, { count: 220, seed: 97 });
         const originalCars = sim.cars.map(car => car.id);
         const violations = [];
+        const sameFlowNeighbor = (fromId, toId) => {
+            const from = network.lanes.get(fromId), to = network.lanes.get(toId);
+            return !!from && !!to && from.sectionId === to.sectionId && from.direction === to.direction
+                && Math.abs(from.ordinal - to.ordinal) <= 1 && Math.abs(from.stripIndex - to.stripIndex) <= 1;
+        };
         let entries = 0;
         for (let tick = 0; tick < 650; tick++) {
             const before = new Map(sim.cars.map(car => [car.id, {
-                mode: car.mode, laneId: car.laneId, s: car.s, connectionId: car.connectionId, changeTo: car.change?.to
+                mode: car.mode, laneId: car.laneId, s: car.s, connectionId: car.connectionId, changeTo: car.change?.to,
+                recovery: car.change?.recovery ? {
+                    sourceLaneId: car.laneId, sourceMode: car.mode, sourceConnectionId: car.connectionId || null,
+                    sourceReceivingLaneId: car.mode === 'connection'
+                        ? network.connections.get(car.connectionId)?.toLaneId || null : null,
+                    to: car.change.to, toConnectionId: car.change.toConnectionId || null,
+                    toReceivingLaneId: car.change.toConnectionId
+                        ? network.connections.get(car.change.toConnectionId)?.toLaneId || null : car.change.to,
+                    toS: car.change.toS
+                } : null
             }]));
             sim.advance(.1);
             for (const car of sim.cars) {
@@ -178,9 +192,62 @@ describe('exported traffic preview', () => {
                 if (previous?.mode === 'connection' && car.mode === 'lane' && !car.traversed?.length) {
                     if (network.connections.get(previous.connectionId).toLaneId !== car.laneId) violations.push('wrong receiving lane');
                 }
+                if (car.change?.recovery) {
+                    const recovery = previous?.recovery || {
+                        sourceLaneId: previous?.laneId, sourceMode: previous?.mode,
+                        sourceConnectionId: previous?.connectionId || null,
+                        sourceReceivingLaneId: previous?.mode === 'connection'
+                            ? network.connections.get(previous.connectionId)?.toLaneId || null : null,
+                        to: car.change.to, toConnectionId: car.change.toConnectionId || null,
+                        toReceivingLaneId: car.change.toConnectionId
+                            ? network.connections.get(car.change.toConnectionId)?.toLaneId || null : car.change.to,
+                        toS: car.change.toS
+                    };
+                    const target = network.lanes.get(recovery.to);
+                    const pivotId = recovery.toConnectionId
+                        ? car.laneId
+                        : car.mode === 'connection' ? network.connections.get(car.connectionId)?.toLaneId : car.laneId;
+                    if (!target || !sameFlowNeighbor(pivotId, target.id)) violations.push('illegal recovery neighbor');
+                    if (recovery.sourceMode === 'connection') {
+                        const sourceMove = network.connections.get(recovery.sourceConnectionId);
+                        if (!sourceMove || sourceMove.fromLaneId !== recovery.sourceLaneId
+                            || sourceMove.toLaneId !== recovery.sourceReceivingLaneId) violations.push('unknown recovery source movement');
+                    }
+                    if (recovery.toConnectionId) {
+                        const movement = network.connections.get(recovery.toConnectionId);
+                        if (!movement || movement.fromLaneId !== recovery.to || !target?.outgoing.includes(movement.id)
+                            || !network.lanes.has(movement.toLaneId)
+                            || movement.toLaneId !== recovery.toReceivingLaneId) violations.push('unknown recovery movement target');
+                    } else if (!target?.routes.length) violations.push('recovery lane has no legal route');
+                }
+                if (previous?.recovery && !car.change?.recovery) {
+                    const recovery = previous.recovery, target = network.lanes.get(recovery.to);
+                    const pivotId = recovery.toConnectionId ? recovery.sourceLaneId
+                        : recovery.sourceMode === 'connection' ? recovery.sourceReceivingLaneId : recovery.sourceLaneId;
+                    if (!target || !sameFlowNeighbor(pivotId, target.id)) violations.push('recovery did not use a same-flow neighbor');
+                    if (recovery.sourceMode === 'connection') {
+                        const sourceMove = network.connections.get(recovery.sourceConnectionId);
+                        if (!sourceMove || sourceMove.fromLaneId !== recovery.sourceLaneId
+                            || sourceMove.toLaneId !== recovery.sourceReceivingLaneId) violations.push('unknown completed recovery source');
+                    }
+                    if (recovery.toConnectionId) {
+                        const movement = network.connections.get(recovery.toConnectionId);
+                        if (car.mode !== 'connection' || car.laneId !== recovery.to || car.connectionId !== recovery.toConnectionId
+                            || car.next !== recovery.toConnectionId || !movement || movement.fromLaneId !== recovery.to
+                            || !target?.outgoing.includes(movement.id) || !network.lanes.has(movement.toLaneId)
+                            || movement.toLaneId !== recovery.toReceivingLaneId) {
+                            violations.push('recovery connection handoff mismatch');
+                        }
+                    } else if (car.mode !== 'lane' || car.laneId !== recovery.to || recovery.toReceivingLaneId !== recovery.to
+                        || !target?.routes.includes(car.next)) {
+                        violations.push('recovery lane handoff mismatch');
+                    }
+                }
                 if (previous?.mode === 'lane' && car.mode === 'lane' && previous.laneId !== car.laneId
-                    && !car.traversed?.length && (previous.changeTo !== car.laneId || !Traffic.laneChangeAllowed(
-                        network.lanes.get(previous.laneId), network.lanes.get(car.laneId)))) violations.push('illegal lane change');
+                    && !car.traversed?.length && (previous.changeTo !== car.laneId || !previous.recovery
+                        && !Traffic.laneChangeAllowed(network.lanes.get(previous.laneId), network.lanes.get(car.laneId)))) {
+                    violations.push('illegal lane change');
+                }
                 let expectedLaneId = previous?.mode === 'connection'
                     ? network.connections.get(previous.connectionId)?.toLaneId : previous?.laneId;
                 for (const connectionId of car.traversed || []) {
@@ -189,7 +256,7 @@ describe('exported traffic preview', () => {
                     const lane = connection && network.lanes.get(connection.fromLaneId);
                     if (!connection || !lane || connection.fromLaneId !== expectedLaneId
                         || !lane.outgoing.includes(connectionId)) {
-                        violations.push('broken traversed connection chain');
+                        violations.push(`broken traversed connection chain: car ${car.id}, previous ${previous?.mode}:${previous?.laneId || previous?.connectionId}, expected ${expectedLaneId}, path ${JSON.stringify(car.traversed)}`);
                         break;
                     }
                     if (Traffic.signalState(network, lane, sim.time, true, lane.path.length) !== 'green') violations.push('red entry');
@@ -219,7 +286,10 @@ describe('exported traffic preview', () => {
             }
             for (const [id, occupants] of sim.occupants()) {
                 if (!network.lanes.has(id)) continue;
-                const ordered = occupants.filter(item => item.s >= 0).sort((a, b) => a.s - b.s);
+                // An active recovery car is physically on its own curved path, so its
+                // projection onto the original lane is not a meaningful queue station.
+                const ordered = occupants.filter(item => item.s >= 0 && !item.car.change?.recovery)
+                    .sort((a, b) => a.s - b.s);
                 for (let i = 1; i < ordered.length; i++) {
                     if (ordered[i].car.id !== ordered[i - 1].car.id && ordered[i].s - ordered[i - 1].s < Traffic.GAP - .01) violations.push('queue overlap');
                 }

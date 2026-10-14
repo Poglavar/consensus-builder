@@ -101,7 +101,15 @@
                 }
             }
         }
-        const result = Engine.refreshNetwork({ ...base, lanes, connections, nodes, fragments, closures }, base.junctionGroups);
+        const closureBlocks = closures.flatMap(closure => {
+            const lane = base.lanes.get(closure.laneId), result = [];
+            for (let s = closure.start; s < closure.end; s += 1) {
+                const length = Math.min(1, closure.end - s);
+                result.push({ pose: G.sample(lane.path, s + length / 2), length, width: lane.width || 3 });
+            }
+            return result;
+        });
+        const result = Engine.refreshNetwork({ ...base, lanes, connections, nodes, fragments, closures, closureBlocks }, base.junctionGroups);
         // A live car may now be in a one-way feeder into a circulating region. Let it
         // reach that region; new cars still spawn only in the strongly connected graph.
         const viable = new Set([...lanes.values()].filter(l => l.routes.length).map(l => l.id));
@@ -214,6 +222,8 @@
             const activating = this.closures.filter(c => c.status === 'pending' && !this.busy(c));
             if (activating.length) changed = true;
             if (changed) {
+                // Keep the two paths of a tactical change intact until it lands.
+                if (this.sim.cars.some(car => car.change?.recovery)) { this.updateGates(); return false; }
                 const active = this.closures.filter(c => c.status === 'active' || activating.includes(c));
                 const anchors = this.sim.cars.filter(c => c.mode === 'connection').map(car => {
                     const move = this.sim.network.connections.get(car.connectionId), target = this.sim.network.lanes.get(move.toLaneId);

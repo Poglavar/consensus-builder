@@ -7,6 +7,7 @@
 })(typeof window !== 'undefined' ? window : null, function (G) {
     'use strict';
     const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
+    const cardinal = angle => ['E', 'N', 'W', 'S'][(Math.round(angle / (Math.PI / 2)) + 4) % 4];
     class LaneIndex {
         constructor(network) {
             this.network = network; this.cells = new Map();
@@ -52,9 +53,10 @@
                 if (Math.abs(Math.cos(angle - p.angle)) < .96) continue;
                 const offset = dot([xy[0] - point[0], xy[1] - point[1]], normal);
                 if (Math.abs(offset) > 65 || best && Math.abs(best.offset) < Math.abs(offset)) continue;
+                const direction = Math.cos(angle - p.angle) >= 0 ? p.angle : p.angle + Math.PI;
                 best = { laneId: candidate.id, ordinal: candidate.ordinal, width: candidate.width || 3, point: xy, angle, offset,
                     s: candidate.path.arcs[i - 1] + (candidate.path.arcs[i] - candidate.path.arcs[i - 1]) * f,
-                    direction: ['E', 'N', 'W', 'S'][(Math.round(angle / (Math.PI / 2)) + 4) % 4] };
+                    direction: cardinal(direction) };
             }
             if (best && !crossings.some(c => Math.hypot(c.point[0] - best.point[0], c.point[1] - best.point[1]) < .5)) crossings.push(best);
         }
@@ -99,6 +101,17 @@
             const duration = Math.max(1, Math.min(60, time - meter.since));
             return meter.lanes.map(l => ({ ...l, count: meter.counts.get(l.laneId),
                 rate: meter.events.filter(e => e.laneId === l.laneId).length * 60 / duration }));
+        }
+        directions(meter) {
+            const groups = new Map();
+            for (const lane of meter.lanes) {
+                if (!groups.has(lane.direction)) groups.set(lane.direction, { direction: lane.direction, count: 0, offset: 0, lanes: 0 });
+                const group = groups.get(lane.direction);
+                group.count += meter.counts.get(lane.laneId) || 0;
+                group.offset += lane.offset;
+                group.lanes++;
+            }
+            return [...groups.values()].map(group => ({ ...group, offset: group.offset / group.lanes }));
         }
     }
     return { LaneIndex, profile, Counters };

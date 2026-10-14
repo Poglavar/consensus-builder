@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import Collision from '../../frontend/traffic/collision.js';
 
-const { LENGTH, WIDTH, overlaps, Index } = Collision;
+const { LENGTH, WIDTH, overlaps, overlapsRectangle, Index } = Collision;
 const pose = (x, y, angle = 0) => ({ x, y, angle });
 
 function polygonOverlap(a, b, margin) {
@@ -35,6 +35,27 @@ describe('traffic vehicle collision geometry', () => {
         // The boxes overlap where perpendicular paths cross even though their
         // longitudinal axes differ.
         expect(overlaps(pose(0, 0, 0), pose(0, 0, Math.PI / 2))).toBe(true);
+    });
+
+    it('checks car footprints against rectangular closure barriers with the collision margin', () => {
+        const car = pose(0, 0);
+        expect(overlapsRectangle(car, pose(3.1, 0), 1, 3.5)).toBe(false);
+        expect(overlapsRectangle(car, pose(2.8, 0), 1, 3.5)).toBe(true);
+        // The exact contact threshold is 2.2 + 0.5 + .12 + .12; touching stays clear.
+        expect(overlapsRectangle(car, pose(2.94, 0), 1, 3.5)).toBe(false);
+    });
+
+    it('separates perpendicular barriers and rotated rectangles whose AABBs overlap', () => {
+        expect(overlapsRectangle(pose(0, 0), pose(0, 3, Math.PI / 2), 1, 3.5)).toBe(false);
+        const rotatedBarrier = pose(3.7, 2.4, Math.PI / 4);
+        const barrierHalfX = .5 * Math.abs(Math.cos(rotatedBarrier.angle))
+            + 1.75 * Math.abs(Math.sin(rotatedBarrier.angle));
+        const barrierHalfY = .5 * Math.abs(Math.sin(rotatedBarrier.angle))
+            + 1.75 * Math.abs(Math.cos(rotatedBarrier.angle));
+        expect(Math.abs(rotatedBarrier.x)).toBeLessThan(LENGTH / 2 + barrierHalfX);
+        expect(Math.abs(rotatedBarrier.y)).toBeLessThan(WIDTH / 2 + barrierHalfY);
+        // Their axis-aligned bounds overlap on x and y, but their actual boxes are apart.
+        expect(overlapsRectangle(pose(0, 0), rotatedBarrier, 1, 3.5)).toBe(false);
     });
 
     it('allows cars travelling in adjacent lanes three metres apart', () => {

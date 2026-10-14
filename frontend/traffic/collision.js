@@ -30,6 +30,23 @@
             && Math.abs(dx * bb.cos + dy * bb.sin) < lengthRadius
             && Math.abs(-dx * bb.sin + dy * bb.cos) < widthRadius;
     }
+    function overlapsRectangle(vehiclePose, rectanglePose, length, width, margin = MARGIN) {
+        const dx = rectanglePose.x - vehiclePose.x, dy = rectanglePose.y - vehiclePose.y;
+        const aa = heading(vehiclePose), bb = heading(rectanglePose);
+        const aligned = Math.abs(aa.cos * bb.cos + aa.sin * bb.sin);
+        const crossed = Math.abs(aa.cos * bb.sin - aa.sin * bb.cos);
+        const vehicleHalfLength = LENGTH / 2 + margin, vehicleHalfWidth = WIDTH / 2 + margin;
+        const rectangleHalfLength = length / 2 + margin, rectangleHalfWidth = width / 2 + margin;
+        const epsilon = 1e-7;
+        return Math.abs(dx * aa.cos + dy * aa.sin)
+                < vehicleHalfLength + rectangleHalfLength * aligned + rectangleHalfWidth * crossed - epsilon
+            && Math.abs(-dx * aa.sin + dy * aa.cos)
+                < vehicleHalfWidth + rectangleHalfLength * crossed + rectangleHalfWidth * aligned - epsilon
+            && Math.abs(dx * bb.cos + dy * bb.sin)
+                < rectangleHalfLength + vehicleHalfLength * aligned + vehicleHalfWidth * crossed - epsilon
+            && Math.abs(-dx * bb.sin + dy * bb.cos)
+                < rectangleHalfWidth + vehicleHalfLength * crossed + vehicleHalfWidth * aligned - epsilon;
+    }
     class Index {
         constructor() { this.cells = new Map(); this.positions = new Map(); }
         key(p) { return `${Math.floor(p.x / 8)}:${Math.floor(p.y / 8)}`; }
@@ -62,5 +79,5 @@
         }
         blocked(id, pose, before = pose) { return this.blocker(id, pose, before) != null; }
     }
-    return { LENGTH, WIDTH, overlaps, Index };
+    return { LENGTH, WIDTH, overlaps, overlapsRectangle, Index };
 });

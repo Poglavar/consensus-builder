@@ -10,6 +10,9 @@ stvarnu crtu zaustavljanja, razmak iza vozila i fizičko preklapanje karoserija 
 Na zelenom ulaze i kada je nizvodno red; prolaze slobodni dio koraka pa čekaju ako je put zauzet.
 Već prijeđeni semafor ne zaustavlja ih ponovno. Pri velikoj gustoći mogu nastati zastoji i potpune
 blokade; simulator ne optimizira tok prometa.
+Ako je vozilo blokirano, može se polako prestrojiti u slobodnu susjednu traku i unutar raskrižja,
+uključujući prelazak oznake koja inače ograničava promjenu trake. Ne prelazi u suprotni smjer
+niti prolazi kroz vozila, crveno svjetlo ili zatvorenu dionicu.
 
 Prekidač **Zvuk** uključuje tihu, udaljenu buku motora i guma vozila u vidljivom području.
 Zvuk počinje nakon interakcije sa stranicom i utiša se pri pauziranju ili skrivanju kartice.
@@ -31,8 +34,9 @@ služe samo za prikaz. Simulacijski graf `lanes` sadrži trake dostupne automobi
 njihove izričito dopuštene veze. Površinska geometrija ne dodaje kretanja u graf.
 
 Alat **Zatvori traku** zatvara dionice od 5 ili 10 metara; zauzeta dionica čeka da je vozila napuste.
-Vozila obilaze prepreku samo dopuštenim susjednim trakama, a bez dopuštenog obilaska čekaju.
-Alat **Mjeri protok** broji simulirana vozila po traci i smjeru do 60 simuliranih sekundi. Zatvaranja,
+Vozila obilaze prepreku preko susjednih traka u istom smjeru; bez slobodnog obilaska čekaju.
+Alat **Mjeri protok** broji sve prelaze preko crte po traci; na karti prikazuje zbroj za svaki smjer.
+Protok u vozilima po minuti računa se iz posljednjih 60 simuliranih sekundi. Zatvaranja,
 mjerači i stanje prometa postoje samo u otvorenoj stranici. To su rezultati simulacije, a ne prognoza
 ili kalibrirano mjerenje cestovnog prometa.
 

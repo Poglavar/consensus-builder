@@ -26,8 +26,10 @@
     map.setView(initialView.slice(0, 2), initialView[2]);
     if (Object.hasOwn(places, initialPlace)) document.querySelectorAll('[data-place]').forEach(button =>
         button.classList.toggle('active', button.dataset.place === initialPlace));
-    const guideCanvas = $('guides'), carCanvas = $('cars');
-    const guides = guideCanvas.getContext('2d'), ctx = carCanvas.getContext('2d');
+    const guideCanvas = $('guides'), carCanvas = $('cars'), meterCanvas = document.createElement('canvas');
+    meterCanvas.setAttribute('aria-hidden', 'true');
+    meterCanvas.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:430';
+    const guides = guideCanvas.getContext('2d'), ctx = carCanvas.getContext('2d'), meterContext = meterCanvas.getContext('2d');
     let baseNetwork, editor, laneIndex, hover = null, meterHover = null, selectedMeter = null, tool = 'inspect', roadEdges, transitionEdges, surface;
     let network, sim, running = !reduced, rate = 2, seed = 52, selected = null, following = false;
     let selectedInfo = null;
@@ -36,8 +38,8 @@
     let screenCars = [], frameCount = 0, tileErrors = 0;
     tiles.on('tileerror', () => { tileErrors++; });
 
-    const scene = new window.TrafficSceneLayer([guideCanvas, carCanvas], () => {
-        size = scene.size; updateTransform(); drawGuides(); drawCars();
+    const scene = new window.TrafficSceneLayer([guideCanvas, carCanvas, meterCanvas], () => {
+        size = scene.size; updateTransform(); drawGuides(); drawCars(); drawMeterLabels();
     });
     scene.addTo(map);
     function resize() {
@@ -170,7 +172,41 @@
             guides.strokeStyle = meter.id === selectedMeter ? '#4dd9dc' : '#98eeee'; guides.lineWidth = 2;
             line(guides, G.path(meter.ends));
             for (const point of meter.ends) { const p = screen(point); guides.beginPath(); guides.arc(p.x, p.y, 3.5, 0, Math.PI * 2); guides.fillStyle = '#e5ffff'; guides.fill(); }
-            if (meter.id) { const p = screen(meter.center); guides.fillStyle = '#0c656c'; guides.fillRect(p.x - 12, p.y - 10, 24, 20); guides.fillStyle = '#fff'; guides.font = '11px system-ui'; guides.textAlign = 'center'; guides.fillText(String(meter.id), p.x, p.y + 4); }
+        }
+        drawMeterLabels();
+    }
+    function drawMeterLabels() {
+        if (!transform || !meterContext) return;
+        meterContext.clearRect(0, 0, size.x, size.y);
+        const arrows = { E: '→', N: '↑', W: '←', S: '↓' };
+        const cardinal = angle => ['E', 'N', 'W', 'S'][(Math.round(angle / (Math.PI / 2)) + 4) % 4];
+        meterContext.font = '600 12px system-ui'; meterContext.textAlign = 'center'; meterContext.textBaseline = 'middle';
+        for (const meter of counters.meters) {
+            const groups = counters.directions(meter);
+            const base = screen(meter.point);
+            const tangentEnd = screen([meter.point[0] + meter.tangent[0], meter.point[1] + meter.tangent[1]]);
+            const tx = tangentEnd.x - base.x, ty = tangentEnd.y - base.y, length = Math.hypot(tx, ty) || 1;
+            const forward = cardinal(Math.atan2(meter.tangent[1], meter.tangent[0]));
+            const labels = groups.map(group => {
+                const center = screen([meter.point[0] + meter.normal[0] * group.offset,
+                    meter.point[1] + meter.normal[1] * group.offset]);
+                const label = `${arrows[group.direction] || '•'} ${group.count}`;
+                return { group, center, label, width: meterContext.measureText(label).width + 12, height: 20 };
+            });
+            const separation = labels.length > 1
+                ? Math.hypot(Math.max(...labels.map(label => label.width)), 20) / 2 + 6 : 0;
+            for (const { group, center, label, width, height } of labels) {
+                if (!visible(center)) continue;
+                const side = group.direction === forward ? 1 : -1;
+                const point = { x: center.x + tx / length * side * separation, y: center.y + ty / length * side * separation };
+                if (separation) {
+                    meterContext.beginPath(); meterContext.moveTo(center.x, center.y); meterContext.lineTo(point.x, point.y);
+                    meterContext.strokeStyle = '#173c3a99'; meterContext.lineWidth = 1; meterContext.stroke();
+                }
+                meterContext.fillStyle = meter.id === selectedMeter ? '#0c656cf2' : '#173c3ae8';
+                meterContext.fillRect(point.x - width / 2, point.y - height / 2, width, height);
+                meterContext.fillStyle = '#fff'; meterContext.fillText(label, point.x, point.y + .5);
+            }
         }
     }
 
@@ -420,7 +456,7 @@
         }
         drawCars();
         if (editor?.update()) { network = sim.network; drawGuides(); }
-        if (now - uiTime > 250) { updateUI(); updateAudio(); uiTime = now; }
+        if (now - uiTime > 250) { updateUI(); updateAudio(); drawMeterLabels(); uiTime = now; }
         if (running && !document.hidden) frameId = requestAnimationFrame(animate);
     }
     function wake() { previousFrame = null; if (frameId == null && !document.hidden) frameId = requestAnimationFrame(animate); }

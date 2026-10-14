@@ -134,8 +134,21 @@
             nodes.get(lane.toNode)?.incoming.push(lane.id);
         }
         for (const siblings of sections.values()) {
-            for (const from of siblings) from.adjacent = siblings.filter(to => laneChangeAllowed(from, to)
-                && to.routes.length && to.region === from.region).map(to => to.id);
+            for (const from of siblings) {
+                from.adjacent = siblings.filter(to => laneChangeAllowed(from, to)
+                    && to.routes.length && to.region === from.region).map(to => to.id);
+                from.neighbours = siblings.filter(to => !to.ghost && to.id !== from.id
+                    && Math.abs(to.ordinal - from.ordinal) === 1
+                    && Math.abs(to.stripIndex - from.stripIndex) === 1).map(to => to.id);
+            }
+            const distance = new Map(), queue = siblings.filter(lane => lane.routes.length && !lane.ghost);
+            for (const lane of queue) distance.set(lane.id, 0);
+            for (let i = 0; i < queue.length; i++) for (const id of queue[i].neighbours) {
+                const lane = lanes.get(id);
+                if (lane.fromNode !== queue[i].fromNode || lane.toNode !== queue[i].toNode || distance.has(id)) continue;
+                distance.set(id, distance.get(queue[i].id) + 1); queue.push(lane);
+            }
+            for (const lane of siblings) lane.recoveryDistance = distance.get(lane.id) ?? Infinity;
         }
         // Group split physical junctions for route selection and spawn placement.
         const parents = new Map([...nodes.keys()].map(id => [id, id]));
@@ -237,7 +250,14 @@
         const weights = [];
         let totalWeight = 0;
         for (const lane of spawnLanes) { totalWeight += lane.path.length; weights.push(totalWeight); }
-        return Object.assign(network, { spawnLanes, weights, totalWeight });
+        const movementsByApproach = new Map();
+        for (const connection of connections.values()) {
+            const from = lanes.get(connection.fromLaneId);
+            const key = `${junctionGroups.get(connection.nodeId)}:${from.sectionId}:${from.direction}`;
+            if (!movementsByApproach.has(key)) movementsByApproach.set(key, []);
+            movementsByApproach.get(key).push(connection.id);
+        }
+        return Object.assign(network, { spawnLanes, weights, totalWeight, movementsByApproach });
     }
 
     function signalAspect(signal, phaseKey, time, enabled = true) {
@@ -294,6 +314,15 @@
         }
 
         carOccupancies(car) {
+            if (car.change?.recovery) {
+                const change = car.change;
+                const entries = this.carOccupancies({ ...car, change: null });
+                const target = change.toConnectionId ? this.network.connections.get(change.toConnectionId) : this.network.lanes.get(change.to);
+                const pose = this.pose(car), s = Geometry.nearest(target.path, [pose.x, pose.y]).s;
+                entries.push([target.id, s]);
+                if (change.toConnectionId) entries.push([target.toLaneId, s - target.path.length]);
+                return entries;
+            }
             if (car.mode === 'lane') {
                 const entries = [[car.laneId, car.s]];
                 if (car.change) entries.push([car.change.to,
@@ -360,6 +389,65 @@
         }
         canEnter(car, connection, occupied, checkSignal = true) { return this.entryBlocker(car, connection, occupied, checkSignal) == null; }
 
+        tryRecovery(car, occupied) {
+            if (car.change || (car.blockedFor || 0) < 1) return;
+            const n = this.network, { lane, move, route } = this.routeInfo(car), start = this.pose(car);
+            const choices = [];
+            const consider = (target, mode, station) => {
+                const source = mode === 'connection' ? n.lanes.get(target.fromLaneId) : target;
+                const exit = mode === 'connection' ? n.lanes.get(target.toLaneId) : target;
+                const current = move ? n.lanes.get(move.toLaneId) : lane;
+                const intermediate = !exit.routes.length && exit.recoveryDistance < current.recoveryDistance;
+                if ((!exit.routes.length && !intermediate) || source.ghost) return;
+                const near = Geometry.nearest(target.path, [start.x, start.y]);
+                if (near.distance > 6 || Math.cos(near.angle - start.angle) < .8) return;
+                if (mode === 'connection' && signalState(n, source, this.time, this.signals,
+                    Geometry.nearest(source.path, [start.x, start.y]).s) !== 'green') return;
+                let endS = Math.min(target.path.length, station ?? near.s + 8);
+                if (mode === 'lane') {
+                    for (const control of target.signals) if (control.stopS >= near.s - 1e-6) endS = Math.min(endS, control.stopS - .2);
+                }
+                if (endS < near.s - .01) return;
+                const probe = { ...car, change: null, mode, laneId: source.id,
+                    connectionId: mode === 'connection' ? target.id : null, s: endS,
+                    next: (exit.exitRoutes?.length ? exit.exitRoutes : exit.routes)[0] };
+                const space = this.limits(probe, occupied);
+                if (space.clearance < 1 || space.gate < .1 || space.signal < .1) return;
+                const end = sample(target.path, endS), path = Geometry.taper(start, end);
+                if (path.length < 1 || path.length > 22) return;
+                // A tactical change may cross a lane marking, never a barrier.
+                for (let s = 0; s <= path.length + .5; s += .5) {
+                    const pose = sample(path, Math.min(s, path.length));
+                    if ((n.closureBlocks || []).some(block => Collision.overlapsRectangle(pose, block.pose, block.length, block.width))) return;
+                }
+                choices.push({ to: source.id, toConnectionId: mode === 'connection' ? target.id : null,
+                    toS: endS, path, s: 0, progress: 0, recovery: true,
+                    score: near.distance + path.length * .05 + (intermediate ? 4 + exit.recoveryDistance * 8 : 0) });
+            };
+            if (!move) for (const id of lane.neighbours || []) {
+                const target = n.lanes.get(id), near = Geometry.nearest(target.path, [start.x, start.y]);
+                if (near.distance > 6 || Math.cos(near.angle - start.angle) < .8) continue;
+                if (target.path.length - near.s < 8) {
+                    const routes = target.routes.length ? target.routes : Number.isFinite(target.recoveryDistance) ? target.outgoing : [];
+                    for (const id of routes) consider(n.connections.get(id), 'connection', Math.min(8, n.connections.get(id).path.length));
+                }
+                consider(target, 'lane');
+            }
+            if (move) {
+                const key = `${n.junctionGroups.get(move.nodeId)}:${lane.sectionId}:${lane.direction}`;
+                for (const id of n.movementsByApproach.get(key) || []) {
+                    const target = n.connections.get(id), from = n.lanes.get(target.fromLaneId);
+                    if (id === move.id || Math.abs(from.ordinal - lane.ordinal) > 1) continue;
+                    consider(target, 'connection');
+                }
+                const receiving = n.lanes.get(move.toLaneId);
+                for (const id of receiving.neighbours || []) consider(n.lanes.get(id), 'lane');
+            }
+            if (!choices.length) return;
+            car.change = choices.sort((a, b) => a.score - b.score)[0];
+            car.state = 'changing';
+        }
+
         tryLaneChange(car, occupied) {
             const from = this.network.lanes.get(car.laneId);
             if (this.gates.length || from.fragment || car.change || car.speed < 2 || car.s < 15 || from.path.length - car.s < Math.max(40, car.speed * 5)
@@ -398,7 +486,7 @@
                             && other.fromLaneId !== move.fromLaneId) continue;
                     }
                     const distance = (entry.s - station - GAP) / ratio;
-                    if (entry.car !== car && entry.s >= station - 1e-7 && distance < clearance) {
+                    if (entry.car.id !== car.id && entry.s >= station - 1e-7 && distance < clearance) {
                         clearance = distance; leader = entry.car.id;
                     }
                 }
@@ -408,12 +496,12 @@
                 ahead(move.toLaneId, car.s - route.length, 1, true);
                 ahead(move.fromLaneId, lane.path.length + car.s);
             }
-            if (car.change) {
+            if (car.change && !car.change.recovery) {
                 const target = n.lanes.get(car.change.to), ratio = target.path.length / lane.path.length;
                 ahead(target.id, car.s * ratio, ratio);
             }
             let signal = move ? Infinity : signalStoppingDistance(n, lane, car.s, this.time, this.signals);
-            if (car.change) {
+            if (car.change && !car.change.recovery) {
                 const target = n.lanes.get(car.change.to), ratio = target.path.length / lane.path.length;
                 signal = Math.min(signal, signalStoppingDistance(n, target, car.s * ratio, this.time, this.signals) / ratio);
             }
@@ -453,6 +541,7 @@
         inspectCar(car) {
             const signal = this.signalAhead(car);
             if (car.speed >= .05) return { kind: 'moving', speed: car.speed * 3.6, signal };
+            if (car.change?.blockerId != null) return { kind: 'following', carId: car.change.blockerId, signal };
             if (car.collisionBlocker != null) return { kind: 'collision', carId: car.collisionBlocker, signal };
             const limits = this.limits(car, this.occupants());
             // The nearest constraint determines where this vehicle must wait.
@@ -498,6 +587,36 @@
         }
 
         advanceCar(car, distance, occupied) {
+            if (car.change?.recovery) {
+                const change = car.change, { route, move } = this.routeInfo(car);
+                const limits = this.limits(car, occupied);
+                const remaining = change.path.length - change.s;
+                let travel = Math.max(0, Math.min(distance, remaining, limits.signal, limits.gate));
+                change.blockerId = null;
+                if (remaining - travel < .02) {
+                    const target = change.toConnectionId ? this.network.connections.get(change.toConnectionId) : null;
+                    const landing = { ...car, change: null, mode: target ? 'connection' : 'lane',
+                        laneId: change.to, connectionId: target?.id, s: change.toS };
+                    for (const [key, s] of this.carOccupancies(landing)) {
+                        if (!this.network.lanes.has(key) || s < 0) continue;
+                        const blocker = (occupied.get(key) || []).find(entry => entry.car.id !== car.id
+                            && entry.s >= 0 && Math.abs(entry.s - s) < GAP - .001);
+                        if (blocker) { change.blockerId = blocker.car.id; travel = Math.min(travel, Math.max(0, remaining - .02)); break; }
+                    }
+                }
+                change.s += travel; change.progress = change.s / change.path.length;
+                const pose = sample(change.path, change.s);
+                car.s = Geometry.nearest(route, [pose.x, pose.y]).s;
+                if (change.path.length - change.s < 1e-6) {
+                    car.laneId = change.to; car.connectionId = change.toConnectionId;
+                    car.mode = change.toConnectionId ? 'connection' : 'lane'; car.s = change.toS;
+                    car.change = null; car.blockedFor = 0; car.cooldown = this.time + 4;
+                    car.next = change.toConnectionId || this.chooseRoute(this.network.lanes.get(car.laneId), car);
+                    if (move && !change.toConnectionId && this.network.nodes.get(move.nodeId)?.degree >= 3) this.crossings++;
+                    this.laneChanges++;
+                }
+                return travel;
+            }
             const travel = this.move(car, distance, occupied);
         if (car.change) {
             // Lateral progress stops with the vehicle; a queue cannot push a stopped car sideways.
@@ -528,26 +647,34 @@
             }
             for (const car of this.cars) {
                 this.processingCar = car;
-                const before = this.pose(car), snapshot = { ...car, change: car.change && { ...car.change } };
+                const before = this.pose(car), snapshot = { ...car, change: car.change && { ...car.change }, traversed: [] };
                 const counts = [this.crossings, this.laneChanges];
                 car.traversed = [];
                 car.collisionBlocker = null;
                 const previousKeys = this.carOccupancies(car).map(([id]) => id);
                 const { lane, move, route } = this.routeInfo(car);
+                const beforeLimits = this.limits(car, occupied);
+                const blocked = car.speed < .5 && beforeLimits.signal > .25
+                    && (beforeLimits.stopping < .25 || snapshot.collisionBlocker != null || snapshot.state === 'queue');
+                const blockedFor = blocked ? (car.blockedFor || 0) + STEP : 0;
+                car.blockedFor = blockedFor;
+                this.tryRecovery(car, occupied);
                 if (!move) this.tryLaneChange(car, occupied);
                 const limits = this.limits(car, occupied);
-                car.state = move && !move.geometryKind ? 'turning' : car.change || move?.type === 'bypass' ? 'changing' : 'driving';
+                car.state = car.change ? 'changing' : move && !move.geometryKind ? 'turning' : move?.type === 'bypass' ? 'changing' : 'driving';
                 if (!move && !limits.entering && route.length - car.s < 12) car.state = !limits.connection ? 'blocked' : 'queue';
                 if (limits.clearance < 15 || limits.gate < 15) car.state = 'queue';
                 if (limits.signal < 12 && limits.signal <= limits.clearance) car.state = 'red';
                 const roadLimit = lane.maxSpeed > 0 ? lane.maxSpeed / 3.6 : 13.9;
                 const receivingLimit = move ? this.network.lanes.get(move.toLaneId).maxSpeed / 3.6 : Infinity;
                 const cruise = Math.min(car.cruise, roadLimit, receivingLimit > 0 ? receivingLimit : Infinity, move && !move.geometryKind ? 6 : Infinity);
-                const desired = Math.min(cruise, Math.sqrt(6 * limits.stopping));
+                const desired = car.change?.recovery ? Math.min(cruise, 2.5, Math.sqrt(6 * Math.min(limits.signal, limits.gate)))
+                    : Math.min(cruise, Math.sqrt(6 * limits.stopping));
                 const oldSpeed = car.speed;
                 car.speed = clamp(desired, Math.max(0, car.speed - 3.5 * STEP), car.speed + 2 * STEP);
                 const requested = car.speed * STEP;
-                const motionStart = { ...car, change: car.change && { ...car.change } };
+                // Every collision trial starts from its own untouched path journal.
+                const motionStart = { ...car, change: car.change && { ...car.change }, traversed: [] };
                 const restore = state => {
                     for (const key of Object.keys(car)) if (!(key in state)) delete car[key];
                     Object.assign(car, state, { change: state.change && { ...state.change }, traversed: [...state.traversed || []] });
@@ -572,6 +699,7 @@
                         }
                     }
                     restore(best); [this.crossings, this.laneChanges] = bestCounts;
+                    car.blockedFor = blockedFor;
                     car.state = 'queue'; car.collisionBlocker = travel < .001 ? collisionBlocker : null;
                     after = this.pose(car);
                 }
@@ -604,6 +732,7 @@
 
         pose(car) {
             if (this.posesByCar && car !== this.processingCar && this.posesByCar.has(car)) return this.posesByCar.get(car);
+            if (car.change?.recovery) return sample(car.change.path, car.change.s);
             if (car.mode === 'connection') return sample(this.network.connections.get(car.connectionId).path, car.s);
             const from = this.network.lanes.get(car.laneId);
             const a = sample(from.path, car.s);
