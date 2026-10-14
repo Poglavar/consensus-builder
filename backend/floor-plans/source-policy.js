@@ -3,6 +3,7 @@ import * as cheerio from 'cheerio';
 import { extractExplicitLocation,listingIdentity,propertyDetailId } from './explicit-location.js';
 import { hasLocationSignal,listingSignals } from './site-signals.js';
 import { cachedStreetIndex } from './site-candidates.js';
+import { developerProjectRoot } from './developer-projects.js';
 
 export const EXCLUSION_REASON='missing-explicit-street-and-house-number';
 export const ORPHAN_ASSET_REASON='no-address-qualified-owner';
@@ -47,8 +48,16 @@ export function qualifyPageEvidence(html,url,evidence,{document=null}={}) {
   if(propertyDetailId(url)) return {...evidence,listing:{sourceId:null,explicitLocation:null,sourceEvidenceStatus:'unparsed-object'}};
   return evidence;
  }
- const explicitLocation=extractExplicitLocation(html,url,evidence.listing,{document});
- const signals=listingSignals({facts:{...evidence.listing,explicitLocation},text:ownText(html,document),
+ let scopedHtml=html;
+ if(evidence.listing.sourceType==='developer-project') {
+  const $=document||cheerio.load(html||''), root=developerProjectRoot($,url);
+  const scoped=root?.clone();
+  scoped?.find('script,style,noscript,nav,footer,header,form,aside,[role="navigation"],[role="contentinfo"],[role="dialog"],[aria-hidden="true"],[hidden],[data-elementor-type="popup"],[class*="modal" i],[class*="dialog" i],[class*="popup" i],[class*="related" i],[class*="similar" i],[class*="recommend" i]').remove();
+  scopedHtml=scoped?.length?$.html(scoped):'';
+ }
+ const explicitLocation=extractExplicitLocation(scopedHtml,url,evidence.listing,{
+  ...(evidence.listing.sourceType==='developer-project'?{}:{document})});
+ const signals=listingSignals({facts:{...evidence.listing,explicitLocation},text:ownText(scopedHtml,evidence.listing.sourceType==='developer-project'?null:document),
   title:evidence.listing.title||'',streetIndex:cachedStreetIndex()});
  const {schema,...locationSignals}=signals;
  return {...evidence,listing:{...evidence.listing,explicitLocation,

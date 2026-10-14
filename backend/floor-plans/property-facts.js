@@ -15,7 +15,13 @@ function recordYear(value) {
 
 function inferType(title, text, sourceType) {
     const t = clean(title).toLocaleLowerCase('hr');
-    if (sourceType === 'architecture-project') {
+    if (sourceType === 'architecture-project' || sourceType === 'developer-project') {
+        if (sourceType === 'developer-project') {
+            if (/\b(hotel|ured|office|poslovn\w*|trgov\w*|muzej|galerij\w*)\b/.test(t)) return 'commercial';
+            if (/\b(stamben\w*|residential|housing|zgrada|building|dom)\b/.test(t)) return 'residential';
+            if (/\b(kuća|kuca|house|villa|vila)\b/.test(t)) return 'house';
+            return 'unknown';
+        }
         if (/\b(hotel|ured|office|poslovn\w*|trgov\w*|muzej|galerij\w*|izložb\w*|izlozb\w*)\b/.test(t)) return 'commercial';
         if (/\b(stamben\w*|residential|housing|zgrada|building|dom)\b/.test(t)) return 'residential';
         if (/\b(kuća|kuca|house|villa|vila)\b/.test(t)) return 'house';

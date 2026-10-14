@@ -2,6 +2,7 @@
 import * as cheerio from 'cheerio';
 import { extractExplicitLocation, propertyDetailId } from './explicit-location.js';
 import { extractPropertyFacts } from './property-facts.js';
+import { developerProjectRoot, extractDeveloperProject } from './developer-projects.js';
 
 const TRACKING = /^(utm_|fbclid$|gclid$|mc_cid$|mc_eid$|ref$|source$)/i;
 const PLAN_WORD = /(tlocrt|floor[._ -]?plans?|ground[._ -]?plans?|blueprints?|etažni|etazni|tlocrti|\bgrundriss(?:e)?\b)/i;
@@ -237,6 +238,17 @@ function assetOwnership($, el, listing, pageUrl, url, label, forcedKind = null, 
             && !sameDocumentUrl(linkedIdentity, pageUrl, pageUrl);
         return { listingOwned: Boolean(inMain && !globalArtifact && !recommendation && !otherProjectCard && !hasConflictingOwner && !otherProjectLink) };
     }
+    if (listing?.sourceType === 'developer-project') {
+        const root = developerProjectRoot($, pageUrl);
+        const inRoot = Boolean(root?.length && (root[0] === element[0] || root.find(element).length));
+        const hiddenProjectDialog = element.closest('[role="dialog"],[aria-hidden="true"],[hidden],[data-elementor-type="popup"],[class*="modal" i],[class*="dialog" i],[class*="popup" i]').length > 0;
+        const otherProjectCard = element.closest('[class*="other-project" i],[class*="more-project" i],[class*="project-card" i],[class*="related" i],[class*="recommend" i]').length > 0;
+        const linkedProject = element.closest('a[href]').attr('href');
+        const linkedIdentity = linkedProject && normalizeUrl(linkedProject, pageUrl);
+        const otherProjectLink = linkedIdentity && /\/(?:projects?|projekti?|prodaja-nekretnina)\//i.test(new URL(linkedIdentity).pathname)
+            && !sameDocumentUrl(linkedIdentity, pageUrl, pageUrl);
+        return { listingOwned: Boolean(inRoot && !globalArtifact && !hiddenProjectDialog && !recommendation && !otherProjectCard && !otherProjectLink && !hasConflictingOwner) };
+    }
     const listingOwned = Boolean(listing) && !globalArtifact && !hasConflictingOwner && !otherCarousel
         && (explicitMatch || (!recommendation && !row.length && (gallery || floorPlan)));
     return { listingOwned, ...(ownerSourceId ? { ownerSourceId } : {}), ...(ownerListingUrl ? { ownerListingUrl } : {}) };
@@ -292,6 +304,9 @@ export function extractPageEvidence(html, pageUrl, { sourceKind = null, discover
         projectUrl: normalizeUrl(record.isPartOf?.url, pageUrl),
         locality: first(record.address?.addressLocality, record.address?.addressRegion)
     } : null;
+    const developerProject = extractDeveloperProject($, pageUrl);
+    if (developerProject) listing = { ...(listing || {}), title: developerProject.title,
+        sourceId: first(listing?.sourceId, normalizeUrl(pageUrl, pageUrl)), sourceType: 'developer-project' };
     if (sourceKind === 'architecture') {
         const route = architectureDetailRoute(pageUrl, $);
         const fragmentId = route === 'njiric-fragment' ? new URL(pageUrl).searchParams.get('id') : null;
@@ -313,7 +328,8 @@ export function extractPageEvidence(html, pageUrl, { sourceKind = null, discover
     }
     if (listing) {
         const factText = propertyEvidenceText($, sourceKind);
-        const propertyDetails = extractPropertyFacts({ record, title: listing.title || listingTitle || '', text: factText, sourceType: listing.sourceType || null });
+        const propertyDetails = extractPropertyFacts({ record, title: listing.title || listingTitle || '',
+            text: developerProject?.text || factText, sourceType: listing.sourceType || null });
         listing.propertyDetails = propertyDetails;
         if (propertyDetails.newBuild !== null) listing.newBuild = propertyDetails.newBuild;
     }
