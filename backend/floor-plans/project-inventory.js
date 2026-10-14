@@ -80,7 +80,11 @@ export function projectInventory(postings, plans, options = {}) {
             const model = plan?.model || {};
             const sameSourceUnits = ownedPlans.filter(p => p.sha256 === plan?.sha256
                 && (p.model?.source?.page || 1) === (model.source?.page || 1)).map(p => p.model?.unitId);
-            const unit = model.unitId || one(aliases.map(p => listingUnitId(p.facts, p.url))) || one(sameSourceUnits)
+            const listingUnit = one(aliases.map(p => listingUnitId(p.facts, p.url)));
+            // Unreviewed region names are not public apartment identities when the offer names it.
+            const generatedUnit = plan?.kind !== 'reviewed' && /^(?:plan|unit|apartment|region)[\s_-]/i.test(model.unitId || '');
+            const establishedUnit = listingUnit || one(ownedPlans.filter(p => ['original', 'reviewed'].includes(p.kind)).map(p => p.model?.unitId));
+            const unit = (generatedUnit && establishedUnit ? establishedUnit : model.unitId) || listingUnit || one(sameSourceUnits)
                 || one(ownedPlans.map(p => p.model?.unitId));
             const id = hash(`${key}|${unit || 'apartment'}`);
             const hasGeometry = hasUsableGeometry(model);

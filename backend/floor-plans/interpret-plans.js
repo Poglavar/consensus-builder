@@ -14,12 +14,13 @@ import { sourceGeometry } from './source-geometry.js';
 import {runBatchStage,reservationUsd,budgetUsed} from './batch-worker.js';
 import {locatedListingSql,LOCATED_PLAN_TASK_SQL} from './building-location.js';
 import { readBlob } from './blob-store.js';
-import { sourceUnitMatches } from './original-plan-sources.js';
+import { listingUnitId, sourceUnitMatches } from './original-plan-sources.js';
 
 const exec=promisify(execFile);
 export function taskContext(row) {
     const facts=row.facts||{};
-    return {listingUrl:row.listing_url||row.url,facts:{floor:facts.floor??null,unitId:facts.unitId??null,areaM2:facts.areaM2??null}};
+    const listingUrl=row.listing_url||row.url;
+    return {listingUrl,facts:{floor:facts.floor??null,unitId:listingUnitId(facts,listingUrl),areaM2:facts.areaM2??null}};
 }
 // A drawing is read once per page and per stated facts. The same project published under several
 // URLs (hosts, languages) states the same facts and shares one reading; units that reuse one sheet

@@ -7,7 +7,7 @@ import { currentProcessedPlans } from '../floor-plan-archive/processed-catalogue
 
 export const normalizeUnitId = value => typeof value === 'string' && value.trim()
     ? value.trim().toUpperCase().replace(/[\s_-]+/g, '') : null;
-const explicitUnits = text => [...String(text || '').replace(/\b\d+(?:[.,]\d+)?\s*m(?:2|²|\b)/gi, ' ')
+const explicitUnits = text => [...String(text || '').replace(/(?<![a-z0-9])\d+(?:[.,_-]\d+)?[\s_-]*m(?:[\s_-]*2|²|\b)/gi, ' ')
     .matchAll(/(?:^|[^a-z0-9])(?:stan[\s_-]*|s[\s_-]*)(\d{1,3}(?:-\d{1,3})?[a-z]?)(?=$|[^a-z0-9])/gi)]
     .map(match => `S${match[1].toUpperCase()}`);
 export function listingUnitId(facts = {}, url = '') {
@@ -76,9 +76,13 @@ export function originalPlanSource(row) {
     // Gallery ownership does not imply that every related unit, garage or whole-floor sheet is this offer.
     if (/(?:^|[\W_])(?:garaz[ae]?|garaž[ae]?|garage|garrage|parking|kat|etaza|etaža|floor)(?:$|[\W_])/i.test(basename)
         || [asset.scope, reviewed?.scope, processed?.scope].some(scope => ['floor', 'project', 'building'].includes(scope))) return null;
-    const sourceUnits = [...new Set([asset.unitId, reviewed?.unitId, processed?.unitId, ...explicitUnits(basename)]
+    const sourceUnits = [...new Set([asset.unitId, reviewed?.unitId, ...explicitUnits(basename)]
         .map(normalizeUnitId).filter(Boolean))];
     if (sourceUnits.length > 1 || (listingUnit && sourceUnits.some(unit => unit !== normalizeUnitId(listingUnit)))) return null;
+    // A machine region label is a hint, not evidence against the listing or printed source unit.
+    const establishedUnit = listingUnit || asset.unitId || reviewed?.unitId || sourceUnits[0] || null;
+    const processedUnit = processed?.unitId && (!establishedUnit
+        || normalizeUnitId(processed.unitId) === normalizeUnitId(establishedUnit)) ? processed.unitId : null;
     const type = row.media_type?.split(';')[0].trim().toLowerCase();
     let page = 1;
     if (type === 'application/pdf') {
@@ -89,7 +93,7 @@ export function originalPlanSource(row) {
         || row.image_kind !== 'floor_plan' || row.image_classified_sha256 !== row.sha256
         || row.image_status !== 'complete' || row.reading?.kind !== 'floor_plan'
         || row.reading?.containsPlan !== true || row.reading?.confidence !== 'high') return null;
-    const unitId = facts.unitId || listingUnit || asset.unitId || reviewed?.unitId || processed?.unitId || sourceUnits[0] || null;
+    const unitId = reviewed?.unitId || processedUnit || establishedUnit;
     const identity = createHash('sha256').update(JSON.stringify([row.listing_url, row.sha256, page, unitId])).digest('hex').slice(0, 20);
     return { id: `original-${identity}`, kind: 'original', listing_url: row.listing_url,
         sha256: row.sha256, source_sha256: row.sha256, media_type: type, byte_count: row.byte_count || 0,

@@ -206,6 +206,10 @@ describe('durable tasks and spend accounting',()=>{
         expect(taskId(task.source_sha256,1,{...context,listingUrl:'https://www.agency.test/en/listing/1'})).toBe(id);
         expect(taskId(task.source_sha256,1,{...context,building:{buildingId:'43'}})).toBe(id);
     });
+    it('supplies the explicit listing URL unit to the reader without mistaking marketed area for a unit',()=>{
+        expect(taskContext({url:'https://agency.test/stan-s2-80-58-m2/',facts:{title:'Stan 80,58 m²'}}).facts.unitId).toBe('S2');
+        expect(taskContext({url:'https://agency.test/stan-80-58-m2/',facts:{title:'Stan 80,58 m²'}}).facts.unitId).toBeNull();
+    });
     it('reserves maximum output and input headroom, using batch pricing',()=>{
         const price=vi.fn(()=>0.15);expect(reservationUsd('model',1000,price)).toBe(0.15);
         expect(price).toHaveBeenCalledWith('model',{input_tokens:2224,output_tokens:MAX_OUTPUT_TOKENS},{batch:true});

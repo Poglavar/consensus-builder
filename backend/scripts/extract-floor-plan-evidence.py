@@ -111,6 +111,62 @@ def axis_candidates(gray):
     return candidates
 
 
+def hatched_candidates(gray):
+    """Propose dense cross-hatched strips, then measure thickness on source pixels."""
+    dark = (gray < 160).astype(np.uint8)
+    density = cv2.boxFilter(dark.astype(np.float32), -1, (5, 5),
+                            normalize=True, borderType=cv2.BORDER_CONSTANT)
+    mask = (density > .48).astype(np.uint8) * 255
+    # Fill only raster-scale holes within a hatch, never a door-sized gap.
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
+    diagonal = np.eye(3, dtype=np.uint8)
+    diagonals = [cv2.morphologyEx(dark, cv2.MORPH_OPEN, kernel)
+                 for kernel in (diagonal, np.fliplr(diagonal).copy())]
+    found = []
+    for seed in axis_candidates(255-mask):
+        x0, y0, x1, y1 = seed['bounds']
+        length = max(x1-x0, y1-y0) + 1
+        if seed['widthPx'] < 5 or length < 36:
+            continue
+        patch = dark[y0:y1+1, x0:x1+1]
+        # Thin grids, paired furniture outlines and solid fills lack this combination
+        # of substantial ink, white hatch holes, and both diagonal stroke directions.
+        if not .48 <= float(patch.mean()) <= .82:
+            continue
+        if any(float(d[y0:y1+1, x0:x1+1].mean()) < .30 for d in diagonals):
+            continue
+        horizontal = seed['orientation'] == 'H'
+        view = dark if horizontal else dark.T
+        lo, hi, first, last = ((x0, x1, y0, y1) if horizontal else (y0, y1, x0, x1))
+        margin = max(2, round((hi-lo)*.1))
+        profile = view[:, lo+margin:hi-margin+1].mean(axis=1)
+        center = round((first+last)/2)
+        start = stop = center
+        # Source support, rather than the closed mask, defines the measured width.
+        # Bounded expansion also prevents a candidate swallowing a filled room.
+        while start > 0 and profile[start-1] >= .30 and center-start < 24:
+            start -= 1
+        while stop+1 < len(profile) and profile[stop+1] >= .30 and stop-center < 24:
+            stop += 1
+        thickness = stop-start+1
+        if not 5 <= thickness <= 32 or length/thickness < 3:
+            continue
+        center = (start+stop)/2
+        item = {'orientation': seed['orientation'],
+                'a': [lo, center] if horizontal else [center, lo],
+                'b': [hi, center] if horizontal else [center, hi],
+                'widthPx': float(thickness),
+                'bounds': [lo, start, hi, stop] if horizontal else [start, lo, stop, hi]}
+        if item not in found:
+            found.append(item)
+    return found
+
+
+def measured_candidates(gray):
+    # Keep the solid detector and its candidate order unchanged.
+    return axis_candidates(gray) + hatched_candidates(gray)
+
+
 def scale_candidates(gray):
     pale = (gray < 225).astype(np.uint8) * 255
     opened = cv2.morphologyEx(pale, cv2.MORPH_OPEN,
@@ -184,7 +240,7 @@ def extract_evidence(image_path, evidence_path, annotation_path, scale_annotatio
     gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
     height, width = gray.shape
     photo_like = float(np.mean(gray < 150)) > .25
-    walls = [] if photo_like else axis_candidates(gray)
+    walls = [] if photo_like else measured_candidates(gray)
     scales = [] if photo_like else scale_candidates(gray)
     truncated = len(walls) > MAX_CANDIDATES
     walls = walls[:MAX_CANDIDATES]
@@ -200,7 +256,7 @@ def extract_evidence(image_path, evidence_path, annotation_path, scale_annotatio
         issues.append(f'Wall candidates truncated to {MAX_CANDIDATES}.')
     if not walls:
         issues.append('No confident orthogonal wall candidates were found; evidence is inconclusive.')
-    evidence = {'version': 'floor-plan-evidence-v2', 'widthPx': width, 'heightPx': height,
+    evidence = {'version': 'floor-plan-evidence-v3', 'widthPx': width, 'heightPx': height,
                 'wallCandidates': walls, 'scaleCandidates': scales, 'issues': issues,
                 'candidateFramePx': candidate_frame(walls, width, height)}
     Path(evidence_path).write_text(json.dumps(evidence, separators=(',', ':')) + '\n', encoding='utf8')

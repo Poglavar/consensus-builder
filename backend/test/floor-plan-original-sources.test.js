@@ -28,6 +28,21 @@ describe('current original plan eligibility', () => {
         expect(originalPlanSource(source({ facts: { ...facts, propertyDetails: { propertyType: 'apartment' } },
             source_url: 'https://example.test/s3-438x280.jpg', asset: { url: 'https://example.test/s3-438x280.jpg', listingOwned: true } }))).toBeNull();
     });
+    it.each([
+        'https://eurovilla.hr/nekretnina/zagreb-maksimir-stan-80-58-m2/123456/',
+        'https://eurovilla.hr/en/property/zagreb-apartment-80-58-m2/123456/',
+        'https://eurovilla.hr/nekretnina/zagreb-stan-73-m2/123456/',
+        'https://eurovilla.hr/nekretnina/zagreb-stan-80,58-m2/123456/',
+    ])('does not invent a unit from Eurovilla marketed area in %s', url => {
+        expect(listingUnitId({ title: 'Zagreb, stan 80,58 m²' }, url)).toBeNull();
+        expect(sourceUnitMatches({}, url, 'https://example.test/s2.png')).toBe(true);
+    });
+    it('keeps Nobel S2 when an adjacent marketed area is scrubbed from its slug', () => {
+        const url = 'https://gradnja.nobelgrupa.hr/stan-s2-80-58-m2/';
+        expect(listingUnitId({ title: 'Stan 80,58 m²' }, url)).toBe('S2');
+        expect(sourceUnitMatches({}, url, 'https://example.test/s2-1800x1150.jpg')).toBe(true);
+        expect(sourceUnitMatches({}, url, 'https://example.test/s3-1800x1150.jpg')).toBe(false);
+    });
     it('admits a retained classified apartment drawing and derives explicit listing URL unit identity', () => {
         expect(originalPlanSource(source())).toMatchObject({ kind: 'original', sha256: sha, reviewStatus: 'source_only',
             model: { scope: 'unit', unitId: 'S10', architecture: null, source: { url: sourceUrl, sha256: sha, page: 1 } } });
@@ -117,7 +132,32 @@ describe('original and geometry inventory selection', () => {
         expect(await currentOriginalPlans(db, [url], { processedPlans: [{ ...held, source_sha256: 'b'.repeat(64) }] }))
             .toMatchObject([{ model: { unitId: null } }]);
         const conflict = source({ processed_model: held.model });
-        expect(originalPlanSource(conflict)).toBeNull();
+        expect(originalPlanSource(conflict)).toMatchObject({ model: { unitId: 'S10' } });
+        expect(originalPlanSource({ ...conflict, reviewed_model: held.model })).toBeNull();
+    });
+    it.each(['plan-1', 'unit-S2'])('keeps published S2 identity after reconstruction uses %s', async generatedId => {
+        const url = 'https://gradnja.nobelgrupa.hr/stan-s2-80-58-m2/', imageUrl = 'https://gradnja.nobelgrupa.hr/images/s2.png';
+        const row = source({ listing_url: url, source_url: imageUrl, asset: { url: imageUrl, listingOwned: true } });
+        const model = { ...geometry({ unitId: generatedId }), source_sha256: sha, listing_url: url, page: 1 };
+        const db = { async query() { return { rows: [row] }; } };
+        const [beforeSource] = await currentOriginalPlans(db, [url], { processedPlans: [] });
+        const [afterSource] = await currentOriginalPlans(db, [url], { processedPlans: [model] });
+        expect(afterSource).toMatchObject({ id: beforeSource.id, model: { unitId: 'S2' } });
+        const offer = { ...posting, url };
+        const before = projectInventory([offer], [beforeSource]).apartments[0];
+        const after = projectInventory([offer], [afterSource, model]).apartments;
+        expect(after).toHaveLength(1);
+        expect(after[0]).toMatchObject({ id: before.id, unitId: 'S2', hasGeometry: true });
+    });
+    it('preserves a curated raw unit ID equivalent to the explicit listing unit', () => {
+        const offer = { ...posting, facts: { ...posting.facts, unitId: 'A52' } };
+        const curated = { ...geometry({ unitId: 'A-5-2' }), kind: 'reviewed' };
+        const key = listingIdentity(offer.url, offer.facts.sourceId) || offer.url;
+        const expected = createHash('sha256').update(`${key}|A-5-2`).digest('hex').slice(0, 16);
+        expect(projectInventory([offer], [curated]).apartments[0]).toMatchObject({ id: expected, unitId: 'A-5-2' });
+        const url = 'https://example.test/curated.png';
+        expect(originalPlanSource(source({ facts: offer.facts, source_url: url, asset: { url, listingOwned: true },
+            reviewed_model: curated.model })).model.unitId).toBe('A-5-2');
     });
     it('keeps apartment identity when reconstruction becomes available and prefers geometry in either input order', () => {
         const original = originalPlanSource(source()), reconstructed = geometry();
