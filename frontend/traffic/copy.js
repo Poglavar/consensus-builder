@@ -13,7 +13,7 @@
         trafficHub: 'Promet',
         aboutSimulator: 'O simulatoru',
 
-            title: 'Simulator prometa u Zagrebu',
+            title: 'Dzepni simulator prometa',
             eyebrow: 'SIMULATOR PROMETA',
             intro: 'Uredite prometne trake i pratite kako se promet mijenja.',
             candidate: 'OSM i spremljene veze traka',

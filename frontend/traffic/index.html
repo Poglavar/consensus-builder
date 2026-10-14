@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f5f4ef">
-    <title>Simulator prometa u Zagrebu | zagreb.lol</title>
+    <title>Dzepni simulator prometa | zagreb.lol</title>
     <meta name="description" content="Interaktivni simulator prometa u Zagrebu. Zatvarajte prometne trake, pratite obilazne putanje vozila i mjerite protok na raskrižjima.">
     <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
     <link rel="canonical" href="https://zagreb.lol/promet/simulator/">
@@ -13,21 +13,21 @@
     <meta property="og:type" content="website">
     <meta property="og:locale" content="hr_HR">
     <meta property="og:site_name" content="zagreb.lol">
-    <meta property="og:title" content="Simulator prometa u Zagrebu">
+    <meta property="og:title" content="Dzepni simulator prometa">
     <meta property="og:description" content="Uredite prometne trake, pratite vozila i usporedite protok prije i nakon zatvaranja dijela ceste.">
     <meta property="og:url" content="https://zagreb.lol/promet/simulator/">
     <meta property="og:image" content="https://zagreb.lol/promet/simulator/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Simulator prometa u Zagrebu — semafor i prometne trake">
+    <meta property="og:image:alt" content="Dzepni simulator prometa — semafor i prometne trake">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Simulator prometa u Zagrebu">
+    <meta name="twitter:title" content="Dzepni simulator prometa">
     <meta name="twitter:description" content="Uredite trake. Mjerite protok. Usporedite učinak promjene na promet.">
     <meta name="twitter:image" content="https://zagreb.lol/promet/simulator/og-image.png">
     <link rel="alternate" type="application/json" href="/api/promet/simulator/status" title="Izvori i obuhvat podataka simulatora">
     <link rel="help" href="llms.txt" type="text/plain">
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://zagreb.lol/promet/simulator/#app","name":"Simulator prometa u Zagrebu","url":"https://zagreb.lol/promet/simulator/","description":"Interaktivno zatvaranje prometnih traka, prikaz kretanja vozila i mjerenje protoka u središtu Zagreba.","inLanguage":"hr-HR","applicationCategory":"SimulationApplication","operatingSystem":"Web","isAccessibleForFree":true,"provider":{"@type":"Organization","name":"zagreb.lol","url":"https://zagreb.lol/"}},{"@type":"Dataset","@id":"https://zagreb.lol/promet/simulator/#podaci","name":"Prometne trake i spremljena kretanja u središtu Zagreba","description":"Izvedena mreža prometnih traka iz OpenStreetMapa i spremljenih odluka o dopuštenim kretanjima. Obuhvat i vrijeme izvora dostupni su kroz API.","inLanguage":"hr-HR","spatialCoverage":{"@type":"Place","name":"Središte Zagreba"},"distribution":{"@type":"DataDownload","contentUrl":"https://zagreb.lol/api/promet/simulator/network","encodingFormat":"application/json"}}]}
+    {"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://zagreb.lol/promet/simulator/#app","name":"Dzepni simulator prometa","url":"https://zagreb.lol/promet/simulator/","description":"Interaktivno zatvaranje prometnih traka, prikaz kretanja vozila i mjerenje protoka u središtu Zagreba.","inLanguage":"hr-HR","applicationCategory":"SimulationApplication","operatingSystem":"Web","isAccessibleForFree":true,"provider":{"@type":"Organization","name":"zagreb.lol","url":"https://zagreb.lol/"}},{"@type":"Dataset","@id":"https://zagreb.lol/promet/simulator/#podaci","name":"Prometne trake i spremljena kretanja u središtu Zagreba","description":"Izvedena mreža prometnih traka iz OpenStreetMapa i spremljenih odluka o dopuštenim kretanjima. Obuhvat i vrijeme izvora dostupni su kroz API.","inLanguage":"hr-HR","spatialCoverage":{"@type":"Place","name":"Središte Zagreba"},"distribution":{"@type":"DataDownload","contentUrl":"https://zagreb.lol/api/promet/simulator/network","encodingFormat":"application/json"}}]}
     </script>
     <link rel="stylesheet" href="assets/leaflet/leaflet.css">
     <link rel="stylesheet" href="traffic.css?v=20261014g">
@@ -54,7 +54,7 @@
         <aside class="controls">
             <header>
                 <div class="eyebrow"><span class="brand-mark" aria-hidden="true">↗</span><span data-i18n-key="traffic.eyebrow">SIMULATOR PROMETA</span><span class="edition">01 / ZG</span></div>
-                <h1 data-i18n-key="traffic.title">Simulator prometa u Zagrebu</h1>
+                <h1 data-i18n-key="traffic.title">Dzepni simulator prometa</h1>
                 <p class="intro" data-i18n-key="traffic.intro">Uredite prometne trake i pratite kako se promet mijenja.</p>
                 <span class="source-badge"><span aria-hidden="true"></span><span data-i18n-key="traffic.candidate">OSM i spremljene veze traka</span></span>
             </header>

@@ -426,6 +426,7 @@
         if (selected != null) document.querySelector('.inspector').scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
     });
     function openSignal(signal) {
+        $('status').hidden = true;
         const content = document.createElement('div');
         const title = document.createElement('strong'); title.textContent = t('signalSource', { road: signal.name || t('unnamed'), direction: t(`direction${signal.direction}`) });
         const detail = document.createElement('p'); detail.textContent = t('signalDetails');

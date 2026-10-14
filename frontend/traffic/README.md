@@ -1,4 +1,4 @@
-# Simulator prometa u Zagrebu
+# Dzepni simulator prometa
 
 Hrvatski simulator prikazuje kretanje vozila kroz odabrano područje Zagreba. Možete zatvarati
 trake, pratiti vozila, pregledati razlog njihova zaustavljanja i mjeriti protok. Kretanje koristi

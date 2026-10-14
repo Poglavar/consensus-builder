@@ -17,12 +17,12 @@ describe('Croatian traffic simulator site', () => {
         const body = html.match(/<body>([\s\S]*?)<\/body>/i)?.[1] || '';
 
         expect(html).toMatch(/<html\s+lang="hr">/i);
-        expect(body).toContain('Simulator prometa u Zagrebu');
+        expect(body).toContain('Dzepni simulator prometa');
         expect(body).toContain('Zatvori traku');
         expect(body).not.toMatch(/<(?:select|button)\b[^>]*(?:language|jezik)|\bname="(?:lang|language|jezik)"/i);
         expect(body).not.toMatch(/\b(?:Choose language|Select language|Odaberite jezik|English)\b/i);
         expect(html).toContain('src="copy.js');
-        expect(copy.t('traffic.title')).toBe('Simulator prometa u Zagrebu');
+        expect(copy.t('traffic.title')).toBe('Dzepni simulator prometa');
         expect(pageScript).toContain('window.TrafficCopy.t');
         expect(pageScript).not.toMatch(/window\.(?:i18n|i18next)|\bi18next\b/i);
         expect(html).not.toMatch(/<script\b[^>]*src="https?:\/\/[^\"]*(?:i18n|locale|translation)/i);
