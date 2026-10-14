@@ -16,7 +16,12 @@ def image_page(path, text=''):
     gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
     height, width = gray.shape
     if not text.strip():
-        text = command(['tesseract', str(path), 'stdout', '--psm', '11'])
+        # Pillow decodes AVIF/WebP sources that the installed Tesseract cannot read directly.
+        # OCR the same bounded raster used by line detection, then discard the temporary PNG.
+        with tempfile.TemporaryDirectory(prefix='floor-plan-ocr-raster-') as directory:
+            raster = Path(directory) / 'source.png'
+            image.save(raster, 'PNG')
+            text = command(['tesseract', str(raster), 'stdout', '--psm', '11'])
     edges = cv2.Canny(gray, 80, 180)
     lines = cv2.HoughLinesP(edges, 1, np.pi / 180, threshold=30,
         minLineLength=max(15, min(width, height)//60), maxLineGap=3)
