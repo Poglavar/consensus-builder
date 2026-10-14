@@ -70,7 +70,8 @@ export function projectInventory(postings, plans, options = {}) {
         const facts = aliases.map(p => ({ ...p.facts, propertyDetails: details(p.facts || {}) }));
         const ownedPlans = [...(planGroups.get(key) || [])].sort((a, b) => {
             const rank = plan => hasUsableGeometry(plan.model) ? (plan.kind === 'reviewed' ? 0 : 1) : plan.kind === 'original' ? 2 : 3;
-            return rank(a) - rank(b) || (b.byte_count || 0) - (a.byte_count || 0) || a.id.localeCompare(b.id);
+            return rank(a) - rank(b) || Number(Boolean(b.model?.unitId)) - Number(Boolean(a.model?.unitId))
+                || (b.byte_count || 0) - (a.byte_count || 0) || a.id.localeCompare(b.id);
         });
         // Commercial premises, houses and portfolio building pages are not apartment offers.
         if (!ownedPlans.length && !facts.some(f => f.propertyDetails.propertyType === 'apartment')) continue;
@@ -79,7 +80,8 @@ export function projectInventory(postings, plans, options = {}) {
             const model = plan?.model || {};
             const sameSourceUnits = ownedPlans.filter(p => p.sha256 === plan?.sha256
                 && (p.model?.source?.page || 1) === (model.source?.page || 1)).map(p => p.model?.unitId);
-            const unit = model.unitId || one(aliases.map(p => listingUnitId(p.facts, p.url))) || one(sameSourceUnits);
+            const unit = model.unitId || one(aliases.map(p => listingUnitId(p.facts, p.url))) || one(sameSourceUnits)
+                || one(ownedPlans.map(p => p.model?.unitId));
             const id = hash(`${key}|${unit || 'apartment'}`);
             const hasGeometry = hasUsableGeometry(model);
             const property = facts.map(f => f.propertyDetails);

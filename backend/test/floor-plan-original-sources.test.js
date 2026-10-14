@@ -68,6 +68,15 @@ describe('current original plan eligibility', () => {
 });
 
 describe('original and geometry inventory selection', () => {
+    it('keeps an unnumbered alternate drawing of the same apartment offer with its sole identified unit', () => {
+        const url = 'https://example.test/apartment/123';
+        const original = originalPlanSource(source({ listing_url: url, source_url: 'https://example.test/plan.png',
+            asset: { url: 'https://example.test/plan.png', listingOwned: true } }));
+        const numbered = { ...geometry({ unitId: 'S1-3' }), listing_url: url };
+        const inventory = projectInventory([{ ...posting, url }], [original, numbered]);
+        expect(inventory.apartments).toHaveLength(1);
+        expect(inventory.apartments[0]).toMatchObject({ unitId: 'S1-3', hasPlan: true });
+    });
     it('prefers the full original over a smaller gallery thumbnail of the same unit', () => {
         const original = originalPlanSource(source({ byte_count: 200000 }));
         const thumbnail = { ...original, id: 'original-0000', sha256: 'b'.repeat(64), byte_count: 20000 };
