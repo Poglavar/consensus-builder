@@ -11,7 +11,7 @@
     "checkedCityCount": 2005,
     "uncheckedCityCount": 127,
     "cityRegistryFoundCount": 1403,
-    "verifiedCitySampleCount": 724,
+    "verifiedCitySampleCount": 726,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
     "populationMatchedCount": 1536,
@@ -17438,29 +17438,53 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
-      "checkedDate": "2026-10-09",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-09",
-        "path": "research/overnight-cities-2026-10-08/city-378-bobo-dioulasso.json",
-        "field": "$.checkedAt"
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-outcomes/2026-10-14-africa-next.json",
+        "field": "$.cities[2].finishedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "The official commune site publishes a city-plan page as a static image. National DGI sources document a cadastral office for Bobo-Dioulasso and cadastral-extract workflows; official government sources identify SyC@D/sif.bf as the integrated cadastre/domain procedure platform. The inspected app exposes an Angular shell and authenticated workflow routes, not an anonymous parcel feature/schema contract. No data form or parcel lookup was used.",
-      "verifiedSample": false,
+      "registryBasis": "The current DGI public PLOT route returned 144 unchanged nearby polygons with stable provider IDs on repeated viewport reads; independent GEOS found no invalid geometries, duplicate geometry or material overlaps. Exact native-ID reads, explicit absence, complete paging/manifest semantics and an independent native-coordinate proof remain unestablished. The empty WUP viewport does not establish citywide absence.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "integrationAttempts": [],
-      "sourceIds": [],
+      "integrationAttempts": [
+        {
+          "outcome": "held",
+          "summary": "144 unchanged nearby plot polygons are valid, distinct and non-overlapping, with stable IDs on viewport re-read. Source-contract preflight held: exact-ID geometry/absence routes remain unproved, paging parameters are ignored and no complete manifest contract exists. The UTM-labelled WMS describes raster coverages and cannot prove the JSON parcel native CRS.",
+          "checkedAt": "2026-10-14T14:10:16.047926+00:00",
+          "sources": [
+            {
+              "id": "bf-dgi-ecadastre-public-geojson",
+              "name": "Burkina Faso DGI public cadastral plot footprints"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-africa-next.json",
+          "diagnosticsUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/africa-next-qualification-2026-10-14/bobo-dioulasso/qualification.json",
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-africa-next.json",
+            "field": "$.cities[2].finishedAt"
+          }
+        }
+      ],
+      "sourceIds": [
+        "bf-dgi-ecadastre-public-geojson"
+      ],
       "evidenceUrls": [
         "https://mairie-bobo.bf/plan-de-la-ville/",
         "https://dgi.bf/contacts/",
         "https://dgi.bf/faq/",
         "https://gouvernement.gov.bf/actualites/foncier-lancement-de-la-plateforme-https-sif-bf-pour-une-gestion-transparente-des-procedures/",
         "https://dgi.impots.gov.bf/",
-        "https://sif.bf/"
+        "https://sif.bf/",
+        "https://ecadastre.dgi.bf/api/locations/geojson"
       ],
       "evidenceFiles": [
-        "research/overnight-cities-2026-10-08/city-378-bobo-dioulasso.json"
+        "research/overnight-cities-2026-10-08/city-378-bobo-dioulasso.json",
+        "research/africa-next-qualification-2026-10-14/bobo-dioulasso/qualification.json",
+        "world-parcels/research/africa-next-qualification-2026-10-14/bobo-dioulasso/qualification.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=11.18472&mlon=-4.28975#map=12/11.18472/-4.28975",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=11.18472%2C-4.28975",
@@ -26601,11 +26625,11 @@
       "populationPlausibility2025": null,
       "populationMatch": null,
       "checked": true,
-      "checkedDate": "2026-10-12",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-12",
-        "path": "world-parcels/research/qualification-outcomes/2026-10-12-valhalla.json",
-        "field": "$.cities[118].finishedAt"
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-outcomes/2026-10-14-africa-next.json",
+        "field": "$.cities[0].finishedAt"
       },
       "registryFound": null,
       "registryFindingBasis": null,
@@ -26613,6 +26637,24 @@
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [
+        {
+          "outcome": "held",
+          "summary": "Current production profile held on four provider timeouts, followed by one failed 40-second metadata probe. No fresh geometry or native CRS proof was received; the historical four-feature qualification is retained as historical evidence.",
+          "checkedAt": "2026-10-14T13:17:55.804615+00:00",
+          "sources": [
+            {
+              "id": "zm-nsdi-zilmis-lots",
+              "name": "Zambia NSDI ZILMIS lot polygons"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-africa-next.json",
+          "diagnosticsUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/africa-next-qualification-2026-10-14/chirundu/attempt-01/qualification.json",
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-africa-next.json",
+            "field": "$.cities[0].finishedAt"
+          }
+        },
         {
           "outcome": "qualified",
           "summary": "All required gates and candidate/cache hash bindings passed. Four unchanged parcels; zero metric blockers. Recommended for primary technical review only, without integration or admission.",
@@ -86298,25 +86340,49 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
-      "checkedDate": "2026-10-09",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-09",
-        "path": "research/overnight-cities-2026-10-08/city-1868-mwanza.json",
-        "field": "$.checkedAt"
+        "date": "2026-10-14",
+        "path": "world-parcels/research/africa-next-qualification-2026-10-14/mwanza/evidence/qualification.json",
+        "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "Mwanza City Council’s own strategic plan documents its Urban Planning, Land and Natural Resources activity, city survey-and-mapping capacity, surveyed plots and title-deed preparation. The figures are historical aggregate evidence, so they establish city-local land survey/registry work but not current database coverage or a public parcel geometry route.",
-      "verifiedSample": false,
+      "registryBasis": "Verified 87 parcel outlines at the recorded sample location using Tanzania e-Ardhi current town-plan planning-survey footprints. Coverage is bounded; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "integrationAttempts": [],
-      "sourceIds": [],
+      "integrationAttempts": [
+        {
+          "outcome": "qualified",
+          "summary": "All nine gates and primary independent review passed: 87 unchanged planning-survey footprints, stable UUIDs, 13 cells twice, forced reads, explicit absence, binding and zero metric blockers. Three default GML geometries in publisher-declared EPSG:4326 reproduce the adapter output exactly. Internal storage frame, survey accuracy, legal title and wider coverage remain unverified. No app admission was performed.",
+          "checkedAt": "2026-10-14T14:14:37.966120+00:00",
+          "sources": [
+            {
+              "id": "tz-mlhhsd-eardhi-current-tp-spatial-units",
+              "name": "Tanzania e-Ardhi current town-plan planning-survey footprints"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-africa-next.json",
+          "diagnosticsUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/africa-next-qualification-2026-10-14/mwanza/evidence/qualification.json",
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-africa-next.json",
+            "field": "$.cities[1].finishedAt"
+          }
+        }
+      ],
+      "sourceIds": [
+        "tz-mlhhsd-eardhi-current-tp-spatial-units"
+      ],
       "evidenceUrls": [
         "https://www.mwanzacc.go.tz/storage/app/uploads/public/5bb/74d/e80/5bb74de803120412478265.pdf",
-        "https://www.mwanzacc.go.tz/"
+        "https://www.mwanzacc.go.tz/",
+        "https://eardhi.lands.go.tz/map/geoserver/taspro/ows"
       ],
       "evidenceFiles": [
-        "research/overnight-cities-2026-10-08/city-1868-mwanza.json"
+        "research/overnight-cities-2026-10-08/city-1868-mwanza.json",
+        "research/africa-next-qualification-2026-10-14/mwanza/evidence/qualification.json",
+        "world-parcels/research/africa-next-qualification-2026-10-14/mwanza/evidence/qualification.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-2.53518&mlon=32.92965#map=12/-2.53518/32.92965",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-2.53518%2C32.92965",

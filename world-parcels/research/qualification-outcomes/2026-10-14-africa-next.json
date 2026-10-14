@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "basis": "Fresh local qualifications of three African cities under the nine-gate CRS policy; source-contract preflight and full runtime qualification are distinguished.",
+  "pointOrder": "latitude-longitude",
+  "counts": {
+    "qualified": 1,
+    "held": 2
+  },
+  "cities": [
+    {
+      "cityCode": 2260,
+      "cityName": "Chirundu",
+      "countryCode": "ZM",
+      "point": [
+        -16.0278010235141,
+        28.8443119973995
+      ],
+      "sourceIds": [
+        "zm-nsdi-zilmis-lots"
+      ],
+      "outcome": "held",
+      "summary": "Current production profile held on four provider timeouts, followed by one failed 40-second metadata probe. No fresh geometry or native CRS proof was received; the historical four-feature qualification is retained as historical evidence.",
+      "finishedAt": "2026-10-14T13:17:55.804615+00:00",
+      "finishedAtBasis": "Completed qualification artifact modification time, not provider update time.",
+      "diagnosticsEvidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/chirundu/attempt-01/qualification.json"
+    },
+    {
+      "cityCode": 1868,
+      "cityName": "Mwanza",
+      "countryCode": "TZ",
+      "point": [
+        -2.5351793407139,
+        32.92965227765
+      ],
+      "sourceIds": [
+        "tz-mlhhsd-eardhi-current-tp-spatial-units"
+      ],
+      "outcome": "qualified",
+      "summary": "All nine gates and primary independent review passed: 87 unchanged planning-survey footprints, stable UUIDs, 13 cells twice, forced reads, explicit absence, binding and zero metric blockers. Three default GML geometries in publisher-declared EPSG:4326 reproduce the adapter output exactly. Internal storage frame, survey accuracy, legal title and wider coverage remain unverified. No app admission was performed.",
+      "finishedAt": "2026-10-14T14:14:37.966120+00:00",
+      "finishedAtBasis": "Completed integrated qualification artifact modification time, not provider update time.",
+      "diagnosticsEvidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/mwanza/evidence/qualification.json"
+    },
+    {
+      "cityCode": 378,
+      "cityName": "Bobo-Dioulasso",
+      "countryCode": "BF",
+      "point": [
+        11.1847197779143,
+        -4.28974790525362
+      ],
+      "sourceIds": [
+        "bf-dgi-ecadastre-public-geojson"
+      ],
+      "outcome": "held",
+      "qualificationStage": "source-contract-preflight",
+      "summary": "144 unchanged nearby plot polygons are valid, distinct and non-overlapping, with stable IDs on viewport re-read. Source-contract preflight held: exact-ID geometry/absence routes remain unproved, paging parameters are ignored and no complete manifest contract exists. The UTM-labelled WMS describes raster coverages and cannot prove the JSON parcel native CRS.",
+      "finishedAt": "2026-10-14T14:10:16.047926+00:00",
+      "finishedAtBasis": "Source-contract preflight completion timestamp.",
+      "diagnosticsEvidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/bobo-dioulasso/qualification.json"
+    }
+  ]
+}

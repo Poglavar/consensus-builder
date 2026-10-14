@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "1868",
+  "allNineGatesVerified": true,
+  "method": "Primary review independently reparsed first-party default GML and capabilities and recomputed CRS alignment and GEOS metric checks against the unchanged full-safe cache.",
+  "qualificationReportSha256": "ec00fe72f5472db411f0cf929656151554cddc83018af6080803a05e1bbd6dbe",
+  "candidateSha256": "4257cec9240cc2c12471d3622500282cc25e61f2b84f773d839d87fa24202ed0",
+  "cacheSha256": "f5015949f80294ccbcb82bbaee5b9cbaa369c8069b5fdb4069cce6b915d6acc5",
+  "rawCapabilitiesSha256": "92422b993d643b2ad13f41f63313ad40230b0b5a72cf3420f383afa829fa5648",
+  "rawNativeGmlSha256": "f65429d84d2809453c4b8fd8f73d1884d0c2b5fe0f2c5c3e9cdbdad045b78313",
+  "independentMetricSha256": "71bcbe315d68762f955b574f825cef0afef278d03f53a720b6dd67103c3f50e1",
+  "independentAlignmentSha256": "1145bdb1e81a9c51e5933d2ef9ce21423232f7cdce2598797f7807df141093e5",
+  "coordinateEvidenceScope": "Only the publisher-declared default WFS GML coordinate representation is verified. Internal storage CRS, datum realization, observation epoch, cadastral survey accuracy and legal title are unverified.",
+  "noGeometryRepairOrFittedOffset": true,
+  "runtimeAdmissionPerformed": false
+}

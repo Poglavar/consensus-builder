@@ -1,0 +1,7 @@
+{
+  "stage": "describe-layer",
+  "url": "https://data2d.ecadastre.dgi.bf/geoserver/cadastre2D/wms?service=WMS&version=1.1.1&request=DescribeLayer&layers=cadastre&outputFormat=application%2Fjson",
+  "observedAt": "2026-10-14T13:20:18.995220+00:00",
+  "httpStatus": 200,
+  "bodyBytes": 21438
+}

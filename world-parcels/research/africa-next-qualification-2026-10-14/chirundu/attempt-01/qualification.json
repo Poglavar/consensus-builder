@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 2,
+  "status": "held",
+  "cityCode": "2260",
+  "cityName": "Chirundu",
+  "sourceId": "zm-nsdi-zilmis-lots",
+  "candidateSha256": "a4e6b92f6533b3857b5e114c6a7f789440291b453bc9271c628b1fc0b8d45954",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": false,
+      "freshCollectedIds": 0
+    },
+    "stableGeometry": {
+      "passed": false,
+      "independentRead": true
+    },
+    "explicitAbsence": {
+      "passed": false
+    },
+    "sampling": {
+      "passed": false,
+      "capability": "bbox-13-cell",
+      "cellCount": 0,
+      "attemptedCellCount": 13
+    },
+    "completeness": {
+      "passed": false,
+      "capability": "bbox-13-cell"
+    },
+    "binding": {
+      "passed": false
+    },
+    "metric": {
+      "passed": false,
+      "errorType": "Error",
+      "code": "metric-report-failed"
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Declared native CRS, wire axis order and unchanged native sample evidence are required.",
+      "sourceGeoreferencing": "unverified",
+      "fittedOffsetApplied": false
+    }
+  },
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "6d18edfe75b3149104038dcbca4d0096bbcb923f0f9fa4b49f4815344e75bb90",
+  "featureCount": 0,
+  "sampleIds": [
+    "ZM-NSDI-LOT-42423",
+    "ZM-NSDI-LOT-42873",
+    "ZM-NSDI-LOT-47576",
+    "ZM-NSDI-LOT-47577"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 4,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-14T13:16:54.601Z",
+      "queryHash": "f90c160b8e5ae3c78eed84d05d6432a8dd6a113e1a4be1e9192cabb117ec42df",
+      "safeParamNames": [
+        "where"
+      ],
+      "elapsedMs": 15026,
+      "timeout": true,
+      "errorType": "TimeoutError"
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-14T13:17:09.635Z",
+      "queryHash": "f90c160b8e5ae3c78eed84d05d6432a8dd6a113e1a4be1e9192cabb117ec42df",
+      "safeParamNames": [
+        "where"
+      ],
+      "elapsedMs": 15012,
+      "timeout": true,
+      "errorType": "TimeoutError"
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-14T13:17:24.657Z",
+      "queryHash": "58d76c07362a2a14b5be1f8cf9041dae99f52018f1737128622125a08e9102df",
+      "safeParamNames": [
+        "where"
+      ],
+      "elapsedMs": 15010,
+      "timeout": true,
+      "errorType": "TimeoutError"
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.map.gov.zm",
+      "method": "GET",
+      "startedAt": "2026-10-14T13:17:39.702Z",
+      "queryHash": "b7625861f9074530a87b1b663d20504c96c1bf52c80f84688866d21a8b93ddbb",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "elapsedMs": 15026,
+      "timeout": true,
+      "errorType": "TimeoutError"
+    }
+  ],
+  "failures": {
+    "exactIds": {
+      "errorType": "Error",
+      "code": "parcel-source-unavailable",
+      "httpStatus": 504
+    },
+    "stableGeometry": {
+      "errorType": "Error",
+      "code": "parcel-source-unavailable",
+      "httpStatus": 504
+    },
+    "explicitAbsence": {
+      "errorType": "Error",
+      "code": "parcel-source-unavailable",
+      "httpStatus": 504
+    },
+    "sampling": {
+      "errorType": "Error",
+      "code": "parcel-source-unavailable",
+      "httpStatus": 504
+    },
+    "binding": {
+      "errorType": "Error"
+    },
+    "freshCollectedIdRead": {
+      "errorType": "Error"
+    },
+    "metric": {
+      "errorType": "Error",
+      "code": "metric-report-failed"
+    }
+  },
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "The alignment gate verifies the published coordinate transform; basemap disagreement is never corrected with a fitted offset."
+  ]
+}

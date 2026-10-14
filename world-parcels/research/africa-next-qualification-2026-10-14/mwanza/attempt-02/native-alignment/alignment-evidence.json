@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "sourceId": "tz-mlhhsd-eardhi-current-tp-spatial-units",
+  "cityCode": "1868",
+  "contractSha256": "6e45fd86fed17c9f6c39c29f0b9c56c683154c6358573311cca0447e2fcc7d95",
+  "nativeCrs": "EPSG:4326",
+  "nativeAxisOrder": "north-east",
+  "metadataUrl": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+  "metadataFile": "alignment-metadata.json",
+  "metadataSha256": "80d4a48ce799374fe23ab6f25b566444ca30443a067af1e5d64fa641158ab433",
+  "nativeFile": "alignment-native.json",
+  "nativeSha256": "8434884fb06289f1930ef6e16b68a9a449ed414cb4ec831e0fb546c4754eb436",
+  "representationScope": "Publisher-declared default WFS GML representation only. Internal storage CRS, datum realization/epoch, source survey accuracy and legal title remain unverified.",
+  "operationScope": "Use the published EPSG:4326 coordinate operation; no fitted offset, axis repair, geometry repair or substitute CRS."
+}

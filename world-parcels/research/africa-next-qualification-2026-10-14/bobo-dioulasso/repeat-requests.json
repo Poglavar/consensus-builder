@@ -1,0 +1,31 @@
+[
+  {
+    "stage": "repeat-nearby",
+    "url": "https://ecadastre.dgi.bf/api/locations/geojson?minX=-4.29474790525362&minY=11.1797197779143&maxX=-4.28474790525362&maxY=11.1897197779143&type=PLOT",
+    "observedAt": "2026-10-14T13:26:58.754487+00:00",
+    "httpStatus": 200,
+    "featureCount": 144,
+    "safeFile": "repeat-nearby-safe.geojson",
+    "safeSha256": "ae99de035d5a2046ddc0af67da7a24c4dc372d95f667292c58501b3dc44c9926",
+    "idsEqualFid": true,
+    "responseMetadataKeys": [
+      "type",
+      "crs"
+    ],
+    "sameIdsAndGeometry": true
+  },
+  {
+    "stage": "forced-limit-one",
+    "url": "https://ecadastre.dgi.bf/api/locations/geojson?minX=-4.29474790525362&minY=11.1797197779143&maxX=-4.28474790525362&maxY=11.1897197779143&type=PLOT&paging=true&limit=1&page=0",
+    "observedAt": "2026-10-14T13:27:01.604079+00:00",
+    "httpStatus": 200,
+    "featureCount": 144,
+    "safeFile": "forced-limit-one-safe.geojson",
+    "safeSha256": "ae99de035d5a2046ddc0af67da7a24c4dc372d95f667292c58501b3dc44c9926",
+    "idsEqualFid": true,
+    "responseMetadataKeys": [
+      "type",
+      "crs"
+    ]
+  }
+]

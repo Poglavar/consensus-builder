@@ -18663,6 +18663,47 @@
         "kharagpur",
         "krishnanagar"
       ]
+    },
+    {
+      "sourceId": "tz-mlhhsd-eardhi-current-tp-spatial-units",
+      "name": "Tanzania e-Ardhi current town-plan planning-survey footprints",
+      "operator": "United Republic of Tanzania Ministry of Lands, Housing and Human Settlements Development",
+      "countryCode": "TZ",
+      "scope": "The Ministry e-Ardhi TP Drawing / current town-plan layer returned 87 unchanged planning-survey footprints around the unchanged WUP locator. All nine bounded qualification gates and independent primary review passed. These footprints do not establish legal cadastral title, citywide completeness, the internal storage frame or absolute survey accuracy.",
+      "endpoint": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows",
+      "method": "Bounded safe ID and unchanged geometry reads; independent metric audit and primary review",
+      "responseFormat": "WFS GeoJSON and declared-default GML 3.2",
+      "crs": "Publisher-declared default EPSG:4326 GML north,east; GeoJSON east,north; metric EPSG:32736. Internal storage CRS and epoch unverified.",
+      "reuseStatus": "Anonymous public geometry and publisher attribution verified; explicit reuse conditions, legal title and survey accuracy remain informational and unconfirmed.",
+      "evidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/mwanza/evidence/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:1868"
+      ],
+      "verificationStatus": "verified_sample_partial_coverage",
+      "runtimeReadiness": "technical_qualified_pending_admission",
+      "appCityIds": [],
+      "adapterCandidateFile": "world-parcels/research/africa-next-qualification-2026-10-14/mwanza/candidate.json",
+      "alignmentEvidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/mwanza/evidence/alignment-report.json"
+    },
+    {
+      "sourceId": "bf-dgi-ecadastre-public-geojson",
+      "name": "Burkina Faso DGI public cadastral plot footprints",
+      "operator": "Direction générale des Impôts du Burkina Faso",
+      "countryCode": "BF",
+      "scope": "The current DGI public PLOT route returned 144 unchanged nearby polygons with stable provider IDs on repeated viewport reads; independent GEOS found no invalid geometries, duplicate geometry or material overlaps. Exact native-ID reads, explicit absence, complete paging/manifest semantics and an independent native-coordinate proof remain unestablished. The empty WUP viewport does not establish citywide absence.",
+      "endpoint": "https://ecadastre.dgi.bf/api/locations/geojson",
+      "method": "Bounded safe ID and unchanged geometry reads; independent metric audit and primary review",
+      "responseFormat": "Public bounded GeoJSON PLOT route",
+      "crs": "EPSG:4326 declared JSON wire frame; native/storage coordinate operation unverified. Metric EPSG:32630.",
+      "reuseStatus": "Anonymous public geometry and publisher attribution verified; explicit reuse conditions, legal title and survey accuracy remain informational and unconfirmed.",
+      "evidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/bobo-dioulasso/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:378"
+      ],
+      "verificationStatus": "verified_sample_partial_coverage",
+      "runtimeReadiness": "held_source_contract_preflight",
+      "appCityIds": [],
+      "sourceContractEvidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/bobo-dioulasso/source-profile.json"
     }
   ],
   "countryCoverage": [
@@ -45402,30 +45443,33 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 558,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "bf-dgi-ecadastre-public-geojson"
+      ],
       "researchFile": "research/overnight-cities-2026-10-08/city-378-bobo-dioulasso.json",
-      "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-378-bobo-dioulasso.json",
+      "latestAssessmentFile": "research/africa-next-qualification-2026-10-14/bobo-dioulasso/qualification.json",
       "aliases": [
         "wup2025:378",
         "Bobo-Dioulasso",
         "bobo dioulasso"
       ],
-      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeReadiness": "held_source_contract_preflight",
       "dataFindings": {
         "registryFound": true,
-        "registryBasis": "The official commune site publishes a city-plan page as a static image. National DGI sources document a cadastral office for Bobo-Dioulasso and cadastral-extract workflows; official government sources identify SyC@D/sif.bf as the integrated cadastre/domain procedure platform. The inspected app exposes an Angular shell and authenticated workflow routes, not an anonymous parcel feature/schema contract. No data form or parcel lookup was used.",
+        "registryBasis": "The current DGI public PLOT route returned 144 unchanged nearby polygons with stable provider IDs on repeated viewport reads; independent GEOS found no invalid geometries, duplicate geometry or material overlaps. Exact native-ID reads, explicit absence, complete paging/manifest semantics and an independent native-coordinate proof remain unestablished. The empty WUP viewport does not establish citywide absence.",
         "registryEvidenceUrls": [
           "https://mairie-bobo.bf/plan-de-la-ville/",
           "https://dgi.bf/contacts/",
           "https://dgi.bf/faq/",
           "https://gouvernement.gov.bf/actualites/foncier-lancement-de-la-plateforme-https-sif-bf-pour-une-gestion-transparente-des-procedures/",
           "https://dgi.impots.gov.bf/",
-          "https://sif.bf/"
+          "https://sif.bf/",
+          "https://ecadastre.dgi.bf/api/locations/geojson"
         ],
-        "verifiedSample": false,
-        "publicParcelGeometryFound": false,
-        "reason": "The publicly indexed Cadastre Burkina host currently returns a default nginx page by anonymous HTTPS, and its www hostname fails standard certificate hostname verification. No TLS bypass was attempted. The official Syc@D portal returns an application shell; static client routes include authentication, geoserver and parcel-procedure APIs, but no public anonymous geometry/schema contract was established. No login or API data call was made."
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true,
+        "reason": "The current DGI public PLOT route returned 144 unchanged nearby polygons with stable provider IDs on repeated viewport reads; independent GEOS found no invalid geometries, duplicate geometry or material overlaps. Exact native-ID reads, explicit absence, complete paging/manifest semantics and an independent native-coordinate proof remain unestablished. The empty WUP viewport does not establish citywide absence."
       },
       "populationResearch": {
         "cohort": "overnight-top1000",
@@ -45436,7 +45480,9 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-378-bobo-dioulasso.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/bobo-dioulasso/qualification.json",
+      "metricReportFile": "world-parcels/research/africa-next-qualification-2026-10-14/bobo-dioulasso/metric-report.json"
     },
     {
       "cityId": "wup2025:7228",
@@ -49104,26 +49150,29 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 636,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "tz-mlhhsd-eardhi-current-tp-spatial-units"
+      ],
       "researchFile": "research/overnight-cities-2026-10-08/city-1868-mwanza.json",
-      "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-1868-mwanza.json",
+      "latestAssessmentFile": "research/africa-next-qualification-2026-10-14/mwanza/evidence/qualification.json",
       "aliases": [
         "wup2025:1868",
         "Mwanza",
         "mwanza"
       ],
-      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeReadiness": "technical_qualified_pending_admission",
       "dataFindings": {
         "registryFound": true,
-        "registryBasis": "Mwanza City Council’s own strategic plan documents its Urban Planning, Land and Natural Resources activity, city survey-and-mapping capacity, surveyed plots and title-deed preparation. The figures are historical aggregate evidence, so they establish city-local land survey/registry work but not current database coverage or a public parcel geometry route.",
+        "registryBasis": "The Ministry e-Ardhi TP Drawing / current town-plan layer returned 87 unchanged planning-survey footprints around the unchanged WUP locator. All nine bounded qualification gates and independent primary review passed. These footprints do not establish legal cadastral title, citywide completeness, the internal storage frame or absolute survey accuracy.",
         "registryEvidenceUrls": [
           "https://www.mwanzacc.go.tz/storage/app/uploads/public/5bb/74d/e80/5bb74de803120412478265.pdf",
-          "https://www.mwanzacc.go.tz/"
+          "https://www.mwanzacc.go.tz/",
+          "https://eardhi.lands.go.tz/map/geoserver/taspro/ows"
         ],
-        "verifiedSample": false,
-        "publicParcelGeometryFound": false,
-        "reason": "Historical city-local government evidence confirms surveying/land administration, but no safe anonymous map or schema-bearing parcel feature endpoint was exposed by the inspected official public HTML. The national property-specific e-Ardhi estimator was not used."
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true,
+        "reason": "The Ministry e-Ardhi TP Drawing / current town-plan layer returned 87 unchanged planning-survey footprints around the unchanged WUP locator. All nine bounded qualification gates and independent primary review passed. These footprints do not establish legal cadastral title, citywide completeness, the internal storage frame or absolute survey accuracy."
       },
       "populationResearch": {
         "cohort": "overnight-top1000",
@@ -49134,7 +49183,9 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-1868-mwanza.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/mwanza/evidence/qualification.json",
+      "metricReportFile": "world-parcels/research/africa-next-qualification-2026-10-14/mwanza/evidence/metric-report.json"
     },
     {
       "cityId": "wup2025:1014",

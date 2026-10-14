@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Source contract preflight for the DGI public plot-geometry route; a runtime adapter cannot be qualified before exact identity, completeness and coordinate proof are established.",
+  "city": {
+    "code": "378",
+    "name": "Bobo-Dioulasso",
+    "point": [
+      -4.28974790525362,
+      11.1847197779143
+    ]
+  },
+  "sourceId": "bf-dgi-ecadastre-public-geojson",
+  "endpoint": "https://ecadastre.dgi.bf/api/locations/geojson",
+  "filter": {
+    "type": "PLOT"
+  },
+  "identity": {
+    "idField": "feature.id / properties.FID",
+    "idPrefix": "BF-ECADASTRE:",
+    "nativeIdType": "string"
+  },
+  "sourceWireCrs": "EPSG:4326",
+  "sourceWireAxisOrder": "east-north",
+  "nativeStorageCrs": null,
+  "metricEpsg": "EPSG:32630",
+  "classification": {
+    "isParcel": true,
+    "role": "Public cadastral plot footprints; not legal title or citywide completeness.",
+    "evidence": [
+      "https://ecadastre.dgi.bf/",
+      "https://ecadastre.dgi.bf/main.d0f438b0f6cdaf6e.js"
+    ]
+  }
+}

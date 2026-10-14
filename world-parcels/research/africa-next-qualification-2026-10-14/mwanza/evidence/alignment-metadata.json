@@ -1,0 +1,14 @@
+{
+  "nativeCrs": "EPSG:4326",
+  "declarationKind": "publisher-declared WFS DefaultCRS / GML representation; internal datastore storage CRS is not established",
+  "featureType": "taspro:current_tp_spatial_units",
+  "defaultCrsOriginal": "urn:ogc:def:crs:EPSG::4326",
+  "defaultCrsAxisOrder": "north-east (EPSG:4326 axis order in WFS 2.0 GML 3.2)",
+  "requestOutputFormat": "application/gml+xml; version=3.2",
+  "requestOmittedSrsName": true,
+  "rawCapabilitiesFile": "wfs-capabilities.xml",
+  "rawCapabilitiesSha256": "92422b993d643b2ad13f41f63313ad40230b0b5a72cf3420f383afa829fa5648",
+  "rawNativeGmlFile": "known-uids-default-gml32.xml",
+  "rawNativeGmlSha256": "f65429d84d2809453c4b8fd8f73d1884d0c2b5fe0f2c5c3e9cdbdad045b78313",
+  "sourceScope": "Only the publisher-declared default WFS GML coordinate representation is verified. Internal storage CRS, datum realization, observation epoch, cadastral survey accuracy and legal title are unverified."
+}
