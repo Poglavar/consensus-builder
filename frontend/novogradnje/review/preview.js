@@ -7,6 +7,15 @@
  document.title='Draft '+draft.unitId+' · Novogradnje';
  document.getElementById('unit-title').textContent='Apartment '+draft.unitId;
  document.getElementById('unit-info').textContent=(draft.floor===0?'Ground floor':'Floor '+draft.floor)+' · '+draft.architecture.walls.length+' reconstructed wall segments';
+ const correction=draft.correction,correctionNotice=document.getElementById('correction-notice');
+ if(correction){
+  const revision=Number.isInteger(correction.annotationRevision)&&correction.annotationRevision>=0?correction.annotationRevision:null;
+  const heading=document.createElement('strong');heading.textContent=revision===null?'Corrected using your annotations':'Corrected using your annotations (revision '+revision+')';
+  correctionNotice.append(heading);
+  const summary=Array.isArray(correction.summary)?correction.summary.filter(value=>typeof value==='string'&&value.trim()).slice(0,2):[];
+  if(summary.length){const detail=document.createElement('span');detail.textContent=' '+summary.join(' ');correctionNotice.append(detail);}
+  correctionNotice.hidden=false;
+ }
  document.getElementById('full-source').href=draft.image;
  document.getElementById('listing').href=draft.listingUrl;
  const note=(id,values)=>{for(const value of values){const li=document.createElement('li');li.textContent=value;document.getElementById(id).append(li);}};
