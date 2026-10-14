@@ -109,17 +109,8 @@
             const visibleLanes = [...baseNetwork.lanes.values()].filter(lane => routeVisible(lane.path));
             // Paint all road surfaces first; then markings, so overlapping joins are continuous.
             guides.strokeStyle = '#555f61';
-            guides.fillStyle = '#555f61';
-            for (const junction of surface.junctions) {
-                const points = junction.points.map(screen);
-                if (!points.some(visible)) continue;
-                guides.beginPath(); guides.moveTo(points[0].x, points[0].y);
-                for (const p of points.slice(1)) guides.lineTo(p.x, p.y);
-                guides.closePath(); guides.fill();
-            }
-            for (const lane of surface.lanes) if (routeVisible(lane.path)) { guides.lineWidth = (lane.width || 3) * metres; line(guides, lane.path); }
-            for (const c of baseNetwork.connections.values()) if (routeVisible(c.path)) {
-                guides.lineWidth = (baseNetwork.lanes.get(c.fromLaneId).width || 3) * metres; line(guides, c.path);
+            for (const roads of [surface.lanes, surface.connections]) for (const lane of roads) {
+                if (routeVisible(lane.path)) { guides.lineWidth = (lane.width || 3) * metres; line(guides, lane.path); }
             }
             if (zoom >= 17) for (const lane of visibleLanes) {
                 for (const edge of roadEdges.get(lane.id)) {

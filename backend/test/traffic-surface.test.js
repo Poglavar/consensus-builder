@@ -8,7 +8,7 @@ function lane(id, fromNode, toNode, points, width = 6, type = 'driving') {
 
 function network(lanes, nodes = new Map(), connections = new Map()) {
     return {
-        lanes: new Map(lanes.map(item => [item.id, { path: Geometry.path(item.points) }])),
+        lanes: new Map(lanes.map(item => [item.id, { ...item, path: Geometry.path(item.points) }])),
         nodes,
         connections,
         project: point => point
@@ -28,6 +28,12 @@ function insideConvexPolygon(point, polygon) {
     return true;
 }
 
+function isRoad(surface, point) {
+    const paths = [...surface.lanes, ...(surface.connections || [])];
+    return paths.some(item => Geometry.nearest(item.path, point).distance <= (item.width || 3) / 2)
+        || (surface.junctions || []).some(item => insideConvexPolygon(point, item.points));
+}
+
 describe('traffic road surfaces', () => {
     it('keeps mapped roadbeds when movements are missing or forbidden', () => {
         const sourceLanes = [
@@ -44,26 +50,63 @@ describe('traffic road surfaces', () => {
         expect(forbidden.lanes.map(item => item.path.points)).toEqual(missing.lanes.map(item => item.path.points));
     });
 
-    it('builds a finite convex junction hull that covers each portal width', () => {
+    it('leaves empty corners between perpendicular arms unpaved when no movement passes through them', () => {
         const junction = 'junction';
         const sourceLanes = [
-            lane('east', 'west', junction, [[-20, 0], [0, 0]], 8),
-            lane('north', 'north-start', junction, [[0, -20], [0, 0]], 4),
-            lane('west', junction, 'east-end', [[0, 0], [20, 0]], 6),
-            lane('south', junction, 'south-end', [[0, 0], [0, 20]], 10)
+            lane('incoming', 'west', junction, [[-30, 0], [-12, 0]], 3),
+            lane('north', junction, 'north-end', [[0, 12], [0, 30]], 3),
+            lane('east', junction, 'east-end', [[0, 0], [30, 0]], 3)
         ];
-        const graph = network(sourceLanes, new Map([[junction, { id: junction, point: [0, 0], degree: 4 }]]));
+        const graph = network(sourceLanes, new Map([[junction, { id: junction, point: [0, 0], degree: 3 }]]));
         const surface = TrafficSurface.build(graph, sourceLanes);
-        const polygon = surface.junctions.find(item => item.nodeId === junction)?.points;
-        const portals = [[0, -4], [0, 4], [-2, 0], [2, 0], [0, -3], [0, 3], [-5, 0], [5, 0]];
 
-        expect(polygon?.length).toBeGreaterThan(2);
-        expect(polygon.flat().every(Number.isFinite)).toBe(true);
-        for (const portal of portals) expect(insideConvexPolygon(portal, polygon)).toBe(true);
-        for (let i = 0; i < polygon.length; i++) {
-            const a = polygon[i], b = polygon[(i + 1) % polygon.length], c = polygon[(i + 2) % polygon.length];
-            const cross = (b[0] - a[0]) * (c[1] - b[1]) - (b[1] - a[1]) * (c[0] - b[0]);
-            expect(cross).toBeGreaterThanOrEqual(-1e-8);
+        expect(isRoad(surface, [-6, 6])).toBe(false);
+        for (const point of [[-20, 0], [0, 20], [20, 0]]) expect(isRoad(surface, point)).toBe(true);
+    });
+
+    it('paints a real curved turn only within its lane footprint, keeping its empty outside corner', () => {
+        const sourceLanes = [
+            lane('incoming', 'west', 'junction', [[-30, 0], [-12, 0]], 3),
+            lane('north', 'junction', 'north-end', [[0, 12], [0, 30]], 3),
+            lane('east', 'junction', 'east-end', [[0, 0], [30, 0]], 3)
+        ];
+        const graph = network(sourceLanes, new Map([['junction', { degree: 3, point: [0, 0] }]]));
+        const turn = Geometry.taper({ x: -12, y: 0, angle: 0 }, { x: 0, y: 12, angle: Math.PI / 2 });
+        graph.connections.set('turn', { id: 'turn', fromLaneId: 'incoming', toLaneId: 'north', path: turn });
+        const surface = TrafficSurface.build(graph, sourceLanes), middle = Geometry.sample(turn, turn.length / 2);
+
+        expect(surface.connections[0].path).toBe(turn);
+        expect(isRoad(surface, [middle.x, middle.y])).toBe(true);
+        expect(isRoad(surface, [-6, 6])).toBe(false);
+    });
+
+    it.each([[2, 3], [3, 2]])('retains the physical lane fan of a %s-to-%s width transition', (beforeCount, afterCount) => {
+        const makeSide = (count, incoming) => Array.from({ length: count }, (_, ordinal) => {
+            const y = ((count - 1) / 2 - ordinal) * 3;
+            return { ...lane(`${incoming ? 'in' : 'out'}-${ordinal}`, incoming ? 'west' : 'junction',
+                incoming ? 'junction' : 'east', incoming ? [[0, y], [100, y]] : [[100, y], [200, y]], 3),
+                ordinal, sectionId: incoming ? 'before' : 'after', direction: 'forward' };
+        });
+        const sourceLanes = [...makeSide(beforeCount, true), ...makeSide(afterCount, false)];
+        const moves = (beforeCount === 2 ? [[0, 0], [1, 1], [1, 2]] : [[0, 0], [1, 0], [2, 1]])
+            .map(([from, to], i) => ({ id: `move-${i}`, fromLaneId: `in-${from}`, toLaneId: `out-${to}`,
+                nodeId: 'junction', type: beforeCount < afterCount ? 'split' : 'merge', path: Geometry.path([[100, 0], [100, 0]]) }));
+        const graph = network(sourceLanes, new Map([['junction', { degree: 2 }]]), new Map(moves.map(move => [move.id, move])));
+        Object.assign(graph, Geometry.build(graph.lanes, graph.connections, graph.nodes));
+        const surface = TrafficSurface.build(graph, sourceLanes);
+
+        expect(surface.connections).toHaveLength(3);
+        for (const connection of surface.connections) {
+            expect(connection.geometryKind).toBe('taper');
+            for (const fraction of [.25, .5, .75]) {
+                const pose = Geometry.sample(connection.path, connection.path.length * fraction);
+                expect(isRoad(surface, [pose.x, pose.y])).toBe(true);
+            }
+        }
+        const outside = surface.connections[0];
+        for (const fraction of [.25, .5, .75]) {
+            const pose = Geometry.sample(outside.path, outside.path.length * fraction);
+            expect(isRoad(surface, [pose.x - Math.sin(pose.angle) * 2, pose.y + Math.cos(pose.angle) * 2])).toBe(false);
         }
     });
 
