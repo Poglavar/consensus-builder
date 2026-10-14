@@ -4,7 +4,7 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-14 (expanded selection and 12-run resolution comparison complete; baseline retained). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-14 (resolution comparison complete; three-seed 60-epoch comparison frozen for GPU execution). Status values: todo · running · done · dropped (with the reason).
 
 ## Where we stand (2026-10-14)
 
@@ -53,7 +53,7 @@ in three lanes, two Split runs about 40 minutes; a 1,600-tile 30-epoch run is ab
 | 3 | Split learning curve and Zagreb-donor fine-tune curve | GPU | done 2026-10-13 (round 2) |
 | 4 | Per-city reconstruction settings | laptop | done 2026-10-13: no lever |
 | 5 | Visibility audit (image support) | laptop + vision model | done 2026-10-13 (machine labels; interpretation corrected) |
-| 6 | Zagreb model levers, one at a time | GPU | todo |
+| 6 | Zagreb model levers, one at a time | GPU | running: 60-epoch comparison frozen; later levers pending |
 | 7 | Milestone 4 on both final splits | GPU or laptop | todo |
 | 8 | Ljubljana and a Spanish Csa city | laptop + GPU | todo |
 | 9 | Serving check (CPU inference) | laptop | todo |
@@ -97,6 +97,18 @@ three rejections in a row triggers reassessment of data, targets and optimizatio
 about 3 GPU-h, about $1.50. The first resolution-augmentation trial is recorded under step 11; it did not
 pass the clean-precision guard. Freeze the longer schedule before renting again and compare with the
 saved three-seed v2 baselines on the same manifests.
+
+The first schedule comparison is frozen in `gpu/plans/selection-v2-longer.json`: three fresh Zagreb
+fits at 60 epochs versus the saved 30-epoch baselines, seeds 1–3, 1,623 training tiles and the same
+48 selection tiles. Epoch count is the only changed training argument. The cosine learning-rate
+schedule spans 60 epochs; evaluation remains every two epochs, so the longer recipe has more
+checkpoint-selection opportunities. This is a comparison of complete schedules, not an extension
+of converged weights. The saved baselines peaked at epochs 22, 12 and 22, so the existing curves
+show no consistent late improvement. Clean Zagreb F1 and its precision/area-recall/boundary/density
+guards decide retention; clean Split transfer and resampled Zagreb imagery are secondary. Runtime
+packages and ImageNet weights are pinned to the baseline records. Final splits remain unscored.
+Estimate: about 70–90 minutes including setup, checks and backup, roughly $0.70–1.00 at the prior
+working rate. Training has a two-hour timeout; verify the backups and destroy the rental at completion.
 
 **7. Milestone 4.** Freeze the recipe, score both final splits once. Proposed targets: Zagreb final
 ≥ 0.38, Split final ≥ 0.20.

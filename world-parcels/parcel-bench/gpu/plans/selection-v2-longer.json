@@ -1,0 +1,152 @@
+{
+  "name": "selection-v2-longer",
+  "purpose": "Three fresh 60-epoch Zagreb fits compared with the saved 30-epoch v2 baselines. Change only the declared schedule length, retaining training data, architecture, seeds, augmentation and checkpoint-selection rule. Selection evidence only; no final scoring.",
+  "comparison": {
+    "reference_epochs": 30,
+    "candidate_epochs": 60,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "primary": "Mean clean Zagreb selection parcel F1; paired 12-geographic-block bootstrap, 2000 replicates, conditional on fitted seeds; report seed range and selected epoch.",
+    "guards": [
+      "precision",
+      "area_weighted_recall",
+      "boundary_f1",
+      "per-density parcel_f1"
+    ],
+    "secondary": [
+      "Clean zero-shot transfer to Split selection",
+      "Zagreb RGB resampling to 0.5 m and 1.0 m, compared with saved baseline study cases"
+    ],
+    "decision": "Retain only if the primary gain exceeds seed spread, its paired interval excludes zero, and guards do not regress. Secondary findings are exploratory and cannot replace a failed primary comparison.",
+    "interpretation": "60 epochs stretches the existing cosine learning-rate schedule and offers twice as many checkpoint-selection evaluations. This compares full training recipes, not merely appending 30 epochs to converged weights. No equivalence or recoverability-ceiling claim from an unresolved difference.",
+    "initialization": "Fresh original ImageNet initialization for each seed; never resume or initialize from a cadastral checkpoint.",
+    "maximum_training_hours": 2.0
+  },
+  "frozen_inputs": {
+    "recipe_hash": "48de5c48dab295de",
+    "dataset_manifest_sha256": "e2d7799672e34b148cd09b9e3fdf0bc7f2ae646d9ed392b19b5e0f7627855b31",
+    "manifests": {
+      "zagreb-v2": "c774064ccc09d126b0490b97b7e8fded27bbba698c03a0f4bc417b4f7adabd1b",
+      "split-v2": "c697361f87e01a370db855fa9676fff3224c7ec3768a8966ceaf2faad32111f8"
+    },
+    "eligible_training_tiles": 1623,
+    "selection_tiles_per_city": 48
+  },
+  "runtime": {
+    "critical_packages": {
+      "huggingface_hub": "1.30.0",
+      "numpy": "2.5.3",
+      "opencv-python-headless": "5.0.0.93",
+      "pillow": "12.3.0",
+      "pyproj": "3.8.0",
+      "rasterio": "1.5.2",
+      "safetensors": "0.8.0",
+      "scikit-image": "0.26.0",
+      "scipy": "1.18.1",
+      "shapely": "2.2.0",
+      "timm": "1.0.30",
+      "torch": "2.13.0+cu126",
+      "torchvision": "0.28.0+cu126",
+      "tqdm": "4.70.0"
+    },
+    "reference_environment": "output/runs/integration-v2/runtime/package-versions.json",
+    "pretrained_repository": "timm/convnext_tiny.in12k_ft_in1k",
+    "pretrained_revision": "aa096f03029c7f0ec052013f64c819b34f8ad790",
+    "pretrained_file": "model.safetensors",
+    "pretrained_file_sha256": "a1aefa409b513cf209b085424eb3efffe4e4a9f511491bc2c12ea35209e6bb95"
+  },
+  "reference_runs": [
+    {
+      "run": "zagreb-base-n1623-s1",
+      "directory": "output/runs/selection-v2-resolution/zagreb-base-n1623-s1",
+      "training_recipe_sha256": "b8260efdd55a3873916bec308c084f437e73aed939d7469825b2872f48ae8060",
+      "results_sha256": "57b709166014f21d75406edbc74b66db364a65a8291a195bf36bef0347b73872",
+      "checkpoint_sha256": "cde3617f0b5ce3afc35845ec1f7d856fe1952f9531dc55878796bc2f32e1cfe5"
+    },
+    {
+      "run": "zagreb-base-n1623-s2",
+      "directory": "output/runs/selection-v2-resolution/zagreb-base-n1623-s2",
+      "training_recipe_sha256": "05bcaa735e8f2827e557f562405486b28c20947fe8dba7531a423dcca4783e30",
+      "results_sha256": "ebff32769d5c7458bb69aac2c0406e75c1b3213a64f7ee3c5a3f8582809bc2bb",
+      "checkpoint_sha256": "1da23f04f0c1cacf5afc695411e9037f595f4ac3c84d72d8dae9fb86bf299e20"
+    },
+    {
+      "run": "zagreb-base-n1623-s3",
+      "directory": "output/runs/selection-v2-resolution/zagreb-base-n1623-s3",
+      "training_recipe_sha256": "84f1d9a9de92a022b77c4602ddc504478bf746afc7062659bd690f38eed9377b",
+      "results_sha256": "26bd4893eaeae5fa0a99da87846d3cc7925a8dd67cada042a8cb14ce6b6b01e9",
+      "checkpoint_sha256": "f2132647c58e9c012300c0b7e9be2479ed70b240e6bede3468b6a09e75326529"
+    }
+  ],
+  "runs": [
+    {
+      "name": "zagreb-long60-n1623-s1",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/zagreb-v2.json",
+        "--seed",
+        "1",
+        "--epochs",
+        "60",
+        "--eval-every",
+        "2",
+        "--resolution-aug-prob",
+        "0",
+        "--resolution-aug-max-gsd",
+        "1.0"
+      ],
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/split-v2.json"
+        }
+      ]
+    },
+    {
+      "name": "zagreb-long60-n1623-s2",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/zagreb-v2.json",
+        "--seed",
+        "2",
+        "--epochs",
+        "60",
+        "--eval-every",
+        "2",
+        "--resolution-aug-prob",
+        "0",
+        "--resolution-aug-max-gsd",
+        "1.0"
+      ],
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/split-v2.json"
+        }
+      ]
+    },
+    {
+      "name": "zagreb-long60-n1623-s3",
+      "train": [
+        "--manifest",
+        "world-parcels/parcel-bench/manifests/zagreb-v2.json",
+        "--seed",
+        "3",
+        "--epochs",
+        "60",
+        "--eval-every",
+        "2",
+        "--resolution-aug-prob",
+        "0",
+        "--resolution-aug-max-gsd",
+        "1.0"
+      ],
+      "evals": [
+        {
+          "manifest": "world-parcels/parcel-bench/manifests/split-v2.json"
+        }
+      ]
+    }
+  ]
+}
