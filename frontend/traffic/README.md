@@ -23,6 +23,8 @@ sections, normally 28 metres and longer for larger shifts. Quintic curves match 
 at both ends and progress monotonically down the road. Coincident straight endpoints have no
 connector loop. Small coordinate mismatches blend over a shorter run, so cars do not briefly
 reverse at rounded section endpoints. Actual junction turns keep their exported geometry.
+Sharp interior vertices and eligible two-arm right-angle joins get short curves. Mapped signal
+positions are protected when smoothing or trimming a path.
 
 Each end can borrow at most 45% of a section, less at bends or mapped signals. Signal stop positions
 remain at their original distance along the road. These are derived driving paths, not surveyed
@@ -32,6 +34,26 @@ geometry does not add a new branch or resolve an unanswered lane.
 Cars keep their following gap through a split, including across its shared entrance. Cars on the
 same taper can follow each other without waiting for the entire transition to empty; competing
 merges yield to traffic already in the transition. Through paths retain the road speed limit.
+
+## Interactive tools and limits
+
+**Inspect** highlights a hovered lane and lets you select cars or existing meters. The road surfaces,
+markings and cars share Leaflet's zoom transform; car positions interpolate between simulation steps.
+Vehicle motion uses 4.4 × 1.8 metre footprints and checks the swept movement against nearby cars.
+
+**Close lane** selects 5 or 10 metre chunks on one lane. Click more chunks to extend a closure, or
+click a closed chunk to reopen it. An occupied approach remains pending until its cars have cleared.
+Active closures remove that lane span, with a 2.5 metre body clearance at either end. Cars use only
+permitted adjacent same-direction lanes, can make several successive detours, and return after the
+barrier when possible. A closure with no legal detour produces a queue. Edits keep current vehicles,
+their positions, the clock and counters; an already-entered curve retains its geometry until finished.
+
+**Measure flow** snaps a perpendicular line across the simulated driving lanes of the road, including
+its opposite carriageway. Each lane/direction has a total and a rate over up to 60 simulated seconds.
+The **Before edit** column retains the preceding rate when a closure is changed. Counts continue
+through edits; **Reset counts** resets one meter, and **New traffic** resets the run and meter counts
+while keeping the current closures. Scenarios and meters are local to the open page. These are
+simulation counts, not calibrated traffic-flow forecasts.
 
 ## Data and limits
 
@@ -56,13 +78,17 @@ and regressing candidates are excluded. Live manual decisions take precedence. U
 restriction approaches and movements that contradict mapped OSM restrictions are blocked.
 Bus/private/destination-only lanes are excluded. Missing movements are never inferred.
 
-The simulation chooses only exported lane connections. Traffic spawns across all cyclic lane
+Base junction turns use only exported lane connections; closure detours add explicit permitted
+adjacent-lane changes. Traffic spawns across cyclic lane
 regions, weighted by eligible lane length; routes and lane changes stay within each car's region.
 Lane changes cross one adjacent driving lane in the same section/direction, respect `change:lanes`,
 and reserve space in both lanes during the manoeuvre. Drivers queue behind each other. Junction
-reservations serialize crossings at an OSM node, and a car needs room to clear its reservation and
-keep a following gap before entering a lane. The oldest long-waiting approach with room gets
-priority for the next crossing, while still obeying its signal. Near a blocked turn, a queued driver
+reservations conservatively group nearby nodes and narrow or sharply bent sections. Cars choose an
+exit through a reserved area and check downstream room before entering, including past tiny internal
+connectors. Opposing vehicle footprints also identify short kinks where two cars cannot pass.
+A car needs room to clear its reservation and keep a following gap. The oldest long-waiting approach
+with room gets priority for the next crossing, while still obeying its signal. A queue can span several
+signal phases while a car clears a grouped junction. Near a blocked turn, a queued driver
 may choose another clear, explicit permitted exit in the same region. Missing exits are never
 inferred.
 
@@ -106,11 +132,12 @@ Do not copy raw API payloads into the frontend: source metadata may contain loca
 
 ```sh
 cd backend
-npx vitest run test/traffic-simulation.test.js test/traffic-geometry.test.js test/traffic-snapshot.test.js test/traffic-preview-data.test.js test/traffic-signals.test.js
+npx vitest run test/traffic-*.test.js
 ```
 
-`geometry.js` and `simulation.js` have no DOM, canvas or Leaflet dependencies. Headless tests
-exercise split/merge continuity, following gaps, signal positions, movement and the saved-answer merge. The data test also runs traffic over
+The geometry, simulation, collision, scenario and meter modules have no DOM, canvas or Leaflet
+dependencies. Headless tests exercise curves, following gaps, signal positions, live edits, multi-lane
+detours, directional counts and the saved-answer merge. The data test also runs traffic over
 the exported graph, checking every entry against the source lane's allowed connections and lights.
 The signal test checks OSM direction tags, exact way/section matching and incoming-only controls.
 Desktop/mobile appearance and canvas animation are checked manually in a headed browser.

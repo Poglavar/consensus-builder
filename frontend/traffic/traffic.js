@@ -3,7 +3,9 @@
     'use strict';
     const $ = id => document.getElementById(id);
     const t = (key, params) => window.i18n.t(`traffic.${key}`, params);
-    const Engine = window.TrafficSimulation;
+    const Engine = window.TrafficSimulation, G = window.TrafficGeometry;
+    const Scenario = window.TrafficScenario, Meters = window.TrafficMeters;
+    const counters = new Meters.Counters();
     const colors = ['#237e88', '#ce7943', '#e4ae4a', '#5968a0', '#668e69', '#f4f0dc', '#bd6977'];
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || new URLSearchParams(location.search).has('reduceMotion');
     const map = L.map('map', { zoomControl: false, preferCanvas: true, minZoom: 13, maxZoom: 20 });
@@ -20,34 +22,30 @@
         button.classList.toggle('active', button.dataset.place === initialPlace));
     const guideCanvas = $('guides'), carCanvas = $('cars');
     const guides = guideCanvas.getContext('2d'), ctx = carCanvas.getContext('2d');
+    let baseNetwork, editor, laneIndex, hover = null, meterHover = null, selectedMeter = null, tool = 'inspect', roadEdges, transitionEdges;
     let network, sim, running = !reduced, rate = 2, seed = 52, selected = null, following = false;
     let signalPopup = null;
     let transform, size = { x: 0, y: 0 }, previousFrame = null, uiTime = 0, frameId = null;
     let screenCars = [], frameCount = 0, tileErrors = 0;
     tiles.on('tileerror', () => { tileErrors++; });
 
+    const scene = new window.TrafficSceneLayer([guideCanvas, carCanvas], () => {
+        size = scene.size; updateTransform(); drawGuides(); drawCars();
+    });
+    scene.addTo(map);
     function resize() {
-        size = map.getSize();
         if (signalPopup?.isOpen()) {
-            signalPopup.options.maxWidth = Math.max(140, Math.min(280, size.x - 72));
-            signalPopup.update();
+            signalPopup.options.maxWidth = Math.max(140, Math.min(280, map.getSize().x - 72)); signalPopup.update();
         }
-        const dpr = Math.min(devicePixelRatio || 1, 2);
-        for (const canvas of [guideCanvas, carCanvas]) {
-            canvas.width = Math.round(size.x * dpr); canvas.height = Math.round(size.y * dpr);
-            canvas.style.width = `${size.x}px`; canvas.style.height = `${size.y}px`;
-            canvas.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
-        }
-        updateTransform(); drawGuides(); drawCars();
+        scene.reset();
     }
-
     function updateTransform() {
         if (!network) return;
-        const origin = map.latLngToContainerPoint([network.origin[1], network.origin[0]]);
+        const origin = scene.project([network.origin[1], network.origin[0]]);
         const east = network.unproject([100, 0]), north = network.unproject([0, 100]);
         transform = { x: origin.x, y: origin.y,
-            sx: (map.latLngToContainerPoint([east[1], east[0]]).x - origin.x) / 100,
-            sy: (map.latLngToContainerPoint([north[1], north[0]]).y - origin.y) / 100 };
+            sx: (scene.project([east[1], east[0]]).x - origin.x) / 100,
+            sy: (scene.project([north[1], north[0]]).y - origin.y) / 100 };
     }
     const screen = point => ({ x: transform.x + point[0] * transform.sx, y: transform.y + point[1] * transform.sy });
     const visible = p => p.x > -40 && p.x < size.x + 40 && p.y > -40 && p.y < size.y + 40;
@@ -63,26 +61,103 @@
         context.stroke();
     }
 
+    function buildRoadEdges() {
+        roadEdges = new Map();
+        const sections = new Map();
+        for (const lane of baseNetwork.lanes.values()) {
+            const key = `${lane.sectionId}:${lane.direction}`;
+            if (!sections.has(key)) sections.set(key, []);
+            sections.get(key).push(lane);
+        }
+        for (const lane of baseNetwork.lanes.values()) {
+            const siblings = sections.get(`${lane.sectionId}:${lane.direction}`);
+            roadEdges.set(lane.id, [-1, 1].map(side => {
+                const adjacent = siblings.some(other => other.ordinal === lane.ordinal - side && Math.abs(other.stripIndex - lane.stripIndex) === 1);
+                const points = offsetPolylinePlanar(lane.path.points, side * (lane.width || 3) / 2);
+                return { route: G.path(points || lane.path.points), dashed: adjacent };
+            }));
+        }
+        transitionEdges = [];
+        for (const connection of baseNetwork.connections.values()) {
+            if (!connection.geometryKind || connection.path.length < 1) continue;
+            const from = baseNetwork.lanes.get(connection.fromLaneId), to = baseNetwork.lanes.get(connection.toLaneId);
+            for (const [index, side] of [-1, 1].entries()) {
+                const width = ((from.width || 3) + (to.width || 3)) / 2;
+                const points = offsetPolylinePlanar(connection.path.points, side * width / 2);
+                transitionEdges.push({ route: G.path(points || connection.path.points),
+                    dashed: roadEdges.get(from.id)[index].dashed || roadEdges.get(to.id)[index].dashed });
+            }
+        }
+    }
     function drawGuides() {
         guides.clearRect(0, 0, size.x, size.y);
-        if (!network || !transform || !$('lanes').checked) return;
-        const zoom = map.getZoom();
-        guides.strokeStyle = zoom >= 17 ? '#367f784f' : '#367f7828';
-        guides.lineWidth = zoom >= 19 ? 1.3 : .8;
-        for (const lane of network.lanes.values()) {
-            if (lane.highway === 'service' || !routeVisible(lane.path)) continue;
-            line(guides, lane.path);
-            if (zoom < 18 || lane.path.length < 15) continue;
-            const p = Engine.sample(lane.path, lane.path.length * .55), s = screen([p.x, p.y]);
-            if (!visible(s)) continue;
-            guides.save(); guides.translate(s.x, s.y); guides.rotate(-p.angle);
-            guides.beginPath(); guides.moveTo(-3, -2); guides.lineTo(0, 0); guides.lineTo(-3, 2); guides.stroke(); guides.restore();
+        if (!network || !transform) return;
+        const zoom = scene.zoom, metres = Math.abs(transform.sx);
+        guides.lineCap = 'butt'; guides.lineJoin = 'round'; guides.setLineDash([]);
+        if ($('lanes').checked) {
+            const visibleLanes = [...baseNetwork.lanes.values()].filter(lane => routeVisible(lane.path));
+            // Paint all road surfaces first; then markings, so overlapping joins are continuous.
+            guides.strokeStyle = '#555f61';
+            for (const lane of visibleLanes) { guides.lineWidth = (lane.width || 3) * metres; line(guides, lane.path); }
+            for (const c of baseNetwork.connections.values()) if (routeVisible(c.path)) {
+                guides.lineWidth = (baseNetwork.lanes.get(c.fromLaneId).width || 3) * metres; line(guides, c.path);
+            }
+            if (zoom >= 17) for (const lane of visibleLanes) {
+                for (const edge of roadEdges.get(lane.id)) {
+                    guides.strokeStyle = edge.dashed ? '#e6e8dfaa' : '#e6e8dfd0';
+                    guides.lineWidth = Math.max(.65, .1 * metres);
+                    guides.setLineDash(edge.dashed ? [3 * metres, 5 * metres] : []); line(guides, edge.route);
+                }
+                guides.setLineDash([]);
+                if (zoom < 18 || lane.path.length < 12) continue;
+                for (let station = Math.min(18, lane.path.length / 2); station < lane.path.length; station += 55) {
+                    const p = G.sample(lane.path, station), q = screen([p.x, p.y]);
+                    guides.save(); guides.translate(q.x, q.y); guides.rotate(-p.angle); guides.scale(metres, metres);
+                    guides.strokeStyle = '#e6e8df95'; guides.lineWidth = .13;
+                    guides.beginPath(); guides.moveTo(-1.4, 0); guides.lineTo(1.4, 0); guides.moveTo(.4, -.65); guides.lineTo(1.4, 0); guides.lineTo(.4, .65); guides.stroke(); guides.restore();
+                }
+            }
+            if (zoom >= 17) for (const edge of transitionEdges) if (routeVisible(edge.route)) {
+                guides.strokeStyle = edge.dashed ? '#e6e8dfaa' : '#e6e8dfd0';
+                guides.lineWidth = Math.max(.65, .1 * metres);
+                guides.setLineDash(edge.dashed ? [3 * metres, 5 * metres] : []); line(guides, edge.route);
+            }
+            guides.setLineDash([]);
         }
-        for (const connection of network.connections.values()) {
-            if (!connection.geometryKind && zoom < 18) continue;
-            guides.strokeStyle = connection.geometryKind ? (zoom >= 17 ? '#367f784f' : '#367f7828') : '#367f7827';
-            guides.lineWidth = connection.geometryKind ? (zoom >= 19 ? 1.3 : .8) : .75;
-            if (routeVisible(connection.path)) line(guides, connection.path);
+        if (hover && zoom >= 17) {
+            guides.strokeStyle = tool === 'close' ? '#f5ad4a88' : '#68dcda66';
+            guides.lineWidth = (hover.lane.width || 3) * metres;
+            const selection = Scenario.chunk(hover.lane, hover.s, Number($('chunk-size').value));
+            line(guides, tool === 'close' ? G.slice(hover.lane.path, selection.start, selection.end) : hover.lane.path);
+        }
+        for (const closure of editor?.closures || []) {
+            const lane = baseNetwork.lanes.get(closure.laneId), route = G.slice(lane.path, closure.start, closure.end);
+            if (!routeVisible(route)) continue;
+            const pending = closure.status === 'pending';
+            guides.lineWidth = (lane.width || 3) * metres; guides.strokeStyle = pending ? '#f3b754ad' : '#453d36'; line(guides, route);
+            guides.lineWidth = .3 * metres; guides.strokeStyle = pending ? '#ffd686' : '#f9b349';
+            for (let s = closure.start; s <= closure.end + .01; s += 1.1) {
+                const p = G.sample(lane.path, s), half = (lane.width || 3) / 2;
+                line(guides, G.path([[-Math.sin(p.angle) * half + p.x - Math.cos(p.angle) * .4, Math.cos(p.angle) * half + p.y - Math.sin(p.angle) * .4],
+                    [Math.sin(p.angle) * half + p.x + Math.cos(p.angle) * .4, -Math.cos(p.angle) * half + p.y + Math.sin(p.angle) * .4]]));
+            }
+            for (const station of [closure.start, closure.end]) {
+                const p = G.sample(lane.path, station), half = (lane.width || 3) / 2;
+                const edge = G.path([[p.x - Math.sin(p.angle) * half, p.y + Math.cos(p.angle) * half], [p.x + Math.sin(p.angle) * half, p.y - Math.cos(p.angle) * half]]);
+                guides.lineWidth = .65 * metres; guides.strokeStyle = '#fff4d8'; line(guides, edge);
+                guides.setLineDash([.5 * metres, .5 * metres]); guides.strokeStyle = '#d66c33'; line(guides, edge); guides.setLineDash([]);
+            }
+        }
+        if (editor?.closures.some(c => c.status === 'active')) for (const c of network.connections.values()) {
+            if (c.type !== 'bypass' || !routeVisible(c.path)) continue;
+            guides.lineWidth = Math.max(.7, metres * .1); guides.strokeStyle = '#93d3b75a'; guides.setLineDash([2 * metres, 3 * metres]); line(guides, c.path);
+        }
+        guides.setLineDash([]);
+        for (const meter of [...counters.meters, ...(meterHover ? [meterHover] : [])]) {
+            guides.strokeStyle = meter.id === selectedMeter ? '#4dd9dc' : '#98eeee'; guides.lineWidth = 2;
+            line(guides, G.path(meter.ends));
+            for (const point of meter.ends) { const p = screen(point); guides.beginPath(); guides.arc(p.x, p.y, 3.5, 0, Math.PI * 2); guides.fillStyle = '#e5ffff'; guides.fill(); }
+            if (meter.id) { const p = screen(meter.center); guides.fillStyle = '#0c656c'; guides.fillRect(p.x - 12, p.y - 10, 24, 20); guides.fillStyle = '#fff'; guides.font = '11px system-ui'; guides.textAlign = 'center'; guides.fillText(String(meter.id), p.x, p.y + 4); }
         }
     }
 
@@ -119,17 +194,18 @@
         }
         drawSignals();
         for (const car of sim.cars) {
-            const pose = sim.pose(car), p = screen([pose.x, pose.y]);
+            const pose = running ? sim.renderPose(car) : sim.pose(car), p = screen([pose.x, pose.y]);
             if (!visible(p)) continue;
             screenCars.push({ id: car.id, x: p.x, y: p.y });
-            const length = Math.max(8, Math.min(31, 4.4 * transform.sx));
-            const width = Math.max(4.2, Math.min(13, 1.9 * transform.sx));
+            const length = 4.4 * transform.sx;
+            const width = 1.8 * transform.sx;
+            if (scene.zoom < 17) { ctx.beginPath(); ctx.arc(p.x, p.y, 1.25, 0, Math.PI * 2); ctx.fillStyle = colors[car.color]; ctx.fill(); continue; }
             ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(-pose.angle);
             if (selected === car.id) {
                 ctx.beginPath(); ctx.arc(0, 0, length * .9, 0, Math.PI * 2);
                 ctx.strokeStyle = '#177c6eb0'; ctx.lineWidth = 1.5; ctx.stroke();
             }
-            ctx.shadowColor = '#16362644'; ctx.shadowBlur = 2; ctx.shadowOffsetY = 1;
+            ctx.shadowColor = '#16362644'; ctx.shadowBlur = .8; ctx.shadowOffsetY = 1;
             ctx.fillStyle = colors[car.color]; ctx.strokeStyle = '#243e465c'; ctx.lineWidth = .6;
             ctx.beginPath(); ctx.roundRect(-length / 2, -width / 2, length, width, Math.min(2, width * .24)); ctx.fill(); ctx.stroke();
             ctx.shadowColor = 'transparent'; ctx.shadowOffsetY = 0;
@@ -166,7 +242,105 @@
             $('selected-detail').textContent = `${lane.name || t('unnamed')} · ${t('lane', { number: lane.ordinal + 1 })}\n${t(car.state)} · ${t('exits', { count: lane.outgoing.length })}`;
             document.querySelector('.car-swatch').style.backgroundColor = colors[car.color];
         } else $('selected-detail').textContent = t('selectHint');
+        updateTools();
     }
+
+    function attachCounters() { sim.listeners.add((car, before, after, time) => counters.observe(car, before, after, time)); }
+    function updateTools() {
+        $('tool-hint').textContent = t(`${tool}Hint`);
+        const active = editor.closures.filter(c => c.status === 'active').length;
+        $('closure-count').textContent = t('closureCount', { active, pending: editor.closures.length - active });
+        $('clear-closures').disabled = !editor.closures.length;
+        $('chunk-size').disabled = tool !== 'close';
+        $('meter-panel').hidden = !counters.meters.length;
+        const select = $('meter-select');
+        if (select.options.length !== counters.meters.length || [...select.options].some((o, i) => o.value !== String(counters.meters[i].id))) {
+            select.replaceChildren(...counters.meters.map(m => { const o = document.createElement('option'); o.value = m.id; o.textContent = t('meterName', { id: m.id }); return o; }));
+        }
+        selectedMeter ||= counters.meters[0]?.id;
+        select.value = selectedMeter;
+        const meter = counters.meters.find(m => m.id === selectedMeter);
+        if (!meter) return;
+        for (const option of select.options) option.textContent = t('meterName', { id: option.value });
+        $('meter-road').textContent = meter.name || t('unnamed');
+        $('meter-rows').replaceChildren(...counters.rows(meter, sim.time).map(row => {
+            const tr = document.createElement('tr');
+            const before = meter.baseline?.rates.find(r => r.laneId === row.laneId)?.rate;
+            for (const value of [`${row.ordinal + 1} · ${t(`direction${row.direction}`)}`, row.count, row.rate.toFixed(1), before == null ? '—' : before.toFixed(1)]) {
+                const td = document.createElement('td'); td.textContent = value; tr.append(td);
+            }
+            return tr;
+        }));
+        $('meter-window').textContent = t('meterWindow', { seconds: Math.min(60, Math.floor(sim.time - meter.since)) })
+            + (meter.baseline ? ` ${t('baselineWindow', { seconds: Math.floor(meter.baseline.duration) })}` : '');
+    }
+    function hitAt(event) {
+        if (!laneIndex || scene.zoom < 17) return null;
+        return laneIndex.hit(baseNetwork.project([event.latlng.lng, event.latlng.lat]), 2 / Math.abs(transform.sx));
+    }
+    function handleToolClick(event) {
+        if (!sim) return false;
+        const hit = hitAt(event);
+        if (tool === 'close') {
+            if (hit) {
+                counters.markIntervention(sim.time);
+                editor.toggle(Scenario.chunk(hit.lane, hit.s, Number($('chunk-size').value)));
+                network = sim.network; updateUI(); drawGuides(); drawCars(); wake();
+            }
+            return true;
+        }
+        if (tool === 'meter') {
+            const shape = Meters.profile(laneIndex, hit);
+            if (shape) { selectedMeter = counters.add(shape, sim.time).id; updateUI(); drawGuides(); }
+            return true;
+        }
+        const point = baseNetwork.project([event.latlng.lng, event.latlng.lat]);
+        const nearest = counters.meters.map(m => ({ m, distance: G.nearest(G.path(m.ends), point).distance }))
+            .sort((a, b) => a.distance - b.distance)[0];
+        if (nearest && nearest.distance < 5 / Math.abs(transform.sx)) {
+            selectedMeter = nearest.m.id; updateUI(); drawGuides(); return true;
+        }
+        return false;
+    }
+    let hoverFrame = null, pointerEvent = null;
+    map.on('mousemove', event => {
+        pointerEvent = event;
+        if (hoverFrame) return;
+        hoverFrame = requestAnimationFrame(() => {
+            hoverFrame = null;
+            if (scene.zooming) return;
+            hover = hitAt(pointerEvent); meterHover = tool === 'meter' ? Meters.profile(laneIndex, hover) : null;
+            const tooltip = $('lane-tooltip'); tooltip.hidden = !hover;
+            if (hover) {
+                tooltip.textContent = t('laneHover', { road: hover.lane.name || t('unnamed'), number: hover.lane.ordinal + 1 });
+                if (tool === 'close') {
+                    const chunk = Scenario.chunk(hover.lane, hover.s, Number($('chunk-size').value));
+                    const closed = editor.closures.some(c => c.laneId === chunk.laneId && c.start < chunk.end && c.end > chunk.start);
+                    tooltip.textContent += ` · ${t(closed ? 'closedHover' : 'openHover', { length: Math.round(chunk.end - chunk.start) })}`;
+                }
+                const p = pointerEvent.containerPoint;
+                tooltip.style.left = `${Math.max(8, Math.min(map.getSize().x - tooltip.offsetWidth - 8, p.x + 15))}px`;
+                tooltip.style.top = `${Math.max(8, p.y - tooltip.offsetHeight - 12)}px`;
+            }
+            drawGuides();
+        });
+    });
+    map.on('mouseout dragstart zoomstart', () => { hover = meterHover = null; $('lane-tooltip').hidden = true; drawGuides(); });
+    function setTool(value) {
+        tool = value; following = false; meterHover = null;
+        document.querySelectorAll('[data-tool]').forEach(button => {
+            const active = button.dataset.tool === tool; button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active));
+        });
+        map.getContainer().classList.toggle('editing-road', tool !== 'inspect');
+        if (sim) { updateUI(); drawGuides(); }
+    }
+    document.querySelectorAll('[data-tool]').forEach(button => button.addEventListener('click', () => setTool(button.dataset.tool)));
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') setTool('inspect'); });
+    $('chunk-size').addEventListener('change', drawGuides);
+    $('clear-closures').addEventListener('click', () => { counters.markIntervention(sim.time); editor.clear(); network = sim.network; updateUI(); drawGuides(); drawCars(); wake(); });
+    $('meter-select').addEventListener('change', () => { selectedMeter = Number($('meter-select').value); updateUI(); drawGuides(); });
+    $('reset-meter').addEventListener('click', () => { counters.reset(selectedMeter, sim.time); updateUI(); });
+    $('remove-meter').addEventListener('click', () => { counters.remove(selectedMeter); selectedMeter = counters.meters[0]?.id; updateUI(); drawGuides(); });
 
     function animate(now) {
         frameId = null;
@@ -177,20 +351,23 @@
             if (car) { const p = sim.pose(car), ll = network.unproject([p.x, p.y]); map.panTo([ll[1], ll[0]], { animate: false }); }
         }
         drawCars();
+        if (editor?.update()) { network = sim.network; drawGuides(); }
         if (now - uiTime > 250) { updateUI(); uiTime = now; }
         if (running && !document.hidden) frameId = requestAnimationFrame(animate);
     }
     function wake() { previousFrame = null; if (frameId == null && !document.hidden) frameId = requestAnimationFrame(animate); }
 
-    map.on('move zoom resize', () => { updateTransform(); drawGuides(); drawCars(); });
+
     map.on('dragstart', () => { following = false; updateUI(); });
     map.on('click', event => {
-        const nearest = screenCars.map(car => ({ ...car, distance: Math.hypot(car.x - event.containerPoint.x, car.y - event.containerPoint.y) }))
+        if (handleToolClick(event)) return;
+        const pointer = scene.point(event.containerPoint);
+        const nearest = screenCars.map(car => ({ ...car, distance: Math.hypot(car.x - pointer.x, car.y - pointer.y) }))
             .sort((a, b) => a.distance - b.distance)[0];
         const mapped = network && $('lights').checked && map.getZoom() >= 17
             ? [...network.signals.values()].map(signal => {
                 const p = screen(network.project(signal.point));
-                return { signal, distance: Math.hypot(p.x - event.containerPoint.x, p.y - event.containerPoint.y) };
+                return { signal, distance: Math.hypot(p.x - pointer.x, p.y - pointer.y) };
             }).sort((a, b) => a.distance - b.distance)[0] : null;
         if (mapped?.distance < 12 && mapped.distance < (nearest?.distance ?? Infinity)) {
             following = false; updateUI();
@@ -202,7 +379,7 @@
             link.href = `https://www.openstreetmap.org/node/${encodeURIComponent(id)}`;
             link.target = '_blank'; link.rel = 'noopener';
             content.append(title, detail, link);
-            signalPopup = L.popup({ maxWidth: Math.max(140, Math.min(280, size.x - 72)), autoPanPadding: [16, 16] })
+            signalPopup = L.popup({ maxWidth: Math.max(140, Math.min(280, map.getSize().x - 72)), autoPanPadding: [16, 16] })
                 .setLatLng([signal.point[1], signal.point[0]]).setContent(content).openOn(map);
             return;
         }
@@ -218,6 +395,8 @@
     });
     $('reset').addEventListener('click', () => {
         sim = new Engine.Simulation(network, { count: Number($('density').value), seed: ++seed, signals: $('lights').checked });
+        editor.setSimulation(sim); attachCounters();
+        for (const meter of counters.meters) counters.reset(meter.id, 0);
         selected = null; following = false; updateUI(); drawCars(); wake();
     });
     $('speed').addEventListener('input', () => { rate = Number($('speed').value); $('speed-value').textContent = `${rate}×`; });
@@ -246,11 +425,13 @@
 
     async function load() {
         try {
-            const response = await fetch('data/central.json.gz?v=20261014d', { cache: 'no-store' });
+            const response = await fetch('data/central.json.gz?v=20261014e', { cache: 'no-store' });
             if (!response.ok) throw new Error(`Traffic data: HTTP ${response.status}`);
             const data = await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
-            network = Engine.createNetwork(data);
+            network = baseNetwork = Engine.createNetwork(data);
+            laneIndex = new Meters.LaneIndex(baseNetwork); buildRoadEdges();
             sim = new Engine.Simulation(network, { count: Number($('density').value), seed });
+            editor = new Scenario.Editor(baseNetwork, sim); attachCounters();
             if (!network.spawnLanes.length) throw new Error('The exported graph has no usable starting lanes.');
             L.rectangle([[data.bbox[1], data.bbox[0]], [data.bbox[3], data.bbox[2]]], {
                 color: '#557d68', weight: 1, dashArray: '5 7', fill: false, interactive: false
@@ -269,7 +450,7 @@
     }
     // Read-only diagnostics expose the rendered artifact for manual browser verification.
     window.trafficPreview = {
-        get simulation() { return sim; }, get network() { return network; }, map,
+        get simulation() { return sim; }, get network() { return network; }, get baseNetwork() { return baseNetwork; }, get editor() { return editor; }, counters, laneIndex: () => laneIndex, scene, map,
         inspect: () => ({ ...sim?.stats(), frameCount, tileErrors, visibleCars: screenCars.length,
             running, selected, following, tileCount: document.querySelectorAll('.leaflet-tile-loaded').length })
     };

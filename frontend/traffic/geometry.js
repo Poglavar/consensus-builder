@@ -11,7 +11,18 @@
     const point = pose => [pose.x, pose.y];
 
     function path(points) {
-        const clean = points.filter((p, i) => !i || Math.hypot(p[0] - points[i - 1][0], p[1] - points[i - 1][1]) > 1e-5);
+        // OSM coordinates rounded to 1e-7 degrees can leave centimetre-scale
+        // kinks at connector endpoints. Keep route endpoints, discard only tiny
+        // interior steps that cannot represent a reliable heading.
+        const clean = [];
+        for (let i = 0; i < points.length; i++) {
+            const p = points[i];
+            if (!clean.length || i === points.length - 1
+                || Math.hypot(p[0] - clean.at(-1)[0], p[1] - clean.at(-1)[1]) > .025) clean.push(p);
+        }
+        if (clean.length > 2 && Math.hypot(clean.at(-1)[0] - clean.at(-2)[0], clean.at(-1)[1] - clean.at(-2)[1]) <= .025) {
+            clean.splice(-2, 1);
+        }
         const arcs = [0];
         for (let i = 1; i < clean.length; i++) {
             arcs.push(arcs[i - 1] + Math.hypot(clean[i][0] - clean[i - 1][0], clean[i][1] - clean[i - 1][1]));
@@ -39,6 +50,73 @@
         return path([point(sample(route, start)),
             ...route.points.filter((p, index) => route.arcs[index] > start && route.arcs[index] < end),
             point(sample(route, end))]);
+    }
+
+    function nearest(route, xy) {
+        let best = null;
+        for (let i = 1; i < route.points.length; i++) {
+            const a = route.points[i - 1], b = route.points[i];
+            const dx = b[0] - a[0], dy = b[1] - a[1], length2 = dx * dx + dy * dy;
+            const t = length2 ? clamp(((xy[0] - a[0]) * dx + (xy[1] - a[1]) * dy) / length2, 0, 1) : 0;
+            const x = a[0] + dx * t, y = a[1] + dy * t, distance = Math.hypot(xy[0] - x, xy[1] - y);
+            if (!best || distance < best.distance) best = { s: route.arcs[i - 1] + Math.sqrt(length2) * t,
+                x, y, distance, angle: Math.atan2(dy, dx) };
+        }
+        if (!best && route.points.length) return { s: 0, x: route.points[0][0], y: route.points[0][1],
+            distance: Math.hypot(xy[0] - route.points[0][0], xy[1] - route.points[0][1]), angle: route.heading || 0 };
+        return best;
+    }
+
+    function mapStation(route, sourceS) {
+        const map = route.stationMap;
+        if (!map?.length) return clamp(sourceS, 0, route.length);
+        const s = clamp(sourceS, map[0].source, map.at(-1).source);
+        let i = 1;
+        while (i < map.length && map[i].source < s) i++;
+        const a = map[i - 1], b = map[i], t = (s - a.source) / (b.source - a.source || 1);
+        return a.route + (b.route - a.route) * t;
+    }
+
+    function roundCorners(source, { radius = 4, protectedStations = [], protectedRadius = 5 } = {}) {
+        const raw = source.points, sourceArcs = source.arcs;
+        if (raw.length < 3 || radius <= 0) return source;
+        const protectedAt = s => protectedStations.some(value => Math.abs(value - s) <= protectedRadius);
+        const entries = [{ point: raw[0], source: 0 }], corners = [];
+        for (let i = 1; i < raw.length - 1; i++) {
+            const a = raw[i - 1], v = raw[i], b = raw[i + 1];
+            const inLen = Math.hypot(v[0] - a[0], v[1] - a[1]);
+            const outLen = Math.hypot(b[0] - v[0], b[1] - v[1]);
+            if (inLen < .05 || outLen < .05 || protectedAt(sourceArcs[i])) {
+                entries.push({ point: v, source: sourceArcs[i] }); continue;
+            }
+            const incoming = [(v[0] - a[0]) / inLen, (v[1] - a[1]) / inLen];
+            const outgoing = [(b[0] - v[0]) / outLen, (b[1] - v[1]) / outLen];
+            const turn = Math.acos(clamp(dot(incoming, outgoing), -1, 1));
+            if (turn < Math.PI / 6 || turn > Math.PI * .83) {
+                entries.push({ point: v, source: sourceArcs[i] }); continue;
+            }
+            const trim = Math.min(radius, inLen * .35, outLen * .35);
+            const start = [v[0] - incoming[0] * trim, v[1] - incoming[1] * trim];
+            const end = [v[0] + outgoing[0] * trim, v[1] + outgoing[1] * trim];
+            const sourceStart = sourceArcs[i] - trim, sourceEnd = sourceArcs[i] + trim;
+            entries.push({ point: start, source: sourceStart });
+            const controls = [start, [start[0] + incoming[0] * trim * .55, start[1] + incoming[1] * trim * .55],
+                [end[0] - outgoing[0] * trim * .55, end[1] - outgoing[1] * trim * .55], end];
+            const count = Math.max(4, Math.ceil(trim / .5));
+            for (let j = 1; j <= count; j++) {
+                const t = j / count, u = 1 - t;
+                const p = controls.reduce((sum, c, k) => {
+                    const w = k === 0 ? u ** 3 : k === 1 ? 3 * u * u * t : k === 2 ? 3 * u * t * t : t ** 3;
+                    return [sum[0] + c[0] * w, sum[1] + c[1] * w];
+                }, [0, 0]);
+                entries.push({ point: p, source: sourceStart + (sourceEnd - sourceStart) * t });
+            }
+            corners.push(i);
+        }
+        entries.push({ point: raw.at(-1), source: source.length });
+        const result = path(entries.map(entry => entry.point));
+        result.stationMap = entries.map((entry, i) => ({ source: entry.source, route: result.arcs[Math.min(i, result.arcs.length - 1)] }));
+        return result;
     }
 
     function available(lane, atStart, stops) {
@@ -88,7 +166,7 @@
 
     function build(sourceLanes, sourceConnections, nodes, signals = []) {
         const lanes = new Map([...sourceLanes].map(([id, lane]) => [id,
-            { ...lane, rawPath: lane.path, startTrim: 0, endTrim: 0 }]));
+            { ...lane, rawPath: lane.path, sourceStops: [], startTrim: 0, endTrim: 0 }]));
         const connections = new Map([...sourceConnections].map(([id, connection]) => [id, { ...connection }]));
         const stops = new Map(), sections = new Map(), groups = new Map();
         const starts = new Map(), ends = new Map();
@@ -96,7 +174,13 @@
         const add = (map, key, value) => { if (!map.has(key)) map.set(key, []); map.get(key).push(value); };
         for (const signal of signals) for (const control of signal.controls) {
             const lane = lanes.get(control.laneId);
-            if (lane) add(stops, lane.id, control.fraction * lane.path.length);
+            if (lane) lane.sourceStops.push(control.fraction * lane.path.length);
+        }
+        for (const lane of lanes.values()) {
+            const rawStops = lane.sourceStops;
+            lane.path = roundCorners(lane.path, { protectedStations: rawStops });
+            lane.sourceStops = rawStops.map(sourceS => ({ sourceS, station: mapStation(lane.path, sourceS) }));
+            if (lane.sourceStops.length) stops.set(lane.id, lane.sourceStops.map(stop => stop.station));
         }
         for (const lane of lanes.values()) add(sections, sectionKey(lane), lane);
         for (const connection of connections.values()) {
@@ -140,8 +224,59 @@
             for (const lane of group.to) lane.startTrim = after;
             for (const move of group.moves) move.geometryKind = needed ? 'taper' : 'continuation';
         }
+        // A very short connector can hide a right-angle break between otherwise
+        // separate lane sections. Borrow a small run from both lanes so the
+        // connector can leave and arrive on their actual tangents. Treat shared
+        // branch endpoints as one unit: every movement using a trimmed endpoint
+        // must be rebuilt, while a real turn or a protected stop blocks trimming.
+        const cornerCandidates = new Map();
+        for (const move of connections.values()) {
+            if (move.geometryKind || nodes.get(move.nodeId)?.degree !== 2
+                || !['continue', 'split', 'merge'].includes(move.type)) continue;
+            const from = lanes.get(move.fromLaneId), to = lanes.get(move.toLaneId);
+            if (!from || !to || from.endTrim || to.startTrim) continue;
+            const a = sample(from.path, from.path.length), b = sample(to.path, 0);
+            const gap = Math.hypot(b.x - a.x, b.y - a.y);
+            const angle = Math.acos(clamp(dot(unit(a.angle), unit(b.angle)), -1, 1));
+            if (gap < 2 && angle >= Math.PI / 4 && angle <= Math.PI * 149 / 180) {
+                const before = Math.min(3.5, available(from, false, stops));
+                const after = Math.min(3.5, available(to, true, stops));
+                if (before >= .25 && after >= .25) cornerCandidates.set(move, { before, after });
+            }
+        }
+        // If a lane endpoint also serves a non-candidate movement, leave that
+        // endpoint and its junction geometry untouched.
+        let changed;
+        do {
+            changed = false;
+            for (const move of [...cornerCandidates.keys()]) {
+                const hasUnsmoothedNeighbor = (ends.get(move.fromLaneId) || []).some(other => !cornerCandidates.has(other))
+                    || (starts.get(move.toLaneId) || []).some(other => !cornerCandidates.has(other));
+                if (hasUnsmoothedNeighbor) { cornerCandidates.delete(move); changed = true; }
+            }
+        } while (changed);
+        const cornerTrims = new Map();
+        const setCornerTrim = (laneId, atStart, amount) => {
+            if (!cornerTrims.has(laneId)) cornerTrims.set(laneId, { start: 0, end: 0 });
+            const trim = cornerTrims.get(laneId);
+            trim[atStart ? 'start' : 'end'] = Math.max(trim[atStart ? 'start' : 'end'], amount);
+        };
+        for (const [move, availableTrim] of cornerCandidates) {
+            const from = lanes.get(move.fromLaneId), to = lanes.get(move.toLaneId);
+            setCornerTrim(from.id, false, availableTrim.before);
+            setCornerTrim(to.id, true, availableTrim.after);
+            move.geometryKind = 'corner';
+        }
+        for (const [laneId, trim] of cornerTrims) {
+            const lane = lanes.get(laneId);
+            lane.startTrim = Math.max(lane.startTrim, trim.start);
+            lane.endTrim = Math.max(lane.endTrim, trim.end);
+        }
         for (const lane of lanes.values()) {
-            if (lane.startTrim || lane.endTrim) lane.path = slice(lane.rawPath, lane.startTrim, lane.rawPath.length - lane.endTrim);
+            if (lane.startTrim || lane.endTrim) {
+                lane.path = slice(lane.path, lane.startTrim, lane.path.length - lane.endTrim);
+                lane.sourceStops = lane.sourceStops.map(stop => ({ ...stop, station: stop.station - lane.startTrim }));
+            }
         }
         for (const move of connections.values()) {
             const from = lanes.get(move.fromLaneId), to = lanes.get(move.toLaneId);
@@ -159,5 +294,5 @@
         return { lanes, connections };
     }
 
-    return { path, sample, build };
+    return { path, sample, slice, taper, nearest, roundCorners, mapStation, build };
 });

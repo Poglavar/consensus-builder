@@ -53,7 +53,7 @@ footer { display: flex; align-items: center; justify-content: space-between; mar
 #language { border: 0; color: #677c6d; background: transparent; font-size: 10px; padding: 4px; }
 .map-stage { position: relative; overflow: hidden; isolation: isolate; background: #e9ede6; }
 #map { position: absolute; inset: 0; z-index: 1; background: #e9ede6; }
-.leaflet-tile-pane { filter: saturate(.38) contrast(.92) brightness(1.04); }
+.leaflet-tile-pane { filter: saturate(.2) contrast(.7) brightness(1.13); opacity: .68; }
 .leaflet-control-attribution { font-size: 9px; }
 .leaflet-control-zoom { border: 1px solid #d0d8cf; box-shadow: 0 1px 5px #223c3012; }
 .leaflet-control-zoom a { color: var(--ink); background: #fafbf7; }
@@ -102,3 +102,24 @@ footer { display: flex; align-items: center; justify-content: space-between; mar
     .map-legend { bottom: 18px; font-size: 8px; gap: 5px; }
 }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+
+/* Road tools remain usable below the map on touch screens. */
+.traffic-scene { position: absolute; left: 0; top: 0; transform-origin: 0 0; pointer-events: none; }
+.tools, .meter-panel { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 18px; grid-column: 1 / -1; }
+.tool-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.tool-buttons button { padding: 9px 3px; border: 1px solid #bac8c0; border-radius: 4px; background: transparent; font-size: 10px; }
+.tool-buttons button.active { background: #176d66; border-color: #176d66; color: #fff; }
+.chunk-control { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; font-size: 11px; }
+.chunk-control select, #meter-select { border: 1px solid #b9c8c1; border-radius: 4px; padding: 4px 6px; background: #fafbf5; font-size: 11px; }
+.tools p, .meter-panel p { font-size: 10px; color: var(--muted); line-height: 1.5; }
+.closure-status { display: flex; gap: 8px; justify-content: space-between; align-items: center; font-size: 10px; }
+.closure-status button { font-size: 10px; white-space: nowrap; }
+.meter-table-wrap { width: 100%; overflow-x: auto; }
+.meter-panel table { width: 100%; font-size: 10px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.meter-panel th, .meter-panel td { padding: 7px 3px; text-align: right; border-bottom: 1px solid #dce2d8; }
+.meter-panel th { color: var(--muted); font-weight: 500; font-size: 9px; }
+.meter-panel th:first-child, .meter-panel td:first-child { text-align: left; }
+.meter-actions { display: flex; gap: 20px; }
+.lane-tooltip { position: absolute; z-index: 460; background: #173c3ae8; color: #fff; padding: 7px 10px; border-radius: 4px; font-size: 10px; pointer-events: none; max-width: calc(100% - 16px); }
+.lane-tooltip[hidden], .meter-panel[hidden] { display: none; }
+.editing-road { cursor: crosshair; }

@@ -7,14 +7,19 @@
     <meta name="theme-color" content="#f5f4ef">
     <title>Zagreb, in motion · Lane Lab</title>
     <link rel="stylesheet" href="../vendor/leaflet-1.9.4/leaflet.css">
-    <link rel="stylesheet" href="traffic.css?v=20261014d">
+    <link rel="stylesheet" href="traffic.css?v=20261014e">
     <script defer src="../vendor/leaflet-1.9.4/leaflet.js"></script>
     <script defer src="../js/reduced-motion.js"></script>
     <script defer src="../js/i18n.js"></script>
-    <script defer src="copy.js?v=20261014d"></script>
-    <script defer src="geometry.js?v=20261014d"></script>
-    <script defer src="simulation.js?v=20261014d"></script>
-    <script defer src="traffic.js?v=20261014d"></script>
+    <script defer src="copy.js?v=20261014e"></script>
+    <script defer src="geometry.js?v=20261014e"></script>
+    <script defer src="collision.js?v=20261014e"></script>
+    <script defer src="simulation.js?v=20261014e"></script>
+    <script defer src="scenario.js?v=20261014e"></script>
+    <script defer src="meters.js?v=20261014e"></script>
+    <script defer src="../js/corridor-profile.js"></script>
+    <script defer src="scene-layer.js?v=20261014e"></script>
+    <script defer src="traffic.js?v=20261014e"></script>
 </head>
 <body>
     <main class="app">
@@ -37,6 +42,25 @@
                 <input id="density" type="range" min="40" max="600" value="440" step="20">
                 <label class="toggle"><span data-i18n-key="traffic.lights"></span><input id="lights" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
                 <label class="toggle"><span data-i18n-key="traffic.lanes"></span><input id="lanes" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+            </section>
+
+            <section class="tools">
+                <h2 data-i18n-key="traffic.tools"></h2>
+                <div class="tool-buttons" role="group" data-i18n-key="traffic.tools" data-i18n-attr="aria-label">
+                    <button data-tool="inspect" class="active" aria-pressed="true" data-i18n-key="traffic.inspectTool"></button>
+                    <button data-tool="close" aria-pressed="false" data-i18n-key="traffic.closeTool"></button>
+                    <button data-tool="meter" aria-pressed="false" data-i18n-key="traffic.meterTool"></button>
+                </div>
+                <div class="chunk-control"><label for="chunk-size" data-i18n-key="traffic.chunkSize"></label><select id="chunk-size"><option value="5">5 m</option><option value="10">10 m</option></select></div>
+                <p id="tool-hint"></p>
+                <div class="closure-status"><span id="closure-count"></span><button id="clear-closures" class="text-button" data-i18n-key="traffic.reopenAll"></button></div>
+            </section>
+            <section id="meter-panel" class="meter-panel" hidden>
+                <div class="field"><label for="meter-select" data-i18n-key="traffic.meters"></label><select id="meter-select"></select></div>
+                <p id="meter-road"></p>
+                <div class="meter-table-wrap"><table><thead><tr><th data-i18n-key="traffic.meterLane"></th><th data-i18n-key="traffic.meterTotal"></th><th data-i18n-key="traffic.meterRate"></th><th data-i18n-key="traffic.meterBefore"></th></tr></thead><tbody id="meter-rows"></tbody></table></div>
+                <p id="meter-window"></p>
+                <div class="meter-actions"><button id="reset-meter" class="text-button" data-i18n-key="traffic.resetMeter"></button><button id="remove-meter" class="text-button" data-i18n-key="traffic.removeMeter"></button></div>
             </section>
 
             <section class="explore">
@@ -71,6 +95,7 @@
             <div id="map" data-i18n-key="traffic.mapLabel" data-i18n-attr="aria-label"></div>
             <canvas id="guides" aria-hidden="true"></canvas>
             <canvas id="cars" aria-hidden="true"></canvas>
+            <div id="lane-tooltip" class="lane-tooltip" hidden></div>
             <div class="map-topline"><span class="live-dot" aria-hidden="true"></span><span id="network-label" data-i18n-key="traffic.loading"></span></div>
             <div id="status" class="status" role="status"><span data-i18n-key="traffic.loading"></span></div>
             <div class="stats-bar">

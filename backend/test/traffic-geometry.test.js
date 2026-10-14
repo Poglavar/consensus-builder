@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import Geometry from '../../frontend/traffic/geometry.js';
 
-const { path, sample, build } = Geometry;
+const { path, sample, slice, taper, nearest, roundCorners, build } = Geometry;
 const J = 'junction';
 
 function lane(id, { y, fromNode, toNode, ordinal, x0 = 0, x1 = 100 }) {
@@ -49,6 +49,18 @@ function endpoints(p) {
 
 function expectSamePoint(a, b, tolerance = 1e-5) {
     expect(Math.hypot(a[0] - b[0], a[1] - b[1])).toBeLessThan(tolerance);
+}
+
+function tangent(route, atStart) {
+    const span = Math.min(.25, route.length / 10);
+    const a = pointAt(route, atStart ? 0 : route.length - span);
+    const b = pointAt(route, atStart ? span : route.length);
+    const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    return [(b[0] - a[0]) / length, (b[1] - a[1]) / length];
+}
+
+function expectTangentMatches(a, b) {
+    expect(a[0] * b[0] + a[1] * b[1]).toBeGreaterThan(.99);
 }
 
 function splitFixture() {
@@ -129,12 +141,116 @@ function expectTaperedResult(fixture) {
 }
 
 describe('traffic lane geometry transitions', () => {
+    it('rounds sharp lane corners with continuous sampled headings and keeps endpoints', () => {
+        const source = path([[0, 0], [20, 0], [20, 20]]);
+        const route = roundCorners(source, { radius: 4 });
+        expect(route.points[0]).toEqual([0, 0]);
+        expect(route.points.at(-1)).toEqual([20, 20]);
+        let previous = sample(route, 0.25).angle;
+        for (let s = 0.35; s < route.length; s += 0.1) {
+            const current = sample(route, s).angle;
+            const delta = Math.atan2(Math.sin(current - previous), Math.cos(current - previous));
+            expect(Math.abs(delta)).toBeLessThan(Math.PI / 8);
+            previous = current;
+        }
+        const onRoute = sample(route, route.length * 0.5);
+        const hit = nearest(route, [onRoute.x, onRoute.y]);
+        expect(hit).toMatchObject({ x: expect.any(Number), y: expect.any(Number), s: expect.any(Number),
+            distance: expect.any(Number), angle: expect.any(Number) });
+        expect(hit.distance).toBeLessThan(1e-8);
+        expect(slice(route, 0, route.length).length).toBeCloseTo(route.length, 5);
+        expect(typeof slice).toBe('function');
+        expect(typeof taper).toBe('function');
+    });
+
+    it('keeps a mapped signal at its source corner while smoothing nearby geometry', () => {
+        const sourceLane = lane('signal-lane', { y: 0, fromNode: 'a', toNode: 'b', ordinal: 0 });
+        sourceLane.path = path([[0, 0], [20, 0], [20, 20]]);
+        sourceLane.sectionId = 'signal-section';
+        const result = build(new Map([[sourceLane.id, sourceLane]]), new Map(), new Map(), [
+            { controls: [{ laneId: sourceLane.id, fraction: 0.5 }] }
+        ]);
+        const output = result.lanes.get(sourceLane.id);
+        expect(output.sourceStops[0].sourceS).toBeCloseTo(20, 5);
+        expect(sample(output.path, output.sourceStops[0].station).x).toBeCloseTo(20, 5);
+        expect(sample(output.path, output.sourceStops[0].station).y).toBeCloseTo(0, 5);
+        expect(output.path.points).toContainEqual([20, 0]);
+    });
+
+    it('drops centimetre quantization steps without shifting route endpoints', () => {
+        const route = path([[0, 0], [0.008, 0], [1, 0]]);
+        expect(route.points).toEqual([[0, 0], [1, 0]]);
+        expect(sample(route, 0.001).angle).toBeCloseTo(0, 8);
+        expect(sample(route, route.length).x).toBe(1);
+    });
+
     it('builds a smooth, non-crossing 2-to-3 split with a long enough taper', () => {
         expectTaperedResult(splitFixture());
     });
 
     it('builds a smooth 3-to-2 merge with a long enough taper', () => {
         expectTaperedResult(mergeFixture());
+    });
+
+    it('rounds a short joined right-angle connection with borrowed lane runs', () => {
+        const incoming = lane('in', { y: 0, fromNode: 'west', toNode: J });
+        const outgoing = lane('out', { y: 0, fromNode: J, toNode: 'north', x0: 100, x1: 200 });
+        incoming.path = path([[0, 0], [100, 0]]);
+        outgoing.path = path([[100, 0], [100, 100]]);
+        const link = movement('corner', 'in', 'out');
+        link.path = path([[100, 0], [100, 0]]);
+        const result = build(new Map([['in', incoming], ['out', outgoing]]), new Map([['corner', link]]),
+            new Map([[J, { degree: 2 }]]));
+        const connected = result.connections.get('corner');
+        const from = result.lanes.get('in'), to = result.lanes.get('out');
+        expect(connected.geometryKind).toBe('corner');
+        expect(from.endTrim).toBeCloseTo(3.5, 5);
+        expect(to.startTrim).toBeCloseTo(3.5, 5);
+        expectTangentMatches(tangent(from.path, false), tangent(connected.path, true));
+        expectTangentMatches(tangent(connected.path, false), tangent(to.path, true));
+        expectSamePoint(pointAt(from.path, from.path.length), pointAt(connected.path, 0));
+        expectSamePoint(pointAt(to.path, 0), pointAt(connected.path, connected.path.length));
+    });
+
+    it('keeps an early signal fixed while limiting the borrowed outgoing run', () => {
+        const incoming = lane('in', { y: 0, fromNode: 'west', toNode: J });
+        const outgoing = lane('out', { y: 0, fromNode: J, toNode: 'north' });
+        incoming.path = path([[0, 0], [100, 0]]);
+        outgoing.path = path([[100, 0], [100, 100]]);
+        const link = movement('corner', 'in', 'out');
+        link.path = path([[100, 0], [100, 0]]);
+        const result = build(new Map([['in', incoming], ['out', outgoing]]), new Map([['corner', link]]),
+            new Map([[J, { degree: 2 }]]), [{ controls: [{ laneId: 'out', fraction: .02 }] }]);
+        const output = result.lanes.get('out');
+        const stop = output.sourceStops[0];
+        expect(output.startTrim).toBeLessThan(2);
+        expect(output.startTrim).toBeGreaterThan(0);
+        expect(pointAt(output.path, stop.station)[1]).toBeCloseTo(2, 5);
+        expect(stop.sourceS).toBeCloseTo(2, 5);
+    });
+
+    it('keeps every branch connector joined to its shared trimmed endpoint', () => {
+        const incoming = lane('in', { y: 0, fromNode: 'west', toNode: J });
+        incoming.path = path([[0, 0], [100, 0]]);
+        const north = lane('north', { y: 0, fromNode: J, toNode: 'north' });
+        north.path = path([[100, 0], [100, 100]]);
+        const northeast = lane('northeast', { y: 0, fromNode: J, toNode: 'northeast' });
+        northeast.path = path([[100, 0], [170, 70]]);
+        const first = movement('branch-north', 'in', 'north', 'split');
+        const second = movement('branch-northeast', 'in', 'northeast', 'split');
+        const result = build(new Map([['in', incoming], ['north', north], ['northeast', northeast]]),
+            new Map([[first.id, first], [second.id, second]]), new Map([[J, { degree: 2 }]]));
+        const shared = result.lanes.get('in');
+        const sharedEnd = pointAt(shared.path, shared.path.length);
+        for (const id of [first.id, second.id]) {
+            const connection = result.connections.get(id);
+            const destination = result.lanes.get(connection.toLaneId);
+            expect(connection.geometryKind).toBe('corner');
+            expectSamePoint(pointAt(connection.path, 0), sharedEnd);
+            expectSamePoint(pointAt(connection.path, connection.path.length), pointAt(destination.path, 0));
+            expectTangentMatches(tangent(shared.path, false), tangent(connection.path, true));
+            expectTangentMatches(tangent(connection.path, false), tangent(destination.path, true));
+        }
     });
 
     it('removes the degenerate loop from a coincident straight continuation', () => {

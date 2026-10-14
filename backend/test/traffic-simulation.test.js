@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 const require = createRequire(import.meta.url);
 const Traffic = require('../../frontend/traffic/simulation.js');
+const Collision = require('../../frontend/traffic/collision.js');
 const { Simulation, createNetwork, laneChangeAllowed, signalState, sample, GAP } = Traffic;
 
 const ORIGIN = [15.98, 45.81];
@@ -40,19 +41,23 @@ function car(id, laneId, s, next = null, speed = 0) {
         next, state: 'driving', change: null, stoppedFor: 0, cooldown: Infinity, clearance: null };
 }
 
-function connectedNetwork({ signal = false, mapped = signal } = {}) {
+function connectedNetwork({ signal = false, mapped = signal, separatedApproaches = false } = {}) {
+    const inEnd = separatedApproaches ? [-15, 0] : [0, 0];
+    const crossEnd = separatedApproaches ? [0, 15] : [0, 0];
     const lanes = [
-        lane('in', 'west', 'junction', [-100, 0], [0, 0], { sectionId: 'a-west' }),
+        lane('in', 'west', 'junction', [-100, 0], inEnd, { sectionId: 'a-west' }),
         lane('out', 'junction', 'east', [0, 0], [100, 0], { sectionId: 'b-east' })
     ];
     if (signal) {
-        lanes.push(lane('cross-in', 'north', 'junction', [0, 100], [0, 0], { sectionId: 'z-north' }));
+        lanes.push(lane('cross-in', 'north', 'junction', [0, 100], crossEnd, { sectionId: 'z-north' }));
         lanes.push(lane('cross-out', 'junction', 'south', [0, 0], [0, -100], { sectionId: 'z-south' }));
     }
-    const connections = [connection('move-in-out', 'in', 'out', 'junction', [[0, 0], [1, 2], [0, 0]])];
-    if (signal) connections.push(connection('move-cross', 'cross-in', 'cross-out', 'junction', [[0, 0], [2, 1], [0, 0]]));
+    const inPath = separatedApproaches ? [inEnd, [-7.5, 0], [0, 0]] : [[0, 0], [1, 2], [0, 0]];
+    const crossPath = separatedApproaches ? [crossEnd, [0, 7.5], [0, 0]] : [[0, 0], [2, 1], [0, 0]];
+    const connections = [connection('move-in-out', 'in', 'out', 'junction', inPath)];
+    if (signal) connections.push(connection('move-cross', 'cross-in', 'cross-out', 'junction', crossPath));
     const fixture = data(lanes, connections, { junction: signal ? 3 : 2 });
-    if (mapped) fixture.signals.push({ id: 'osm-node:123', point: geo([0, 0]), controls: [
+    if (mapped) fixture.signals.push({ id: 'osm-node:123', point: geo(separatedApproaches ? inEnd : [0, 0]), controls: [
         { laneId: 'in', fraction: 1 }, { laneId: 'cross-in', fraction: 1 }
     ] });
     return createNetwork(fixture);
@@ -101,13 +106,13 @@ function poseDistance(a, b) {
     return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
-function circulatingNetwork() {
+function circulatingNetwork({ includeBypass = true } = {}) {
     const lanes = [
         lane('a', 'south-west', 'south-east', [0, 0], [100, 0], { sectionId: 'south' }),
         lane('b', 'south-east', 'north-east', [100, 0], [100, 100]),
         lane('c', 'north-east', 'north-west', [100, 100], [0, 100]),
         lane('d', 'north-west', 'south-west', [0, 100], [0, 0]),
-        lane('bypass', 'south-east', 'north-west', [100, 0], [0, 100]),
+        ...(includeBypass ? [lane('bypass', 'south-east', 'north-west', [100, 0], [0, 100])] : []),
         lane('feeder', 'west', 'south-west', [-100, 0], [0, 0]),
         lane('branch', 'south-east', 'outside', [100, 0], [200, 0]),
         lane('dead-end', 'outside', 'boundary', [200, 0], [300, 0]),
@@ -117,8 +122,12 @@ function circulatingNetwork() {
             sectionId: 'south', stripIndex: 1, ordinal: 1
         })
     ];
-    const pairs = [['a', 'b'], ['b', 'c'], ['c', 'd'], ['d', 'a'], ['a', 'bypass'],
-        ['bypass', 'd'], ['feeder', 'a'],
+    // Model the trap SCC as a loop with two separated physical arms. A pair of
+    // reverse-direction cars on one centerline would correctly block each other.
+    lanes.find(item => item.id === 'trap-a').points = [geo([200, 0]), geo([220, 12]), geo([250, 0])];
+    lanes.find(item => item.id === 'trap-b').points = [geo([250, 0]), geo([230, -12]), geo([200, 0])];
+    const pairs = [['a', 'b'], ['b', 'c'], ['c', 'd'], ['d', 'a'],
+        ...(includeBypass ? [['a', 'bypass'], ['bypass', 'd']] : []), ['feeder', 'a'],
         ['a', 'branch'], ['branch', 'dead-end'], ['adjacent-trap', 'branch'],
         ['branch', 'trap-a'], ['trap-a', 'trap-b'], ['trap-b', 'trap-a']];
     const moves = pairs.map(([fromId, toId]) => {
@@ -126,7 +135,7 @@ function circulatingNetwork() {
         return { id: `${fromId}-${toId}`, fromLaneId: fromId, toLaneId: toId,
             nodeId: from.toNode, points: [from.points.at(-1), to.points[0]] };
     });
-    return createNetwork(data(lanes, moves));
+    return createNetwork(data(lanes, moves, { 'north-west': 3, 'south-east': 3 }));
 }
 
 describe('traffic simulation', () => {
@@ -146,14 +155,26 @@ describe('traffic simulation', () => {
         expect(new Simulation(connectedNetwork(), { count: 5 }).cars).toEqual([]);
     });
 
-    it('keeps the same cars circulating without missing exits or accumulating in another region', () => {
-        const network = circulatingNetwork();
-        const sim = new Simulation(network, { count: 20, seed: 7, signals: false, laneChangeRate: 0 });
+    it('keeps manually placed cars circulating in each SCC without respawning or changing regions', () => {
+        const network = circulatingNetwork({ includeBypass: false });
+        const sim = new Simulation(network, { count: 0, seed: 7, signals: false, laneChangeRate: 0 });
+        // The conflict footprint spans both trap nodes, so ordinary spawning
+        // correctly excludes those lanes. Place traffic away from the endpoints
+        // to exercise both existing SCCs without starting inside a collision area.
+        expect(network.spawnLanes.some(item => ['trap-a', 'trap-b'].includes(item.id))).toBe(false);
+        const placements = [
+            ...['a', 'b', 'c', 'd'].flatMap(id => [15, 45, 75].map(s => [id, s])),
+            ['a', 90], ['d', 90], ['trap-a', 20]
+        ];
+        for (const [index, [laneId, s]] of placements.entries()) {
+            sim.cars.push(car(index + 1, laneId, s, network.lanes.get(laneId).routes[0]));
+        }
         const original = sim.cars.map(vehicle => vehicle.id);
         const regions = new Map(sim.cars.map(vehicle => [vehicle.id, network.lanes.get(vehicle.laneId).region]));
         const transitions = new Map(original.map(id => [id, 0]));
         const violations = [];
-        expect(original).toHaveLength(20);
+        expect(original).toHaveLength(15);
+        expect(sim.targetCount).toBe(0);
         expect(new Set(regions.values()).size).toBe(2);
         for (let tick = 0; tick < 1500; tick++) {
             const before = new Map(sim.cars.map(vehicle => [vehicle.id, vehicle.laneId]));
@@ -210,7 +231,7 @@ describe('traffic simulation', () => {
     });
 
     it('gives the oldest queued approach the crossing priority without bypassing its red signal', () => {
-        const network = connectedNetwork({ signal: true });
+        const network = connectedNetwork({ signal: true, separatedApproaches: true });
         const incoming = network.lanes.get('in');
         const crossIncoming = network.lanes.get('cross-in');
         const redTime = Array.from({ length: 4800 }, (_, index) => index * .1)
@@ -219,6 +240,8 @@ describe('traffic simulation', () => {
         expect(redTime).toBeTypeOf('number');
 
         const sim = new Simulation(network, { count: 0, signals: true, laneChangeRate: 0 });
+        // Keep the two approaches physically separate while they queue. Starting
+        // both centers at the shared junction point creates an initial OBB overlap.
         const older = car(1, 'in', incoming.path.length - .01, 'move-in-out', 0);
         const newer = car(2, 'cross-in', crossIncoming.path.length - .01, 'move-cross', 0);
         older.queuedAt = redTime - 30;
@@ -297,6 +320,52 @@ describe('traffic simulation', () => {
         expect(vehicle.s).toBeCloseTo(approach.signals[0].stopS, 6);
         expect(vehicle.s).toBeLessThan(approach.path.length - .004);
         expect(vehicle.state).toBe('red');
+    });
+
+    it('passes two nearby mapped controls only on green, even when the later control is red', () => {
+        const lanes = [
+            lane('in', 'west', 'junction', [-100, 0], [0, 0], { sectionId: 'approach' }),
+            lane('out', 'junction', 'east', [0, 0], [100, 0]),
+            lane('cross-in', 'north', 'junction', [0, 100], [0, 0]),
+            lane('cross-out', 'junction', 'south', [0, 0], [0, -100])
+        ];
+        const fixture = data(lanes, [
+            connection('move-in-out', 'in', 'out', 'junction', [[0, 0], [0, 0], [0, 0]]),
+            connection('move-cross', 'cross-in', 'cross-out', 'junction', [[0, 0], [0, 0], [0, 0]])
+        ], { junction: 4 });
+        fixture.signals.push(
+            { id: 'signal-first', point: geo([-94, 0]), controls: [{ laneId: 'in', fraction: .94 }] },
+            { id: 'signal-last', point: geo([0, 0]), controls: [{ laneId: 'in', fraction: 1 }] }
+        );
+        const network = createNetwork(fixture), approach = network.lanes.get('in');
+        const [first, last] = approach.signals;
+        const startTime = Array.from({ length: 4800 }, (_, i) => i * .1).find(time =>
+            Traffic.signalAspect(network.signals.get(first.signalId), first.phase, time + .1) === 'green'
+            && Traffic.signalAspect(network.signals.get(first.signalId), first.phase, time + .3) === 'green'
+            && Traffic.signalAspect(network.signals.get(last.signalId), last.phase, time + 2.2) === 'red');
+        expect(startTime).toBeDefined();
+
+        const vehicle = car(1, 'in', first.stopS - .5, 'move-in-out', 4);
+        const sim = new Simulation(network, { count: 0, laneChangeRate: 0 });
+        sim.cars.push(vehicle);
+        sim.time = startTime;
+        let crossedFirst = false, crossedLast = false, sawLastRedAtFirst = false;
+        for (let tick = 0; tick < 600 && !crossedLast; tick++) {
+            const previous = vehicle.s;
+            sim.advance(.1);
+            if (previous < first.stopS && vehicle.s >= first.stopS) {
+                crossedFirst = true;
+                expect(Traffic.signalAspect(network.signals.get(first.signalId), first.phase, sim.time)).toBe('green');
+                sawLastRedAtFirst = Traffic.signalAspect(network.signals.get(last.signalId), last.phase, sim.time) === 'red';
+            }
+            if (vehicle.traversed?.includes('move-in-out')) {
+                crossedLast = true;
+                expect(Traffic.signalAspect(network.signals.get(last.signalId), last.phase, sim.time)).toBe('green');
+            }
+        }
+        expect(crossedFirst).toBe(true);
+        expect(sawLastRedAtFirst).toBe(true);
+        expect(crossedLast).toBe(true);
     });
 
     it('keeps a following car at least one safety gap behind a queue', () => {
@@ -415,11 +484,106 @@ describe('traffic simulation', () => {
         const network = connectedNetwork();
         const sim = new Simulation(network, { count: 0, signals: false });
         const approaching = car(1, 'in', network.lanes.get('in').path.length - 1, 'move-in-out');
-        const leader = car(2, 'out', 12, null);
+        const leader = car(2, 'out', 9, null);
         const movement = network.connections.get('move-in-out');
 
-        expect(sim.canEnter(approaching, movement, new Map([['out', [{ car: leader, s: 12 }]]]))).toBe(false);
-        expect(sim.canEnter(approaching, movement, new Map([['out', [{ car: leader, s: GAP * 2 + .001 }]]]))).toBe(true);
+        expect(sim.canEnter(approaching, movement, new Map([['out', [{ car: leader, s: 9 }]]]))).toBe(false);
+        // The rear must clear the crossing by 3.2 m, in addition to the 7 m following gap.
+        expect(sim.canEnter(approaching, movement, new Map([['out', [{ car: leader, s: 10.3 }]]]))).toBe(true);
+    });
+
+    it('checks the final exit lane before reserving a short internal connector', () => {
+        const lanes = [
+            lane('approach', 'west', 'junction', [-100, 0], [0, 0]),
+            lane('tiny', 'junction', 'inner', [0, 0], [3, 0]),
+            lane('ring', 'inner', 'junction', [3, 0], [0, 0]),
+            lane('exit', 'inner', 'outside', [3, 0], [103, 0]),
+            lane('return', 'outside', 'junction', [103, 0], [0, 0])
+        ];
+        const moves = [
+            ['enter', 'approach', 'tiny', 'junction'], ['tiny-ring', 'tiny', 'ring', 'inner'],
+            ['tiny-exit', 'tiny', 'exit', 'inner'], ['ring-return', 'ring', 'tiny', 'junction'],
+            ['exit-return', 'exit', 'return', 'outside'], ['return-tiny', 'return', 'tiny', 'junction']
+        ].map(([id, fromLaneId, toLaneId, nodeId]) => ({ id, fromLaneId, toLaneId, nodeId,
+            points: [lanes.find(item => item.id === fromLaneId).points.at(-1),
+                lanes.find(item => item.id === toLaneId).points[0]] }));
+        const network = createNetwork(data(lanes, moves, { junction: 3, inner: 3, outside: 2 }));
+        const group = 'shared-short-connector-area';
+        const groups = new Map([...network.nodes.keys()].map(id => [id, id]));
+        groups.set('junction', group); groups.set('inner', group);
+        Traffic.refreshNetwork(network, groups);
+        const sim = new Simulation(network, { count: 0, signals: false, laneChangeRate: 0 });
+        const approaching = car(1, 'approach', network.lanes.get('approach').path.length - 20, 'enter');
+        const leader = car(2, 'exit', 9);
+        sim.cars.push(approaching, leader);
+        const blocked = sim.occupants();
+
+        expect(network.lanes.get('tiny').exitRoutes).toContain('tiny-exit');
+        expect(sim.receivingClear(approaching, network.connections.get('tiny-exit'), blocked)).toBe(false);
+        expect(sim.canEnter(approaching, network.connections.get('enter'), blocked)).toBe(false);
+
+        leader.s = 10.3;
+        const clear = sim.occupants();
+        expect(sim.receivingClear(approaching, network.connections.get('tiny-exit'), clear)).toBe(true);
+        expect(sim.canEnter(approaching, network.connections.get('enter'), clear)).toBe(true);
+    });
+
+    it('uses a shared reservation rule for degree-two groups with a corner and a continuation', () => {
+        const lanes = [
+            lane('corner-in', 'west', 'junction', [-100, 0], [0, 0]),
+            lane('corner-out', 'junction', 'east', [0, 0], [100, 0]),
+            lane('through-in', 'north', 'junction', [0, 100], [0, 0]),
+            lane('through-out', 'junction', 'south', [0, 0], [0, -100])
+        ];
+        const fixture = data(lanes, [
+            { ...connection('corner', 'corner-in', 'corner-out', 'junction', [[0, 0], [2, 1], [0, 0]]), geometryKind: 'turn' },
+            { ...connection('through', 'through-in', 'through-out', 'junction', [[0, 0], [0, 0], [0, 0]]), geometryKind: 'continuation' }
+        ], { junction: 2 });
+        const network = createNetwork(fixture);
+        const group = network.junctionGroups.get('junction');
+        const sim = new Simulation(network, { count: 0, signals: false });
+
+        expect(network.junctionKeys.has(group)).toBe(true);
+        expect(sim.needsReservation(network.connections.get('corner'))).toBe(true);
+        expect(sim.needsReservation(network.connections.get('through'))).toBe(true);
+    });
+
+    it('chooses an exit route over an internal circulation and releases its group reservation', () => {
+        const lanes = [
+            lane('ring-one', 'a', 'b', [0, 0], [100, 0]),
+            lane('ring-two', 'b', 'a', [100, 0], [0, 0]),
+            lane('escape', 'b', 'c', [100, 0], [200, 0]),
+            lane('return', 'c', 'a', [200, 0], [0, 0])
+        ];
+        const moves = [
+            ['internal', 'ring-one', 'ring-two', 'b'], ['exit', 'ring-one', 'escape', 'b'],
+            ['around', 'ring-two', 'ring-one', 'a'], ['escape-return', 'escape', 'return', 'c'],
+            ['return-ring', 'return', 'ring-one', 'a']
+        ].map(([id, fromLaneId, toLaneId, nodeId]) => ({ id, fromLaneId, toLaneId, nodeId,
+            points: [lanes.find(item => item.id === fromLaneId).points.at(-1),
+                lanes.find(item => item.id === toLaneId).points[0]] }));
+        const network = createNetwork(data(lanes, moves, { a: 3, b: 3, c: 2 }));
+        const group = 'shared-junction';
+        const groups = new Map([...network.nodes.keys()].map(id => [id, id]));
+        groups.set('a', group); groups.set('b', group);
+        Traffic.refreshNetwork(network, groups);
+        const sim = new Simulation(network, { count: 0, signals: false, laneChangeRate: 0 });
+        const source = network.lanes.get('ring-one');
+        const vehicle = car(1, source.id, source.path.length - .1, 'internal');
+        vehicle.traversed = [];
+        sim.cars.push(vehicle);
+        sim.reservations.set(group, vehicle.id);
+
+        expect(source.routes).toContain('internal');
+        expect(source.exitRoutes).toEqual(['exit']);
+        expect(sim.chooseRoute(source)).toBe('exit');
+        vehicle.next = sim.chooseRoute(source);
+        sim.move(vehicle, .5, new Map());
+        expect(vehicle.laneId).toBe('escape');
+        expect(sim.reservations.get(group)).toBe(vehicle.id);
+        sim.move(vehicle, 3, new Map());
+        expect(vehicle.clearance).toBeNull();
+        expect(sim.reservations.has(group)).toBe(false);
     });
 
     it('takes another explicit clear exit in the same circulation region when queued', () => {
@@ -427,15 +591,17 @@ describe('traffic simulation', () => {
         const sim = new Simulation(network, { count: 0, signals: false, laneChangeRate: 0 });
         const source = network.lanes.get('a');
         const queued = car(1, 'a', source.path.length - .01, 'a-b', 0);
-        const leader = car(2, 'b', 12, 'b-c', 0);
+        const leader = car(2, 'b', 9, 'b-c', 0);
         sim.cars.push(queued, leader);
 
         expect(source.routes).toContain('a-bypass');
         expect(network.lanes.get('bypass').region).toBe(source.region);
         sim.advance(.1);
 
-        expect(queued.mode).toBe('connection');
-        expect(queued.connectionId).toBe('a-bypass');
+        // The bypass connector is zero-length in this fixture, so the same tick
+        // carries the car directly onto its receiving lane.
+        expect(queued.mode).toBe('lane');
+        expect(queued.laneId).toBe('bypass');
         expect(network.lanes.get('bypass').region).toBe(source.region);
     });
 
@@ -475,6 +641,41 @@ describe('traffic simulation', () => {
         expect(shape(first)).toEqual(shape(second));
     });
 
+    it('freezes lane-change pose and heading when a moving car stops', () => {
+        const source = lane('source', 'west', 'east', [0, 0], [100, 0], {
+            sectionId: 'parallel', ordinal: 0, stripIndex: 0, maxSpeed: 60
+        });
+        const target = lane('target', 'west', 'east', [0, 3.5], [100, 3.5], {
+            sectionId: 'parallel', ordinal: 1, stripIndex: 1, maxSpeed: 60
+        });
+        const sourceReturn = lane('source-return', 'east', 'west', [100, 0], [0, 0], { sectionId: 'source-return' });
+        const targetReturn = lane('target-return', 'east', 'west', [100, 3.5], [0, 3.5], { sectionId: 'target-return' });
+        const lanes = [source, target, sourceReturn, targetReturn];
+        const connections = [
+            ['source', 'source-return', 'east'], ['source-return', 'source', 'west'],
+            ['target', 'target-return', 'east'], ['target-return', 'target', 'west']
+        ].map(([fromLaneId, toLaneId, nodeId]) => ({ id: `${fromLaneId}-${toLaneId}`, fromLaneId, toLaneId,
+            nodeId, points: [lanes.find(item => item.id === fromLaneId).points.at(-1),
+                lanes.find(item => item.id === toLaneId).points[0]] }));
+        const network = createNetwork(data(lanes, connections));
+        const sim = new Simulation(network, { count: 0, signals: false, laneChangeRate: 0 });
+        const vehicle = car(1, 'source', 40, 'source-source-return', 0);
+        vehicle.change = { to: 'target', progress: .5, duration: 3.2, angle: .25 };
+        sim.cars.push(vehicle);
+        sim.gates.push({ distance: () => 0 });
+        const before = sim.pose(vehicle);
+
+        sim.advance(.1);
+
+        const after = sim.pose(vehicle);
+        expect(vehicle.speed).toBe(0);
+        expect(vehicle.change.progress).toBe(.5);
+        expect(vehicle.change.angle).toBe(.25);
+        expect(after.x).toBeCloseTo(before.x, 8);
+        expect(after.y).toBeCloseTo(before.y, 8);
+        expect(after.angle).toBeCloseTo(before.angle, 8);
+    });
+
     it('allows lane changes only to adjacent lanes going the same way under mapped rules', () => {
         const source = lane('source', 'a', 'b', [0, 0], [100, 0], {
             sectionId: 'oneway', ordinal: 1, stripIndex: 1, change: 'yes'
@@ -492,5 +693,107 @@ describe('traffic simulation', () => {
         expect(laneChangeAllowed(source, makeTarget('far', { ordinal: -1, stripIndex: -1 }))).toBe(false);
         expect(laneChangeAllowed(source, makeTarget('other-section', { sectionId: 'another' }))).toBe(false);
         expect(laneChangeAllowed(source, makeTarget('opposite', { direction: 'backward' }))).toBe(false);
+    });
+
+    it('completes a permitted lane change without replacing the vehicle', () => {
+        const lanes = [
+            lane('source', 'a', 'b', [0, 0], [100, 0], {
+                sectionId: 'two-lane-road', ordinal: 0, stripIndex: 0, change: 'yes'
+            }),
+            lane('target', 'a', 'b', [0, 3.5], [100, 3.5], {
+                sectionId: 'two-lane-road', ordinal: 1, stripIndex: 1, change: 'yes'
+            }),
+            lane('return', 'b', 'a', [100, 1.75], [0, 1.75], { sectionId: 'return-road' })
+        ];
+        const moves = [
+            ['source-return', 'source', 'return', 'b'], ['target-return', 'target', 'return', 'b'],
+            ['return-source', 'return', 'source', 'a'], ['return-target', 'return', 'target', 'a']
+        ].map(([id, fromLaneId, toLaneId, nodeId]) => ({ id, fromLaneId, toLaneId, nodeId,
+            points: [lanes.find(item => item.id === fromLaneId).points.at(-1),
+                lanes.find(item => item.id === toLaneId).points[0]] }));
+        const network = createNetwork(data(lanes, moves, { a: 3, b: 3 }));
+        const sim = new Simulation(network, { count: 0, seed: 97, signals: false, laneChangeRate: 100 });
+        const vehicle = car(97, 'source', 40, 'source-return', 8);
+        vehicle.cooldown = 0;
+        sim.cars.push(vehicle);
+
+        expect(network.lanes.get('source').adjacent).toContain('target');
+        expect(network.lanes.get('target').region).toBe(network.lanes.get('source').region);
+        for (let tick = 0; tick < 50; tick++) sim.advance(.1);
+
+        const target = network.lanes.get('target');
+        const pose = sim.pose(vehicle), center = sample(target.path, vehicle.s);
+        expect(sim.cars[0]).toBe(vehicle);
+        expect(vehicle.id).toBe(97);
+        expect(vehicle.laneId).toBe('target');
+        expect(vehicle.change).toBeNull();
+        expect(sim.laneChanges).toBe(1);
+        expect([pose.x, pose.y, pose.angle].every(Number.isFinite)).toBe(true);
+        expect(Math.hypot(pose.x - center.x, pose.y - center.y)).toBeLessThan(.01);
+    });
+
+    it('reserves a narrow bent two-way section but leaves a passable straight section separate', () => {
+        const forward = lane('bent-forward', 'a', 'b', [0, 0], [30, 8.5], {
+            sectionId: 'narrow-bent-section', direction: 'forward'
+        });
+        forward.points = [geo([0, 0]), geo([10, 0]), geo([30, 8.5])];
+        forward.width = 2.75;
+        const backward = lane('bent-backward', 'b', 'a', [28.924, 11.031], [0, 2.75], {
+            sectionId: 'narrow-bent-section', direction: 'backward'
+        });
+        backward.points = [geo([28.924, 11.031]), geo([10, 2.75]), geo([0, 2.75])];
+        backward.width = 2.75;
+        const entryForwardLane = lane('entry-forward-lane', 'west', 'a', [-30, 0], [0, 0], { sectionId: 'entry-forward' });
+        entryForwardLane.width = 3.5;
+        const entryBackwardLane = lane('entry-backward-lane', 'east', 'b', [58.924, 11.031], [28.924, 11.031], { sectionId: 'entry-backward' });
+        entryBackwardLane.width = 3.5;
+        const entryForward = { ...connection('entry-forward', 'entry-forward-lane', 'bent-forward', 'a', [[0, 0], [0, 0], [0, 0]]), geometryKind: 'continuation' };
+        const entryBackward = { ...connection('entry-backward', 'entry-backward-lane', 'bent-backward', 'b', [[28.924, 11.031], [28.924, 11.031], [28.924, 11.031]]), geometryKind: 'continuation' };
+        const bent = createNetwork(data([forward, backward, entryForwardLane, entryBackwardLane],
+            [entryForward, entryBackward], { a: 2, b: 2 }));
+        const bentGroup = bent.junctionGroups.get('a');
+        const sim = new Simulation(bent, { count: 0, signals: false });
+        const frontCar = car(1, 'entry-forward-lane', 0, 'entry-forward');
+        const backCar = car(2, 'entry-backward-lane', 0, 'entry-backward');
+        sim.cars.push(frontCar, backCar);
+        sim.reservations.set(bentGroup, frontCar.id);
+        let bentBodiesOverlap = false;
+        for (let a = 0; a <= bent.lanes.get('bent-forward').path.length && !bentBodiesOverlap; a += .25) {
+            for (let b = 0; b <= bent.lanes.get('bent-backward').path.length; b += .25) {
+                if (Collision.overlaps(sample(bent.lanes.get('bent-forward').path, a),
+                    sample(bent.lanes.get('bent-backward').path, b))) {
+                    bentBodiesOverlap = true;
+                    break;
+                }
+            }
+        }
+
+        expect(bentBodiesOverlap).toBe(true);
+        expect(bent.junctionGroups.get('a')).toBe(bent.junctionGroups.get('b'));
+        expect(bent.lanes.get('bent-forward').conflictInterior).toBe(true);
+        expect(bent.lanes.get('bent-backward').conflictInterior).toBe(true);
+        expect(sim.needsReservation(bent.connections.get('entry-forward'))).toBe(true);
+        expect(sim.needsReservation(bent.connections.get('entry-backward'))).toBe(true);
+        expect(sim.canEnter(frontCar, bent.connections.get('entry-forward'), new Map())).toBe(true);
+        expect(sim.canEnter(backCar, bent.connections.get('entry-backward'), new Map())).toBe(false);
+        for (let tick = 0; tick < 100; tick++) {
+            sim.advance(.1);
+            expect(sim.cars.map(item => item.id)).toEqual([frontCar.id, backCar.id]);
+            expect([sim.pose(frontCar), sim.pose(backCar)].every(pose =>
+                [pose.x, pose.y, pose.angle].every(Number.isFinite))).toBe(true);
+            expect(Collision.overlaps(sim.pose(frontCar), sim.pose(backCar))).toBe(false);
+        }
+
+        const straightForward = lane('straight-forward', 'left', 'right', [0, 30], [30, 30], {
+            sectionId: 'wide-straight-section', direction: 'forward'
+        });
+        const straightBackward = lane('straight-backward', 'right', 'left', [30, 33], [0, 33], {
+            sectionId: 'wide-straight-section', direction: 'backward'
+        });
+        straightForward.width = straightBackward.width = 2.75;
+        const straight = createNetwork(data([straightForward, straightBackward], [], { left: 2, right: 2 }));
+        expect(straight.junctionGroups.get('left')).not.toBe(straight.junctionGroups.get('right'));
+        expect(straight.lanes.get('straight-forward').conflictInterior).toBe(false);
+        expect(straight.lanes.get('straight-backward').conflictInterior).toBe(false);
     });
 });
