@@ -1331,7 +1331,8 @@
                 "apply_disabled_for_type": "Apply is disabled for this proposal type.",
                 "editApproval": "Edit ownership and approval",
                 "addApproval": "Add ownership and approval",
-                "editApprovalHint": "Opens the editor on its Approval tab. Saving creates a replacement proposal; acceptances of this one do not carry over."
+                "editApprovalHint": "Opens the editor on its Approval tab. Saving creates a replacement proposal; acceptances of this one do not carry over.",
+                "betOutcome": "Bet on outcome"
             },
             "expiry": {
                 "expired": "Proposal expired",
@@ -1704,6 +1705,15 @@
                 "recordHint": "Created date and copyable identifiers",
                 "actions": "More actions",
                 "actionsHint": "Fork this proposal and explore its land"
+            },
+            "bet": {
+                "mintFirst": "This proposal needs to be minted on Solana before anyone can bet on its outcome.",
+                "connect": "Connect your Solana wallet before minting this proposal.",
+                "mint": "Open Share and choose Mint. Follow the wallet prompts and any parcel prerequisites.",
+                "return": "Return to this proposal and choose Bet on outcome. Open the pool if needed, then choose Yes or No and enter your stake.",
+                "openMint": "Open minting options",
+                "approval": "Betting is not available for proposals with ownership and approval rules yet. Those decisions do not settle a betting pool.",
+                "chain": "Betting is currently available only for proposals minted on Solana. This proposal was minted on another chain."
             }
         },
         "block": {

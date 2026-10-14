@@ -423,6 +423,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `;
 
+    const betButtonHtml = proposalKey ? `
+        <button type="button" class="btn btn-bet-proposal" onclick="openProposalOutcomeBet(${inlineJsArg(proposalKey)})">
+            <i class="fas fa-coins" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.betOutcome', 'Bet on outcome')}
+        </button>
+    ` : '';
+
     // Fork opens a cloned draft's proposal form. Edit geometry below opens its design tool
     // directly; both preserve the published source record.
     const forkButtonHtml = proposalKey
@@ -562,6 +568,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         <div class="proposal-actions proposal-actions-group proposal-primary-actions">
             ${mapActionButtonHtml}
             ${shareButtonHtml}
+            ${betButtonHtml}
             ${forkButtonHtml}
             <button type="button" class="btn btn-proposal-details" onclick="toggleProposalDetailsPanelMinimized(false)">
                 <i class="fas fa-circle-info" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.details', 'Details')}
@@ -1654,6 +1661,18 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     if (typeof setupGameLogClickListeners === 'function') {
         setupGameLogClickListeners();
     }
+}
+
+// The compact panel and expanded reader share this entry into betting and minting guidance.
+function openProposalOutcomeBet(proposalId) {
+    const proposal = getProposalByIdOrHash(proposalId);
+    if (!proposal) throw new Error('Proposal is unavailable.');
+    return window.ProposalBetEntry.open({
+        proposal,
+        nftInfo: getProposalNftInfo(proposal),
+        approvalSetup: window.ProposalApprovalRuntime?.uses(proposal) === true,
+        onMint: () => showUploadProposalModal(proposal)
+    });
 }
 
 let proposalSupportWalletRefreshBound = false;

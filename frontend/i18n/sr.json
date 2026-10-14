@@ -1365,7 +1365,8 @@
                 "apply_disabled_for_type": "Primena je onemogućena za ovu vrstu predloga.",
                 "editApproval": "Uredi vlasništvo i odobravanje",
                 "addApproval": "Dodaj vlasništvo i odobravanje",
-                "editApprovalHint": "Otvara uređivač na kartici Odobravanje. Čuvanje pravi zamenski predlog; prihvatanja ovog predloga se ne prenose."
+                "editApprovalHint": "Otvara uređivač na kartici Odobravanje. Čuvanje pravi zamenski predlog; prihvatanja ovog predloga se ne prenose.",
+                "betOutcome": "Kladi se na ishod"
             },
             "expiry": {
                 "expired": "Predlog je istekao",
@@ -1738,6 +1739,15 @@
                 "recordHint": "Datum izrade i identifikatori za kopiranje",
                 "actions": "Dodatne radnje",
                 "actionsHint": "Napravite svoju verziju i istražite zemljište"
+            },
+            "bet": {
+                "mintFirst": "Ovaj predlog treba mintovati na Solani pre nego što se bilo ko može kladiti na njegov ishod.",
+                "connect": "Poveži svoj Solana novčanik pre mintovanja ovog predloga.",
+                "mint": "Otvori Podeli i izaberi Mintuj. Prati uputstva novčanika i ispuni preduslove za parcele.",
+                "return": "Vrati se na ovaj predlog i izaberi Kladi se na ishod. Po potrebi otvori fond, zatim izaberi Da ili Ne i unesi ulog.",
+                "openMint": "Otvori opcije mintovanja",
+                "approval": "Klađenje još nije dostupno za predloge sa pravilima vlasništva i odobravanja. Te odluke ne određuju ishod fonda za klađenje.",
+                "chain": "Klađenje je trenutno dostupno samo za predloge mintovane na Solani. Ovaj predlog je mintovan na drugom lancu."
             }
         },
         "block": {

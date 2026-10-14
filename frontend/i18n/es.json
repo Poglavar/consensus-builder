@@ -1378,7 +1378,8 @@
                 "apply_disabled_for_type": "Aplicar está desactivado para este tipo de propuesta.",
                 "editApproval": "Editar propiedad y aprobación",
                 "addApproval": "Añadir propiedad y aprobación",
-                "editApprovalHint": "Abre el editor en la pestaña Aprobación. Guardar crea una propuesta de reemplazo; las aceptaciones de esta no se trasladan."
+                "editApprovalHint": "Abre el editor en la pestaña Aprobación. Guardar crea una propuesta de reemplazo; las aceptaciones de esta no se trasladan.",
+                "betOutcome": "Apostar al resultado"
             },
             "expiry": {
                 "expired": "Propuesta caducada",
@@ -1751,6 +1752,15 @@
                 "recordHint": "Fecha de creación e identificadores para copiar",
                 "actions": "Más acciones",
                 "actionsHint": "Crea una versión y explora el terreno"
+            },
+            "bet": {
+                "mintFirst": "Esta propuesta debe acuñarse en Solana antes de que alguien pueda apostar a su resultado.",
+                "connect": "Conecta tu billetera de Solana antes de acuñar esta propuesta.",
+                "mint": "Abre Compartir y elige Acuñar. Sigue las indicaciones de la billetera y los requisitos previos de las parcelas.",
+                "return": "Vuelve a esta propuesta y elige Apostar al resultado. Abre el fondo si es necesario, elige Sí o No e introduce tu apuesta.",
+                "openMint": "Abrir opciones de acuñación",
+                "approval": "Las apuestas aún no están disponibles para propuestas con reglas de propiedad y aprobación. Esas decisiones no liquidan un fondo de apuestas.",
+                "chain": "Actualmente solo se puede apostar a propuestas acuñadas en Solana. Esta propuesta se acuñó en otra cadena."
             }
         },
         "block": {

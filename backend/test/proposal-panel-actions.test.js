@@ -120,6 +120,21 @@ function render(proposal, { applied = false, connected = false, road = false, su
 const parse = html => load(`<main>${html}</main>`);
 
 describe('proposal details action footer', () => {
+    it.each([
+        { proposalId: 'local-1', cadastreParcelIds: [] },
+        { proposalId: 'minted-1', cadastreParcelIds: [], nft: { chainId: 'solana-devnet' } }
+    ])('keeps Bet on outcome in the shared action footer for every proposal', proposal => {
+        const result = render(proposal);
+        const button = parse(result.footer.innerHTML)('.proposal-primary-actions .btn-bet-proposal');
+        expect(button.length).toBe(1);
+        expect(button.text()).toContain('Bet on outcome');
+        expect(button.attr('disabled')).toBeUndefined();
+        expect(result.footer.innerHTML).toContain(`openProposalOutcomeBet("${proposal.proposalId}")`);
+        expect(parse(result.content.innerHTML)('.btn-bet-proposal').length).toBe(0);
+        const approval = render(proposal, { approvalSetup: true });
+        expect(parse(approval.footer.innerHTML)('.btn-bet-proposal').length).toBe(1);
+    });
+
     it('leaves out donations, pledges and the market for a minted approval setup the contract never executes', () => {
         const proposal = { proposalId: 'approval-1', title: 'Readjustment', cadastreParcelIds: [], nft: { chainId: 'solana-devnet' } };
         const plain = render(proposal, { connected: true });
