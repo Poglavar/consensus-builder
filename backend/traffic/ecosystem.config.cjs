@@ -6,8 +6,10 @@ module.exports = {
     apps: [{
         name: 'zagreb-traffic-simulator',
         cwd: project,
-        script: 'backend/scripts/serve-traffic-simulator.mjs',
-        args: ['--env-file', '/etc/traffic-simulator/database.env'],
+        script: process.execPath,
+        interpreter: 'none',
+        args: [resolve(project, 'backend/scripts/serve-traffic-simulator.mjs'),
+            '--env-file', '/etc/traffic-simulator/database.env'],
         autorestart: true,
         watch: false,
         max_memory_restart: '700M',
