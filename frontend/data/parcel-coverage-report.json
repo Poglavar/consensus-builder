@@ -10,15 +10,15 @@
     "statisticalJurisdictions": 237,
     "checkedCityCount": 2004,
     "uncheckedCityCount": 127,
-    "cityRegistryFoundCount": 1388,
-    "verifiedCitySampleCount": 660,
+    "cityRegistryFoundCount": 1390,
+    "verifiedCitySampleCount": 667,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
     "populationMatchedCount": 1536,
     "growthMatchedCount": 654,
     "checkedCitiesMissingDate": 0,
     "wikiCityCount": 282,
-    "configuredAppCityCount": 587,
+    "configuredAppCityCount": 594,
     "unmatchedStatisticalAmounts": {
       "landAreaKm2": 0,
       "builtUpAreaKm2": 0.003000000084284693,
@@ -11846,10 +11846,13 @@
       "registryCityIds": [
         "wup2025:10755"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "barharia"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 10755,
       "wupName": "Barharia",
@@ -11867,18 +11870,36 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-outcomes/2026-10-13-india-live.json",
-        "field": "$.cities[25].finishedAt"
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10755/qualification.json",
+        "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "Government of Bihar district administration identifies Barharia as a block/circle under Siwan Sadar, while the official Bihar BhuNaksha viewer’s anonymous hierarchy includes Siwan/Siwan Sadar/Barharia circle and mauza. This confirms local map inventory presence, but not exact WUP-point geometry.",
-      "verifiedSample": false,
+      "registryBasis": "Verified 118 parcel outlines at the recorded sample location using Matribhoomi (Survey of India) — Manjha tehsil cadastral map, Bihar (overlaps resolved). Coverage is bounded; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
+        {
+          "outcome": "qualified",
+          "summary": "All eight gates passed on Matribhoomi (Survey of India) — Manjha tehsil cadastral map, Bihar (overlaps resolved) (118 parcels, 95 requests); independent metric audit passed.",
+          "checkedAt": "2026-10-14T07:00:52.460Z",
+          "sources": [
+            {
+              "id": "in-br-matribhoomi-manjha-ground",
+              "name": "Matribhoomi (Survey of India) — Manjha tehsil cadastral map, Bihar (overlaps resolved)"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+          "diagnosticsUrl": null,
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+            "field": "$.cities[7].finishedAt"
+          }
+        },
         {
           "outcome": "held",
           "summary": "Held: metric (118 parcels, 43 requests) {\"metric\":{\"errorType\":\"Error\",\"code\":\"metric-report-failed\"}}",
@@ -11886,7 +11907,7 @@
           "sources": [
             {
               "id": "in-br-matribhoomi-manjha",
-              "name": "Matribhoomi (Survey of India) — Manjha tehsil cadastral map, Bihar"
+              "name": "in-br-matribhoomi-manjha"
             }
           ],
           "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-13-india-live.json",
@@ -11898,15 +11919,20 @@
           }
         }
       ],
-      "sourceIds": [],
+      "sourceIds": [
+        "in-br-matribhoomi-manjha-ground"
+      ],
       "evidenceUrls": [
         "https://siwan.nic.in/subdivision-blocks/",
         "https://siwan.nic.in/village-panchayats/",
         "https://dlrs.bihar.gov.in/services.html",
-        "https://bhunaksha.bihar.gov.in/"
+        "https://bhunaksha.bihar.gov.in/",
+        "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/53"
       ],
       "evidenceFiles": [
-        "research/overnight-cities-2026-10-08/city-10755-barharia.json"
+        "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10755/qualification.json",
+        "research/overnight-cities-2026-10-08/city-10755-barharia.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=26.36018&mlon=84.46565#map=12/26.36018/84.46565",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=26.36018%2C84.46565",
@@ -25327,10 +25353,13 @@
       "registryCityIds": [
         "wup2025:10917"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "chhapra"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 10917,
       "wupName": "Chhapra",
@@ -25348,18 +25377,36 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-outcomes/2026-10-13-india-live.json",
-        "field": "$.cities[27].finishedAt"
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10917/qualification.json",
+        "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "The official Saran district land-records service is linked from the Collectorate in Chapra. Bihar BhuNaksha exposes district/subdivision/circle/mauza/survey/map-sheet selectors; the statewide browser is designed for revenue map viewing, while cadastral edits are for authorized officials. No Chapra urban mauza, point extent or safe full-polygon geometry response was established here. Bihar’s public Revenue Map viewer and land-record pages are the relevant local pathway.",
-      "verifiedSample": false,
+      "registryBasis": "Verified 40 parcel outlines at the recorded sample location using Matribhoomi (Survey of India) — Chapra tehsil cadastral map, Bihar (overlaps resolved). Coverage is bounded; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
+        {
+          "outcome": "qualified",
+          "summary": "All eight gates passed on Matribhoomi (Survey of India) — Chapra tehsil cadastral map, Bihar (overlaps resolved) (40 parcels, 96 requests); independent metric audit passed.",
+          "checkedAt": "2026-10-14T06:42:19.411Z",
+          "sources": [
+            {
+              "id": "in-br-matribhoomi-chapra-ground",
+              "name": "Matribhoomi (Survey of India) — Chapra tehsil cadastral map, Bihar (overlaps resolved)"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+          "diagnosticsUrl": null,
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+            "field": "$.cities[9].finishedAt"
+          }
+        },
         {
           "outcome": "held",
           "summary": "Held: metric (203 parcels, 44 requests) {\"metric\":{\"errorType\":\"Error\",\"code\":\"metric-report-failed\"}}",
@@ -25379,12 +25426,17 @@
           }
         }
       ],
-      "sourceIds": [],
+      "sourceIds": [
+        "in-br-matribhoomi-chapra-ground"
+      ],
       "evidenceUrls": [
-        "https://saran.nic.in/service/view-khata-and-jamabandi-records-online/"
+        "https://saran.nic.in/service/view-khata-and-jamabandi-records-online/",
+        "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/72"
       ],
       "evidenceFiles": [
-        "research/overnight-cities-2026-10-08/city-10917-chhapra.json"
+        "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10917/qualification.json",
+        "research/overnight-cities-2026-10-08/city-10917-chhapra.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=25.78322&mlon=84.74234#map=12/25.78322/84.74234",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=25.78322%2C84.74234",
@@ -26034,18 +26086,36 @@
         "confidence": "high"
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-2026-10-13-india-live/10969/qualification.json",
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10969/qualification.json",
         "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "Verified 30 parcel outlines at the recorded sample location using Matribhoomi (Survey of India) — Chapra tehsil cadastral map, Bihar. Coverage is bounded; citywide completeness remains unverified.",
+      "registryBasis": "Verified 30 parcel outlines at the recorded sample location using Matribhoomi (Survey of India) — Chapra tehsil cadastral map, Bihar (overlaps resolved). Coverage is bounded; citywide completeness remains unverified.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
+        {
+          "outcome": "qualified",
+          "summary": "All eight gates passed on Matribhoomi (Survey of India) — Chapra tehsil cadastral map, Bihar (overlaps resolved) (30 parcels, 100 requests); independent metric audit passed.",
+          "checkedAt": "2026-10-14T07:12:06.019Z",
+          "sources": [
+            {
+              "id": "in-br-matribhoomi-chapra-ground",
+              "name": "Matribhoomi (Survey of India) — Chapra tehsil cadastral map, Bihar (overlaps resolved)"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+          "diagnosticsUrl": null,
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+            "field": "$.cities[10].finishedAt"
+          }
+        },
         {
           "outcome": "qualified",
           "summary": "All eight gates passed on Matribhoomi (Survey of India) — Chapra tehsil cadastral map, Bihar (30 parcels, 44 requests); independent metric audit passed.",
@@ -26066,14 +26136,17 @@
         }
       ],
       "sourceIds": [
-        "in-br-matribhoomi-chapra"
+        "in-br-matribhoomi-chapra",
+        "in-br-matribhoomi-chapra-ground"
       ],
       "evidenceUrls": [
         "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/72"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-13-india-live/10969/qualification.json",
+        "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10969/qualification.json",
         "research/india-africa-2026-10-08/india-city-10969.json",
+        "world-parcels/research/qualification-2026-10-13-india-live/10969/qualification.json",
+        "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10917/qualification.json",
         "research/indian-cadastrals-sources-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=25.74899&mlon=84.88764#map=12/25.74899/84.88764",
@@ -58964,11 +59037,11 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-coastal.json",
-        "field": "$.cities[6].finishedAt"
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+        "field": "$.cities[1].finishedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
@@ -58976,6 +59049,24 @@
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [
+        {
+          "outcome": "held",
+          "summary": "Held: completeness (129 parcels, 265 requests) {\"forcedPaging\":{\"errorType\":\"Error\",\"code\":\"parcel-source-unavailable\",\"httpStatus\":502}}",
+          "checkedAt": "2026-10-14T07:08:56.516Z",
+          "sources": [
+            {
+              "id": "in-kl-ncscm-czmp-ground",
+              "name": "NCSCM CZMP — Kerala survey plots (overlaps resolved)"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+          "diagnosticsUrl": null,
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+            "field": "$.cities[1].finishedAt"
+          }
+        },
         {
           "outcome": "held",
           "summary": "Held at the metric gate: 50 overlapping polygon pairs above 0.01 m²; total material overlap 1.761922 m², largest 0.135303 m². Original geometry was not repaired.",
@@ -63800,10 +63891,13 @@
       "registryCityIds": [
         "wup2025:11477"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "kotwali"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 11477,
       "wupName": "Kotwali",
@@ -63821,18 +63915,36 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-outcomes/2026-10-13-india-live.json",
-        "field": "$.cities[30].finishedAt"
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/11477/qualification.json",
+        "field": "$.requests[0].startedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": "Identity review only. Official Census of India data lists two separate villages named Kotwali in Rajaun sub-district, Banka (codes 240853 and 240854); the Banka District Census Handbook reports populations of 681 and 1,673 in 2011. Bhagalpur District separately lists a Kotwali police station. Neither the supplied WUP point nor its 2025 population estimate (839,900) has been reconciled to either village or to the police station; these homonyms do not establish the WUP settlement’s identity or registry coverage.",
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Verified 59 parcel outlines at the recorded sample location using Matribhoomi (Survey of India) — Goradih tehsil cadastral map, Bihar (overlaps resolved). Coverage is bounded; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
+        {
+          "outcome": "qualified",
+          "summary": "All eight gates passed on Matribhoomi (Survey of India) — Goradih tehsil cadastral map, Bihar (overlaps resolved) (59 parcels, 100 requests); independent metric audit passed.",
+          "checkedAt": "2026-10-14T06:45:39.622Z",
+          "sources": [
+            {
+              "id": "in-br-matribhoomi-goradih-ground",
+              "name": "Matribhoomi (Survey of India) — Goradih tehsil cadastral map, Bihar (overlaps resolved)"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+          "diagnosticsUrl": null,
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+            "field": "$.cities[12].finishedAt"
+          }
+        },
         {
           "outcome": "held",
           "summary": "Held: exactIds, stableGeometry, completeness, binding, metric (59 parcels, 32 requests) {\"forcedPaging\":{\"errorType\":\"Error\",\"code\":\"parcel-source-unavailable\",\"httpStatus\":504},\"binding\":{\"errorType\":\"Error\",\"code\":\"parcel-source-unavailable\",\"httpStatus\":504},\"freshCollectedIdRead\":{\"errorType\":\"Error\",\"code\":\"parcel-source-unavailable\",\"httpStatus\":502},\"metric\":{\"errorType\":\"Error\"",
@@ -63840,7 +63952,7 @@
           "sources": [
             {
               "id": "in-br-matribhoomi-goradih",
-              "name": "Matribhoomi (Survey of India) — Goradih tehsil cadastral map, Bihar"
+              "name": "in-br-matribhoomi-goradih"
             }
           ],
           "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-13-india-live.json",
@@ -63852,10 +63964,16 @@
           }
         }
       ],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "in-br-matribhoomi-goradih-ground"
+      ],
+      "evidenceUrls": [
+        "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/12"
+      ],
       "evidenceFiles": [
-        "research/overnight-cities-2026-10-08/city-11477-kotwali.json"
+        "world-parcels/research/qualification-2026-10-14-india-overlap-ground/11477/qualification.json",
+        "research/overnight-cities-2026-10-08/city-11477-kotwali.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=25.11348&mlon=87.06940#map=12/25.11348/87.06940",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=25.11348%2C87.06940",
@@ -63896,18 +64014,36 @@
         "confidence": "high"
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-2026-10-14-india-coastal/9587/qualification.json",
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9587/qualification.json",
         "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "Verified 25 parcel outlines at the recorded sample location using NCSCM CZMP — Kerala survey plots. Coverage is bounded; citywide completeness remains unverified.",
+      "registryBasis": "Verified 25 parcel outlines at the recorded sample location using NCSCM CZMP — Kerala survey plots (overlaps resolved). Coverage is bounded; citywide completeness remains unverified.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
+        {
+          "outcome": "qualified",
+          "summary": "All eight gates passed on NCSCM CZMP — Kerala survey plots (overlaps resolved) (25 parcels, 142 requests); independent metric audit passed.",
+          "checkedAt": "2026-10-14T06:53:26.359Z",
+          "sources": [
+            {
+              "id": "in-kl-ncscm-czmp-ground",
+              "name": "NCSCM CZMP — Kerala survey plots (overlaps resolved)"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+          "diagnosticsUrl": null,
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+            "field": "$.cities[3].finishedAt"
+          }
+        },
         {
           "outcome": "qualified",
           "summary": "All eight gates passed on NCSCM CZMP — Kerala survey plots (25 parcels, 86 requests); independent metric audit passed.",
@@ -63929,16 +64065,19 @@
       ],
       "sourceIds": [
         "in-kl-entebhoomi-110114",
-        "in-kl-ncscm-czmp-survey-plots"
+        "in-kl-ncscm-czmp-survey-plots",
+        "in-kl-ncscm-czmp-ground"
       ],
       "evidenceUrls": [
         "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/110114",
         "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Kerala/MapServer/6"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-14-india-coastal/9587/qualification.json",
+        "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9587/qualification.json",
         "research/india-africa-followup-2026-10-08/kerala-browser-initial-failure.json",
         "research/india-africa-followup-2026-10-08/kerala-assessment.json",
+        "world-parcels/research/qualification-2026-10-14-india-coastal/9587/qualification.json",
+        "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9497/qualification.json",
         "research/ncscm-czmp-cities-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=11.20591&mlon=75.85835#map=12/11.20591/75.85835",
@@ -76541,10 +76680,13 @@
       "registryCityIds": [
         "wup2025:9265"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "mangaluru"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 9265,
       "wupName": "Mangaluru",
@@ -76562,18 +76704,36 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-coastal.json",
-        "field": "$.cities[5].finishedAt"
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9265/qualification.json",
+        "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "Mangalore City Corporation’s own citizen-services portal identifies itself as an official MCC service, lists its Mangaluru address, and provides municipal property-tax services including registering a new property. This supports a city-specific municipal property register, not a public land-title parcel map.",
-      "verifiedSample": false,
+      "registryBasis": "Verified 61 parcel outlines at the recorded sample location using NCSCM CZMP 2019 — Karnataka survey plots (overlaps resolved). Coverage is bounded; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
+        {
+          "outcome": "qualified",
+          "summary": "All eight gates passed on NCSCM CZMP 2019 — Karnataka survey plots (overlaps resolved) (61 parcels, 202 requests); independent metric audit passed.",
+          "checkedAt": "2026-10-14T06:25:51.808Z",
+          "sources": [
+            {
+              "id": "in-ka-ncscm-czmp-ground",
+              "name": "NCSCM CZMP 2019 — Karnataka survey plots (overlaps resolved)"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+          "diagnosticsUrl": null,
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+            "field": "$.cities[0].finishedAt"
+          }
+        },
         {
           "outcome": "held",
           "summary": "Held at the metric gate: 4 overlapping polygon pairs above 0.01 m²; total material overlap 164.176040 m², largest 163.999820 m². Original geometry was not repaired.",
@@ -76581,7 +76741,7 @@
           "sources": [
             {
               "id": "in-ka-ncscm-czmp-survey-plots",
-              "name": "NCSCM CZMP 2019 — Karnataka survey plots"
+              "name": "in-ka-ncscm-czmp-survey-plots"
             }
           ],
           "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-india-coastal.json",
@@ -76593,13 +76753,18 @@
           }
         }
       ],
-      "sourceIds": [],
+      "sourceIds": [
+        "in-ka-ncscm-czmp-ground"
+      ],
       "evidenceUrls": [
         "https://mccportal.in/",
-        "https://mccportal.in/document/MCC%20PROPERTY%20TAX%20USER_GUIDE.pdf"
+        "https://mccportal.in/document/MCC%20PROPERTY%20TAX%20USER_GUIDE.pdf",
+        "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES_2019/CZMP_Karnataka19/MapServer/5"
       ],
       "evidenceFiles": [
-        "research/overnight-cities-2026-10-08/city-9265-mangaluru.json"
+        "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9265/qualification.json",
+        "research/overnight-cities-2026-10-08/city-9265-mangaluru.json",
+        "research/ncscm-czmp-cities-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=12.89887&mlon=74.84979#map=12/12.89887/74.84979",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=12.89887%2C74.84979",
@@ -78425,9 +78590,12 @@
       "registryCityIds": [
         "wup2025:10911"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "masrakh"
+      ],
       "cohorts": [
         "growth200",
+        "app",
         "registry"
       ],
       "wupCityCode": 10911,
@@ -78446,18 +78614,36 @@
         "confidence": "high"
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-outcomes/2026-10-13-india-live.json",
-        "field": "$.cities[26].finishedAt"
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10911/qualification.json",
+        "field": "$.requests[0].startedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Verified 59 parcel outlines at the recorded sample location using Matribhoomi (Survey of India) — Masrakh tehsil cadastral map, Bihar (overlaps resolved). Coverage is bounded; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
+        {
+          "outcome": "qualified",
+          "summary": "All eight gates passed on Matribhoomi (Survey of India) — Masrakh tehsil cadastral map, Bihar (overlaps resolved) (59 parcels, 142 requests); independent metric audit passed.",
+          "checkedAt": "2026-10-14T06:39:20.492Z",
+          "sources": [
+            {
+              "id": "in-br-matribhoomi-masrakh-ground",
+              "name": "Matribhoomi (Survey of India) — Masrakh tehsil cadastral map, Bihar (overlaps resolved)"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+          "diagnosticsUrl": null,
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+            "field": "$.cities[8].finishedAt"
+          }
+        },
         {
           "outcome": "held",
           "summary": "Held before qualification: Parcel provider is unavailable.",
@@ -78465,7 +78651,7 @@
           "sources": [
             {
               "id": "in-br-matribhoomi-masrakh",
-              "name": "Matribhoomi (Survey of India) — Masrakh tehsil cadastral map, Bihar"
+              "name": "in-br-matribhoomi-masrakh"
             }
           ],
           "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-13-india-live.json",
@@ -78477,10 +78663,16 @@
           }
         }
       ],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "in-br-matribhoomi-masrakh-ground"
+      ],
+      "evidenceUrls": [
+        "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/83"
+      ],
       "evidenceFiles": [
-        "research/india-africa-2026-10-08/india-city-10911.json"
+        "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10911/qualification.json",
+        "research/india-africa-2026-10-08/india-city-10911.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=26.12117&mlon=84.79510#map=12/26.12117/84.79510",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=26.12117%2C84.79510",
@@ -84079,11 +84271,11 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-outcomes/2026-10-13-india-live.json",
-        "field": "$.cities[29].finishedAt"
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+        "field": "$.cities[11].finishedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
@@ -84093,12 +84285,30 @@
       "integrationAttempts": [
         {
           "outcome": "held",
+          "summary": "Held before qualification: Parcel provider returned conflicting geometry for one parcel ID.",
+          "checkedAt": "2026-10-14T07:03:47.022Z",
+          "sources": [
+            {
+              "id": "in-br-matribhoomi-munger-ground",
+              "name": "Matribhoomi (Survey of India) — Munger tehsil cadastral map, Bihar (overlaps resolved)"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+          "diagnosticsUrl": null,
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+            "field": "$.cities[11].finishedAt"
+          }
+        },
+        {
+          "outcome": "held",
           "summary": "Held before qualification: Parcel provider timed out.",
           "checkedAt": "2026-10-13T13:56:44.602Z",
           "sources": [
             {
               "id": "in-br-matribhoomi-munger",
-              "name": "Matribhoomi (Survey of India) — Munger tehsil cadastral map, Bihar"
+              "name": "in-br-matribhoomi-munger"
             }
           ],
           "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-13-india-live.json",
@@ -96970,18 +97180,36 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-2026-10-14-india-coastal/9663/qualification.json",
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9663/qualification.json",
         "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "Verified 22 parcel outlines at the recorded sample location using NCSCM CZMP — Kerala survey plots. Coverage is bounded; citywide completeness remains unverified.",
+      "registryBasis": "Verified 22 parcel outlines at the recorded sample location using NCSCM CZMP — Kerala survey plots (overlaps resolved). Coverage is bounded; citywide completeness remains unverified.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
+        {
+          "outcome": "qualified",
+          "summary": "All eight gates passed on NCSCM CZMP — Kerala survey plots (overlaps resolved) (22 parcels, 139 requests); independent metric audit passed.",
+          "checkedAt": "2026-10-14T06:31:23.192Z",
+          "sources": [
+            {
+              "id": "in-kl-ncscm-czmp-ground",
+              "name": "NCSCM CZMP — Kerala survey plots (overlaps resolved)"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+          "diagnosticsUrl": null,
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+            "field": "$.cities[4].finishedAt"
+          }
+        },
         {
           "outcome": "qualified",
           "summary": "All eight gates passed on NCSCM CZMP — Kerala survey plots (22 parcels, 85 requests); independent metric audit passed.",
@@ -97002,15 +97230,17 @@
         }
       ],
       "sourceIds": [
-        "in-kl-ncscm-czmp-survey-plots"
+        "in-kl-ncscm-czmp-survey-plots",
+        "in-kl-ncscm-czmp-ground"
       ],
       "evidenceUrls": [
         "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Kerala/MapServer/6"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-14-india-coastal/9663/qualification.json",
+        "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9663/qualification.json",
         "research/overnight-cities-2026-10-08/city-9663-ponnani.json",
         "world-parcels/research/qualification-2026-10-14-india-coastal/9587/qualification.json",
+        "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9497/qualification.json",
         "research/ncscm-czmp-cities-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=10.57454&mlon=76.06319#map=12/10.57454/76.06319",
@@ -98595,10 +98825,13 @@
       "registryCityIds": [
         "wup2025:10741"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "puducherry"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 10741,
       "wupName": "Puducherry",
@@ -98616,18 +98849,36 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-coastal.json",
-        "field": "$.cities[12].finishedAt"
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10741/qualification.json",
+        "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "The Puducherry Directorate of Survey, Settlement and Land Records issues settlement extracts, FMB copies and village maps, and runs Nilamagal land-record services across the Union Territory. These are official local survey and record services; they do not provide anonymous polygon coverage for this WUP locator. The official contact directory explicitly locates the Survey and Land Records Director’s office in New Saram, Puducherry, providing city-local institutional evidence.",
-      "verifiedSample": false,
+      "registryBasis": "Verified 26 parcel outlines at the recorded sample location using NCSCM CZMP — Puducherry survey plots (overlaps resolved). Coverage is bounded; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
+        {
+          "outcome": "qualified",
+          "summary": "All eight gates passed on NCSCM CZMP — Puducherry survey plots (overlaps resolved) (26 parcels, 135 requests); independent metric audit passed.",
+          "checkedAt": "2026-10-14T06:33:58.673Z",
+          "sources": [
+            {
+              "id": "in-py-ncscm-czmp-ground",
+              "name": "NCSCM CZMP — Puducherry survey plots (overlaps resolved)"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+          "diagnosticsUrl": null,
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+            "field": "$.cities[6].finishedAt"
+          }
+        },
         {
           "outcome": "held",
           "summary": "Held at the metric gate: 5 overlapping polygon pairs above 0.01 m²; total material overlap 0.111288 m², largest 0.036400 m². Original geometry was not repaired.",
@@ -98635,7 +98886,7 @@
           "sources": [
             {
               "id": "in-py-ncscm-czmp-survey-plots",
-              "name": "NCSCM CZMP — Puducherry survey plots"
+              "name": "in-py-ncscm-czmp-survey-plots"
             }
           ],
           "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-india-coastal.json",
@@ -98647,16 +98898,21 @@
           }
         }
       ],
-      "sourceIds": [],
+      "sourceIds": [
+        "in-py-ncscm-czmp-ground"
+      ],
       "evidenceUrls": [
         "https://revenue.py.gov.in/dos.html",
         "https://revenue.py.gov.in/land_records_modernization.html",
         "https://puducherry-dt.gov.in/ta/service/%E0%AE%A8%E0%AE%BF%E0%AE%B2-%E0%AE%AA%E0%AE%A4%E0%AE%BF%E0%AE%B5%E0%AF%87%E0%AE%9F%E0%AF%81%E0%AE%95%E0%AE%B3%E0%AF%8D/",
         "https://nilamagal.py.gov.in/public",
-        "https://revenue.py.gov.in/contact_us.html"
+        "https://revenue.py.gov.in/contact_us.html",
+        "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Puducherry/MapServer/5"
       ],
       "evidenceFiles": [
-        "research/overnight-cities-2026-10-08/city-10741-puducherry.json"
+        "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10741/qualification.json",
+        "research/overnight-cities-2026-10-08/city-10741-puducherry.json",
+        "research/ncscm-czmp-cities-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=11.93384&mlon=79.80289#map=12/11.93384/79.80289",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=11.93384%2C79.80289",
@@ -120450,10 +120706,13 @@
       "registryCityIds": [
         "wup2025:9497"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "thalassery"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 9497,
       "wupName": "Thalassery",
@@ -120471,18 +120730,36 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-coastal.json",
-        "field": "$.cities[7].finishedAt"
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9497/qualification.json",
+        "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "The official Ente Bhoomi camp-office table explicitly lists a Thalassery taluk and Thalassery village row with a digital survey camp office at Thottummal Thalasseri. This establishes city-bound survey/land-record infrastructure, rather than relying on the Kannur district office alone. No public vector geometry was verified.",
-      "verifiedSample": false,
+      "registryBasis": "Verified 26 parcel outlines at the recorded sample location using NCSCM CZMP — Kerala survey plots (overlaps resolved). Coverage is bounded; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
+        {
+          "outcome": "qualified",
+          "summary": "All eight gates passed on NCSCM CZMP — Kerala survey plots (overlaps resolved) (26 parcels, 145 requests); independent metric audit passed.",
+          "checkedAt": "2026-10-14T06:28:44.487Z",
+          "sources": [
+            {
+              "id": "in-kl-ncscm-czmp-ground",
+              "name": "NCSCM CZMP — Kerala survey plots (overlaps resolved)"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+          "diagnosticsUrl": null,
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+            "field": "$.cities[2].finishedAt"
+          }
+        },
         {
           "outcome": "held",
           "summary": "Held at the metric gate: 8 overlapping polygon pairs above 0.01 m²; total material overlap 10.893279 m², largest 5.649531 m². Original geometry was not repaired.",
@@ -120502,15 +120779,20 @@
           }
         }
       ],
-      "sourceIds": [],
+      "sourceIds": [
+        "in-kl-ncscm-czmp-ground"
+      ],
       "evidenceUrls": [
         "https://survey.entebhoomi.kerala.gov.in/portal/web/campoffice",
         "https://dslr.kerala.gov.in/en/sub-offices-2/",
         "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
-        "https://survey.entebhoomi.kerala.gov.in/portal/survey/search"
+        "https://survey.entebhoomi.kerala.gov.in/portal/survey/search",
+        "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Kerala/MapServer/6"
       ],
       "evidenceFiles": [
-        "research/overnight-cities-2026-10-08/city-9497-thalassery.json"
+        "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9497/qualification.json",
+        "research/overnight-cities-2026-10-08/city-9497-thalassery.json",
+        "research/ncscm-czmp-cities-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=11.67305&mlon=75.55060#map=12/11.67305/75.55060",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=11.67305%2C75.55060",
@@ -120845,18 +121127,36 @@
         "confidence": "high"
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-2026-10-14-india-coastal/10013/qualification.json",
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10013/qualification.json",
         "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "Verified 150 parcel outlines at the recorded sample location using NCSCM CZMP — Kerala survey plots. Coverage is bounded; citywide completeness remains unverified.",
+      "registryBasis": "Verified 71 parcel outlines at the recorded sample location using NCSCM CZMP — Kerala survey plots (overlaps resolved). Coverage is bounded; citywide completeness remains unverified.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
+        {
+          "outcome": "qualified",
+          "summary": "All eight gates passed on NCSCM CZMP — Kerala survey plots (overlaps resolved) (71 parcels, 164 requests); independent metric audit passed.",
+          "checkedAt": "2026-10-14T06:56:32.537Z",
+          "sources": [
+            {
+              "id": "in-kl-ncscm-czmp-ground",
+              "name": "NCSCM CZMP — Kerala survey plots (overlaps resolved)"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+          "diagnosticsUrl": null,
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-india-overlap-ground.json",
+            "field": "$.cities[5].finishedAt"
+          }
+        },
         {
           "outcome": "qualified",
           "summary": "All eight gates passed on NCSCM CZMP — Kerala survey plots (150 parcels, 104 requests); independent metric audit passed.",
@@ -120878,20 +121178,22 @@
       ],
       "sourceIds": [
         "in-kl-entebhoomi-010111",
-        "in-kl-ncscm-czmp-survey-plots"
+        "in-kl-ncscm-czmp-survey-plots",
+        "in-kl-ncscm-czmp-ground"
       ],
       "evidenceUrls": [
         "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/010111",
         "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Kerala/MapServer/6"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-14-india-coastal/10013/qualification.json",
+        "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10013/qualification.json",
         "research/thiruvananthapuram.json",
         "research/retry/cities/thiruvananthapuram.json",
         "research/india-africa-followup-2026-10-08/kerala-browser-initial-failure.json",
         "research/india-africa-followup-2026-10-08/kerala-assessment.json",
         "research/india-africa-followup-2026-10-08/kerala-adapter-parallel.json",
         "world-parcels/research/qualification-2026-10-14-india-coastal/9587/qualification.json",
+        "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9497/qualification.json",
         "research/ncscm-czmp-cities-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=8.50983&mlon=76.96764#map=12/8.50983/76.96764",
@@ -139703,7 +140005,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 244,
-      "citiesWithRegistry": 179,
+      "citiesWithRegistry": 181,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,

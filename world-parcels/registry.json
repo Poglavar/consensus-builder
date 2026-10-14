@@ -17339,17 +17339,12 @@
       ],
       "verificationStatus": "verified_live_city_adapter",
       "liveIntegration": {
-        "status": "enabled",
-        "cityIds": [
-          "chirand"
-        ],
-        "additionalCityEvidence": {
-          "chirand": "world-parcels/research/qualification-2026-10-13-india-live/10969/qualification.json"
-        }
+        "status": "superseded",
+        "cityIds": [],
+        "additionalCityEvidence": {},
+        "successorSourceId": "in-br-matribhoomi-chapra-ground"
       },
-      "appCityIds": [
-        "chirand"
-      ]
+      "appCityIds": []
     },
     {
       "sourceId": "in-gj-ncscm-czmp-survey-plots",
@@ -17403,23 +17398,12 @@
       ],
       "verificationStatus": "verified_live_city_adapter",
       "liveIntegration": {
-        "status": "enabled",
-        "cityIds": [
-          "kozhikode",
-          "ponnani",
-          "thiruvananthapuram"
-        ],
-        "additionalCityEvidence": {
-          "kozhikode": "world-parcels/research/qualification-2026-10-14-india-coastal/9587/qualification.json",
-          "ponnani": "world-parcels/research/qualification-2026-10-14-india-coastal/9663/qualification.json",
-          "thiruvananthapuram": "world-parcels/research/qualification-2026-10-14-india-coastal/10013/qualification.json"
-        }
+        "status": "superseded",
+        "cityIds": [],
+        "additionalCityEvidence": {},
+        "successorSourceId": "in-kl-ncscm-czmp-ground"
       },
-      "appCityIds": [
-        "kozhikode",
-        "ponnani",
-        "thiruvananthapuram"
-      ]
+      "appCityIds": []
     },
     {
       "sourceId": "in-tn-ncscm-czmp-survey-plots",
@@ -17862,6 +17846,225 @@
       },
       "appCityIds": [
         "palwal"
+      ]
+    },
+    {
+      "sourceId": "in-ka-ncscm-czmp-ground",
+      "name": "NCSCM CZMP 2019 — Karnataka survey plots (overlaps resolved)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Survey-plot outlines on the Karnataka Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+      "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES_2019/CZMP_Karnataka19/MapServer/5",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9265/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:9265"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "mangaluru"
+        ],
+        "additionalCityEvidence": {
+          "mangaluru": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9265/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "mangaluru"
+      ]
+    },
+    {
+      "sourceId": "in-kl-ncscm-czmp-ground",
+      "name": "NCSCM CZMP — Kerala survey plots (overlaps resolved)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Survey-plot outlines on the Kerala Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+      "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Kerala/MapServer/6",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9497/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:9497",
+        "wup2025:9587",
+        "wup2025:9663",
+        "wup2025:10013"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "thalassery",
+          "kozhikode",
+          "ponnani",
+          "thiruvananthapuram"
+        ],
+        "additionalCityEvidence": {
+          "thalassery": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9497/qualification.json",
+          "kozhikode": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9587/qualification.json",
+          "ponnani": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9663/qualification.json",
+          "thiruvananthapuram": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10013/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "thalassery",
+        "kozhikode",
+        "ponnani",
+        "thiruvananthapuram"
+      ]
+    },
+    {
+      "sourceId": "in-py-ncscm-czmp-ground",
+      "name": "NCSCM CZMP — Puducherry survey plots (overlaps resolved)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Survey-plot outlines on the Puducherry Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+      "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Puducherry/MapServer/5",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10741/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:10741"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "puducherry"
+        ],
+        "additionalCityEvidence": {
+          "puducherry": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10741/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "puducherry"
+      ]
+    },
+    {
+      "sourceId": "in-br-matribhoomi-manjha-ground",
+      "name": "Matribhoomi (Survey of India) — Manjha tehsil cadastral map, Bihar (overlaps resolved)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Khesra parcels of Manjha tehsil (Bihar) on the national Matribhoomi cadastral map service, keyed by the village map code (BHUCODE), khesra number and part. Parcel types include agricultural plots, settlement (abadi), roads and water.",
+      "endpoint": "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/53",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10755/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:10755"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "barharia"
+        ],
+        "additionalCityEvidence": {
+          "barharia": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10755/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "barharia"
+      ]
+    },
+    {
+      "sourceId": "in-br-matribhoomi-masrakh-ground",
+      "name": "Matribhoomi (Survey of India) — Masrakh tehsil cadastral map, Bihar (overlaps resolved)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Khesra parcels of Masrakh tehsil (Bihar) on the national Matribhoomi cadastral map service, keyed by the village map code (BHUCODE), khesra number and part. Parcel types include agricultural plots, settlement (abadi), roads and water.",
+      "endpoint": "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/83",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10911/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:10911"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "masrakh"
+        ],
+        "additionalCityEvidence": {
+          "masrakh": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10911/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "masrakh"
+      ]
+    },
+    {
+      "sourceId": "in-br-matribhoomi-chapra-ground",
+      "name": "Matribhoomi (Survey of India) — Chapra tehsil cadastral map, Bihar (overlaps resolved)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Khesra parcels of Chapra tehsil (Bihar) on the national Matribhoomi cadastral map service, keyed by the village map code (BHUCODE), khesra number and part. Parcel types include agricultural plots, settlement (abadi), roads and water.",
+      "endpoint": "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/72",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10917/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:10917",
+        "wup2025:10969"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "chhapra",
+          "chirand"
+        ],
+        "additionalCityEvidence": {
+          "chhapra": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10917/qualification.json",
+          "chirand": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10969/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "chhapra",
+        "chirand"
+      ]
+    },
+    {
+      "sourceId": "in-br-matribhoomi-goradih-ground",
+      "name": "Matribhoomi (Survey of India) — Goradih tehsil cadastral map, Bihar (overlaps resolved)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Khesra parcels of Goradih tehsil (Bihar) on the national Matribhoomi cadastral map service, keyed by the village map code (BHUCODE), khesra number and part. Parcel types include agricultural plots, settlement (abadi), roads and water.",
+      "endpoint": "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/12",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/11477/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:11477"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "kotwali"
+        ],
+        "additionalCityEvidence": {
+          "kotwali": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/11477/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "kotwali"
       ]
     }
   ],
@@ -20539,9 +20742,10 @@
       "parcelStatus": "verified_sample_partial_coverage",
       "sourceIds": [
         "in-kl-entebhoomi-110114",
-        "in-kl-ncscm-czmp-survey-plots"
+        "in-kl-ncscm-czmp-survey-plots",
+        "in-kl-ncscm-czmp-ground"
       ],
-      "researchFile": "world-parcels/research/qualification-2026-10-14-india-coastal/9587/qualification.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9587/qualification.json",
       "aliases": [
         "wup2025:9587",
         "Kozhikode",
@@ -20609,8 +20813,8 @@
           "termsAreInformational": true
         }
       ],
-      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/9587/qualification.json",
-      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-coastal/9587/metric-report.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9587/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9587/metric-report.json",
       "population2025": 6123872,
       "population2015": 3874719,
       "appCityId": "kozhikode",
@@ -23222,9 +23426,10 @@
       "parcelStatus": "verified_sample_partial_coverage",
       "sourceIds": [
         "in-kl-entebhoomi-010111",
-        "in-kl-ncscm-czmp-survey-plots"
+        "in-kl-ncscm-czmp-survey-plots",
+        "in-kl-ncscm-czmp-ground"
       ],
-      "researchFile": "world-parcels/research/qualification-2026-10-14-india-coastal/10013/qualification.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10013/qualification.json",
       "previousResearchFile": "research/thiruvananthapuram.json",
       "retryFile": "research/retry/cities/thiruvananthapuram.json",
       "aliases": [
@@ -23294,8 +23499,8 @@
           "termsAreInformational": true
         }
       ],
-      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/10013/qualification.json",
-      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-coastal/10013/metric-report.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10013/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10013/metric-report.json",
       "population2025": 2946119,
       "population2015": 2366175,
       "appCityId": "thiruvananthapuram",
@@ -27058,14 +27263,16 @@
       ],
       "largestRank": null,
       "growthRank": 37,
-      "sourceIds": [],
-      "researchFile": "research/india-africa-2026-10-08/india-city-10911.json",
+      "sourceIds": [
+        "in-br-matribhoomi-masrakh-ground"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10911/qualification.json",
       "aliases": [
         "wup2025:10911",
         "Masrakh"
       ],
       "latestAssessmentFile": "research/india-africa-2026-10-08/india-city-10911.json",
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "verified_sample_partial_coverage",
       "dataFindings": {
         "registryFound": null,
         "registryBasis": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
@@ -27079,7 +27286,13 @@
         "freshVerifiedSample": false,
         "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
         "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10911/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10911/metric-report.json",
+      "population2025": 228857,
+      "population2015": 109020,
+      "appCityId": "masrakh",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:10933",
@@ -27749,9 +27962,10 @@
       "largestRank": null,
       "growthRank": 67,
       "sourceIds": [
-        "in-br-matribhoomi-chapra"
+        "in-br-matribhoomi-chapra",
+        "in-br-matribhoomi-chapra-ground"
       ],
-      "researchFile": "world-parcels/research/qualification-2026-10-13-india-live/10969/qualification.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10969/qualification.json",
       "aliases": [
         "wup2025:10969",
         "Chirand"
@@ -27772,12 +27986,12 @@
         "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
         "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID."
       },
-      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-13-india-live/10969/qualification.json",
-      "metricReportFile": "world-parcels/research/qualification-2026-10-13-india-live/10969/metric-report.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10969/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10969/metric-report.json",
       "population2025": 169348,
       "population2015": 87247,
       "appCityId": "chirand",
-      "note": "Passed all eight parcel qualification gates at the UN WUP settlement locator. Geometry evidence is bounded; wider coverage remains unverified."
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:3617",
@@ -35971,9 +36185,10 @@
       "checked": true,
       "parcelStatus": "verified_sample_partial_coverage",
       "sourceIds": [
-        "in-kl-ncscm-czmp-survey-plots"
+        "in-kl-ncscm-czmp-survey-plots",
+        "in-kl-ncscm-czmp-ground"
       ],
-      "researchFile": "world-parcels/research/qualification-2026-10-14-india-coastal/9663/qualification.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9663/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-9663-ponnani.json",
       "aliases": [
         "wup2025:9663",
@@ -35999,8 +36214,8 @@
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
       },
-      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-coastal/9663/qualification.json",
-      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-coastal/9663/metric-report.json",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9663/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9663/metric-report.json",
       "population2025": 2409567,
       "population2015": 1702693,
       "appCityId": "ponnani",
@@ -45682,9 +45897,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 585,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-10755-barharia.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-br-matribhoomi-manjha-ground"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10755/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-10755-barharia.json",
       "aliases": [
         "wup2025:10755",
@@ -45714,7 +45931,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-10755-barharia.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10755/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10755/metric-report.json",
+      "population2025": 1038926.9999999999,
+      "population2015": 817204,
+      "appCityId": "barharia",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:9497",
@@ -45729,9 +45952,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 586,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-9497-thalassery.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-kl-ncscm-czmp-ground"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9497/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-9497-thalassery.json",
       "aliases": [
         "wup2025:9497",
@@ -45761,7 +45986,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-9497-thalassery.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9497/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9497/metric-report.json",
+      "population2025": 1038646.9999999999,
+      "population2015": 1047565,
+      "appCityId": "thalassery",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:7505",
@@ -46536,9 +46767,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 603,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-10741-puducherry.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-py-ncscm-czmp-ground"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10741/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-10741-puducherry.json",
       "aliases": [
         "wup2025:10741",
@@ -46569,7 +46802,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-10741-puducherry.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10741/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10741/metric-report.json",
+      "population2025": 998290,
+      "population2015": 888656,
+      "appCityId": "puducherry",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:8108",
@@ -46632,9 +46871,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 605,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-9265-mangaluru.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-ka-ncscm-czmp-ground"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9265/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-9265-mangaluru.json",
       "aliases": [
         "wup2025:9265",
@@ -46662,7 +46903,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-9265-mangaluru.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9265/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9265/metric-report.json",
+      "population2025": 993566,
+      "population2015": 923057,
+      "appCityId": "mangaluru",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:5218",
@@ -51239,9 +51486,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 704,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-11477-kotwali.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-br-matribhoomi-goradih-ground"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/11477/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-11477-kotwali.json",
       "aliases": [
         "wup2025:11477",
@@ -51266,7 +51515,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-11477-kotwali.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/11477/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/11477/metric-report.json",
+      "population2025": 839900,
+      "population2015": 690129,
+      "appCityId": "kotwali",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:10440",
@@ -66886,9 +67141,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 1039,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-10917-chhapra.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-br-matribhoomi-chapra-ground"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10917/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-10917-chhapra.json",
       "aliases": [
         "wup2025:10917",
@@ -66915,7 +67172,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-10917-chhapra.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10917/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10917/metric-report.json",
+      "population2025": 559249,
+      "population2015": 498578,
+      "appCityId": "chhapra",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:9475",

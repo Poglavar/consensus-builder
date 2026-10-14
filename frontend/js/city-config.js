@@ -10185,7 +10185,7 @@
             currency: { locale: 'en-IN', code: 'INR' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.7481087475537, 84.8804993475657], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.7481087475537, 84.8804993475657], fallbackDataset: [84.8804993475657, 25.7481087475537] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-matribhoomi-chapra', idPrefix: 'IN-BR-MB-CHAPRA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-matribhoomi-chapra-ground', idPrefix: 'IN-BR-MB-CHAPRA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bhavnagar: {
@@ -10230,7 +10230,7 @@
             currency: { locale: 'en-IN', code: 'INR' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [11.19465, 75.84215], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [11.19465, 75.84215], fallbackDataset: [75.84215, 11.19465] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-kl-ncscm-czmp-survey-plots', idPrefix: 'IN-KL-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-kl-ncscm-czmp-ground', idPrefix: 'IN-KL-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ponnani: {
@@ -10239,7 +10239,7 @@
             currency: { locale: 'en-IN', code: 'INR' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [10.57075, 76.05195], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [10.57075, 76.05195], fallbackDataset: [76.05195, 10.57075] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-kl-ncscm-czmp-survey-plots', idPrefix: 'IN-KL-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-kl-ncscm-czmp-ground', idPrefix: 'IN-KL-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         thiruvananthapuram: {
@@ -10248,7 +10248,7 @@
             currency: { locale: 'en-IN', code: 'INR' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [8.46953, 76.93828], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [8.46953, 76.93828], fallbackDataset: [76.93828, 8.46953] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-kl-ncscm-czmp-survey-plots', idPrefix: 'IN-KL-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-kl-ncscm-czmp-ground', idPrefix: 'IN-KL-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         colachel: {
@@ -10303,6 +10303,69 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.194482321657, 76.62843094297341], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.194482321657, 76.62843094297341], fallbackDataset: [76.62843094297341, 28.194482321657] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-rewari-outlines', idPrefix: 'IN-HR-HSAC2-REWARI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        mangaluru: {
+            id: 'mangaluru', wupCityCode: '9265',
+            label: translateCityText('city.labels.mangaluru', 'Mangaluru, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [12.89765, 74.83355], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [12.89765, 74.83355], fallbackDataset: [74.83355, 12.89765] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-ka-ncscm-czmp-ground', idPrefix: 'IN-KA-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP 2019 survey plots, Karnataka. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        thalassery: {
+            id: 'thalassery', wupCityCode: '9497',
+            label: translateCityText('city.labels.thalassery', 'Thalassery, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [11.67935, 75.55185], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [11.67935, 75.55185], fallbackDataset: [75.55185, 11.67935] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-kl-ncscm-czmp-ground', idPrefix: 'IN-KL-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        puducherry: {
+            id: 'puducherry', wupCityCode: '10741',
+            label: translateCityText('city.labels.puducherry', 'Puducherry, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [11.92255, 79.81165], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [11.92255, 79.81165], fallbackDataset: [79.81165, 11.92255] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-py-ncscm-czmp-ground', idPrefix: 'IN-PY-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Puducherry. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        barharia: {
+            id: 'barharia', wupCityCode: '10755',
+            label: translateCityText('city.labels.barharia', 'Barharia, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.3601802570443, 84.4656501175913], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.3601802570443, 84.4656501175913], fallbackDataset: [84.4656501175913, 26.3601802570443] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-matribhoomi-manjha-ground', idPrefix: 'IN-BR-MB-MANJHA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        masrakh: {
+            id: 'masrakh', wupCityCode: '10911',
+            label: translateCityText('city.labels.masrakh', 'Masrakh, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.1235979448259, 84.7958100370138], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.1235979448259, 84.7958100370138], fallbackDataset: [84.7958100370138, 26.1235979448259] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-matribhoomi-masrakh-ground', idPrefix: 'IN-BR-MB-MASRAKH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        chhapra: {
+            id: 'chhapra', wupCityCode: '10917',
+            label: translateCityText('city.labels.chhapra', 'Chhapra, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.7832172997632, 84.7523408466032], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.7832172997632, 84.7523408466032], fallbackDataset: [84.7523408466032, 25.7832172997632] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-matribhoomi-chapra-ground', idPrefix: 'IN-BR-MB-CHAPRA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        kotwali: {
+            id: 'kotwali', wupCityCode: '11477',
+            label: translateCityText('city.labels.kotwali', 'Kotwali, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.1134775298077, 87.0693959423189], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.1134775298077, 87.0693959423189], fallbackDataset: [87.0693959423189, 25.1134775298077] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-matribhoomi-goradih-ground', idPrefix: 'IN-BR-MB-GORADIH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
     };

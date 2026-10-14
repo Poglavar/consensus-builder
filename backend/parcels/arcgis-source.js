@@ -6,6 +6,7 @@ import { upstreamError, providerHttpError, validateBounds, validateGeometry, can
 import { retainParcel } from './parcel-components.js';
 import { parseEsriParcelCollection } from './esri-parcel-reader.js';
 import { geometryParcelFeature, parseGeometryParcelId, geometryLookupBounds, GEOMETRY_IDENTITY_KIND } from './geometry-identity.js';
+import { OVERLAP_GROUND_POLICY, withOverlapGround } from './overlap-ground.js';
 export { validateBounds } from './source-contract.js';
 
 const MAX_DISTINCT_MANIFEST_PAGES = 128;
@@ -94,6 +95,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         || (descriptor.boundsSrid !== undefined && (!Number.isInteger(descriptor.boundsSrid) || descriptor.boundsSrid <= 0
             || typeof descriptor.boundsProjection !== 'string' || !descriptor.boundsProjection.length))
         || (descriptor.boundsProjection !== undefined && descriptor.boundsSrid === undefined)
+        || ![undefined, OVERLAP_GROUND_POLICY].includes(descriptor.overlapResolution)
         || new URL(endpoint).protocol !== 'https:') throw new Error('Invalid ArcGIS parcel source descriptor.');
     const boundsProjection = descriptor.boundsSrid === undefined ? null : proj4('EPSG:4326', descriptor.boundsProjection);
     const responseProjection = responseSrid === 3857 ? proj4('EPSG:3857', 'EPSG:4326') : null;
@@ -577,5 +579,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         return { ...result, features: result.features.filter(parcel => booleanIntersects(parcel, footprint)) };
     }
 
-    return Object.freeze({ queryBounds, queryIds, queryGeometry });
+    const adapter = Object.freeze({ queryBounds, queryIds, queryGeometry });
+    // Layers whose outlines overlap (Indian village seams) publish disjoint derived ground instead.
+    return descriptor.overlapResolution === OVERLAP_GROUND_POLICY ? withOverlapGround(adapter, { maxBboxKm2 }) : adapter;
 }

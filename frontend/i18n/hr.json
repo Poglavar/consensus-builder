@@ -3905,6 +3905,13 @@
     },
     "city": {
         "labels": {
+            "mangaluru": "Mangaluru, Indija",
+            "thalassery": "Thalassery, Indija",
+            "puducherry": "Puducherry, Indija",
+            "barharia": "Barharia, Indija",
+            "masrakh": "Masrakh, Indija",
+            "chhapra": "Chhapra, Indija",
+            "kotwali": "Kotwali, Indija",
             "karnal": "Karnal, Indija",
             "rewari": "Rewari, Indija",
             "bhavnagar": "Bhavnagar, Indija",

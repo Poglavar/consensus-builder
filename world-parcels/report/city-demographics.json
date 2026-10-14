@@ -5451,9 +5451,9 @@
         }
       ],
       "wikipediaLookupStatus": "verified",
-      "parcelSourceId": "in-kl-ncscm-czmp-survey-plots",
+      "parcelSourceId": "in-kl-ncscm-czmp-ground",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/9587/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9587/qualification.json"
     },
     {
       "id": "wup2025:10098",
@@ -13448,9 +13448,9 @@
         }
       ],
       "wikipediaLookupStatus": "verified",
-      "parcelSourceId": "in-kl-ncscm-czmp-survey-plots",
+      "parcelSourceId": "in-kl-ncscm-czmp-ground",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/10013/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10013/qualification.json"
     },
     {
       "id": "wup2025:11531",
@@ -18229,10 +18229,13 @@
       "latitude": 26.1211707275585,
       "longitude": 84.7950953210667,
       "registryCityIds": [],
-      "appCityIds": [],
+      "appCityIds": [
+        "masrakh"
+      ],
       "wupCityCode": 10911,
       "cohorts": [
-        "growth200"
+        "growth200",
+        "app"
       ],
       "population2015": 109020,
       "population2025": 228857,
@@ -18266,7 +18269,10 @@
           "distanceKm": 0
         }
       ],
-      "wikipediaLookupStatus": "attempted_no_verified_article"
+      "wikipediaLookupStatus": "attempted_no_verified_article",
+      "parcelSourceId": "in-br-matribhoomi-masrakh-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10911/qualification.json"
     },
     {
       "id": "wup2025:2362",
@@ -19792,9 +19798,9 @@
         }
       ],
       "wikipediaLookupStatus": "verified",
-      "parcelSourceId": "in-br-matribhoomi-chapra",
+      "parcelSourceId": "in-br-matribhoomi-chapra-ground",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/10969/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10969/qualification.json"
     },
     {
       "id": "wup2025:2793",
@@ -32298,9 +32304,9 @@
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
-      "parcelSourceId": "in-kl-ncscm-czmp-survey-plots",
+      "parcelSourceId": "in-kl-ncscm-czmp-ground",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/9663/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9663/qualification.json"
     },
     {
       "id": "wup2025:9895",
@@ -39252,10 +39258,13 @@
       "registryCityIds": [
         "wup2025:10755"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "barharia"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -39273,7 +39282,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-br-matribhoomi-manjha-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10755/qualification.json"
     },
     {
       "id": "wup2025:9497",
@@ -39284,10 +39296,13 @@
       "registryCityIds": [
         "wup2025:9497"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "thalassery"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -39305,7 +39320,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-kl-ncscm-czmp-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9497/qualification.json"
     },
     {
       "id": "wup2025:7505",
@@ -39828,10 +39846,13 @@
       "registryCityIds": [
         "wup2025:10741"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "puducherry"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -39849,7 +39870,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-py-ncscm-czmp-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10741/qualification.json"
     },
     {
       "id": "wup2025:8108",
@@ -39892,10 +39916,13 @@
       "registryCityIds": [
         "wup2025:9265"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "mangaluru"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -39913,7 +39940,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-ka-ncscm-czmp-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9265/qualification.json"
     },
     {
       "id": "wup2025:5218",
@@ -43072,10 +43102,13 @@
       "registryCityIds": [
         "wup2025:11477"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "kotwali"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -43093,7 +43126,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-br-matribhoomi-goradih-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/11477/qualification.json"
     },
     {
       "id": "wup2025:10440",
@@ -53887,10 +53923,13 @@
       "registryCityIds": [
         "wup2025:10917"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "chhapra"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -53908,7 +53947,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-br-matribhoomi-chapra-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10917/qualification.json"
     },
     {
       "id": "wup2025:9475",
