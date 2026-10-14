@@ -22,7 +22,8 @@ export function publicProject(row, { detail = false, retained = new Set() } = {}
     if (!inventory || inventory.excludedUse || !model.siteKey) return null;
     const id = projectId(model.siteKey), label = model.label || inventory.name || 'Stambeni projekt';
     const slug = `${slugify(label) || 'projekt'}-${id}`, url = `${BASE_PATH}zgrada/${slug}/`;
-    const apartments = (inventory.apartments || []).map(a => {
+    // Collection retains facts-only postings, but every public apartment must have a plan.
+    const apartments = (inventory.apartments || []).filter(a => a.hasPlan === true).map(a => {
         const value = { id: a.id, label: a.label, url: `${url}stan/${a.id}/`, areaM2: a.areaM2,
             rooms: a.rooms, orientation: a.orientation, floor: a.floor, hasPlan: a.hasPlan, sourceTitle: a.sourceTitle };
         if (detail) Object.assign(value, { ...a, ...value,
@@ -32,8 +33,9 @@ export function publicProject(row, { detail = false, retained = new Set() } = {}
             placement: (model.placements || []).find(p => p.planId === a.planId) || null });
         return value;
     });
+    if (!apartments.length) return null;
     const value = { id, slug, url, label, name: inventory.name || label, address: label,
-        availability: apartments.length ? 'ready' : 'discovered',
+        availability: 'ready',
         kind: inventory.kind, constructionYear: inventory.constructionYear, completionYear: inventory.completionYear,
         titles: inventory.titles || [], location: location(model), apartments,
         sourceCount: inventory.sourceCount, planCount: apartments.filter(a => a.hasPlan).length,
@@ -46,8 +48,8 @@ export function publicProject(row, { detail = false, retained = new Set() } = {}
 
 export async function readPublicCatalogue(db) {
     const rows = (await db.query('SELECT site_key,model,built_at FROM floor_plan.site_model ORDER BY site_key')).rows;
-    // Located leads stay in the collection database; search and the sitemap promise usable homes.
-    const projects = rows.map(row => publicProject(row)).filter(project => project?.availability === 'ready')
+    // Located leads stay in the collection database; public search promises floor plans.
+    const projects = rows.map(row => publicProject(row)).filter(Boolean)
         .sort((a, b) => Number(b.kind === 'new_build') - Number(a.kind === 'new_build') || b.planCount - a.planCount || a.label.localeCompare(b.label, 'hr'));
     return { projects, counts: { projects: projects.length, apartments: projects.reduce((n, p) => n + p.apartments.length, 0),
         withPlans: projects.filter(p => p.planCount > 0).length },

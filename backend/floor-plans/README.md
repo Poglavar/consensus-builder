@@ -18,9 +18,9 @@ A completion forecast is labeled separately; absent or conflicting years remain
 unknown. Advertised apartment area and physical net plan area remain separate.
 Translated aliases of one posting contribute evidence without multiplying its
 apartments or source links. Commercial-only projects are omitted from this catalogue.
-Search, map and sitemap include only projects with at least one apartment record.
-Located leads without apartments stay in the collection backlog; existing deep links
-explain the missing inventory, link to the source and remain `noindex,follow`.
+Search, map, sitemap and public detail routes include only apartments with a floor plan
+and projects containing at least one such apartment. Facts-only listings stay in the
+collection database; their former public detail URLs return 404.
 The building viewer requires a supported footprint and storey height/elevation.
 
 The source roster reconciles every known agency domain, the 20 evidenced studio
