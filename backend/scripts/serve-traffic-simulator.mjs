@@ -37,12 +37,14 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
         TRAFFIC_TOPOLOGY_ROOT: args.get('--topology-root') || process.env.TRAFFIC_TOPOLOGY_ROOT || resolve(project, 'topology'),
         TRAFFIC_ROADS_API: args.get('--roads-api') || process.env.TRAFFIC_ROADS_API };
     if (!env.TRAFFIC_ROADS_API) throw new Error('Set TRAFFIC_ROADS_API or pass --roads-api.');
+    const schema = env.TRAFFIC_DATABASE_SCHEMA || 'public';
+    if (!/^[a-z_][a-z0-9_]*$/.test(schema)) throw new Error('Invalid TRAFFIC_DATABASE_SCHEMA.');
     const pool = new pg.Pool({
         connectionString: env.DATABASE_URL,
         host: process.platform === 'darwin' && env.PGHOST === 'db' ? 'localhost' : env.PGHOST,
         port: Number(env.PGPORT) || 5432, user: env.PGUSER, password: env.PGPASSWORD, database: env.PGDATABASE,
         connectionTimeoutMillis: 10000, statement_timeout: 60000,
-        options: '-c default_transaction_read_only=on'
+        options: `-c default_transaction_read_only=on -c search_path=${schema},public`
     });
     const port = Number(args.get('--port') || env.TRAFFIC_PORT || 8192);
     const app = createTrafficSimulatorApp({ pool, env,

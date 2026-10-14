@@ -26,6 +26,7 @@ const TOPOLOGY_FILES = [
 const STORED_SOLUTIONS_PATH = 'backend/scripts/lib/stored-solutions.js';
 const STORED_SOLUTIONS_EXPORTS = ['isUnsafeComparedWithParent', 'nodesWithMissingIncomingAssignments'];
 const BACKEND_FILES = [
+    ['backend/db/traffic-simulator-source.sql', 'backend/db/traffic-simulator-source.sql'],
     ['backend/traffic/network-source.mjs', 'backend/traffic/network-source.mjs'],
     ['backend/traffic/ecosystem.config.cjs', 'backend/traffic/ecosystem.config.cjs'],
     ['backend/traffic/nginx.locations.conf', 'backend/traffic/nginx.locations.conf'],

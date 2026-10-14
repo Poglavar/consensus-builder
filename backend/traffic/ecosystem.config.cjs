@@ -17,6 +17,7 @@ module.exports = {
         env: {
             NODE_ENV: 'production',
             TRAFFIC_PORT: 8192,
+            TRAFFIC_DATABASE_SCHEMA: 'traffic_simulator',
             TRAFFIC_TOPOLOGY_ROOT: resolve(project, 'topology'),
             TRAFFIC_ROADS_API: 'http://127.0.0.1:3001/api'
         }
