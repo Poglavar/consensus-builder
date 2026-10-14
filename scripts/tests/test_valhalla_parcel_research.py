@@ -154,6 +154,7 @@ class ResumeAndReceiptTests(unittest.TestCase):
         args = SimpleNamespace(repo_root=root, state_dir=Path("state"), queue=queue, job_name="test",
                                codex="codex", max_retries=3)
         instance = runner.Runner(args)
+        instance.models = {"review": {"model": "test-review", "effort": "high"}}
         instance.state = {"queuePath": str(queue), "rootReviewTasks": {}, "cities": {}}
         evidence = queue.parent / "evidence.json"
         evidence.write_text("{}")
@@ -282,6 +283,51 @@ class FailureClassificationAndPromptTests(unittest.TestCase):
             self.assertIn("sample feature 0 contains non-ID attribute 'ilId'", prompt)
             self.assertIn("Do not repeat web searches, network/API requests, or source investigation", prompt)
             self.assertIn("do not drop, simplify, transform, or reconstruct polygon coordinates", prompt)
+
+
+class FiniteDiscoveryTests(unittest.TestCase):
+    def test_finite_queue_never_generates_a_global_range(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            queue = root / "cohort/pending-queue.json"
+            queue.parent.mkdir()
+            queue.write_text(json.dumps({"cities": [{"cityCode": 42}]}))
+            args = runner.build_parser().parse_args(["--run", "--stop-after-queue", "--discovery-only",
+                                                     "--repo-root", str(root), "--queue", str(queue)])
+            args.timeout_seconds = 60
+            instance = runner.Runner(args)
+            instance.models = {"research": {"model": "test-model"}}
+            instance.codex_env = {}
+            with patch.object(instance, "_resolve_identity_holds", return_value=True), \
+                 patch.object(instance, "_process_queue", return_value=(True, 1000)), \
+                 patch.object(instance, "_write_queue_builder") as extend:
+                self.assertEqual(instance.run(), 0)
+            extend.assert_not_called()
+            self.assertEqual(instance.state["status"], "complete")
+
+    def test_discovery_mode_excludes_legacy_admission_tasks(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            args = runner.build_parser().parse_args(["--repo-root", str(root), "--discovery-only"])
+            instance = runner.Runner(args)
+            instance.state = {"queuePath": str(root / "cohort/pending-queue.json")}
+            instance._ensure_root_tasks(root / "cohort", [])
+            self.assertEqual(instance.state["rootReviewTasks"], {})
+            prompt = instance._build_review_prompt([], [])
+            self.assertIn("do not edit registry, catalog, runtime", prompt)
+            self.assertNotIn("ONLY agent authorized", prompt)
+
+    def test_subscription_environment_strips_shared_key_list_and_forces_login(self):
+        with tempfile.TemporaryDirectory() as raw:
+            args = runner.build_parser().parse_args(["--repo-root", raw])
+            instance = runner.Runner(args)
+            with patch.dict(runner.os.environ, {"OPENAI_API_KEY": "fake", "SAFE_SETTING": "kept"}), \
+                 patch.object(instance, "_accounting", return_value={"environmentKeys": ["OPENAI_API_KEY"]}):
+                environment = instance._subscription_environment()
+            self.assertNotIn("OPENAI_API_KEY", environment)
+            self.assertEqual(environment["SAFE_SETTING"], "kept")
+            command = instance._command({"model": "test", "effort": "low"}, Path("schema"), Path("answer"))
+            self.assertIn('forced_login_method="chatgpt"', command)
 
 
 if __name__ == "__main__":

@@ -32,8 +32,6 @@ DEFAULT_QUEUE = Path("world-parcels/research/overnight-next-1201-1300-2026-10-09
 DEFAULT_SOURCE = Path("tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz")
 HANDOFF = Path("world-parcels/research/valhalla-handoff-2026-10-09.md")
 DEFAULT_STATE = Path("tmp/valhalla-parcel-research")
-RESEARCH_MODEL = "gpt-5.6-luna"
-REVIEW_MODEL = "gpt-6-sol"
 MAX_RETRIES = 3
 MAX_WORKERS = 3
 TURN_TIMEOUT_SECONDS = 90 * 60
@@ -393,6 +391,29 @@ class Runner:
         self.state: dict[str, Any] = {}
         self.discovery_claims = {}
         self.discovery_waiting = False
+        self.codex_env = None
+        self.models = None
+
+    def _model(self, role: str) -> dict[str, Any]:
+        if self.models is None:
+            self.models = self._accounting({"operation": "models",
+                                           "researchModel": getattr(self.args, "research_model", None),
+                                           "reviewModel": getattr(self.args, "review_model", None)})
+        return self.models[role]
+
+    def _accounting(self, request: dict[str, Any]) -> dict[str, Any]:
+        helper = self.root / "scripts/lib/parcel-research-accounting.cjs"
+        result = subprocess.run(["node", str(helper)], input=json.dumps(request),
+                                capture_output=True, text=True, timeout=60, cwd=self.root)
+        if result.returncode:
+            raise RuntimeError(f"subscription accounting failed: {result.stderr.strip()}")
+        return json.loads(result.stdout)
+
+    def _subscription_environment(self) -> dict[str, str]:
+        if self.codex_env is None:
+            keys = self._accounting({"operation": "environmentKeys"})["environmentKeys"]
+            self.codex_env = {key: value for key, value in os.environ.items() if key not in keys}
+        return self.codex_env
 
     def log(self, message: str, **fields: Any) -> None:
         event = {"at": utc_now(), "message": message, **fields}
@@ -477,6 +498,7 @@ class Runner:
     def _command(self, call: dict[str, Any], schema_path: Path, answer_path: Path) -> list[str]:
         return [self.codex, "--ask-for-approval", "never", "--search", "exec",
                 "--sandbox", "workspace-write", "-c", "sandbox_workspace_write.network_access=true",
+                "-c", 'forced_login_method="chatgpt"',
                 "-m", call["model"], "-c", f'model_reasoning_effort="{call["effort"]}"',
                 "--json", "--output-schema", str(schema_path), "--output-last-message", str(answer_path), "-"]
 
@@ -497,7 +519,7 @@ class Runner:
         try:
             proc = self.popen_factory(self._command(call, schema_path, answer_path), cwd=self.root,
                                       stdin=subprocess.PIPE, stdout=out_stream, stderr=err_stream,
-                                      text=True, start_new_session=True)
+                                      text=True, start_new_session=True, env=self._subscription_environment())
             try:
                 proc.stdin.write(call["prompt"])
                 proc.stdin.close()
@@ -582,6 +604,14 @@ class Runner:
                           "answerPath": str(item.get("answerPath", "")), "timedOut": item.get("timedOut", False),
                           "interrupted": item.get("interrupted", False), "systemic": systemic,
                           "error": item.get("error"), "elapsedSeconds": max(0, round(self.clock() - item.get("started", self.clock()), 2))}
+                if item.get("stdoutPath"):
+                    result["accounting"] = self._accounting({
+                        "operation": "record", "billing": "subscription", "stdoutPath": str(item["stdoutPath"]),
+                        "model": item["call"]["model"], "repo": "consensus-builder", "script": "parcel-research",
+                        "meta": {"callId": item["call"]["callId"], "jobName": self.args.job_name,
+                                 "taskId": item["call"].get("taskId"), "role": item["call"]["role"]}})
+                    self.state.setdefault("usage", {})[item["call"]["callId"]] = result["accounting"]
+                    self.log("subscription usage recorded", callId=item["call"]["callId"], **result["accounting"])
                 results.append(result)
                 if proc:
                     self.active_processes.pop(proc.pid, None)
@@ -617,7 +647,7 @@ class Runner:
         if previous_errors:
             retry_block = """
 
-This is an artifact-validation retry. The previous validation errors are listed below. Correct only these packet/schema issues in your existing city and service-review files and the referenced sample file when the error explicitly names it. Do not repeat web searches, network/API requests, or source investigation. You may normalize each retained sample feature's properties to exactly `{{"id": <the same existing verified native identity>}}` and move source-field/composite-key provenance into city/service-review metadata. Preserve each geometry object byte-for-byte/coordinate-for-coordinate, feature count, and native identity value; do not drop, simplify, transform, or reconstruct polygon coordinates. If the evidence cannot support a correction, leave the source finding held and clearly state the limitation.
+This is an artifact-validation retry. The previous validation errors are listed below. Correct only these packet/schema issues in your existing city and service-review files and the referenced sample file when the error explicitly names it. Do not repeat web searches, network/API requests, or source investigation. You may normalize each retained sample feature's properties to exactly `{{"id": <the same existing verified identity>}}` and move source-field/composite-key provenance into city/service-review metadata. Preserve each geometry object coordinate-for-coordinate, feature count, and identity value; do not drop, simplify, transform, or reconstruct polygon coordinates. If the evidence cannot support a correction, leave the source finding held and clearly state the limitation.
 Previous validator/turn errors:
 """ + "\n".join(f"- {error}" for error in previous_errors)
         return f"""You are one of three parallel anonymous cadastral-source researchers in a resumable WUP city queue.
@@ -632,7 +662,17 @@ Write only `{city_file}`, `{review_file}`, and at most one sample GeoJSON contai
 
 Preserve `cityCode={code}`, rank {city.get('rank')}, country `{city.get('country')}` / `{city.get('iso2')}`, exact WUP point `{city.get('point')}` in latitude/longitude order, `population2025={round(float(city.get('pop2025k')) * 1000)}` persons, `population2025k={city.get('pop2025k')}`, and `populationUnit="persons"`. Do not shift a coordinate to force a parcel hit. A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.
 
-For retained GeoJSON samples, put exactly one canonical native identity in `properties`, preferably `{{"id": "<stable-native-identity>"}}`. Put native source field names, source-specific field mapping, and composite-key provenance in the city/service-review metadata, not in retained GeoJSON feature properties. Do not retain raw source-specific attribute sets. Existing legacy samples with only `OBJECTID` or `PARCEL_ID` remain valid. Never use an internal synthetic row number as the native identity unless source evidence proves that is the stable parcel identity.
+For retained GeoJSON samples, put exactly one safe stable identity in `properties`, preferably `{{"id": "<stable-identity>"}}`. Prefer native IDs or proven composite keys. If the provider exposes geometry without a safe durable key, a deterministic geometry-derived ID is acceptable: record the exact canonicalization/hash recipe, source namespace, collision/deduplication policy and stability limits. Do not label derived IDs native or reject otherwise usable geometry solely for lacking a native key. Never use response order, a random ID or an ephemeral row counter. Put source field mappings and identity provenance in metadata; retain no raw attribute sets.
+
+Use the queue's `priorEvidence` and `appBindings` as starting evidence, including past holds and qualification diagnostics. Read their referenced files before repeating work. Recheck current endpoints and investigate the specific unresolved blocker or another official route; a previous hold is a lead, not a permanent verdict. Existing app support is bounded coverage and must not be overwritten by a new failed probe.
+
+Apply these integration lessons explicitly:
+- Identify the actual cadastral layer rather than roads, buildings, planning zones, tax tables or a screenshot. A national registry or viewable raster alone does not prove accessible parcel polygons for this city.
+- Check the service extent against the exact WUP city and distinguish centre-point coverage from nearby/district/partial-city coverage. Use small bounded windows near that city, record each window and do not claim all-city coverage from a sample.
+- Inspect CRS, coordinate order, paging limits, maximum bbox area, stable IDs, duplicate geometries and overlapping/invalid parcels. Check WFS version/type names and ArcGIS layer IDs, ID-list/page support, current/historic validity fields and response transfer limits. Filter historic duplicates only with evidenced field semantics; do not suppress genuine overlaps.
+- Retain at most three full polygons unchanged, preserving rings, holes, multipolygons and precision. Attribute minimization must never simplify geometry. Record source authority, licence/reuse evidence or uncertainty, attribution, observation time and safe field allowlist.
+- Run one request at a time per provider host, honour Retry-After, use bounded timeouts and at most two retries for transient failures. Stop repeated 403/429/5xx or CAPTCHA failures and record them. Use official viewer configuration, WFS/ArcGIS/OGC endpoints or official downloadable polygon files as alternative routes; do not bypass access controls.
+- Record access failure, unsupported format, wrong extent, provider unavailability and geometry defects separately from unestablished registry presence. Include the next concrete qualification action where a source is promising. Discovery evidence alone never admits a source to the app.
 
 Required city JSON core schema example (include these fields with accurate evidence; additional established packet fields are welcome):
 ```json
@@ -641,7 +681,7 @@ Required city JSON core schema example (include these fields with accurate evide
 
 Perform separate first-party discovery queries in English and the country's local/native language; record the actual query text, search outcome, and URLs in `freshResearch.queries`. Follow the official viewer's current JavaScript/configuration to the public map/API service, inspect schema/CRS and a bounded anonymous ID+geometry response when available. Ordinary public GET/POST is allowed. Never log in, use credentials/private tokens, defeat CAPTCHA/Cloudflare, or request owner, address, contact, titleholder, personal, tax/account, or other unsafe fields. TLS verification is the default; only use a narrow, source-specific certificate exception when the user has already authorized that exact exception, and record its host, reason, and request. Never disable TLS verification globally. Retain full unchanged native geometry only with safe parcel IDs, at most three polygons total; keep larger raw evidence in ignored `tmp/`.
 
-Record every attempted route/request and distinguish a city/local registry custodian from general national agency prose. Use `registryFound=true` only when a local registry/cadastre/map/procedure is actually evidenced; otherwise use `null` (never `false`). Do not present packet completion as source integration/admission. Keep `runtimeReadiness` held unless the serial reviewer qualifies a real adapter independently.
+Record every attempted route/request and distinguish a city/local registry custodian from general national agency prose. Use `registryFound=true` only when a local registry/cadastre/map/procedure is actually evidenced; otherwise use `null` (never `false`). Do not present packet completion as source integration/admission. Keep `runtimeReadiness` held pending a separate adapter qualification.
 
 The paired service review MUST contain `"cityRecord": "{city_file}"` at the top level. Write and reread both named JSON files before returning. This report must document query and request outcomes, scope limits, safe field allowlist, and uncertainty. Mark the packet complete only after accurately recording all executed attempts. Never invent a successful query, registry, or geometry. End with a short machine-readable completion summary in your final response.{retry_block}"""
 
@@ -652,6 +692,29 @@ The paired service review MUST contain `"cityRecord": "{city_file}"` at the top 
         identity_text = "\n".join(f"- `identity:{item['cityCode']}` — resolve this held identity before any work on the next rank range." for item in identities)
         handoff = (self.root / HANDOFF).as_posix()
         receipt_dir = self._receipt_dir().relative_to(self.root).as_posix()
+        if getattr(self.args, "discovery_only", False):
+            return f"""You are the serial evidence reviewer for a finite Africa cadastral discovery queue.
+Review only the city packets listed below. Write only durable review receipts under `{receipt_dir}`;
+do not edit registry, catalog, runtime, generated reports, queue identity or another city's packet.
+Do not perform admission, commit, push, deploy or contact anyone. Do not launch other research jobs.
+
+{city_text or '- (none)'}
+
+For each listed city, read both its city packet and paired service review and any retained sample.
+Check exact queue country/code/rank/point/population, actual bilingual searches and request results,
+prior evidence, source authority, extent and coverage limits, safe IDs and full unchanged polygons.
+Stable geometry-derived IDs are acceptable when provenance and deterministic recipe are explicit;
+native IDs are preferable but their absence alone is not a rejection. Distinguish raster viewers,
+partial extent, service/access failures, historic duplicate rows and true geometry defects.
+Do not turn unresolved evidence into absence or a worker's success label into qualification.
+Record a concrete next qualification action for promising sources. All discoveries remain held
+for independent live adapter qualification; an existing app binding remains independently valid.
+
+Before adding an exact city:<code> ID to reviewedIds, write and reread its receipt at
+`{receipt_dir}/city_<code>.json` containing exact taskId, decision `held`, nonempty evidenceFiles
+(repository-relative paths actually read and existing), checkedAt ISO timestamp, reason and nextAction.
+A completed held review belongs in both reviewedIds and heldIds. Return only the supplied JSON
+schema fields reviewedIds, heldIds, summary and systemicFailure. Never mark an unread task reviewed."""
         return f"""You are the one serial root reviewer for the persistent WUP parcel-research job. You own root review decisions and are the ONLY agent authorized in this job to edit `world-parcels/registry.json`, `backend/parcels/source-catalog.json`, `frontend/js/city-config.js`, and generated coverage/report artifacts. Research workers own only their named city packet/review/sample files. Provider-expansion paired city/review/sample files are immutable discovery evidence; put review decisions in separate receipts without rewriting those files. Do not commit, push, deploy, or contact anyone. Preserve the user's paused local-research goal and remote-job authorization; do not start any separate investigation outside these named tasks.
 
 Review at most three pending legacy/root items listed below in this turn, plus the new city batch. For each task, inspect the paired evidence and add only its exact ID to `reviewedIds` after a completed review; a hold is a completed review but must remain visibly held. Do not mark unreviewed tasks done. Use the handoff file when present: `{handoff}`.
@@ -726,6 +789,8 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
 
     def _ensure_root_tasks(self, cohort_dir: Path, cities: list[dict[str, Any]]) -> None:
         tasks = self.state.setdefault("rootReviewTasks", {})
+        if getattr(self.args, "discovery_only", False):
+            return
         for task_id, description in ROOT_REVIEW_TASKS:
             tasks.setdefault(task_id, {"status": "pending", "description": description, "attempts": 0})
         # City review owns packet review. Reuse its proof instead of adding a second task.
@@ -833,7 +898,8 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
     def _review_call(self, city_items: list[dict[str, Any]], root_task_ids: list[str], identities: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         task_id = "review:" + ",".join([f"city:{item['cityCode']}" for item in city_items]
                                         + root_task_ids + [f"identity:{item['cityCode']}" for item in (identities or [])])
-        return self._call("reviewer", task_id, self._build_review_prompt(city_items, root_task_ids, identities), REVIEW_MODEL, "high")
+        model = self._model("review")
+        return self._call("reviewer", task_id, self._build_review_prompt(city_items, root_task_ids, identities), model["model"], model.get("effort") or "high")
 
     def _record_city_attempts(self, cities: list[dict[str, Any]], cohort_dir: Path,
                               parallel_reviewer: dict[str, Any] | None = None) -> tuple[list[dict[str, Any]], dict[str, Any] | None, bool]:
@@ -862,10 +928,11 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 entry["status"] = "running"
                 entry["lastAttemptAt"] = utc_now()
                 entry["lastError"] = None
+                model = self._model("research")
                 calls.append(self._call("research", f"city:{code}",
                                         self._build_research_prompt(city, cohort_dir, entry["attempts"],
                                                                     entry.get("lastValidationErrors")),
-                                        RESEARCH_MODEL, "low"))
+                                        model["model"], model.get("effort") or "low"))
             if parallel_reviewer is not None and attempt_round == 0:
                 calls.append(parallel_reviewer)
             self.save_state()
@@ -1185,6 +1252,8 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                     end_rank = max(int(row["rank"]) for row in roster)
             except (ValueError, TypeError, KeyError):
                 pass
+        if getattr(self.args, "stop_after_queue", False):
+            total_rank_count = len(cities)
         self.state["queuePath"] = str(queue_path)
         self.state["queueSha256"] = sha256_file(queue_path)
         self.state["currentRankStart"] = start_rank
@@ -1262,9 +1331,11 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 return False, None
             if once:
                 return True, end_rank
-            self.log("batch checkpoint", batch=batch_number, reviewedCount=sum(
-                1 for code in self.state["cities"] if self.state["cities"][code].get("status") in {"reviewed", "reviewed-held"}),
-                failedSkippedCount=sum(1 for code in self.state["cities"] if self.state["cities"][code].get("status") == "failed-skipped"))
+            reviewed_count = sum(1 for entry in self.state["cities"].values()
+                                 if entry.get("status") in {"reviewed", "reviewed-held"})
+            failed_count = sum(1 for entry in self.state["cities"].values() if entry.get("status") == "failed-skipped")
+            self.log(f"batch checkpoint: {reviewed_count + failed_count}/{len(cities)} cities processed",
+                     batch=batch_number, reviewedCount=reviewed_count, failedSkippedCount=failed_count)
             if self.stop_requested:
                 return False, None
 
@@ -1289,6 +1360,8 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         if not (1 <= self.args.max_retries <= MAX_RETRIES):
             raise ValueError("--max-retries must be between 1 and 3")
         self.acquire_lock()
+        self._subscription_environment()
+        self._model("research")
         queue_path = self._queue_path()
         self.load_state(queue_path)
         previous_handlers = {}
@@ -1311,6 +1384,12 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 if self.args.once:
                     self.state["status"] = "paused-checkpointed"
                     self.save_state()
+                    return 0
+                if getattr(self.args, "stop_after_queue", False):
+                    self.state["status"] = "complete-with-failures" if self.state.get("failedItems") else "complete"
+                    self.state["completedAt"] = utc_now()
+                    self.save_state()
+                    self.log("finite city queue exhausted", total=len(self._load_queue(current_queue)[1]))
                     return 0
                 if range_end is None:
                     range_end = self.state.get("currentRankEnd") or 0
@@ -1354,6 +1433,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--status", action="store_true", help="report persisted state, actual PID identity, active children, and heartbeat")
     parser.add_argument("--stop", action="store_true", help="send SIGTERM to this runner only; it checkpoints and stops its owned Codex groups")
     parser.add_argument("--once", action="store_true", help="checkpoint after one batch (one to three city workers plus one review)")
+    parser.add_argument("--stop-after-queue", action="store_true", help="finish this finite queue without generating global rank ranges")
+    parser.add_argument("--discovery-only", action="store_true", help="review city evidence only; exclude legacy tasks and source admission")
     parser.add_argument("--workers", type=int, default=3, help="parallel city research workers (1-3; default 3)")
     parser.add_argument("--job-name", default="valhalla-parcel-research", help="persistent state/log job name")
     parser.add_argument("--repo-root", type=Path, default=DEFAULT_ROOT)
@@ -1361,6 +1442,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE, help="official local WUP 2025 gzip source for later ranges")
     parser.add_argument("--state-dir", type=Path, default=DEFAULT_STATE)
     parser.add_argument("--codex", help="Codex CLI executable (default: codex from PATH)")
+    parser.add_argument("--research-model", help="override the shared cheap Codex research model")
+    parser.add_argument("--review-model", help="override the shared Codex review model")
     parser.add_argument("--max-turn-minutes", type=int, default=90, help="per Codex turn timeout, capped at 90 minutes")
     parser.add_argument("--max-retries", type=int, default=3, help="per-city/per-review retry cap (maximum 3)")
     parser.add_argument("--range-size", type=int, default=100, help="rank range generated after the first fixed queue")
