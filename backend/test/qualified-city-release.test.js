@@ -16,7 +16,8 @@ const manifests = [
     json('world-parcels/research/qualification-admission-2026-10-12-pl-egib.json'),
     json('world-parcels/research/qualification-admission-2026-10-13-mumbai.json'),
     json('world-parcels/research/qualification-admission-2026-10-13-india-live.json'),
-    json('world-parcels/research/qualification-admission-2026-10-14-india-coastal.json')
+    json('world-parcels/research/qualification-admission-2026-10-14-india-coastal.json'),
+    json('world-parcels/research/qualification-admission-2026-10-14-haryana-outlines.json')
 ];
 // A later admission that switched a live city to a newly qualified source (switchedFrom) replaces
 // its earlier binding; the earlier one stays in its manifest as history.

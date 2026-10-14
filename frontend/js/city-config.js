@@ -10086,7 +10086,7 @@
             currency: { locale: 'en-IN', code: 'INR' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.536704378771, 75.035515266935], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.536704378771, 75.035515266935], fallbackDataset: [75.035515266935, 29.536704378771] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-sirsa', idPrefix: 'IN-HR-HSAC-SIRSA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-sirsa-outlines', idPrefix: 'IN-HR-HSAC2-SIRSA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hisar: {
@@ -10095,7 +10095,7 @@
             currency: { locale: 'en-IN', code: 'INR' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.150778973288602, 75.75211620569911], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.150778973288602, 75.75211620569911], fallbackDataset: [75.75211620569911, 29.150778973288602] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-hisar', idPrefix: 'IN-HR-HSAC-HISAR-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-hisar-outlines', idPrefix: 'IN-HR-HSAC2-HISAR-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kaithal: {
@@ -10104,7 +10104,7 @@
             currency: { locale: 'en-IN', code: 'INR' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.7995897199337, 76.4055225188099], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.7995897199337, 76.4055225188099], fallbackDataset: [76.4055225188099, 29.7995897199337] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-kaithal', idPrefix: 'IN-HR-HSAC-KAITHAL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-kaithal-outlines', idPrefix: 'IN-HR-HSAC2-KAITHAL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ambala: {
@@ -10113,7 +10113,7 @@
             currency: { locale: 'en-IN', code: 'INR' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [30.380225522836298, 76.8141196644984], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [30.380225522836298, 76.8141196644984], fallbackDataset: [76.8141196644984, 30.380225522836298] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-ambala', idPrefix: 'IN-HR-HSAC-AMBALA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-ambala-outlines', idPrefix: 'IN-HR-HSAC2-AMBALA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         jind: {
@@ -10122,7 +10122,7 @@
             currency: { locale: 'en-IN', code: 'INR' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.3176729893746, 76.3185369205235], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.3176729893746, 76.3185369205235], fallbackDataset: [76.3185369205235, 29.3176729893746] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-jind', idPrefix: 'IN-HR-HSAC-JIND-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-jind-outlines', idPrefix: 'IN-HR-HSAC2-JIND-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bhiwani: {
@@ -10131,7 +10131,7 @@
             currency: { locale: 'en-IN', code: 'INR' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.7971298761814, 76.1384878765419], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.7971298761814, 76.1384878765419], fallbackDataset: [76.1384878765419, 28.7971298761814] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-bhiwani', idPrefix: 'IN-HR-HSAC-BHIWANI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-bhiwani-outlines', idPrefix: 'IN-HR-HSAC2-BHIWANI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kurukshetra: {
@@ -10140,7 +10140,7 @@
             currency: { locale: 'en-IN', code: 'INR' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.9674026272771, 76.8569110935626], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.9674026272771, 76.8569110935626], fallbackDataset: [76.8569110935626, 29.9674026272771] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-kurukshetra', idPrefix: 'IN-HR-HSAC-KURUKSHETRA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-kurukshetra-outlines', idPrefix: 'IN-HR-HSAC2-KURUKSHETRA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         rohtak: {
@@ -10149,7 +10149,7 @@
             currency: { locale: 'en-IN', code: 'INR' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.8730362473323, 76.5954147246247], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.8730362473323, 76.5954147246247], fallbackDataset: [76.5954147246247, 28.8730362473323] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-rohtak', idPrefix: 'IN-HR-HSAC-ROHTAK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-rohtak-outlines', idPrefix: 'IN-HR-HSAC2-ROHTAK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         panipat: {
@@ -10158,7 +10158,7 @@
             currency: { locale: 'en-IN', code: 'INR' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.400963638737302, 76.98281629834831], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.400963638737302, 76.98281629834831], fallbackDataset: [76.98281629834831, 29.400963638737302] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-panipat', idPrefix: 'IN-HR-HSAC-PANIPAT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-panipat-outlines', idPrefix: 'IN-HR-HSAC2-PANIPAT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         sonipat: {
@@ -10167,7 +10167,7 @@
             currency: { locale: 'en-IN', code: 'INR' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.9827143736227, 77.03440734666691], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.9827143736227, 77.03440734666691], fallbackDataset: [77.03440734666691, 28.9827143736227] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-sonipat', idPrefix: 'IN-HR-HSAC-SONIPAT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-sonipat-outlines', idPrefix: 'IN-HR-HSAC2-SONIPAT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         palwal: {
@@ -10176,7 +10176,7 @@
             currency: { locale: 'en-IN', code: 'INR' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.141468469378, 77.3328111663979], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.141468469378, 77.3328111663979], fallbackDataset: [77.3328111663979, 28.141468469378] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-palwal', idPrefix: 'IN-HR-HSAC-PALWAL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-palwal-outlines', idPrefix: 'IN-HR-HSAC2-PALWAL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         chirand: {
@@ -10285,6 +10285,24 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [17.69725, 83.22115], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [17.69725, 83.22115], fallbackDataset: [83.22115, 17.69725] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-ap-ncscm-czmp-survey-plots', idPrefix: 'IN-AP-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Andhra Pradesh. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        karnal: {
+            id: 'karnal', wupCityCode: '8099',
+            label: translateCityText('city.labels.karnal', 'Karnal, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.683358416672, 77.0241809146046], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.683358416672, 77.0241809146046], fallbackDataset: [77.0241809146046, 29.683358416672] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-karnal-outlines', idPrefix: 'IN-HR-HSAC2-KARNAL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        rewari: {
+            id: 'rewari', wupCityCode: '8316',
+            label: translateCityText('city.labels.rewari', 'Rewari, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.194482321657, 76.62843094297341], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.194482321657, 76.62843094297341], fallbackDataset: [76.62843094297341, 28.194482321657] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-rewari-outlines', idPrefix: 'IN-HR-HSAC2-REWARI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
     };

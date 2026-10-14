@@ -3905,6 +3905,8 @@
     },
     "city": {
         "labels": {
+            "karnal": "Karnal, Indija",
+            "rewari": "Rewari, Indija",
             "bhavnagar": "Bhavnagar, Indija",
             "vapi": "Vapi, Indija",
             "vasai_virar": "Vasai-Virar, Indija",

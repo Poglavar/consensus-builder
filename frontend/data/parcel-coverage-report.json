@@ -2,23 +2,23 @@
   "schemaVersion": 1,
   "purpose": "Interactive inventory of parcel-registry research. Area shares describe jurisdictions with evidence, not cadastral polygon completeness.",
   "metadata": {
-    "asOf": "2026-10-13",
+    "asOf": "2026-10-14",
     "demographicSnapshotDate": "2026-10-12",
     "statisticsYear": 2025,
-    "cityCount": 1809,
+    "cityCount": 1810,
     "countryCount": 255,
     "statisticalJurisdictions": 237,
-    "checkedCityCount": 1732,
+    "checkedCityCount": 1733,
     "uncheckedCityCount": 77,
-    "cityRegistryFoundCount": 1387,
-    "verifiedCitySampleCount": 658,
+    "cityRegistryFoundCount": 1388,
+    "verifiedCitySampleCount": 660,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
-    "populationMatchedCount": 1535,
-    "growthMatchedCount": 653,
+    "populationMatchedCount": 1536,
+    "growthMatchedCount": 654,
     "checkedCitiesMissingDate": 27,
     "wikiCityCount": 282,
-    "configuredAppCityCount": 585,
+    "configuredAppCityCount": 587,
     "unmatchedStatisticalAmounts": {
       "landAreaKm2": 0,
       "builtUpAreaKm2": 0.003000000084284693,
@@ -3995,19 +3995,20 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-2026-10-13-india-live/7788/qualification.json",
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7788/qualification.json",
         "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "Verified 122 parcel outlines at the recorded sample location using HSAC Haryana cadastral map — Ambala district. Coverage is bounded; citywide completeness remains unverified.",
+      "registryBasis": "Verified 92 parcel outlines at the recorded sample location using HSAC Haryana cadastral map — Ambala district. Coverage is bounded; citywide completeness remains unverified.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "in-hr-hsac-ambala"
+        "in-hr-hsac-ambala",
+        "in-hr-hsac-ambala-outlines"
       ],
       "evidenceUrls": [
         "https://ambala.gov.in/service/jamabandi-portal/",
@@ -4016,8 +4017,9 @@
         "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/1"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-13-india-live/7788/qualification.json",
+        "world-parcels/research/qualification-2026-10-14-haryana-outlines/7788/qualification.json",
         "research/overnight-cities-2026-10-08/city-7788-ambala.json",
+        "world-parcels/research/qualification-2026-10-13-india-live/7788/qualification.json",
         "research/indian-cadastrals-sources-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=30.36023&mlon=76.81412#map=12/30.36023/76.81412",
@@ -12502,24 +12504,26 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-2026-10-13-india-live/7878/qualification.json",
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7878/qualification.json",
         "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "Verified 51 parcel outlines at the recorded sample location using HSAC Haryana cadastral map — Bhiwani district. Coverage is bounded; citywide completeness remains unverified.",
+      "registryBasis": "Verified 50 parcel outlines at the recorded sample location using HSAC Haryana cadastral map — Bhiwani district. Coverage is bounded; citywide completeness remains unverified.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "in-hr-hsac-bhiwani"
+        "in-hr-hsac-bhiwani",
+        "in-hr-hsac-bhiwani-outlines"
       ],
       "evidenceUrls": [
         "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/2"
       ],
       "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-14-haryana-outlines/7878/qualification.json",
         "world-parcels/research/qualification-2026-10-13-india-live/7878/qualification.json",
         "research/indian-cadastrals-sources-2026-10-13.json"
       ],
@@ -38658,19 +38662,20 @@
         "evidenceFile": "research/overnight-followon-2026-10-09/ranked-population.json"
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-2026-10-13-india-live/7285/qualification.json",
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7285/qualification.json",
         "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "Verified 62 parcel outlines at the recorded sample location using HSAC Haryana cadastral map — Hisar district. Coverage is bounded; citywide completeness remains unverified.",
+      "registryBasis": "Verified 64 parcel outlines at the recorded sample location using HSAC Haryana cadastral map — Hisar district. Coverage is bounded; citywide completeness remains unverified.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "in-hr-hsac-hisar"
+        "in-hr-hsac-hisar",
+        "in-hr-hsac-hisar-outlines"
       ],
       "evidenceUrls": [
         "https://hisar.gov.in/service/land-records/",
@@ -38679,8 +38684,9 @@
         "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/6"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-13-india-live/7285/qualification.json",
+        "world-parcels/research/qualification-2026-10-14-haryana-outlines/7285/qualification.json",
         "research/overnight-followon-2026-10-09/city-7285-hisar.json",
+        "world-parcels/research/qualification-2026-10-13-india-live/7285/qualification.json",
         "research/indian-cadastrals-sources-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=29.14078&mlon=75.74212#map=12/29.14078/75.74212",
@@ -44204,10 +44210,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-2026-10-13-india-live/7797/qualification.json",
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7797/qualification.json",
         "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
@@ -44216,12 +44222,14 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "in-hr-hsac-jind"
+        "in-hr-hsac-jind",
+        "in-hr-hsac-jind-outlines"
       ],
       "evidenceUrls": [
         "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/8"
       ],
       "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-14-haryana-outlines/7797/qualification.json",
         "world-parcels/research/qualification-2026-10-13-india-live/7797/qualification.json",
         "research/indian-cadastrals-sources-2026-10-13.json"
       ],
@@ -45980,10 +45988,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-2026-10-13-india-live/7670/qualification.json",
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7670/qualification.json",
         "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
@@ -45992,12 +46000,14 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "in-hr-hsac-kaithal"
+        "in-hr-hsac-kaithal",
+        "in-hr-hsac-kaithal-outlines"
       ],
       "evidenceUrls": [
         "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/9"
       ],
       "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-14-haryana-outlines/7670/qualification.json",
         "world-parcels/research/qualification-2026-10-13-india-live/7670/qualification.json",
         "research/indian-cadastrals-sources-2026-10-13.json"
       ],
@@ -47379,10 +47389,13 @@
       "registryCityIds": [
         "wup2025:8099"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "karnal"
+      ],
       "cohorts": [
         "registry",
-        "overnight-next-1101-1200"
+        "overnight-next-1101-1200",
+        "app"
       ],
       "wupCityCode": 8099,
       "wupName": "Karnal",
@@ -47400,24 +47413,29 @@
         "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
       },
       "checked": true,
-      "checkedDate": "2026-10-09",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-09",
-        "path": "research/overnight-next-2026-10-09/city-8099-karnal.json",
-        "field": "$.checkedAt"
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8099/qualification.json",
+        "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "Official city/municipality property GIS and land-record service exist, but public anonymous parcel geometry was not verified.",
-      "verifiedSample": false,
+      "registryBasis": "Verified 131 parcel outlines at the recorded sample location using HSAC Haryana cadastral map — Karnal district. Coverage is bounded; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
+      "sourceIds": [
+        "in-hr-hsac-karnal-outlines"
+      ],
       "evidenceUrls": [
         "https://gis.ulbharyana.gov.in/",
-        "https://www.ulbharyana.gov.in/Karnal/251"
+        "https://www.ulbharyana.gov.in/Karnal/251",
+        "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/10"
       ],
       "evidenceFiles": [
-        "research/overnight-next-2026-10-09/city-8099-karnal.json"
+        "world-parcels/research/qualification-2026-10-14-haryana-outlines/8099/qualification.json",
+        "research/overnight-next-2026-10-09/city-8099-karnal.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=29.68336&mlon=76.99418#map=12/29.68336/76.99418",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=29.68336%2C76.99418",
@@ -51759,10 +51777,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-2026-10-13-india-live/7952/qualification.json",
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7952/qualification.json",
         "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
@@ -51771,12 +51789,14 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "in-hr-hsac-kurukshetra"
+        "in-hr-hsac-kurukshetra",
+        "in-hr-hsac-kurukshetra-outlines"
       ],
       "evidenceUrls": [
         "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/11"
       ],
       "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-14-haryana-outlines/7952/qualification.json",
         "world-parcels/research/qualification-2026-10-13-india-live/7952/qualification.json",
         "research/indian-cadastrals-sources-2026-10-13.json"
       ],
@@ -73472,10 +73492,10 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-2026-10-13-india-live/8691/qualification.json",
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8691/qualification.json",
         "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
@@ -73484,12 +73504,14 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "in-hr-hsac-palwal"
+        "in-hr-hsac-palwal",
+        "in-hr-hsac-palwal-outlines"
       ],
       "evidenceUrls": [
         "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/21"
       ],
       "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-14-haryana-outlines/8691/qualification.json",
         "world-parcels/research/qualification-2026-10-13-india-live/8691/qualification.json",
         "research/indian-cadastrals-sources-2026-10-13.json"
       ],
@@ -73699,19 +73721,20 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-2026-10-13-india-live/8162/qualification.json",
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8162/qualification.json",
         "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "Verified 95 parcel outlines at the recorded sample location using HSAC Haryana cadastral map — Panipat district. Coverage is bounded; citywide completeness remains unverified.",
+      "registryBasis": "Verified 97 parcel outlines at the recorded sample location using HSAC Haryana cadastral map — Panipat district. Coverage is bounded; citywide completeness remains unverified.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "in-hr-hsac-panipat"
+        "in-hr-hsac-panipat",
+        "in-hr-hsac-panipat-outlines"
       ],
       "evidenceUrls": [
         "https://panipat.gov.in/dynamic-integration-of-property-registration-and-land-records-administration/",
@@ -73722,8 +73745,9 @@
         "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/14"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-13-india-live/8162/qualification.json",
+        "world-parcels/research/qualification-2026-10-14-haryana-outlines/8162/qualification.json",
         "research/overnight-cities-2026-10-08/city-8162-panipat.json",
+        "world-parcels/research/qualification-2026-10-13-india-live/8162/qualification.json",
         "research/indian-cadastrals-sources-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=29.39096&mlon=76.97282#map=12/29.39096/76.97282",
@@ -80015,6 +80039,64 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:8316",
+      "name": "Rewari",
+      "country": "India",
+      "countryCode": "IN",
+      "latitude": 28.194482321657,
+      "longitude": 76.62843094297341,
+      "registryCityIds": [
+        "wup2025:8316"
+      ],
+      "appCityIds": [
+        "rewari"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 8316,
+      "wupName": "Rewari",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 209700,
+      "population2025": 220564,
+      "annualGrowthPct2015To2025": 0.5051,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": "2026-10-14",
+      "checkedDateEvidence": {
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8316/qualification.json",
+        "field": "$.requests[0].startedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Verified 75 parcel outlines at the recorded sample location using HSAC Haryana cadastral map — Rewari district. Coverage is bounded; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "in-hr-hsac-rewari-outlines"
+      ],
+      "evidenceUrls": [
+        "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/15"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-14-haryana-outlines/8316/qualification.json",
+        "research/indian-cadastrals-sources-2026-10-13.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=28.19448&mlon=76.62843#map=12/28.19448/76.62843",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=28.19448%2C76.62843",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:6724",
       "name": "Reynosa",
       "country": "Mexico",
@@ -80553,10 +80635,10 @@
         "evidenceFile": "research/overnight-followon-2026-10-09/ranked-population.json"
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-2026-10-13-india-live/8085/qualification.json",
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8085/qualification.json",
         "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
@@ -80565,7 +80647,8 @@
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "in-hr-hsac-rohtak"
+        "in-hr-hsac-rohtak",
+        "in-hr-hsac-rohtak-outlines"
       ],
       "evidenceUrls": [
         "https://rohtak.gov.in/",
@@ -80575,8 +80658,9 @@
         "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/16"
       ],
       "evidenceFiles": [
-        "world-parcels/research/qualification-2026-10-13-india-live/8085/qualification.json",
+        "world-parcels/research/qualification-2026-10-14-haryana-outlines/8085/qualification.json",
         "research/overnight-followon-2026-10-09/city-8085-rohtak.json",
+        "world-parcels/research/qualification-2026-10-13-india-live/8085/qualification.json",
         "research/indian-cadastrals-sources-2026-10-13.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=28.89304&mlon=76.59541#map=12/28.89304/76.59541",
@@ -88488,24 +88572,26 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-2026-10-13-india-live/6392/qualification.json",
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-haryana-outlines/6392/qualification.json",
         "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "Verified 54 parcel outlines at the recorded sample location using HSAC Haryana cadastral map — Sirsa district. Coverage is bounded; citywide completeness remains unverified.",
+      "registryBasis": "Verified 52 parcel outlines at the recorded sample location using HSAC Haryana cadastral map — Sirsa district. Coverage is bounded; citywide completeness remains unverified.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "in-hr-hsac-sirsa"
+        "in-hr-hsac-sirsa",
+        "in-hr-hsac-sirsa-outlines"
       ],
       "evidenceUrls": [
         "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/17"
       ],
       "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-14-haryana-outlines/6392/qualification.json",
         "world-parcels/research/qualification-2026-10-13-india-live/6392/qualification.json",
         "research/indian-cadastrals-sources-2026-10-13.json"
       ],
@@ -88995,24 +89081,26 @@
         "distanceKm": 0
       },
       "checked": true,
-      "checkedDate": "2026-10-13",
+      "checkedDate": "2026-10-14",
       "checkedDateEvidence": {
-        "date": "2026-10-13",
-        "path": "world-parcels/research/qualification-2026-10-13-india-live/8337/qualification.json",
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8337/qualification.json",
         "field": "$.requests[0].startedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "Verified 64 parcel outlines at the recorded sample location using HSAC Haryana cadastral map — Sonipat district. Coverage is bounded; citywide completeness remains unverified.",
+      "registryBasis": "Verified 66 parcel outlines at the recorded sample location using HSAC Haryana cadastral map — Sonipat district. Coverage is bounded; citywide completeness remains unverified.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
-        "in-hr-hsac-sonipat"
+        "in-hr-hsac-sonipat",
+        "in-hr-hsac-sonipat-outlines"
       ],
       "evidenceUrls": [
         "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/18"
       ],
       "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-14-haryana-outlines/8337/qualification.json",
         "world-parcels/research/qualification-2026-10-13-india-live/8337/qualification.json",
         "research/indian-cadastrals-sources-2026-10-13.json"
       ],
@@ -109734,8 +109822,8 @@
       "population": 1463865524,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 230,
-      "citiesWithRegistry": 178,
+      "citiesChecked": 231,
+      "citiesWithRegistry": 179,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,

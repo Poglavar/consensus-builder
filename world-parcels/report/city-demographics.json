@@ -47032,9 +47032,9 @@
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
-      "parcelSourceId": "in-hr-hsac-panipat",
+      "parcelSourceId": "in-hr-hsac-panipat-outlines",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/8162/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8162/qualification.json"
     },
     {
       "id": "wup2025:4547",
@@ -50702,9 +50702,9 @@
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
-      "parcelSourceId": "in-hr-hsac-ambala",
+      "parcelSourceId": "in-hr-hsac-ambala-outlines",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/7788/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7788/qualification.json"
     },
     {
       "id": "wup2025:6724",
@@ -55181,9 +55181,9 @@
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-followon-2026-10-09/ranked-population.json"
       },
-      "parcelSourceId": "in-hr-hsac-hisar",
+      "parcelSourceId": "in-hr-hsac-hisar-outlines",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/7285/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7285/qualification.json"
     },
     {
       "id": "wup2025:9632",
@@ -56395,9 +56395,9 @@
         "overnight-followon-1001-1100",
         "app"
       ],
-      "parcelSourceId": "in-hr-hsac-rohtak",
+      "parcelSourceId": "in-hr-hsac-rohtak-outlines",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/8085/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8085/qualification.json"
     },
     {
       "id": "wup2025:6791",
@@ -58896,11 +58896,17 @@
       "registryCityIds": [
         "wup2025:8099"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "karnal"
+      ],
       "cohorts": [
         "registry",
-        "overnight-next-1101-1200"
-      ]
+        "overnight-next-1101-1200",
+        "app"
+      ],
+      "parcelSourceId": "in-hr-hsac-karnal-outlines",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8099/qualification.json"
     },
     {
       "id": "wup2025:870",
@@ -68011,9 +68017,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "in-hr-hsac-sirsa",
+      "parcelSourceId": "in-hr-hsac-sirsa-outlines",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/6392/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/6392/qualification.json"
     },
     {
       "id": "wup2025:7670",
@@ -68043,9 +68049,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "in-hr-hsac-kaithal",
+      "parcelSourceId": "in-hr-hsac-kaithal-outlines",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/7670/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7670/qualification.json"
     },
     {
       "id": "wup2025:7797",
@@ -68075,9 +68081,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "in-hr-hsac-jind",
+      "parcelSourceId": "in-hr-hsac-jind-outlines",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/7797/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7797/qualification.json"
     },
     {
       "id": "wup2025:7878",
@@ -68107,9 +68113,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "in-hr-hsac-bhiwani",
+      "parcelSourceId": "in-hr-hsac-bhiwani-outlines",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/7878/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7878/qualification.json"
     },
     {
       "id": "wup2025:7952",
@@ -68139,9 +68145,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "in-hr-hsac-kurukshetra",
+      "parcelSourceId": "in-hr-hsac-kurukshetra-outlines",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/7952/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7952/qualification.json"
     },
     {
       "id": "wup2025:8337",
@@ -68171,9 +68177,9 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "in-hr-hsac-sonipat",
+      "parcelSourceId": "in-hr-hsac-sonipat-outlines",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/8337/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8337/qualification.json"
     },
     {
       "id": "wup2025:8691",
@@ -68203,9 +68209,41 @@
         "confidence": "high",
         "distanceKm": 0
       },
-      "parcelSourceId": "in-hr-hsac-palwal",
+      "parcelSourceId": "in-hr-hsac-palwal-outlines",
       "parcelQualification": "technical-qualified-bounded",
-      "qualificationEvidence": "world-parcels/research/qualification-2026-10-13-india-live/8691/qualification.json"
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8691/qualification.json"
+    },
+    {
+      "id": "wup2025:8316",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Rewari",
+      "countryCode": "IN",
+      "latitude": 28.194482321657,
+      "longitude": 76.62843094297341,
+      "wupLatitude": 28.194482321657,
+      "wupLongitude": 76.62843094297341,
+      "wupName": "Rewari",
+      "wupCityCode": 8316,
+      "appCityIds": [
+        "rewari"
+      ],
+      "population2025": 220564,
+      "population2015": 209700,
+      "annualGrowthPct2015To2025": 0.5051,
+      "registryCityIds": [
+        "wup2025:8316"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "in-hr-hsac-rewari-outlines",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8316/qualification.json"
     }
   ],
   "wikipediaLookupErrors": [
