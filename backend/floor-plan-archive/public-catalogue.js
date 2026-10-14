@@ -22,12 +22,14 @@ export function publicProject(row, { detail = false, retained = new Set() } = {}
     if (!inventory || inventory.excludedUse || !model.siteKey) return null;
     const id = projectId(model.siteKey), label = model.label || inventory.name || 'Stambeni projekt';
     const slug = `${slugify(label) || 'projekt'}-${id}`, url = `${BASE_PATH}zgrada/${slug}/`;
-    // Collection retains facts-only postings, but every public apartment must have a plan.
-    const apartments = (inventory.apartments || []).filter(a => a.hasPlan === true).map(a => {
+    // Facts-only postings stay private; geometry or a retained original drawing qualifies.
+    const apartments = (inventory.apartments || []).map(a => ({ ...a, hasGeometry: Boolean(a.architecture) }))
+        .filter(a => a.hasPlan === true && (a.hasGeometry || Boolean(a.source?.sha256 && retained.has(a.source.sha256)))).map(a => {
         const value = { id: a.id, label: a.label, url: `${url}stan/${a.id}/`, areaM2: a.areaM2,
-            rooms: a.rooms, orientation: a.orientation, floor: a.floor, hasPlan: a.hasPlan, sourceTitle: a.sourceTitle };
+            rooms: a.rooms, orientation: a.orientation, floor: a.floor, hasPlan: true,
+            hasGeometry: a.hasGeometry, sourceTitle: a.sourceTitle };
         if (detail) Object.assign(value, { ...a, ...value,
-            source: a.source ? { ...a.source, url: httpUrl(a.source.url), mediaType: retained.get?.(a.source.sha256) || null, assetUrl: retained.has(a.source.sha256)
+            source: a.source ? { ...a.source, url: httpUrl(a.source.url), mediaType: retained.get?.(a.source.sha256) || null, assetUrl: a.source.sha256 && retained.has(a.source.sha256)
                 ? `${BASE_PATH}api/source/${a.source.sha256}` : null } : null,
             sourceUrls: (a.sourceUrls || []).map(httpUrl).filter(Boolean),
             placement: (model.placements || []).find(p => p.planId === a.planId) || null });
@@ -48,8 +50,10 @@ export function publicProject(row, { detail = false, retained = new Set() } = {}
 
 export async function readPublicCatalogue(db) {
     const rows = (await db.query('SELECT site_key,model,built_at FROM floor_plan.site_model ORDER BY site_key')).rows;
-    // Located leads stay in the collection database; public search promises floor plans.
-    const projects = rows.map(row => publicProject(row)).filter(Boolean)
+    // Located leads stay in the collection database; source-only plans require retained bytes.
+    const hashes = [...new Set(rows.flatMap(row => (row.model.inventory?.apartments || []).map(a => a.source?.sha256).filter(Boolean)))];
+    const retained = hashes.length ? new Map((await db.query('SELECT sha256,media_type FROM floor_plan.blob WHERE sha256=ANY($1::text[]) AND bytes_available', [hashes])).rows.map(b => [b.sha256,b.media_type])) : new Map();
+    const projects = rows.map(row => publicProject(row, { retained })).filter(Boolean)
         .sort((a, b) => Number(b.kind === 'new_build') - Number(a.kind === 'new_build') || b.planCount - a.planCount || a.label.localeCompare(b.label, 'hr'));
     return { projects, counts: { projects: projects.length, apartments: projects.reduce((n, p) => n + p.apartments.length, 0),
         withPlans: projects.filter(p => p.planCount > 0).length },

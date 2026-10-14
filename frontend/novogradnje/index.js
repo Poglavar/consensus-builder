@@ -107,14 +107,17 @@
         }
         if(visibleApartments.length)card.append(list);
         if(selected){
-            const hasPlan=selected.hasPlan||Boolean(selected.architecture||selected.source?.assetUrl);
-            const review=!hasPlan?'Tlocrt još nije obrađen.':selected.reviewStatus==='reviewed'||selected.reviewStatus==='published'?'Pregledana geometrija tlocrta.':'Procijenjena rekonstrukcija tlocrta; potrebna je provjera.';
+            const hasGeometry=Boolean(selected.architecture);
+            const hasOriginal=Boolean(safeHref(selected.source?.assetUrl));
+            const hasPlan=selected.hasPlan||hasGeometry||hasOriginal;
+            const review=!hasPlan?'Tlocrt još nije obrađen.':hasGeometry?(selected.reviewStatus==='reviewed'||selected.reviewStatus==='published'?'Pregledana geometrija tlocrta.':'Procijenjena rekonstrukcija tlocrta; potrebna je provjera.'):'Dostupan je izvorni tlocrt.';
             card.append(node('p','confidence-note',`${review} Orijentacije i površine prikazane su samo kada su navedene u izvoru.`));
             const grid=node('div','viewer-grid');
             if(hasPlan){
-                const plan=node('section','viewer-panel'),planTitle=node('h3','', 'Tlocrt stana'),planHost=node('div','');plan.append(planTitle,planHost);
-                if(selected.architecture)viewers.push(V.mountApartment(planHost,selected));else {const message=node('p','viewer-copy','Geometrija tlocrta nije dostupna za prikaz.');plan.append(message);}
-                addOriginal(plan,selected.source);addSourceLink(plan,selected.source?.url||selected.source?.publicUrl,'Otvori izvor tlocrta ↗');grid.append(plan);
+                const plan=node('section','viewer-panel'),planTitle=node('h3','',hasGeometry?'Tlocrt i 3D prikaz':'Izvorni tlocrt');plan.append(planTitle);
+                if(hasGeometry){const planHost=node('div','');plan.append(planHost);viewers.push(V.mountApartment(planHost,selected));}
+                if(hasOriginal){addOriginal(plan,selected.source);if(!hasGeometry)plan.append(node('p','viewer-copy','3D rekonstrukcija još nije izrađena.'));}
+                addSourceLink(plan,selected.source?.url||selected.source?.publicUrl,'Otvori izvor tlocrta ↗');grid.append(plan);
             }
             if(C.hasEnvelope(project.model)){
                 const building=node('section','viewer-panel'),buildingTitle=node('h3','', 'Obris i katovi zgrade'),buildingHost=node('div','viewer-canvas');building.append(buildingTitle,buildingHost);

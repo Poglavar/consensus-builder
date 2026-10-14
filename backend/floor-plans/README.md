@@ -21,6 +21,11 @@ apartments or source links. Commercial-only projects are omitted from this catal
 Search, map, sitemap and public detail routes include only apartments with a floor plan
 and projects containing at least one such apartment. Facts-only listings stay in the
 collection database; their former public detail URLs return 404.
+`hasPlan` covers a confirmed retained original drawing as well as reconstructed
+geometry; `hasGeometry` separately controls the 3D viewer. Original drawings require
+current listing ownership, matching source hashes, a positive current classification,
+and no conflicting unit identifier. Generic documents and related-unit gallery images
+do not create apartment entries. Reviewed PDF sources also need a unit and page.
 The building viewer requires a supported footprint and storey height/elevation.
 
 The source roster reconciles every known agency domain, the 20 evidenced studio
