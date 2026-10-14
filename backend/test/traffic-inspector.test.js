@@ -49,7 +49,7 @@ function simFor(network, cars = [], signals = true) {
 }
 
 function timeWhen(network, signalId, aspect) {
-    const signal = network.signals.get(signalId);
+    const signal = [...network.signals.values()].find(item => item.sourceIds.includes(signalId));
     const phase = signal.phases[0];
     for (let time = 0; time < 240; time += .1) {
         if (signalAspect(signal, phase, time) === aspect) return time;
@@ -64,15 +64,19 @@ describe('traffic selected-car inspector', () => {
             { id: 'controlling-signal', point: geo([100, 0]), controls: [{ laneId: 'approach', fraction: .5 }] }
         ] });
         const approach = network.lanes.get('approach');
-        const signal = approach.signals.find(item => item.signalId === 'controlling-signal');
-        const vehicle = car(1, signal.stopS, 'move');
+        const control = approach.signals.find(item => network.signals.get(item.signalId).sourceIds.includes('controlling-signal'));
+        const head = network.signals.get(control.signalId);
+        const vehicle = car(1, control.stopS - .1, 'move');
         const sim = simFor(network, [vehicle]);
         sim.time = timeWhen(network, 'controlling-signal', 'red');
 
         const reason = sim.inspectCar(vehicle);
         expect(reason.kind).toBe('signal');
-        expect(reason.signal).toMatchObject({ id: 'controlling-signal', aspect: 'red', distance: 0 });
-        expect(reason.signal.point).toEqual(geo([100, 0]));
+        expect(reason.signal).toMatchObject({ id: head.id, sourceIds: ['controlling-signal'],
+            direction: 'E', aspect: 'red' });
+        expect(reason.signal.distance).toBeCloseTo(.1, 5);
+        expect(reason.signal.point).toEqual(head.point);
+        expect(head.sourcePoints).toContainEqual(geo([100, 0]));
     });
 
     it('reports a nearer following car instead of a red signal farther ahead', () => {
@@ -87,7 +91,7 @@ describe('traffic selected-car inspector', () => {
         const reason = sim.inspectCar(vehicle);
         expect(reason).toMatchObject({ kind: 'following', carId: 2 });
         expect(reason.distance).toBe(0);
-        expect(reason.signal).toMatchObject({ id: 'far-red', aspect: 'red' });
+        expect(reason.signal).toMatchObject({ sourceIds: ['far-red'], aspect: 'red' });
     });
 
     it('identifies a junction owner and a longer-waiting priority car', () => {
@@ -193,8 +197,11 @@ describe('traffic selected-car inspector', () => {
         const sim = simFor(laneSignals, [vehicle]);
 
         const signal = sim.signalAhead(vehicle);
-        expect(signal).toMatchObject({ id: 'target-lane-signal' });
-        expect(signal.distance).toBeCloseTo(30, 6);
+        expect(signal.sourceIds).toEqual(['target-lane-signal']);
+        expect(signal.id).toMatch(/^signal:/);
+        const control = laneSignals.lanes.get('target').signals[0];
+        const ratio = laneSignals.lanes.get('target').path.length / laneSignals.lanes.get('approach').path.length;
+        expect(signal.distance).toBeCloseTo((control.stopS - vehicle.s * ratio) / ratio, 6);
     });
 
     it('does not mutate simulation state, reservations, priorities, or randomness', () => {

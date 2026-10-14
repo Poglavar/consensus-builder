@@ -1,99 +1,128 @@
 <!doctype html>
-<!-- A small OSM traffic playground using exported lane topology and saved junction answers. -->
-<html lang="en">
+<!-- Simulator učitava cestovnu mrežu i spremljene odgovore za raskrižja kroz API. -->
+<html lang="hr">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f5f4ef">
-    <title>Zagreb, in motion · Lane Lab</title>
-    <link rel="stylesheet" href="../vendor/leaflet-1.9.4/leaflet.css">
-    <link rel="stylesheet" href="traffic.css?v=20261014f">
-    <script defer src="../vendor/leaflet-1.9.4/leaflet.js"></script>
-    <script defer src="../js/reduced-motion.js"></script>
-    <script defer src="../js/i18n.js"></script>
-    <script defer src="copy.js?v=20261014f"></script>
-    <script defer src="geometry.js?v=20261014f"></script>
-    <script defer src="collision.js?v=20261014f"></script>
-    <script defer src="simulation.js?v=20261014f"></script>
-    <script defer src="scenario.js?v=20261014f"></script>
-    <script defer src="meters.js?v=20261014f"></script>
-    <script defer src="../js/corridor-profile.js"></script>
-    <script defer src="scene-layer.js?v=20261014f"></script>
-    <script defer src="traffic.js?v=20261014f"></script>
+    <title>Simulator prometa u Zagrebu | zagreb.lol</title>
+    <meta name="description" content="Interaktivni simulator prometa u Zagrebu. Zatvarajte prometne trake, pratite obilazne putanje vozila i mjerite protok na raskrižjima.">
+    <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+    <link rel="canonical" href="https://zagreb.lol/promet/simulator/">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="hr_HR">
+    <meta property="og:site_name" content="zagreb.lol">
+    <meta property="og:title" content="Simulator prometa u Zagrebu">
+    <meta property="og:description" content="Uredite prometne trake, pratite vozila i usporedite protok prije i nakon zatvaranja dijela ceste.">
+    <meta property="og:url" content="https://zagreb.lol/promet/simulator/">
+    <meta property="og:image" content="https://zagreb.lol/promet/simulator/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Simulator prometa u Zagrebu — semafor i prometne trake">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Simulator prometa u Zagrebu">
+    <meta name="twitter:description" content="Uredite trake. Mjerite protok. Usporedite učinak promjene na promet.">
+    <meta name="twitter:image" content="https://zagreb.lol/promet/simulator/og-image.png">
+    <link rel="alternate" type="application/json" href="/api/promet/simulator/status" title="Izvori i obuhvat podataka simulatora">
+    <link rel="help" href="llms.txt" type="text/plain">
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://zagreb.lol/promet/simulator/#app","name":"Simulator prometa u Zagrebu","url":"https://zagreb.lol/promet/simulator/","description":"Interaktivno zatvaranje prometnih traka, prikaz kretanja vozila i mjerenje protoka u središtu Zagreba.","inLanguage":"hr-HR","applicationCategory":"SimulationApplication","operatingSystem":"Web","isAccessibleForFree":true,"provider":{"@type":"Organization","name":"zagreb.lol","url":"https://zagreb.lol/"}},{"@type":"Dataset","@id":"https://zagreb.lol/promet/simulator/#podaci","name":"Prometne trake i spremljena kretanja u središtu Zagreba","description":"Izvedena mreža prometnih traka iz OpenStreetMapa i spremljenih odluka o dopuštenim kretanjima. Obuhvat i vrijeme izvora dostupni su kroz API.","inLanguage":"hr-HR","spatialCoverage":{"@type":"Place","name":"Središte Zagreba"},"distribution":{"@type":"DataDownload","contentUrl":"https://zagreb.lol/api/promet/simulator/network","encodingFormat":"application/json"}}]}
+    </script>
+    <link rel="stylesheet" href="assets/leaflet/leaflet.css">
+    <link rel="stylesheet" href="traffic.css?v=20261014g">
+    <script defer src="assets/leaflet/leaflet.js"></script>
+    <script defer src="assets/reduced-motion.js"></script>
+    <script defer src="copy.js?v=20261014g"></script>
+    <script defer src="geometry.js?v=20261014g"></script>
+    <script defer src="collision.js?v=20261014g"></script>
+    <script defer src="signal-plan.js?v=20261014g"></script>
+    <script defer src="simulation.js?v=20261014g"></script>
+    <script defer src="surface.js?v=20261014g"></script>
+    <script defer src="scenario.js?v=20261014g"></script>
+    <script defer src="meters.js?v=20261014g"></script>
+    <script defer src="assets/corridor-profile.js"></script>
+    <script defer src="scene-layer.js?v=20261014g"></script>
+    <script defer src="traffic.js?v=20261014g"></script>
 </head>
 <body>
+    <header class="site-header">
+        <a class="site-brand" href="https://zagreb.lol/"><img src="favicon.svg" alt="" width="28" height="28">zagreb.lol</a>
+        <nav aria-label="Povezani prometni alati"><a href="https://zagreb.lol/promet/snimke/">Snimke prometa</a><a href="https://zagreb.lol/promet/destinacije/">Trajanje putovanja</a><a href="#o-simulatoru">O simulatoru</a></nav>
+    </header>
     <main class="app">
         <aside class="controls">
             <header>
-                <div class="eyebrow"><span class="brand-mark" aria-hidden="true">↗</span><span data-i18n-key="traffic.eyebrow"></span><span class="edition">01 / ZG</span></div>
-                <h1 data-i18n-key="traffic.title"></h1>
-                <p class="intro" data-i18n-key="traffic.intro"></p>
-                <span class="source-badge"><span aria-hidden="true"></span><span data-i18n-key="traffic.candidate"></span></span>
+                <div class="eyebrow"><span class="brand-mark" aria-hidden="true">↗</span><span data-i18n-key="traffic.eyebrow">SIMULATOR PROMETA</span><span class="edition">01 / ZG</span></div>
+                <h1 data-i18n-key="traffic.title">Simulator prometa u Zagrebu</h1>
+                <p class="intro" data-i18n-key="traffic.intro">Uredite prometne trake i pratite kako se promet mijenja.</p>
+                <span class="source-badge"><span aria-hidden="true"></span><span data-i18n-key="traffic.candidate">OSM i spremljene veze traka</span></span>
             </header>
 
             <section class="playback">
                 <div class="play-buttons">
-                    <button id="play" class="primary" disabled><span id="play-icon" aria-hidden="true">Ⅱ</span><span id="play-label" data-i18n-key="traffic.pause"></span></button>
-                    <button id="reset" class="secondary" disabled><span aria-hidden="true">↻</span><span data-i18n-key="traffic.reset"></span></button>
+                    <button id="play" class="primary" disabled><span id="play-icon" aria-hidden="true">Ⅱ</span><span id="play-label" data-i18n-key="traffic.pause">Pauziraj</span></button>
+                    <button id="reset" class="secondary" disabled><span aria-hidden="true">↻</span><span data-i18n-key="traffic.reset">Novi promet</span></button>
                 </div>
-                <div class="field"><label for="speed" data-i18n-key="traffic.speed"></label><output id="speed-value" for="speed">2×</output></div>
+                <div class="field"><label for="speed" data-i18n-key="traffic.speed">Brzina simulacije</label><output id="speed-value" for="speed">2×</output></div>
                 <input id="speed" type="range" min="0.5" max="6" value="2" step="0.5">
-                <div class="field"><label for="density" data-i18n-key="traffic.cars"></label><output id="density-value" for="density">440</output></div>
+                <div class="field"><label for="density" data-i18n-key="traffic.cars">Broj automobila</label><output id="density-value" for="density">440</output></div>
                 <input id="density" type="range" min="40" max="600" value="440" step="20">
-                <label class="toggle"><span data-i18n-key="traffic.lights"></span><input id="lights" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
-                <label class="toggle"><span data-i18n-key="traffic.lanes"></span><input id="lanes" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+                <label class="toggle"><span data-i18n-key="traffic.lights">Semafori</span><input id="lights" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+                <label class="toggle"><span data-i18n-key="traffic.lanes">Kolnik i oznake</span><input id="lanes" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
             </section>
 
             <section class="tools">
-                <h2 data-i18n-key="traffic.tools"></h2>
+                <h2 data-i18n-key="traffic.tools">Alati za upravljanje prometom</h2>
                 <div class="tool-buttons" role="group" data-i18n-key="traffic.tools" data-i18n-attr="aria-label">
-                    <button data-tool="inspect" class="active" aria-pressed="true" data-i18n-key="traffic.inspectTool"></button>
-                    <button data-tool="close" aria-pressed="false" data-i18n-key="traffic.closeTool"></button>
-                    <button data-tool="meter" aria-pressed="false" data-i18n-key="traffic.meterTool"></button>
+                    <button data-tool="inspect" class="active" aria-pressed="true" data-i18n-key="traffic.inspectTool">Pregled</button>
+                    <button data-tool="close" aria-pressed="false" data-i18n-key="traffic.closeTool">Zatvori traku</button>
+                    <button data-tool="meter" aria-pressed="false" data-i18n-key="traffic.meterTool">Mjeri protok</button>
                 </div>
-                <div class="chunk-control"><label for="chunk-size" data-i18n-key="traffic.chunkSize"></label><select id="chunk-size"><option value="5">5 m</option><option value="10">10 m</option></select></div>
+                <div class="chunk-control"><label for="chunk-size" data-i18n-key="traffic.chunkSize">Duljina zatvaranja</label><select id="chunk-size"><option value="5">5 m</option><option value="10">10 m</option></select></div>
                 <p id="tool-hint"></p>
-                <div class="closure-status"><span id="closure-count"></span><button id="clear-closures" class="text-button" data-i18n-key="traffic.reopenAll"></button></div>
+                <div class="closure-status"><span id="closure-count"></span><button id="clear-closures" class="text-button" data-i18n-key="traffic.reopenAll">Otvori sve</button></div>
             </section>
             <section id="meter-panel" class="meter-panel" hidden>
                 <div class="field"><label for="meter-select" data-i18n-key="traffic.meters"></label><select id="meter-select"></select></div>
                 <p id="meter-road"></p>
-                <div class="meter-table-wrap"><table><thead><tr><th data-i18n-key="traffic.meterLane"></th><th data-i18n-key="traffic.meterTotal"></th><th data-i18n-key="traffic.meterRate"></th><th data-i18n-key="traffic.meterBefore"></th></tr></thead><tbody id="meter-rows"></tbody></table></div>
+                <div class="meter-table-wrap"><table><thead><tr><th data-i18n-key="traffic.meterLane">Traka / smjer</th><th data-i18n-key="traffic.meterTotal">Ukupno</th><th data-i18n-key="traffic.meterRate">voz/min</th><th data-i18n-key="traffic.meterBefore">Prije</th></tr></thead><tbody id="meter-rows"></tbody></table></div>
                 <p id="meter-window"></p>
-                <div class="meter-actions"><button id="reset-meter" class="text-button" data-i18n-key="traffic.resetMeter"></button><button id="remove-meter" class="text-button" data-i18n-key="traffic.removeMeter"></button></div>
+                <div class="meter-actions"><button id="reset-meter" class="text-button" data-i18n-key="traffic.resetMeter">Poništi brojanje</button><button id="remove-meter" class="text-button" data-i18n-key="traffic.removeMeter">Ukloni</button></div>
             </section>
 
             <section class="explore">
-                <h2 data-i18n-key="traffic.areas"></h2>
+                <h2 data-i18n-key="traffic.areas">Istraži</h2>
                 <div class="places">
-                    <button class="place active" data-place="miramarska" data-i18n-key="traffic.miramarska"></button>
-                    <button class="place" data-place="split" data-i18n-key="traffic.split"></button>
-                    <button class="place" data-place="center" data-i18n-key="traffic.center"></button>
-                    <button class="place" data-place="west" data-i18n-key="traffic.west"></button>
-                    <button class="place" data-place="overview" data-i18n-key="traffic.overview"></button>
+                    <button class="place active" data-place="miramarska" data-i18n-key="traffic.miramarska">Miramarska × Vukovarska</button>
+                    <button class="place" data-place="split" data-i18n-key="traffic.split">Račvanje traka · Lučićeva</button>
+                    <button class="place" data-place="center" data-i18n-key="traffic.center">Središte grada</button>
+                    <button class="place" data-place="west" data-i18n-key="traffic.west">Trešnjevka</button>
+                    <button class="place" data-place="overview" data-i18n-key="traffic.overview">Cijeli prikaz</button>
                 </div>
             </section>
 
             <section class="inspector" aria-live="polite">
-                <div class="inspector-top"><span class="car-swatch" aria-hidden="true"></span><h2 id="selected-title" data-i18n-key="traffic.follow"></h2></div>
-                <p id="selected-detail" data-i18n-key="traffic.selectHint"></p>
+                <div class="inspector-top"><span class="car-swatch" aria-hidden="true"></span><h2 id="selected-title" data-i18n-key="traffic.follow">Prati automobil</h2></div>
+                <p id="selected-detail" data-i18n-key="traffic.selectHint">Kliknite automobil da vidite njegovu traku, dopuštene izlaze, razlog zaustavljanja i sljedeći semafor.</p>
                 <div id="selected-status" hidden>
                     <div class="inspection-field"><span id="selected-reason-label"></span><strong id="selected-reason"></strong><span id="selected-blocker" hidden></span></div>
-                    <div class="inspection-field"><span data-i18n-key="traffic.signalAhead"></span><strong id="selected-signal"></strong></div>
-                    <button id="show-signal" class="text-button" data-i18n-key="traffic.showSignal" hidden></button>
+                    <div class="inspection-field"><span data-i18n-key="traffic.signalAhead">Semafor na ovom prilazu</span><strong id="selected-signal"></strong></div>
+                    <button id="show-signal" class="text-button" data-i18n-key="traffic.showSignal" hidden>Prikaži semafor</button>
                 </div>
-                <button id="follow" class="text-button" data-i18n-key="traffic.follow" disabled></button>
+                <button id="follow" class="text-button" data-i18n-key="traffic.follow" disabled>Prati automobil</button>
             </section>
 
-            <details class="about">
-                <summary data-i18n-key="traffic.dataDetails"></summary>
-                <p data-i18n-key="traffic.explanation"></p>
-                <p data-i18n-key="traffic.signalNote"></p>
-                <p data-i18n-key="traffic.dataNote"></p>
+            <details id="o-simulatoru" class="about">
+                <summary data-i18n-key="traffic.dataDetails">O ovom prikazu</summary>
+                <p data-i18n-key="traffic.explanation">Automobili biraju dopuštena skretanja na putovima koji ostaju povezani kroz učitano područje. Promjene traka poštuju ucrtana ograničenja.</p>
+                <p data-i18n-key="traffic.signalNote">Položaji semafora izvode se iz podataka OpenStreetMapa (OSM). Više OSM čvorova može se grupirati na isti prilaz i dijeliti jedan simulirani ciklus. Prikazani položaji ne moraju odgovarati točnoj lokaciji fizičkih stupova semafora.</p>
+                <p data-i18n-key="traffic.dataNote">Kolnik se prikazuje i kada nisu dodijeljena sva dopuštena kretanja. Širine traka su procijenjene; nogostupi mogu biti nepotpuni.</p>
                 <p id="source-detail"></p>
-                <a href="https://wiki.openstreetmap.org/wiki/Key:change" target="_blank" rel="noopener" data-i18n-key="traffic.sourceLink"></a>
+                <p>Obuhvat je središte Zagreba. Kolnik se prikazuje neovisno o potpunosti grafa dopuštenih kretanja; vozila koriste samo provjerene veze. Ciklusi semafora i prometna potražnja služe simulaciji i usporedbi scenarija.</p>
+                <a href="/api/promet/simulator/status">Izvori i obuhvat kroz API</a><br>
+                <a href="https://wiki.openstreetmap.org/wiki/Key:change" target="_blank" rel="noopener" data-i18n-key="traffic.sourceLink">Referenca oznaka za promjenu trake</a>
             </details>
-            <footer><span class="footer-brand">CONSENSUS BUILDER</span><select id="language" aria-label="Language"><option value="en">EN</option><option value="hr">HR</option><option value="sr">SR</option><option value="es">ES</option></select></footer>
         </aside>
 
         <section class="map-stage">
@@ -101,17 +130,18 @@
             <canvas id="guides" aria-hidden="true"></canvas>
             <canvas id="cars" aria-hidden="true"></canvas>
             <div id="lane-tooltip" class="lane-tooltip" hidden></div>
-            <div class="map-topline"><span class="live-dot" aria-hidden="true"></span><span id="network-label" data-i18n-key="traffic.loading"></span></div>
-            <div id="status" class="status" role="status"><span data-i18n-key="traffic.loading"></span></div>
+            <div class="map-topline"><span class="live-dot" aria-hidden="true"></span><span id="network-label" data-i18n-key="traffic.loading">Učitavanje spremljenih veza traka…</span></div>
+            <div id="status" class="status" role="status"><span data-i18n-key="traffic.loading">Učitavanje spremljenih veza traka…</span></div>
             <div class="stats-bar">
-                <div><strong id="moving">—</strong><span data-i18n-key="traffic.moving"></span></div>
-                <div><strong id="waiting">—</strong><span data-i18n-key="traffic.waiting"></span></div>
-                <div><strong id="crossings">—</strong><span data-i18n-key="traffic.turns"></span></div>
-                <div><strong id="changes">—</strong><span data-i18n-key="traffic.changes"></span></div>
-                <div class="clock"><strong id="clock">00:00</strong><span data-i18n-key="traffic.elapsed"></span></div>
+                <div><strong id="moving">—</strong><span data-i18n-key="traffic.moving">U pokretu</span></div>
+                <div><strong id="waiting">—</strong><span data-i18n-key="traffic.waiting">Čekanje</span></div>
+                <div><strong id="crossings">—</strong><span data-i18n-key="traffic.turns">Prolasci kroz raskrižja</span></div>
+                <div><strong id="changes">—</strong><span data-i18n-key="traffic.changes">Promjene traka</span></div>
+                <div class="clock"><strong id="clock">00:00</strong><span data-i18n-key="traffic.elapsed">Simulirano vrijeme</span></div>
             </div>
-            <div class="map-legend"><span class="legend-line" aria-hidden="true"></span><span data-i18n-key="traffic.lanes"></span><span class="legend-light" aria-hidden="true"></span><span data-i18n-key="traffic.lightLegend"></span></div>
+            <div class="map-legend"><span class="legend-line" aria-hidden="true"></span><span data-i18n-key="traffic.lanes">Kolnik i oznake</span><span class="legend-light" aria-hidden="true"></span><span data-i18n-key="traffic.lightLegend">OSM podaci · izvedeni položaj · simulirani ciklus</span></div>
         </section>
     </main>
+    <footer class="site-footer"><span>© 2026 <a href="https://zagreb.lol/">zagreb.lol</a> · Neovisni alat za istraživanje prometa</span><nav aria-label="Izvori i povezane stranice"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a><a href="https://zagreb.lol/ulice-i-parcele/">Ulice i parcele</a><a href="https://zagreb.lol/zet/">ZET točnost</a></nav></footer>
 </body>
 </html>

@@ -1,0 +1,23 @@
+# Simulator prometa u Zagrebu — zagreb.lol
+
+Interaktivna web-aplikacija za zatvaranje prometnih traka u odsječcima od 5 ili 10 metara,
+prikaz dopuštenih obilaznih putanja vozila i usporedbu protoka prije i nakon promjene.
+Jezik sučelja i sadržaja je hrvatski.
+
+- Stranica: https://zagreb.lol/promet/simulator/
+- Mreža traka, dopuštene veze, kolnik i izvorne OSM oznake semafora: https://zagreb.lol/api/promet/simulator/network
+- Obuhvat, broj elemenata i vrijeme izvora: https://zagreb.lol/api/promet/simulator/status
+- Povezane snimke prometa: https://zagreb.lol/promet/snimke/
+- Trajanje putovanja: https://zagreb.lol/promet/destinacije/
+
+Podatkovni API čita OSM prometnu topologiju i spremljene odluke o kretanjima iz baze.
+Obuhvat aplikacije je središte Zagreba, a ne cijeli grad. Datum OSM izvora i vrijeme
+izgradnje odgovora nalaze se u API metapodacima; to nisu datumi izgradnje cesta.
+
+Kolnik je prikazan i ondje gdje nisu dodijeljena sva dopuštena kretanja. Vozila koriste
+samo provjerene veze i dopuštene promjene susjedne trake. Prikazani položaji semafora
+izvedeni su na prilazima iz OSM oznaka, uz zajedničke simulirane faze raskrižja.
+Potražnja, brzine bez izvorne oznake i ciklusi semafora služe istraživanju scenarija.
+Rezultati nisu mjerenje stvarnog prometa ni službeni plan signalizacije.
+
+Izvor geografskih podataka: https://www.openstreetmap.org/copyright

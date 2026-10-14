@@ -1,147 +1,85 @@
-<!-- Documents the local traffic preview and its reproducible, read-only data export. -->
-# Zagreb traffic preview
+# Simulator prometa u Zagrebu
 
-Open `/traffic/` on the frontend server. This is a separate, buildless Leaflet/canvas page.
-For a new local server, run from the repository root:
+Hrvatski simulator prikazuje kretanje vozila kroz odabrano područje Zagreba. Možete zatvarati
+trake, pratiti vozila, pregledati razlog njihova zaustavljanja i mjeriti protok. Kretanje koristi
+spremljene odgovore za raskrižja i izričito dopuštene veze; nedostajući izlazi i skretanja ne
+izmišljaju se.
 
-```sh
-npx http-server frontend -a localhost -p 8192 -c-1
-```
+## Prometni signali
 
-The playback controls set speed, car count, lane guides and mapped traffic signals with simulated cycles.
-Click a car to highlight its current lane and available exits; **Follow a car** keeps it in view.
-The inspector shows the current reason for waiting, the blocking car when known, and the mapped
-signal controlling this approach with its current color and distance. **Show signal** locates that
-OSM node on the map. The selected signal and any blocking vehicle are highlighted; the signal cycle
-remains simulated. These diagnostics reuse the motion constraints and do not change the run.
-The place buttons jump to Miramarska × Vukovarska, a two-to-three-lane split on Lučićeva,
-the city centre, Trešnjevka or the entire loaded area. `/traffic/?view=split` opens the lane split directly.
-Reduced-motion preferences start the animation paused. Hidden tabs stop the animation clock.
+OSM čvorovi služe kao izvorni dokaz za signale. Simulator ih grupira u kontrolere raskrižja i
+izvodi vjerojatne položaje glava semafora uz rub prilaza. Više OSM čvorova može završiti na istom
+prilazu i dijeliti kontroler; prikazana glava zato ne označava nužno točan položaj fizičkog stupa.
+Suprotni prilazi imaju zeleno zajedno, a okomiti smjerovi izmjenjuju se. Svaka faza koristi
+ilustrativnih 24 sekunde zelenog, 3 sekunde žutog i 2 sekunde svecrvenog vremena za raščišćavanje.
+To nisu stvarni signalni planovi, izmjerena vremena ni podaci o trenutačnom prometu.
 
-## Lane geometry
+## Geometrija i alati
 
-`geometry.js` builds the physical paths once in projected metres; the car simulation and lane
-guides use those same paths. At aligned two-arm nodes, all lanes in a directed cross-section share
-a transition zone. Splits, merges and changes in lateral offset borrow space along both adjoining
-sections, normally 28 metres and longer for larger shifts. Quintic curves match the lane tangents
-at both ends and progress monotonically down the road. Coincident straight endpoints have no
-connector loop. Small coordinate mismatches blend over a shorter run, so cars do not briefly
-reverse at rounded section endpoints. Actual junction turns keep their exported geometry.
-Sharp interior vertices and eligible two-arm right-angle joins get short curves. Mapped signal
-positions are protected when smoothing or trimming a path.
+`surfaceLanes` opisuje fizički prikaz traka tipa `driving` i `bus`, uključujući trake koje nisu
+dopuštene osobnim automobilima, primjerice privatne ili zajedničke središnje trake. Te površine
+služe samo za prikaz. Simulacijski graf `lanes` sadrži trake dostupne automobilima, a `connections`
+njihove izričito dopuštene veze. Površinska geometrija ne dodaje kretanja u graf.
 
-Each end can borrow at most 45% of a section, less at bends or mapped signals. Signal stop positions
-remain at their original distance along the road. These are derived driving paths, not surveyed
-lane-marking locations. The saved movement IDs and allowed turns remain the source of truth;
-geometry does not add a new branch or resolve an unanswered lane.
+Alat **Zatvori traku** zatvara dionice od 5 ili 10 metara; zauzeta dionica čeka da je vozila napuste.
+Vozila obilaze prepreku samo dopuštenim susjednim trakama, a bez dopuštenog obilaska čekaju.
+Alat **Mjeri protok** broji simulirana vozila po traci i smjeru do 60 simuliranih sekundi. Zatvaranja,
+mjerači i stanje prometa postoje samo u otvorenoj stranici. To su rezultati simulacije, a ne prognoza
+ili kalibrirano mjerenje cestovnog prometa.
 
-Cars keep their following gap through a split, including across its shared entrance. Cars on the
-same taper can follow each other without waiting for the entire transition to empty; competing
-merges yield to traffic already in the transition. Through paths retain the road speed limit.
+Položaji vozila i traka izvedeni su iz karte, ne iz geodetske izmjere. Dio nogostupa može nedostajati;
+neka raskrižja ostaju neriješena. Kad nedostaje dopuštena veza, vozilo se zaustavlja umjesto da
+simulator pretpostavi skretanje. Podloga karte koristi javne OSM pločice i traži internetsku vezu.
 
-## Interactive tools and limits
+## API i podaci
 
-**Inspect** highlights a hovered lane and lets you select cars or existing meters. The road surfaces,
-markings and cars share Leaflet's zoom transform; car positions interpolate between simulation steps.
-Vehicle motion uses 4.4 × 1.8 metre footprints and checks the swept movement against nearby cars.
+Stranica za produkciju nalazi se na [`https://zagreb.lol/promet/simulator/`](https://zagreb.lol/promet/simulator/).
+Mreža se učitava na zahtjev s `/api/promet/simulator/network`; `/api/promet/simulator/status`
+vraća obuhvat, broj elemenata i sažetak izvora. API spaja trenutačni OSM izvoz sa spremljenim
+kandidatima za raskrižja, provjerava njihove roditeljske verzije i ograničenja te ne mijenja bazu.
+Podaci se drže u memoriji dvije minute. Ako osvježavanje ne uspije, API vraća HTTP 503 i ne poslužuje
+istekli odgovor. U paketu se ne objavljuje izvedena JSON mreža.
 
-**Close lane** selects 5 or 10 metre chunks on one lane. Click more chunks to extend a closure, or
-click a closed chunk to reopen it. An occupied approach remains pending until its cars have cleared.
-Active closures remove that lane span, with a 2.5 metre body clearance at either end. Cars use only
-permitted adjacent same-direction lanes, can make several successive detours, and return after the
-barrier when possible. A closure with no legal detour produces a queue. Edits keep current vehicles,
-their positions, the clock and counters; an already-entered curve retains its geometry until finished.
+## Priprema izdanja i lokalni pregled
 
-**Measure flow** snaps a perpendicular line across the simulated driving lanes of the road, including
-its opposite carriageway. Each lane/direction has a total and a rate over up to 60 simulated seconds.
-The **Before edit** column retains the preceding rate when a closure is changed. Counts continue
-through edits; **Reset counts** resets one meter, and **New traffic** resets the run and meter counts
-while keeping the current closures. Scenarios and meters are local to the open page. These are
-simulation counts, not calibrated traffic-flow forecasts.
-
-## Data and limits
-
-`data/central.json.gz` is a derived central-Zagreb preview, bounded by its recorded `bbox`.
-The browser decompresses it with `DecompressionStream`; no running topology API or database is
-needed to play the exported scene. OSM map tiles still require internet access.
-
-The export uses the shared OSM snapshot, deterministic lane rules, and saved candidate junction
-graphs from the existing topology pipeline. It reuses that pipeline's builder, junction curves,
-parent-regression checks and OSM restriction validator. Candidates are not promoted or modified.
-Its metadata records the OSM timestamp/hash and each selected saved solution's ID, status and date.
-Exporter timestamps describe the export, not the age of the OSM evidence.
-
-A complete saved junction replaces a current node atomically only when every directed lane
-incidence can be matched uniquely. Lane matching uses source way, direction, ordinal, access and
-turn/change rules, because section split IDs vary with viewport extent. A compatible incomplete
-answer can also contribute checked saved movements for still-unassigned incoming lanes; existing
-movements and the node's unresolved status are retained. This export keeps the same 858 fully saved
-junctions and adds 14 checked connections across 3 unresolved junctions. An omitted `centreLane`
-flag means false; actual shared centre lanes are excluded from car traffic. Rejected, incompatible
-and regressing candidates are excluded. Live manual decisions take precedence. Unsupported
-restriction approaches and movements that contradict mapped OSM restrictions are blocked.
-Bus/private/destination-only lanes are excluded. Missing movements are never inferred.
-
-Base junction turns use only exported lane connections; closure detours add explicit permitted
-adjacent-lane changes. Traffic spawns across cyclic lane
-regions, weighted by eligible lane length; routes and lane changes stay within each car's region.
-Lane changes cross one adjacent driving lane in the same section/direction, respect `change:lanes`,
-and reserve space in both lanes during the manoeuvre. Drivers queue behind each other. Junction
-reservations conservatively group nearby nodes and narrow or sharply bent sections. Cars choose an
-exit through a reserved area and check downstream room before entering, including past tiny internal
-connectors. Opposing vehicle footprints also identify short kinks where two cars cannot pass.
-A car needs room to clear its reservation and keep a following gap. The oldest long-waiting approach
-with room gets priority for the next crossing, while still obeying its signal. A queue can span several
-signal phases while a car clears a grouped junction. Near a blocked turn, a queued driver
-may choose another clear, explicit permitted exit in the same region. Missing exits are never
-inferred.
-
-Traffic demand, speeds without a mapped limit, and **signal colors and cycle timings are
-illustrative**. Signal locations come from OSM nodes in the same July 28, 2026 snapshot as the road
-geometry. Controls attach by exact source-way and section-vertex membership and respect
-`traffic_signals:direction` or `direction`; tagged signalised road crossings are included. An OSM
-node can represent a whole junction or crossing, not each physical signal pole. The mapped point is
-the source location; the simulated colors and cycles are not live traffic, observed signal plans or
-a calibrated traffic model.
-
-Some junctions remain unresolved, so normal traffic does not use feeders or dead ends outside cyclic
-regions. A manually placed car that reaches a missing exit remains stopped; cars persist until the
-user resets the preview or lowers the car count.
-
-The last recorded whole-city survey (2026-09-28) had 57 open junction groups out of 21,806; this
-smaller export is not a new citywide coverage survey.
-
-Lane-change semantics: [OSM `change` documentation](https://wiki.openstreetmap.org/wiki/Key:change).
-Signal-node semantics: [OSM traffic signals](https://wiki.openstreetmap.org/wiki/Tag:highway%3Dtraffic_signals).
-Map data: [OpenStreetMap contributors, ODbL](https://www.openstreetmap.org/copyright).
-
-## Refresh the snapshot
-
-The existing pipeline currently lives in the `clickable-legacy-streets` checkout. From this
-repository's root, with the shared roads API and the local database available:
+Iz korijena repozitorija izradite paket u novom direktoriju čiji roditelj već postoji. Putanja mora
+biti izvan oba radna repozitorija i korisničkog direktorija.
 
 ```sh
-node backend/scripts/export-traffic-preview.mjs \
-  --topology-root ../consensus-builder-clickable-legacy-streets
+node backend/scripts/build-traffic-release.mjs \
+  --topology-root ../canonical-topology \
+  --output /tmp/traffic-simulator-release
 ```
 
-Optional arguments: `--bbox west,south,east,north`, `--roads-api http://localhost:3001/api`,
-`--city zagreb`, `--output frontend/traffic/data/central.json.gz`.
-The exporter reads the topology checkout's `backend/.env`; a Docker hostname `db` maps to
-`localhost` when run on the host. PostgreSQL sessions are read-only, with bounded statement times.
-It creates only the compressed preview artifact, with no model calls or database writes.
-Do not copy raw API payloads into the frontend: source metadata may contain local paths.
+Izgradnja kopira frontend i runtime skripte te potrebne topološke datoteke iz `HEAD` kanonskog
+topološkog repozitorija. `release-manifest.json` bilježi SHA aplikacije, SHA topologije i kontrolne
+sažetke datoteka. Rezultat je pripremljen paket (`PREPARED`); naredba ga ne objavljuje i ne deploya.
+Topološki runtime čuva kanonske algoritme. Paket izričito izvozi dvije postojeće funkcije za
+provjeru spremljenih odgovora; manifest razlikuje sažetak izvornika od sažetka paketirane datoteke.
 
-## Verify
+Za pokretanje pripremljenog paketa:
 
 ```sh
-cd backend
-npx vitest run test/traffic-*.test.js
+cd /tmp/traffic-simulator-release
+npm --prefix backend install --omit=dev
+export TRAFFIC_TOPOLOGY_ROOT=./topology
+export TRAFFIC_ROADS_API=https://roads-api.example/api
+export PGHOST=localhost
+export PGPORT=5432
+export PGUSER=readonly_user
+export PGPASSWORD='...'
+export PGDATABASE=geodata
+node backend/scripts/serve-traffic-simulator.mjs
 ```
 
-The geometry, simulation, collision, scenario and meter modules have no DOM, canvas or Leaflet
-dependencies. Headless tests exercise curves, following gaps, signal positions, live edits, multi-lane
-detours, directional counts and the saved-answer merge. The data test also runs traffic over
-the exported graph, checking every entry against the source lane's allowed connections and lights.
-The signal test checks OSM direction tags, exact way/section matching and incoming-only controls.
-Desktop/mobile appearance and canvas animation are checked manually in a headed browser.
+Otvorite `http://localhost:8192/promet/simulator/`. Poslužitelj prihvaća i `DATABASE_URL`;
+inače koristi navedene `PG*` varijable. PostgreSQL sesija je samo za čitanje. Skripta po zadanim
+postavkama čita `backend/.env`, a `--env-file` može odabrati drugu datoteku. Iz radnog repozitorija
+poslužitelju treba predati `--assets-dir /tmp/traffic-simulator-release/frontend/traffic/assets`;
+paket već sadrži te biblioteke na zadanoj putanji. Izvoz za testove ostaje u `backend/test/fixtures/`
+i nikada se ne servira stranici.
+
+Poslužitelj sluša na localhostu i servira stranicu pod `/promet/simulator/` te API pod
+`/api/promet/simulator/`. Za javnu objavu potrebno je zasebno konfigurirati reverse proxy za ta dva
+prefiksa i postupak deploya. `sitemap.xml` sadrži kanonsku stranicu; pri objavi je treba uključiti u
+glavni sitemap zagreb.lol. `llms.txt` opisuje API, izvore, obuhvat i ograničenja simulacije.

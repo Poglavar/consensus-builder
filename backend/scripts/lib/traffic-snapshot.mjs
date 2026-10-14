@@ -97,16 +97,27 @@ export function mergeSavedJunctions(base, solutions, { isUnsafe, missingNodes })
             const current = incidentLanes(base, nodeId);
             const stored = incidentLanes(graph, nodeId);
             // A clipped viewport or changed source must not erase an approach that exists today.
-            if (current.length !== stored.length) continue;
-            const matches = stored.map(lane => [lane.id, current.filter(candidate => sameLane(candidate, lane, nodeId))]);
-            if (matches.some(([, candidates]) => candidates.length !== 1)) continue;
+            let required = current, supplied = stored;
+            let matches = supplied.map(lane => [lane.id, required.filter(candidate => sameLane(candidate, lane, nodeId))]);
+            const completeIdentity = current.length === stored.length && matches.every(([, candidates]) => candidates.length === 1)
+                && new Set(matches.map(([, candidates]) => candidates[0].id)).size === current.length;
+            if (!completeIdentity) {
+                // Shared centre strips have changed representation in the source graph.
+                // Checked ordinary-car movements remain useful, but the whole junction
+                // stays unresolved until those other incidences have also been answered.
+                required = current.filter(publicCarLane); supplied = stored.filter(publicCarLane);
+                if (required.length !== supplied.length) continue;
+                matches = supplied.map(lane => [lane.id, required.filter(candidate => sameLane(candidate, lane, nodeId))]);
+                if (matches.some(([, candidates]) => candidates.length !== 1)) continue;
+            }
             const mapping = new Map(matches.map(([id, candidates]) => [id, candidates[0].id]));
-            if (new Set(mapping.values()).size !== current.length) continue;
-            const remapped = connections.map(connection => ({ ...connection,
+            if (new Set(mapping.values()).size !== required.length) continue;
+            const remapped = connections.filter(connection => mapping.has(connection.fromLaneId) && mapping.has(connection.toLaneId))
+                .map(connection => ({ ...connection,
                 fromLaneId: mapping.get(connection.fromLaneId), toLaneId: mapping.get(connection.toLaneId) }));
             if (!remapped.every(connection => baseLanes.get(connection.fromLaneId)?.toNode === nodeId
                 && baseLanes.get(connection.toLaneId)?.fromNode === nodeId)) continue;
-            if (!open.has(nodeId)) {
+            if (completeIdentity && !open.has(nodeId)) {
                 chosen.set(nodeId, { solution, connections: remapped });
             } else {
                 // An unanswered lane must not erase a checked answer for another lane. Preserve

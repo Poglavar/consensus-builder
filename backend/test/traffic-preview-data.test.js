@@ -1,4 +1,4 @@
-// Exercises the shipped, compressed Zagreb graph and audits actual movements over many steps.
+// Exercises an offline fixture read back from the traffic API and audits actual movements.
 import { readFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
 import { createRequire } from 'node:module';
@@ -7,7 +7,9 @@ import { describe, expect, it } from 'vitest';
 const require = createRequire(import.meta.url);
 const Traffic = require('../../frontend/traffic/simulation.js');
 const Collision = require('../../frontend/traffic/collision.js');
-const data = JSON.parse(gunzipSync(readFileSync(new URL('../../frontend/traffic/data/central.json.gz', import.meta.url))));
+const data = process.env.TRAFFIC_TEST_NETWORK
+    ? JSON.parse(readFileSync(process.env.TRAFFIC_TEST_NETWORK))
+    : JSON.parse(gunzipSync(readFileSync(new URL('./fixtures/traffic-network.json.gz', import.meta.url))));
 
 describe('exported traffic preview', () => {
     it('carries actual saved answers and an internally consistent directed graph', () => {
@@ -76,6 +78,26 @@ describe('exported traffic preview', () => {
         }
     });
 
+    it('retains the saved Savska exits and coordinates the wide, split junction as one controller', () => {
+        const network = Traffic.createNetwork(data);
+        for (const nodeId of ['osm-node:21285211', 'osm-node:1603960938']) {
+            const saved = data.connections.filter(move => move.nodeId === nodeId && move.solutionId === '2009');
+            expect(saved.length).toBeGreaterThan(5);
+            expect(data.source.savedPartialJunctions.some(item => item.nodeId === nodeId && item.solutionId === '2009')).toBe(true);
+            expect(network.nodes.get(nodeId).unresolved).toBe(true);
+        }
+        const controller = [...network.controllers.values()].find(item => item.cluster?.nodes.has('osm-node:21285211'));
+        expect(controller.cluster.nodes.has('osm-node:1603960938')).toBe(true);
+        const heads = [...network.signals.values()].filter(head => head.controllerId === controller.id);
+        expect(heads).toHaveLength(4);
+        for (let time = 0; time < 116; time += .5) {
+            const aspects = Object.fromEntries(heads.map(head => [head.direction, Traffic.signalAspect(head, head.phase, time)]));
+            expect(aspects.N).toBe(aspects.S);
+            expect(aspects.E).toBe(aspects.W);
+            expect(aspects.N === 'green' && aspects.E === 'green').toBe(false);
+        }
+    });
+
     it('replaces the Vukovarska endpoint weave and Lučićeva lane split with continuous road paths', () => {
         const network = Traffic.createNetwork(data);
         const targetNodes = new Set(['osm-node:2892273952', 'osm-node:2287954173']);
@@ -99,11 +121,10 @@ describe('exported traffic preview', () => {
         }
         expect([...network.connections.keys()]).toEqual(data.connections.map(move => move.id));
         const displacedSignals = [];
-        for (const lane of network.lanes.values()) for (const signal of lane.signals) {
-            const rawControl = data.signals.find(item => item.id === signal.signalId).controls.find(item => item.laneId === lane.id);
-            const before = Traffic.sample(lane.rawPath, rawControl.fraction * lane.rawPath.length);
-            const after = Traffic.sample(lane.path, signal.stopS);
-            if (Math.hypot(before.x - after.x, before.y - after.y) > .001) displacedSignals.push(signal.signalId);
+        for (const lane of network.lanes.values()) for (const stop of lane.sourceStops) {
+            const before = Traffic.sample(lane.rawPath, stop.sourceS);
+            const after = Traffic.sample(lane.path, stop.station);
+            if (Math.hypot(before.x - after.x, before.y - after.y) > .001) displacedSignals.push(lane.id);
         }
         expect(displacedSignals).toEqual([]);
     });
@@ -182,7 +203,7 @@ describe('exported traffic preview', () => {
                         violations.push('broken traversed connection chain');
                         break;
                     }
-                    if (Traffic.signalState(network, lane, sim.time, true) !== 'green') violations.push('red entry');
+                    if (Traffic.signalState(network, lane, sim.time, true, lane.path.length) !== 'green') violations.push('red entry');
                     expectedLaneId = connection.toLaneId;
                 }
                 if (previous?.mode === 'lane' && car.mode === 'lane' && previous.laneId === car.laneId) {

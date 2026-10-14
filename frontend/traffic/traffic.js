@@ -2,17 +2,22 @@
 (async function () {
     'use strict';
     const $ = id => document.getElementById(id);
-    const t = (key, params) => window.i18n.t(`traffic.${key}`, params);
+    const t = (key, params) => window.TrafficCopy.t(key, params);
+    for (const element of document.querySelectorAll('[data-i18n-key]')) {
+        const text = t(element.dataset.i18nKey);
+        if (element.dataset.i18nAttr) element.setAttribute(element.dataset.i18nAttr, text);
+        else element.textContent = text;
+    }
     const Engine = window.TrafficSimulation, G = window.TrafficGeometry;
     const Scenario = window.TrafficScenario, Meters = window.TrafficMeters;
     const counters = new Meters.Counters();
     const colors = ['#237e88', '#ce7943', '#e4ae4a', '#5968a0', '#668e69', '#f4f0dc', '#bd6977'];
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || new URLSearchParams(location.search).has('reduceMotion');
     const map = L.map('map', { zoomControl: false, preferCanvas: true, minZoom: 13, maxZoom: 20 });
-    L.control.zoom({ position: 'topright' }).addTo(map);
+    L.control.zoom({ position: 'topright', zoomInTitle: t('zoomInButton'), zoomOutTitle: t('zoomOutButton') }).addTo(map);
     const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 20, maxNativeZoom: 19,
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">suradnici OpenStreetMapa</a>'
     }).addTo(map);
     const places = { miramarska: [45.80013, 15.97458, 18], split: [45.7975692, 15.9705577, 20], center: [45.8078, 15.9776, 18], west: [45.79992, 15.95386, 18] };
     const initialPlace = new URLSearchParams(location.search).get('view');
@@ -22,7 +27,7 @@
         button.classList.toggle('active', button.dataset.place === initialPlace));
     const guideCanvas = $('guides'), carCanvas = $('cars');
     const guides = guideCanvas.getContext('2d'), ctx = carCanvas.getContext('2d');
-    let baseNetwork, editor, laneIndex, hover = null, meterHover = null, selectedMeter = null, tool = 'inspect', roadEdges, transitionEdges;
+    let baseNetwork, editor, laneIndex, hover = null, meterHover = null, selectedMeter = null, tool = 'inspect', roadEdges, transitionEdges, surface;
     let network, sim, running = !reduced, rate = 2, seed = 52, selected = null, following = false;
     let selectedInfo = null;
     let signalPopup = null;
@@ -99,7 +104,15 @@
             const visibleLanes = [...baseNetwork.lanes.values()].filter(lane => routeVisible(lane.path));
             // Paint all road surfaces first; then markings, so overlapping joins are continuous.
             guides.strokeStyle = '#555f61';
-            for (const lane of visibleLanes) { guides.lineWidth = (lane.width || 3) * metres; line(guides, lane.path); }
+            guides.fillStyle = '#555f61';
+            for (const junction of surface.junctions) {
+                const points = junction.points.map(screen);
+                if (!points.some(visible)) continue;
+                guides.beginPath(); guides.moveTo(points[0].x, points[0].y);
+                for (const p of points.slice(1)) guides.lineTo(p.x, p.y);
+                guides.closePath(); guides.fill();
+            }
+            for (const lane of surface.lanes) if (routeVisible(lane.path)) { guides.lineWidth = (lane.width || 3) * metres; line(guides, lane.path); }
             for (const c of baseNetwork.connections.values()) if (routeVisible(c.path)) {
                 guides.lineWidth = (baseNetwork.lanes.get(c.fromLaneId).width || 3) * metres; line(guides, c.path);
             }
@@ -168,7 +181,7 @@
             const p = screen(network.project(signal.point));
             if (!visible(p)) continue;
             const radius = map.getZoom() >= 19 ? 4 : 3;
-            const states = signal.phases.length ? signal.phases.map(phase => Engine.signalAspect(signal, phase, sim.time)) : ['unknown'];
+            const states = [Engine.signalAspect(signal, signal.phase, sim.time)];
             for (let index = 0; index < states.length; index++) {
                 const start = index * Math.PI * 2 / states.length - Math.PI / 2;
                 ctx.beginPath(); ctx.moveTo(p.x, p.y);
@@ -243,13 +256,14 @@
         if (!sim) return;
         const stats = sim.stats();
         $('moving').textContent = stats.moving; $('waiting').textContent = stats.waiting;
-        $('crossings').textContent = stats.crossings.toLocaleString(); $('changes').textContent = stats.laneChanges.toLocaleString();
+        $('crossings').textContent = stats.crossings.toLocaleString('hr-HR'); $('changes').textContent = stats.laneChanges.toLocaleString('hr-HR');
         const seconds = Math.floor(stats.time);
         $('clock').textContent = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
         $('play-label').textContent = t(running ? 'pause' : 'play'); $('play-icon').textContent = running ? 'Ⅱ' : '▶';
         $('play').setAttribute('aria-pressed', String(running));
-        $('network-label').textContent = t('network', { lanes: network.lanes.size.toLocaleString(), connections: network.connections.size.toLocaleString() });
-        $('source-detail').textContent = `${t('solved', { count: network.data.source.savedJunctions.length })}. ${t('snapshot', { date: network.data.source.osmTimestamp.slice(0, 10) })}.`;
+        $('network-label').textContent = t('network', { lanes: network.lanes.size.toLocaleString('hr-HR'), connections: network.connections.size.toLocaleString('hr-HR') });
+        const counts = network.data.source.counts;
+        $('source-detail').textContent = `${t('solved', { count: counts.savedJunctions })}. ${t('coverage', { unresolved: counts.unresolvedNodes, partial: counts.partialJunctions })}. ${t('snapshot', { date: network.data.source.osmTimestamp.slice(0, 10) })}.`;
         const car = sim.cars.find(item => item.id === selected);
         if (!car) { selected = null; following = false; }
         selectedInfo = car ? sim.inspectCar(car) : null;
@@ -271,7 +285,7 @@
             const signal = selectedInfo.signal;
             $('selected-signal').dataset.aspect = signal?.aspect || '';
             $('selected-signal').textContent = signal ? t('signalApproach', {
-                id: signal.id.replace('osm-node:', ''), distance: signal.distance.toFixed(1),
+                road: signal.name || t('unnamed'), direction: t(`direction${signal.direction}`), distance: signal.distance.toFixed(1),
                 aspect: t(`aspect${signal.aspect[0].toUpperCase()}${signal.aspect.slice(1)}`)
             }) : t(sim.signals ? 'signalNone' : 'signalDisabled');
             $('show-signal').hidden = !signal;
@@ -412,16 +426,20 @@
         if (selected != null) document.querySelector('.inspector').scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
     });
     function openSignal(signal) {
-        const id = signal.id.replace('osm-node:', '');
         const content = document.createElement('div');
-        const title = document.createElement('strong'); title.textContent = t('signalSource', { id });
+        const title = document.createElement('strong'); title.textContent = t('signalSource', { road: signal.name || t('unnamed'), direction: t(`direction${signal.direction}`) });
         const detail = document.createElement('p'); detail.textContent = t('signalDetails');
-        const link = document.createElement('a'); link.textContent = t('signalLink');
-        link.href = `https://www.openstreetmap.org/node/${encodeURIComponent(id)}`;
-        link.target = '_blank'; link.rel = 'noopener';
-        content.append(title, detail, link);
+        content.append(title, detail);
+        for (const source of signal.sourceIds) {
+            const id = source.replace('osm-node:', ''), link = document.createElement('a');
+            link.textContent = `${t('signalLink')} · ${id}`;
+            link.href = `https://www.openstreetmap.org/node/${encodeURIComponent(id)}`;
+            link.target = '_blank'; link.rel = 'noopener'; content.append(link, document.createElement('br'));
+        }
         signalPopup = L.popup({ maxWidth: Math.max(140, Math.min(280, map.getSize().x - 72)), autoPanPadding: [16, 16] })
             .setLatLng([signal.point[1], signal.point[0]]).setContent(content).openOn(map);
+        const close = signalPopup.getElement().querySelector('.leaflet-popup-close-button');
+        if (close) { close.setAttribute('aria-label', t('closePopup')); close.title = t('closePopup'); }
     }
     $('show-signal').addEventListener('click', () => {
         const car = sim.cars.find(item => item.id === selected);
@@ -465,17 +483,16 @@
         document.querySelectorAll('[data-place]').forEach(item => item.classList.toggle('active', item === button));
         updateUI();
     }));
-    $('language').value = window.i18n.getLanguage();
-    $('language').addEventListener('change', () => window.i18n.setLanguage($('language').value));
-    window.i18n.onChange(() => { document.title = `${t('title')} · Lane Lab`; updateUI(); });
+    document.querySelector('a[href="#o-simulatoru"]').addEventListener('click', () => { $('o-simulatoru').open = true; });
 
     async function load() {
         try {
-            const response = await fetch('data/central.json.gz?v=20261014f', { cache: 'no-store' });
+            const response = await fetch('/api/promet/simulator/network', { cache: 'no-store' });
             if (!response.ok) throw new Error(`Traffic data: HTTP ${response.status}`);
-            const data = await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
+            const data = await response.json();
             network = baseNetwork = Engine.createNetwork(data);
             laneIndex = new Meters.LaneIndex(baseNetwork); buildRoadEdges();
+            surface = window.TrafficSurface.build(baseNetwork, data.surfaceLanes);
             sim = new Engine.Simulation(network, { count: Number($('density').value), seed });
             editor = new Scenario.Editor(baseNetwork, sim); attachCounters();
             if (!network.spawnLanes.length) throw new Error('The exported graph has no usable starting lanes.');
@@ -500,6 +517,5 @@
         inspect: () => ({ ...sim?.stats(), frameCount, tileErrors, visibleCars: screenCars.length,
             running, selected, following, tileCount: document.querySelectorAll('.leaflet-tile-loaded').length })
     };
-    await window.i18n.ready;
     await load();
 })();

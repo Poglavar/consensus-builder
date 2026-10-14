@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Simulator prometa u Zagrebu</title>
+  <desc id="desc">Uredite trake. Mjerite protok. Simulator prometa Zagreba na zagreb.lol.</desc>
+  <rect width="1200" height="630" fill="#f5f4ef"/>
+  <circle cx="74" cy="77" r="3" fill="#126e67"/>
+  <text x="91" y="83" fill="#697878" font-family="Arial, 'DejaVu Sans', sans-serif" font-size="16" font-weight="700" letter-spacing="3">ZAGREB.LOL  /  PROMET</text>
+
+  <text x="74" y="223" fill="#172d2d" font-family="Arial, 'DejaVu Sans', sans-serif" font-size="65" font-weight="700" letter-spacing="-2.2">Simulator prometa</text>
+  <text x="74" y="301" fill="#172d2d" font-family="Arial, 'DejaVu Sans', sans-serif" font-size="65" font-weight="700" letter-spacing="-2.2">u Zagrebu</text>
+  <rect x="77" y="344" width="49" height="5" rx="2.5" fill="#126e67"/>
+  <text x="74" y="401" fill="#536966" font-family="Arial, 'DejaVu Sans', sans-serif" font-size="26" font-weight="400">Uredite trake. Mjerite protok.</text>
+  <text x="74" y="548" fill="#126e67" font-family="Arial, 'DejaVu Sans', sans-serif" font-size="19" font-weight="700" letter-spacing=".5">zagreb.lol/promet/simulator</text>
+
+  <rect x="762" y="63" width="376" height="504" rx="28" fill="#e8ece5"/>
+  <path d="M780 352h337M950 82v469" fill="none" stroke="#d1dad1" stroke-width="25" stroke-linecap="round"/>
+  <path d="M780 352h337M950 82v469" fill="none" stroke="#f8f8f2" stroke-width="2" stroke-dasharray="10 15" stroke-linecap="round"/>
+  <path d="M820 226h98M981 485h100M873 390v111M1028 107v97" fill="none" stroke="#72a89b" stroke-width="5" stroke-linecap="round"/>
+  <path d="m908 216 12 10-12 10m174 239 12 10-12 10M863 489l10 12 10-12m140-284 15-10 15 10" fill="none" stroke="#126e67" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="897" y="192" width="106" height="243" rx="31" fill="#172d2d"/>
+  <rect x="904" y="199" width="92" height="229" rx="26" fill="none" stroke="#ffffff" stroke-opacity=".14" stroke-width="2"/>
+  <circle cx="950" cy="245" r="26" fill="#e46052"/>
+  <circle cx="950" cy="314" r="26" fill="#e2a344"/>
+  <circle cx="950" cy="383" r="26" fill="#55a27d"/>
+  <path d="M939 235a14 14 0 0 1 16-6M939 304a14 14 0 0 1 16-6M939 373a14 14 0 0 1 16-6" fill="none" stroke="#fff" stroke-opacity=".42" stroke-width="3" stroke-linecap="round"/>
+
+  <circle cx="831" cy="352" r="8" fill="#126e67" stroke="#f5f4ef" stroke-width="4"/>
+  <circle cx="1076" cy="352" r="8" fill="#126e67" stroke="#f5f4ef" stroke-width="4"/>
+  <circle cx="950" cy="134" r="8" fill="#126e67" stroke="#f5f4ef" stroke-width="4"/>
+  <circle cx="950" cy="523" r="8" fill="#126e67" stroke="#f5f4ef" stroke-width="4"/>
+
+  <rect x="1013" y="264" width="81" height="34" rx="17" fill="#f5f4ef"/>
+  <circle cx="1031" cy="281" r="4" fill="#126e67"/>
+  <rect x="1041" y="277" width="36" height="8" rx="4" fill="#9eaea5"/>
+  <rect x="805" y="402" width="81" height="34" rx="17" fill="#f5f4ef"/>
+  <circle cx="823" cy="419" r="4" fill="#126e67"/>
+  <rect x="833" y="415" width="36" height="8" rx="4" fill="#9eaea5"/>
+</svg>

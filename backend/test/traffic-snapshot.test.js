@@ -42,6 +42,55 @@ function fixture({ extraBaseLane = false } = {}) {
     return { base, graph };
 }
 
+function centreDirectionMismatchFixture({ extraPublicLane = false, centreMovement = true } = {}) {
+    const currentLanes = [
+        roadLane('in-a', 'a', J, { sourceWayId: 'way-in-a' }),
+        roadLane('in-b', 'b', J, { sourceWayId: 'way-in-b' }),
+        roadLane('out-a', J, 'c', { sourceWayId: 'way-out-a' }),
+        roadLane('out-b', J, 'd', { sourceWayId: 'way-out-b' }),
+        roadLane('centre-forward', 'e', J, {
+            sourceWayId: 'way-centre', direction: 'forward', ordinal: 0,
+            turn: 'left', centreLane: true
+        }),
+        roadLane('centre-backward', J, 'f', {
+            sourceWayId: 'way-centre', direction: 'backward', ordinal: 0,
+            turn: 'left', centreLane: true
+        })
+    ];
+    if (extraPublicLane) currentLanes.push(roadLane('new-public-in', 'g', J, {
+        sourceWayId: 'new-public-way'
+    }));
+
+    const oldLanes = [
+        roadLane('old-in-a', 'old-a', J, { sourceWayId: 'way-in-a' }),
+        roadLane('old-in-b', 'old-b', J, { sourceWayId: 'way-in-b' }),
+        roadLane('old-out-a', J, 'old-c', { sourceWayId: 'way-out-a' }),
+        roadLane('old-out-b', J, 'old-d', { sourceWayId: 'way-out-b' }),
+        roadLane('old-centre-both', 'old-e', J, {
+            sourceWayId: 'way-centre', direction: 'both', ordinal: 0,
+            turn: null, centreLane: false
+        })
+    ];
+    const base = {
+        nodes: [{ id: J, degree: 5 }],
+        lanes: currentLanes,
+        connections: [movement('existing-a', 'in-a', 'out-a')],
+        problems: [{ type: 'unresolved_intersection', nodeIds: [J] }],
+        decisions: { answered: [] }
+    };
+    const graph = {
+        nodes: [{ id: J, degree: 5 }],
+        lanes: oldLanes,
+        connections: [
+            movement('saved-a', 'old-in-a', 'old-out-a'),
+            movement('saved-b', 'old-in-b', 'old-out-b'),
+            ...(centreMovement ? [movement('saved-centre', 'old-centre-both', 'old-out-a')] : [])
+        ],
+        problems: []
+    };
+    return { base, graph };
+}
+
 function solution(id, graph, overrides = {}) {
     return {
         id, parentId: null, status: 'candidate', sourceKind: 'claude',
@@ -316,6 +365,63 @@ describe('traffic snapshot saved junction merge', () => {
 
         expect(merged.connections).toEqual(base.connections);
         expect(merged.savedJunctions).toEqual([]);
+    });
+
+    it('fills stable public lanes when a saved both-direction centre incidence became two current centre incidences', () => {
+        const { base, graph } = centreDirectionMismatchFixture();
+        const candidate = solution('centre-direction-change', graph);
+        const graphBefore = structuredClone(candidate.graph);
+        const baseBefore = structuredClone(base);
+
+        const merged = mergeSavedJunctions(base, [candidate], mergeOptions);
+
+        expect(merged.connections.filter(item => item.nodeId === J)).toEqual([
+            base.connections[0],
+            expect.objectContaining({
+                id: 'saved-b', fromLaneId: 'in-b', toLaneId: 'out-b',
+                savedSolutionId: 'centre-direction-change', savedSource: 'claude'
+            })
+        ]);
+        expect(merged.connections.some(item => item.fromLaneId.startsWith('centre-')
+            || item.toLaneId.startsWith('centre-'))).toBe(false);
+        expect(merged.savedJunctions).toEqual([]);
+        expect(merged.savedPartialJunctions).toEqual([expect.objectContaining({
+            nodeId: J, solutionId: 'centre-direction-change', laneIds: ['in-b']
+        })]);
+        expect(merged.problems).toEqual(base.problems);
+        expect(candidate.graph).toEqual(graphBefore);
+        expect(base).toEqual(baseBefore);
+    });
+
+    it('rejects a centre-direction partial match when the current public lane set has a new arm', () => {
+        const { base, graph } = centreDirectionMismatchFixture({ extraPublicLane: true });
+        const candidate = solution('centre-plus-new-arm', graph);
+        const graphBefore = structuredClone(candidate.graph);
+
+        const merged = mergeSavedJunctions(base, [candidate], mergeOptions);
+
+        expect(merged.connections).toEqual(base.connections);
+        expect(merged.savedJunctions).toEqual([]);
+        expect(merged.savedPartialJunctions).toEqual([]);
+        expect(candidate.graph).toEqual(graphBefore);
+    });
+
+    it('ignores saved movements that touch a centre lane with no public-lane match', () => {
+        const { base, graph } = centreDirectionMismatchFixture({ centreMovement: false });
+        graph.connections.push(movement('saved-to-centre', 'old-in-a', 'old-centre-both'));
+        const candidate = solution('unmatched-centre-target', graph);
+
+        const merged = mergeSavedJunctions(base, [candidate], mergeOptions);
+
+        expect(merged.connections.filter(item => item.nodeId === J)).toEqual([
+            base.connections[0],
+            expect.objectContaining({ id: 'saved-b', fromLaneId: 'in-b', toLaneId: 'out-b' })
+        ]);
+        expect(merged.connections.some(item => item.toLaneId === 'centre-forward'
+            || item.toLaneId === 'centre-backward')).toBe(false);
+        expect(merged.savedPartialJunctions).toEqual([expect.objectContaining({
+            nodeId: J, solutionId: 'unmatched-centre-target', laneIds: ['in-b']
+        })]);
     });
 
     it('accepts only public, directed driving lanes for cars', () => {

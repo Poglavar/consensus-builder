@@ -8,7 +8,7 @@ button:disabled { cursor: default; opacity: .5; }
 button { color: inherit; }
 button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visible { outline: 3px solid #db8f3b; outline-offset: 3px; }
 input:focus-visible { outline: 2px solid #db8f3b; outline-offset: 4px; }
-.app { display: grid; grid-template-columns: 310px minmax(0, 1fr); height: 100dvh; min-height: 520px; }
+.app { display: grid; grid-template-columns: 310px minmax(0, 1fr); height: calc(100dvh - 94px); min-height: 520px; }
 .controls { z-index: 500; padding: 28px 24px 16px; background: var(--paper); border-right: 1px solid #d4d9d0; overflow-y: auto; scrollbar-width: thin; }
 .eyebrow { display: flex; align-items: center; gap: 9px; font-size: 10px; font-weight: 750; letter-spacing: .16em; }
 .brand-mark { width: 27px; height: 27px; display: grid; place-items: center; background: var(--ink); color: var(--paper); font-size: 22px; border-radius: 7px; }
@@ -59,7 +59,6 @@ h2 { margin: 0 0 11px; font-size: 11px; font-weight: 650; }
 .about a { color: var(--accent); }
 footer { display: flex; align-items: center; justify-content: space-between; margin-top: 22px; border-top: 1px solid var(--line); padding-top: 12px; }
 .footer-brand { color: #839085; font-size: 8px; letter-spacing: .12em; font-weight: 650; }
-#language { border: 0; color: #677c6d; background: transparent; font-size: 10px; padding: 4px; }
 .map-stage { position: relative; overflow: hidden; isolation: isolate; background: #e9ede6; }
 #map { position: absolute; inset: 0; z-index: 1; background: #e9ede6; }
 .leaflet-tile-pane { filter: saturate(.2) contrast(.7) brightness(1.13); opacity: .68; }
@@ -111,6 +110,17 @@ footer { display: flex; align-items: center; justify-content: space-between; mar
     .map-legend { bottom: 18px; font-size: 8px; gap: 5px; }
 }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+.site-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 54px; padding: 10px 24px; border-bottom: 1px solid var(--line); background: var(--paper); }
+.site-brand { display: inline-flex; align-items: center; gap: 9px; color: var(--ink); font-size: 17px; font-weight: 750; text-decoration: none; }
+.site-header nav, .site-footer nav { display: flex; flex-wrap: wrap; gap: 16px; }
+.site-header nav a { font-size: 11px; color: var(--accent); text-decoration: none; }
+.site-footer { min-height: 40px; margin: 0; padding: 9px 24px; gap: 12px; font-size: 10px; color: var(--muted); background: var(--paper); }
+.site-footer a { color: var(--accent); }
+@media (max-width: 640px) {
+    .site-header { padding: 10px 16px; align-items: flex-start; flex-wrap: wrap; gap: 8px; }
+    .site-header nav { gap: 12px; }
+    .site-footer { padding: 12px 20px; flex-direction: column; align-items: flex-start; gap: 8px; }
+}
 
 /* Road tools remain usable below the map on touch screens. */
 .traffic-scene { position: absolute; left: 0; top: 0; transform-origin: 0 0; pointer-events: none; }

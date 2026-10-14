@@ -3,10 +3,11 @@
 (function (root, factory) {
     const geometry = typeof module !== 'undefined' && module.exports ? require('./geometry.js') : root.TrafficGeometry;
     const collision = typeof module !== 'undefined' && module.exports ? require('./collision.js') : root.TrafficCollision;
-    const api = factory(geometry, collision);
+    const signals = typeof module !== 'undefined' && module.exports ? require('./signal-plan.js') : root.TrafficSignals;
+    const api = factory(geometry, collision, signals);
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
     if (root) root.TrafficSimulation = api;
-})(typeof window !== 'undefined' ? window : null, function (Geometry, Collision) {
+})(typeof window !== 'undefined' ? window : null, function (Geometry, Collision, Signals) {
     'use strict';
     const GAP = 7;
     const STEP = 0.1;
@@ -101,23 +102,14 @@
             from.outgoing.push(item.id);
         }
         ({ lanes, connections } = Geometry.build(lanes, connections, nodes, data.signals));
-        const signals = new Map();
-        for (const record of data.signals) {
-            const signal = { ...record, phases: [] };
-            for (const control of record.controls) {
-                const lane = lanes.get(control.laneId);
-                if (!lane || !Number.isFinite(control.fraction) || control.fraction < 0 || control.fraction > 1) {
-                    throw new Error(`Invalid mapped signal control: ${record.id}`);
-                }
-                lane.signals.push({ signalId: signal.id, phase: lane.sectionId, stopS: clamp(lane.sourceStops.find(stop => Math.abs(stop.sourceS - control.fraction * lane.rawPath.length) < 1e-6).station, 0, lane.path.length) });
-                signal.phases.push(lane.sectionId);
+        for (const record of data.signals) for (const control of record.controls) {
+            if (!lanes.has(control.laneId) || !Number.isFinite(control.fraction) || control.fraction < 0 || control.fraction > 1) {
+                throw new Error(`Invalid mapped signal control: ${record.id}`);
             }
-            signal.phases = [...new Set(signal.phases)].sort();
-            signal.offset = [...signal.id].reduce((n, c) => (n * 31 + c.charCodeAt(0)) >>> 0, 0) % 37;
-            signals.set(signal.id, signal);
         }
-        for (const lane of lanes.values()) lane.signals.sort((a, b) => a.stopS - b.stopS);
-        return refreshNetwork({ origin, lanes, nodes, signals, connections, project, unproject, data });
+        const network = { origin, lanes, nodes, connections, project, unproject, data };
+        Object.assign(network, Signals.build(network, data.signals));
+        return refreshNetwork(network);
     }
 
     function refreshNetwork(network, fixedGroups = null) {
@@ -247,19 +239,10 @@
     }
 
     function signalAspect(signal, phaseKey, time, enabled = true) {
-        if (!enabled) return 'green';
-        const phase = signal.phases.indexOf(phaseKey);
-        if (phase < 0) return 'red';
-        // Even a single mapped approach has a red interval for crossing traffic/pedestrians.
-        // These timings are illustrative; OSM supplies positions and directions, not signal plans.
-        const phases = Math.max(2, signal.phases.length);
-        const slot = 12;
-        const t = ((time + signal.offset) % (slot * phases) + slot * phases) % (slot * phases);
-        if (Math.floor(t / slot) !== phase) return 'red';
-        return t % slot < 9 ? 'green' : t % slot < 10.5 ? 'amber' : 'red';
+        return Signals.aspect(signal, phaseKey, time, enabled);
     }
 
-    function signalState(network, lane, time, enabled = true, position = lane.path.length) {
+    function signalState(network, lane, time, enabled = true, position = 0) {
         const control = lane.signals.find(item => item.stopS >= position - 1e-6);
         return control ? signalAspect(network.signals.get(control.signalId), control.phase, time, enabled) : 'green';
     }
@@ -294,7 +277,13 @@
         choose(list) { return list.length ? list[Math.floor(this.random() * list.length)] : null; }
 
         chooseRoute(lane, car = null) {
-            if (!lane.fragment) return this.choose(lane.exitRoutes?.length ? lane.exitRoutes : lane.routes);
+            if (!lane.fragment) {
+                if (car && lane.exitRoutes?.length) {
+                    const exit = this.freeExit(car, lane, this.junctionKey(lane.fromNode), this.occupants());
+                    if (exit.clear && exit.route) return exit.route;
+                }
+                return this.choose(lane.exitRoutes?.length ? lane.exitRoutes : lane.routes);
+            }
             const moves = lane.routes.map(id => this.network.connections.get(id));
             if (car?.returnLaneId) {
                 const target = this.network.fragments?.get(car.returnLaneId)?.[0];
@@ -385,27 +374,41 @@
         }
         receivingClear(car, connection, occupied) { return this.receivingBlocker(car, connection, occupied) == null; }
 
+        freeExit(car, start, key, occupied) {
+            // Explicitly placed traffic in a wholly enclosed circulation region
+            // still follows its existing loop; ordinary spawning excludes it.
+            if (!start.exitRoutes?.length) return { clear: true, route: null };
+            const search = preferred => {
+                const queue = [{ lane: start, route: null }], seen = new Set();
+                let blocker = null;
+                for (let i = 0; i < queue.length; i++) {
+                    const { lane, route } = queue[i];
+                    if (seen.has(lane.id)) continue;
+                    seen.add(lane.id);
+                    if (this.junctionKey(lane.toNode) !== key || !lane.routes?.length) return { clear: true, route };
+                    for (const id of preferred ? lane.exitRoutes : lane.routes) {
+                        const move = this.network.connections.get(id);
+                        const blockedBy = this.receivingBlocker(car, move, occupied);
+                        if (blockedBy == null) queue.push({ lane: this.network.lanes.get(move.toLaneId), route: route || id });
+                        else blocker ??= blockedBy;
+                    }
+                }
+                return { clear: false, carId: blocker };
+            };
+            const preferred = search(true);
+            // A queued shortest exit must not hide a longer, permitted way out.
+            // The bounded search examines each permitted lane once.
+            return preferred.clear ? preferred : search(false);
+        }
+
         exitBlocker(car, connection, occupied) {
             const immediate = this.receivingBlocker(car, connection, occupied);
             if (immediate != null) return { kind: 'exit', carId: immediate };
             if (!this.needsReservation(connection)) return null;
-            const key = this.junctionKey(connection.nodeId), queue = [connection.toLaneId], seen = new Set();
-            let blocker = null;
             // An empty tiny connector is not an exit. Check all the way through
             // the reserved area before occupying it, so downstream queues can clear.
-            for (let i = 0; i < queue.length; i++) {
-                const lane = this.network.lanes.get(queue[i]);
-                if (seen.has(lane.id)) continue;
-                seen.add(lane.id);
-                if (this.junctionKey(lane.toNode) !== key || !lane.exitRoutes?.length) return null;
-                for (const id of lane.exitRoutes) {
-                    const move = this.network.connections.get(id);
-                    const blockedBy = this.receivingBlocker(car, move, occupied);
-                    if (blockedBy == null) queue.push(move.toLaneId);
-                    else blocker ??= blockedBy;
-                }
-            }
-            return { kind: 'exit', carId: blocker };
+            const exit = this.freeExit(car, this.network.lanes.get(connection.toLaneId), this.junctionKey(connection.nodeId), occupied);
+            return exit.clear ? null : { kind: 'exit', carId: exit.carId };
         }
         hasExitSpace(car, connection, occupied) { return this.exitBlocker(car, connection, occupied) == null; }
 
@@ -416,7 +419,7 @@
         entryBlocker(car, connection, occupied, checkSignal = true, bodies = this.bodies) {
             if (!connection) return { kind: 'noExit' };
             const lane = this.network.lanes.get(car.laneId);
-            if (checkSignal && signalState(this.network, lane, this.time, this.signals) !== 'green') return { kind: 'signal' };
+            if (checkSignal && signalState(this.network, lane, this.time, this.signals, car.s) !== 'green') return { kind: 'signal' };
             if (this.gates.some(gate => gate.blocksEntry?.(car, connection, this))) return { kind: 'closure' };
             const owner = this.reservations.get(this.junctionKey(connection.nodeId));
             if (owner != null && owner !== car.id) return { kind: 'junction', carId: owner };
@@ -501,7 +504,7 @@
             const connection = !move && n.connections.get(car.next);
             const entry = move ? null : car.change ? { kind: 'changing' } : this.entryBlocker(car, connection, occupied, false, bodies);
             const available = !!move || entry == null;
-            const entering = !!move || (available && signalState(n, lane, this.time, this.signals) === 'green');
+            const entering = !!move || (available && signalState(n, lane, this.time, this.signals, car.s) === 'green');
             const gate = Math.min(Infinity, ...this.gates.map(item => item.distance?.(car, this) ?? Infinity));
             const hold = connection && this.needsReservation(connection)
                 && this.reservations.get(this.junctionKey(connection.nodeId)) !== car.id ? HOLD : 0;
@@ -521,7 +524,8 @@
                 .filter(control => control.stopS >= car.s * ratio - 1e-6)
                 .map(control => {
                     const signal = this.network.signals.get(control.signalId);
-                    return { id: signal.id, point: signal.point, aspect: signalAspect(signal, control.phase, this.time),
+                    return { id: signal.id, point: signal.point, sourceIds: signal.sourceIds, name: signal.name, direction: signal.direction,
+                        aspect: signalAspect(signal, control.phase, this.time),
                         distance: Math.max(0, (control.stopS - car.s * ratio) / ratio),
                         stop: sample(approach.path, control.stopS) };
                 }));
@@ -615,7 +619,7 @@
                 if (!move) this.tryLaneChange(car, occupied);
                 if (!move && !car.change && car.speed < .5 && route.length - car.s < 12
                     && !this.canEnter(car, this.network.connections.get(car.next), occupied)) {
-                    const alternatives = (lane.exitRoutes?.length ? lane.exitRoutes : lane.routes).filter(id => id !== car.next && this.canEnter(car, this.network.connections.get(id), occupied));
+                    const alternatives = lane.routes.filter(id => id !== car.next && this.canEnter(car, this.network.connections.get(id), occupied));
                     if (alternatives.length) car.next = this.choose(alternatives);
                 }
                 const limits = this.limits(car, occupied);

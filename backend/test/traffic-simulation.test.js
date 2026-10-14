@@ -106,6 +106,10 @@ function poseDistance(a, b) {
     return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
+function headForSource(network, sourceId) {
+    return [...network.signals.values()].find(signal => signal.sourceIds.includes(sourceId));
+}
+
 function circulatingNetwork({ includeBypass = true } = {}) {
     const lanes = [
         lane('a', 'south-west', 'south-east', [0, 0], [100, 0], { sectionId: 'south' }),
@@ -216,7 +220,7 @@ describe('traffic simulation', () => {
         expect(redTime).toBeTypeOf('number');
         expect(greenTime).toBeTypeOf('number');
 
-        const vehicle = car(1, 'in', approach.path.length - 1, 'move-in-out');
+        const vehicle = car(1, 'in', approach.signals[0].stopS - .5, 'move-in-out');
         sim.cars.push(vehicle);
         sim.time = redTime - .1;
         sim.advance(.1);
@@ -225,7 +229,7 @@ describe('traffic simulation', () => {
 
         sim.time = greenTime - .1;
         vehicle.speed = 0;
-        sim.advance(1.5);
+        for (let tick = 0; tick < 100 && vehicle.mode !== 'connection'; tick++) sim.advance(.1);
         expect(vehicle.mode === 'connection' || vehicle.laneId === 'out').toBe(true);
         expect(sim.crossings + Number(vehicle.mode === 'connection')).toBeGreaterThan(0);
     });
@@ -242,8 +246,8 @@ describe('traffic simulation', () => {
         const sim = new Simulation(network, { count: 0, signals: true, laneChangeRate: 0 });
         // Keep the two approaches physically separate while they queue. Starting
         // both centers at the shared junction point creates an initial OBB overlap.
-        const older = car(1, 'in', incoming.path.length - .01, 'move-in-out', 0);
-        const newer = car(2, 'cross-in', crossIncoming.path.length - .01, 'move-cross', 0);
+        const older = car(1, 'in', incoming.signals[0].stopS - .01, 'move-in-out', 0);
+        const newer = car(2, 'cross-in', crossIncoming.signals[0].stopS - .01, 'move-cross', 0);
         older.queuedAt = redTime - 30;
         newer.queuedAt = redTime - 1;
         // Process the competing green approach first to make priority independent of array order.
@@ -312,7 +316,7 @@ describe('traffic simulation', () => {
         const redTime = Array.from({ length: 480 }, (_, i) => i * .1).find(time =>
             signalState(network, approach, time, true, 0) === 'red'
             && signalState(network, approach, time + 2, true, 0) === 'red');
-        const vehicle = car(1, 'in', approach.path.length - .03, null, 1);
+        const vehicle = car(1, 'in', approach.signals[0].stopS - .03, null, 1);
         const sim = new Simulation(network, { count: 0 });
         sim.cars.push(vehicle);
         sim.time = redTime;
@@ -322,7 +326,7 @@ describe('traffic simulation', () => {
         expect(vehicle.state).toBe('red');
     });
 
-    it('passes two nearby mapped controls only on green, even when the later control is red', () => {
+    it('groups nearby mapped lights into one stop, then lets the same car continue through', () => {
         const lanes = [
             lane('in', 'west', 'junction', [-100, 0], [0, 0], { sectionId: 'approach' }),
             lane('out', 'junction', 'east', [0, 0], [100, 0]),
@@ -334,38 +338,34 @@ describe('traffic simulation', () => {
             connection('move-cross', 'cross-in', 'cross-out', 'junction', [[0, 0], [0, 0], [0, 0]])
         ], { junction: 4 });
         fixture.signals.push(
-            { id: 'signal-first', point: geo([-94, 0]), controls: [{ laneId: 'in', fraction: .94 }] },
-            { id: 'signal-last', point: geo([0, 0]), controls: [{ laneId: 'in', fraction: 1 }] }
+            { id: 'osm-node:signal-first', point: geo([-.5, 0]), kind: 'traffic_signals', controls: [{ laneId: 'in', fraction: .995 }] },
+            { id: 'osm-node:signal-last', point: geo([0, 0]), kind: 'traffic_signals', controls: [{ laneId: 'in', fraction: 1 }] }
         );
         const network = createNetwork(fixture), approach = network.lanes.get('in');
-        const [first, last] = approach.signals;
-        const startTime = Array.from({ length: 4800 }, (_, i) => i * .1).find(time =>
-            Traffic.signalAspect(network.signals.get(first.signalId), first.phase, time + .1) === 'green'
-            && Traffic.signalAspect(network.signals.get(first.signalId), first.phase, time + .3) === 'green'
-            && Traffic.signalAspect(network.signals.get(last.signalId), last.phase, time + 2.2) === 'red');
-        expect(startTime).toBeDefined();
+        expect(approach.signals).toHaveLength(1);
+        const [control] = approach.signals;
+        const head = network.signals.get(control.signalId);
+        expect(head.sourceIds).toEqual(['osm-node:signal-first', 'osm-node:signal-last']);
+        const startTime = Array.from({ length: 1000 }, (_, i) => i * .1)
+            .find(time => Traffic.signalAspect(head, control.phase, time) === 'green');
+        expect(startTime).toBeTypeOf('number');
 
-        const vehicle = car(1, 'in', first.stopS - .5, 'move-in-out', 4);
+        const vehicle = car(1, 'in', control.stopS - .5, 'move-in-out', 4);
         const sim = new Simulation(network, { count: 0, laneChangeRate: 0 });
         sim.cars.push(vehicle);
         sim.time = startTime;
-        let crossedFirst = false, crossedLast = false, sawLastRedAtFirst = false;
-        for (let tick = 0; tick < 600 && !crossedLast; tick++) {
+        let crossedGroupedStop = false;
+        for (let tick = 0; tick < 100 && vehicle.mode !== 'connection'; tick++) {
             const previous = vehicle.s;
             sim.advance(.1);
-            if (previous < first.stopS && vehicle.s >= first.stopS) {
-                crossedFirst = true;
-                expect(Traffic.signalAspect(network.signals.get(first.signalId), first.phase, sim.time)).toBe('green');
-                sawLastRedAtFirst = Traffic.signalAspect(network.signals.get(last.signalId), last.phase, sim.time) === 'red';
-            }
-            if (vehicle.traversed?.includes('move-in-out')) {
-                crossedLast = true;
-                expect(Traffic.signalAspect(network.signals.get(last.signalId), last.phase, sim.time)).toBe('green');
+            if (previous < control.stopS && vehicle.s >= control.stopS) {
+                crossedGroupedStop = true;
+                expect(Traffic.signalAspect(head, control.phase, sim.time)).toBe('green');
             }
         }
-        expect(crossedFirst).toBe(true);
-        expect(sawLastRedAtFirst).toBe(true);
-        expect(crossedLast).toBe(true);
+        expect(crossedGroupedStop).toBe(true);
+        expect(vehicle.mode === 'connection' || vehicle.laneId === 'out').toBe(true);
+        if (vehicle.mode === 'connection') expect(vehicle.connectionId).toBe('move-in-out');
     });
 
     it('keeps a following car at least one safety gap behind a queue', () => {
@@ -468,16 +468,22 @@ describe('traffic simulation', () => {
         expect(followerRemainsClearAfterLeaderExits).toBe(true);
     });
 
-    it('maps an outgoing signal to the same world position after transition trimming', () => {
+    it('keeps an outgoing source point while placing its derived stop and head after transition trimming', () => {
         const network = transitionNetwork('split', true);
         const outgoing = network.lanes.get('out-0');
         const controlFraction = .2;
         expect(outgoing.startTrim).toBeGreaterThan(0);
-        expect(outgoing.signals[0].stopS).toBeCloseTo(controlFraction * outgoing.rawPath.length - outgoing.startTrim, 5);
+        const sourceStation = outgoing.sourceStops.find(item =>
+            Math.abs(item.sourceS - controlFraction * outgoing.rawPath.length) < 1e-6).station;
+        expect(outgoing.signals[0].stopS).toBeCloseTo(Math.max(0, sourceStation - 2.5), 5);
+        const head = headForSource(network, 'outgoing-signal');
+        expect(head).toBeDefined();
+        expect(head.sourcePoints).toContainEqual(geo([120, 3.5]));
         const stop = sample(outgoing.path, outgoing.signals[0].stopS);
-        const world = network.unproject([stop.x, stop.y]);
-        expect(world[0]).toBeCloseTo(network.signals.get('outgoing-signal').point[0], 8);
-        expect(world[1]).toBeCloseTo(network.signals.get('outgoing-signal').point[1], 8);
+        const headXY = network.project(head.point);
+        const lateral = (headXY[0] - stop.x) * Math.sin(stop.angle)
+            - (headXY[1] - stop.y) * Math.cos(stop.angle);
+        expect(lateral).toBeCloseTo((outgoing.width || 3) / 2 + .8, 1);
     });
 
     it('requires room for the crossing reservation and following gap before entering a lane', () => {
@@ -584,6 +590,75 @@ describe('traffic simulation', () => {
         sim.move(vehicle, 3, new Map());
         expect(vehicle.clearance).toBeNull();
         expect(sim.reservations.has(group)).toBe(false);
+    });
+
+    it('uses a longer clear exit when the preferred exit is queued, and rejects entry when both exits are queued', () => {
+        function twoExitFixture({ blockLong = false } = {}) {
+            const lanes = [
+                lane('approach', 'west', 'a', [-100, 0], [0, 0]),
+                lane('inside', 'a', 'b', [0, 0], [100, 0]),
+                lane('short-exit', 'b', 'short-out', [100, 0], [100, 40]),
+                lane('short-return', 'short-out', 'a', [100, 40], [0, 0]),
+                lane('long-bridge', 'b', 'd', [100, 0], [200, 0]),
+                lane('long-exit', 'd', 'long-out', [200, 0], [200, 60]),
+                lane('long-return', 'long-out', 'a', [200, 60], [0, 0])
+            ];
+            const moves = [
+                ['enter', 'approach', 'inside', 'a'],
+                ['short-entry', 'inside', 'short-exit', 'b'],
+                ['short-turn', 'short-exit', 'short-return', 'short-out'],
+                ['short-close', 'short-return', 'inside', 'a'],
+                ['long-entry', 'inside', 'long-bridge', 'b'],
+                ['long-leave', 'long-bridge', 'long-exit', 'd'],
+                ['long-turn', 'long-exit', 'long-return', 'long-out'],
+                ['long-close', 'long-return', 'inside', 'a']
+            ].map(([id, fromLaneId, toLaneId, nodeId]) => {
+                const from = lanes.find(item => item.id === fromLaneId);
+                const to = lanes.find(item => item.id === toLaneId);
+                const point = from.points.at(-1);
+                return { id, fromLaneId, toLaneId, nodeId, points: [point, point, to.points[0]] };
+            });
+            const graph = createNetwork(data(lanes, moves, { a: 3, b: 3, d: 2, 'short-out': 2, 'long-out': 2 }));
+            const group = 'shared-exit-area';
+            const groups = new Map([...graph.nodes.keys()].map(id => [id, id]));
+            for (const id of ['a', 'b', 'd']) groups.set(id, group);
+            Traffic.refreshNetwork(graph, groups);
+            const sim = new Simulation(graph, { count: 0, signals: false, laneChangeRate: 0 });
+            const approaching = car(1, 'approach', graph.lanes.get('approach').path.length - .1, 'enter');
+            approaching.traversed = [];
+            const shortQueue = car(2, 'short-exit', 9, 'short-turn');
+            sim.cars.push(approaching, shortQueue);
+            if (blockLong) sim.cars.push(car(3, 'long-bridge', 9, 'long-leave'));
+            return { graph, sim, group, approaching, shortQueue };
+        }
+
+        const clearLong = twoExitFixture();
+        const { graph, sim, group, approaching } = clearLong;
+        const entry = graph.connections.get('enter');
+        expect(graph.lanes.get('inside').exitRoutes).toEqual(['short-entry']);
+        expect(sim.receivingClear(approaching, graph.connections.get('short-entry'), sim.occupants())).toBe(false);
+        expect(sim.receivingClear(approaching, graph.connections.get('long-entry'), sim.occupants())).toBe(true);
+        expect(sim.canEnter(approaching, entry, sim.occupants(), false)).toBe(true);
+        expect(sim.chooseRoute(graph.lanes.get('inside'), approaching)).toBe('long-entry');
+
+        approaching.next = 'enter';
+        for (let step = 0; step < 500; step++) {
+            sim.move(approaching, .5, sim.occupants());
+            expect(Collision.overlaps(sim.pose(approaching), sim.pose(clearLong.shortQueue))).toBe(false);
+            if (approaching.laneId === 'long-exit' && !sim.reservations.has(group)) break;
+        }
+        expect(approaching.traversed).toContain('long-entry');
+        expect(approaching.traversed).not.toContain('short-entry');
+        expect(approaching.laneId).toBe('long-exit');
+        expect(approaching.s).toBeGreaterThanOrEqual(3.2);
+        expect(sim.reservations.has(group)).toBe(false);
+
+        const bothBlocked = twoExitFixture({ blockLong: true });
+        expect(bothBlocked.graph.lanes.get('inside').exitRoutes).toEqual(['short-entry']);
+        expect(bothBlocked.sim.receivingClear(bothBlocked.approaching, bothBlocked.graph.connections.get('long-entry'),
+            bothBlocked.sim.occupants())).toBe(false);
+        expect(bothBlocked.sim.canEnter(bothBlocked.approaching, bothBlocked.graph.connections.get('enter'),
+            bothBlocked.sim.occupants(), false)).toBe(false);
     });
 
     it('takes another explicit clear exit in the same circulation region when queued', () => {
