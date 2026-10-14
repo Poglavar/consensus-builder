@@ -321,6 +321,7 @@
             $('show-signal').hidden = !signal;
         } else $('selected-detail').textContent = '';
         updateTools();
+        drawMeterLabels();
     }
 
     function attachCounters() { sim.listeners.add((car, before, after, time) => counters.observe(car, before, after, time)); }
@@ -456,7 +457,7 @@
         }
         drawCars();
         if (editor?.update()) { network = sim.network; drawGuides(); }
-        if (now - uiTime > 250) { updateUI(); updateAudio(); drawMeterLabels(); uiTime = now; }
+        if (now - uiTime > 250) { updateUI(); updateAudio(); uiTime = now; }
         if (running && !document.hidden) frameId = requestAnimationFrame(animate);
     }
     function wake() { previousFrame = null; if (frameId == null && !document.hidden) frameId = requestAnimationFrame(animate); }
