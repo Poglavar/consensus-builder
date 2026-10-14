@@ -22,6 +22,7 @@
         approvalError: null,
         approvalImportSequence: 0
     };
+    const failedDraftReopenInFlight = new Set();
 
     function tDraft(key, fallback, params = {}) {
         let value = null;
@@ -1282,7 +1283,10 @@
             },
             previewGeometry: structureGeometry
         });
-        if (!draft) return null;
+        if (!draft) {
+            reportProposalDesignSaveFailure('proposalDrafts.design.draftCreateFailed');
+            return null;
+        }
         return instantCreateProposalFromDraft(draft.id);
     }
 
@@ -1300,6 +1304,54 @@
         try { global.showEphemeralMessage?.(message, 7000, 'error'); } catch (_) { }
         try { global.updateStatus?.(message); } catch (_) { }
         return false;
+    }
+
+    // Shared feedback for draft commits initiated by geometry editors. Include a localized reason
+    // when one is available without guessing whether the record was created or retained.
+    function reportProposalDesignSaveFailure(error = null) {
+        let reason = String(error?.message || error || '');
+        if (reason.startsWith('proposalDrafts.')) reason = tDraft(reason, '');
+        reason = reason.replace(/[\s.!?]+$/, '');
+        const message = reason
+            ? tDraft('proposalDrafts.errors.designSaveFailedReason', 'Your changes could not be saved ({{reason}}). Try again.', { reason })
+            : tDraft('proposalDrafts.errors.designSaveFailed', 'Your changes could not be saved. Try again.');
+        try { global.showEphemeralMessage?.(message, 7000, 'error'); } catch (_) { }
+        try { global.updateStatus?.(message); } catch (_) { }
+        return message;
+    }
+
+    function reopenFailedProposalDraftOnce(draftId, store = global.proposalDraftStore, options = {}) {
+        const id = String(draftId || '');
+        if (!id || failedDraftReopenInFlight.has(id)) return false;
+        let retained = null;
+        try { retained = store?.getDraft?.(draftId) || null; } catch (_) { }
+        if (!retained || typeof global.openProposalDraftDesign !== 'function') return false;
+        const commitOnFinish = options.commitOnFinish === true
+            || String(geometryEditCommitDraftId || '') === String(draftId);
+        // openProposalDraftDesign calls finish on a false result or rejection. Clear the old
+        // matching marker before the handoff so that path cannot recursively commit/reopen; put
+        // it back only after a successful editor open.
+        if (String(geometryEditCommitDraftId || '') === String(draftId)) geometryEditCommitDraftId = null;
+        failedDraftReopenInFlight.add(id);
+        const reportReopenFailure = () => {
+            if (typeof options.onReopenFailure === 'function') options.onReopenFailure();
+            else reportProposalDesignSaveFailure('proposalDrafts.errors.designEditorReopenFailed');
+        };
+        Promise.resolve().then(() => global.openProposalDraftDesign(draftId)).then(opened => {
+            if (!opened) {
+                reportReopenFailure();
+                return;
+            }
+            const adapterKey = retained.adapterKey || retained.goal;
+            if (commitOnFinish
+                && String(editorState.designDraftId || '') === String(draftId)
+                && GEOMETRY_EDITABLE_ADAPTERS.has(adapterKey)) {
+                geometryEditCommitDraftId = String(draftId);
+            }
+        }).catch(() => {
+            reportReopenFailure();
+        }).finally(() => failedDraftReopenInFlight.delete(id));
+        return true;
     }
 
     // A building typology on a site: the design tool opens on the site's design parcels (the live
@@ -1447,7 +1499,7 @@
             ? global.buildGeometryFromParcels(liveIds)
             : null;
         if (!geometry || !geometry.type) {
-            console.warn('[ProposalEditor] Could not build structure geometry from the selection', ids);
+            reportProposalDesignSaveFailure('proposalDrafts.errors.structureGeometryFailed');
             return null;
         }
         if (!structureGeometryIsOneArea(geometry)) {
@@ -1486,7 +1538,10 @@
             },
             previewGeometry: structureGeometry
         });
-        if (!draft) return null;
+        if (!draft) {
+            reportProposalDesignSaveFailure('proposalDrafts.design.draftCreateFailed');
+            return null;
+        }
         try { global.document?.getElementById('parcel-info-panel')?.classList.remove('visible'); } catch (_) { }
         return instantCreateProposalFromDraft(draft.id);
     }
@@ -1508,10 +1563,22 @@
     function finishProposalDraftDesignSession(draftId = null) {
         const activeId = editorState.designDraftId || global.activeProposalDesignDraftId || null;
         if (!activeId || (draftId && String(activeId) !== String(draftId))) return null;
-        const draft = global.proposalDraftStore?.getDraft?.(activeId) || null;
-        if (draft) {
-            global.proposalDraftStore.validateDraft(activeId);
-            global.proposalDraftStore.flush();
+        let draft = null;
+        try {
+            draft = global.proposalDraftStore?.getDraft?.(activeId) || null;
+            if (draft) {
+                global.proposalDraftStore.validateDraft(activeId);
+                global.proposalDraftStore.flush();
+            }
+        } catch (error) {
+            reportProposalDesignSaveFailure(error);
+            // This is called after most geometry tools have torn down. Make one bounded attempt
+            // to restore the editor around the retained draft, while preserving the sync return
+            // contract used by callers to detect that finishing failed.
+            reopenFailedProposalDraftOnce(activeId, global.proposalDraftStore, {
+                commitOnFinish: String(geometryEditCommitDraftId || '') === String(activeId)
+            });
+            return null;
         }
         editorState.designDraftId = null;
         global.activeProposalDesignDraftId = null;
@@ -1527,8 +1594,10 @@
             geometryEditCommitDraftId = null;
             const current = global.proposalDraftStore.getDraft(commitId);
             if (current && current.dirty) {
-                Promise.resolve(instantCreateProposalFromDraft(commitId)).catch(error => {
+                Promise.resolve(instantCreateProposalFromDraft(commitId, { commitOnFinish: true })).catch(error => {
                     console.warn('[ProposalEditor] Geometry edit commit failed; draft kept', error);
+                    reportProposalDesignSaveFailure(error);
+                    reopenFailedProposalDraftOnce(commitId, global.proposalDraftStore, { commitOnFinish: true });
                 });
             } else if (current) {
                 global.proposalDraftStore.deleteDraft(commitId);
@@ -1819,7 +1888,13 @@
 
     async function instantCreateProposalFromDraft(draftId, options = {}) {
         const store = global.proposalDraftStore;
-        let draft = store?.getDraft(draftId);
+        let draft = null;
+        try { draft = store?.getDraft?.(draftId) || null; }
+        catch (error) {
+            reportProposalDesignSaveFailure(error);
+            reopenFailedProposalDraftOnce(draftId, store, { commitOnFinish: true });
+            return null;
+        }
         if (!draft) return null;
 
         // Clicking Done is not instant, and it used to look like nothing had happened. The spinner
@@ -1829,6 +1904,11 @@
         try { global.beginApplyIndicator?.(); } catch (_) { }
         try {
             return await instantCreateProposalFromDraftInner(draftId, store, draft, profile, options);
+        } catch (error) {
+            console.warn('[ProposalEditor] Unexpected instant-create failure; checking for a retained draft', error);
+            reportProposalDesignSaveFailure(error);
+            reopenFailedProposalDraftOnce(draftId, store, { commitOnFinish: true });
+            return null;
         } finally {
             try { global.endApplyIndicator?.(); } catch (_) { }
             profile.report();
@@ -1865,19 +1945,17 @@
             console.error('[ProposalEditor] instantCreate failed:', reason || '(no reason)');
             if (typeof global.showEphemeralMessage === 'function') global.showEphemeralMessage(message, 7000, 'error');
             if (typeof global.updateStatus === 'function') global.updateStatus(message);
-            Promise.resolve(global.openProposalDraftDesign?.(draftId)).then(opened => {
-                if (opened) return;
-                // The design tool refusing to open is not a reason to destroy the work it was
-                // holding. It used to delete the draft here, so a gate that declined the selection
-                // — a readjustment on ground another proposal holds, say — cost the user the
-                // drawing as well as the answer. The draft is kept and the failure is said out
-                // loud; a stranded draft can be reopened or discarded deliberately, which is the
-                // user's call and not this path's.
-                console.error('[ProposalEditor] Could not reopen the failed drawing; the draft is kept', draftId);
-                const stranded = tDraft('proposalDrafts.keptUnopened',
-                    'The design tool could not reopen this. Your work is kept as a draft — fix what it complained about and open it again.');
-                try { if (typeof global.showEphemeralMessage === 'function') global.showEphemeralMessage(stranded, 9000, 'error'); } catch (_) { }
-                try { if (typeof global.updateStatus === 'function') global.updateStatus(stranded); } catch (_) { }
+            reopenFailedProposalDraftOnce(draftId, store, {
+                commitOnFinish: true,
+                onReopenFailure: () => {
+                    // Refusing to reopen is not a reason to destroy the retained drawing. Say so
+                    // and leave the draft available from the proposal editor.
+                    console.error('[ProposalEditor] Could not reopen the failed drawing; the draft is kept', draftId);
+                    const stranded = tDraft('proposalDrafts.keptUnopened',
+                        'The design tool could not reopen this. Your work is kept as a draft — fix what it complained about and open it again.');
+                    try { if (typeof global.showEphemeralMessage === 'function') global.showEphemeralMessage(stranded, 9000, 'error'); } catch (_) { }
+                    try { if (typeof global.updateStatus === 'function') global.updateStatus(stranded); } catch (_) { }
+                }
             });
             return null;
         };
@@ -2159,6 +2237,7 @@
     global.beginProposalDraftDesignSession = beginProposalDraftDesignSession;
     global.getActiveProposalDesignDraft = getActiveProposalDesignDraft;
     global.finishProposalDraftDesignSession = finishProposalDraftDesignSession;
+    global.reportProposalDesignSaveFailure = reportProposalDesignSaveFailure;
     global.isProposalDesignCommitSession = isProposalDesignCommitSession;
     global.discardProposalDraftDesignSession = discardProposalDraftDesignSession;
     global.confirmDiscardProposalDesignSession = confirmDiscardProposalDesignSession;

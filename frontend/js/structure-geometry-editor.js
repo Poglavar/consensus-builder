@@ -206,10 +206,14 @@
             global.map.off('touchmove', moveGeometryDrag);
             global.map.off('mouseup', endGeometryDrag);
             global.map.off('touchend', endGeometryDrag);
-            try { global.map.dragging?.enable?.(); } catch (_) { }
+            global.map.off('touchcancel', endGeometryDrag);
+            if (drag?.mapDraggingWasEnabled) {
+                try { global.map.dragging?.enable?.(); } catch (_) { }
+            }
         }
         global.document?.removeEventListener('mouseup', endGeometryDrag);
         global.document?.removeEventListener('touchend', endGeometryDrag);
+        global.document?.removeEventListener('touchcancel', endGeometryDrag);
         if (!drag) return;
         if (drag.lastValid) state.decorations[drag.type][drag.index] = drag.lastValid;
         if (drag.rejected && !drag.lastValid) rejectOutside();
@@ -249,15 +253,18 @@
             original,
             start: { lng: event.latlng.lng, lat: event.latlng.lat },
             lastValid: null,
-            rejected: false
+            rejected: false,
+            mapDraggingWasEnabled: global.map?.dragging?.enabled?.() === true
         };
         try { global.map?.dragging?.disable?.(); } catch (_) { }
         global.map?.on('mousemove', moveGeometryDrag);
         global.map?.on('touchmove', moveGeometryDrag);
         global.map?.on('mouseup', endGeometryDrag);
         global.map?.on('touchend', endGeometryDrag);
+        global.map?.on('touchcancel', endGeometryDrag);
         global.document?.addEventListener('mouseup', endGeometryDrag);
         global.document?.addEventListener('touchend', endGeometryDrag);
+        global.document?.addEventListener('touchcancel', endGeometryDrag);
     }
 
     function bindDraggableGeometry(layer, type, index) {
@@ -267,20 +274,23 @@
         return layer;
     }
 
-    function addPointMarker(group, type, coord, index, icon, options = {}) {
+    function addPointMarker(group, type, coord, index, icon) {
         const marker = global.L.marker([coord[1], coord[0]], {
             icon,
             draggable: true,
             keyboard: true,
-            pane: EDITOR_PANE,
-            zIndexOffset: options.zIndexOffset || 500
+            // Point handles must stay above interactive paths regardless of the map's pan offset.
+            pane: state.session.handlePane
         }).addTo(group);
         marker.on('dragstart', recordHistory);
         marker.on('dragend', () => {
             const next = marker.getLatLng();
             const nextCoord = [next.lng, next.lat];
             if (!pointInside(nextCoord)) {
-                marker.setLatLng([coord[1], coord[0]]);
+                const previous = type === 'benches'
+                    ? state.decorations.benches[index].coordinate
+                    : state.decorations[type][index];
+                marker.setLatLng([previous[1], previous[0]]);
                 rejectOutside();
                 return;
             }
@@ -684,6 +694,7 @@
     }
 
     function closeEditor(saved) {
+        const isCommit = global.isProposalDesignCommitSession?.() === true;
         const draftId = state.draftId;
         const reselectKey = state.reselectKey || null;
         state.reselectKey = null;
@@ -719,8 +730,11 @@
         // editor's own, and must not be turned away by the lock it just held.
         if (session?.close) session.close();
         else global.__mapEditLock?.release(EDIT_LOCK_OWNER);
+        // Cancel must not commit a retained draft whose previous save failed.
+        if (!saved && isCommit) global.discardProposalDraftDesignSession?.();
+        let finished = true;
         if (draftId && typeof global.finishProposalDraftDesignSession === 'function') {
-            global.finishProposalDraftDesignSession(draftId);
+            finished = global.finishProposalDraftDesignSession(draftId) !== null;
         }
         // The applied structure resumes rendering its own decorations.
         if (global.structureGeometryEditorEditingProposalId) {
@@ -729,20 +743,25 @@
             try { global.updateSquaresLayer?.(); } catch (_) { }
             try { global.updateLakesLayer?.(); } catch (_) { }
         }
-        if (saved && typeof global.updateStatus === 'function') global.updateStatus(t('statusSaved', 'Structure design saved.'));
+        // Commit sessions report their actual async result in the shared proposal shell.
+        if (saved && finished && !isCommit && typeof global.updateStatus === 'function') global.updateStatus(t('statusSaved', 'Structure design saved.'));
         // The editor replaced the proposal card for its duration — on cancel, bring the card
         // back for the proposal that was selected. (On save the shell re-selects the rebuilt
         // proposal itself, which may carry a NEW id.)
         if (!saved && reselectKey && typeof global.selectAndHighlightProposal === 'function') {
             try { global.selectAndHighlightProposal(reselectKey, null, false, true); } catch (_) { }
         }
+        return finished;
     }
 
     function saveEditor() {
         if (!state.draftId) return false;
         if (state.tool === 'path') finishPath();
         const draft = global.proposalDraftStore?.getDraft?.(state.draftId);
-        if (!draft) return closeEditor(false);
+        if (!draft) {
+            global.reportProposalDesignSaveFailure?.();
+            return false;
+        }
         const current = clone(draft.editorPayload?.structureProposal || {});
         current.kind = state.kind;
         current.geometry = clone(state.boundary.geometry);
@@ -756,9 +775,17 @@
         } else {
             current.decorations = clone(state.decorations);
         }
-        global.syncActiveProposalDraftFromEditor?.('structure', { structureProposal: current }, { coalesceKey: 'editor:structure' });
-        closeEditor(true);
-        return true;
+        try {
+            const updated = global.syncActiveProposalDraftFromEditor?.('structure', { structureProposal: current }, { coalesceKey: 'editor:structure' });
+            if (!updated) {
+                global.reportProposalDesignSaveFailure?.();
+                return false;
+            }
+        } catch (error) {
+            global.reportProposalDesignSaveFailure?.(error);
+            return false;
+        }
+        return closeEditor(true);
     }
 
     function openStructureGeometryEditor(draftOrId) {

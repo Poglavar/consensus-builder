@@ -35,6 +35,7 @@
         server: null,
         serverError: null,
         serverPending: false,
+        structureBuildPending: false,
         serverSeq: 0,
         selectionIds: [],
         ground: null,
@@ -1021,9 +1022,54 @@
         const context = siteContext();
         log(`build ${toolKey} on a ${Math.round(draftApi().siteAreaM2(state.site))} m² site (${(context.binding && context.binding.parcels.length) || 0} bound parcels, ${context.binding ? context.binding.source : 'no binding'})`);
         if (STRUCTURES.includes(toolKey)) {
+            if (state.structureBuildPending) return;
+            const restoreOptions = {
+                ring: state.ring.map(coordinate => coordinate.slice()),
+                selectionIds: context.selectionIds.slice(),
+                ground: state.ground
+            };
+            state.structureBuildPending = true;
+            // Release the SiteTool lock before creation: successful focus and the retained-draft
+            // path may synchronously open another map editor. Reacquire only if creation failed
+            // and no other editor has claimed the map in the meantime.
             teardown({ keepSynthetic: false });
-            Promise.resolve(win.instantCreateStructureFromSite(toolKey, context))
-                .catch(error => console.error('[SiteTool] structure creation failed', error));
+            const restoreSiteIfUnclaimed = () => {
+                if (isActive() || win.OnMapEditor?.isActive?.() || win.__mapEditLock?.isHeld?.()) return false;
+                try {
+                    const restored = start(restoreOptions);
+                    if (!restored) win.reportProposalDesignSaveFailure?.('proposalDrafts.errors.siteRestoreFailed');
+                    return restored;
+                }
+                catch (error) {
+                    console.warn('[SiteTool] could not restore the failed site design', error);
+                    win.reportProposalDesignSaveFailure?.('proposalDrafts.errors.siteRestoreFailed');
+                    return false;
+                }
+            };
+            if (typeof win.instantCreateStructureFromSite !== 'function') {
+                state.structureBuildPending = false;
+                if (typeof win.reportProposalDesignSaveFailure === 'function') {
+                    win.reportProposalDesignSaveFailure('proposalDrafts.design.unavailable');
+                } else notify(t('proposalDrafts.design.unavailable', 'This design editor is unavailable.'), 'error');
+                restoreSiteIfUnclaimed();
+                return;
+            }
+            let creation;
+            try { creation = win.instantCreateStructureFromSite(toolKey, context); }
+            catch (error) { creation = Promise.reject(error); }
+            Promise.resolve(creation)
+                .then(created => {
+                    state.structureBuildPending = false;
+                    if (!created) restoreSiteIfUnclaimed();
+                })
+                .catch(error => {
+                    state.structureBuildPending = false;
+                    if (typeof win.reportProposalDesignSaveFailure === 'function') {
+                        win.reportProposalDesignSaveFailure(error);
+                    } else notify(t('proposalDrafts.errors.designSaveFailed', 'Your changes could not be saved. Try again.'), 'error');
+                    console.error('[SiteTool] structure creation failed', error);
+                    restoreSiteIfUnclaimed();
+                });
             return;
         }
         if (toolKey === 'row' || toolKey === 'parcelBased') { enterPlots(toolKey); return; }

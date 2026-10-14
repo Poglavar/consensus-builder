@@ -517,6 +517,11 @@
         "errors": {
             "draftFailed": "Nije moguće otvoriti ovaj prijedlog za uređivanje.",
             "instantCreateFailed": "Novi objekt nije bilo moguće spremiti.",
+            "designSaveFailed": "Izmjene nije bilo moguće spremiti. Pokušajte ponovno.",
+            "designSaveFailedReason": "Izmjene nije bilo moguće spremiti ({{reason}}). Pokušajte ponovno.",
+            "structureGeometryFailed": "Nije moguće izraditi geometriju iz odabranih čestica.",
+            "designEditorReopenFailed": "Nije moguće ponovno otvoriti uređivač dizajna.",
+            "siteRestoreFailed": "Nije moguće vratiti lokaciju. Pokušajte ponovno.",
             "noAdapter": "Za ovu vrstu prijedloga nije registriran uređivač.",
             "notReshapeable": "Ovoj se vrsti prijedloga ne može mijenjati oblik.",
             "parcelsNotContiguous": "Odabrane čestice moraju činiti jednu povezanu površinu.",

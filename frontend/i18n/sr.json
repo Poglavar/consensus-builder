@@ -517,6 +517,11 @@
         "errors": {
             "draftFailed": "Nije moguće otvoriti ovaj predlog za uređivanje.",
             "instantCreateFailed": "Novi objekat nije bilo moguće sačuvati.",
+            "designSaveFailed": "Izmene nije moguće sačuvati. Pokušajte ponovo.",
+            "designSaveFailedReason": "Izmene nije moguće sačuvati ({{reason}}). Pokušajte ponovo.",
+            "structureGeometryFailed": "Nije moguće napraviti geometriju od izabranih parcela.",
+            "designEditorReopenFailed": "Nije moguće ponovo otvoriti uređivač dizajna.",
+            "siteRestoreFailed": "Nije moguće vratiti lokaciju. Pokušajte ponovo.",
             "noAdapter": "Za ovu vrstu predloga nije registrovan uređivač.",
             "notReshapeable": "Ovoj vrsti predloga se ne može menjati oblik.",
             "parcelsNotContiguous": "Izabrane parcele moraju činiti jednu povezanu površinu.",

@@ -225,11 +225,25 @@
             return;
         }
         if (['park', 'square', 'lake'].includes(toolKey)) {
-            Promise.resolve(global.instantCreateStructureFromSelection?.(toolKey, ids))
-                .catch(error => console.warn('[buildPalette] structure creation failed', error));
+            if (typeof global.instantCreateStructureFromSelection !== 'function') {
+                global.reportProposalDesignSaveFailure?.('proposalDrafts.design.unavailable');
+                return;
+            }
+            Promise.resolve(global.instantCreateStructureFromSelection(toolKey, ids))
+                .catch(error => {
+                    if (typeof global.reportProposalDesignSaveFailure === 'function') global.reportProposalDesignSaveFailure(error);
+                    else console.warn('[buildPalette] structure creation failed', error);
+                });
         } else {
-            Promise.resolve(global.startInstantProposalDesign?.(toolKey, ids))
-                .catch(error => console.warn('[buildPalette] design tool failed to open', error));
+            if (typeof global.startInstantProposalDesign !== 'function') {
+                global.reportProposalDesignSaveFailure?.('proposalDrafts.design.unavailable');
+                return;
+            }
+            Promise.resolve(global.startInstantProposalDesign(toolKey, ids))
+                .catch(error => {
+                    if (typeof global.reportProposalDesignSaveFailure === 'function') global.reportProposalDesignSaveFailure(error);
+                    else console.warn('[buildPalette] design tool failed to open', error);
+                });
         }
     }
 

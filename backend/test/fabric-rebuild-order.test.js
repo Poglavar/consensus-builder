@@ -91,6 +91,7 @@ describe('ProposalManager._rebuildPass — stable authored state', () => {
         const stateBeforeEachApply = [];
         const manager = {
             _resetDerivedFabric: vi.fn(),
+            _reconcileStructurePresentation: vi.fn(),
             applyProposal: vi.fn(async proposalId => {
                 stateBeforeEachApply.push(proposals.map(proposal => isApplied(proposal)));
                 const proposal = byId.get(String(proposalId));
@@ -108,6 +109,9 @@ describe('ProposalManager._rebuildPass — stable authored state', () => {
         const result = await manager._rebuildPass(proposals, { silent: true });
 
         expect(result).toEqual({ ok: true, applied: 3, failed: [], invalidated: [] });
+        expect(manager._reconcileStructurePresentation).toHaveBeenCalledWith(proposals, { silent: true });
+        expect(manager._reconcileStructurePresentation.mock.invocationCallOrder[0])
+            .toBeGreaterThan(manager.applyProposal.mock.invocationCallOrder.at(-1));
         expect(stateBeforeEachApply).toEqual([
             [true, true, true],
             [true, true, true],
@@ -138,6 +142,7 @@ describe('ProposalManager._rebuildPass — stable authored state', () => {
         const manager = {
             _lastApplyFailureByProposalId: new Map(),
             _resetDerivedFabric: vi.fn(),
+            _reconcileStructurePresentation: vi.fn(),
             applyProposal: vi.fn(async proposalId => {
                 if (proposalId === 'failed') return false;
                 beforeLater.push(proposals.map(item => isApplied(item)));
@@ -154,6 +159,7 @@ describe('ProposalManager._rebuildPass — stable authored state', () => {
         const result = await manager._rebuildPass(proposals, { silent: true });
 
         expect(result.failed.map(item => item.proposalId)).toEqual(['failed']);
+        expect(manager._reconcileStructurePresentation).not.toHaveBeenCalled();
         expect(beforeLater).toEqual([[true, true]]);
         expect(proposals.map(item => item.applied)).toEqual([true, true]);
         expect(proposals.map(item => item.appliedAt)).toEqual(['before-a', 'before-b']);

@@ -517,6 +517,11 @@
         "errors": {
             "draftFailed": "No se pudo abrir esta propuesta para editarla.",
             "instantCreateFailed": "No se pudo guardar el nuevo objeto.",
+            "designSaveFailed": "No se pudieron guardar tus cambios. Inténtalo de nuevo.",
+            "designSaveFailedReason": "No se pudieron guardar tus cambios ({{reason}}). Inténtalo de nuevo.",
+            "structureGeometryFailed": "No se pudo generar la geometría de las parcelas seleccionadas.",
+            "designEditorReopenFailed": "No se pudo volver a abrir el editor de diseño.",
+            "siteRestoreFailed": "No se pudo restaurar el sitio. Inténtalo de nuevo.",
             "noAdapter": "No hay un editor registrado para este tipo de propuesta.",
             "notReshapeable": "Este tipo de propuesta no se puede remodelar.",
             "parcelsNotContiguous": "Las parcelas seleccionadas deben formar una sola superficie continua.",

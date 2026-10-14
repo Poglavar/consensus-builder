@@ -517,6 +517,11 @@
         "errors": {
             "draftFailed": "Could not open this proposal for editing.",
             "instantCreateFailed": "Could not save the new object.",
+            "designSaveFailed": "Your changes could not be saved. Try again.",
+            "designSaveFailedReason": "Your changes could not be saved ({{reason}}). Try again.",
+            "structureGeometryFailed": "Geometry could not be built from the selected parcels.",
+            "designEditorReopenFailed": "The design editor could not be reopened.",
+            "siteRestoreFailed": "The site could not be restored. Try again.",
             "noAdapter": "No editor is registered for this proposal type.",
             "notReshapeable": "This proposal type cannot be reshaped.",
             "parcelsNotContiguous": "The selected parcels must form one connected area.",

@@ -97,6 +97,150 @@ afterEach(() => {
 });
 
 describe('one-click structure creation focus', () => {
+    it('reports draft validation failures and attempts to reopen the retained draft', async () => {
+        const draft = { id: 'draft-retained', dirty: true };
+        const error = new Error('local storage is unavailable');
+        const showEphemeralMessage = vi.fn();
+        const updateStatus = vi.fn();
+        const openProposalDraftDesign = vi.fn(async () => true);
+        install('proposalDraftStore', {
+            getDraft: vi.fn(() => draft),
+            resumeDraft: vi.fn(),
+            validateDraft: vi.fn(() => { throw error; }),
+            flush: vi.fn()
+        });
+        install('showEphemeralMessage', showEphemeralMessage);
+        install('updateStatus', updateStatus);
+        install('openProposalDraftDesign', openProposalDraftDesign);
+
+        delete require.cache[shellPath];
+        require(shellPath);
+        globalThis.beginProposalDraftDesignSession(draft.id);
+
+        expect(globalThis.finishProposalDraftDesignSession(draft.id)).toBeNull();
+        await Promise.resolve();
+        await Promise.resolve();
+        expect(globalThis.activeProposalDesignDraftId).toBe(draft.id);
+        expect(openProposalDraftDesign).toHaveBeenCalledWith(draft.id);
+        expect(showEphemeralMessage).toHaveBeenCalledWith(
+            expect.stringContaining('Your changes could not be saved (local storage is unavailable)'),
+            7000,
+            'error'
+        );
+        expect(updateStatus).toHaveBeenCalledWith(expect.stringContaining('local storage is unavailable'));
+    });
+
+    it('surfaces an unexpected async instant-create rejection and reopens its retained draft', async () => {
+        const draft = {
+            id: 'draft-async-failure',
+            goal: 'park',
+            adapterKey: 'park',
+            proposalType: 'Park',
+            fields: { name: 'Park', description: 'Park', offer: 1 }
+        };
+        const error = new Error('draft validation storage failed');
+        const showEphemeralMessage = vi.fn();
+        const updateStatus = vi.fn();
+        const openProposalDraftDesign = vi.fn(async () => true);
+        install('proposalDraftStore', {
+            getDraft: vi.fn(() => draft),
+            validateDraft: vi.fn(() => { throw error; })
+        });
+        install('showEphemeralMessage', showEphemeralMessage);
+        install('updateStatus', updateStatus);
+        install('openProposalDraftDesign', openProposalDraftDesign);
+
+        delete require.cache[shellPath];
+        require(shellPath);
+        await expect(globalThis.instantCreateProposalFromDraft(draft.id)).resolves.toBeNull();
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(showEphemeralMessage).toHaveBeenCalledWith(
+            'Your changes could not be saved (draft validation storage failed). Try again.',
+            7000,
+            'error'
+        );
+        expect(updateStatus).toHaveBeenCalledWith(expect.stringContaining('draft validation storage failed'));
+        expect(openProposalDraftDesign).toHaveBeenCalledWith(draft.id);
+    });
+
+    it.each(['unexpected error', 'invalid draft'])('rearms commit-on-finish after an async %s so retry creates the object', async failureMode => {
+        let draft = {
+            id: 'draft-retry',
+            goal: 'buildings',
+            adapterKey: 'buildings',
+            proposalType: 'Building',
+            dirty: true,
+            fields: { name: 'Building', description: 'Building', offer: 1, selectedParcelIds: [] },
+            editorPayload: { typology: 'buildings' },
+            previewGeometry: [],
+            validation: { valid: true, errors: [] }
+        };
+        let validationCalls = 0;
+        const proposal = { goal: 'buildings', applied: true, buildingProposal: { buildings: [] } };
+        const addProposal = vi.fn(() => 'new-building');
+        const deriveForNewProposal = vi.fn(async () => ({ applied: true }));
+        const openProposalDraftDesign = vi.fn(async draftId => {
+            globalThis.beginProposalDraftDesignSession(draftId);
+            return true;
+        });
+        install('proposalDraftStore', {
+            createDraft: vi.fn(() => draft),
+            getDraft: vi.fn(() => draft),
+            resumeDraft: vi.fn(),
+            validateDraft: vi.fn(() => {
+                validationCalls += 1;
+                if (validationCalls === 2) {
+                    if (failureMode === 'unexpected error') throw new Error('temporary validation failure');
+                    return { ...draft, validation: { valid: false, errors: [{ message: 'temporary invalid draft' }] } };
+                }
+                return draft;
+            }),
+            flush: vi.fn(),
+            buildProposalFromDraft: vi.fn(() => proposal),
+            consumeAfterPublish: vi.fn(() => { draft = null; })
+        });
+        install('proposalStorage', {
+            addProposal,
+            getProposal: vi.fn(() => ({ ...proposal, proposalId: 'new-building', applied: true }))
+        });
+        install('ProposalManager', {
+            deriveForNewProposal,
+            _refreshUIAfterProposalChange: vi.fn()
+        });
+        install('isProposalApplied', value => value.applied === true);
+        install('openProposalDraftDesign', openProposalDraftDesign);
+        install('showEphemeralMessage', vi.fn());
+        install('updateStatus', vi.fn());
+
+        delete require.cache[shellPath];
+        require(shellPath);
+        await globalThis.startInstantSiteDesign('buildings', {
+            site: { type: 'Polygon', coordinates: [[[1, 2], [2, 2], [1, 2]]] },
+            toleranceM: 0,
+            binding: null,
+            selectionIds: []
+        }, ['site:retry']);
+
+        expect(globalThis.isProposalDesignCommitSession()).toBe(true);
+        globalThis.finishProposalDraftDesignSession(draft.id);
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        expect(draft).toBeTruthy();
+        expect(openProposalDraftDesign).toHaveBeenCalledTimes(2);
+        expect(globalThis.isProposalDesignCommitSession()).toBe(true);
+        expect(addProposal).not.toHaveBeenCalled();
+
+        globalThis.finishProposalDraftDesignSession(draft.id);
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        expect(addProposal).toHaveBeenCalledOnce();
+        expect(deriveForNewProposal).toHaveBeenCalledOnce();
+        expect(draft).toBeNull();
+        expect(globalThis.isProposalDesignCommitSession()).toBe(false);
+    });
+
     it('authors the structure against the exact live ids returned by selection preparation', async () => {
         const createDraft = vi.fn(() => null);
         install('prepareProposalDraftParcelSelection', vi.fn(async () => ({
@@ -125,6 +269,48 @@ describe('one-click structure creation focus', () => {
             'HR-330264-574#live-b'
         ]);
         expect(authored.editorPayload.structureProposal).not.toHaveProperty('selectedParcelIds');
+    });
+
+    it('reports missing structure geometry and a null site draft factory result', async () => {
+        const showEphemeralMessage = vi.fn();
+        const updateStatus = vi.fn();
+        install('i18n', {
+            t: key => ({
+                'proposalDrafts.errors.structureGeometryFailed': 'Geometry could not be built from the selected parcels.',
+                'proposalDrafts.design.draftCreateFailed': 'Could not save a local draft for this site design.'
+            }[key] || key)
+        });
+        install('showEphemeralMessage', showEphemeralMessage);
+        install('updateStatus', updateStatus);
+        install('prepareProposalDraftParcelSelection', vi.fn(async () => ({
+            ids: ['parcel-1'], layers: [{ feature: {} }], complete: true
+        })));
+        install('areParcelsContiguous', vi.fn(() => ({ contiguous: true })));
+        install('buildGeometryFromParcels', vi.fn(() => null));
+        install('proposalDraftStore', { createDraft: vi.fn(() => null) });
+
+        delete require.cache[shellPath];
+        require(shellPath);
+        expect(await globalThis.instantCreateStructureFromSelection('park', ['parcel-1'])).toBeNull();
+        expect(await globalThis.instantCreateStructureFromSite('square', {
+            site: { type: 'Polygon', coordinates: [[[1, 2], [2, 2], [1, 2]]] },
+            toleranceM: 0,
+            binding: null
+        })).toBeNull();
+
+        expect(showEphemeralMessage).toHaveBeenNthCalledWith(
+            1,
+            'Your changes could not be saved (Geometry could not be built from the selected parcels). Try again.',
+            7000,
+            'error'
+        );
+        expect(showEphemeralMessage).toHaveBeenNthCalledWith(
+            2,
+            'Your changes could not be saved (Could not save a local draft for this site design). Try again.',
+            7000,
+            'error'
+        );
+        expect(updateStatus).toHaveBeenCalledTimes(2);
     });
 
     it('refuses a disconnected live selection before building a proposal', async () => {

@@ -213,6 +213,14 @@ describe('open-ground host on a partially surveyed site', () => {
         const remainder = pieces.find(feature => feature !== body);
         expect(remainder.properties.cadastreParcelIds).toEqual(['HR-330264-1']);
         expect(remainder.properties.ownershipDetails.owners[0].name).toBe('Owner HR-330264-1');
+        // The cadastral remainder is also tagged with this proposal as producer, but it is not
+        // part of the square's rendered body and must not be merged into its presentation geometry.
+        expect(remainder.properties.producedByProposalId).toBe('sq-hole');
+        expect(remainder.properties.structureType).toBeUndefined();
+        const visibleSquare = turf.feature(globalThis.squares[0].geometry);
+        const visibleBody = turf.feature(body.geometry);
+        expect(turf.area(visibleSquare)).toBeCloseTo(turf.area(visibleBody), 0);
+        expect(turf.area(turf.intersect(visibleSquare, visibleBody))).toBeCloseTo(turf.area(visibleBody), 0);
         expect(turf.area(remainder)).toBeCloseTo(turf.area(turf.feature(rect(0, 0, 10, 10))), 0);
         expect(pieces).toHaveLength(2);
         expect(globalThis.squares).toHaveLength(1);
@@ -347,6 +355,33 @@ describe('formations on bare ground (empty binding)', () => {
 });
 
 describe('geometric interaction on open ground', () => {
+    const proposalFamilies = [
+        ['park', 'parks', 'updateParksLayer'],
+        ['square', 'squares', 'updateSquaresLayer'],
+        ['lake', 'lakes', 'updateLakesLayer'],
+        ['station', 'transitStations', 'updateTransitStationsLayer'],
+        ['building', 'proposedBuildings', 'updateProposedBuildingsLayer']
+    ];
+
+    function openGroundProposal(id, kind, geometry = rect(0, 0, 20, 20)) {
+        if (kind === 'building') {
+            return {
+                proposalId: id, title: id, goal: 'buildings', applied: false,
+                createdAt: '2026-10-01T00:00:00.000Z', cadastreParcelIds: [],
+                site: { type: 'MultiPolygon', coordinates: [rect(0, 0, 20, 20).coordinates] },
+                binding: { parcels: [], coverage: 'none', source: 'client-preview' },
+                buildingProposal: { type: 'block' },
+                geometry: { buildings: [turf.feature(rect(2, 2, 8, 8))] }
+            };
+        }
+        const record = structureRecord(id, kind, geometry, {
+            site: rect(0, 0, 20, 20),
+            binding: { parcels: [], coverage: 'none', source: 'client-preview' }
+        });
+        if (kind === 'station') record.structureProposal.stationType = 'tram';
+        return record;
+    }
+
     function bareRoad(id, polygon, extra = {}) {
         return {
             proposalId: id,
@@ -398,47 +433,217 @@ describe('geometric interaction on open ground', () => {
         expect(fabric.list().map(feature => feature.properties.producedByProposalId)).toEqual(['second']);
     });
 
-    it('redraws buildings removed when an overlapping Square is applied', async () => {
+    it.each(proposalFamilies.flatMap(([oldKind]) => proposalFamilies.map(([newKind]) => [oldKind, newKind])))
+    ('publishes the old %s and new %s family outputs for overlapping replacement', async (oldKind, newKind) => {
+        const oldId = `old-${oldKind}`;
+        const targetId = `new-${newKind}`;
+        const oldRecord = openGroundProposal(oldId, oldKind);
+        const target = openGroundProposal(targetId, newKind);
+        const supersession = require('../../frontend/js/proposal-supersession.js');
+        install('collectAppliedProposalAlternatives', supersession.collectAppliedProposalAlternatives);
+        const published = new Map();
+        const ids = name => (globalThis[name] || []).map(feature => feature.properties.proposalId);
+        proposalFamilies.forEach(([, collection, updater]) => install(updater, vi.fn(() => {
+            published.set(collection, {
+                standing: globalThis.proposalStorage.getAllProposals()
+                    .filter(record => record.applied).map(record => record.proposalId).sort(),
+                outputs: ids(collection)
+            });
+        })));
+
+        const { manager, fabric } = await harness({ records: [oldRecord, target] });
+        await expect(manager.applyProposal(oldId)).resolves.toBe(true);
+        const oldCollection = proposalFamilies.find(([kind]) => kind === oldKind)[1];
+        const newCollection = proposalFamilies.find(([kind]) => kind === newKind)[1];
+        expect(published.get(oldCollection)?.outputs).toEqual([oldId]);
+
+        await expect(manager.applyProposal(targetId)).resolves.toBe(true);
+
+        expect(globalThis.proposalStorage.getProposal(oldId).applied).toBe(false);
+        expect(globalThis.proposalStorage.getProposal(targetId).applied).toBe(true);
+        expect(globalThis.proposalStorage.getAllProposals().filter(record => record.applied).map(record => record.proposalId))
+            .toEqual([targetId]);
+        expect(globalThis[oldCollection].map(feature => feature.properties.proposalId))
+            .toEqual(oldCollection === newCollection ? [targetId] : []);
+        expect(globalThis[newCollection].map(feature => feature.properties.proposalId)).toEqual([targetId]);
+        // The callbacks observe committed record state and final outputs, including the old type
+        // whose record was switched off and therefore is absent from the replay list.
+        expect(published.get(oldCollection)).toMatchObject({
+            standing: [targetId], outputs: oldCollection === newCollection ? [targetId] : []
+        });
+        expect(published.get(newCollection)).toMatchObject({ standing: [targetId], outputs: [targetId] });
+        if (['park', 'square', 'lake'].includes(newKind)) {
+            expect(fabric.list().some(feature => feature.properties.producedByProposalId === targetId)).toBe(true);
+        }
+    });
+
+    it('does not publish supersession when the replacement fails materialization', async () => {
         const block = {
-            proposalId: 'block-under-square',
-            title: 'Block',
-            goal: 'buildings',
-            applied: false,
-            createdAt: '2026-10-01T00:00:00.000Z',
-            cadastreParcelIds: [],
+            proposalId: 'block-before-invalid-lake', title: 'Block', goal: 'buildings', applied: false,
+            createdAt: '2026-10-01T00:00:00.000Z', cadastreParcelIds: [],
             site: { type: 'MultiPolygon', coordinates: [rect(0, 0, 20, 20).coordinates] },
             binding: { parcels: [], coverage: 'none', source: 'client-preview' },
             buildingProposal: { type: 'block' },
             geometry: { buildings: [turf.feature(rect(2, 2, 8, 8))] }
         };
-        const square = structureRecord('square-over-block', 'square', rect(0, 0, 20, 20), {
-            binding: { parcels: [], coverage: 'none', source: 'client-preview' }
-        });
+        const invalidLake = structureRecord('invalid-lake', 'lake', {
+            type: 'MultiPolygon',
+            coordinates: [rect(0, 0, 10, 10).coordinates, rect(30, 30, 40, 40).coordinates]
+        }, { site: rect(0, 0, 20, 20), binding: { parcels: [], coverage: 'none', source: 'client-preview' } });
         const supersession = require('../../frontend/js/proposal-supersession.js');
         install('collectAppliedProposalAlternatives', supersession.collectAppliedProposalAlternatives);
-        let renderedBuildingIds = [];
-        let renderedSquareIds = [];
-        install('updateProposedBuildingsLayer', vi.fn(() => {
-            renderedBuildingIds = globalThis.proposedBuildings.map(feature => feature.properties.proposalId);
-        }));
-        install('updateSquaresLayer', vi.fn(() => {
-            renderedSquareIds = globalThis.squares.map(feature => feature.properties.proposalId);
-        }));
+        const redraw = vi.fn();
+        install('updateProposedBuildingsLayer', redraw);
+        install('updateLakesLayer', redraw);
+        const { manager, fabric } = await harness({ records: [block, invalidLake] });
+        await expect(manager.applyProposal('block-before-invalid-lake')).resolves.toBe(true);
+        redraw.mockClear();
+        const before = fabric.list().map(feature => JSON.stringify(feature));
 
-        const { manager } = await harness({ records: [block, square] });
-        await expect(manager.applyProposal('block-under-square')).resolves.toBe(true);
-        expect(renderedBuildingIds).toEqual(['block-under-square']);
+        await expect(manager.applyProposal('invalid-lake')).resolves.toBe(false);
 
-        await expect(manager.applyProposal('square-over-block')).resolves.toBe(true);
-
-        expect(globalThis.proposalStorage.getProposal('block-under-square').applied).toBe(false);
-        expect(globalThis.proposedBuildings).toEqual([]);
-        expect(renderedBuildingIds).toEqual([]);
-        expect(renderedSquareIds).toEqual(['square-over-block']);
+        expect(globalThis.proposalStorage.getProposal('block-before-invalid-lake').applied).toBe(true);
+        expect(globalThis.proposalStorage.getProposal('invalid-lake').applied).toBe(false);
+        expect(globalThis.proposedBuildings.map(feature => feature.properties.proposalId)).toEqual(['block-before-invalid-lake']);
+        expect(globalThis.lakes).toEqual([]);
+        expect(fabric.list().map(feature => JSON.stringify(feature))).toEqual(before);
+        expect(redraw).not.toHaveBeenCalled();
     });
 });
 
 describe('two proposals on the same open ground', () => {
+    const landStructureFamilies = [
+        ['park', 'parks'],
+        ['square', 'squares'],
+        ['lake', 'lakes']
+    ];
+
+    function geometryOfProducedBody(fabric, proposalId, kind) {
+        const bodies = fabric.list().filter(feature =>
+            String(feature.properties.producedByProposalId || '') === String(proposalId)
+            && feature.properties.structureType === kind);
+        if (!bodies.length) return null;
+        return bodies.slice(1).reduce((combined, feature) => turf.union(combined, feature), bodies[0]);
+    }
+
+    function expectSameGeometry(actual, expected) {
+        expect(actual).toBeTruthy();
+        expect(expected).toBeTruthy();
+        const actualFeature = turf.feature(actual);
+        const expectedFeature = turf.feature(expected);
+        const intersection = turf.intersect(actualFeature, expectedFeature);
+        expect(turf.area(actualFeature) - turf.area(intersection || turf.feature({ type: 'Polygon', coordinates: [] })))
+            .toBeCloseTo(0, 2);
+        expect(turf.area(expectedFeature) - turf.area(intersection || turf.feature({ type: 'Polygon', coordinates: [] })))
+            .toBeCloseTo(0, 2);
+    }
+
+    function renderFeature(collection, proposalId) {
+        return globalThis[collection].find(feature => String(feature.properties.proposalId) === proposalId) || null;
+    }
+
+    it.each(landStructureFamilies.flatMap(([oldKind]) => landStructureFamilies.flatMap(([newKind]) => [
+        [oldKind, newKind, 'partial'], [oldKind, newKind, 'complete']
+    ])))('projects %s geometry after a %s taker with %s overlap, through replay and unapply', async (oldKind, newKind, overlap) => {
+        const oldId = `old-${oldKind}`;
+        const newId = `new-${newKind}`;
+        const oldGeometry = rect(0, 0, 10, 10);
+        const newGeometry = overlap === 'complete' ? rect(0, 0, 10, 10) : rect(6, 0, 16, 10);
+        const oldDecorations = {
+            trees: [[LON + 3 * U, LAT + 5 * U], [LON + 8 * U, LAT + 5 * U]],
+            benches: [
+                { coordinate: [LON + 3 * U, LAT + 4 * U], bearing: 15 },
+                { coordinate: [LON + 8 * U, LAT + 4 * U], bearing: 45 }
+            ],
+            paths: [[
+                [LON + 2 * U, LAT + 2 * U], [LON + 4 * U, LAT + 2 * U],
+                [LON + 8 * U, LAT + 2 * U], [LON + 9 * U, LAT + 2 * U]
+            ]]
+        };
+        const old = structureRecord(oldId, oldKind, oldGeometry, {
+            binding: { parcels: [], coverage: 'none' },
+            site: oldGeometry
+        });
+        old.structureProposal.decorations = structuredClone(oldDecorations);
+        if (oldKind === 'lake') old.structureProposal.lakeGraphics = {
+            shore: structuredClone(oldGeometry), water: structuredClone(rect(1, 1, 9, 9)),
+            transition: structuredClone(rect(2, 2, 8, 8)), fish: [[LON + 5 * U, LAT + 5 * U]], version: 3
+        };
+        const newer = structureRecord(newId, newKind, newGeometry, {
+            binding: { parcels: [], coverage: 'none' },
+            site: newGeometry
+        });
+        newer.createdAt = '2026-10-03T00:00:00.000Z';
+        const oldGeometrySnapshot = structuredClone(old.structureProposal.geometry);
+        const oldDecorationsSnapshot = structuredClone(old.structureProposal.decorations);
+        const oldLakeGraphicsSnapshot = structuredClone(old.structureProposal.lakeGraphics || null);
+        const { manager, fabric } = await harness({ records: [old, newer] });
+        const oldCollection = landStructureFamilies.find(([kind]) => kind === oldKind)[1];
+        const newCollection = landStructureFamilies.find(([kind]) => kind === newKind)[1];
+
+        await expect(manager.applyProposal(oldId)).resolves.toBe(true);
+        await expect(manager.deriveForNewProposal(globalThis.proposalStorage.getProposal(newId)))
+            .resolves.toMatchObject({ ok: true, goalKey: newKind });
+
+        const assertProjectedState = () => {
+            expect(globalThis.proposalStorage.getProposal(oldId).applied).toBe(true);
+            expect(globalThis.proposalStorage.getProposal(newId).applied).toBe(true);
+            const oldBody = geometryOfProducedBody(fabric, oldId, oldKind);
+            const oldRender = renderFeature(oldCollection, oldId);
+            if (oldBody) {
+                expect(oldRender).toBeTruthy();
+                expectSameGeometry(oldRender.geometry, oldBody.geometry);
+                if (oldKind === 'lake' && overlap === 'partial') {
+                    // This harness deliberately has no ensureLakeGraphics generator, so stale
+                    // authored graphics must be cleared rather than reused on clipped geometry.
+                    expect(oldRender.properties.lakeGraphics).toBeNull();
+                }
+                expect(oldRender.properties.decorations?.trees || []).toContainEqual([LON + 3 * U, LAT + 5 * U]);
+                if (oldKind !== 'lake') {
+                    expect(oldRender.properties.decorations?.trees || []).not.toContainEqual([LON + 8 * U, LAT + 5 * U]);
+                    expect(oldRender.properties.decorations?.benches || []).not.toContainEqual(
+                        expect.objectContaining({ coordinate: [LON + 8 * U, LAT + 4 * U] })
+                    );
+                    expect(oldRender.properties.decorations?.paths || []).toContainEqual([
+                        [LON + 2 * U, LAT + 2 * U], [LON + 4 * U, LAT + 2 * U]
+                    ]);
+                    expect(oldRender.properties.decorations?.paths || []).not.toContainEqual(expect.arrayContaining([
+                        [LON + 8 * U, LAT + 2 * U]
+                    ]));
+                }
+            } else {
+                expect(oldRender).toBeNull();
+            }
+            const newBody = geometryOfProducedBody(fabric, newId, newKind);
+            const newRender = renderFeature(newCollection, newId);
+            expect(newBody).toBeTruthy();
+            expect(newRender).toBeTruthy();
+            expectSameGeometry(newRender.geometry, newBody.geometry);
+            expect(globalThis.proposalStorage.getProposal(oldId).structureProposal.geometry).toEqual(oldGeometrySnapshot);
+            expect(globalThis.proposalStorage.getProposal(oldId).structureProposal.decorations).toEqual(oldDecorationsSnapshot);
+            if (oldKind === 'lake') {
+                expect(globalThis.proposalStorage.getProposal(oldId).structureProposal.lakeGraphics).toEqual(oldLakeGraphicsSnapshot);
+            }
+        };
+        assertProjectedState();
+
+        // A full materialization must rebuild the same transient projection from the authored plan.
+        await expect(manager.rebuildAppliedFabric({ silent: true })).resolves.toMatchObject({ ok: true, applied: 2, failed: [] });
+        assertProjectedState();
+
+        await expect(manager.unapplyProposal(newId)).resolves.toBe(true);
+        expect(globalThis.proposalStorage.getProposal(oldId).applied).toBe(true);
+        expect(globalThis.proposalStorage.getProposal(newId).applied).toBe(false);
+        expectSameGeometry(renderFeature(oldCollection, oldId)?.geometry, oldGeometry);
+        expect(renderFeature(newCollection, newId)).toBeNull();
+        expect(renderFeature(oldCollection, oldId).properties.decorations).toEqual(oldDecorationsSnapshot);
+        expect(globalThis.proposalStorage.getProposal(oldId).structureProposal.geometry).toEqual(oldGeometrySnapshot);
+        expect(globalThis.proposalStorage.getProposal(oldId).structureProposal.decorations).toEqual(oldDecorationsSnapshot);
+        if (oldKind === 'lake') {
+            expect(globalThis.proposalStorage.getProposal(oldId).structureProposal.lakeGraphics).toEqual(oldLakeGraphicsSnapshot);
+        }
+    });
+
     it('lets the newer take the older one\'s ground piece, without double cover, and gives it back on unapply', async () => {
         const older = structureRecord('older', 'park', rect(0, 0, 10, 10), { binding: { parcels: [], coverage: 'none' } });
         const newer = structureRecord('newer', 'square', rect(6, 0, 16, 10), { binding: { parcels: [], coverage: 'none' } });

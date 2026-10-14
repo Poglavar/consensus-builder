@@ -887,10 +887,20 @@
     function saveStationGeometryEditor() {
         if (!stationEditor) return false;
         const draftId = stationEditor.draftId;
-        syncStationEditorDraft();
+        const isCommit = global.isProposalDesignCommitSession?.() === true;
+        try {
+            if (!syncStationEditorDraft()) {
+                global.reportProposalDesignSaveFailure?.();
+                return false;
+            }
+        } catch (error) {
+            global.reportProposalDesignSaveFailure?.(error);
+            return false;
+        }
         teardownStationEditor();
-        global.finishProposalDraftDesignSession?.(draftId);
-        if (typeof global.updateStatus === 'function') {
+        if (global.finishProposalDraftDesignSession?.(draftId) === null) return false;
+        // Commit sessions report their actual async result in the shared proposal shell.
+        if (!isCommit && typeof global.updateStatus === 'function') {
             global.updateStatus(stationEditorText('saved', 'Station geometry saved.'));
         }
         return true;

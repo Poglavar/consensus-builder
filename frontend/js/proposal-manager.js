@@ -1657,21 +1657,26 @@ const ProposalManager = {
                         }
                         stood = await this.applyProposal(id, replayOptions);
                     } catch (error) {
+                        const failure = this.getLastApplyFailureInfo?.(id);
                         failed.push({
                             proposalId: id,
                             title: record.title || record.name || id,
+                            code: error?.code || failure?.code || null,
+                            missingIds: error?.missingIds || failure?.missingIds || [],
                             reason: String(error && error.message || error)
                         });
                     }
                     if (!stood) {
                         if (!failed.some(entry => String(entry.proposalId || '') === id)) {
-                            // getLastApplyFailure returns the message itself (a string). Reading
-                            // `.message` off it lost every real reason to the generic fallback.
-                            const failure = this.getLastApplyFailure?.(id);
+                            // Preserve the structured refusal through the local summary. Keeping
+                            // only its message made deriveForNewProposal overwrite its code and IDs.
+                            const failure = this.getLastApplyFailureInfo?.(id);
                             failed.push({
                                 proposalId: id,
                                 title: record.title || record.name || id,
-                                reason: failure || 'proposal could not be materialized locally'
+                                code: failure?.code || null,
+                                missingIds: failure?.missingIds || [],
+                                reason: failure?.message || 'proposal could not be materialized locally'
                             });
                         }
                         continue;
@@ -1688,6 +1693,7 @@ const ProposalManager = {
             }
 
             if (!failed.length) {
+                this._reconcileStructurePresentation(seedById.values(), opts);
                 // Every removed or replayed output changes its presentation layer. Superseded
                 // records are no longer applied, so they are absent from orderedReplay even though
                 // their old rendered output must disappear. Redraw each affected kind after commit.
@@ -2698,6 +2704,7 @@ const ProposalManager = {
             // depth where it found it, or every later save in the session is silently suppressed.
             if (replayBatched) batchStore.endBatch();
         }
+        if (!failed.length) this._reconcileStructurePresentation(appliedList, passOptions);
         // Recorded, not yet printed: the caller adds the strip refresh and the pass count, so a
         // rebuild reports itself in ONE line instead of one per phase.
         this._lastRebuildProfile = {

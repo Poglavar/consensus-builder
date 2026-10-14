@@ -34,10 +34,12 @@ function makeEditorHarness(decorations, options = {}) {
     const historyInstances = [];
     const mapHandlers = new Map();
     const documentHandlers = new Map();
+    const initialMapDraggingEnabled = options.mapDraggingEnabled !== false;
     const groundRecords = [];
     const lakeError = { hidden: true, textContent: '' };
     const lakeSave = { disabled: false };
     const groups = [];
+    const previewLayers = [];
     const panel = {
         classList: makeClassList(),
         listeners: {},
@@ -80,6 +82,7 @@ function makeEditorHarness(decorations, options = {}) {
         removeEventListener(type, handler) {
             documentHandlers.set(type, (documentHandlers.get(type) || []).filter(item => item !== handler));
         },
+        fire(type, event = {}) { (documentHandlers.get(type) || []).slice().forEach(handler => handler(event)); },
         fireKey(event) { (documentHandlers.get('keydown') || []).forEach(handler => handler(event)); }
     };
 
@@ -91,7 +94,13 @@ function makeEditorHarness(decorations, options = {}) {
             handlers.push(handler); mapHandlers.set(type, handlers);
         },
         off(type, handler) { mapHandlers.set(type, (mapHandlers.get(type) || []).filter(item => item !== handler)); },
-        dragging: { enable() {}, disable() {} },
+        fire(type, event = {}) { (mapHandlers.get(type) || []).slice().forEach(handler => handler(event)); },
+        dragging: {
+            _enabled: initialMapDraggingEnabled,
+            enable() { this._enabled = true; },
+            disable() { this._enabled = false; },
+            enabled() { return this._enabled; }
+        },
         getZoom() { return 18; }, fitBounds() {}, removeLayer() {}
     };
     const groupFactory = () => {
@@ -105,11 +114,23 @@ function makeEditorHarness(decorations, options = {}) {
         groups.push(group);
         return group;
     };
-    const makeLayer = () => ({ addTo(group) { group.addLayer(this); return this; } });
+    const makeLayer = options => ({
+        options,
+        events: {},
+        addTo(group) { group.addLayer(this); return this; },
+        on(type, handler) { this.events[type] = handler; return this; },
+        fire(type, event = {}) { this.events[type]?.(event); return this; },
+        setLatLngs(latlngs) { this.latlngs = latlngs; return this; },
+        setStyle(style) { this.style = { ...this.style, ...style }; return this; }
+    });
     const markers = [];
     const L = {
         layerGroup: groupFactory,
-        geoJSON: () => Object.assign(makeLayer(), { getBounds: () => ({ isValid: () => true }) }),
+        geoJSON(_feature, options) {
+            const layer = Object.assign(makeLayer(options), { getBounds: () => ({ isValid: () => true }) });
+            previewLayers.push(layer);
+            return layer;
+        },
         divIcon: options => options,
         marker(latlng, options) {
             const marker = Object.assign(makeLayer(), {
@@ -122,7 +143,16 @@ function makeEditorHarness(decorations, options = {}) {
             markers.push(marker);
             return marker;
         },
-        polygon: () => makeLayer(), polyline: () => makeLayer(),
+        polygon(_latlngs, options) {
+            const layer = makeLayer(options);
+            previewLayers.push(layer);
+            return layer;
+        },
+        polyline(_latlngs, options) {
+            const layer = makeLayer(options);
+            previewLayers.push(layer);
+            return layer;
+        },
         DomEvent: { stopPropagation() {}, stop() {} }
     };
     const historyFactory = {
@@ -147,6 +177,9 @@ function makeEditorHarness(decorations, options = {}) {
     };
     let savedDecorations = null;
     let savedPayload = null;
+    let syncBehavior = options.syncBehavior || 'success';
+    const saveFailures = [];
+    const statusMessages = [];
     let polygonEditorOptions = null;
     let polygonEditorDestroyed = false;
     const finishedDrafts = [];
@@ -161,7 +194,11 @@ function makeEditorHarness(decorations, options = {}) {
     const context = createContext({
         document, map, L, GeometryEditHistory: historyFactory,
         turf: {
-            booleanPointInPolygon: () => true,
+            booleanPointInPolygon(point) {
+                if (options.rejectOutsidePoints !== true) return true;
+                const [lng, lat] = point.coordinates;
+                return lng >= 0 && lng <= 1 && lat >= 0 && lat <= 1;
+            },
             point: coordinates => ({ type: 'Point', coordinates }),
             polygon: coordinates => ({ type: 'Feature', geometry: { type: 'Polygon', coordinates } }),
             booleanWithin: () => true,
@@ -190,11 +227,17 @@ function makeEditorHarness(decorations, options = {}) {
             }
         },
         syncActiveProposalDraftFromEditor(_section, payload) {
+            if (syncBehavior === 'null') return null;
+            if (syncBehavior === 'throw') throw new Error('draft store unavailable');
             savedPayload = payload;
             savedDecorations = payload.structureProposal.decorations;
+            draft.editorPayload.structureProposal = JSON.parse(JSON.stringify(payload.structureProposal));
+            return draft;
         },
-        finishProposalDraftDesignSession(id) { finishedDrafts.push(id); },
-        updateStatus(message) { context.lastStatus = message; },
+        reportProposalDesignSaveFailure(error) { saveFailures.push(error || null); },
+        finishProposalDraftDesignSession(id) { finishedDrafts.push(id); return options.finishFailed ? null : draft; },
+        updateStatus(message) { statusMessages.push(message); context.lastStatus = message; },
+        isProposalDesignCommitSession() { return options.commitSession === true; },
         buildLakeGraphicsFromGeometry(value) { return { geometry: value, shore: { type: 'Polygon', coordinates: [] }, water: { type: 'Polygon', coordinates: [] }, version: 'fresh' }; },
         PolygonGeometryEditor: {
             create(value) {
@@ -225,7 +268,7 @@ function makeEditorHarness(decorations, options = {}) {
     runInContext(editorSource, context, { filename: 'frontend/js/structure-geometry-editor.js' });
 
     return {
-        context, panel, groups, markers, historyInstances, document,
+        context, panel, groups, markers, previewLayers, historyInstances, document,
         draft,
         groundRecords,
         lakeError,
@@ -235,6 +278,14 @@ function makeEditorHarness(decorations, options = {}) {
         get finishedDrafts() { return finishedDrafts; },
         get savedPayload() { return savedPayload; },
         mapEditorOptions, mapEditorSessions, fitFeatures,
+        saveFailures, statusMessages,
+        setSyncBehavior(value) { syncBehavior = value; },
+        fireMap: (type, event) => map.fire(type, event),
+        fireDocument: (type, event) => document.fire(type, event),
+        listenerCount(target, type) {
+            return (target === 'map' ? mapHandlers : documentHandlers).get(type)?.length || 0;
+        },
+        isMapDraggingEnabled: () => map.dragging.enabled(),
         open() {
             return context.openStructureGeometryEditor({
                 ...draft,
@@ -252,7 +303,7 @@ function makeEditorHarness(decorations, options = {}) {
     };
 }
 
-const currentMarkers = harness => harness.groups.at(-1).items.filter(item => item.events && typeof item.fire === 'function');
+const currentMarkers = harness => harness.groups.at(-1).items.filter(item => typeof item.getLatLng === 'function');
 
 describe('structure geometry editor history wiring', () => {
     it('blocks a lake edit outside its authored ground, keeps the edit open, then allows a valid save', () => {
@@ -370,5 +421,174 @@ describe('structure geometry editor history wiring', () => {
 
         harness.undo();
         expect(harness.save().trees).toEqual([[0.2, 0.2]]);
+    });
+
+    it.each([
+        ['park tree', 'park', { trees: [[0.2, 0.2]] }, 'trees', [[0.4, 0.35]]],
+        ['park bench', 'park', { benches: [{ coordinate: [0.2, 0.2], bearing: 15 }] }, 'benches', [{ coordinate: [0.4, 0.35], bearing: 15 }]],
+        ['square fountain', 'square', { fountains: [[0.2, 0.2]] }, 'fountains', [[0.4, 0.35]]]
+    ])('keeps the latest valid %s coordinate after a later out-of-bound drag', (_label, kind, decorations, type, expected) => {
+        const harness = makeEditorHarness(decorations, { kind, rejectOutsidePoints: true });
+        expect(harness.open()).toBe(true);
+        expect(harness.context.turf.booleanPointInPolygon(harness.context.turf.point([0.4, 0.35]))).toBe(true);
+        const marker = currentMarkers(harness)[0];
+
+        marker.setLatLng([0.35, 0.4]);
+        marker.fire('dragend');
+        expect(marker.getLatLng()).toEqual({ lat: 0.35, lng: 0.4 });
+
+        marker.setLatLng([1.2, 1.3]); // Outside the authored [0, 1] boundary.
+        marker.fire('dragend');
+
+        expect(marker.getLatLng()).toEqual({ lat: 0.35, lng: 0.4 });
+        expect(harness.save()[type]).toEqual(expected);
+    });
+
+    it.each(['null', 'throw'])('keeps the park editor open after draft sync %s and preserves edits for retry', (syncBehavior) => {
+        const harness = makeEditorHarness({ trees: [[0.2, 0.2]], version: 3 }, { syncBehavior });
+        expect(harness.open()).toBe(true);
+        const marker = currentMarkers(harness)[0];
+        marker.setLatLng([0.35, 0.4]);
+        marker.fire('dragend');
+
+        harness.save();
+
+        expect(harness.context.isStructureGeometryEditorActive()).toBe(true);
+        expect(harness.finishedDrafts).toEqual([]);
+        expect(harness.savedPayload).toBeNull();
+        expect(harness.statusMessages).not.toContain('Structure design saved.');
+        expect(harness.saveFailures).toHaveLength(1);
+        if (syncBehavior === 'throw') expect(harness.saveFailures[0].message).toBe('draft store unavailable');
+
+        harness.setSyncBehavior('success');
+        const saved = harness.save();
+        expect(saved.trees).toEqual([[0.4, 0.35]]);
+        expect(harness.savedPayload.structureProposal.decorations.trees).toEqual([[0.4, 0.35]]);
+        expect(harness.context.isStructureGeometryEditorActive()).toBe(false);
+        expect(harness.finishedDrafts).toEqual(['draft-1']);
+        expect(harness.statusMessages).toContain('Structure design saved.');
+    });
+
+    it('keeps the editable design when its draft cannot be read at save time', () => {
+        const harness = makeEditorHarness({ trees: [[0.2, 0.2]] });
+        expect(harness.open()).toBe(true);
+        harness.context.proposalDraftStore.getDraft = () => null;
+
+        harness.save();
+
+        expect(harness.context.isStructureGeometryEditorActive()).toBe(true);
+        expect(harness.finishedDrafts).toEqual([]);
+        expect(harness.saveFailures).toHaveLength(1);
+    });
+
+    it('discards a retained commit-session draft on Cancel without publishing it', () => {
+        const harness = makeEditorHarness({ trees: [[0.2, 0.2]] }, { commitSession: true });
+        let discarded = false;
+        const published = [];
+        harness.draft.dirty = true;
+        harness.context.discardProposalDraftDesignSession = () => {
+            discarded = true;
+            harness.context.isProposalDesignCommitSession = () => false;
+        };
+        harness.context.finishProposalDraftDesignSession = () => {
+            if (harness.context.isProposalDesignCommitSession()) published.push(harness.draft);
+        };
+        expect(harness.open()).toBe(true);
+
+        harness.cancel();
+
+        expect(discarded).toBe(true);
+        expect(published).toEqual([]);
+        expect(harness.context.isStructureGeometryEditorActive()).toBe(false);
+    });
+
+    it('does not overwrite a failed draft finish with a saved status', () => {
+        const harness = makeEditorHarness({ trees: [[0.2, 0.2]] }, { finishFailed: true });
+        expect(harness.open()).toBe(true);
+
+        harness.save();
+
+        expect(harness.finishedDrafts).toEqual(['draft-1']);
+        expect(harness.statusMessages).not.toContain('Structure design saved.');
+    });
+
+    it('does not report local success while saving a valid commit-session draft', () => {
+        const harness = makeEditorHarness({ trees: [[0.2, 0.2]], version: 3 }, { commitSession: true });
+        expect(harness.open()).toBe(true);
+        const marker = currentMarkers(harness)[0];
+        marker.setLatLng([0.35, 0.4]);
+        marker.fire('dragend');
+
+        expect(harness.save().trees).toEqual([[0.4, 0.35]]);
+        expect(harness.finishedDrafts).toEqual(['draft-1']);
+        expect(harness.statusMessages).not.toContain('Structure design saved.');
+    });
+
+    it.each([
+        ['park', { trees: [[0.2, 0.2]], paths: [[[0.1, 0.1], [0.4, 0.4]]] }, 'trees'],
+        ['square', { fountains: [[0.2, 0.2]] }, 'fountains']
+    ])('keeps %s point handles above SVG previews and saves dragged coordinates', (kind, decorations, type) => {
+        const harness = makeEditorHarness(decorations, { kind });
+
+        expect(harness.open()).toBe(true);
+        const marker = currentMarkers(harness)[0];
+        expect(marker.options.pane).toBe('onMapEditorHandles');
+        expect(marker.options.zIndexOffset).toBeUndefined();
+        expect(harness.previewLayers.some(layer => layer.options?.pane === 'onMapEditorPane')).toBe(true);
+
+        marker.fire('dragstart');
+        marker.setLatLng([0.35, 0.4]); // Leaflet marker coordinates are [latitude, longitude].
+        marker.fire('dragend');
+
+        expect(harness.save()[type]).toEqual([[0.4, 0.35]]);
+    });
+
+    it.each([
+        ['map', true],
+        ['document', false]
+    ])('ends a park path drag on %s touchcancel and restores its original map drag state', (cancelTarget, wasEnabled) => {
+        const harness = makeEditorHarness({ paths: [[[0.1, 0.2], [0.4, 0.5]]] }, {
+            mapDraggingEnabled: wasEnabled
+        });
+
+        expect(harness.open()).toBe(true);
+        const path = harness.previewLayers.find(layer => layer.options?.className === 'structure-geometry-draggable');
+        expect(path).toBeDefined();
+        const activeListenersBeforeDrag = {
+            map: ['mousemove', 'touchmove', 'mouseup', 'touchend', 'touchcancel']
+                .map(type => harness.listenerCount('map', type)),
+            document: ['mouseup', 'touchend', 'touchcancel']
+                .map(type => harness.listenerCount('document', type))
+        };
+        path.fire('touchstart', { latlng: { lng: 0.1, lat: 0.2 }, originalEvent: {} });
+        expect(harness.isMapDraggingEnabled()).toBe(false);
+        expect(harness.listenerCount('map', 'touchmove')).toBe(1);
+        expect(harness.listenerCount('document', 'touchend')).toBe(1);
+
+        harness.fireMap('touchmove', { latlng: { lng: 0.3, lat: 0.4 } });
+        expect(path.latlngs).toEqual([[0.4, 0.3], [0.7, 0.6]]);
+        if (cancelTarget === 'map') harness.fireMap('touchcancel');
+        else harness.fireDocument('touchcancel');
+
+        expect(['mousemove', 'touchmove', 'mouseup', 'touchend', 'touchcancel']
+            .map(type => harness.listenerCount('map', type))).toEqual(activeListenersBeforeDrag.map);
+        expect(['mouseup', 'touchend', 'touchcancel']
+            .map(type => harness.listenerCount('document', type))).toEqual(activeListenersBeforeDrag.document);
+        expect(harness.isMapDraggingEnabled()).toBe(wasEnabled);
+    });
+
+    it('does not enable a map that was disabled before a completed park touch drag', () => {
+        const harness = makeEditorHarness({ paths: [[[0.1, 0.2], [0.4, 0.5]]] }, {
+            mapDraggingEnabled: false
+        });
+
+        expect(harness.open()).toBe(true);
+        const path = harness.previewLayers.find(layer => layer.options?.className === 'structure-geometry-draggable');
+        path.fire('touchstart', { latlng: { lng: 0.1, lat: 0.2 }, originalEvent: {} });
+        harness.fireDocument('touchend');
+
+        expect(harness.isMapDraggingEnabled()).toBe(false);
+        expect(harness.listenerCount('map', 'touchmove')).toBe(0);
+        expect(harness.listenerCount('document', 'touchend')).toBe(0);
     });
 });

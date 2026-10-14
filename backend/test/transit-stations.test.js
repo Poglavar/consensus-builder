@@ -299,6 +299,79 @@ describe('station placement alignment', () => {
 });
 
 describe('station geometry editing', () => {
+    function openSaveHarness({ sync, commitSession = false } = {}) {
+        const keys = [
+            'map', 'L', 'document', 'turf', 'proposalDraftStore', 'ProposalSelection',
+            'hideProposalDetailsPanel', 'hideParcelInfoPanel', 'isProposalDesignCommitSession',
+            'finishProposalDraftDesignSession', 'reportProposalDesignSaveFailure', 'updateStatus',
+            'syncActiveProposalDraftFromEditor', 'OnMapEditor'
+        ];
+        const originals = new Map(keys.map(key => [key, globalThis[key]]));
+        const listeners = new Map();
+        const panel = {
+            classList: { add() {}, remove() {} },
+            innerHTML: '', dataset: {},
+            setAttribute() {},
+            addEventListener: (type, listener) => listeners.set(type, listener),
+            removeEventListener: vi.fn(),
+            querySelector: () => null,
+            remove() {}
+        };
+        const closeSession = vi.fn();
+        const finish = vi.fn();
+        const reportFailure = vi.fn();
+        const updateStatus = vi.fn();
+        const draft = {
+            id: 'station-save-draft', adapterKey: 'station', sourceProposalId: 'station-1',
+            editorPayload: { structureProposal: {
+                stationType: 'elevated', center: [15.98, 45.81], bearing: 20,
+                platformHeightM: 14,
+                geometry: stations.createStationFootprint([15.98, 45.81], 20, 'elevated', turf)
+            } }
+        };
+        const makeLayer = () => ({ addTo() { return this; }, clearLayers() {} });
+        globalThis.map = {
+            getPane: () => ({ style: {} }), createPane: () => ({ style: {} }), removeLayer() {}
+        };
+        globalThis.L = {
+            layerGroup: makeLayer, featureGroup: makeLayer,
+            geoJSON: () => ({ addTo() { return this; } }),
+            polyline: () => ({ addTo() { return this; } }),
+            marker: () => ({ addTo() { return this; } }),
+            divIcon: options => options
+        };
+        globalThis.document = {
+            body: { appendChild() {} },
+            createElement: () => panel,
+            addEventListener() {}, removeEventListener() {}, getElementById: () => null
+        };
+        globalThis.OnMapEditor = { open: vi.fn(() => ({
+            root: panel, close: closeSession, fitFeature: vi.fn()
+        })) };
+        globalThis.turf = turf;
+        globalThis.proposalDraftStore = { getDraft: id => id === draft.id ? draft : null };
+        globalThis.ProposalSelection = { getKey: () => 'station-1' };
+        globalThis.hideProposalDetailsPanel = () => {};
+        globalThis.hideParcelInfoPanel = () => {};
+        globalThis.isProposalDesignCommitSession = () => commitSession;
+        globalThis.finishProposalDraftDesignSession = finish;
+        globalThis.reportProposalDesignSaveFailure = reportFailure;
+        globalThis.updateStatus = updateStatus;
+        globalThis.syncActiveProposalDraftFromEditor = vi.fn(sync);
+        expect(stations.openStationGeometryEditor(draft)).toBe(true);
+        const clickSave = () => listeners.get('click')({
+            target: { closest: () => ({ dataset: { stationEditorAction: 'save' } }) }
+        });
+        const restore = async () => {
+            await stations.cancelStationGeometryEditor();
+            for (const [key, value] of originals.entries()) {
+                if (value === undefined) delete globalThis[key];
+                else globalThis[key] = value;
+            }
+        };
+        return { draft, panel, closeSession, finish, reportFailure, updateStatus, clickSave, restore };
+    }
+
     it('rotates around the fixed centre and carries elevated height into the edited structure', () => {
         const center = [15.98, 45.81];
         const original = {
@@ -408,6 +481,54 @@ describe('station geometry editing', () => {
                 if (value === undefined) delete globalThis[key];
                 else globalThis[key] = value;
             }
+        }
+    });
+
+    it.each([
+        ['returns null', () => null],
+        ['throws', () => { throw new Error('draft sync failed'); }]
+    ])('keeps the editor open and reports failure when draft sync %s', async (_label, sync) => {
+        const harness = openSaveHarness({ sync });
+        try {
+            harness.clickSave();
+
+            expect(globalThis.transitStationGeometryEditorActive).toBe(true);
+            expect(harness.closeSession).not.toHaveBeenCalled();
+            expect(harness.finish).not.toHaveBeenCalled();
+            expect(harness.reportFailure).toHaveBeenCalled();
+            expect(harness.updateStatus).not.toHaveBeenCalledWith('Station geometry saved.');
+        } finally {
+            await harness.restore();
+        }
+    });
+
+    it('does not overwrite a failed draft finish with a saved status', async () => {
+        const harness = openSaveHarness({ sync: () => ({ id: 'station-save-draft' }) });
+        harness.finish.mockReturnValue(null);
+        try {
+            harness.clickSave();
+            expect(harness.finish).toHaveBeenCalledWith(harness.draft.id);
+            expect(harness.updateStatus).not.toHaveBeenCalledWith('Station geometry saved.');
+        } finally {
+            await harness.restore();
+        }
+    });
+
+    it('closes after a valid commit-session sync without announcing save before commit finishes', async () => {
+        const harness = openSaveHarness({ sync: () => ({ synced: true }), commitSession: true });
+        try {
+            harness.clickSave();
+
+            expect(globalThis.transitStationGeometryEditorActive).toBe(false);
+            expect(harness.closeSession).toHaveBeenCalledTimes(1);
+            expect(globalThis.syncActiveProposalDraftFromEditor).toHaveBeenCalledWith(
+                'station', expect.objectContaining({ structureProposal: expect.any(Object) }),
+                { coalesceKey: 'editor:station' }
+            );
+            expect(harness.reportFailure).not.toHaveBeenCalled();
+            expect(harness.updateStatus).not.toHaveBeenCalledWith('Station geometry saved.');
+        } finally {
+            await harness.restore();
         }
     });
 });
