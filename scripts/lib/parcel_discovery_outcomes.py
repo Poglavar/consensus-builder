@@ -36,6 +36,24 @@ def evidence_file(root: Path, value: str) -> Path:
     return target
 
 
+def supported_binding_errors(root: Path, receipt: dict, bindings: list[dict], city_code: str) -> list[str]:
+    """Check live source bindings against the app's canonical WUP demographic mapping."""
+    catalog = json.loads((root / "backend/parcels/source-catalog.json").read_text())
+    source = next((row for row in catalog["sources"] if row["id"] == receipt["source"]["sourceId"]), None)
+    if source is None or source.get("endpoint") != receipt["source"]["endpoint"]:
+        return ["already-supported source ID and endpoint must match the current catalog"]
+    demographics = json.loads((root / "world-parcels/report/city-demographics.json").read_text())
+    mapped_ids = {app_id for row in demographics["cities"] if str(row.get("wupCityCode")) == city_code
+                  for app_id in row.get("appCityIds", [])}
+    for app_id in receipt["appCityIds"]:
+        binding = next((row for row in bindings if row["id"] == app_id), None)
+        if (binding is None or binding.get("sourceId") != source["id"] or app_id not in source.get("cityIds", [])
+                or (binding.get("wupCityCode") is not None and str(binding["wupCityCode"]) != city_code)
+                or (str(binding.get("wupCityCode")) != city_code and app_id not in mapped_ids)):
+            return ["already-supported must match the current config, catalog and canonical WUP-to-app identity mapping"]
+    return []
+
+
 def validate_receipt(root: Path, receipt: dict) -> list[str]:
     """Validate the handoff contract, without guessing a verdict from prose/keywords."""
     errors = []

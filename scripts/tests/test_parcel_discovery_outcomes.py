@@ -103,6 +103,22 @@ class DiscoveryOutcomeTests(unittest.TestCase):
             rec["searchCoverage"][level] = {"status": "not-applicable", "reason": "Skipped"}
             self.assertTrue(outcomes.validate_receipt(self.root, rec), level)
 
+    def test_existing_app_identity_uses_canonical_wup_demographic_mapping(self):
+        catalog = self.root / "backend/parcels/source-catalog.json"
+        demographics = self.root / "world-parcels/report/city-demographics.json"
+        catalog.parent.mkdir(parents=True)
+        demographics.parent.mkdir(parents=True)
+        catalog.write_text(json.dumps({"sources": [{"id": "example-cadastre", "endpoint": "https://example.test/parcels", "cityIds": ["example"]}]}))
+        demographics.write_text(json.dumps({"cities": [{"wupCityCode": 42, "appCityIds": ["example"]}]}))
+        receipt = {**self.receipt, "decision": "already-supported", "appCityIds": ["example"]}
+        bindings = [{"id": "example", "sourceId": "example-cadastre"}]
+        self.assertEqual(outcomes.supported_binding_errors(self.root, receipt, bindings, "42"), [])
+        self.assertTrue(outcomes.supported_binding_errors(self.root, receipt, bindings, "43"))
+        bindings[0]["wupCityCode"] = 43
+        self.assertTrue(outcomes.supported_binding_errors(self.root, receipt, bindings, "42"))
+        bindings[0].update(wupCityCode=42, sourceId="different-source")
+        self.assertTrue(outcomes.supported_binding_errors(self.root, receipt, bindings, "42"))
+
     def test_counts_do_not_call_old_held_reviews_candidates(self):
         state = {"cities": {"1": {"status": "reviewed-held"},
                             "2": {"status": "reviewed-rejected", "discoveryDecision": "rejected"},

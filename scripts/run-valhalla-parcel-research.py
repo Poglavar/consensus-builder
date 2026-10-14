@@ -1182,13 +1182,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 try:
                     from parcel_source_admission import _existing_bindings
                     bindings = _existing_bindings(self.root)
-                    catalog = json_read(self.root / "backend/parcels/source-catalog.json")
-                    source = next((row for row in catalog["sources"] if row["id"] == receipt["source"]["sourceId"]), None)
-                    code = task_id.split(":", 1)[1]
-                    if source is None or source.get("endpoint") != receipt["source"]["endpoint"] or not all(
-                            app_id in source.get("cityIds", []) and any(row["id"] == app_id and str(row.get("wupCityCode")) == code
-                            and row.get("sourceId") == source["id"] for row in bindings) for app_id in receipt["appCityIds"]):
-                        errors.append("already-supported must match actual city configuration and catalog source/endpoint bindings")
+                    errors.extend(discovery_outcomes.supported_binding_errors(self.root, receipt, bindings, task_id.split(":", 1)[1]))
                 except (OSError, ValueError, KeyError, TypeError, RuntimeError) as exc:
                     errors.append(f"could not verify current app bindings: {exc}")
             if errors:
