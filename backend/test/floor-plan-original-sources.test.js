@@ -66,6 +66,14 @@ describe('current original plan eligibility', () => {
         const url = `https://example.test/images/${name}.png`;
         expect(originalPlanSource(source({ source_url: url, asset: { url, listingOwned: true } }))).toBeNull();
     });
+    it.each(['s1-2d-floor-plan-1800x1150.jpg', 's1-3d-floor-plan-1800x1150.jpg'])('admits the explicitly named apartment floor plan %s', name => {
+        const url = `https://example.test/images/${name}`;
+        const row = source({ listing_url: 'https://example.test/stan-s1-50m2/', source_url: url,
+            asset: { url, listingOwned: true } });
+        expect(originalPlanSource(row)).toMatchObject({ model: { unitId: 'S1', scope: 'unit' } });
+        expect(originalPlanSource({ ...row, listing_url: listingUrl })).toBeNull();
+        expect(originalPlanSource({ ...row, asset: { ...row.asset, scope: 'floor' } })).toBeNull();
+    });
     it('allows an unnumbered source owned by an apartment offer without inventing a unit number', () => {
         const row = source({ listing_url: 'https://example.test/apartment/123', source_url: 'https://example.test/plan.png',
             asset: { url: 'https://example.test/plan.png', listingOwned: true } });

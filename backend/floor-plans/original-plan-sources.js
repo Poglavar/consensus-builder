@@ -8,6 +8,7 @@ import { currentProcessedPlans } from '../floor-plan-archive/processed-catalogue
 export const normalizeUnitId = value => typeof value === 'string' && value.trim()
     ? value.trim().toUpperCase().replace(/[\s_-]+/g, '') : null;
 const explicitUnits = text => [...String(text || '').replace(/(?<![a-z0-9])\d+(?:[.,_-]\d+)?[\s_-]*m(?:[\s_-]*2|²|\b)/gi, ' ')
+    .replace(/[\s_-](?:2d|3d)(?=[\s_-]+floor[\s_-]*plan)/gi, ' ')
     .matchAll(/(?:^|[^a-z0-9])(?:stan[\s_-]*|s[\s_-]*)(\d{1,3}(?:-\d{1,3})?[a-z]?)(?=$|[^a-z0-9])/gi)]
     .map(match => `S${match[1].toUpperCase()}`);
 export function listingUnitId(facts = {}, url = '') {
@@ -94,7 +95,9 @@ export function originalPlanSource(row) {
     try { basename = decodeURIComponent(new URL(row.source_url).pathname.split('/').at(-1)); }
     catch { return null; }
     // Gallery ownership does not imply that every related unit, garage or whole-floor sheet is this offer.
-    if (/(?:^|[\W_])(?:garaz[ae]?|garaž[ae]?|garage|garrage|parking|kat|etaza|etaža|floor)(?:$|[\W_])/i.test(basename)
+    const namedUnitFloorPlan = /floor[\s_-]*plan/i.test(basename) && explicitUnits(basename).length > 0;
+    if (/(?:^|[\W_])(?:garaz[ae]?|garaž[ae]?|garage|garrage|parking)(?:$|[\W_])/i.test(basename)
+        || (/(?:^|[\W_])(?:kat|etaza|etaža|floor)(?:$|[\W_])/i.test(basename) && !namedUnitFloorPlan)
         || [asset.scope, reviewed?.scope, processed?.scope].some(scope => ['floor', 'project', 'building'].includes(scope))) return null;
     const sourceUnits = [...new Set([asset.unitId, reviewed?.unitId, ...explicitUnits(basename)]
         .map(normalizeUnitId).filter(Boolean))];
