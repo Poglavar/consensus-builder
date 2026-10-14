@@ -114,7 +114,9 @@ export async function loadTrafficNetwork({
         && point[1] >= extent[1] && point[1] <= extent[3];
     const bounded = lane => Array.isArray(lane.geometry?.coordinates) && lane.geometry.coordinates.length >= 2
         && lane.geometry.coordinates.every(inBounds);
-    const surfaceLanes = display.lanes.filter(lane => ['driving', 'bus'].includes(lane.type) && bounded(lane));
+    // Physical roadbeds use the full mapped lanes. Display portals deliberately
+    // cut back routing traces, including junctions with no resolved continuation.
+    const surfaceLanes = merged.lanes.filter(lane => ['driving', 'bus'].includes(lane.type) && bounded(lane));
     const lanes = display.lanes.filter(lane => publicCarLane(lane)
         && !unsupportedWays.has(String(lane.sourceWayId)) && bounded(lane));
     const laneIds = new Set(lanes.map(lane => lane.id));

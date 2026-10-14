@@ -7,7 +7,15 @@
     'use strict';
     function build(network, sourceLanes) {
         const lanes = sourceLanes.map(source => {
-            const route = network.lanes.get(source.id)?.path || G.roundCorners(G.path(source.points.map(network.project)));
+            let route = G.roundCorners(G.path(source.points.map(network.project)));
+            const lane = network.lanes.get(source.id);
+            // Only a derived width transition or smoothed corner replaces its
+            // borrowed road run. Junction routing portals never cut the roadbed.
+            if (lane?.startTrim || lane?.endTrim) {
+                const start = lane.startTrim ? G.nearest(route, lane.path.points[0]).s : 0;
+                const end = lane.endTrim ? G.nearest(route, lane.path.points.at(-1)).s : route.length;
+                route = G.slice(route, start, end);
+            }
             return { ...source, path: route };
         });
         // Each junction surface follows a real movement at its lane width.

@@ -32,6 +32,9 @@ To nisu stvarni signalni planovi, izmjerena vremena ni podaci o trenutačnom pro
 dopuštene osobnim automobilima, primjerice privatne ili zajedničke središnje trake. Te površine
 služe samo za prikaz. Simulacijski graf `lanes` sadrži trake dostupne automobilima, a `connections`
 njihove izričito dopuštene veze. Površinska geometrija ne dodaje kretanja u graf.
+Površine koriste pune izvorne putanje; odmaci koji odvajaju simulacijske trake od raskrižja
+ne prekidaju kolnik ni kada nastavak nije riješen. Samo stvarni prijelaz broja traka ili
+zaglađeni zavoj preuzima odgovarajući dio površine.
 Kolnik prati širinu i putanju svake trake i spremljenog kretanja. Prazni kutovi između krakova
 raskrižja ne popunjavaju se trokutima; proširenja i suženja prate stvarne prijelaze broja traka.
 

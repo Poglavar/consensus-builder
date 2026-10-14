@@ -110,13 +110,30 @@ describe('traffic road surfaces', () => {
         }
     });
 
-    it('reuses the already derived lane path when one is available', () => {
-        const source = lane('derived', 'west', 'east', [[0, 2], [8, 2], [16, 2]]);
-        const graph = network([source]);
-        const route = graph.lanes.get(source.id).path;
+    it('keeps a full physical road across unresolved and forbidden junction portals', () => {
+        const source = lane('mapped', 'west', 'east', [[-30, 0], [0, 0], [30, 0]], 3);
+        const graph = network([{ ...source, points: [[-20, 0], [20, 0]] }]);
+        graph.connections.set('blocked', { id: 'blocked', fromLaneId: source.id, toLaneId: source.id, forbidden: true });
 
         const result = TrafficSurface.build(graph, [source]);
 
-        expect(result.lanes[0].path).toBe(route);
+        expect(result.lanes[0].path.points).toEqual(source.points);
+        expect(result.connections).toEqual([]);
+        for (const point of [[-29, 0], [-25, 0], [25, 0], [29, 0]]) expect(isRoad(result, point)).toBe(true);
+        expect(isRoad(result, [0, 4])).toBe(false);
+        expect(graph.lanes.get(source.id).path.points).toEqual([[-20, 0], [20, 0]]);
+    });
+
+    it('replaces only a borrowed taper run while retaining the other full junction endpoint', () => {
+        const source = lane('mapped', 'transition', 'junction', [[0, 0], [50, 0]], 3);
+        const graph = network([{ ...source, points: [[4, 0], [40, 0]] }]);
+        graph.lanes.get(source.id).startTrim = 4;
+        graph.lanes.get(source.id).endTrim = 0;
+        const result = TrafficSurface.build(graph, [source]);
+
+        expect(isRoad(result, [1, 0])).toBe(false);
+        expect(isRoad(result, [6, 0])).toBe(true);
+        expect(isRoad(result, [49, 0])).toBe(true);
+        expect(result.lanes[0].path.points).toEqual([[4, 0], [50, 0]]);
     });
 });
