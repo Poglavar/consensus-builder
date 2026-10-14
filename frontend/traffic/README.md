@@ -37,6 +37,8 @@ ne prekidaju kolnik ni kada nastavak nije riješen. Samo stvarni prijelaz broja 
 zaglađeni zavoj preuzima odgovarajući dio površine.
 Kolnik prati širinu i putanju svake trake i spremljenog kretanja. Prazni kutovi između krakova
 raskrižja ne popunjavaju se trokutima; proširenja i suženja prate stvarne prijelaze broja traka.
+Oznake pri promjeni broja traka nastavljaju uzdužne rubove cestovnih traka. Ne iscrtavaju
+lepezaste putanje vozila prema novim trakama; dodatne paralelne crte počinju tek na kolniku.
 
 Prekidač **Tramvajske tračnice** prikazuje aktivne OSM središnice iz zajedničkog API-ja
 `/roads/rails`. `tramTracks` zadržava identitet OSM puta, njegovu geometriju i oznake `gauge` i

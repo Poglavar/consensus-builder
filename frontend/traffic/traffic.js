@@ -73,34 +73,8 @@
     }
 
     function buildRoadEdges() {
-        roadEdges = new Map();
-        const sections = new Map();
-        for (const lane of baseNetwork.lanes.values()) {
-            const key = `${lane.sectionId}:${lane.direction}`;
-            if (!sections.has(key)) sections.set(key, []);
-            sections.get(key).push(lane);
-        }
-        for (const lane of baseNetwork.lanes.values()) {
-            const siblings = sections.get(`${lane.sectionId}:${lane.direction}`);
-            roadEdges.set(lane.id, [-1, 1].map(side => {
-                const adjacent = siblings.some(other => other.ordinal === lane.ordinal - side && Math.abs(other.stripIndex - lane.stripIndex) === 1);
-                const points = offsetPolylinePlanar(lane.path.points, side * (lane.width || 3) / 2);
-                return { route: G.path(points || lane.path.points), dashed: adjacent };
-            }));
-        }
-        transitionEdges = [];
-        for (const connection of baseNetwork.connections.values()) {
-            if (connection.path.length < 1) continue;
-            const from = baseNetwork.lanes.get(connection.fromLaneId), to = baseNetwork.lanes.get(connection.toLaneId);
-            if (!from || !to) continue;
-            for (const [index, side] of [-1, 1].entries()) {
-                const width = ((from.width || 3) + (to.width || 3)) / 2;
-                const points = offsetPolylinePlanar(connection.path.points, side * width / 2);
-                transitionEdges.push({ route: G.path(points || connection.path.points),
-                    dashed: !connection.geometryKind
-                        || roadEdges.get(from.id)[index].dashed || roadEdges.get(to.id)[index].dashed });
-            }
-        }
+        const markings = window.TrafficMarkings.build(baseNetwork, surface, offsetPolylinePlanar);
+        roadEdges = markings.lanes; transitionEdges = markings.connections;
     }
     function drawGuides() {
         guides.clearRect(0, 0, size.x, size.y);
@@ -555,8 +529,9 @@
             if (!response.ok) throw new Error(`Traffic data: HTTP ${response.status}`);
             const data = await response.json();
             network = baseNetwork = Engine.createNetwork(data);
-            laneIndex = new Meters.LaneIndex(baseNetwork); buildRoadEdges();
+            laneIndex = new Meters.LaneIndex(baseNetwork);
             surface = window.TrafficSurface.build(baseNetwork, data.surfaceLanes);
+            buildRoadEdges();
             tramTracks = Trams.build(data.tramTracks, baseNetwork.project, offsetPolylinePlanar);
             sim = new Engine.Simulation(network, { count: Number($('density').value), seed });
             editor = new Scenario.Editor(baseNetwork, sim); attachCounters();
