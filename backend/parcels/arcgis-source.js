@@ -7,6 +7,7 @@ import { retainParcel } from './parcel-components.js';
 import { parseEsriParcelCollection } from './esri-parcel-reader.js';
 import { geometryParcelFeature, parseGeometryParcelId, geometryLookupBounds, GEOMETRY_IDENTITY_KIND } from './geometry-identity.js';
 import { OVERLAP_GROUND_POLICY, withOverlapGround } from './overlap-ground.js';
+import { geoJsonResponseCrsMatches } from './response-crs.js';
 export { validateBounds } from './source-contract.js';
 
 const MAX_DISTINCT_MANIFEST_PAGES = 128;
@@ -213,10 +214,11 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             const raw = await request(search);
             const payload = descriptor.queryFormat === 'esri-json' ? parseEsriParcelCollection(raw) : raw;
             if (payload.type !== 'FeatureCollection' || !Array.isArray(payload.features)) throw upstreamError('Parcel provider returned an invalid FeatureCollection.');
-            if (responseProjection && payload.features.length && (payload.crs?.type !== 'name' || ![
-                'EPSG:3857', 'urn:ogc:def:crs:EPSG::3857', 'http://www.opengis.net/def/crs/EPSG/0/3857'
-            ].includes(payload.crs?.properties?.name))) {
-                throw upstreamError('ArcGIS parcel provider omitted or changed its projected response CRS.');
+            if (!geoJsonResponseCrsMatches(payload.crs, responseSrid ?? 4326,
+                { required: responseProjection !== null && payload.features.length > 0 })) {
+                throw upstreamError(responseProjection
+                    ? 'ArcGIS parcel provider omitted or changed its projected response CRS.'
+                    : 'ArcGIS parcel provider declared an unsupported or mismatched response CRS.');
             }
             const page = descriptor.nativeGeometryMode === 'parts'
                 ? [...payload.features].sort((a, b) => Number(a.properties?.[objectIdField]) - Number(b.properties?.[objectIdField]))

@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
+import { checkParcelAlignment, collectArcgisAlignment, createArcgisAlignmentObserver, importAlignmentEvidence } from './lib/parcel-alignment.mjs';
 
 const MAX_REQUESTS = 300;
 const MAX_FEATURES = 10_000;
@@ -217,7 +218,7 @@ function findRepoRoot(scriptFile) {
     return root;
 }
 
-export function makeSafeFetch({ state, stage, timeoutMs = MAX_RESPONSE_MS }) {
+export function makeSafeFetch({ state, stage, timeoutMs = MAX_RESPONSE_MS, onResponse }) {
     return async (input, init = {}) => {
         if (state.requests.length >= MAX_REQUESTS) throw Object.assign(new Error('Request budget exceeded.'), { code: 'qualification-request-budget' });
         const started = Date.now();
@@ -259,9 +260,10 @@ export function makeSafeFetch({ state, stage, timeoutMs = MAX_RESPONSE_MS }) {
             const timeout = AbortSignal.timeout(timeoutMs);
             const signal = init.signal ? AbortSignal.any([init.signal, timeout]) : timeout;
             try {
-                const response = await globalThis.__qualificationOriginalFetch(input, { ...init, signal });
+                const response = await (globalThis.__qualificationOriginalFetch || globalThis.fetch)(input, { ...init, signal });
                 requestRecord.httpStatus = response.status;
                 requestRecord.elapsedMs = Date.now() - started;
+                if (onResponse) await onResponse({ url, init, response: response.clone() });
                 return response;
             } catch (error) {
                 requestRecord.elapsedMs = Date.now() - started;
@@ -341,7 +343,7 @@ async function main() {
         classification: checkRecord(candidate.sourceClassification?.isParcel === true && candidate.sourceClassification.evidence?.length > 0,
             { evidenceCount: candidate.sourceClassification?.evidence?.length || 0 }),
         exactIds: checkRecord(false), stableGeometry: checkRecord(false), explicitAbsence: checkRecord(false),
-        sampling: checkRecord(false), completeness: checkRecord(false), binding: checkRecord(false), metric: checkRecord(false)
+        sampling: checkRecord(false), completeness: checkRecord(false), binding: checkRecord(false), metric: checkRecord(false), alignment: checkRecord(false)
     };
     const sampledCells = [];
     const samplingPoints = [];
@@ -349,11 +351,14 @@ async function main() {
     const failures = {};
     const metricCrs = epsgCode(candidate.metricEpsg);
     const sourceId = candidate.descriptor.id;
+    const alignmentReads = [];
     const makeAdapter = stage => {
         requestStage(state, stage);
         const descriptor = { ...candidate.descriptor };
         const fetchImpl = makeSafeFetch({ state, stage,
-            timeoutMs: descriptor.adapter === 'hmlr-browser' ? 180_000 : MAX_RESPONSE_MS });
+            timeoutMs: descriptor.adapter === 'hmlr-browser' ? 180_000 : MAX_RESPONSE_MS,
+            ...(descriptor.adapter === 'arcgis' && stage === 'exact-id-first-read'
+                ? { onResponse: createArcgisAlignmentObserver(descriptor, alignmentReads) } : {}) });
         if (stage === 'forced-page-size-one') {
             descriptor.pageSize = 1; descriptor.idBatchSize = 1;
             if (Number.isFinite(descriptor.maxFeatures)) descriptor.maxFeatures = Math.min(descriptor.maxFeatures, FORCED_STAGE_MAX_FEATURES);
@@ -405,8 +410,9 @@ async function main() {
     // Preserve normal global fetch behavior outside each GML adapter call.
     const originalFetch = globalThis.fetch;
     globalThis.__qualificationOriginalFetch = originalFetch;
+    let firstExact;
     try {
-        let firstExact, secondExact, absenceResult;
+        let secondExact, absenceResult;
         try {
             firstExact = await runSource('exact-id-first-read', async adapter => getExact(adapter, candidate.sampleIds));
             ingest([...firstExact.values()]);
@@ -640,10 +646,27 @@ async function main() {
         checks.metric = checkRecord(true, metric);
     } catch (error) { recordFailure('metric', error); checks.metric = checkRecord(false, safeFailure(error)); }
 
+    try {
+        let evidencePath;
+        if (candidate.alignmentEvidence) evidencePath = await importAlignmentEvidence({ reference: candidate.alignmentEvidence,
+            candidateDir: path.dirname(args.candidatePath), outputDir });
+        else if (candidate.descriptor.adapter === 'arcgis' && firstExact?.size) {
+            evidencePath = await collectArcgisAlignment({ descriptor: candidate.descriptor, cityCode: candidate.city.code,
+                exactFeatures: firstExact, reads: alignmentReads, outputDir,
+                fetchImpl: makeSafeFetch({ state, stage: 'native-crs-alignment' }) });
+        }
+        checks.alignment = await checkParcelAlignment({ descriptor: candidate.descriptor, cityCode: candidate.city.code,
+            evidencePath, cachePath, outputDir, scriptPath: path.join(repoRoot, 'scripts/parcel-alignment-check.py') });
+    } catch (error) {
+        recordFailure('alignment', error);
+        checks.alignment = checkRecord(false, { ...safeFailure(error), reason: error.message,
+            sourceGeoreferencing: 'unverified', fittedOffsetApplied: false });
+    }
+
     const passed = Object.values(checks).every(check => check.passed);
     const status = passed ? 'technical-qualified' : candidate.sourceClassification?.isParcel === false ? 'excluded' : 'held';
     const report = {
-        schemaVersion: 1,
+        schemaVersion: 2,
         status,
         cityCode: candidate.city.code,
         cityName: candidate.city.name,
@@ -651,6 +674,7 @@ async function main() {
         candidateSha256: sha256(candidateBytes),
         checks,
         ...(checks.metric.passed ? { geometryReport: path.basename(metricReportPath) } : {}),
+        ...(checks.alignment.reportFile ? { alignmentReport: checks.alignment.reportFile } : {}),
         cacheFile: path.basename(cachePath),
         cacheSha256: cacheHash,
         featureCount: features.length,
@@ -665,6 +689,7 @@ async function main() {
         failures,
         limitations: [
             'Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.',
+            'The alignment gate verifies the published coordinate transform; basemap disagreement is never corrected with a fitted offset.',
             ...(!areaEnumeration ? ['Area enumeration is unsupported by descriptor; point/exact-ID checks do not imply area completeness.'] : [])
         ]
     };
@@ -685,8 +710,8 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(im
                 candidateSha256 = sha256(bytes);
                 cityCode = JSON.parse(bytes.toString('utf8'))?.city?.code ?? null;
             } catch { /* Keep failure output data-free. */ }
-            const checks = Object.fromEntries(['classification','exactIds','stableGeometry','explicitAbsence','sampling','completeness','binding','metric'].map(key => [key, { passed: false }]));
-            await fs.writeFile(path.join(args.outputDir, 'qualification.json'), `${JSON.stringify({ schemaVersion:1, status:'held', cityCode, candidateSha256, checks, failure }, null, 2)}\n`);
+            const checks = Object.fromEntries(['classification','exactIds','stableGeometry','explicitAbsence','sampling','completeness','binding','metric','alignment'].map(key => [key, { passed: false }]));
+            await fs.writeFile(path.join(args.outputDir, 'qualification.json'), `${JSON.stringify({ schemaVersion:2, status:'held', cityCode, candidateSha256, checks, failure }, null, 2)}\n`);
         } catch { /* CLI or output-path errors have no report destination. */ }
         process.stderr.write(`${JSON.stringify({ status: 'held', ...failure })}\n`);
         process.exitCode = 2;

@@ -2,6 +2,7 @@ import { afterAll, beforeAll, test } from 'vitest';
 import assert from 'node:assert/strict';
 import { area as geoArea, intersect } from '@turf/turf';
 import { createHmlrBrowserGroundEngine, HMLR_BROWSER_GROUND_POLICY, HMLR_BROWSER_GROUND_PREFIX } from '../parcels/hmlr-browser-ground.js';
+import { toWgs84 } from '../parcels/osgb36-projection.js';
 
 let engine;
 beforeAll(async () => { engine = await createHmlrBrowserGroundEngine(); });
@@ -90,13 +91,23 @@ test('rejects non-finite or unclosed native rings before GEOS conversion', async
 });
 
 test('rectangle tests use the policy input: an L around the rectangle misses it, a parcel inside meets it', async () => {
-    const proj4 = (await import('proj4')).default;
-    const [x, y] = proj4('EPSG:27700', 'EPSG:4326', [530810, 180210]);
+    const [x, y] = toWgs84([530810, 180210]);
     const bounds = [x - 0.00002, y - 0.00002, x + 0.00002, y + 0.00002];
     const ell = feature('7', [[[530790, 180150], [531000, 180150], [531000, 180160], [530800, 180160], [530800, 180300], [530790, 180300], [530790, 180150]]]);
     const inside = square('8', 530805, 180205, 10);
     const far = square('9', 531500, 180205, 10);
     assert.deepEqual(await engine.intersectsBounds([ell, inside, far], bounds), [false, true, false]);
     await assert.rejects(engine.intersectsBounds([ell], [1, 2, 0, 3]), /WGS84 bounds/);
+});
+
+test('actual ground output uses the official OS control point and records the operation', async () => {
+    const result = await engine.resolve([square('17', 91492.146, 11318.804, 10)]);
+    const expected = [-6.29977752014, 49.92226393730];
+    const vertices = result.features[0].geometry.coordinates.flat(2);
+    const nearest = Math.min(...vertices.map(point => Math.hypot((point[0] - expected[0]) * 111320 * Math.cos(expected[1] * Math.PI / 180),
+        (point[1] - expected[1]) * 111320)));
+    assert.ok(nearest < 0.01);
+    assert.equal(result.features[0].properties.coordinateOperation.nativeCrs, 'EPSG:27700');
+    assert.equal(result.features[0].properties.coordinateOperation.fittedOffsetApplied, false);
 });
 

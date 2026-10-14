@@ -221,10 +221,13 @@
         const provider = cityConfig(city)?.parcels;
         let features;
         let returnsWGS84 = true;
+        let sourceSrid = null;
         const importedIdParameters = { 'parcel-ba': 'smp', 'parcel-bg': 'parcel_id', 'parcel-co': 'parcel_id', 'parcel-lj': 'parcel_id', 'parcel-nyc': 'parcel_id' };
         if (override) {
             const answer = await override.fetchByIds(ids);
             features = Array.isArray(answer?.features) ? answer.features : [];
+            returnsWGS84 = answer?.returnsWGS84 !== false;
+            sourceSrid = answer?.sourceSrid || (returnsWGS84 ? 'EPSG:4326' : null);
         } else if (provider?.source === 'parcel-source') {
             features = [];
             // Slow providers use smaller browser requests as well as smaller upstream batches,
@@ -255,6 +258,7 @@
         } else if (source === 'oss.uredjenazemlja.hr') {
             features = await requestOssIds(ids);
             returnsWGS84 = false;
+            sourceSrid = 'EPSG:3765';
         } else features = await requestBackendIds(ids);
 
         const byId = new Map();
@@ -269,7 +273,8 @@
             complete: true,
             features: Array.from(byId.values()),
             absentIds,
-            returnsWGS84
+            returnsWGS84,
+            sourceSrid: sourceSrid || (returnsWGS84 ? 'EPSG:4326' : null)
         };
     }
 
@@ -285,7 +290,7 @@
             throw new Error('Parcel source returned an incomplete point response.');
         }
         noteSourceInView(city);
-        return { status: 'ready', complete: true, queryType: 'point', features: payload.features, absentIds: [], returnsWGS84: true };
+        return { status: 'ready', complete: true, queryType: 'point', features: payload.features, absentIds: [], returnsWGS84: true, sourceSrid: payload.sourceSrid || 'EPSG:4326' };
     }
 
     function datasetToLatLng(easting, northing, city) {
@@ -324,7 +329,8 @@
             const answer = await override.fetchCell({ cell: String(cell), bbox, latLonBbox, city: context.city });
             const features = Array.isArray(answer?.features) ? answer.features : [];
             noteSourceInView(context.city || currentCity(), override);
-            return { features, returnsWGS84: answer?.returnsWGS84 !== false };
+            const returnsWGS84 = answer?.returnsWGS84 !== false;
+            return { features, returnsWGS84, sourceSrid: answer?.sourceSrid || (returnsWGS84 ? 'EPSG:4326' : null) };
         }
         const absent = noRegisterError(context.city);
         if (absent) throw absent;
@@ -337,18 +343,27 @@
             });
             if (payload.complete !== true || !Array.isArray(payload.features)) throw new Error('Parcel source returned an incomplete viewport response.');
             noteSourceInView(context.city || currentCity());
-            return { features: payload.features, returnsWGS84: true };
+            return { features: payload.features, returnsWGS84: true, sourceSrid: payload.sourceSrid || 'EPSG:4326' };
         }
         const builder = context.builder;
         const count = 2000;
         let startIndex = 0;
         let more = true;
         let returnsWGS84 = false;
+        let pageMode = null;
+        let sourceSrid = null;
         const features = [];
         while (more) {
             const request = builder ? builder(bbox, { count, startIndex, latLonBbox, city: context.city }) : null;
             if (builder && !request) throw new Error('Parcel source is unavailable for this city.');
-            returnsWGS84 = request ? request.returnsWGS84 === true : false;
+            const pageReturnsWGS84 = request ? request.returnsWGS84 === true : false;
+            returnsWGS84 = pageReturnsWGS84;
+            const pageSrid = request?.sourceSrid || (returnsWGS84 ? 'EPSG:4326' : (request?.isOSS || !request ? 'EPSG:3765' : null));
+            if (startIndex > 0 && (sourceSrid !== pageSrid || pageMode !== pageReturnsWGS84)) {
+                throw new Error('Parcel bounds response mixed source coordinate systems.');
+            }
+            pageMode = pageReturnsWGS84;
+            sourceSrid = pageSrid;
             const url = request ? request.url : `${OSS_URL}?${new URLSearchParams({
                 token: OSS_TOKEN,
                 service: 'WFS',
@@ -375,7 +390,7 @@
             startIndex += returned;
         }
         noteSourceInView(context.city || currentCity());
-        return { features, returnsWGS84 };
+        return { features, returnsWGS84, sourceSrid };
     }
 
     // Sources whose per-query cost is shared overlap context are queried in blocks of cells. HMLR
@@ -431,7 +446,8 @@
         noteSourceInView(city);
         const boxes = payload.features.map(feature => geometryBox(feature.geometry));
         const meets = (a, b) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
-        return { cells: cells.map(({ key, box }) => ({ key, result: { status: 'ready', returnsWGS84: true, absentIds: [],
+        return { cells: cells.map(({ key, box }) => ({ key, result: { status: 'ready', returnsWGS84: true,
+            sourceSrid: payload.sourceSrid || 'EPSG:4326', absentIds: [],
             features: payload.features.filter((_, index) => meets(boxes[index], box)) } })) };
     }
 
@@ -461,6 +477,8 @@
         }
         const modes = new Set(results.map(result => result.returnsWGS84));
         if (modes.size > 1) throw new Error('Parcel bounds response mixed coordinate systems.');
+        const sourceSrids = new Set(results.map(result => result.sourceSrid || null));
+        if (sourceSrids.size > 1) throw new Error('Parcel bounds response mixed source coordinate systems.');
         const byId = new Map();
         results.flatMap(result => result.features).forEach(feature => {
             const id = normalizeFeatureId(feature);
@@ -470,7 +488,8 @@
             status: 'ready',
             features: Array.from(byId.values()),
             absentIds: [],
-            returnsWGS84: modes.has(true)
+            returnsWGS84: modes.has(true),
+            sourceSrid: sourceSrids.values().next().value || null
         };
     }
 
@@ -484,7 +503,7 @@
             if (!global.BrowserParcelSources) throw new Error('Browser parcel adapters are unavailable.');
             const payload = await global.BrowserParcelSources.queryGeometry(provider.sourceId, geom, { city: options.city || currentCity() });
             if (payload.complete !== true || !Array.isArray(payload.features)) throw new Error('Parcel source returned an incomplete footprint response.');
-            return { status: 'ready', features: payload.features, absentIds: [], returnsWGS84: true,
+            return { status: 'ready', features: payload.features, absentIds: [], returnsWGS84: true, sourceSrid: payload.sourceSrid || 'EPSG:4326',
                 coverage: null, count: payload.features.length, queryMs: null };
         }
         const path = '/parcels/under';
@@ -499,6 +518,7 @@
             features: payload.features,
             absentIds: [],
             returnsWGS84: true,
+            sourceSrid: payload.sourceSrid || 'EPSG:4326',
             coverage: payload.coverage === undefined ? null : Number(payload.coverage),
             count: Number(payload.count) || payload.features.length,
             queryMs: Number(payload.queryMs) || null

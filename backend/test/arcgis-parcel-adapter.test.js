@@ -40,6 +40,36 @@ function makeFetch(pages) {
 }
 
 describe('createArcgisParcelSource', () => {
+    it.each([
+        undefined,
+        null,
+        { type: 'name', properties: { name: 'CRS84' } },
+        { type: 'name', properties: { name: 'urn:ogc:def:crs:OGC:1.3:CRS84' } },
+        { type: 'name', properties: { name: 'urn:ogc:def:crs:EPSG::4326' } },
+        { type: 'name', properties: { name: 'http://www.opengis.net/def/crs/EPSG/0/4326' } }
+    ])('accepts absent or recognized WGS84 GeoJSON CRS metadata (%s)', async crs => {
+        const payload = { type: 'FeatureCollection', features: [feature(1, '1001')] };
+        if (crs !== undefined) payload.crs = crs;
+        const fetchImpl = async () => ({ ok: true, status: 200, json: async () => payload });
+        const source = createArcgisParcelSource(descriptor, { fetchImpl });
+        await expect(source.queryIds(['CA-ON-TORONTO-1001'])).resolves.toMatchObject({ complete: true, features: [{
+            id: 'CA-ON-TORONTO-1001'
+        }] });
+    });
+
+    it.each([
+        { type: 'name', properties: { name: 'EPSG:3857' } },
+        { type: 'name', properties: { name: 'EPSG:26917' } },
+        { type: 'link', properties: { href: 'https://example.test/crs' } },
+        { type: 'name', properties: { name: 'unknown:crs' } }
+    ])('rejects a declared non-WGS84 GeoJSON CRS (%j)', async crs => {
+        const fetchImpl = async () => ({ ok: true, status: 200, json: async () => ({
+            type: 'FeatureCollection', crs, features: [feature(1, '1001')]
+        }) });
+        await expect(createArcgisParcelSource(descriptor, { fetchImpl })
+            .queryIds(['CA-ON-TORONTO-1001'])).rejects.toThrow('declared an unsupported or mismatched response CRS');
+    });
+
     it('transforms only explicitly tagged Web Mercator GeoJSON and reproduces exact native-ID reads', async () => {
         const native = feature(1, '1001', polygon(-9209572.792818315, 3232719.554550018,
             -9209461.473327523, 3232845.481821127));

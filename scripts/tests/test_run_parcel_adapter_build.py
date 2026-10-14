@@ -11,6 +11,8 @@ import unittest
 from contextlib import redirect_stderr
 from io import StringIO
 from pathlib import Path
+from unittest.mock import patch
+from types import SimpleNamespace
 
 MODULE_PATH = Path(__file__).resolve().parents[1] / "run-parcel-adapter-build.py"
 spec = importlib.util.spec_from_file_location("parcel_adapter_build", MODULE_PATH)
@@ -31,6 +33,66 @@ def write_task_queue(path: Path, candidate: Path) -> dict:
     }
     path.write_text(json.dumps({"tasks": [task]}), encoding="utf-8")
     return task
+
+
+def write_qualification_artifacts(evidence: Path, task: dict, candidate_sha: str) -> tuple[dict, dict]:
+    evidence.mkdir(parents=True, exist_ok=True)
+    geometry = {"type": "Polygon", "coordinates": [[[2.0, 1.0], [2.001, 1.0], [2.001, 1.001], [2.0, 1.0]]]}
+    cache = {"type": "FeatureCollection", "features": [{"type": "Feature", "id": "unit-wfs-source:parcel-1",
+                                                            "geometry": geometry, "properties": {}}]}
+    cache_bytes = json.dumps(cache, separators=(",", ":")).encode()
+    (evidence / "full-safe.geojson").write_bytes(cache_bytes)
+    metadata = {"nativeCrs": "EPSG:4326"}
+    metadata_bytes = json.dumps(metadata, separators=(",", ":")).encode()
+    (evidence / "alignment-metadata.json").write_bytes(metadata_bytes)
+    native = {"type": "NativeParcelSamples", "features": [{"id": "unit-wfs-source:parcel-1", "geometry": geometry}]}
+    native_bytes = json.dumps(native, separators=(",", ":")).encode()
+    (evidence / "alignment-native.json").write_bytes(native_bytes)
+    contract = "b" * 64
+    alignment = {"schemaVersion": 1, "sourceId": task["sourceId"], "cityCode": "17",
+                 "contractSha256": contract, "nativeCrs": "EPSG:4326", "nativeAxisOrder": "east-north",
+                 "metadataUrl": "https://example.test/metadata", "metadataFile": "alignment-metadata.json",
+                 "metadataSha256": hashlib.sha256(metadata_bytes).hexdigest(), "nativeFile": "alignment-native.json",
+                 "nativeSha256": hashlib.sha256(native_bytes).hexdigest()}
+    alignment_bytes = json.dumps(alignment, separators=(",", ":")).encode()
+    (evidence / "alignment-evidence.json").write_bytes(alignment_bytes)
+    report = {"schemaVersion": 1, "passed": True, "sourceId": task["sourceId"], "cityCode": "17",
+              "contractSha256": contract, "evidenceSha256": hashlib.sha256(alignment_bytes).hexdigest(),
+              "metadataSha256": hashlib.sha256(metadata_bytes).hexdigest(),
+              "nativeSha256": hashlib.sha256(native_bytes).hexdigest(),
+              "cacheSha256": hashlib.sha256(cache_bytes).hexdigest(), "nativeCrs": "EPSG:4326",
+              "nativeAxisOrder": "east-north", "coordinateOperation": "axis order change (2D)",
+              "operationPipeline": "+proj=noop",
+              "bestOperationAvailable": True, "ballparkAllowed": False,
+              "sourceGeometryChanged": False, "fittedOffsetApplied": False}
+    (evidence / "alignment-report.json").write_text(json.dumps(report))
+    qualification = {"schemaVersion": 2, "cityCode": "17", "sourceId": task["sourceId"],
+                     "candidateSha256": candidate_sha, "requestCount": 1, "status": "technical-qualified",
+                     "checks": {name: {"passed": True} for name in runner.REQUIRED_QUALIFICATION_CHECKS},
+                     "cacheFile": "full-safe.geojson", "cacheSha256": hashlib.sha256(cache_bytes).hexdigest(),
+                     "alignmentReport": "alignment-report.json"}
+    qualification["checks"]["alignment"]["contractSha256"] = contract
+    return qualification, alignment
+
+
+def mocked_alignment_recompute(command, **kwargs):
+    if not any(str(part).endswith("parcel-alignment-check.py") for part in command):
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+    evidence_path, cache_path, output_path = map(Path, command[2:5])
+    evidence_bytes = evidence_path.read_bytes()
+    evidence = json.loads(evidence_bytes)
+    report = {"schemaVersion": 1, "passed": True, "sourceId": evidence["sourceId"],
+              "cityCode": evidence["cityCode"], "contractSha256": evidence["contractSha256"],
+              "evidenceSha256": hashlib.sha256(evidence_bytes).hexdigest(),
+              "metadataSha256": hashlib.sha256((evidence_path.parent / evidence["metadataFile"]).read_bytes()).hexdigest(),
+              "nativeSha256": hashlib.sha256((evidence_path.parent / evidence["nativeFile"]).read_bytes()).hexdigest(),
+              "cacheSha256": hashlib.sha256(cache_path.read_bytes()).hexdigest(),
+              "nativeCrs": evidence["nativeCrs"], "nativeAxisOrder": evidence["nativeAxisOrder"],
+              "coordinateOperation": "axis order change (2D)", "bestOperationAvailable": True,
+              "operationPipeline": "+proj=noop",
+              "ballparkAllowed": False, "sourceGeometryChanged": False, "fittedOffsetApplied": False}
+    output_path.write_text(json.dumps(report))
+    return SimpleNamespace(returncode=0, stdout='{"passed":true}', stderr="")
 
 
 class AdapterBuildRunnerTests(unittest.TestCase):
@@ -88,6 +150,9 @@ class AdapterBuildRunnerTests(unittest.TestCase):
             self.assertIn("--metric-script", prompt)
             self.assertIn("Never edit city configs, source catalog", prompt)
             self.assertIn("backend/parcels/", prompt)
+            for phrase in ("native CRS", "wire axis order", "datum", "required grids", "ballpark",
+                           "OSM/basemap fit", "offset", "alignment", "requiredChecks"):
+                self.assertIn(phrase, prompt)
 
     def test_qualification_manifest_binds_hashes_and_requires_passing_seed_for_built(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -102,26 +167,47 @@ class AdapterBuildRunnerTests(unittest.TestCase):
             attempt = root / "attempt"
             evidence = attempt / "qualification/17/evidence"
             evidence.mkdir(parents=True)
-            qualification = {"cityCode": "17", "sourceId": task["sourceId"],
-                             "candidateSha256": seed_sha, "requestCount": 1,
-                             "status": "technical-qualified", "checks": {k: {"passed": True} for k in ("classification", "exactIds", "stableGeometry", "explicitAbsence", "sampling", "completeness", "binding", "metric")}}
+            qualification, _ = write_qualification_artifacts(evidence, task, seed_sha)
             qualification_path = evidence / "qualification.json"
             qualification_path.write_text(json.dumps(qualification))
             manifest = {"taskId": task["taskId"], "sourceId": task["sourceId"], "seeds": [{
+                "qualificationStatus": "technical-qualified",
                 "cityCode": "17", "seedPath": str(candidate), "seedSha256": seed_sha,
                 "candidateUsedPath": str(candidate), "candidateUsedSha256": seed_sha,
                 "qualificationPath": "qualification/17/evidence/qualification.json",
                 "qualifierExitCode": 0,
-            }]}
+            }], "requiredChecks": list(runner.REQUIRED_QUALIFICATION_CHECKS)}
             manifest_path = attempt / "qualification-manifest.json"
             manifest_path.write_text(json.dumps(manifest))
             value = {"taskId": task["taskId"], "status": "built", "qualificationEvidence": [
-                "qualification-manifest.json", "qualification/17/evidence/qualification.json"]}
-            self.assertEqual(runner.verify_qualification_manifest(value, task, attempt, qual)[0], True)
+                "qualification-manifest.json", "qualification/17/evidence/qualification.json",
+                "qualification/17/evidence/alignment-evidence.json", "qualification/17/evidence/alignment-metadata.json",
+                "qualification/17/evidence/alignment-native.json", "qualification/17/evidence/alignment-report.json",
+                "qualification/17/evidence/full-safe.geojson"]}
+            with patch.object(runner.subprocess, "run", side_effect=mocked_alignment_recompute):
+                self.assertEqual(runner.verify_qualification_manifest(value, task, attempt, qual)[0], True)
             manifest["seeds"][0]["qualifierExitCode"] = 1
             manifest_path.write_text(json.dumps(manifest))
-            self.assertIn("passing technical qualification",
-                          runner.verify_qualification_manifest(value, task, attempt, qual)[1])
+            with patch.object(runner.subprocess, "run", side_effect=mocked_alignment_recompute):
+                self.assertIn("passing technical qualification",
+                              runner.verify_qualification_manifest(value, task, attempt, qual)[1])
+
+    def test_built_manifest_cannot_omit_alignment_gate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            qual = root / "qualified"; qual.mkdir()
+            candidate = qual / "candidate.json"; candidate.write_text('{"descriptor":{"id":"unit-wfs-source"}}')
+            task = write_task_queue(root / "queue.json", candidate)
+            attempt = root / "attempt"; evidence = attempt / "qualification/17/evidence"
+            seed_sha = hashlib.sha256(candidate.read_bytes()).hexdigest()
+            qualification, _ = write_qualification_artifacts(evidence, task, seed_sha)
+            (evidence / "qualification.json").write_text(json.dumps(qualification))
+            manifest = {"taskId": task["taskId"], "sourceId": task["sourceId"], "requiredChecks": [], "seeds": []}
+            (attempt / "qualification-manifest.json").write_text(json.dumps(manifest))
+            value = {"taskId": task["taskId"], "status": "built", "qualificationEvidence": ["qualification-manifest.json"]}
+            ok, reason, _ = runner.verify_qualification_manifest(value, task, attempt, qual)
+            self.assertFalse(ok)
+            self.assertIn("alignment gate", reason)
 
     def test_default_state_dir_is_repo_relative(self):
         args = runner.parse_args(["--status", "--queue", "q.json", "--repo-root", "repo",

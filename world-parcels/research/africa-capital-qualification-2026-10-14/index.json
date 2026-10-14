@@ -33,6 +33,8 @@
     }
   },
   "learnings": [
+    "Coordinate qualification now requires a ninth alignment gate: establish native/storage CRS separately from service output and metric CRS; preserve first-party metadata, explicit wire axes/units, unchanged native ID+geometry and hashes, then independently verify the documented transform with required grids.",
+    "Follow world-parcels/research/parcel-alignment-2026-10-14/index.json. Never fit offsets, rotations or scale to OSM/imagery, guess a datum/epoch, or change measured geometry. Source errors and ambiguous/unavailable coordinate operations remain held.",
     "ArcGIS native field names are case-sensitive: this Kigali service returns objectid and upi; use esri-json because the GeoJSON route was rejected.",
     "A clean neighbourhood subset does not prove geometry quality at the exact WUP centre: Kigali passed on 72 features nearby but the WUP-centre run held on one material overlap among 82 unchanged features.",
     "Porto-Novo protocol and paging checks passed but 264 unchanged features include one invalid polygon and nine material overlaps; no corrected-source selection semantics were established.",

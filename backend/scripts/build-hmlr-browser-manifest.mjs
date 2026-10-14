@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { appendFile, mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import proj4 from 'proj4';
+import { hmlrRoutingProjection } from '../parcels/hmlr-routing-projection.js';
 import { fetchHmlrCatalogue, pinHmlrAuthority } from '../parcels/hmlr-catalogue.js';
 import { officialArchiveFetch, boundedBytes } from '../parcels/gml-snapshot-source.js';
 import { readGmlZipMember } from '../parcels/gml-zip-reader.js';
@@ -18,11 +18,10 @@ const cmp=(a,b)=>a<b?-1:a>b?1:0;
 const numericCmp=(a,b)=>a.length-b.length||cmp(a,b);
 const log=message=>console.log(`[${new Date().toISOString()}] [hmlr-browser-manifest] ${message}`);
 const MAX_AUTHORITY_FEATURES=1_500_000;
-proj4.defs('EPSG:27700','+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.1502,0.2470,0.8421,-20.4894 +units=m +no_defs');
 
 export function projectNativeBounds(bounds) {
     if(!Array.isArray(bounds)||bounds.length!==4||!bounds.every(Number.isFinite)||bounds[0]>=bounds[2]||bounds[1]>=bounds[3])throw new Error('Invalid native HMLR extent.');
-    const project=proj4('EPSG:27700','EPSG:4326'), points=[];
+    const project=hmlrRoutingProjection, points=[];
     const steps=Math.max(1,Math.ceil(Math.max(bounds[2]-bounds[0],bounds[3]-bounds[1])/1000));
     for(let i=0;i<=steps;i++){const t=i/steps,x=bounds[0]+(bounds[2]-bounds[0])*t,y=bounds[1]+(bounds[3]-bounds[1])*t;
         points.push(project.forward([x,bounds[1]]),project.forward([x,bounds[3]]),project.forward([bounds[0],y]),project.forward([bounds[2],y]));}
@@ -82,7 +81,7 @@ export async function buildManifest({out,baseUrl,fetcher=officialArchiveFetch,ca
    const signal=AbortSignal.timeout(10*60*1000),response=await fetcher(a.endpoint,{signal});
    if(response.status!==200||!response.ok||response.headers.get('etag')!==a.expectedEtag||Number(response.headers.get('content-length'))!==a.expectedBytes){await response.body?.cancel().catch(()=>{});throw new Error('Archive revision differs from pinned catalog.');}
    const bytes=await boundedResponse(response,128*1024*1024,signal),archiveSha256=sha(bytes),ids=new Set();let extent=null;
-   const project=proj4('EPSG:27700','EPSG:4326'),scopeBuilder=createHmlrArchiveScopeBuilder(point=>project.forward(point));
+   const project=hmlrRoutingProjection,scopeBuilder=createHmlrArchiveScopeBuilder(point=>project.forward(point));
    const parsed=await parse(readGmlZipMember(bytes,1024*1024*1024,signal),{coordinateMode:'native',idField:'INSPIREID',maxBytes:1024*1024*1024,maxFeatures:MAX_AUTHORITY_FEATURES,signal,onFeature:f=>{ids.add(canonicalId(f.properties.INSPIREID));scopeBuilder.addGeometry(f.geometry);const g=f.geometry,coords=g.type==='Polygon'?[g.coordinates]:g.coordinates;for(const poly of coords)for(const ring of poly)for(const [x,y] of ring)extent=extent?[Math.min(extent[0],x),Math.min(extent[1],y),Math.max(extent[2],x),Math.max(extent[3],y)]:[x,y,x,y];}});
    const list=[...ids].sort(numericCmp); if(!list.length||parsed.featureCount!==list.length||parsed.numberMatched!==list.length||parsed.numberReturned!==list.length||!extent||!parsed.sourceTimestamp||parsed.sourceTimestamp.slice(0,10)!==cat.sourceDate)throw new Error('Archive is empty, duplicated, partial, or from a different edition.');
    const scope=scopeBuilder.finish(archiveSha256),scopeJson=JSON.stringify(scope),scopeBytes=Buffer.byteLength(scopeJson);

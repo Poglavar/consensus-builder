@@ -4,6 +4,7 @@ import proj4 from 'proj4';
 import { HttpError } from '../utils/helpers.js';
 import { concatBytes } from './byte-utils.js';
 import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
+import { geoJsonResponseCrsMatches } from './response-crs.js';
 
 const sourceRequestQueues = new Map();
 
@@ -171,10 +172,11 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
                 throw upstreamError('Parcel provider is unavailable.');
             }
             if (payload?.type !== 'FeatureCollection' || !Array.isArray(payload.features)) throw upstreamError('WFS parcel provider returned an invalid FeatureCollection.');
-            if (toWgs84 && payload.features.length && (payload.crs?.type !== 'name' || ![
-                'EPSG:3857', 'urn:ogc:def:crs:EPSG::3857', 'http://www.opengis.net/def/crs/EPSG/0/3857'
-            ].includes(payload.crs?.properties?.name))) {
-                throw upstreamError('WFS parcel provider omitted or changed its projected response CRS.');
+            if (!geoJsonResponseCrsMatches(payload.crs, responseSrid ?? 4326,
+                { required: toWgs84 !== null && payload.features.length > 0 })) {
+                throw upstreamError(toWgs84
+                    ? 'WFS parcel provider omitted or changed its projected response CRS.'
+                    : 'WFS parcel provider declared an unsupported or mismatched response CRS.');
             }
             const page = payload.features;
             if (page.length > pageSize) throw upstreamError('WFS parcel provider returned more features than the configured page limit.');

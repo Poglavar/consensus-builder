@@ -181,7 +181,10 @@
             if (options.skipConversion !== true) {
                 const convert = dependencies.convertFeatures;
                 if (typeof convert !== 'function') throw new Error('Cadastral coordinate conversion is unavailable.');
-                const converted = convert({ type: 'FeatureCollection', features: raw });
+                const converted = convert({ type: 'FeatureCollection', features: raw }, {
+                    sourceSrid: options.sourceSrid,
+                    city: options.city
+                });
                 if (!converted || !Array.isArray(converted.features)) {
                     throw new Error('Cadastral coordinate conversion returned no FeatureCollection.');
                 }
@@ -277,7 +280,9 @@
             // it. A transport that claims completeness but omits an id must not partially publish
             // the facts it happened to return.
             const normalized = normalizeFeatures(result.features, {
-                skipConversion: options.skipConversion === true
+                skipConversion: options.skipConversion === true,
+                sourceSrid: result.sourceSrid,
+                city: options.city
             });
             const responseIds = normalized.map(featureId);
             if (options.requestedIds && result.complete === true) {
