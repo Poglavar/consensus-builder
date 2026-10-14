@@ -13,7 +13,8 @@
 // The manifest records the source it switched from.
 //
 // Usage: node scripts/admit-qualified-cities.mjs --state <qualification state dir> [--state ...]
-//          --release <name> [--exclude <code=reason>]... [--codes <a,b>] [--switch] [--apply]
+//          --release <name> [--exclude <code=reason>]... [--codes <a,b>] [--outcomes <file>]
+//          [--country-config <json>] [--switch] [--apply]
 // Without --apply nothing is written; the plan and any refusal are printed.
 
 import fs from 'node:fs';
@@ -59,13 +60,16 @@ const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const writeJson = (rel, value, indent = 2) => fs.writeFileSync(path.join(REPO, rel), `${JSON.stringify(value, null, indent)}\n`);
 
 function parseArgs(argv) {
-    const args = { states: [], exclude: new Map(), apply: false, release: null, codes: null, switch: false };
+    const args = { states: [], exclude: new Map(), apply: false, release: null, codes: null, switch: false,
+        outcomes: null, countryConfig: null };
     for (let i = 0; i < argv.length; i++) {
         const flag = argv[i];
         if (flag === '--state') args.states.push(path.resolve(argv[++i]));
         else if (flag === '--release') args.release = argv[++i];
         else if (flag === '--exclude') { const [code, ...reason] = argv[++i].split('='); args.exclude.set(code, reason.join('=') || 'excluded at admission'); }
         else if (flag === '--codes') args.codes = new Set(argv[++i].split(','));
+        else if (flag === '--outcomes') args.outcomes = path.resolve(argv[++i]);
+        else if (flag === '--country-config') args.countryConfig = path.resolve(argv[++i]);
         else if (flag === '--apply') args.apply = true;
         else if (flag === '--switch') args.switch = true;
         else if (flag === '--help') args.help = true;
@@ -109,16 +113,46 @@ function wupIndex() {
     return byCode;
 }
 
-function latestOutcomes() {
-    const dir = path.join(REPO, 'world-parcels/research/qualification-outcomes');
+function latestOutcomes(outcomesPath = path.join(REPO, 'world-parcels/research/qualification-outcomes')) {
+    const files = fs.statSync(outcomesPath).isDirectory()
+        ? fs.readdirSync(outcomesPath).filter(n => n.endsWith('.json')).sort().map(n => path.join(outcomesPath, n))
+        : [outcomesPath];
     const latest = new Map();
-    for (const name of fs.readdirSync(dir).filter(n => n.endsWith('.json')).sort()) {
-        for (const city of readJson(path.join(dir, name)).cities) {
+    for (const file of files) {
+        for (const city of readJson(file).cities || []) {
             const key = String(city.cityCode), prev = latest.get(key);
             if (!prev || (city.finishedAt || '') >= (prev.finishedAt || '')) latest.set(key, city);
         }
     }
     return latest;
+}
+
+export function validateCountryConfig(config, expectedCountryCode = null) {
+    const countryCode = config?.countryCode;
+    const currency = config?.currency;
+    if (!/^[A-Z]{2}$/.test(countryCode || '') || (expectedCountryCode && countryCode !== expectedCountryCode)) {
+        throw new Error('country config countryCode must match the candidate ISO-3166 alpha-2 code');
+    }
+    const englishName = new Intl.DisplayNames(['en'], { type: 'region' }).of(countryCode);
+    if (!englishName || englishName === countryCode || englishName === 'Unknown Region') throw new Error(`unsupported ISO-3166 alpha-2 country code ${countryCode}`);
+    if (!currency || typeof currency.locale !== 'string' || !currency.locale.trim()
+        || !/^[A-Z]{3}$/.test(currency.code || '')) throw new Error('country config needs a valid locale and three-letter currency code');
+    let locale;
+    try { locale = Intl.getCanonicalLocales(currency.locale)[0]; new Intl.NumberFormat(locale); }
+    catch { throw new Error('country config currency locale is not a valid Intl locale'); }
+    const supportedCurrencies = typeof Intl.supportedValuesOf === 'function' ? Intl.supportedValuesOf('currency') : [];
+    if (!supportedCurrencies.includes(currency.code)) throw new Error(`unsupported ISO-4217 currency code ${currency.code}`);
+    return { countryCode, currency: { locale, code: currency.code } };
+}
+
+function countryName(code, locale) {
+    return new Intl.DisplayNames([locale], { type: 'region' }).of(code);
+}
+
+function currencyFor(countryCode, explicit) {
+    if (explicit) return validateCountryConfig(explicit, countryCode).currency;
+    const known = CURRENCY[countryCode];
+    return known ? { locale: known[0], code: known[1] } : null;
 }
 
 // Final evidence of every technical-qualified city in the given runner state dirs (latest run wins).
@@ -232,7 +266,7 @@ function switchParcelsLine(configText, appCityId, descriptor) {
 
 function cityConfigEntry(item) {
     const { appCityId, code, label, center, descriptor, countryCode } = item;
-    const [locale, currency] = CURRENCY[countryCode];
+    const { locale, code: currency } = item.currency;
     const q = quote;
     return [
         `        ${appCityId}: {`,
@@ -278,9 +312,10 @@ async function main() {
     }
     for (const [cc, names] of Object.entries(COUNTRY_NAMES)) for (const l of LOCALES) countryNames[l][cc] ??= names[l];
 
-    const outcomes = latestOutcomes();
+    const outcomes = latestOutcomes(args.outcomes || undefined);
     const evidence = evidenceIndex(args.states);
     const wup = wupIndex();
+    const explicitCountry = args.countryConfig ? validateCountryConfig(readJson(args.countryConfig)) : null;
     const plan = [], refused = [];
     const taken = new Set(configIds);
     for (const [code, outcome] of [...outcomes].sort((a, b) => Number(a[0]) - Number(b[0]))) {
@@ -288,15 +323,33 @@ async function main() {
         if (args.exclude.has(code)) { refused.push({ code, name: outcome.cityName, reason: args.exclude.get(code) }); continue; }
         const ev = evidence.get(code);
         if (!ev) { refused.push({ code, name: outcome.cityName, reason: 'no evidence in the given state dirs' }); continue; }
-        const candidateSourceId = readJson(ev.candidate).descriptor?.id;
-        const catalogSource = catalogDoc.sources.find(s => s.id === candidateSourceId);
+        const candidate = readJson(ev.candidate);
+        const candidateDescriptor = candidate.descriptor;
+        const candidateSourceId = candidateDescriptor?.id;
+        const catalogSource = catalogDoc.sources.find(s => s.id === candidateSourceId) || candidateDescriptor;
         const checked = verifyAdmissionEvidence(ev, catalogSource);
         if (typeof checked === 'string') { refused.push({ code, name: outcome.cityName, reason: checked }); continue; }
         // An opt-in alternative (Ljubljana's GURS service) is skipped by default resolution, so it cannot be a city's only source.
         if (catalogSource.defaultForCity === false) { refused.push({ code, name: outcome.cityName, reason: `${catalogSource.id} is an opt-in alternative (defaultForCity false)` }); continue; }
         const w = wup.get(code)?.['2025'];
         const countryCode = catalogSource.countryCode || outcome.countryCode;
-        if (!CURRENCY[countryCode] || !LOCALES.every(l => countryNames[l][countryCode])) { refused.push({ code, name: outcome.cityName, reason: `no currency/label for ${countryCode}` }); continue; }
+        let currency;
+        const candidateCountry = candidate.city?.currency ? { countryCode, currency: candidate.city.currency } : null;
+        try { currency = currencyFor(countryCode, explicitCountry || candidateCountry); }
+        catch (error) { refused.push({ code, name: outcome.cityName, reason: error.message }); continue; }
+        if (!currency) { refused.push({ code, name: outcome.cityName, reason: `no verified currency configuration for ${countryCode}` }); continue; }
+        for (const l of LOCALES) countryNames[l][countryCode] ??= countryName(countryCode, l);
+        if (!LOCALES.every(l => countryNames[l][countryCode])) { refused.push({ code, name: outcome.cityName, reason: `no localized country label for ${countryCode}` }); continue; }
+        if (!catalogDoc.sources.some(s => s.id === candidateSourceId)) {
+            const endpoint = candidateDescriptor?.endpoint;
+            if (!candidateDescriptor || !candidateSourceId || !/^https?:\/\//i.test(endpoint || '')
+                || !candidateDescriptor.adapter || !candidateDescriptor.idPrefix || !candidateDescriptor.name) {
+                refused.push({ code, name: outcome.cityName, reason: 'new source descriptor lacks a public HTTP(S) endpoint, adapter, display name or ID prefix' }); continue;
+            }
+            // A new source arrives without production city bindings; the candidate is its contract.
+            candidateDescriptor.cityIds = [];
+            candidateDescriptor.countryCode ||= countryCode;
+        }
         // A live city configured without a WUP code is the same place when its centre is this close.
         const pointLatLon = [checked.candidate.city.point[1], checked.candidate.city.point[0]];
         const twin = configs.find(c => Number.isFinite(c.lat) && haversineKm(c.lat, c.lon, ...pointLatLon) < TWIN_KM
@@ -311,7 +364,7 @@ async function main() {
         // Same-named cities in one country are told apart by their state or region code.
         const takenLabels = new Set([...Object.values(i18n.en.city?.labels || {}), ...plan.map(item => item.label)]);
         const qualifier = takenLabels.has(`${outcome.cityName}, ${countryNames.en[countryCode]}`) ? ` (${catalogSource.stateCode || code})` : '';
-        plan.push({ code, appCityId, outcome, evidence: ev, ...checked, catalogSource, countryCode, qualifier,
+        plan.push({ code, appCityId, outcome, evidence: ev, ...checked, catalogSource, countryCode, currency, qualifier,
             name: outcome.cityName, label: `${outcome.cityName}${qualifier}, ${countryNames.en[countryCode]}`,
             center: [point[1], point[0]], metricSrid: Number(String(metricCrs).split(':')[1]),
             population2025: w?.pop ?? null, population2015: wup.get(code)?.['2015']?.pop ?? null, countryName: countryNames.en[countryCode] });
@@ -349,7 +402,12 @@ async function main() {
         if (previous.metricSridByCity) delete previous.metricSridByCity[item.appCityId];
     }
     for (const item of plan) {
-        const source = nextCatalog.sources.find(s => s.id === item.catalogSource.id);
+        let source = nextCatalog.sources.find(s => s.id === item.catalogSource.id);
+        if (!source) {
+            source = structuredClone(item.catalogSource);
+            source.cityIds = [];
+            nextCatalog.sources.push(source);
+        }
         source.cityIds = [...new Set([...(source.cityIds || []), item.appCityId])];
         if (source.metricSridByCity || source.metricSrid !== item.metricSrid) {
             source.metricSridByCity ??= Object.fromEntries((source.cityIds || []).filter(id => id !== item.appCityId).map(id => [id, source.metricSrid]));
@@ -366,6 +424,7 @@ async function main() {
     for (const r of refused) log(`refused ${r.code} ${r.name}: ${r.reason}`);
 
     if (!args.apply) { log('dry run: nothing written (pass --apply)'); return; }
+    if (!plan.length) { log('no eligible cities; nothing written'); return; }
 
     const evidenceRoot = `world-parcels/research/qualification-${args.release}`;
     const manifestCities = [];
