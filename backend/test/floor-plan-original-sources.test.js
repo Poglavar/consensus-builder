@@ -68,6 +68,13 @@ describe('current original plan eligibility', () => {
 });
 
 describe('original and geometry inventory selection', () => {
+    it('prefers the full original over a smaller gallery thumbnail of the same unit', () => {
+        const original = originalPlanSource(source({ byte_count: 200000 }));
+        const thumbnail = { ...original, id: 'original-0000', sha256: 'b'.repeat(64), byte_count: 20000 };
+        const apartment = projectInventory([posting], [thumbnail, original]).apartments[0];
+        expect(apartment.source.sha256).toBe(sha);
+        expect(apartment.originalSources).toHaveLength(2);
+    });
     it('preserves existing hyphenated geometry apartment deep-link IDs', () => {
         const key = listingIdentity(posting.url, posting.facts.sourceId) || posting.url;
         const expected = createHash('sha256').update(`${key}|A-5-2`).digest('hex').slice(0, 16);

@@ -32,7 +32,7 @@ export function hasUsableGeometry(model = {}) {
 
 export const ORIGINAL_PLAN_SOURCES_SQL = `SELECT l.url AS listing_url,l.facts,l.location_status,
     t.url AS source_url,t.current_sha256,t.image_kind,t.image_classified_sha256,
-    b.sha256,b.bytes_available,b.media_type,a.asset,
+    b.sha256,b.bytes_available,b.media_type,b.byte_count,a.asset,
     image.status AS image_status,image.result->'reading' AS reading,
     reviewed.model AS reviewed_model,reviewed.status AS review_status
  FROM floor_plan.listing l
@@ -82,7 +82,7 @@ export function originalPlanSource(row) {
     const unitId = facts.unitId || listingUnit || asset.unitId || reviewed?.unitId || processed?.unitId || sourceUnits[0] || null;
     const identity = createHash('sha256').update(JSON.stringify([row.listing_url, row.sha256, page, unitId])).digest('hex').slice(0, 20);
     return { id: `original-${identity}`, kind: 'original', listing_url: row.listing_url,
-        sha256: row.sha256, source_sha256: row.sha256, media_type: type,
+        sha256: row.sha256, source_sha256: row.sha256, media_type: type, byte_count: row.byte_count || 0,
         reviewStatus: row.review_status || 'source_only', model: { scope: 'unit', unitId,
             floor: facts.floor ?? null, architecture: null,
             quality: reviewed?.quality || processed?.quality || { issues: [] },

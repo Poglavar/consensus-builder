@@ -70,7 +70,7 @@ export function projectInventory(postings, plans, options = {}) {
         const facts = aliases.map(p => ({ ...p.facts, propertyDetails: details(p.facts || {}) }));
         const ownedPlans = [...(planGroups.get(key) || [])].sort((a, b) => {
             const rank = plan => hasUsableGeometry(plan.model) ? (plan.kind === 'reviewed' ? 0 : 1) : plan.kind === 'original' ? 2 : 3;
-            return rank(a) - rank(b) || a.id.localeCompare(b.id);
+            return rank(a) - rank(b) || (b.byte_count || 0) - (a.byte_count || 0) || a.id.localeCompare(b.id);
         });
         // Commercial premises, houses and portfolio building pages are not apartment offers.
         if (!ownedPlans.length && !facts.some(f => f.propertyDetails.propertyType === 'apartment')) continue;
