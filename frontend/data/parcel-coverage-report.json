@@ -24,9 +24,7 @@
       "builtUpAreaKm2": 0.003000000084284693,
       "population": 2
     },
-    "warnings": [
-      "Zagreb guess-spike records were not available at report build time"
-    ]
+    "warnings": []
   },
   "world": {
     "landAreaKm2": 134735851,
@@ -134234,7 +134232,7 @@
       "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
       "verifiedSample": true,
-      "impliedParcelsTried": null,
+      "impliedParcelsTried": true,
       "integrationAttempts": [],
       "sourceIds": [
         "hr-dgu-oss-dkp-cestice"
