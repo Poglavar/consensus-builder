@@ -1608,8 +1608,8 @@
                     model: translateSingleBuildingText('modal.singleBuilding.modelHint', 'Adjust the height and orbit to see the fit. Use 2D to reshape the footprint.')
                 },
                 tools: `
-                    <button id="single-rotate-counterclockwise" class="btn btn-quiet" type="button" title="${modalText.rotateCounterclockwiseLabel}" aria-label="${modalText.rotateCounterclockwiseLabel}"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> 5°</button>
-                    <button id="single-rotate-clockwise" class="btn btn-quiet" type="button" title="${modalText.rotateClockwiseLabel}" aria-label="${modalText.rotateClockwiseLabel}"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i> 5°</button>
+                    <button id="single-rotate-counterclockwise" class="btn" type="button" title="${modalText.rotateCounterclockwiseLabel}" aria-label="${modalText.rotateCounterclockwiseLabel}"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> 5°</button>
+                    <button id="single-rotate-clockwise" class="btn" type="button" title="${modalText.rotateClockwiseLabel}" aria-label="${modalText.rotateClockwiseLabel}"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i> 5°</button>
                 `,
                 content: `                        <div class="on-map-building__height">
                             <label for="single-height-slider">${modalText.heightLabel} <strong id="single-height-value">${DEFAULT_HEIGHT_M}</strong></label>

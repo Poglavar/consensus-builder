@@ -63,7 +63,7 @@
 .on-map-editor__footer > div { width: 100%; min-width: 0; }
 .on-map-editor__footer [role="status"]:not(:empty) { margin-bottom: var(--cb-space-2); font-size: var(--cb-text-sm); }
 .on-map-editor__tools { position: fixed; display: flex; flex-wrap: wrap; gap: var(--cb-space-1); }
-.on-map-editor__tools .btn { min-height: 36px; padding-inline: var(--cb-space-2); background: var(--cb-glass); box-shadow: var(--cb-shadow-sm); }
+.on-map-editor__tools .btn { min-height: 36px; padding-inline: var(--cb-space-2); box-shadow: var(--cb-shadow-sm); }
 body.on-map-editing .map-shell-slot--tray { display: none; }
 @media (max-width: 639.98px) {
     .on-map-editor__panel {
@@ -74,9 +74,14 @@ body.on-map-editing .map-shell-slot--tray { display: none; }
         width: auto;
         max-height: min(56dvh, 440px);
         padding: var(--cb-space-2) var(--cb-space-3);
-        background: var(--cb-glass-veil);
     }
     .on-map-editor__header { min-height: 28px; }
     .on-map-editor__header h2 { font-size: var(--cb-text-base); }
     .on-map-editor__hint { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 }
+
+/* The shared runtime lifts native popups out of the transformed map pane while editing. */
+.leaflet-pane.on-map-editor-popups { z-index: var(--cb-z-editor-popup); }
+
+/* A newly opened Settings/Layers sheet takes focus above the in-progress editor. */
+body.on-map-editing .map-sheet { z-index: var(--cb-z-open-menu); }

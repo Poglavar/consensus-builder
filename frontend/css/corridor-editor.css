@@ -296,6 +296,7 @@ body.corridor-editor-open .leaflet-interactive {
    be something you have to scroll a boulevard's fifteen rows to reach. */
 .corridor-editor-pickers {
     display: flex;
+    align-items: flex-start;
     gap: 8px;
     margin-bottom: 12px;
 }
@@ -311,7 +312,7 @@ body.corridor-editor-open .leaflet-interactive {
    the point is to show each lane's surface colour). The toggle mimics the sibling <select> (the
    base form control's tokens); the menu is a coloured list — each row IS its lane's surface, with
    contrast-picked text. */
-.cb-lane-dropdown { position: relative; }
+.cb-lane-dropdown { min-width: 0; }
 
 .cb-lane-dropdown-toggle {
     display: flex;
@@ -333,13 +334,12 @@ body.corridor-editor-open .leaflet-interactive {
 .cb-lane-dropdown-caret { color: var(--cb-text-muted); font-size: 0.7rem; flex: none; }
 
 .cb-lane-dropdown-menu {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    right: 0;
-    z-index: var(--cb-z-local-50);
-    max-height: 340px;
+    position: static;
+    box-sizing: border-box;
+    width: 100%;
+    max-height: min(40dvh, 280px);
     overflow-y: auto;
+    margin-top: 4px;
     border: 1px solid var(--cb-line-strong);
     border-radius: var(--cb-radius-md);
     background: var(--cb-surface);

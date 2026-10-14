@@ -249,6 +249,14 @@
     font-size: var(--cb-text-sm);
 }
 
+.reparcel-coverage {
+    padding: 8px 10px;
+    border-radius: var(--cb-radius-md);
+    line-height: 1.35;
+}
+
+.reparcel-agreement-hint { line-height: 1.4; }
+
 .reparcel-cashtotal {
     margin-top: 6px;
     color: var(--cb-text-strong);
@@ -411,6 +419,10 @@
     .reparcel-actions [data-reparcel-commit] {
         flex: 1 1 40%;
     }
+}
+
+@media (max-width: 520px) {
+    .reparcel-courtyard-label { flex-basis: 100%; }
 }
 
 @media (max-width: 480px) {

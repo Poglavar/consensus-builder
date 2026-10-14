@@ -67,8 +67,16 @@
             footer.hidden = !options.footer;
             const tools = node('div', 'on-map-editor__tools', root);
             appendContent(tools, options.tools);
-            tools.hidden = !options.tools;
+            tools.hidden = true; // Anchored tools appear once geometry supplies a position.
             const map = env.map;
+            const mapContainer = map.getContainer();
+            const popupPane = map.getPane('popupPane');
+            const popupHome = popupPane ? {
+                parent: popupPane.parentNode,
+                next: popupPane.nextSibling,
+                left: popupPane.style.left,
+                top: popupPane.style.top
+            } : null;
             const disabledButtons = Object.entries(modeButtons).filter(([mode]) => !modes.includes(mode))
                 .map(([, id]) => doc.getElementById(id)).filter(Boolean)
                 .map(button => ({ button, disabled: button.disabled }));
@@ -80,6 +88,47 @@
             let anchor = null;
             let preview = null;
             let pendingFit = null;
+            let openPopup = null;
+            let popupPadding = null;
+
+            // Leaflet's transformed map pane traps popups below the editor. Keep the native
+            // popup pane in the map container, mirroring its old origin so pan/zoom and auto-pan
+            // still use Leaflet coordinates, while its own stacking level clears the controls.
+            function positionPopupPane() {
+                if (!popupHome?.parent) return;
+                const origin = popupHome.parent.getBoundingClientRect();
+                const bounds = mapContainer.getBoundingClientRect();
+                popupPane.style.left = `${origin.left - bounds.left}px`;
+                popupPane.style.top = `${origin.top - bounds.top}px`;
+            }
+            function onPopupOpen(event) {
+                openPopup = event.popup;
+                positionPopupPane();
+                const popupRect = openPopup.getElement?.()?.getBoundingClientRect();
+                if (!popupRect) return;
+                popupPadding = {
+                    autoPanPaddingTopLeft: openPopup.options.autoPanPaddingTopLeft,
+                    autoPanPaddingBottomRight: openPopup.options.autoPanPaddingBottomRight
+                };
+                const bounds = mapContainer.getBoundingClientRect();
+                const panelRect = panel.getBoundingClientRect();
+                const toolsRect = tools.getBoundingClientRect();
+                const mobile = env.innerWidth < 640;
+                const belowTools = tools.hidden ? 76 : toolsRect.bottom - bounds.top + 12;
+                const top = !mobile && bounds.height - 100 - belowTools >= popupRect.height
+                    ? Math.max(76, belowTools) : 76;
+                const right = !mobile && bounds.width - panelRect.width - 48 >= popupRect.width
+                    ? panelRect.width + 24 : 12;
+                openPopup.options.autoPanPaddingTopLeft = [12, top];
+                openPopup.options.autoPanPaddingBottomRight = [right, 100];
+                openPopup.update();
+            }
+            function onPopupClose(event) {
+                if (openPopup !== event.popup) return;
+                if (popupPadding) Object.assign(openPopup.options, popupPadding);
+                openPopup = null;
+                popupPadding = null;
+            }
 
             function positionTools() {
                 if (!options.tools || !anchor || closed) return;
@@ -136,10 +185,20 @@
 
             function onModeChange() { syncMode(); }
             function onKeydown(event) {
-                if (options.handleEscape === false || event.defaultPrevented || event.key !== 'Escape') return;
+                if (event.defaultPrevented || event.key !== 'Escape') return;
                 // A nested confirmation or specialized popup gets first use of Escape.
                 if ([...doc.querySelectorAll('.cb-dialog-overlay')]
                     .some(element => !element.hidden && element.getClientRects().length > 0)) return;
+                // Sheets opened during editing sit above this frame; MapShell owns their Escape.
+                if ([...doc.querySelectorAll('.map-sheet:not([hidden])')]
+                    .some(element => element.getClientRects().length > 0)) return;
+                if (openPopup) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    map.closePopup(openPopup);
+                    return;
+                }
+                if (options.handleEscape === false) return;
                 event.preventDefault();
                 options.onCancel?.();
             }
@@ -147,6 +206,17 @@
                 if (closed) return;
                 closed = true;
                 map.off('move zoom resize', positionTools);
+                map.off('move zoom resize', positionPopupPane);
+                map.off('popupopen', onPopupOpen);
+                map.off('popupclose', onPopupClose);
+                if (openPopup) onPopupClose({ popup: openPopup });
+                if (popupHome?.parent) {
+                    map.closePopup();
+                    popupHome.parent.insertBefore(popupPane, popupHome.next);
+                    popupPane.style.left = popupHome.left;
+                    popupPane.style.top = popupHome.top;
+                    popupPane.classList.remove('on-map-editor-popups');
+                }
                 env.removeEventListener('resize', positionTools);
                 env.removeEventListener('mapmodechange', onModeChange);
                 env.removeEventListener('threeModeReady', onModeChange);
@@ -168,7 +238,7 @@
                 owner: options.owner,
                 get preview() { return preview; },
                 setPreview(detail) { if (closed) return; preview = detail || null; announce(); },
-                setAnchor(value) { anchor = value; positionTools(); },
+                setAnchor(value) { anchor = value; if (!anchor) tools.hidden = true; else positionTools(); },
                 fitFeature(feature, settings = {}) {
                     if (!feature) return;
                     if (env.isThreeModeActive?.()) { pendingFit = { feature, settings }; return; }
@@ -196,6 +266,12 @@
                     const layerPane = map.getPane(name) || map.createPane(name);
                     layerPane.style.zIndex = String(z);
                 }
+                if (popupHome?.parent) {
+                    map.closePopup();
+                    mapContainer.appendChild(popupPane);
+                    popupPane.classList.add('on-map-editor-popups');
+                    positionPopupPane();
+                }
                 suspended.forEach(({ element }) => { element.style.display = 'none'; });
                 doc.body.appendChild(root);
                 doc.body.classList.add('on-map-editing');
@@ -206,6 +282,9 @@
                 env.__drillUi?.hidePanel?.();
                 env.MapShell?.closeSheet?.({ restoreFocus: false });
                 map.on('move zoom resize', positionTools);
+                map.on('move zoom resize', positionPopupPane);
+                map.on('popupopen', onPopupOpen);
+                map.on('popupclose', onPopupClose);
                 env.addEventListener('resize', positionTools);
                 env.addEventListener('mapmodechange', onModeChange);
                 env.addEventListener('threeModeReady', onModeChange);

@@ -650,6 +650,7 @@
         });
 
         state.escHandler = (event) => {
+            if (event.defaultPrevented) return;
             if (event.key === 'Escape') {
                 if (state.drawing.active) {
                     cancelDraw();

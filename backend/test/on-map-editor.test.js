@@ -16,7 +16,13 @@ function fakeElement(tagName = 'div') {
         isConnected: false,
         className: '',
         classList: { add: vi.fn(), remove: vi.fn() },
-        appendChild(child) { child.parentNode = this; this.children.push(child); return child; },
+        appendChild(child) { child.remove?.(); child.parentNode = this; this.children.push(child); return child; },
+        insertBefore(child, next) {
+            child.remove?.(); child.parentNode = this;
+            const at = this.children.indexOf(next);
+            this.children.splice(at < 0 ? this.children.length : at, 0, child);
+            return child;
+        },
         remove() {
             this.isConnected = false;
             const siblings = this.parentNode?.children || [];
@@ -31,7 +37,7 @@ function fakeElement(tagName = 'div') {
     };
 }
 
-function runtime({ claim = true } = {}) {
+function runtime({ claim = true, popup = false } = {}) {
     const dispatched = [];
     const documentListeners = new Map();
     const envListeners = new Map();
@@ -59,10 +65,18 @@ function runtime({ claim = true } = {}) {
         addEventListener(name, listener) { documentListeners.set(name, listener); },
         removeEventListener(name) { documentListeners.delete(name); }
     };
+    const mapContainer = fakeElement();
+    mapContainer.getBoundingClientRect = () => ({ left: 30, top: 20, width: 1000, height: 800 });
+    const mapListeners = new Map();
     const map = {
         panes: new Map(),
-        on: vi.fn(),
-        off: vi.fn(),
+        on: vi.fn((names, fn) => names.split(' ').forEach(name => {
+            if (!mapListeners.has(name)) mapListeners.set(name, new Set());
+            mapListeners.get(name).add(fn);
+        })),
+        off: vi.fn((names, fn) => names.split(' ').forEach(name => mapListeners.get(name)?.delete(fn))),
+        fire(name, event = {}) { mapListeners.get(name)?.forEach(fn => fn(event)); },
+        closePopup: vi.fn(function (popup) { this.fire('popupclose', { popup }); }),
         invalidateSize: vi.fn(),
         fitBounds: vi.fn(),
         getPane(name) { return this.panes.get(name) || null; },
@@ -71,8 +85,19 @@ function runtime({ claim = true } = {}) {
             this.panes.set(name, pane);
             return pane;
         },
-        getContainer: () => ({ getBoundingClientRect: () => ({ left: 0, top: 0, width: 1000, height: 800 }) })
+        latLngToContainerPoint: () => ({ x: 300, y: 200 }),
+        getContainer: () => mapContainer
     };
+    if (popup) {
+        const mapPane = fakeElement();
+        mapPane.getBoundingClientRect = () => ({ left: -18, top: 32 });
+        mapContainer.appendChild(mapPane);
+        const popupPane = fakeElement();
+        popupPane.style.left = '0px'; popupPane.style.top = '0px';
+        mapPane.appendChild(popupPane);
+        map.panes.set('mapPane', mapPane);
+        map.panes.set('popupPane', popupPane);
+    }
     const env = {
         document,
         CustomEvent: class CustomEvent { constructor(type) { this.type = type; } },
@@ -94,6 +119,76 @@ function runtime({ claim = true } = {}) {
 afterEach(() => vi.restoreAllMocks());
 
 describe('OnMapEditor shared floating-panel lifecycle', () => {
+    it('keeps anchored tools hidden until geometry is ready, and hides them when it is cleared', () => {
+        const { editor } = runtime();
+        const session = editor.open({ owner: 'row-house', tools: 'rotate' });
+        expect(session.tools.hidden).toBe(true);
+        session.setAnchor({ lat: 1, lng: 2 });
+        expect(session.tools.hidden).toBe(false);
+        expect(session.tools.style.left).toMatch(/px$/);
+        session.setAnchor(null);
+        expect(session.tools.hidden).toBe(true);
+        session.close();
+    });
+
+    it('lifts native popups over editor controls, follows the map origin and restores their pane', () => {
+        const { editor, map } = runtime({ popup: true });
+        const popupPane = map.getPane('popupPane');
+        const mapPane = map.getPane('mapPane');
+        const session = editor.open({ owner: 'reparcellization' });
+        expect(popupPane.parentNode).toBe(map.getContainer());
+        expect(popupPane.classList.add).toHaveBeenCalledWith('on-map-editor-popups');
+        expect(popupPane.style).toMatchObject({ left: '-48px', top: '12px' });
+        mapPane.getBoundingClientRect = () => ({ left: 10, top: 80 });
+        map.fire('move');
+        expect(popupPane.style).toMatchObject({ left: '-20px', top: '60px' });
+        session.close();
+        expect(popupPane.parentNode).toBe(mapPane);
+        expect(popupPane.style).toMatchObject({ left: '0px', top: '0px' });
+        expect(popupPane.classList.remove).toHaveBeenCalledWith('on-map-editor-popups');
+        map.fire('move');
+        expect(popupPane.style).toMatchObject({ left: '0px', top: '0px' });
+        expect(map.closePopup).toHaveBeenCalledTimes(2);
+    });
+
+    it('pans popups clear of desktop controls and restores their original padding', () => {
+        const { editor, map } = runtime({ popup: true });
+        const session = editor.open({ owner: 'reparcellization', tools: 'tools' });
+        session.panel.getBoundingClientRect = () => ({ width: 320 });
+        session.tools.hidden = false;
+        session.tools.getBoundingClientRect = () => ({ bottom: 240 });
+        const popup = {
+            options: { autoPanPaddingTopLeft: [5, 5], autoPanPaddingBottomRight: null },
+            getElement: () => ({ getBoundingClientRect: () => ({ width: 280, height: 390 }) }),
+            update: vi.fn()
+        };
+        map.fire('popupopen', { popup });
+        expect(popup.options.autoPanPaddingTopLeft).toEqual([12, 232]);
+        expect(popup.options.autoPanPaddingBottomRight).toEqual([344, 100]);
+        expect(popup.update).toHaveBeenCalledOnce();
+        map.fire('popupclose', { popup });
+        expect(popup.options.autoPanPaddingTopLeft).toEqual([5, 5]);
+        expect(popup.options.autoPanPaddingBottomRight).toBeNull();
+        session.close();
+    });
+
+    it('dismisses the open map popup before cancelling a geometry editor', () => {
+        const { editor, map, documentListeners } = runtime({ popup: true });
+        const onCancel = vi.fn();
+        const session = editor.open({ owner: 'single-building', onCancel });
+        const popup = {};
+        map.fire('popupopen', { popup });
+        const event = { key: 'Escape', preventDefault: vi.fn(), stopPropagation: vi.fn() };
+        documentListeners.get('keydown')(event);
+        expect(map.closePopup).toHaveBeenLastCalledWith(popup);
+        expect(event.preventDefault).toHaveBeenCalledOnce();
+        expect(event.stopPropagation).toHaveBeenCalledOnce();
+        expect(onCancel).not.toHaveBeenCalled();
+        documentListeners.get('keydown')(event);
+        expect(onCancel).toHaveBeenCalledOnce();
+        session.close();
+    });
+
     it('defers initial framing until a 2D-only editor leaves the model view', () => {
         const { editor, env, map, envListeners } = runtime();
         env.__mapModeState.desired = 'model';
@@ -116,7 +211,7 @@ describe('OnMapEditor shared floating-panel lifecycle', () => {
         const onCancel = vi.fn();
         const session = editor.open({ owner: 'single-building', onCancel });
         const overlay = { hidden: true, getClientRects: () => [{}] };
-        env.document.querySelectorAll = () => [overlay];
+        env.document.querySelectorAll = selector => selector === '.cb-dialog-overlay' ? [overlay] : [];
         const key = () => ({ key: 'Escape', preventDefault: vi.fn() });
         documentListeners.get('keydown')(key());
         expect(onCancel).toHaveBeenCalledOnce();
@@ -126,6 +221,22 @@ describe('OnMapEditor shared floating-panel lifecycle', () => {
         overlay.getClientRects = () => [];
         documentListeners.get('keydown')(key());
         expect(onCancel).toHaveBeenCalledTimes(2);
+        session.close();
+    });
+
+    it('leaves Escape to a sheet opened above the editor', () => {
+        const { editor, env, documentListeners } = runtime();
+        const onCancel = vi.fn();
+        const session = editor.open({ owner: 'station', onCancel });
+        const sheet = { getClientRects: () => [{}] };
+        env.document.querySelectorAll = selector => selector.startsWith('.map-sheet') ? [sheet] : [];
+        const event = { key: 'Escape', preventDefault: vi.fn() };
+        documentListeners.get('keydown')(event);
+        expect(onCancel).not.toHaveBeenCalled();
+        expect(event.preventDefault).not.toHaveBeenCalled();
+        sheet.getClientRects = () => [];
+        documentListeners.get('keydown')(event);
+        expect(onCancel).toHaveBeenCalledOnce();
         session.close();
     });
 

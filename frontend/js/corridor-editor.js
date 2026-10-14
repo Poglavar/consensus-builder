@@ -19,6 +19,7 @@
 let corridorEditorState = null;
 let corridorEditorSession = null;
 let corridorEditorObstacleTimer = null;
+let corridorEditorLaneMenuCleanup = null;
 // Red overlay of the buildings the CURRENT cross-section cuts into — the on-map counterpart of
 // the "hits buildings" chip, repainted by every obstacle check while the editor is open.
 let corridorEditorHitBuildingsLayer = null;
@@ -72,6 +73,7 @@ function corridorLaneTypeLabel(type) {
 }
 
 function corridorEditorClose() {
+    if (typeof corridorEditorLaneMenuCleanup === 'function') corridorEditorLaneMenuCleanup();
     if (typeof clearCorridorProfilePreview === 'function') clearCorridorProfilePreview();
     corridorEditorRenderBuildingHits([]);
     corridorEditorClearClearanceOverlays();
@@ -1623,6 +1625,9 @@ function corridorEditorSelect(index, scrollIntoView) {
 }
 
 function corridorEditorRender() {
+    // Replacing the picker also removes its toggle/menu nodes; release any document listeners
+    // attached while its custom menu was open before rebuilding them.
+    corridorEditorLaneMenuCleanup?.();
     const body = document.querySelector('.corridor-editor-body');
     if (!body || !corridorEditorState) return;
     corridorEditorSyncTabs();
@@ -1937,14 +1942,19 @@ function corridorEditorBindBody(body) {
         function closeMenu() {
             if (menu) menu.hidden = true;
             if (toggle) toggle.setAttribute('aria-expanded', 'false');
+            removeMenuListeners();
+        }
+        function removeMenuListeners() {
             document.removeEventListener('click', onDocClick, true);
             document.removeEventListener('keydown', onMenuKey, true);
+            if (corridorEditorLaneMenuCleanup === removeMenuListeners) corridorEditorLaneMenuCleanup = null;
         }
         function openMenu() {
             if (menu) menu.hidden = false;
             if (toggle) toggle.setAttribute('aria-expanded', 'true');
             document.addEventListener('click', onDocClick, true);
             document.addEventListener('keydown', onMenuKey, true);
+            corridorEditorLaneMenuCleanup = removeMenuListeners;
         }
         if (toggle) toggle.addEventListener('click', event => {
             event.stopPropagation();
