@@ -41,6 +41,12 @@ export function developerProjectRoot($, rawUrl) {
     if (EXCLUDED_PROJECT_PATHS.has(key)) return null;
     const [, host, path] = key.match(/^([^/]+)(\/.*)$/) || [];
     if (!host || INDEX_PATHS.has(path)) return null;
+    if (host === 'vmdgrupa.hr') {
+        // The page's one-fifth column is a portfolio menu with other project addresses.
+        // Only the four-fifths content column describes the current project.
+        const content = $('main#tm-main [class~="uk-width-4-5@m"]').first();
+        return content.length ? content : null;
+    }
     const selector = OWN_ROOTS[host];
     if (selector) {
         const root = host === 'mado.hr'
@@ -57,10 +63,11 @@ export function extractDeveloperProject($, rawUrl) {
     const root = developerProjectRoot($, rawUrl);
     if (!root) return null;
     const scoped = root.clone();
-    scoped.find('script,style,noscript,nav,footer,header,form,aside,[role="navigation"],[role="contentinfo"],[role="dialog"],[aria-hidden="true"],[hidden],[data-elementor-type="popup"],[class*="modal" i],[class*="dialog" i],[class*="popup" i],[class*="related" i],[class*="similar" i],[class*="recommend" i]').remove();
+    scoped.find('section').filter((_, section) => $(section).find('form').length > 0).remove();
+    scoped.find('script,style,noscript,nav,footer,header,form,aside,[role="navigation"],[role="contentinfo"],[role="dialog"],[aria-hidden="true"],[hidden],[data-elementor-type="popup"],[class*="modal" i],[class*="dialog" i],[class*="popup" i],[class*="related" i],[class*="similar" i],[class*="recommend" i],.uk-nav,.sticky-section,[class~="uk-hidden@m"]').remove();
     const heading = scoped.find('h1').first().text().replace(/\s+/g, ' ').trim();
     const pageTitle = $('meta[property="og:title"]').attr('content')?.trim() || $('title').text().split('|')[0].trim();
     const title = /^(?:fotogalerija|gallery|photos)$/i.test(heading) ? pageTitle : heading || pageTitle;
     if (!title) return null;
-    return { title, rootHtml: $.html(scoped), text: scoped.text().replace(/\s+/g, ' ').trim() };
+    return { title, rootHtml: `<main>${$.html(scoped)}</main>`, text: scoped.text().replace(/\s+/g, ' ').trim() };
 }

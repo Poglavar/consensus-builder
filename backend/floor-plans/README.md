@@ -23,8 +23,9 @@ Located leads without apartments stay in the collection backlog; existing deep l
 explain the missing inventory, link to the source and remain `noindex,follow`.
 The building viewer requires a supported footprint and storey height/elevation.
 
-The source roster reconciles every known agency domain and the 20 evidenced studio
-seeds. Unverified architecture leads remain leads. Discovery still spans the broad
+The source roster reconciles every known agency domain, the 20 evidenced studio
+seeds and the independently checked developer roster. Unverified architecture and
+developer leads remain leads. Discovery still spans the broad
 source set, while **asset fetching now requires a located/probable site or a verified
 building match and current listing ownership**. This concentrates download and
 interpretation work on objects that can actually appear on the map. The deeper
@@ -77,6 +78,28 @@ only their retained plan originals. The existing `push-site-models-to-prod.sh`
 replaces the whole production model set and must not be used with a partial
 archive. Read back the public catalogue and source hashes after publication.
 These processing steps do not enable recurring scheduling.
+
+### Developer sources
+
+`developers.json` is a partial roster of 12 Zagreb residential developers, supported
+by their own company/project pages and 19 project or portfolio seeds. Import it with
+`developer-sites --file backend/floor-plans/developers.json`; manual source-roster
+refresh also imports it. The importer validates the whole document before writing.
+Developer role evidence is kept under `site.evidence.developerSource`, separately
+from agency registry identity and studio provenance. Shared domains keep their
+existing agency/studio parser identity; newly admitted domains use
+`source_kind=developer`. A company role check does not verify every building location
+and does not establish permission to republish its media.
+
+The two public Lankea investor-directory pages supplied 94 company/profile leads in
+`developer-leads.json`. That directory also contains agencies and a studio, so its
+labels are not accepted as proof of a developer role. HUP has a developers'
+association, but its public board page is explicitly for 2020–2024 and is used only
+as a historical discovery lead, without asserting current membership. Each active
+website is checked against its own project evidence; corporate office addresses
+must never substitute for project locations. DOMinvest Development remains deferred
+because its former domain now redirects to a construction-company site whose
+current pages do not establish the named developer entity.
 
 Collection now also compacts completed sources every 50 changed responses and at
 the end of each bounded crawl chunk. The file writer checks actual archive usage,

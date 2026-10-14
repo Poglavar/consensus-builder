@@ -60,6 +60,15 @@ describe('source-only building reader',()=>{
         expect(packet.text).not.toMatch(/Office Street|Other Street|Unrelated Project/);
         expect(packet.links).toEqual([]);
     });
+    it('keeps durable developer reading packets within the project content boundary',()=>{
+        const packet=prepareBuildingEvidence({url:'https://www.bhb.hr/objekti/comfor-h/',sha256:hash,
+            facts:{sourceType:'developer-project'},html:`<head><title>Company office, Office Street 99</title></head>
+            <body><main><h1>Comfor H</h1><p>Project at Branimirova 123, Zagreb</p></main>
+            <section><p>Office Street 99</p><a href="/other-project">Other project</a></section></body>`});
+        expect(packet.text).toContain('Branimirova 123');
+        expect(packet.text).not.toContain('Office Street 99');
+        expect(packet.links).toEqual([]);
+    });
     it('accepts a quoted source candidate without promoting it to verified identity',()=>{
         const reading=parseBuildingReading(JSON.stringify(raw()),task(prepareBuildingEvidence(input())),{model:'answering-model'});
         expect(reading).toMatchObject({status:'candidate',candidateId:'C1',source:{url:'https://agency.test/listing/1',sha256:hash},

@@ -241,7 +241,8 @@ function assetOwnership($, el, listing, pageUrl, url, label, forcedKind = null, 
     if (listing?.sourceType === 'developer-project') {
         const root = developerProjectRoot($, pageUrl);
         const inRoot = Boolean(root?.length && (root[0] === element[0] || root.find(element).length));
-        const hiddenProjectDialog = element.closest('[role="dialog"],[aria-hidden="true"],[hidden],[data-elementor-type="popup"],[class*="modal" i],[class*="dialog" i],[class*="popup" i]').length > 0;
+        const hiddenProjectDialog = element.closest('[role="dialog"],[aria-hidden="true"],[hidden],[data-elementor-type="popup"],[class*="modal" i],[class*="dialog" i],[class*="popup" i],.uk-nav,.sticky-section,[class~="uk-hidden@m"]').length > 0
+            || element.parents('section').toArray().some(section => $(section).find('form').length > 0);
         const otherProjectCard = element.closest('[class*="other-project" i],[class*="more-project" i],[class*="project-card" i],[class*="related" i],[class*="recommend" i]').length > 0;
         const linkedProject = element.closest('a[href]').attr('href');
         const linkedIdentity = linkedProject && normalizeUrl(linkedProject, pageUrl);

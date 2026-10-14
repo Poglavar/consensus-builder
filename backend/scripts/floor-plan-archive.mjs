@@ -20,6 +20,7 @@ import { enqueueBuildingTasks,recognizeBuildings,recognitionStatus } from '../fl
 import { enqueueImageTasks,classifyImages,imageClassificationStatus } from '../floor-plans/classify-images.js';
 import { enforceSourcePolicy } from '../floor-plans/source-retention.js';
 import { importArchitectureSites } from '../floor-plans/architecture-sites.js';
+import { importDeveloperSites } from '../floor-plans/developer-sites.js';
 import { migrateArchiveStorage } from '../floor-plans/storage-migration.js';
 import { locateSites } from '../floor-plans/locate-sites.js';
 import { adjudicateSites,enqueueSiteTasks } from '../floor-plans/adjudicate-sites.js';
@@ -39,6 +40,7 @@ const HELP=`Usage: node scripts/floor-plan-archive.mjs <command> [options]
  crawl [--max-pages 1000] [--max-minutes 45] [--agency ID] [--site HOST] [--discovery-only|--assets-only] [--plan-assets-only]
  sites --file FILE            Import directory-linked site candidates
  architecture-sites --file FILE  Import HKA/MPGI-backed studio websites and portfolio seeds
+ developer-sites --file FILE  Import independently evidenced Zagreb developer websites and project seeds
  websites --file FILE         Import registry-mapped website search candidates
  verify-sites                 Recheck legal identity on archived home/contact pages
  resolve-bindings             Seed reviewed bindings, resolve exact matches, suggest spatial candidates
@@ -125,6 +127,7 @@ export async function runCli(argv=process.argv.slice(2),{clientFactory=options=>
   else if(action==='websites') result=await importWebsiteCandidates(client,await readJson(option('--file')));
   else if(action==='sites') result=await importSites(client,await readJson(option('--file')));
   else if(action==='architecture-sites') result=await importArchitectureSites(client,await readJson(option('--file')));
+  else if(action==='developer-sites') result=await importDeveloperSites(client,await readJson(option('--file')));
   else if(action==='models') result=await importUnitModels(client,await readJson(option('--file')));
   else if(action==='bindings') result=await importBuildingBindings(client,await readJson(option('--file')));
   else if(action==='enqueue') result={enqueued:await enqueue(client,option('--url'),{agencyId:has('--agency')?Number(option('--agency')):null,kind:has('--kind')?option('--kind'):'page',priority:100})};

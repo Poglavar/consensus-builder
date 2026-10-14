@@ -1,9 +1,9 @@
 // An address claim is required before retaining an advertised property or portfolio project.
 import * as cheerio from 'cheerio';
 import { extractExplicitLocation,listingIdentity,propertyDetailId } from './explicit-location.js';
-import { hasLocationSignal,listingSignals } from './site-signals.js';
+import { fold, hasLocationSignal,listingSignals } from './site-signals.js';
 import { cachedStreetIndex } from './site-candidates.js';
-import { developerProjectRoot } from './developer-projects.js';
+import { extractDeveloperProject } from './developer-projects.js';
 
 export const EXCLUSION_REASON='missing-explicit-street-and-house-number';
 export const ORPHAN_ASSET_REASON='no-address-qualified-owner';
@@ -32,6 +32,16 @@ export function listingQualifies(listing) {
  return Boolean(listing.explicitLocation||listing.hasLocationSignal);
 }
 
+export function removeDeveloperProjectTitleNumbers(signals) {
+ const titleAddresses=(signals?.addresses||[]).filter(item=>item.basis==='title-mention');
+ if(!titleAddresses.length) return signals;
+ const addresses=(signals.addresses||[]).filter(item=>item.basis!=='title-mention');
+ const streets=[...(signals.streets||[])];
+ for(const item of titleAddresses) if(!streets.some(street=>fold(street.street)===fold(item.street)))
+  streets.push({street:item.street,quote:item.quote,basis:'title-mention'});
+ return {...signals,addresses,streets};
+}
+
 // The listing's own text for signal reading: page chrome, contact blocks and related ads removed.
 function ownText(html,document) {
  const $=document||cheerio.load(html||'');
@@ -50,15 +60,14 @@ export function qualifyPageEvidence(html,url,evidence,{document=null}={}) {
  }
  let scopedHtml=html;
  if(evidence.listing.sourceType==='developer-project') {
-  const $=document||cheerio.load(html||''), root=developerProjectRoot($,url);
-  const scoped=root?.clone();
-  scoped?.find('script,style,noscript,nav,footer,header,form,aside,[role="navigation"],[role="contentinfo"],[role="dialog"],[aria-hidden="true"],[hidden],[data-elementor-type="popup"],[class*="modal" i],[class*="dialog" i],[class*="popup" i],[class*="related" i],[class*="similar" i],[class*="recommend" i]').remove();
-  scopedHtml=scoped?.length?$.html(scoped):'';
+  const $=document||cheerio.load(html||''), project=extractDeveloperProject($,url);
+  scopedHtml=project?.rootHtml||'';
  }
  const explicitLocation=extractExplicitLocation(scopedHtml,url,evidence.listing,{
   ...(evidence.listing.sourceType==='developer-project'?{}:{document})});
- const signals=listingSignals({facts:{...evidence.listing,explicitLocation},text:ownText(scopedHtml,evidence.listing.sourceType==='developer-project'?null:document),
+ let signals=listingSignals({facts:{...evidence.listing,explicitLocation},text:ownText(scopedHtml,evidence.listing.sourceType==='developer-project'?null:document),
   title:evidence.listing.title||'',streetIndex:cachedStreetIndex()});
+ if(evidence.listing.sourceType==='developer-project') signals=removeDeveloperProjectTitleNumbers(signals);
  const {schema,...locationSignals}=signals;
  return {...evidence,listing:{...evidence.listing,explicitLocation,
   ...(explicitLocation?{address:explicitLocation.address}:{}),

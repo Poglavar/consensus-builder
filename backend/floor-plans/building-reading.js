@@ -4,6 +4,7 @@ import * as cheerio from 'cheerio';
 import {DEFAULT_MAX_TOKENS} from '../../../agents/lib/llm-cost/llm.mjs';
 import {addressKey} from './building-resolution.js';
 import {BUILDING_SCHEMA} from './building-reading-schema.js';
+import {extractDeveloperProject} from './developer-projects.js';
 
 export const BUILDING_PROCESSOR='ad-building-recognition-v3-explicit-address';
 const MAX_TEXT=18000, MAX_LINKS=80, MAX_CANDIDATES=40;
@@ -52,7 +53,12 @@ export function prepareBuildingEvidence({url,sha256,html,document=null,facts={},
     assert(isObject(facts),'Listing facts must be an object.');
     assert(Array.isArray(candidates)&&candidates.length<=MAX_CANDIDATES,'Invalid building candidates.');
     assert(Array.isArray(bindings),'Invalid source bindings.');
-    const $=document||cheerio.load(html);
+    const sourceDocument=document||cheerio.load(html);
+    // A developer project can embed company contacts and other developments in its page.
+    // Keep the durable packet used by later location readers within the same project boundary.
+    const $=facts.sourceType==='developer-project'
+        ?cheerio.load(extractDeveloperProject(sourceDocument,sourceUrl)?.rootHtml||'')
+        :sourceDocument;
     const structured=[];
     $('script[type="application/ld+json"]').each((_,node)=>{
         try {
