@@ -252,11 +252,24 @@ condition on three fitted seeds and 12 blocks, without multiple-comparison adjus
 remains the default, both final splits are unscored for this round, and the rental is destroyed.
 Full guard metrics, seed ranges, validation evidence and spend are in [PLAN.md](PLAN.md#learned-newest-first).
 
+The longer-schedule trial also completed on 2026-10-14 (`gpu/plans/selection-v2-longer.json`): three
+fresh 60-epoch Zagreb fits versus those saved 30-epoch baselines, with identical data, seeds, runtime
+packages and ImageNet weights. Clean F1 changes 0.293 → 0.297, difference +0.004 (95% paired block
+interval −0.006 to +0.012), below the seed spread. Clean Split transfer changes 0.156 → 0.159
+(−0.008 to +0.017). Additional 1 m resampling lowers mean F1 0.237 → 0.221 (−0.025 to −0.003),
+largely because of seed 2. These intervals condition on three fitted seeds and 12 blocks, without
+multiple-comparison adjustment. The 60-epoch runs selected epochs 18/24/30; none found a new best
+after epoch 30. Keep the 30-epoch default. This compared complete cosine schedules with different
+numbers of checkpoint evaluations; it did not extend the saved weights. Twelve selection rows were
+added, all six checkpoints and the full backup were verified, and the rental was destroyed. Final
+splits remain reserved. Scores and curves are in `output/runs/selection-v2-longer-comparison.json` and
+`output/runs/selection-v2-longer-learning-curves.png`; the full evidence is in `PLAN.md`.
+
 ## Status
 
 Done 2026-10-12: scorer with 19 behavioural tests, ledger, Zagreb manifest frozen, rules baseline recorded on both splits, practice-region donors computed for all researched cities, GPU kit written, layered model v0 built with OSM sidecars for all 96 training tiles and an end-to-end CPU smoke test (train, resume, evaluate-only).
 
-Milestone 1 (2026-10-12, RTX 4090 on Vast.ai, 30 epochs in about two minutes): selection parcel F1 0.196 versus the baseline's 0.130; final split, scored once, parcel F1 0.253 versus 0.176, precision 0.290 versus 0.253, recall 0.225 versus 0.135, area-weighted recall 0.227 versus 0.124, boundary F1 0.458 versus 0.430. A 200-epoch run of the same recipe did not beat it on selection (0.189), so training length is not the lever; data is. Rows are in `results.jsonl`.
+Milestone 1 (2026-10-12, RTX 4090 on Vast.ai, 30 epochs in about two minutes): selection parcel F1 0.196 versus the baseline's 0.130; final split, scored once, parcel F1 0.253 versus 0.176, precision 0.290 versus 0.253, recall 0.225 versus 0.135, area-weighted recall 0.227 versus 0.124, boundary F1 0.458 versus 0.430. A 200-epoch run of the same recipe did not beat it on selection (0.189), so that schedule was not retained. Rows are in `results.jsonl`.
 
 OSM dependence of the v0 checkpoint (2026-10-12, selection split, ledger rows `…-osm-model-blank` and `…-osm-none`): with the model's OSM input channels zeroed the result is unchanged (parcel F1 0.196, area-weighted recall 0.239 versus 0.234), so the model reads the imagery, not the OSM layers. With no OSM at all (no building seeds, no road or water barriers, predicted interiors as the only seeds) it reaches parcel F1 0.120, precision 0.266, area-weighted recall 0.221 and boundary F1 0.301, against the OSM rules baseline's 0.130 / 0.234 / 0.119 / 0.335, which cannot run at all without OSM buildings. For a city without OSM footprints the learned model alone is already about the baseline with twice its area-weighted recall; recall of small parcels (0.077) is what it loses.
 
@@ -322,7 +335,7 @@ The study changes RGB alone at model input and cannot measure accuracy on a diff
 provider. Full metrics, per-block differences and hashes: `output/imagery-study-20261013/`; ledger methods
 `layered-imagery-*`. No final split was scored.
 
-Next (the living plan with status, success checks, ETA and spend is `PLAN.md`): a frozen longer-schedule
-comparison against the fresh v2 baselines, then the remaining model levers and a nearby same-climate
-donor for Split. Broader selection and the first resolution-augmentation trial are complete; real
-satellite transfer, Ljubljana and a Spanish Csa city remain pending.
+Next (the living plan with status, success checks, ETA and spend is `PLAN.md`): colour augmentation,
+then flip/rotate test-time averaging, the larger encoder and a nearby same-climate donor for Split.
+Broader selection, resolution augmentation and the longer-schedule trial are complete; the baseline
+default remains unchanged. Real satellite transfer, Ljubljana and a Spanish Csa city remain pending.

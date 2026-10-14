@@ -4,7 +4,7 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-14 (resolution comparison complete; three-seed 60-epoch comparison frozen for GPU execution). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-14 (resolution and three-seed 60-epoch comparisons complete; default unchanged). Status values: todo · running · done · dropped (with the reason).
 
 ## Where we stand (2026-10-14)
 
@@ -21,7 +21,9 @@ Round 2 now has three seeds and paired intervals. The v1 selection sets contain 
 blocks; tile-level intervals understate geographic uncertainty. Each v2 now has 12 blocks (48 tiles),
 with the original final sets preserved. All 12 fresh v2 runs are complete: resolution augmentation helps
 coarsened Zagreb imagery and Zagreb-to-Split transfer, but lowers clean Zagreb precision. The default
-recipe stays unchanged; no final split was scored in this round. Every v2 arm must be refit from ImageNet initialization: the added
+recipe stays unchanged. Three fresh 60-epoch Zagreb fits also failed the retention rule: clean F1 changes
+0.293 → 0.297 with an interval crossing zero, while additional 1 m resampling lowers mean F1. No final
+split was scored in either comparison. Every v2 arm must be refit from ImageNet initialization: the added
 selection tiles appeared in prior full-pool training. Those old checkpoints cannot validate v2. The visibility audit describes image
 support but does not measure a recoverability ceiling. More data, image quality, training and reconstruction
 remain hypotheses to compare; a nonsignificant gain does not identify which one limits performance.
@@ -53,7 +55,7 @@ in three lanes, two Split runs about 40 minutes; a 1,600-tile 30-epoch run is ab
 | 3 | Split learning curve and Zagreb-donor fine-tune curve | GPU | done 2026-10-13 (round 2) |
 | 4 | Per-city reconstruction settings | laptop | done 2026-10-13: no lever |
 | 5 | Visibility audit (image support) | laptop + vision model | done 2026-10-13 (machine labels; interpretation corrected) |
-| 6 | Zagreb model levers, one at a time | GPU | running: 60-epoch comparison frozen; later levers pending |
+| 6 | Zagreb model levers, one at a time | GPU | 60-epoch trial done, not adopted; colour augmentation next |
 | 7 | Milestone 4 on both final splits | GPU or laptop | todo |
 | 8 | Ljubljana and a Spanish Csa city | laptop + GPU | todo |
 | 9 | Serving check (CPU inference) | laptop | todo |
@@ -95,10 +97,10 @@ schedule; colour augmentation; flip/rotate test-time
 averaging (no training); convnext_small. Success: each kept only by the loop's rule. Failure signal:
 three rejections in a row triggers reassessment of data, targets and optimization; it does not prove a data limit. ETA
 about 3 GPU-h, about $1.50. The first resolution-augmentation trial is recorded under step 11; it did not
-pass the clean-precision guard. Freeze the longer schedule before renting again and compare with the
-saved three-seed v2 baselines on the same manifests.
+pass the clean-precision guard. The longer-schedule comparison is also complete and not adopted;
+keep the saved three-seed 30-epoch v2 baselines as the control for the colour-augmentation trial.
 
-The first schedule comparison is frozen in `gpu/plans/selection-v2-longer.json`: three fresh Zagreb
+The first schedule comparison completed on 2026-10-14, frozen in `gpu/plans/selection-v2-longer.json`: three fresh Zagreb
 fits at 60 epochs versus the saved 30-epoch baselines, seeds 1–3, 1,623 training tiles and the same
 48 selection tiles. Epoch count is the only changed training argument. The cosine learning-rate
 schedule spans 60 epochs; evaluation remains every two epochs, so the longer recipe has more
@@ -106,9 +108,10 @@ checkpoint-selection opportunities. This is a comparison of complete schedules, 
 of converged weights. The saved baselines peaked at epochs 22, 12 and 22, so the existing curves
 show no consistent late improvement. Clean Zagreb F1 and its precision/area-recall/boundary/density
 guards decide retention; clean Split transfer and resampled Zagreb imagery are secondary. Runtime
-packages and ImageNet weights are pinned to the baseline records. Final splits remain unscored.
-Estimate: about 70–90 minutes including setup, checks and backup, roughly $0.70–1.00 at the prior
-working rate. Training has a two-hour timeout; verify the backups and destroy the rental at completion.
+packages and ImageNet weights were pinned to the baseline records. The 60-epoch fits selected epochs
+18, 24 and 30; none found a new best after epoch 30. The gain is unresolved and smaller than the seed
+spread, so retain 30 epochs. All artifacts are verified locally and the rental is destroyed. Final splits
+remain unscored; results, guard metrics and actual spend are below.
 
 **7. Milestone 4.** Freeze the recipe, score both final splits once. Proposed targets: Zagreb final
 ≥ 0.38, Split final ≥ 0.20.
@@ -187,8 +190,53 @@ an itemized invoice. All three rentals were destroyed, and the provider inventor
 2026-10-13 22:25 UTC. Verification and the balance receipt are in `output/runs/selection-v2-rental.json`.
 2026-10-13 imagery sensitivity: 72 fixed-checkpoint evaluations, about 10 minutes of local analysis,
 $0 billed; no new training or GPU rental.
+2026-10-14 longer schedule: three 60-epoch fits plus nine fixed-checkpoint imagery evaluations,
+about 65 minutes of training and evaluation and 104 minutes of rental at $0.45/hour including storage.
+The slow backup accounts for much of the extra rental time. Credit decreased from $6.1640 to $5.1650,
+about $1.00 including setup, compute and transfers (account-balance change, not an itemized invoice).
+The GPU was destroyed and inventory was empty at 10:18 UTC; the balance was checked again at 10:22 UTC.
+Receipt: `output/runs/selection-v2-longer-rental.json`.
 
 ## Learned (newest first)
+
+- 2026-10-14, step 6, longer schedule: three fresh 60-epoch Zagreb fits versus the saved 30-epoch
+  baselines, seeds 1–3, 1,623 training tiles, the same 48 selection tiles and recipe `48de5c48dab295de`.
+  Epoch count is the only changed training argument; the longer cosine schedule and twice as many
+  checkpoint evaluations are part of the treatment. Means below average the three seed-pooled scores;
+  parentheses show seed min–max. Differences are 60 minus 30 epochs, with 2,000 paired 12-block
+  bootstrap replicates. Intervals condition on the fitted seeds and are unadjusted for multiple comparisons.
+
+  | Selection condition | 30-epoch F1 (seed range) | 60-epoch F1 (seed range) | Difference (95% block interval) |
+  |---|---|---|---|
+  | Zagreb, clean | 0.293 (0.290–0.297) | 0.297 (0.288–0.305) | +0.004 (−0.006 to +0.012) |
+  | Zagreb, resampled 0.5 m | 0.272 (0.265–0.280) | 0.273 (0.262–0.282) | +0.001 (−0.005 to +0.008) |
+  | Zagreb, resampled 1 m | 0.237 (0.236–0.238) | 0.221 (0.182–0.243) | −0.016 (−0.025 to −0.003) |
+  | Split, clean zero-shot | 0.156 (0.143–0.169) | 0.159 (0.148–0.165) | +0.003 (−0.008 to +0.017) |
+
+  Decision: retain the 30-epoch default. The primary clean F1 gain is unresolved and below both seed
+  ranges' widths (0.007 for 30 epochs, 0.017 for 60). Clean precision rises 0.513 → 0.528, difference
+  +0.015 (−0.004 to +0.026); area-weighted recall changes by +0.001 (−0.016 to +0.013), and boundary
+  F1 by +0.004 (−0.0003 to +0.0073). Clean Zagreb density-bin means do not fall, but directions differ
+  across seeds. These checks do not establish equivalence or a recoverability ceiling.
+
+  The secondary 1 m F1 loss is largely seed 2 (0.236 → 0.182); the other two seeds improve slightly.
+  Mean precision falls 0.426 → 0.401, difference −0.025 (−0.044 to −0.004), and boundary F1 falls
+  0.457 → 0.444, difference −0.013 (−0.023 to −0.004). Its high/dense-bin mean F1 drops by
+  0.012/0.028. Split clean dense-bin F1 falls 0.005 despite the small positive overall mean.
+  Density differences are descriptive, and synthetic resampling does not measure real sensor transfer.
+
+  All three fits completed 60 epochs and 16,260 optimizer steps, with 30 selection evaluations each;
+  selected epochs were 18/24/30 versus 22/12/22 for the baselines. All six best/last checkpoints were
+  loaded and checked, all 720 tile-score outputs were repooled, and 15 saved polygon outputs were
+  independently re-scored with the canonical scorer. The 2,230-file backup (3.34 GB) passed SHA-256
+  verification before rental destruction. Twelve distinct selection rows were added, covering clean
+  own-city, clean transfer, 0.5 m and 1 m for each seed; duplicate clean imagery-study evaluations were
+  not added again. No final split was scored.
+
+  Artifacts: `output/runs/selection-v2-longer/`, `output/runs/selection-v2-longer-imagery/`, and
+  `output/runs/selection-v2-longer-{comparison,audit,rescore,transfer-verification}.json`.
+  Learning curves: `output/runs/selection-v2-longer-learning-curves.png`; analysis scripts and receipt
+  hashes: `output/runs/selection-v2-longer-analysis/`. Colour augmentation is next.
 
 - 2026-10-14, step 11(b), resolution augmentation: 12 fresh ConvNeXt-Tiny runs, 30 epochs each,
   three seeds per city and arm, recipe `48de5c48dab295de`. Means below are over three seed-pooled
