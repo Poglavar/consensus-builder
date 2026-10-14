@@ -3,7 +3,7 @@
 import { createHash } from 'node:crypto';
 import { listingIdentity } from './explicit-location.js';
 import { extractPropertyFacts } from './property-facts.js';
-import { hasUsableGeometry, listingUnitId } from './original-plan-sources.js';
+import { hasUsableGeometry, listingUnitId, normalizeUnitId } from './original-plan-sources.js';
 
 const hash = value => createHash('sha256').update(value).digest('hex').slice(0, 16);
 const finite = value => typeof value === 'number' && Number.isFinite(value) ? value : null;
@@ -84,8 +84,13 @@ export function projectInventory(postings, plans, options = {}) {
             // Unreviewed region names are not public apartment identities when the offer names it.
             const generatedUnit = plan?.kind !== 'reviewed' && /^(?:plan|unit|apartment|region)[\s_-]/i.test(model.unitId || '');
             const establishedUnit = listingUnit || one(ownedPlans.filter(p => ['original', 'reviewed'].includes(p.kind)).map(p => p.model?.unitId));
-            const unit = (generatedUnit && establishedUnit ? establishedUnit : model.unitId) || listingUnit || one(sameSourceUnits)
+            const candidateUnit = (generatedUnit && establishedUnit ? establishedUnit : model.unitId) || listingUnit || one(sameSourceUnits)
                 || one(ownedPlans.map(p => p.model?.unitId));
+            const equivalent = kind => ownedPlans.find(p => p.kind === kind && p.model?.unitId
+                && normalizeUnitId(p.model.unitId) === normalizeUnitId(candidateUnit))?.model.unitId;
+            // Reviewed spelling wins; otherwise preserve an original's published ID across machine
+            // casing/punctuation variants. Geometry-only records keep their historical raw IDs.
+            const unit = equivalent('reviewed') || (plan?.kind !== 'reviewed' && equivalent('original')) || candidateUnit;
             const id = hash(`${key}|${unit || 'apartment'}`);
             const hasGeometry = hasUsableGeometry(model);
             const property = facts.map(f => f.propertyDetails);

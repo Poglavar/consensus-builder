@@ -93,7 +93,7 @@ export function originalPlanSource(row) {
         || row.image_kind !== 'floor_plan' || row.image_classified_sha256 !== row.sha256
         || row.image_status !== 'complete' || row.reading?.kind !== 'floor_plan'
         || row.reading?.containsPlan !== true || row.reading?.confidence !== 'high') return null;
-    const unitId = reviewed?.unitId || processedUnit || establishedUnit;
+    const unitId = reviewed?.unitId || establishedUnit || processedUnit;
     const identity = createHash('sha256').update(JSON.stringify([row.listing_url, row.sha256, page, unitId])).digest('hex').slice(0, 20);
     return { id: `original-${identity}`, kind: 'original', listing_url: row.listing_url,
         sha256: row.sha256, source_sha256: row.sha256, media_type: type, byte_count: row.byte_count || 0,

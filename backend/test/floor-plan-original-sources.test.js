@@ -149,6 +149,36 @@ describe('original and geometry inventory selection', () => {
         expect(after).toHaveLength(1);
         expect(after[0]).toMatchObject({ id: before.id, unitId: 'S2', hasGeometry: true });
     });
+    it.each(['s2', 'S-2'])('preserves original-established S2 through equivalent machine spelling %s', async unitId => {
+        const url = 'https://gradnja.nobelgrupa.hr/stan-s2-80-58-m2/', imageUrl = 'https://example.test/s2.png';
+        const row = source({ listing_url: url, source_url: imageUrl, asset: { url: imageUrl, listingOwned: true } });
+        const model = { ...geometry({ unitId }), source_sha256: sha, listing_url: url, page: 1 };
+        const db = { async query() { return { rows: [row] }; } };
+        const [beforeSource] = await currentOriginalPlans(db, [url], { processedPlans: [] });
+        const [afterSource] = await currentOriginalPlans(db, [url], { processedPlans: [model] });
+        expect(afterSource).toMatchObject({ id: beforeSource.id, model: { unitId: 'S2' } });
+        const offer = { ...posting, url };
+        const before = projectInventory([offer], [beforeSource]).apartments[0];
+        for (const plans of [[afterSource, model], [model, afterSource]]) {
+            const after = projectInventory([offer], plans).apartments;
+            expect(after).toHaveLength(1);
+            expect(after[0]).toMatchObject({ id: before.id, unitId: 'S2', hasGeometry: true });
+        }
+    });
+    it('retains geometry-only raw spelling but lets reviewed spelling win over equivalent originals', () => {
+        const offer = { ...posting, facts: { ...posting.facts, unitId: 'A52' } };
+        const machine = geometry({ unitId: 'A-5-2' });
+        const key = listingIdentity(offer.url, offer.facts.sourceId) || offer.url;
+        const expected = createHash('sha256').update(`${key}|A-5-2`).digest('hex').slice(0, 16);
+        expect(projectInventory([offer], [machine]).apartments[0]).toMatchObject({ id: expected, unitId: 'A-5-2' });
+        const url = 'https://example.test/curated.png';
+        const original = originalPlanSource(source({ facts: offer.facts, source_url: url, asset: { url, listingOwned: true } }));
+        expect(projectInventory([offer], [machine, original]).apartments).toMatchObject([{ unitId: 'A52' }]);
+        const reviewed = { ...machine, kind: 'reviewed' };
+        const apartments = projectInventory([offer], [original, reviewed]).apartments;
+        expect(apartments).toHaveLength(1);
+        expect(apartments[0]).toMatchObject({ id: expected, unitId: 'A-5-2' });
+    });
     it('preserves a curated raw unit ID equivalent to the explicit listing unit', () => {
         const offer = { ...posting, facts: { ...posting.facts, unitId: 'A52' } };
         const curated = { ...geometry({ unitId: 'A-5-2' }), kind: 'reviewed' };
