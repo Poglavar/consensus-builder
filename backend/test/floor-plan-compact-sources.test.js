@@ -199,22 +199,29 @@ describe('source compaction',()=>{
   expect(prune).not.toHaveBeenCalled();
  });
 
- it('checks plan labels across every URL alias before compacting an envelope hash',async()=>{
+ it('materializes envelope candidates and checks retention once per shared-hash alias group',async()=>{
   let envelopeSql='';
   const db={query:vi.fn(async sql=>{
    if(sql.includes('WITH candidate_hashes'))return {rows:[]};
-   if(sql.includes('SELECT DISTINCT t.url')){envelopeSql=sql;return {rows:[]};}
+   if(sql.includes('candidate_rows AS MATERIALIZED')){envelopeSql=sql;return {rows:[]};}
    if(sql.includes('AS n FROM floor_plan.target')||sql.includes('AS n FROM floor_plan.blob'))return {rows:[{n:0}]};
    return {rows:[],rowCount:1};
   })};
   const result=await compactSources(db);
   expect(result.envelopeBlobs).toBe(0);
+  expect(envelopeSql).toContain('candidate_rows AS MATERIALIZED');
+  expect(envelopeSql).toContain('candidate_hashes AS MATERIALIZED');
+  expect(envelopeSql).toContain('alias_checks AS MATERIALIZED');
+  expect(envelopeSql).toContain('JOIN floor_plan.target alias ON alias.current_sha256=c.sha256');
+  expect(envelopeSql).toContain('GROUP BY c.sha256');
+  expect(envelopeSql).toContain('a.has_unsafe_alias IS FALSE');
   expect(envelopeSql).toContain("plan_alias.kind='asset'");
-  expect(envelopeSql).toContain('plan_observation.sha256=t.current_sha256');
+  expect(envelopeSql).toContain('plan_observation.sha256=alias.current_sha256');
   expect(envelopeSql).toContain("a->>'kind'='floor-plan'");
-  expect(envelopeSql).toContain('alias.current_sha256=t.current_sha256');
+  expect(envelopeSql).toContain('alias.current_sha256=c.sha256');
   expect(envelopeSql).toContain('pt.source_sha256=alias.current_sha256');
   expect(envelopeSql).toContain('it.source_sha256=alias.current_sha256');
+  expect(envelopeSql.match(/JOIN floor_plan\.target alias ON/g)).toHaveLength(1);
  });
 
  it('retries pruning committed tombstones after a previous prune interruption',async()=>{
