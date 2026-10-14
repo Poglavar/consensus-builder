@@ -1,393 +1,624 @@
 <!DOCTYPE html>
-<!-- Glavni vodič na hrvatskom: objašnjava aktualni tijek "prvo gradiš, pa predlažeš", paletu
-     Izgradi, životni ciklus objekata, prikaze i dijeljenje. Ostali kako-koristiti-*.html vodiči razrađuju
-     pojedine alate. Engleski parnjak: how-to-use.html. -->
+<!-- Kako koristiti: current map workflows, video walkthroughs and proposal review.
+     Static English/Croatian guide pair: how-to-use.html. -->
 <html lang="hr">
-
-<head>
-    <title>Kako koristiti · Consensus Builder</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
-    <link rel="stylesheet" href="css/tokens.css?v=2" />
-    <link rel="stylesheet" href="css/primitives.css?v=2" />
-    <link rel="stylesheet" href="css/page-chrome.css?v=1" />
-    <link rel="stylesheet" href="vendor/fontawesome-6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/howto.css?v=2" />
-</head>
-
-<body class="cb-page">
-    <header class="cb-page-header">
-        <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo.png" alt="" width="28" height="28"><span>Consensus Builder</span></span>
-        <div class="cb-page-header__title"><h1>Kako koristiti</h1></div>
-        <a class="cb-link cb-back-link" href="/?lang=hr"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>Natrag na kartu</a>
-        <nav class="cb-page-header__lang cb-segmented" aria-label="Jezik">
-            <a class="cb-segmented__option" href="kako-koristiti.html" hreflang="hr" lang="hr" aria-current="page">HR</a>
-            <a class="cb-segmented__option" href="how-to-use.html" hreflang="en" lang="en">EN</a>
-        </nav>
-    </header>
-    <nav class="sidebar" aria-label="Navigacija vodiča">
-        <div class="sidebar-links">
-            <a class="btn btn-quiet" href="#tijek"><i class="fa-solid fa-route" aria-hidden="true"></i>Tijek rada</a>
-            <a class="btn btn-quiet" href="#paleta"><i class="fa-solid fa-shapes" aria-hidden="true"></i>Paleta „Izgradi”</a>
-            <a class="btn btn-quiet" href="#objekti"><i class="fa-solid fa-layer-group" aria-hidden="true"></i>Prijedlozi i varijante</a>
-            <a class="btn btn-quiet" href="#prikazi"><i class="fa-solid fa-cube" aria-hidden="true"></i>Prikazi</a>
-            <a class="btn btn-quiet" href="#dijeljenje"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i>Dijeljenje</a>
-            <a class="btn btn-quiet" href="roadmap.html"><i class="fa-solid fa-compass" aria-hidden="true"></i>Plan razvoja</a>
-        </div>
-    </nav>
-
-    <main class="main-content">
-        <div class="container">
-            <div class="intro intro-with-visual">
-                <div class="intro-copy">
-                    <span class="eyebrow">Ideja u jednoj minuti</span>
-                    <h2>Nacrtaj promjenu, zatim gradi konsenzus</h2>
-                    <p>
-                        Consensus Builder radi kao gradograditeljska igra. Odaberi stvarne čestice i postavi moguću
-                        promjenu na kartu — primjerice blok, park, cestu ili vlasničku ponudu. Dovršeni dizajn postaje
-                        primijenjeni lokalni prijedlog koji možeš pregledati, granati, usporediti i podijeliti.
-                    </p>
-                    <a class="btn btn-primary" href="index.html?lang=hr"><i class="fa-solid fa-map" aria-hidden="true"></i>Otvori kartu</a>
-                </div>
-                <img src="images/site-intro-parcels.webp"
-                    alt="Iste čestice prije i nakon prijedloga gradskog bloka">
-            </div>
-
-            <section id="tijek">
-                <h2>1. Tijek rada</h2>
-
-                <div class="flow-strip">
-                    <div class="flow-step">
-                        <i class="fas fa-hand-pointer"></i>
-                        <strong>Odaberi</strong>
-                        <span>Čestica, više njih ili cijeli blok</span>
-                    </div>
-                    <i class="fas fa-chevron-right flow-arrow"></i>
-                    <div class="flow-step">
-                        <i class="fas fa-shapes"></i>
-                        <strong>Izgradi</strong>
-                        <span>Klikni alat u paleti</span>
-                    </div>
-                    <i class="fas fa-chevron-right flow-arrow"></i>
-                    <div class="flow-step">
-                        <i class="fas fa-pen-ruler"></i>
-                        <strong>Pregledaj</strong>
-                        <span>Provjeri prijedlog u kontekstu</span>
-                    </div>
-                    <i class="fas fa-chevron-right flow-arrow"></i>
-                    <div class="flow-step">
-                        <i class="fas fa-file-signature"></i>
-                        <strong>Razgranaj</strong>
-                        <span>Promijeni dizajn ili uvjete</span>
-                    </div>
-                    <i class="fas fa-chevron-right flow-arrow"></i>
-                    <div class="flow-step">
-                        <i class="fas fa-share-nodes"></i>
-                        <strong>Podijeli</strong>
-                        <span>Pošalji prijedlog ili cijeli plan</span>
-                    </div>
-                </div>
-
-                <ol class="steps">
-                    <li class="step">
-                        <h3>Odaberi zemljište na karti</h3>
-                        <p>
-                            Klikni česticu: na mjestu klika otvara se mali izbornik. Odaberi
-                            <span class="ui-label">Predloži ovdje</span> i otvara se ploča čestice na kartici
-                            <span class="ui-label">Prijedlozi</span>. Za zahvat na više čestica odaberi
-                            <span class="ui-label">Odaberi više</span> pa klikaj ostale redom; traka odabira na dnu
-                            karte pokazuje koliko ih je, a njezin gumb <span class="ui-label">Predloži</span> otvara istu
-                            karticu za cijeli odabir.
-                        </p>
-                        <div class="callout note">
-                            <i class="fas fa-circle-info"></i>
-                            Ako odabereš samo jednu česticu koja leži unutar bloka, aplikacija će pitati
-                            <em>„Odabrana je samo jedna parcela. Jeste li mislili na cijeli blok (N parcela)?”</em>
-                            Odabereš li <span class="ui-label">Da</span>, označit će cijeli blok umjesto tebe.
-                        </div>
-                        <figure class="howto-shot">
-                            <div class="shot-frame">
-                                <img src="images/howto/hub-01-odabir.png?v=20261005"
-                                    alt="Odabrana čestica i kartica Prijedlozi s paletom Izgradi"
-                                    onerror="this.style.display='none'">
-                                <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
-                            </div>
-                            <figcaption>Odabrana čestica i kartica „Prijedlozi” s paletom alata.</figcaption>
-                        </figure>
-                    </li>
-
-                    <li class="step">
-                        <h3>Izgradi — zahvat se odmah pojavljuje na karti</h3>
-                        <p>
-                            Odaberi alat u paleti <span class="ui-label">Izgradi</span>. Zgrade i reparcelacija otvaraju
-                            dizajner; <span class="ui-label">Park</span>, <span class="ui-label">Trg</span> i
-                            <span class="ui-label">Jezero</span> rade jednim klikom. Ceste i pruge pokreću se svojim
-                            alatima za crtanje. Kad završiš, stvara se lokalni prijedlog koji je već primijenjen na
-                            kartu — nema zasebnog koraka „primijeni”.
-                        </p>
-                    </li>
-
-                    <li class="step">
-                        <h3>Pregledaj prijedlog u kontekstu</h3>
-                        <p>
-                            Dovršeni prijedlog ne mijenja se izravno: otvori ga da pregledaš rezultat, promijeniš prikaz,
-                            podijeliš ga ili odabereš <span class="ui-label">Makni s karte</span> bez brisanja. U
-                            uređivaču ispod oblikuješ geometriju prije potvrde ili nakon otvaranja nove varijante.
-                        </p>
-                        <figure class="howto-shot">
-                            <div class="shot-frame">
-                                <img src="images/howto/hub-02-dizajn.png?v=20261005"
-                                    alt="Otvoren uređivač dizajna nad odabranim česticama"
-                                    onerror="this.style.display='none'">
-                                <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
-                            </div>
-                            <figcaption>Uređivač dizajna radi izravno nad kartom.</figcaption>
-                        </figure>
-                    </li>
-
-                    <li class="step">
-                        <h3>Razgranaj prijedlog za promjenu dizajna ili uvjeta</h3>
-                        <p>
-                            Odaberi <span class="ui-label">Razgranaj prijedlog</span> kako bi dobio uređivu kopiju.
-                            Promijeni geometriju, naziv, opis, ponudu, vlasništvo, uvjete, rok isteka ili polog, pa stvori
-                            zamjenski prijedlog. Izvor ostaje netaknut, zato se varijante mogu usporediti.
-                        </p>
-                        <figure class="howto-shot">
-                            <div class="shot-frame">
-                                <img src="images/howto/hub-03-uvjeti.png?v=20261005"
-                                    alt="Prozor Prijedlog za uređivu varijantu s poljima vlasništva i uvjeta"
-                                    onerror="this.style.display='none'">
-                                <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
-                            </div>
-                            <figcaption>Nova varijanta prenosi dizajn i dopušta izmjenu njegovih uvjeta.</figcaption>
-                        </figure>
-                    </li>
-
-                    <li class="step">
-                        <h3>Pregledaj i podijeli rezultat</h3>
-                        <p>
-                            Prebaci se između 2D-a i <a class="cb-link" href="kako-koristiti-prikazi.html">3D-a</a>, a u gradovima koji
-                            ih podržavaju koristi realistični prikaz i šetnju. Jedan prijedlog dijeli se iz njegovih
-                            detalja; za kompoziciju primijeni željeni skup i odaberi
-                            <span class="ui-label">Podijeli cijeli plan</span>.
-                        </p>
-                    </li>
-                </ol>
-            </section>
-
-            <section id="paleta" class="guide-section">
-                <h2>2. Paleta „Izgradi”</h2>
-                <p>
-                    Paleta se nalazi u kartici <span class="ui-label">Prijedlozi</span> ploče čestice i pokazuje sve što
-                    možeš izgraditi na trenutačnom odabiru.
-                </p>
-
-                <div class="table-scroll">
-                    <table class="tool-table">
-                        <thead>
-                            <tr>
-                                <th>Alat</th>
-                                <th>Što radi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="is-grouped">
-                                <td><i class="fas fa-city"></i>Blok</td>
-                                <td>Popunjava blok zgradama po urbanističkom pravilu (gradivi obuhvat, katnost,
-                                    odmaci). <a class="cb-link" href="kako-koristiti-zgrade.html">Vodič za zgrade →</a></td>
-                            </tr>
-                            <tr class="is-grouped">
-                                <td><i class="fas fa-grip-horizontal"></i>Niz kuća</td>
-                                <td>Niz prislonjenih kuća preko odabranih čestica. Traži <strong>najmanje dvije</strong>
-                                    čestice.</td>
-                            </tr>
-                            <tr class="is-grouped">
-                                <td><i class="fas fa-home"></i>Slobodnostojeće</td>
-                                <td>Po jedna samostojeća kuća na svakoj odabranoj čestici.</td>
-                            </tr>
-                            <tr>
-                                <td><i class="fas fa-ruler-combined"></i>Slobodna forma</td>
-                                <td>Zgrada koju sam crtaš, bez pravila — kad ti tipologije ne odgovaraju.</td>
-                            </tr>
-                            <tr>
-                                <td><i class="fas fa-vector-square"></i>Reparcelacija</td>
-                                <td>Spaja odabrane čestice i iznova ih dijeli na uredniji raspored.
-                                    <a class="cb-link" href="kako-koristiti-reparcelacija.html">Vodič →</a></td>
-                            </tr>
-                            <tr>
-                                <td><i class="fas fa-tree"></i>Park</td>
-                                <td>Park preko odabranih čestica, jednim klikom. Namještaj (drveće, klupe, staze)
-                                    dodaješ poslije. <a class="cb-link" href="kako-koristiti-park-trg.html">Vodič →</a></td>
-                            </tr>
-                            <tr>
-                                <td><i class="fas fa-chess-board"></i>Trg</td>
-                                <td>Javni trg, jednim klikom. Dobiva kip; fontane, stolove i klupe dodaješ poslije.</td>
-                            </tr>
-                            <tr>
-                                <td><i class="fas fa-water"></i>Jezero</td>
-                                <td>Vodena površina preko odabranih čestica. Čestice moraju biti povezane.</td>
-                            </tr>
-                            <tr>
-                                <td><i class="fas fa-handshake"></i>Ponuda</td>
-                                <td>Jedini alat koji ništa ne gradi: kupnja ili prijenos vlasništva bez promjene na
-                                    karti.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="callout note">
-                    <i class="fas fa-road"></i>
-                    <strong>Ceste, pruge i stanice čine skupinu Prijevoz.</strong> Nalaze se izvan alata za čestice jer
-                    se crtaju preko karte i mogu presijecati čestice.
-                    <a class="cb-link" href="kako-koristiti-cesta.html">Vodič za ceste i pruge →</a>
-                </div>
-
-                <div class="callout tip">
-                    <i class="fas fa-lightbulb"></i>
-                    <strong>Blok, Niz i Slobodnostojeće</strong> su <em>pravila</em> — oblik nastaje iz parametara koje
-                    zadaš. <strong>Slobodna forma</strong> je suprotnost: crtaš točno ono što želiš. Ako te pravilo
-                    stisne, prebaci se na slobodnu formu.
-                </div>
-            </section>
-
-            <section id="objekti" class="guide-section">
-                <h2>3. Prijedlozi, varijante i planovi</h2>
-                <p>Ta tri pojma važno je razlikovati dok istražuješ alternative.</p>
-                <div class="guide-cards basics-grid lifecycle-grid">
-                    <article class="guide-card">
-                        <div class="card-icon"><i class="fas fa-pen-ruler"></i></div>
-                        <h3>Prijedlog</h3>
-                        <p>Dovršavanje zgrade, ceste ili javnog prostora stvara lokalni prijedlog i primjenjuje ga na
-                            kartu. Njegov spremljeni zapis ne mijenja se izravno.</p>
-                    </article>
-                    <article class="guide-card">
-                        <div class="card-icon"><i class="fas fa-file-signature"></i></div>
-                        <h3>Varijanta</h3>
-                        <p>Uređiva kopija za promjenu dizajna ili uvjeta. Spremanje stvara novi zamjenski prijedlog, a
-                            izvorni ostaje netaknut.</p>
-                    </article>
-                    <article class="guide-card">
-                        <div class="card-icon"><i class="fas fa-layer-group"></i></div>
-                        <h3>Plan</h3>
-                        <p>Uređeni skup prijedloga primijenjenih na kartu. Dijeljenje plana čuva tu kompoziciju i njezine
-                            ovisnosti.</p>
-                    </article>
-                </div>
-                <div class="callout note">
-                    <i class="fas fa-cloud-arrow-up"></i>
-                    Lokalni rad živi u ovom pregledniku. Dijeljenje učitava zapise potrebne za poveznicu na poslužitelj;
-                    neobvezna objava na lancu stvara nepromjenjiv javni zapis.
-                </div>
-            </section>
-
-            <section id="prikazi" class="guide-section">
-                <h2>4. Prikazi</h2>
-                <p>
-                    Isti prijedlog možeš gledati na četiri načina. Gumbi su u traci načina prikaza uz lijevi rub karte, ispod tražilice.
-                </p>
-                <div class="view-list">
-                    <article>
-                        <span class="view-number">2D</span>
-                        <div>
-                            <h3>Karta</h3>
-                            <p>Za odabir čestica, crtanje i provjeru granica. Ovdje se radi.</p>
-                        </div>
-                    </article>
-                    <article>
-                        <span class="view-number">3D</span>
-                        <div>
-                            <h3>Prostorni model</h3>
-                            <p>Zgrade, ceste i javni prostori kao 3D objekti — i panel koji računa koliko ti prijedlog
-                                donosi.</p>
-                        </div>
-                    </article>
-                    <article>
-                        <span class="view-number"><i class="fas fa-globe"></i></span>
-                        <div>
-                            <h3>Realističan kontekst</h3>
-                            <p>Prijedlog stoji u Googleovom fotorealističnom modelu grada.</p>
-                        </div>
-                    </article>
-                    <article>
-                        <span class="view-number"><i class="fas fa-person-walking"></i></span>
-                        <div>
-                            <h3>Šetnja</h3>
-                            <p>Pogled iz očiju pješaka. Dostupno samo u gradovima koji to podržavaju.</p>
-                        </div>
-                    </article>
-                </div>
-                <p style="margin-top:16px">
-                    <a class="cb-link" href="kako-koristiti-prikazi.html">Detaljni vodič za prikaze i 3D →</a>
-                </p>
-            </section>
-
-            <section id="dijeljenje" class="guide-section">
-                <h2>5. Dijeljenje</h2>
-                <div class="guide-cards basics-grid">
-                    <article class="guide-card">
-                        <div class="card-icon"><i class="fas fa-share-nodes"></i></div>
-                        <h3>Jedan prijedlog</h3>
-                        <p>Otvori prijedlog i klikni <span class="ui-label">Podijeli</span>. Dobiješ poveznicu koja
-                            otvara točno taj zahvat.</p>
-                    </article>
-                    <article class="guide-card">
-                        <div class="card-icon"><i class="fas fa-diagram-project"></i></div>
-                        <h3>Cijeli plan</h3>
-                        <p>Primijeni sve prijedloge koje želiš poslati, pa otvori gumb <span class="ui-label">Prijedlozi</span>
-                            (dolje desno) i klikni <span class="ui-label">Podijeli cijeli plan</span>. Poveznica čuva njihov redoslijed i
-                            ovisnosti.</p>
-                    </article>
-                    <article class="guide-card">
-                        <div class="card-icon"><i class="fas fa-clone"></i></div>
-                        <h3>Druga varijanta</h3>
-                        <p>Želiš isprobati alternativu? Izradi novu varijantu prijedloga ili stvori zamjenski. Objavljeni
-                            izvornik ostaje netaknut dok novu verziju možeš mijenjati.</p>
-                    </article>
-                </div>
-            </section>
-
-            <section class="guide-section">
-                <h2>Detaljni vodiči</h2>
-                <div class="guide-cards">
-                    <a href="kako-koristiti-zgrade.html" class="guide-card">
-                        <div class="card-icon"><i class="fas fa-city"></i></div>
-                        <h3>Zgrade</h3>
-                        <p>Blok, niz kuća, slobodnostojeće i slobodna forma — i kako urbanističko pravilo oblikuje
-                            rezultat.</p>
-                    </a>
-                    <a href="kako-koristiti-cesta.html" class="guide-card">
-                        <div class="card-icon"><i class="fas fa-road"></i></div>
-                        <h3>Ceste i pruge</h3>
-                        <p>Iscrtavanje trase, poprečni presjek s trakama i nogostupima, te novi blokovi koje cesta
-                            stvara.</p>
-                    </a>
-                    <a href="kako-koristiti-park-trg.html" class="guide-card">
-                        <div class="card-icon"><i class="fas fa-tree"></i></div>
-                        <h3>Park, trg i jezero</h3>
-                        <p>Javni prostor u jednom kliku, pa uređivač namještaja: drveće, klupe, staze, fontane.</p>
-                    </a>
-                    <a href="kako-koristiti-reparcelacija.html" class="guide-card">
-                        <div class="card-icon"><i class="fas fa-vector-square"></i></div>
-                        <h3>Reparcelacija</h3>
-                        <p>Preraspodjela neurednog bloka na uredne čestice, uz zadržavanje vlasničkih udjela.</p>
-                    </a>
-                    <a href="kako-koristiti-prikazi.html" class="guide-card">
-                        <div class="card-icon"><i class="fas fa-cube"></i></div>
-                        <h3>Prikazi i 3D</h3>
-                        <p>2D, 3D, realističan kontekst i šetnja — te kako čitati dobit prijedloga.</p>
-                    </a>
-                </div>
-            </section>
-
-            <div class="callout tip final-tip">
-                <i class="fas fa-lightbulb"></i>
-                Zapamti redoslijed: <strong>odaberi → izgradi → pregledaj → razgranaj po potrebi → podijeli</strong>.
-                Dovršeni dizajn postaje primijenjeni prijedlog; izmjene uvijek stvaraju novi prijedlog.
-            </div>
-        </div>
-    </main>
-</body>
-
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Kako koristiti · Consensus Builder
+  </title>
+  <meta content="Oblikuj zahvat na stvarnom zemljištu, pregledaj rezultat u 2D-u i 3D-u, usporedi varijante i podijeli prijedlog ili cijeli plan. Počni kratkim videom ili prati pisane korake." name="description"/>
+  <link href="how-to-use.html" hreflang="en" rel="alternate"/>
+  <link href="images/consensus-builder-logo-2.png" rel="icon" type="image/png"/>
+  <link href="css/tokens.css?v=2" rel="stylesheet"/>
+  <link href="css/primitives.css?v=2" rel="stylesheet"/>
+  <link href="css/page-chrome.css?v=1" rel="stylesheet"/>
+  <link href="vendor/fontawesome-6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="css/howto.css?v=20261014" rel="stylesheet"/>
+ </head>
+ <body class="cb-page">
+  <header class="cb-page-header">
+   <span class="cb-page-header__brand">
+    <img alt="" class="cb-page-header__logo" height="28" src="images/consensus-builder-logo.png" width="28"/>
+    <span>
+     Consensus Builder
+    </span>
+   </span>
+   <div class="cb-page-header__title">
+    <h1>
+     Kako koristiti
+    </h1>
+   </div>
+   <a class="cb-link cb-back-link" href="/?lang=hr">
+    <i aria-hidden="true" class="fa-solid fa-arrow-left">
+    </i>
+    Natrag na kartu
+   </a>
+   <nav aria-label="Jezik" class="cb-page-header__lang cb-segmented">
+    <a aria-current="page" class="cb-segmented__option" href="kako-koristiti.html" hreflang="hr" lang="hr">
+     HR
+    </a>
+    <a class="cb-segmented__option" href="how-to-use.html" hreflang="en" lang="en">
+     EN
+    </a>
+   </nav>
+  </header>
+  <nav aria-label="Navigacija vodiča" class="sidebar">
+   <div class="sidebar-links">
+    <a aria-current="page" class="btn btn-quiet" href="kako-koristiti.html">
+     <i aria-hidden="true" class="fa-solid fa-book-open">
+     </i>
+     Kako koristiti
+    </a>
+    <a class="btn btn-quiet" href="kako-koristiti-zgrade.html">
+     <i aria-hidden="true" class="fa-solid fa-building">
+     </i>
+     Zgrade
+    </a>
+    <a class="btn btn-quiet" href="kako-koristiti-park-trg.html">
+     <i aria-hidden="true" class="fa-solid fa-tree">
+     </i>
+     Parkovi, trgovi i jezera
+    </a>
+    <a class="btn btn-quiet" href="kako-koristiti-reparcelacija.html">
+     <i aria-hidden="true" class="fa-solid fa-vector-square">
+     </i>
+     Reparcelacija
+    </a>
+    <a class="btn btn-quiet" href="kako-koristiti-cesta.html">
+     <i aria-hidden="true" class="fa-solid fa-road">
+     </i>
+     Ceste i pruge
+    </a>
+    <a class="btn btn-quiet" href="kako-koristiti-prikazi.html">
+     <i aria-hidden="true" class="fa-solid fa-cube">
+     </i>
+     Prikazi i usporedbe
+    </a>
+   </div>
+   <div class="sidebar-section">
+    <span class="eyebrow">
+     Na ovoj stranici
+    </span>
+    <div class="sidebar-links">
+     <a class="btn btn-quiet" href="#videozapisi">
+      Videoupute
+     </a>
+     <a class="btn btn-quiet" href="#tijek">
+      Započni prijedlog
+     </a>
+     <a class="btn btn-quiet" href="#paleta">
+      Odaberi alat
+     </a>
+     <a class="btn btn-quiet" href="#objekti">
+      Pregledaj i doradi
+     </a>
+     <a class="btn btn-quiet" href="#prikazi">
+      Usporedi varijante
+     </a>
+     <a class="btn btn-quiet" href="#dijeljenje">
+      Podijeli plan
+     </a>
+    </div>
+   </div>
+  </nav>
+  <main class="main-content">
+   <div class="container">
+    <div class="intro intro-with-visual">
+     <div class="intro-copy">
+      <span class="eyebrow">
+       Počni ovdje
+      </span>
+      <h2>
+       Nacrtaj promjenu. Istražite je zajedno.
+      </h2>
+      <p>
+       Oblikuj zahvat na stvarnom zemljištu, pregledaj rezultat u 2D-u i 3D-u, usporedi varijante i podijeli prijedlog ili cijeli plan. Počni kratkim videom ili prati pisane korake.
+      </p>
+      <a class="btn btn-primary" href="index.html?lang=hr">
+       <i aria-hidden="true" class="fa-solid fa-map">
+       </i>
+       Otvori kartu
+      </a>
+     </div>
+     <img alt="Čestice prije i nakon prijedloga gradskog bloka" src="images/site-intro-parcels.webp"/>
+    </div>
+    <section class="guide-section" id="videozapisi">
+     <h2>
+      Pogledaj pa isprobaj
+     </h2>
+     <p>
+      Devet kratkih prikaza aktualne aplikacije. Svaki otvara pripadajuće upute; za čitanje kontrola uključi prikaz videa preko cijelog zaslona.
+     </p>
+     <div class="callout note">
+      <i aria-hidden="true" class="fa-solid fa-circle-info">
+      </i>
+      Snimke koriste englesko sučelje i imaju upute na zaslonu. Pisani koraci dostupni su na engleskom i hrvatskom.
+     </div>
+     <div class="video-library">
+      <a class="video-card" href="kako-koristiti-zgrade.html#watch-house">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-01-house-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:34
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         01 · Zgrade
+        </span>
+        <h3>
+         Oblikuj kuću
+        </h3>
+        <p>
+         Promijeni tlocrt, postavi visinu i odaberi okoliš.
+        </p>
+       </div>
+      </a>
+      <a class="video-card" href="kako-koristiti-park-trg.html#watch-park">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-02-park-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:37
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         02 · Parkovi, trgovi i jezera
+        </span>
+        <h3>
+         Napravi park
+        </h3>
+        <p>
+         Postavi stabla, staze i jezerca pa pregledaj rezultat u 3D-u.
+        </p>
+       </div>
+      </a>
+      <a class="video-card" href="kako-koristiti-park-trg.html#watch-square">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-03-square-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:33
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         03 · Parkovi, trgovi i jezera
+        </span>
+        <h3>
+         Napravi trg
+        </h3>
+        <p>
+         Dodaj fontanu i rasporedi opremu na karti.
+        </p>
+       </div>
+      </a>
+      <a class="video-card" href="kako-koristiti-reparcelacija.html#watch-automatic">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-04-auto-readjustment-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:31
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         04 · Reparcelacija
+        </span>
+        <h3>
+         Automatska reparcelacija
+        </h3>
+        <p>
+         Zakreni linije podjele i pregledaj nove čestice i vlasnike.
+        </p>
+       </div>
+      </a>
+      <a class="video-card" href="kako-koristiti-reparcelacija.html#watch-manual">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-05-manual-readjustment-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:31
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         05 · Reparcelacija
+        </span>
+        <h3>
+         Slobodno nacrtaj čestice
+        </h3>
+        <p>
+         Nacrtaj i podijeli čestice, dodijeli vlasnike i usporedi prije i poslije.
+        </p>
+       </div>
+      </a>
+      <a class="video-card" href="kako-koristiti-reparcelacija.html#watch-keep">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-06-keep-parcels-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:31
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         06 · Reparcelacija
+        </span>
+        <h3>
+         Zadrži postojeće čestice
+        </h3>
+        <p>
+         Kreni od izvornih granica i uređuj ih čvorovima.
+        </p>
+       </div>
+      </a>
+      <a class="video-card" href="kako-koristiti-cesta.html#watch-road">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-07-road-section-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:42
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         07 · Ceste i pruge
+        </span>
+        <h3>
+         Oblikuj cestovni presjek
+        </h3>
+        <p>
+         Nacrtaj trasu, složi prometne trake i pregledaj cestu u 3D-u.
+        </p>
+       </div>
+      </a>
+      <a class="video-card" href="kako-koristiti-zgrade.html#watch-row">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-08-row-houses-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:32
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         08 · Zgrade
+        </span>
+        <h3>
+         Oblikuj kuće u nizu
+        </h3>
+        <p>
+         Prilagodi niz, promijeni mu tlocrt i provjeri ga u kontekstu.
+        </p>
+       </div>
+      </a>
+      <a class="video-card" href="kako-koristiti-zgrade.html#watch-parcel-rules">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-09-parcel-rules-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:39
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         09 · Zgrade
+        </span>
+        <h3>
+         Postavi pravila gradnje na česticama
+        </h3>
+        <p>
+         Odaberi što pravilo obvezuje i razlikuj dopušteni gabarit od primjera gradnje.
+        </p>
+       </div>
+      </a>
+     </div>
+    </section>
+    <section class="guide-section" id="tijek">
+     <h2>
+      Počni od čestice ili lokacije
+     </h2>
+     <ol class="steps">
+      <li class="step">
+       <h3>
+        Odaberi zemljište
+       </h3>
+       <p>
+        Klikni česticu i odaberi
+        <span class="ui-label">
+         Predloži ovdje
+        </span>
+        . Za više čestica odaberi
+        <span class="ui-label">
+         Odaberi više
+        </span>
+        , klikni ostale pa
+        <span class="ui-label">
+         Predloži
+        </span>
+        u traci odabira.
+        <span class="ui-label">
+         Detektiraj blok
+        </span>
+        proširuje odabir na okolni blok.
+       </p>
+      </li>
+      <li class="step">
+       <h3>
+        Ili nacrtaj lokaciju
+       </h3>
+       <p>
+        Odaberi
+        <span class="ui-label">
+         Koristi kao lokaciju
+        </span>
+        za početak od obrisa čestice ili
+        <span class="ui-label">
+         Nacrtaj lokaciju ovdje
+        </span>
+        na otvorenom zemljištu. Lokacija je uređiva granica zahvata. Prijedlog možeš istraživati i gdje podaci o česticama nisu dostupni; nedostatak podataka ne utvrđuje vlasništvo.
+       </p>
+      </li>
+      <li class="step">
+       <h3>
+        Izgradi i dovrši
+       </h3>
+       <p>
+        Odaberi alat u paleti
+        <span class="ui-label">
+         Izgradi
+        </span>
+        . Zgrade i reparcelacija otvaraju dizajner; parkovi, trgovi i jezera nastaju jednim klikom. Dizajner dovrši gumbom
+        <span class="ui-label">
+         Gotovo
+        </span>
+        . U izravnom tijeku gradnje stvara se lokalni prijedlog koji je već primijenjen na kartu. Ako si otvorio obrazac prijedloga, dovrši njegov dizajn pa pošalji obrazac.
+       </p>
+       <div class="callout note">
+        <i aria-hidden="true" class="fa-solid fa-circle-info">
+        </i>
+        Ako sukob spriječi primjenu, aplikacija objašnjava razlog i zadržava objekt izvan karte u popisu prijedloga. Otvori ga ondje, provjeri razlog i primijeni ga kad se sukob riješi.
+       </div>
+      </li>
+     </ol>
+    </section>
+    <section class="guide-section" id="paleta">
+     <h2>
+      Odaberi alat za promjenu
+     </h2>
+     <div class="table-scroll">
+      <table class="tool-table">
+       <thead>
+        <tr>
+         <th scope="col">
+          Alat
+         </th>
+         <th scope="col">
+          Namjena
+         </th>
+         <th scope="col">
+          Upute
+         </th>
+        </tr>
+       </thead>
+       <tbody>
+        <tr>
+         <td>
+          Slobodna zgrada
+         </td>
+         <td>
+          Nacrtaj i preoblikuj tlocrte. Postavi visinu i zeleni ili popločani okoliš.
+         </td>
+         <td>
+          <a class="cb-link" href="kako-koristiti-zgrade.html#freeform">
+           Upute za kuću
+          </a>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Blok / Kuće u nizu / Samostojeće
+         </td>
+         <td>
+          Postavi građevno pravilo, granice i najmanju česticu. Pregledaj primjer gradnje.
+         </td>
+         <td>
+          <a class="cb-link" href="kako-koristiti-zgrade.html">
+           Zgrade
+          </a>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Park / Trg / Jezero
+         </td>
+         <td>
+          Napravi javni prostor pa rasporedi opremu na karti.
+         </td>
+         <td>
+          <a class="cb-link" href="kako-koristiti-park-trg.html">
+           Parkovi, trgovi i jezera
+          </a>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Reparcelacija
+         </td>
+         <td>
+          Podijeli automatski, nacrtaj slobodno ili zadrži postojeće čestice. Provjeri vlasnike i novac.
+         </td>
+         <td>
+          <a class="cb-link" href="kako-koristiti-reparcelacija.html">
+           Reparcelacija
+          </a>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Cesta / Pruga
+         </td>
+         <td>
+          Nacrtaj koridor i složi njegov presjek od traka.
+         </td>
+         <td>
+          <a class="cb-link" href="kako-koristiti-cesta.html">
+           Ceste i pruge
+          </a>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Ponuda
+         </td>
+         <td>
+          Predloži kupoprodajne ili vlasničke uvjete bez novog fizičkog objekta.
+         </td>
+         <td>
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div>
+    </section>
+    <section class="guide-section" id="objekti">
+     <h2>
+      Pregledaj, doradi i gradi suglasnost
+     </h2>
+     <p>
+      Klikni objekt za njegovu ploču radnji.
+      <span class="ui-label">
+       Detalji prijedloga
+      </span>
+      sadrže dizajn, zemljište, vlasništvo i informacije o odobrenju.
+      <span class="ui-label">
+       Makni s karte
+      </span>
+      uklanja prijedlog iz trenutačnog plana, ali zadržava njegov zapis.
+     </p>
+     <p>
+      Odaberi
+      <span class="ui-label">
+       Razgranaj prijedlog
+      </span>
+      za izmjenu dizajna ili uvjeta u uređivoj kopiji. Izvor ostaje netaknut.
+      <span class="ui-label">
+       Uredi geometriju
+      </span>
+      vodi izravno u pripadajući dizajner. Prije dijeljenja pregledaj novu verziju i njezine zahtjeve za odobrenje.
+     </p>
+     <div class="callout note">
+      <i aria-hidden="true" class="fa-solid fa-circle-info">
+      </i>
+      Primijenjen na karti znači vidljiv u tvojem lokalnom scenariju. To je odvojeno od objave, prihvaćanja vlasnika i izvršenja. Prijedlozi na cesti ili preoblikovanoj čestici mogu ovisiti o ranijem prijedlogu.
+     </div>
+     <h3>
+      Vlasništvo, odobrenje i uvjeti
+     </h3>
+     <p>
+      U uređivaču nove varijante otvori
+      <span class="ui-label">
+       Odobrenje
+      </span>
+      za pregled podataka o vlasništvu, izvora odobrenja i pravila za odabrano zemljište.
+      <span class="ui-label">
+       Uvjeti
+      </span>
+      sadrže ponudu, uvjete, rok isteka i polog. Aplikacija javlja nepotpune podatke o vlasništvu umjesto da ih smatra suglasnošću.
+     </p>
+     <p>
+      Promjena vlasništva ili odobrenja stvara zamjenski prijedlog. Prihvaćanja izvornog prijedloga ne prenose se: pregledaj novu verziju i potrebna odobrenja.
+     </p>
+    </section>
+    <section class="guide-section" id="prikazi">
+     <h2>
+      Usporedi varijante
+     </h2>
+     <p>
+      Odaberi
+      <span class="ui-label">
+       Prije / Poslije
+      </span>
+      u detaljima prijedloga ili dizajneru i povuci razdjelnik preko iste karte. Za dvije varijante na jednoj čestici otvori
+      <span class="ui-label">
+       Prijedlozi
+      </span>
+      , označi dva prijedloga i klikni
+      <span class="ui-label">
+       Usporedi
+      </span>
+      . Usporedba prikazuje zahvat, zgrade, čestice, vlasništvo, suglasnost i podršku za tu česticu.
+     </p>
+     <p>
+      <a class="cb-link" href="kako-koristiti-prikazi.html">
+       Istraži 2D, 3D, fasade i rendgenski prikaz →
+      </a>
+     </p>
+    </section>
+    <section class="guide-section" id="dijeljenje">
+     <h2>
+      Podijeli prijedlog ili plan
+     </h2>
+     <p>
+      <span class="ui-label">
+       Podijeli
+      </span>
+      u ploči objekta stvara poveznicu na jedan prijedlog. Za dijeljenje cjeline primijeni željene prijedloge pa odaberi
+      <span class="ui-label">
+       Podijeli cijeli plan
+      </span>
+      . Plan čuva skup primijenjenih prijedloga i njihove ovisnosti.
+     </p>
+     <p>
+      Lokalni rad pohranjen je u ovom pregledniku. Dijeljenje prenosi zapise potrebne za poveznicu; objava na lancu zasebna je radnja. Aplikacija može tražiti javno ime profila pri dijeljenju ili objavi.
+     </p>
+    </section>
+    <footer class="guide-footer">
+     <a class="cb-link" href="kako-koristiti.html">
+      Sve upute
+     </a>
+     ·
+     <a class="cb-link" href="index.html?lang=hr">
+      Isprobaj na karti
+     </a>
+     ·
+     <a class="cb-link" href="roadmap.html">
+      Plan razvoja
+     </a>
+    </footer>
+   </div>
+  </main>
+ </body>
 </html>

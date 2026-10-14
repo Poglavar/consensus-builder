@@ -1,275 +1,386 @@
 <!DOCTYPE html>
-<!-- Vodič na hrvatskom za četiri alata za zgrade: Blok (urbano pravilo), Niz kuća,
-     Slobodnostojeće i Slobodna forma — parametri, kontrole na karti i granice svakog alata.
-     Engleski parnjak: how-to-use-buildings.html. -->
+<!-- Zgrade: current map workflows, video walkthroughs and proposal review.
+     Static English/Croatian guide pair: how-to-use-buildings.html. -->
 <html lang="hr">
-
-<head>
-    <title>Zgrade · Consensus Builder</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
-    <link rel="stylesheet" href="css/tokens.css?v=2" />
-    <link rel="stylesheet" href="css/primitives.css?v=2" />
-    <link rel="stylesheet" href="css/page-chrome.css?v=1" />
-    <link rel="stylesheet" href="vendor/fontawesome-6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/howto.css?v=2" />
-</head>
-
-<body class="cb-page">
-    <header class="cb-page-header">
-        <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo.png" alt="" width="28" height="28"><span>Consensus Builder</span></span>
-        <div class="cb-page-header__title"><h1>Zgrade</h1></div>
-        <a class="cb-link cb-back-link" href="/?lang=hr"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>Natrag na kartu</a>
-        <nav class="cb-page-header__lang cb-segmented" aria-label="Jezik">
-            <a class="cb-segmented__option" href="kako-koristiti-zgrade.html" hreflang="hr" lang="hr" aria-current="page">HR</a>
-            <a class="cb-segmented__option" href="how-to-use-buildings.html" hreflang="en" lang="en">EN</a>
-        </nav>
-    </header>
-    <nav class="sidebar" aria-label="Navigacija vodiča">
-        <div class="sidebar-links">
-            <a class="btn btn-quiet" href="kako-koristiti.html"><i class="fa-solid fa-book-open" aria-hidden="true"></i>Sve upute</a>
-            <a class="btn btn-quiet" href="#blok"><i class="fa-solid fa-city" aria-hidden="true"></i>Blok</a>
-            <a class="btn btn-quiet" href="#niz"><i class="fa-solid fa-grip-horizontal" aria-hidden="true"></i>Niz kuća</a>
-            <a class="btn btn-quiet" href="#slobodnostojece"><i class="fa-solid fa-home" aria-hidden="true"></i>Slobodnostojeće</a>
-            <a class="btn btn-quiet" href="#slobodna-forma"><i class="fa-solid fa-ruler-combined" aria-hidden="true"></i>Slobodna forma</a>
-        </div>
-    </nav>
-
-    <main class="main-content">
-        <div class="container">
-            <div class="intro">
-                <h2>Pravilo ili slobodna ruka</h2>
-                <p>
-                    Za zgrade postoje četiri alata, a razlika među njima je jedna: <strong>tko odlučuje o obliku</strong>.
-                    Kod <em>Bloka</em>, <em>Niza</em> i <em>Slobodnostojećih</em> oblik nastaje iz pravila koje zadaš
-                    klizačima. Kod <em>Slobodne forme</em> crtaš točno ono što želiš.
-                </p>
-            </div>
-
-            <div class="callout note">
-                <i class="fas fa-circle-info"></i>
-                Sva četiri alata na kraju daju prijedlog tipa <strong>Urbanističko pravilo</strong> — razlikuju se po
-                tipologiji (Blok, Niz, Po parceli). Nije riječ o apstraktnom propisu: prijedlog nosi konkretne
-                tlocrte zgrada koje si generirao.
-            </div>
-
-            <div class="callout warn">
-                <i class="fas fa-triangle-exclamation"></i>
-                <strong>Blok</strong> i <strong>Niz kuća</strong> traže <strong>susjedne</strong> čestice. Ako nisu,
-                alati su onemogućeni uz objašnjenje <em>„Onemogućeno jer parcele u prijedlogu nisu susjedne”</em>.
-                Niz uz to traži <strong>najmanje dvije</strong> čestice — na jednoj se svodi na običnu zgradu.
-            </div>
-
-            <section id="blok" class="guide-section">
-                <h2><i class="fas fa-city"></i> Blok — <span class="heading-note">„Urbano pravilo”</span></h2>
-                <p>
-                    Popunjava cijeli blok obodnom izgradnjom — zgrade po rubu, dvorište u sredini. Alat otvara prozor
-                    <span class="ui-label">Urbano pravilo</span> s kartom, 3D pregledom i pločom
-                    <span class="ui-label">Parametri</span>.
-                </p>
-
-                <h3>Dva načina rada</h3>
-                <p>
-                    Prekidač <span class="ui-label">Na temelju postojećih zgrada</span> mijenja cijelu ploču
-                    parametara:
-                </p>
-                <ul>
-                    <li>
-                        <strong>Isključen (zadano)</strong> — blok se crta ispočetka, iz klizača.
-                    </li>
-                    <li>
-                        <strong>Uključen</strong> — zadržava postojeće zgrade i samo im mijenja visinu. Biraš između
-                        <span class="ui-label">Predložena visina (katova)</span> (svaka zgrada ide točno na tu visinu)
-                        i <span class="ui-label">Dodatni katovi</span> (svakoj se dodaje katova na postojeću visinu).
-                        <span class="ui-label">Visina kata</span> je 2,5–5 m.
-                    </li>
-                </ul>
-
-                <h3>Klizači (crtanje ispočetka)</h3>
-                <div class="table-scroll">
-                    <table class="tool-table">
-                        <thead>
-                            <tr>
-                                <th>Parametar</th>
-                                <th>Raspon</th>
-                                <th>Što radi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Povlačenje</td>
-                                <td>0–50 m</td>
-                                <td>Odmak od ruba čestice.</td>
-                            </tr>
-                            <tr>
-                                <td>Širina zgrade</td>
-                                <td>1–100 m</td>
-                                <td>Dubina obodnog trakta. Šire = manje dvorište.</td>
-                            </tr>
-                            <tr>
-                                <td>Visina zgrade</td>
-                                <td>3–80 m</td>
-                                <td>Visina obodne izgradnje.</td>
-                            </tr>
-                            <tr>
-                                <td>Skošenje</td>
-                                <td>0–10 m</td>
-                                <td>Reže uglove.</td>
-                            </tr>
-                            <tr>
-                                <td>Pojednostavi</td>
-                                <td>0–20 m</td>
-                                <td>Zaglađuje nepravilan obris.</td>
-                            </tr>
-                            <tr>
-                                <td>Broj i širina otvora</td>
-                                <td>0–10 · 1–20 m</td>
-                                <td>Prolazi kroz obodni trakt (pasaži, ulazi u dvorište).</td>
-                            </tr>
-                            <tr>
-                                <td>Broj i duljina krila</td>
-                                <td>0–10 · 10–200 m</td>
-                                <td>Krila koja ulaze u dvorište.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="callout tip">
-                    <i class="fas fa-hand-pointer"></i>
-                    <strong>Otvore i krila ne moraš pogađati klizačima.</strong> Čim ih ima barem jedan, na karti se
-                    pojave ručke — <em>„Povucite za pomicanje otvora”</em> i <em>„Povucite za pomicanje krila”</em> —
-                    pa ih klizanjem po obodu bloka namjestiš točno gdje trebaju biti.
-                </div>
-
-                <p>
-                    Ako ti pravilo ne da ono što želiš, klikni <span class="ui-label">Ručno uredi oblik</span>: svaki
-                    vrh obrisa postaje ručka koju povlačiš (<em>„Povucite za oblikovanje”</em>). Povratak je
-                    <span class="ui-label">Natrag na klizače</span> — ali on <strong>odbacuje ručne izmjene</strong>.
-                    Postojeći tlocrt možeš i uvesti gumbom <span class="ui-label">Učitaj GeoJSON</span>.
-                </p>
-                <p>
-                    Potvrdi s <span class="ui-label">Gotovo</span>. Gumb je neaktivan dok zgrada nije generirana.
-                </p>
-
-                <figure class="howto-shot">
-                    <div class="shot-frame">
-                        <img src="images/howto/zgrade-01-blok.png?v=20261005" alt="Prozor Urbano pravilo s klizačima i 3D pregledom"
-                            onerror="this.style.display='none'">
-                        <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
-                    </div>
-                    <figcaption>„Urbano pravilo”: klizači lijevo, rezultat odmah na karti i u 3D pregledu.</figcaption>
-                </figure>
-
-                <div class="callout warn">
-                    <i class="fas fa-triangle-exclamation"></i>
-                    Dvorište zna nestati: ako je zgrada preširoka, unutarnji rub se raspadne i dobiješ puni blok.
-                    Poruka to i kaže — rješenje je smanjiti <span class="ui-label">Širinu zgrade</span>. Na vrlo
-                    složenoj čestici alat može odustati i predložiti da je prvo podijeliš cestama.
-                </div>
-            </section>
-
-            <section id="niz" class="guide-section">
-                <h2><i class="fas fa-grip-horizontal"></i> Niz kuća</h2>
-                <p>
-                    Niz prislonjenih kuća preko više čestica. Prozor <span class="ui-label">Niz kuća</span> ima četiri
-                    klizača: <span class="ui-label">Duljina</span> (4–200 m),
-                    <span class="ui-label">Širina</span> (2–100 m), <span class="ui-label">Visina</span> (3–80 m) i
-                    <span class="ui-label">Skošenje</span> (0–10 m, reže uglove pod 45°).
-                </p>
-                <p>
-                    Duljina ide <strong>paralelno s najdužom stranicom</strong> čestice, širina okomito na nju. Uživo
-                    vidiš <span class="ui-label">Opseg</span>, <span class="ui-label">Površinu</span> i
-                    <span class="ui-label">Volumen</span>.
-                </p>
-
-                <div class="callout tip">
-                    <i class="fas fa-hand-pointer"></i>
-                    <strong>Niz je izravno manipulabilan na karti.</strong> Povuci tijelo da ga pomakneš, narančastu
-                    ručku na uglu da ga zakreneš, a crne ručke na sredinama stranica da mu mijenjaš širinu i duljinu.
-                </div>
-
-                <div class="callout note">
-                    <i class="fas fa-circle-info"></i>
-                    Niz mora ostati unutar odabranih čestica. Zatražiš li vrijednost koja ne stane, alat prvo pokuša
-                    pomaknuti i uspraviti niz — a ako ni to ne pomogne, <strong>klizač se vraća na zadnju valjanu
-                    vrijednost</strong>. To nije greška nego granica prostora.
-                </div>
-
-                <figure class="howto-shot">
-                    <div class="shot-frame">
-                        <img src="images/howto/zgrade-02-niz.png?v=20261005" alt="Prozor Niz kuća s ručkama za rotaciju"
-                            onerror="this.style.display='none'">
-                        <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
-                    </div>
-                    <figcaption>Niz kuća: klizači i ručke za pomicanje, rotaciju i promjenu veličine.</figcaption>
-                </figure>
-            </section>
-
-            <section id="slobodnostojece" class="guide-section">
-                <h2><i class="fas fa-home"></i> Slobodnostojeće kuće</h2>
-                <p>
-                    Po jedna samostojeća kuća na svakoj odabranoj čestici. Samo dva klizača:
-                </p>
-                <ul>
-                    <li><span class="ui-label">Maks. katova</span> (1–20) — svaka kuća dobiva
-                        <strong>nasumičan</strong> broj katova od 1 do te vrijednosti.</li>
-                    <li><span class="ui-label">Min. udaljenost od granica</span> (0,5–20 m) — odmak od međa.</li>
-                </ul>
-                <p>
-                    Ploča pokazuje <span class="ui-label">Zgrade</span>,
-                    <span class="ui-label">Ukupnu tlocrtnu površinu</span>,
-                    <span class="ui-label">Ukupni volumen</span> i <span class="ui-label">Prosječno katova</span>.
-                </p>
-                <div class="callout tip">
-                    <i class="fas fa-dice"></i>
-                    Alat je namjerno nasumičan — tako naselje izgleda organski, a ne kao niz identičnih kutija. Ne
-                    sviđa ti se raspored? <span class="ui-label">Regeneriraj</span> baca nove kockice: druge visine,
-                    druge veličine i položaji tlocrta unutar odmaka.
-                </div>
-            </section>
-
-            <section id="slobodna-forma" class="guide-section">
-                <h2><i class="fas fa-ruler-combined"></i> Slobodna forma</h2>
-                <p>
-                    Kad ti nijedno pravilo ne odgovara. Prozor <span class="ui-label">Zgrade</span> nema urbanističku
-                    logiku — samo pravokutnike koje sam postavljaš. I nije ograničen na jednu zgradu: gore je popis
-                    zgrada s gumbima za <strong>dodavanje</strong>, <strong>preimenovanje</strong> i
-                    <strong>brisanje</strong>, pa ih možeš složiti nekoliko.
-                </p>
-                <p>
-                    Za odabranu zgradu klizači su <span class="ui-label">Širina</span> i
-                    <span class="ui-label">Duljina</span> (1–100 m), <span class="ui-label">Visina</span>
-                    (3–250 m), <span class="ui-label">Faza</span> (0–10 m) i
-                    <span class="ui-label">Rotacija</span> (0–355°). Zgradu možeš i jednostavno
-                    <strong>povući</strong> po karti, a kontrolama na stranama je zakrenuti.
-                </p>
-                <div class="callout note">
-                    <i class="fas fa-circle-info"></i>
-                    Zgrada mora ostati unutar bloka. Kao i kod niza, vrijednost koja bi je izbacila van se odbija i
-                    klizač se vraća natrag.
-                </div>
-                <figure class="howto-shot">
-                    <div class="shot-frame">
-                        <img src="images/howto/zgrade-03-slobodna-forma.png?v=20261005"
-                            alt="Prozor Zgrade sa slobodnom formom i 3D pregledom"
-                            onerror="this.style.display='none'">
-                        <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
-                    </div>
-                    <figcaption>Slobodna forma: više zgrada, svaka sa svojim parametrima.</figcaption>
-                </figure>
-            </section>
-
-            <div class="callout tip final-tip">
-                <i class="fas fa-lightbulb"></i>
-                Počni pravilom, završi rukom. <strong>Blok</strong> ti u nekoliko sekundi da uvjerljiv obodni blok;
-                ako zapne na jednom detalju, prijeđi na <span class="ui-label">Ručno uredi oblik</span> umjesto da se
-                boriš s klizačima. <strong>Slobodnu formu</strong> čuvaj za slučajeve kad zaista projektiraš, a ne
-                pravilo primjenjuješ.
-            </div>
-        </div>
-    </main>
-</body>
-
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Zgrade · Consensus Builder
+  </title>
+  <meta content="Koristi slobodnu formu za točan tlocrt. Pravilom bloka, niza ili samostojećih kuća odredi što se može ili mora izgraditi na odabranom zemljištu." name="description"/>
+  <link href="how-to-use-buildings.html" hreflang="en" rel="alternate"/>
+  <link href="images/consensus-builder-logo-2.png" rel="icon" type="image/png"/>
+  <link href="css/tokens.css?v=2" rel="stylesheet"/>
+  <link href="css/primitives.css?v=2" rel="stylesheet"/>
+  <link href="css/page-chrome.css?v=1" rel="stylesheet"/>
+  <link href="vendor/fontawesome-6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="css/howto.css?v=20261014" rel="stylesheet"/>
+ </head>
+ <body class="cb-page">
+  <header class="cb-page-header">
+   <span class="cb-page-header__brand">
+    <img alt="" class="cb-page-header__logo" height="28" src="images/consensus-builder-logo.png" width="28"/>
+    <span>
+     Consensus Builder
+    </span>
+   </span>
+   <div class="cb-page-header__title">
+    <h1>
+     Zgrade
+    </h1>
+   </div>
+   <a class="cb-link cb-back-link" href="/?lang=hr">
+    <i aria-hidden="true" class="fa-solid fa-arrow-left">
+    </i>
+    Natrag na kartu
+   </a>
+   <nav aria-label="Jezik" class="cb-page-header__lang cb-segmented">
+    <a aria-current="page" class="cb-segmented__option" href="kako-koristiti-zgrade.html" hreflang="hr" lang="hr">
+     HR
+    </a>
+    <a class="cb-segmented__option" href="how-to-use-buildings.html" hreflang="en" lang="en">
+     EN
+    </a>
+   </nav>
+  </header>
+  <nav aria-label="Navigacija vodiča" class="sidebar">
+   <div class="sidebar-links">
+    <a class="btn btn-quiet" href="kako-koristiti.html">
+     <i aria-hidden="true" class="fa-solid fa-book-open">
+     </i>
+     Kako koristiti
+    </a>
+    <a aria-current="page" class="btn btn-quiet" href="kako-koristiti-zgrade.html">
+     <i aria-hidden="true" class="fa-solid fa-building">
+     </i>
+     Zgrade
+    </a>
+    <a class="btn btn-quiet" href="kako-koristiti-park-trg.html">
+     <i aria-hidden="true" class="fa-solid fa-tree">
+     </i>
+     Parkovi, trgovi i jezera
+    </a>
+    <a class="btn btn-quiet" href="kako-koristiti-reparcelacija.html">
+     <i aria-hidden="true" class="fa-solid fa-vector-square">
+     </i>
+     Reparcelacija
+    </a>
+    <a class="btn btn-quiet" href="kako-koristiti-cesta.html">
+     <i aria-hidden="true" class="fa-solid fa-road">
+     </i>
+     Ceste i pruge
+    </a>
+    <a class="btn btn-quiet" href="kako-koristiti-prikazi.html">
+     <i aria-hidden="true" class="fa-solid fa-cube">
+     </i>
+     Prikazi i usporedbe
+    </a>
+   </div>
+   <div class="sidebar-section">
+    <span class="eyebrow">
+     Na ovoj stranici
+    </span>
+    <div class="sidebar-links">
+     <a class="btn btn-quiet" href="#freeform">
+      Slobodna zgrada
+     </a>
+     <a class="btn btn-quiet" href="#rules">
+      Granice pravila
+     </a>
+     <a class="btn btn-quiet" href="#block">
+      Blok
+     </a>
+     <a class="btn btn-quiet" href="#row">
+      Kuće u nizu
+     </a>
+     <a class="btn btn-quiet" href="#detached">
+      Samostojeće kuće
+     </a>
+    </div>
+   </div>
+  </nav>
+  <main class="main-content">
+   <div class="container">
+    <div class="intro">
+     <span class="eyebrow">
+      Uči kroz rad
+     </span>
+     <h2>
+      Nacrtaj zgradu ili odredi pravilo
+     </h2>
+     <p>
+      Koristi slobodnu formu za točan tlocrt. Pravilom bloka, niza ili samostojećih kuća odredi što se može ili mora izgraditi na odabranom zemljištu.
+     </p>
+    </div>
+    <section class="guide-section" id="freeform">
+     <h2>
+      Oblikuj kuću ručno
+     </h2>
+     <figure class="howto-video" id="watch-house">
+      <div class="video-heading">
+       <span class="eyebrow">
+        Pogledaj tijek rada
+       </span>
+       <span class="video-duration">
+        0:34
+       </span>
+      </div>
+      <video aria-describedby="caption-house" aria-label="Oblikuj kuću" controls="" height="960" playsinline="" poster="videos/howto/consensus-builder-01-house-review.jpg" preload="none" width="1440">
+       <source src="videos/howto/consensus-builder-01-house-review.mp4" type="video/mp4"/>
+       <a href="videos/howto/consensus-builder-01-house-review.mp4">
+        Otvori video
+       </a>
+       .
+      </video>
+      <figcaption id="caption-house">
+       <strong>
+        Oblikuj kuću.
+       </strong>
+       Promijeni tlocrt, postavi visinu i odaberi okoliš.
+       <a class="cb-link" href="videos/howto/consensus-builder-01-house-review.mp4">
+        Otvori video
+       </a>
+      </figcaption>
+     </figure>
+     <ol class="steps">
+      <li class="step">
+       <h3>
+        Započni slobodnu zgradu
+       </h3>
+       <p>
+        Odaberi česticu ili lokaciju i alat
+        <span class="ui-label">
+         Slobodna forma
+        </span>
+        . Prozor
+        <span class="ui-label">
+         Slobodna zgrada
+        </span>
+        prikazuje kartu, 3D pregled i popis zgrada. Kontrolama za dodavanje, preimenovanje i brisanje možeš raditi s više zgrada.
+       </p>
+      </li>
+      <li class="step">
+       <h3>
+        Oblikuj tlocrt na karti
+       </h3>
+       <p>
+        Povuci zgradu za premještanje. Povuci vrh za promjenu oblika; klikni rub za dodavanje vrha. Odaberi vrh pa ga ukloni kontrolom za brisanje ili tipkom
+        <span class="ui-label">
+         Delete / Backspace
+        </span>
+        . Zakreni tlocrt u koracima od 5°. Tlocrt mora ostati unutar lokacije.
+       </p>
+      </li>
+      <li class="step">
+       <h3>
+        Postavi visinu i okoliš
+       </h3>
+       <p>
+        Prilagodi
+        <span class="ui-label">
+         Visinu
+        </span>
+        i provjeri 3D pregled.
+        <span class="ui-label">
+         Okoliš
+        </span>
+        nudi postojeće stanje, popločanu ili zelenu površinu oko svih zgrada u prijedlogu. Ovaj dizajn u svakom slučaju uklanja postojeće zgrade na odabranim česticama.
+       </p>
+      </li>
+      <li class="step">
+       <h3>
+        Pročitaj geometrijske pokazatelje
+       </h3>
+       <p>
+        Kartica prikazuje površinu čestica, tlocrt zgrada, izgrađenost (kig), nadzemnu građevinsku bruto površinu (GBP) i kin. Izračun se temelji na nacrtanoj geometriji i visini uz pretpostavljenu etažu od 3 m. Dovrši gumbom Gotovo i pregledaj prijedlog na karti.
+       </p>
+      </li>
+     </ol>
+    </section>
+    <section class="guide-section" id="rules">
+     <h2>
+      Što pravilo obvezuje
+     </h2>
+     <p>
+      <span class="ui-label">
+       Što pravilo obvezuje
+      </span>
+      razlikuje obvezu gradnje od granice dopuštene gradnje. Kontrole postoje za blok, kuće u nizu i samostojeće kuće.
+     </p>
+     <div class="table-scroll">
+      <table class="tool-table">
+       <thead>
+        <tr>
+         <th scope="col">
+          Pravilo
+         </th>
+         <th scope="col">
+          Značenje
+         </th>
+        </tr>
+       </thead>
+       <tbody>
+        <tr>
+         <td>
+          Najviše ovoliko
+         </td>
+         <td>
+          Postavlja gornju granicu. Vlasnici ne moraju izgraditi puni gabarit.
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Između minimuma i ovoga
+         </td>
+         <td>
+          Obvezuje na minimum i dopušta gradnju do gornje granice.
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Točno ovoliko
+         </td>
+         <td>
+          Obvezuje na puni zadani gabarit.
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div>
+     <p>
+      Najmanja površina čestice isključuje manje čestice; prikazane su šrafirano i treba ih spojiti prije gradnje po tom pravilu. Pregled je primjer moguće gradnje, zato uz oblike provjeri i dopuštene i zajamčene vrijednosti.
+     </p>
+    </section>
+    <section class="guide-section" id="block">
+     <h2>
+      Blok i postojeće zgrade
+     </h2>
+     <p>
+      <span class="ui-label">
+       Blok
+      </span>
+      otvara
+      <span class="ui-label">
+       Urbano pravilo
+      </span>
+      . Postavi povlačenje, dubinu krila (
+      <span class="ui-label">
+       Širina zgrade
+      </span>
+      ), visinu, skošenje i pojednostavljenje obrisa. Smanji dubinu ako nestane dvorište. Kad su kontrole otvora i krila omogućene, pomiči njihove ručke po obodu.
+     </p>
+     <p>
+      Odaberi
+      <span class="ui-label">
+       Uredi oblik ručno
+      </span>
+      za pomicanje vrhova obrisa, dodavanje točaka na rubove ili brisanje odabrane točke. Povratak na klizače nakon potvrde odbacuje ručni obris.
+      <span class="ui-label">
+       Učitaj GeoJSON
+      </span>
+      uvozi poligon. Pravilo raspona dodaje najmanju visinu i obveznu dubinu gradnje od ulice.
+     </p>
+     <p>
+      <span class="ui-label">
+       Na temelju postojećih zgrada
+      </span>
+      koristi postojeće tlocrte umjesto crtanja novog bloka. Odaberi predloženu visinu u katovima ili dodatne katove i postavi visinu etaže. Ovaj način treba podatke o zgradama na odabranom zemljištu.
+     </p>
+    </section>
+    <section class="guide-section" id="row">
+     <h2>
+      Kuće u nizu
+     </h2>
+     <figure class="howto-video" id="watch-row">
+      <div class="video-heading">
+       <span class="eyebrow">
+        Pogledaj tijek rada
+       </span>
+       <span class="video-duration">
+        0:32
+       </span>
+      </div>
+      <video aria-describedby="caption-row" aria-label="Oblikuj kuće u nizu" controls="" height="960" playsinline="" poster="videos/howto/consensus-builder-08-row-houses-review.jpg" preload="none" width="1440">
+       <source src="videos/howto/consensus-builder-08-row-houses-review.mp4" type="video/mp4"/>
+       <a href="videos/howto/consensus-builder-08-row-houses-review.mp4">
+        Otvori video
+       </a>
+       .
+      </video>
+      <figcaption id="caption-row">
+       <strong>
+        Oblikuj kuće u nizu.
+       </strong>
+       Prilagodi niz, promijeni mu tlocrt i provjeri ga u kontekstu.
+       <a class="cb-link" href="videos/howto/consensus-builder-08-row-houses-review.mp4">
+        Otvori video
+       </a>
+      </figcaption>
+     </figure>
+     <p>
+      Odaberi najmanje dvije povezane čestice i Kuće u nizu. Duljina, širina, visina i skošenje određuju početni niz. Povuci tlocrt za premještanje, vrhove za promjenu oblika, klikni rub za dodavanje vrha ili izbriši odabrani vrh. Koristi kontrole zakretanja od 5° ili uvezi GeoJSON.
+     </p>
+     <p>
+      Tlocrt mora stati na odabrano zemljište. Postavi pravilo visine i najmanju površinu čestice pa pregledaj generirane kuće. Čestice različitih veličina mogu izazvati upozorenje; provjeri rezultat prije dovršavanja.
+     </p>
+    </section>
+    <section class="guide-section" id="detached">
+     <h2>
+      Samostojeće kuće i pravila čestica
+     </h2>
+     <figure class="howto-video" id="watch-parcel-rules">
+      <div class="video-heading">
+       <span class="eyebrow">
+        Pogledaj tijek rada
+       </span>
+       <span class="video-duration">
+        0:39
+       </span>
+      </div>
+      <video aria-describedby="caption-parcel-rules" aria-label="Postavi pravila gradnje na česticama" controls="" height="960" playsinline="" poster="videos/howto/consensus-builder-09-parcel-rules-review.jpg" preload="none" width="1440">
+       <source src="videos/howto/consensus-builder-09-parcel-rules-review.mp4" type="video/mp4"/>
+       <a href="videos/howto/consensus-builder-09-parcel-rules-review.mp4">
+        Otvori video
+       </a>
+       .
+      </video>
+      <figcaption id="caption-parcel-rules">
+       <strong>
+        Postavi pravila gradnje na česticama.
+       </strong>
+       Odaberi što pravilo obvezuje i razlikuj dopušteni gabarit od primjera gradnje.
+       <a class="cb-link" href="videos/howto/consensus-builder-09-parcel-rules-review.mp4">
+        Otvori video
+       </a>
+      </figcaption>
+     </figure>
+     <p>
+      Samostojeće kuće primjenjuju pravilo zasebno na svaku odabranu česticu. Postavi najveći broj katova, najmanju udaljenost od granica i najmanju površinu čestice. Pravilo raspona dodaje najmanji broj katova i najmanju tlocrtnu površinu; točno pravilo koristi puni dopušteni gabarit.
+     </p>
+     <div class="callout note">
+      <i aria-hidden="true" class="fa-solid fa-circle-info">
+      </i>
+      <span class="ui-label">
+       Ponovno generiraj
+      </span>
+      stvara drugi primjer s različitim brojem katova, veličinama i položajima zgrada. Ne mijenja dopušteni tlocrt ni volumen. Provjeri šrafirane čestice: mogu biti premale, ostati bez prostora nakon odmaka ili ne zadovoljiti minimum.
+     </div>
+    </section>
+    <footer class="guide-footer">
+     <a class="cb-link" href="kako-koristiti.html">
+      Sve upute
+     </a>
+     ·
+     <a class="cb-link" href="index.html?lang=hr">
+      Isprobaj na karti
+     </a>
+     ·
+     <a class="cb-link" href="roadmap.html">
+      Plan razvoja
+     </a>
+    </footer>
+   </div>
+  </main>
+ </body>
 </html>
