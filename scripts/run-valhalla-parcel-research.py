@@ -858,8 +858,18 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         checked = datetime.fromisoformat(receipt["checkedAt"].replace("Z", "+00:00"))
         if checked.tzinfo is None:
             checked = checked.replace(tzinfo=timezone.utc)
+        protected = {path.resolve() for path in paired}
+        coverage = receipt.get("coverage")
+        probes = coverage.get("probes") if isinstance(coverage, dict) else None
+        protected.update((self.root / probe["evidenceFile"]).resolve()
+                         for probe in (probes if isinstance(probes, list) else [])
+                         if isinstance(probe, dict) and probe.get("evidenceFile"))
+        source_evidence = [path for path in evidence if path in protected or
+                           path.relative_to(self.root.resolve()).as_posix() not in discovery_outcomes.APP_CONTEXT_FILES]
         # Receipts use whole seconds; allow only that timestamp's fractional second.
-        if any(path.stat().st_mtime >= checked.timestamp() + 1 for path in evidence):
+        # Shared app context changes as cities are admitted; source packets/probes
+        # remain immutable, and already-supported bindings are checked separately.
+        if any(path.stat().st_mtime >= checked.timestamp() + 1 for path in source_evidence):
             return False
         return True
 

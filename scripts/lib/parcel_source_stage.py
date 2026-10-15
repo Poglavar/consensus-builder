@@ -7,6 +7,7 @@ import importlib.util
 import json
 import math
 import re
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
@@ -71,6 +72,16 @@ def _receipt_evidence_path(root: Path, value: Any, label: str) -> tuple[Path, st
     return path, path.relative_to(root.resolve()).as_posix()
 
 
+@lru_cache(maxsize=1)
+def _app_context_files() -> frozenset[str]:
+    outcomes = _load_script(Path(__file__).with_name("parcel_discovery_outcomes.py"),
+                            "_parcel_stage_discovery_outcomes")
+    paths = getattr(outcomes, "APP_CONTEXT_FILES", None)
+    if not isinstance(paths, (set, frozenset)) or not all(isinstance(path, str) for path in paths):
+        raise RuntimeError("parcel discovery outcomes must define APP_CONTEXT_FILES")
+    return frozenset(paths)
+
+
 def _cohort_sample_path(root: Path, base: Path, value: Any, label: str) -> tuple[Path, str]:
     if not isinstance(value, (str, Path)) or not str(value):
         raise ValueError(f"{label} must be a non-empty sample path")
@@ -129,9 +140,11 @@ def _input_hashes(root: Path, city: dict[str, Any], receipt: dict[str, Any], pac
     if not isinstance(receipt_evidence, list) or not receipt_evidence:
         raise ValueError("candidate receipt requires evidenceFiles")
     receipt_hashes: dict[str, str] = {}
+    app_context_files = _app_context_files()
     for ref in receipt_evidence:
         path, rel = _receipt_evidence_path(root, ref, "receipt evidence file")
-        receipt_hashes[rel] = _sha(path.read_bytes())
+        if rel not in app_context_files:
+            receipt_hashes[rel] = _sha(path.read_bytes())
     coverage = receipt.get("coverage")
     probes = coverage.get("probes") if isinstance(coverage, dict) else None
     if not isinstance(probes, list) or not probes:

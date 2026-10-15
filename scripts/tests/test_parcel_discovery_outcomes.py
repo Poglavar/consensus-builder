@@ -3,6 +3,7 @@ import copy
 import hashlib
 import importlib.util
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -182,6 +183,19 @@ class DiscoveryPipelineTests(unittest.TestCase):
         self.assertEqual(build.call_count, 1)
         self.assertEqual(admit.call_count, 1)
         self.assertEqual(self.instance.state["cities"]["42"]["qualification"]["status"], "integrated")
+
+    def test_admission_context_updates_do_not_restart_review_but_source_packet_changes_do(self):
+        catalog = self.root / "backend/parcels/source-catalog.json"
+        catalog.parent.mkdir(parents=True)
+        catalog.write_text('{"sources": []}')
+        self.receipt["evidenceFiles"].append(catalog.relative_to(self.root).as_posix())
+        self.accept("candidate")
+        future = runner.datetime.now(runner.timezone.utc).timestamp() + 10
+        catalog.write_text('{"sources": [{"id": "newly-admitted-city"}]}')
+        os.utime(catalog, (future, future))
+        self.assertIsNotNone(self.instance._reviewed_city_receipt(self.city, self.packet))
+        os.utime(self.packet["cityPath"], (future, future))
+        self.assertIsNone(self.instance._reviewed_city_receipt(self.city, self.packet))
 
     def test_resume_rechecks_saved_stage_before_reusing_integration(self):
         self.accept("candidate")

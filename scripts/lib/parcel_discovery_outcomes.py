@@ -15,6 +15,14 @@ from urllib.parse import urlparse
 DECISIONS = {"candidate", "blocked", "rejected", "already-supported"}
 REVIEWED_STATUSES = {"reviewed", "reviewed-held", *("reviewed-" + value for value in DECISIONS)}
 SEARCH_LEVELS = {"municipal", "regional", "national", "web"}
+# Admission updates these shared application references. They provide current app
+# context, not immutable first-party evidence for a source-discovery decision.
+APP_CONTEXT_FILES = {
+    "backend/parcels/source-catalog.json", "frontend/js/city-config.js", "world-parcels/registry.json",
+    "world-parcels/report/city-demographics.json", "frontend/data/parcel-coverage-report.json",
+    "frontend/data/world-coverage.json", "frontend/i18n/en.json", "frontend/i18n/es.json",
+    "frontend/i18n/hr.json", "frontend/i18n/sr.json",
+}
 
 
 def https_url(value):

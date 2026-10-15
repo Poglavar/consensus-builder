@@ -184,6 +184,9 @@ class ParcelSourceStageTests(unittest.TestCase):
         (self.cohort / "city-sample.geojson").write_text('{"type":"FeatureCollection","features":[]}\n')
         (self.cohort / "review-sample.geojson").write_text('{"type":"FeatureCollection","features":[]}\n')
         (self.root / "packet.json").write_text("original\n")
+        context_file = self.root / "backend/parcels/source-catalog.json"
+        context_file.parent.mkdir(parents=True, exist_ok=True)
+        context_file.write_text('{"sources":[]}\n')
         probes = []
         for index, bbox in enumerate(([30, -3, 31, -2], [31, -3, 32, -2], [32, -3, 33, -2]), 1):
             rel = f"probe-{index}.json"
@@ -198,7 +201,8 @@ class ParcelSourceStageTests(unittest.TestCase):
                           "endpoint": "https://example.test/source"},
                         "coverage": {"scope": "substantial-city", "probes": probes},
                         "evidenceFiles": ["cohort/city.json", "cohort/review.json", "cohort/city-sample.geojson",
-                                          "cohort/review-sample.geojson", *(probe["evidenceFile"] for probe in probes)]}
+                                          "cohort/review-sample.geojson", "backend/parcels/source-catalog.json",
+                                          *(probe["evidenceFile"] for probe in probes)]}
         self.packet = {"valid": True, "cityPath": str(self.cohort / "city.json"),
                        "reviewPath": str(self.cohort / "review.json"),
                        "city": {"cityCode": "1868", "sampleFiles": ["city-sample.geojson"]},
@@ -366,10 +370,33 @@ class ParcelSourceStageTests(unittest.TestCase):
         self.assertFalse(valid)
         self.assertIn("artifacts", reason)
 
+    def test_app_context_file_updates_do_not_stale_saved_stage(self):
+        harness = Harness(self.root, self.attempt_dir)
+        result = self.call_stage(harness)
+        self.assertEqual(result["status"], "adapter-ready")
+        context_file = self.root / "backend/parcels/source-catalog.json"
+        context_file.write_text('{"sources":[{"id":"newly-admitted"}]}\n')
+        valid, reason = stage.revalidate_stage(harness, self.city, self.receipt, self.packet, result)
+        self.assertTrue(valid, reason)
+        self.assertNotIn("backend/parcels/source-catalog.json", result["inputHashes"]["receiptEvidenceFiles"])
+
+    def test_app_context_probe_path_remains_hash_bound_as_coverage_evidence(self):
+        receipt = json.loads(json.dumps(self.receipt))
+        probe = receipt["coverage"]["probes"][0]
+        probe["evidenceFile"] = "backend/parcels/source-catalog.json"
+        context_file = self.root / probe["evidenceFile"]
+        probe["evidenceSha256"] = hashlib.sha256(context_file.read_bytes()).hexdigest()
+        hashes = stage._input_hashes(self.root, self.city, receipt, self.packet)
+        self.assertNotIn(probe["evidenceFile"], hashes["receiptEvidenceFiles"])
+        self.assertIn(probe["evidenceFile"], hashes["coverageProbeEvidenceFiles"])
+        context_file.write_text('{"sources":[{"id":"newly-admitted"}]}\n')
+        with self.assertRaisesRegex(ValueError, "coverage probe 0 evidence SHA-256 mismatch"):
+            stage._input_hashes(self.root, self.city, receipt, self.packet)
+
     def test_revalidation_detects_changed_backend_adapter_source(self):
         harness = Harness(self.root, self.attempt_dir)
         adapter = self.root / "backend/parcels/reused.js"
-        adapter.parent.mkdir(parents=True)
+        adapter.parent.mkdir(parents=True, exist_ok=True)
         adapter.write_text("export const original = true;\n")
         result = self.call_stage(harness)
         self.assertTrue(stage.revalidate_stage(harness, self.city, self.receipt, self.packet, result)[0])
