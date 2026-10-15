@@ -1,4 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
+import { enableBackgroundChromium } from './helpers/background-chromium.cjs';
+
+// Headed runs open their windows behind the active app instead of taking focus (macOS).
+enableBackgroundChromium();
 
 export default defineConfig({
   testDir: './tests',
