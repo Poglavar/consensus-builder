@@ -346,8 +346,8 @@ def validate_run(plan, run_spec, manifests, pools, samples):
     return output
 
 
-def verify_eval(run, version, best, plan, manifest_info):
-    directory_name = 'selection-eval' if version != 'split-v2' else 'selection-eval-split-v2'
+def verify_eval(run, version, best, plan, manifest_info, *, directory_name=None):
+    directory_name = directory_name or ('selection-eval' if version != 'split-v2' else 'selection-eval-split-v2')
     directory = run / directory_name
     summary, pooled = read_json(directory / 'summary.json'), read_json(directory / 'pooled.json')
     source_config = best['config']
