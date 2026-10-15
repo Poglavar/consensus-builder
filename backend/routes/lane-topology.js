@@ -379,7 +379,7 @@ async function liveDecisions(pool, bbox, city) {
     }
 }
 
-async function buildDeterministicSolution(pool, bbox, city, parentId = null, options = {}) {
+export async function buildDeterministicSolution(pool, bbox, city, parentId = null, options = {}) {
     const evidence = await fetchTopologyOsm(pool, bbox, city, options);
     // A parcel fetch that fails must not take the whole graph with it: the lane model alone is a
     // worse answer, not no answer, and it is the only answer available outside Zagreb anyway.
@@ -462,7 +462,8 @@ function serializedSolution(row, includeGraph = false) {
         problemCounts: row.problem_counts || {},
         // Persisted problem keys are the stable safety identity for parent comparisons. Old graph
         // JSON may contain regenerated IDs that differ from the rows stored with the solution.
-        errorProblemKeys: Array.isArray(row.error_problem_keys) ? row.error_problem_keys : null,
+        errorProblemKeys: row.stats?.forensicRecovery?.originalProblemRowsVerified === false
+            ? null : (Array.isArray(row.error_problem_keys) ? row.error_problem_keys : null),
         createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
         updatedAt: row.updated_at instanceof Date ? row.updated_at.toISOString() : row.updated_at
     };

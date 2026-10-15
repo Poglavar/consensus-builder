@@ -6,7 +6,7 @@ import { createRequire } from 'node:module';
 import Anthropic from '@anthropic-ai/sdk';
 import { normalizeImageryObservations } from './imagery-observations.js';
 
-export const TOPOLOGY_PROMPT_VERSION = 'lane-topology-v14';
+export const TOPOLOGY_PROMPT_VERSION = 'lane-topology-v16';
 // Who answers a junction. `anthropic` is the metered Claude API through the shared LLM layer
 // (agents/lib/llm-cost/llm.cjs) and the default; `claude` and `codex` are the subscription CLIs
 // (cli.cjs), still selectable by name when the plan should pay instead.
@@ -289,6 +289,10 @@ export function buildRecognitionPrompt(input) {
         '- A lane may have multiple alternative permitted intersection movements; label them turn. They are not simultaneous physical merges or splits.',
         '- If the available lane graph cannot stage a non-binary physical transition, retain the best-supported connections and add a nonbinary_transition problem.',
         '- Respect oneway, access, PSV, tram, turn-lane and restriction evidence.',
+        '- A restriction with except=psv still forbids the movement for general traffic. Return a '
+            + 'physically supported PSV movement with that scope explained in its reason; the server '
+            + 'records allowedModes from the actual restriction exceptions. Never infer an exception '
+            + 'from imagery or from a lane arrow alone.',
         '- When orthophoto evidence is attached, inspect orthophoto.jpg before deciding physical continuations, tapers, splits or merges.',
         '- The orthophoto is north-up and spatially registered by the imagery metadata in the evidence package.',
         ...(input?.imagery?.source?.key === 'dgu_dof_lidar_2022_2023'
@@ -302,7 +306,7 @@ export function buildRecognitionPrompt(input) {
         '- Do not measure lane widths. A separate width analysis owns that measurement at a higher imagery resolution; record only the structure you can see.',
         '- Only record visible evidence. Omit occluded or guessed geometry and explain uncertainty as a problem instead.',
         '- Retain unresolved ambiguity as a problem with severity and evidence. Do not hallucinate missing connections.',
-        '- Before closing an approach, account for EVERY public incoming driving lane on it. Each '
+        '- Before closing an approach, account for EVERY public incoming driving or PSV/bus lane on it. Each '
             + 'must have at least one accepted outgoing movement; if any lane remains uncertain, '
             + 'keep that approach unresolved and explain why in a node-scoped problem. Do not '
             + 'invent a movement merely to make the count complete.',
@@ -583,18 +587,19 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
     const restrictionsAtNode = restrictionIndex(context.restrictions);
     const wayOfLane = lane => String(lane?.sourceWayId
         ?? sectionById.get(lane?.sectionId)?.sourceWayId ?? '');
-    const forbidden = connection => {
+    const permitted = connections.filter(connection => {
         const rules = restrictionsAtNode.get(connection.nodeId);
-        if (!rules?.length) return false;
-        const { PROHIBITIVE, MANDATORY } = restrictionsModule();
+        if (!rules?.length) return true;
+        const { allowedMovementModes } = restrictionsModule();
         const fromWayId = wayOfLane(laneById.get(connection.fromLaneId));
         const toWayId = wayOfLane(laneById.get(connection.toLaneId));
-        if (rules.some(rule => PROHIBITIVE.test(rule.kind)
-            && rule.fromWayId === fromWayId && rule.toWayId === toWayId)) return true;
-        const only = rules.find(rule => MANDATORY.test(rule.kind) && rule.fromWayId === fromWayId);
-        return !!(only && only.toWayId !== toWayId);
-    };
-    const permitted = connections.filter(connection => !forbidden(connection));
+        const modes = allowedMovementModes(rules, fromWayId, toWayId);
+        if (modes === null) return true;
+        if (!modes.length) return false;
+        connection.allowedModes = modes;
+        connection.reason += ` Permitted modes: ${modes.join(', ')} (OSM restriction exception).`;
+        return true;
+    });
     const refused = connections.length - permitted.length;
 
     const derivedNodes = new Set((deterministicGraph.connections || []).map(connection => connection.nodeId));
@@ -614,7 +619,7 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
         .map(connection => connection.fromLaneId));
     const requiredIncoming = (nodeId, sectionId) => laneList.filter(lane =>
         lane.toNode === nodeId && (!sectionId || lane.sectionId === sectionId)
-        && lane.type === 'driving'
+        && ['driving', 'bus'].includes(lane.type)
         && !['no', 'private'].includes(lane.access));
     const allIncomingAssigned = (nodeId, sectionId) => {
         const required = requiredIncoming(nodeId, sectionId);

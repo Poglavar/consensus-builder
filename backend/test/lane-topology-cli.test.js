@@ -154,6 +154,32 @@ function partiallyOpenGraph(openApproaches = [{ sectionId: 's2', name: 'Ilica', 
 }
 
 describe('lane-topology partial resolution', () => {
+    it('closes a PSV approach only when every incoming bus lane is assigned', () => {
+        const graph = partiallyOpenGraph();
+        graph.lanes[0].type = 'bus';
+        graph.lanes[0].access = 'psv';
+        graph.lanes.push({ ...graph.lanes[0], id: 'lane:in:s2:second' });
+        const patch = {
+            connections: [{ fromLaneId: 'lane:in:s2', toLaneId: 'lane:out:s3', type: 'turn' }],
+            problems: []
+        };
+        expect(applyRecognitionPatch(patch, graph, 'anthropic').problems
+            .some(problem => problem.type === 'unresolved_intersection')).toBe(true);
+        patch.connections.push({ fromLaneId: 'lane:in:s2:second', toLaneId: 'lane:out:s3', type: 'turn' });
+        expect(applyRecognitionPatch(patch, graph, 'anthropic').problems
+            .some(problem => problem.type === 'unresolved_intersection')).toBe(false);
+    });
+
+    it('keeps a mixed approach open when its bus lane is omitted', () => {
+        const graph = partiallyOpenGraph();
+        graph.lanes.push({ ...graph.lanes[0], id: 'lane:in:s2:bus', type: 'bus', access: 'psv' });
+        const result = applyRecognitionPatch({
+            connections: [{ fromLaneId: 'lane:in:s2', toLaneId: 'lane:out:s3', type: 'turn' }],
+            problems: []
+        }, graph, 'anthropic');
+        expect(result.problems.some(problem => problem.type === 'unresolved_intersection')).toBe(true);
+    });
+
     it('keeps a multi-lane approach open until every incoming lane has a movement', () => {
         const graph = partiallyOpenGraph();
         graph.lanes.push({
@@ -315,12 +341,31 @@ describe('lane-topology partial resolution', () => {
         expect(applied.problems.some(problem => problem.type === 'turn_restriction_violation')).toBe(false);
     });
 
+    it('scopes a returned restricted turn to the source PSV exception, preserving the car ban', () => {
+        const context = { restrictions: [{
+            osm_id: 700, restriction: 'no_left_turn', tags: { except: 'psv' },
+            members: [
+                { role: 'from', type: 'way', ref: '12' },
+                { role: 'via', type: 'node', ref: 'B' },
+                { role: 'to', type: 'way', ref: '13' }
+            ]
+        }] };
+        const patch = { connections: [{ fromLaneId: 'L0', toLaneId: 'L2', type: 'turn' }], problems: [] };
+        const applied = applyRecognitionPatch(patch, partiallyOpenGraph(), 'claude', context);
+        const movement = applied.connections.find(connection => connection.source === 'claude');
+        expect(movement.allowedModes).toEqual(['psv']);
+        expect(applied.problems.some(problem => problem.type === 'movements_against_restrictions')).toBe(false);
+        context.restrictions.push({ ...context.restrictions[0], osm_id: 701, tags: {} });
+        expect(applyRecognitionPatch(patch, partiallyOpenGraph(), 'claude', context).connections
+            .filter(connection => connection.source === 'claude')).toHaveLength(0);
+    });
+
     it('tells the model which approaches are open, not just which node', () => {
         const prompt = buildRecognitionPrompt({ deterministicGraph: partiallyOpenGraph() });
 
         expect(prompt).toContain('"openApproaches":[{"section":"s2","street":"Ilica"');
         expect(prompt).toContain('only traffic ARRIVING on those sections is undecided');
-        expect(prompt).toContain('EVERY public incoming driving lane');
+        expect(prompt).toContain('EVERY public incoming driving or PSV/bus lane');
     });
 });
 

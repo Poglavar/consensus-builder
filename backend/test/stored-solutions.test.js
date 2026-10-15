@@ -1,7 +1,36 @@
 import { describe, expect, it } from 'vitest';
-import { settledNodeIndex } from '../scripts/lib/stored-solutions.js';
+import { settledNodeIndex, nodesWithMissingIncomingAssignments } from '../scripts/lib/stored-solutions.js';
 
 describe('settledNodeIndex', () => {
+    it('does not credit a recovered graph until its original problem history is verified', async () => {
+        const stats = { forensicRecovery: { originalProblemRowsVerified: false } };
+        const fetchImpl = async url => new Response(JSON.stringify(String(url).endsWith('/7')
+            ? { solution: { stats, errorProblemKeys: [], graph: {
+                connections: [{ nodeId: 'junction' }], problems: []
+            } } }
+            : { solutions: [{ id: 7, sourceKind: 'codex' }], total: 1, hasMore: false }),
+        { status: 200, headers: { 'content-type': 'application/json' } });
+        expect((await settledNodeIndex({ api: 'http://localhost', fetchImpl })).settled.has('junction'))
+            .toBe(false);
+        stats.forensicRecovery.originalProblemRowsVerified = true;
+        expect((await settledNodeIndex({ api: 'http://localhost', fetchImpl })).settled.has('junction'))
+            .toBe(true);
+    });
+
+    it('requires an incoming PSV lane even when ordinary lanes are assigned', () => {
+        const graph = {
+            nodes: [{ id: 'junction', degree: 3 }],
+            lanes: [
+                { id: 'road', type: 'driving', direction: 'forward', access: 'yes', toNode: 'junction' },
+                { id: 'bus', type: 'bus', direction: 'forward', access: 'psv', toNode: 'junction' }
+            ],
+            connections: [{ nodeId: 'junction', fromLaneId: 'road' }]
+        };
+        expect(nodesWithMissingIncomingAssignments(graph).has('junction')).toBe(true);
+        graph.connections.push({ nodeId: 'junction', fromLaneId: 'bus' });
+        expect(nodesWithMissingIncomingAssignments(graph).has('junction')).toBe(false);
+    });
+
     it('keeps a node open when its stored graph reports a node-level error', async () => {
         const fetchImpl = async url => new Response(JSON.stringify(
             String(url).endsWith('/7')

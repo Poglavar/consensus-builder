@@ -36,14 +36,45 @@
     // via-way restriction is real, and pretending it does not exist is how coverage gets overstated.
     function describe(restriction) {
         const via = memberRef(restriction, 'via', 'node');
+        const except = String(restriction?.tags?.except || restriction?.except || '')
+            .split(';').map(value => value.trim()).filter(value => /^[a-z][a-z0-9_:]*$/.test(value));
         return {
             osmId: restriction?.osm_id ?? null,
             kind: restriction?.restriction || null,
             fromWayId: memberRef(restriction, 'from', 'way'),
             toWayId: memberRef(restriction, 'to', 'way'),
             viaNodeId: via,
-            viaNodeKey: via === null ? null : nodeKey(via)
+            viaNodeKey: via === null ? null : nodeKey(via),
+            ...(except.length ? { exceptModes: [...new Set(except)] } : {})
         };
+    }
+
+    function includesMode(modes, mode) {
+        return modes.includes(mode) || (modes.includes('psv') && ['bus', 'taxi'].includes(mode));
+    }
+
+    function forbidsMovement(rule, fromWayId, toWayId) {
+        return rule.fromWayId === String(fromWayId) && (
+            (PROHIBITIVE.test(rule.kind) && rule.toWayId === String(toWayId))
+            || (MANDATORY.test(rule.kind) && rule.toWayId !== String(toWayId))
+        );
+    }
+
+    // null means unrestricted; [] means forbidden. A real exception narrows the movement, never
+    // removes the car prohibition. Intersect every applicable rule (PSV includes buses and taxis).
+    function allowedMovementModes(rules, fromWayId, toWayId) {
+        let allowed = null;
+        for (const rule of rules || []) {
+            if (!forbidsMovement(rule, fromWayId, toWayId)) continue;
+            const except = rule.exceptModes || [];
+            if (allowed === null) allowed = [...except];
+            else {
+                const candidates = [...new Set([...allowed, ...except])];
+                allowed = candidates.filter(mode => includesMode(allowed, mode) && includesMode(except, mode));
+            }
+            if (!allowed.length) return [];
+        }
+        return allowed;
     }
 
     function indexGraph(graph) {
@@ -106,10 +137,14 @@
                 && connection.fromWayId === restriction.fromWayId);
             if (!atNode.length) return;
             checked += 1;
+            const subjectToRule = connection => !(
+                Array.isArray(connection.allowedModes) && connection.allowedModes.length > 0
+                && connection.allowedModes.every(mode => includesMode(restriction.exceptModes || [], mode))
+            );
 
             if (PROHIBITIVE.test(restriction.kind)) {
                 atNode
-                    .filter(connection => connection.toWayId === restriction.toWayId)
+                    .filter(connection => connection.toWayId === restriction.toWayId && subjectToRule(connection))
                     .forEach(connection => problems.push(problem(
                         restriction, connection, 'error',
                         `OSM restriction ${restriction.kind} forbids way ${restriction.fromWayId} → `
@@ -120,7 +155,7 @@
 
             if (MANDATORY.test(restriction.kind)) {
                 atNode
-                    .filter(connection => connection.toWayId !== restriction.toWayId)
+                    .filter(connection => connection.toWayId !== restriction.toWayId && subjectToRule(connection))
                     .forEach(connection => problems.push(problem(
                         restriction, connection, 'error',
                         `OSM restriction ${restriction.kind} permits only way ${restriction.fromWayId} → `
@@ -144,5 +179,5 @@
         };
     }
 
-    return { PROHIBITIVE, MANDATORY, describe, checkConnections };
+    return { PROHIBITIVE, MANDATORY, describe, allowedMovementModes, checkConnections };
 });

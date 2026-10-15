@@ -61,7 +61,58 @@ describe('describe', () => {
     });
 });
 
+describe('movement mode scope', () => {
+    const scope = rules => Restrictions.allowedMovementModes(rules.map(describeRestriction), '100', '200');
+
+    it('intersects PSV and bus exceptions without admitting taxis', () => {
+        expect(scope([
+            { ...restriction('no_left_turn'), tags: { except: 'psv' } },
+            { ...restriction('only_straight_on', { to: 300 }), tags: { except: 'bus' } }
+        ])).toEqual(['bus']);
+    });
+
+    it('refuses a movement when applicable exception lists do not overlap', () => {
+        expect(scope([
+            { ...restriction('no_left_turn'), tags: { except: 'bus' } },
+            { ...restriction('no_left_turn'), tags: { except: 'bicycle' } }
+        ])).toEqual([]);
+    });
+
+    it('retains the general permission when no rule forbids that movement', () => {
+        expect(scope([restriction('no_left_turn', { to: 300 })])).toBeNull();
+    });
+
+    it('checks mandatory restrictions against a scoped connection too', () => {
+        const rule = { ...restriction('only_straight_on', { to: 300 }), tags: { except: 'taxi;bus' } };
+        const scoped = graph();
+        scoped.connections[0].allowedModes = ['bus'];
+        expect(checkConnections(scoped, [rule]).problems).toHaveLength(0);
+        scoped.connections[0].allowedModes = ['psv'];
+        expect(checkConnections(scoped, [rule]).problems).toHaveLength(1);
+    });
+});
+
 describe('prohibitive restrictions', () => {
+    it('keeps the general prohibition while allowing a movement explicitly limited to PSV', () => {
+        const rule = { ...restriction('no_left_turn'), tags: { except: 'psv' } };
+        expect(checkConnections(graph(), [rule]).problems).toHaveLength(1);
+        const scoped = graph();
+        scoped.connections[0].allowedModes = ['psv'];
+        expect(checkConnections(scoped, [rule]).problems).toHaveLength(0);
+        scoped.connections[0].allowedModes = ['bus'];
+        expect(checkConnections(scoped, [rule]).problems).toHaveLength(0);
+        scoped.connections[0].allowedModes = ['bus', 'motorcar'];
+        expect(checkConnections(scoped, [rule]).problems).toHaveLength(1);
+    });
+
+    it('does not let one exception bypass another applicable restriction', () => {
+        const scoped = graph();
+        scoped.connections[0].allowedModes = ['psv'];
+        expect(checkConnections(scoped, [
+            { ...restriction('no_left_turn'), tags: { except: 'psv' } },
+            { ...restriction('no_left_turn'), osm_id: 9002 }
+        ]).problems).toHaveLength(1);
+    });
     it('flags a movement OSM forbids', () => {
         const { problems, stats } = checkConnections(graph(), [restriction('no_left_turn')]);
         expect(problems).toHaveLength(1);

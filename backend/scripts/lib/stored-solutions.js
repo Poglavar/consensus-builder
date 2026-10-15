@@ -23,7 +23,12 @@ function overlaps(a, b) {
         && a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1];
 }
 
+function hasUnverifiedProblemHistory(solution) {
+    return solution?.stats?.forensicRecovery?.originalProblemRowsVerified === false;
+}
+
 function errorKeys(solution) {
+    if (hasUnverifiedProblemHistory(solution)) return null;
     if (!Array.isArray(solution?.errorProblemKeys)) return null;
     return new Set(solution.errorProblemKeys);
 }
@@ -35,7 +40,7 @@ function countRestrictionViolations(graph) {
     return reported != null && Number.isFinite(value) ? value : 0;
 }
 
-function isUnsafeComparedWithParent(solution, parent) {
+export function isUnsafeComparedWithParent(solution, parent) {
     const childErrors = errorKeys(solution);
     const parentErrors = errorKeys(parent);
     const parentMissing = missingIncomingAssignmentKeys(parent.graph);
@@ -48,8 +53,8 @@ function isUnsafeComparedWithParent(solution, parent) {
             .some(key => !parentMissing.has(key));
 }
 
-function isDrivableIncomingLane(lane) {
-    return lane?.type === 'driving'
+function isTrafficIncomingLane(lane) {
+    return ['driving', 'bus'].includes(lane?.type)
         && lane?.direction !== 'both'
         && !['no', 'private'].includes(lane?.access)
         && typeof lane?.toNode === 'string';
@@ -60,7 +65,7 @@ function missingIncomingAssignmentKeys(graph) {
     const assigned = new Set((graph?.connections || []).map(connection => connection?.fromLaneId));
     const missing = new Set();
     (graph?.lanes || []).forEach(lane => {
-        if (lane?.type === 'driving' && lane?.direction === 'both'
+        if (['driving', 'bus'].includes(lane?.type) && lane?.direction === 'both'
             && !['no', 'private'].includes(lane?.access)) {
             // A two-way centre lane has no directed counterpart to leave the junction. A model
             // connecting the ordinary lanes cannot by itself resolve this lane's usage.
@@ -72,13 +77,13 @@ function missingIncomingAssignmentKeys(graph) {
             return;
         }
         const node = nodes.get(lane?.toNode);
-        if (Number(node?.degree) < 3 || !isDrivableIncomingLane(lane)) return;
+        if (Number(node?.degree) < 3 || !isTrafficIncomingLane(lane)) return;
         if (!assigned.has(lane.id)) missing.add(`${node.id}|${lane.id}`);
     });
     return missing;
 }
 
-function nodesWithMissingIncomingAssignments(graph) {
+export function nodesWithMissingIncomingAssignments(graph) {
     return new Set([...missingIncomingAssignmentKeys(graph)].map(key => key.split('|')[0]));
 }
 
@@ -136,7 +141,8 @@ export async function settledNodeIndex({ api, city = 'zagreb', bbox, fetchImpl =
             if (!response.ok) continue;
             const stored = (await response.json()).solution;
             const graph = stored?.graph;
-            if (!graph) continue;
+            // A recovered graph can be complete while its original validation rows are missing.
+            if (!graph || hasUnverifiedProblemHistory(stored)) continue;
             if (stored.parentId != null) {
                 const parentResponse = await fetchImpl(`${base}/lane-topology/solutions/${stored.parentId}`,
                     { signal: AbortSignal.timeout(60_000) });

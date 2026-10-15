@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS public.lane_topology_solution (
     status VARCHAR(24) NOT NULL DEFAULT 'candidate'
         CHECK (status IN ('candidate', 'canonical', 'rejected', 'stale')),
     source_kind VARCHAR(32) NOT NULL
-        CHECK (source_kind IN ('deterministic', 'codex', 'claude', 'adjudicated', 'manual')),
+        CHECK (source_kind IN ('deterministic', 'codex', 'claude', 'anthropic', 'adjudicated', 'manual')),
     provider VARCHAR(32),
     model VARCHAR(128),
     prompt_version VARCHAR(32),
@@ -101,7 +101,7 @@ CREATE INDEX IF NOT EXISTS lane_topology_decision_node_idx
 
 CREATE TABLE IF NOT EXISTS public.lane_topology_job (
     id BIGSERIAL PRIMARY KEY,
-    provider VARCHAR(32) NOT NULL CHECK (provider IN ('codex', 'claude')),
+    provider VARCHAR(32) NOT NULL CHECK (provider IN ('codex', 'claude', 'anthropic')),
     status VARCHAR(24) NOT NULL DEFAULT 'queued'
         CHECK (status IN ('queued', 'running', 'completed', 'failed')),
     city VARCHAR(64) NOT NULL DEFAULT 'zagreb',
@@ -166,3 +166,13 @@ CREATE INDEX IF NOT EXISTS lane_width_analysis_status_idx
 -- database without anyone noticing.
 ALTER TABLE public.lane_width_analysis
     ADD COLUMN IF NOT EXISTS osm_snapshot_id BIGINT;
+
+-- The metered Claude API is a provider in its own right; existing databases predate it.
+ALTER TABLE public.lane_topology_solution
+    DROP CONSTRAINT IF EXISTS lane_topology_solution_source_kind_check,
+    ADD CONSTRAINT lane_topology_solution_source_kind_check
+        CHECK (source_kind IN ('deterministic', 'codex', 'claude', 'anthropic', 'adjudicated', 'manual'));
+ALTER TABLE public.lane_topology_job
+    DROP CONSTRAINT IF EXISTS lane_topology_job_provider_check,
+    ADD CONSTRAINT lane_topology_job_provider_check
+        CHECK (provider IN ('codex', 'claude', 'anthropic'));
