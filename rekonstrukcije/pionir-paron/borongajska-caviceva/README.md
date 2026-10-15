@@ -25,7 +25,7 @@ The other two source polygons are deliberately excluded: `.7190` is a small auxi
 The local proposal row is `1089`, proposal id `pionir-borongajska-caviceva-location-permit-2022`, and remains unapplied. Rebuild it with:
 
 ```sh
-PGHOST=localhost node backend/scripts/seed-borongaj-proposal.mjs --apply --export
+node backend/scripts/seed-borongaj-proposal.mjs --apply --export
 ```
 
 ## Legal/design chronology
@@ -66,8 +66,8 @@ From the repository root, with PyMuPDF and Shapely 2.x installed in the selected
 ```sh
 python3 backend/scripts/reconstruct-borongaj-floors.py --cache-dir /tmp/borongaj-floor-cache --fetch
 python3 backend/scripts/reconstruct-borongaj-floors.py --cache-dir /tmp/borongaj-floor-cache --write
-PGHOST=localhost node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs --archive rekonstrukcije/pionir-paron/borongajska-caviceva/proposal.geojson
-PGHOST=localhost node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs --archive rekonstrukcije/pionir-paron/borongajska-caviceva/proposal.geojson --apply
+node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs --archive rekonstrukcije/pionir-paron/borongajska-caviceva/proposal.geojson
+node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs --archive rekonstrukcije/pionir-paron/borongajska-caviceva/proposal.geojson --apply
 ```
 
 The importer defaults to a dry run and writes the source-neutral PostgreSQL floor-model registry, after checking source identities and unchanged proposal footprints. Use `--init-schema` for the first local import; production deployment applies the schema before loading the API. It reads each saved model back before committing and removes duplicate inline copies from the proposal. Re-running it is a no-op. The normal project seed preserves the archive's authoring evidence. The [registry contract](../../../docs/building-floor-models.md) describes native-building imports and production flags.

@@ -12,19 +12,19 @@ const require = createRequire(new URL('../../backend/package.json', import.meta.
 require('dotenv').config({ path: new URL('../../backend/.env', import.meta.url).pathname, quiet: true });
 const turf = require('@turf/turf');
 globalThis.turf = turf; // The shared browser/Node footprint helper resolves Turf at call time.
-const { Pool } = require('pg');
+const { createPool, describeDatabase, isLocalDatabase } = require('./db/connection.cjs');
 const order = require('../frontend/js/proposals/plan-order.js');
 const argv = process.argv.slice(2);
 if (argv.includes('--help') || !argv.length) {
-    console.log('Repair all 22 saved local Borovje proposals.\n  PGHOST=127.0.0.1 node rekonstrukcije/upu-borovje/repair-flat-plan.mjs --dry-run|--apply');
+    console.log('Repair all 22 saved local Borovje proposals.\n  node rekonstrukcije/upu-borovje/repair-flat-plan.mjs --dry-run|--apply   (DATABASE_URL from backend/.env)');
     process.exit(0);
 }
 if (argv.length !== 1 || !['--dry-run', '--apply'].includes(argv[0])) throw new Error('Use --dry-run or --apply.');
-if (!['localhost', '127.0.0.1', '::1'].includes(process.env.PGHOST)
-    || process.env.PGDATABASE !== 'geodata') throw new Error('This repair requires local PGHOST and PGDATABASE=geodata.');
+if (!isLocalDatabase()
+    || describeDatabase().database !== 'geodata') throw new Error('This repair requires a local DATABASE_URL pointing at geodata.');
 const apply = argv[0] === '--apply';
 const log = message => console.log(`[${new Date().toISOString()}] ${message}`);
-const pool = new Pool({ max: 1 });
+const pool = createPool({ max: 1 });
 const client = await pool.connect();
 try {
     await client.query('BEGIN');

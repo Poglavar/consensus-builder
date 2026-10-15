@@ -39,8 +39,8 @@ For the current local database, use `repair-flat-plan.mjs`. It preserves all 22 
 to their intended plots, and recomputes the one flat cadastral declaration per record:
 
 ```
-PGHOST=127.0.0.1 node repair-flat-plan.mjs --dry-run
-PGHOST=127.0.0.1 node repair-flat-plan.mjs --apply
+node repair-flat-plan.mjs --dry-run
+node repair-flat-plan.mjs --apply
 ```
 
 Every changed row is backed up in `public.proposal_borovje_flat_backup` in the update transaction.
@@ -137,7 +137,7 @@ The drawn boundary follows parcel lines, so `snap-to-cadastre.mjs` rebuilds the 
   (1823/8, Letovanićka ulica) and left as it is.
 
 ```
-PGHOST=127.0.0.1 node snap-to-cadastre.mjs --compute                  # local PostGIS → data/cadastral-snap.json
+node snap-to-cadastre.mjs --compute                                   # local PostGIS → data/cadastral-snap.json
 node snap-to-cadastre.mjs --backend <api> --origin <app> --apply      # publish the corrected members as <id>-v2
 node build-urban-blocks.mjs --revision v2 --backend <api> --origin <app> --apply
 node name-plans.mjs --backend <api> --origin <app> --apply            # names upu-borovje-v2, borovje-urbani-blokovi-v2
@@ -163,7 +163,7 @@ collector and the gardens south of it) it is not taken and stays with its city p
 
 ```
 node fit-streets.mjs --capture --app <app url> --backend <api>       # → data/street-footprints.json
-PGHOST=127.0.0.1 node fit-streets.mjs --compute --backend <api>      # → data/streets-fit.json
+node fit-streets.mjs --compute --backend <api>                       # → data/streets-fit.json
 node fit-streets.mjs --backend <api> --origin <app> --apply          # publish the changed members as <id>-v3
 node build-urban-blocks.mjs --revision v3 --backend <api> --origin <app> --apply
 node name-plans.mjs --backend <api> --origin <app> --apply           # names upu-borovje-v3, borovje-urbani-blokovi-v3

@@ -16,7 +16,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import { Connection, Keypair } from '@solana/web3.js';
 import { mintProposal } from '../agents/minter.js';
 import { sendAndConfirmPolling } from '../agents/solana-send.js';
@@ -54,7 +54,7 @@ async function main() {
     if (!recordExisting && !lens.length) throw new Error('--lens needs at least one key');
     const owner = recordExisting ? null : Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync(values.keypair, 'utf8'))));
     const connection = new Connection(values.rpc || process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
-    const pool = new pg.Pool();
+    const pool = createPool();
     try {
         const { rows } = await pool.query(`
             SELECT id, proposal_id, city, COALESCE(title, name) AS title, onchain_data, binding,

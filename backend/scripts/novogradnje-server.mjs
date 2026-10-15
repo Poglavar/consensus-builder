@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 // Dedicated read-only Novogradnje server, sharing the archive database without enabling crawl jobs.
 import express from 'express';
-import pg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'node:url';
 import { setupNovogradnjeRoute } from '../routes/novogradnje.js';
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 const port = Number(process.env.NOVOGRADNJE_PORT || 8490);
 if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('Invalid NOVOGRADNJE_PORT.');
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, ...(process.env.PGHOST ? { host: process.env.PGHOST } : {}), max: 5,
+const pool = createPool({ max: 5,
     application_name: 'novogradnje-web', statement_timeout: 20000 });
 const app = express();
 app.disable('x-powered-by');

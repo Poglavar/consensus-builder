@@ -14,7 +14,7 @@ Regenerate from the original files named in the manifest:
 
 ```sh
 python3 backend/scripts/reconstruct-avenue-v-floors.py --cache SOURCE_DIRECTORY --qa QA_DIRECTORY --output rekonstrukcije/avenue-v/unit-models.json
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs models --file rekonstrukcije/avenue-v/unit-models.json
+node backend/scripts/floor-plan-archive.mjs models --file rekonstrukcije/avenue-v/unit-models.json
 ```
 
 Source bytes also live in the local database's content-addressed archive. The plan viewer obtains each source by hash, and displays its original listing link.

@@ -295,7 +295,7 @@ refundable deposit — `solana program close` returns it). IDL account `66R6QbYp
 in, `@x402/fetch` + `ExactSvmScheme`, `--dry-run` prints the challenge and pays nothing). Payer = persona
 wallet `G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg` (keypair `~/.config/solana/ugt-persona-01.json`,
 outside the repo; funded 0.2 SOL + 5 USDC from the treasury wallet). Backend run natively with
-`PGHOST=localhost` on :3999 against the docker Postgres. Result: 201, row **1339** in the local `proposal`
+`DATABASE_URL` from backend/.env on :3999 against the docker Postgres. Result: 201, row **1339** in the local `proposal`
 table; read back through the free `GET /proposals/1339`: `author` = the persona wallet, `agent` =
 `{ persona, rationale, run_id, wallet, paid: { network, asset, amount: "0.05", amountAtomic: "50000", tx } }`.
 Treasury USDC 15 → 15.05, persona 5 → 4.95, settlement transaction

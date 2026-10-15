@@ -292,7 +292,7 @@ A batch that has not finished inside `awaitMs` is not an error — `runPickBatch
 | `AGENT_DAILY_USDC_CAP` | `run-policy.js` | maximum stake spend; safe default 0.35 USDC; the chain mirror is free |
 | `AGENT_SUPPORT_USDC_CAP` | `support-run.mjs` | maximum amount of its one daily support action; safe default 0.25 USDC |
 | `AGENT_SOCIETY_ACTION_CAP` / `AGENT_SOCIETY_USDC_CAP` | `society-run.mjs` | signed actions / USDC per invocation across all turns; defaults 4 / 0.05 |
-| `PGHOST` / `PGPORT` / `PGUSER` / `PGPASSWORD` / `PGDATABASE` | `parcel-source.js` (via the pool the caller passes) | the shared `geodata` database |
+| `DATABASE_URL` | `parcel-source.js` (via the pool the caller passes, built by `db/connection.cjs`) | the shared `geodata` database, from backend/.env |
 | `X402_*`, `CDP_API_KEY_ID`, `CDP_API_KEY_SECRET` | `routes/agent-proposals.js`, `routes/agent-oracle-facts.js` | hosted-CDP pay-to-propose and paid verified-fact gates; see the agent quickstart |
 
 ## Tests
@@ -309,13 +309,13 @@ None of them touch the network or the ledger. The one test that needs the databa
 
 ```bash
 cd backend
-PGHOST=localhost node agents/run.mjs --dry-run                       # algorithmic plan + pick, writes nothing
-PGHOST=localhost node agents/run.mjs --live --persona densifier-01 --api http://localhost:3999
-PGHOST=localhost node agents/run.mjs --live --controller llm         # optional explicit Anthropic mode
-PGHOST=localhost node agents/run.mjs --live --until posted          # stop before staking
+node agents/run.mjs --dry-run                       # algorithmic plan + pick, writes nothing
+node agents/run.mjs --live --persona densifier-01 --api http://localhost:3999
+node agents/run.mjs --live --controller llm         # optional explicit Anthropic mode
+node agents/run.mjs --live --until posted          # stop before staking
 node agents/support-run.mjs --dry-run --api https://api.urbangametheory.xyz
-PGHOST=localhost node agents/support-run.mjs --live --persona supporter-01 --api https://api.urbangametheory.xyz
-PGHOST=localhost npm run sync:land-events -- --dry-run
+node agents/support-run.mjs --live --persona supporter-01 --api https://api.urbangametheory.xyz
+npm run sync:land-events -- --dry-run
 node agents/society-run.mjs --persona preservationist-01 --turns 3 --api https://api.urbangametheory.xyz   # dry run (default)
 node agents/society-run.mjs --persona speculator-01 --api https://api.urbangametheory.xyz
 node agents/society-run.mjs --persona backer-01 --slot auto --api https://api.urbangametheory.xyz          # a second run today

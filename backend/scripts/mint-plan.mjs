@@ -11,13 +11,13 @@
 // --record-existing records an account minted from ANOTHER database's copy of the same plan (the plan
 // hash is over stable proposal ids, so it is equal everywhere): it reads the account's image_uri on
 // chain and refuses unless it is exactly this plan's `ugt-plan:<slug>@<plan_hash>`.
-// The database is the one backend/.env selects (PG* / DATABASE_URL), like mint-published-proposal.mjs.
+// The database is the one backend/.env selects (DATABASE_URL), like mint-published-proposal.mjs.
 
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import { Connection, Keypair, PublicKey } from '@solana/web3.js';
 import { decodeProposalState } from '../agents/lifecycle-actions.js';
 import { mintProposal } from '../agents/minter.js';
@@ -60,7 +60,7 @@ async function main() {
     if (!recordExisting && !lens.length) throw new Error('--lens needs at least one key');
     const owner = recordExisting ? null : Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync(values.keypair, 'utf8'))));
     const connection = new Connection(values.rpc || process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
-    const pool = new pg.Pool(process.env.DATABASE_URL ? { connectionString: process.env.DATABASE_URL } : undefined);
+    const pool = createPool();
     try {
         const store = createPlanStore(pool);
         const plan = await store.mintInput(values.slug);

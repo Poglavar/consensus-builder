@@ -69,7 +69,7 @@ transaction; resumable; PG11+ for procedure-level COMMIT — prod & local are PG
 2. Run the migration against the prod DB (adds columns, backfills ~357k rows ≈ 10 min, creates the
    GiST index, `ANALYZE`). The **old** backend keeps serving correctly during this.
    ```sh
-   # on the server (do), against the prod building_3d DB (docker; check the server .env for PG*),
+   # on the server (do), against the prod building_3d DB (docker; check the server .env for DATABASE_URL),
    # e.g.:  docker exec -i <pg-container> psql -U <user> -d <db> < building-3d-precompute.sql
    ```
 3. Deploy the backend (`deploy-backend.sh` → git pull + PM2 restart) so the new query goes live

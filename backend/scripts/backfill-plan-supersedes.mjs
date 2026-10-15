@@ -7,18 +7,18 @@
 // overwritten (named plans are immutable, plans.md; only a missing link is filled). The column itself
 // is defined in backend/ens/ens-plan-ddl.sql, applied on every backend deploy.
 //
-//   PGHOST=127.0.0.1 node scripts/backfill-plan-supersedes.mjs --dry-run
-//   PGHOST=127.0.0.1 node scripts/backfill-plan-supersedes.mjs --apply
+//   node scripts/backfill-plan-supersedes.mjs --dry-run
+//   node scripts/backfill-plan-supersedes.mjs --apply
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createClient } from '../db/connection.cjs';
 import { PLANS } from '../../rekonstrukcije/upu-borovje/name-plans.mjs';
 
 const USAGE = `Usage: node scripts/backfill-plan-supersedes.mjs (--dry-run | --apply)
 Records ens_plan.supersedes for the Borovje plan versions where it is missing.
   --dry-run   report what would be written (read-only transaction)
   --apply     write the missing links in one transaction, then read them back
-Connection: PG* variables (backend/.env, or exported, e.g. PGHOST=127.0.0.1 on the host).`;
+Connection: DATABASE_URL (backend/.env, or exported to point at another database).`;
 const log = message => console.log(`[${new Date().toISOString()}] ${message}`);
 
 // The links a list of plan definitions records: [{ slug, supersedes }] for every version that names
@@ -68,7 +68,7 @@ async function main() {
     dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
     const links = supersessionLinks(PLANS);
     const slugs = Array.from(new Set(links.flatMap(link => [link.slug, link.supersedes])));
-    const client = new pg.Client();
+    const client = createClient();
     await client.connect();
     try {
         await client.query(args.apply ? 'BEGIN' : 'BEGIN READ ONLY');

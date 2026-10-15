@@ -11,7 +11,7 @@
 // It is a dry run unless --apply is passed. Writes happen in one transaction. Retired proposal
 // rows remain available as Cancelled history; only their numeric ids disappear from the named plan.
 
-import pkg from 'pg';
+import { createPool, describeDatabase, isLocalDatabase } from '../db/connection.cjs';
 import 'dotenv/config';
 import { createRequire } from 'node:module';
 import { serializeProposalRow } from '../proposals/serializer.js';
@@ -22,7 +22,6 @@ import {
 } from './lib/road-network-repair.mjs';
 
 const require = createRequire(import.meta.url);
-const { Pool } = pkg;
 
 globalThis.turf = require('@turf/turf');
 globalThis.stableStringify = require('../../frontend/js/shared-utils.js').stableStringify;
@@ -61,11 +60,9 @@ Safety: this script only writes through a localhost PostgreSQL connection.
 }
 
 function assertLocalDatabaseConfig() {
-    const host = String(process.env.PGHOST || '').trim().toLowerCase();
-    if (!['localhost', '127.0.0.1', '::1'].includes(host)) {
-        throw new Error(`PGHOST must be localhost for this migration (received '${host || '(unset)'}')`);
+    if (!isLocalDatabase()) {
+        throw new Error(`DATABASE_URL must point at a local host for this migration (received '${describeDatabase().host || '(unset)'}')`);
     }
-    if (!process.env.PGDATABASE) throw new Error('PGDATABASE is not set; run from backend/ so .env is loaded');
 }
 
 function clone(value) {
@@ -578,13 +575,7 @@ export async function run(argv = process.argv.slice(2)) {
     if (args.help) { usage(); return 0; }
     assertLocalDatabaseConfig();
 
-    const pool = new Pool({
-        host: process.env.PGHOST,
-        port: Number(process.env.PGPORT) || 5432,
-        user: process.env.PGUSER,
-        password: process.env.PGPASSWORD,
-        database: process.env.PGDATABASE
-    });
+    const pool = createPool();
     const client = await pool.connect();
     try {
         await client.query('BEGIN');

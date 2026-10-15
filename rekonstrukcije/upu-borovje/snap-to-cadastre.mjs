@@ -15,7 +15,7 @@
 // Named plans never change (plans.md), so nothing existing is edited. The corrected members are published as
 // new records `<proposal_id>-v2` (revisionOf the original) and named as new plan versions by name-plans.mjs.
 //
-//   PGHOST=127.0.0.1 node snap-to-cadastre.mjs --compute        # local PostGIS → data/cadastral-snap.json
+//   node snap-to-cadastre.mjs --compute        # local PostGIS → data/cadastral-snap.json
 //   node snap-to-cadastre.mjs --backend <api> --origin <app> [--apply]
 import os from 'node:os';
 import path from 'node:path';
@@ -49,9 +49,9 @@ const { values } = parseArgs({ options: {
 } });
 if (values.help || (!values.compute && !values.backend)) {
     console.log(`Usage:
-  PGHOST=127.0.0.1 node snap-to-cadastre.mjs --compute     # from the local rows + cadastre → data/cadastral-snap.json
+  node snap-to-cadastre.mjs --compute                      # from the local rows + cadastre → data/cadastral-snap.json
   node snap-to-cadastre.mjs --backend <api> --origin <app> [--apply]
---compute reads the original rows and parcels through backend/.env (PG*), validates the result and writes the
+--compute reads the original rows and parcels through backend/.env (DATABASE_URL), validates the result and writes the
 file; it changes no row. The publish step is a dry run unless --apply; existing -v2 records are left alone.`);
     process.exit(0);
 }
@@ -63,8 +63,8 @@ const geometryOf = value => (value?.type === 'Feature' ? value.geometry : value)
 // ---------------------------------------------------------------------------------------------------------
 async function compute() {
     require('dotenv').config({ path: new URL('../../backend/.env', import.meta.url).pathname, quiet: true });
-    const { Pool } = require('pg');
-    const pool = new Pool({ max: 1, ...(process.env.DATABASE_URL ? { connectionString: process.env.DATABASE_URL } : {}) });
+    const { createPool } = require('./db/connection.cjs');
+    const pool = createPool({ max: 1 });
     const db = await pool.connect();
     const q = (sql, params) => db.query(sql, params);
     try {

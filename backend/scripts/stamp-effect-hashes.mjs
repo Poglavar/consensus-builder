@@ -16,9 +16,9 @@
 // binds to those — no acceptance record carries a hash on any database (checked 2026-10-12) — so
 // --restamp rewrites them to what the browser computes today. Exit 0 when everything was stamped
 // or verified, 2 when some rows were skipped or left mismatched.
-// Connection: PG* variables from backend/.env.
+// Connection: DATABASE_URL from backend/.env.
 
-import pkg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import dotenv from 'dotenv';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
@@ -78,7 +78,7 @@ function usage() {
 export async function run(argv = process.argv.slice(2), { pool: injectedPool } = {}) {
     const args = parseArgs(argv);
     if (args.help) { usage(); return 0; }
-    const pool = injectedPool || new pkg.Pool();
+    const pool = injectedPool || createPool();
     const client = await pool.connect();
     const counts = { stamp: 0, restamp: 0, already: 0, verified: 0, mismatch: 0, skip: 0 };
     try {

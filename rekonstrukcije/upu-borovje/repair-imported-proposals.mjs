@@ -59,9 +59,8 @@ import { fileURLToPath } from 'node:url';
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, '..', '..');
 const require = createRequire(path.join(repoRoot, 'backend', 'package.json'));
-const pkg = require('pg');
+const { createPool, describeDatabase } = require('./db/connection.cjs');
 require('dotenv').config({ path: path.join(repoRoot, 'backend', '.env') });
-const { Pool } = pkg;
 
 const READJUSTMENT_ID = 633;          // the plan's ground: 82 imported parts, a perfect partition
 const MEMBER_IDS = [634, 635, 636, 637, 638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648, 649, 650];
@@ -194,9 +193,9 @@ async function main() {
     // Puts the authored plot list back, undoing --reparcel.
     const restoreAuthored = argv.includes('--restore-authored');
 
-    const pool = new Pool();
+    const pool = createPool();
     const client = await pool.connect();
-    console.log(`database: ${process.env.PGDATABASE || 'geodata'}   mode: ${apply ? 'APPLY' : 'DRY RUN'}\n`);
+    console.log(`database: ${describeDatabase().database}   mode: ${apply ? 'APPLY' : 'DRY RUN'}\n`);
 
     let restored = false;
     let reparcelled = false;

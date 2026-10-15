@@ -20,7 +20,7 @@
 //   node scripts/flag-legacy-centreline-roads.mjs --restore    # remove this migration's flags
 //   node scripts/flag-legacy-centreline-roads.mjs --ids 2,3    # limit to row ids
 
-import pkg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import dotenv from 'dotenv';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -109,7 +109,7 @@ function usage() {
         '  --ids       Only these proposal row ids',
         '  --help      Show this message',
         '',
-        'Connection: PG* variables from backend/.env.'
+        'Connection: DATABASE_URL from backend/.env.'
     ].join('\n'));
 }
 
@@ -118,7 +118,7 @@ export async function run(argv = process.argv.slice(2), { pool: injectedPool } =
     if (args.help) { usage(); return 0; }
     const mode = args.restore ? 'restore' : 'apply';
     const writing = args.apply || args.restore;
-    const pool = injectedPool || new pkg.Pool();
+    const pool = injectedPool || createPool();
     const client = await pool.connect();
     try {
         const { rows } = await client.query(READ_SQL, [args.ids]);

@@ -46,13 +46,13 @@ if (values.help || !['export', 'import'].includes(mode)) { console.log(USAGE); p
 const backendDir = path.resolve(values.backend || new URL('../../backend', import.meta.url).pathname);
 const require = createRequire(path.join(backendDir, 'package.json'));
 require('dotenv').config({ path: path.join(backendDir, '.env'), quiet: true });
-const { Pool } = require('pg');
+const { createPool } = require('./db/connection.cjs');
 const turf = require('@turf/turf');
 globalThis.turf = turf; // the shared footprint helper resolves Turf at call time
 const { assertCanonicalProposalRow } = await import(pathToFileURL(path.join(backendDir, 'proposals/serializer.js')).href);
 const order = require(path.join(backendDir, '../frontend/js/proposals/plan-order.js'));
 
-const pool = new Pool({ max: 1, ...(process.env.DATABASE_URL ? { connectionString: process.env.DATABASE_URL } : {}) });
+const pool = createPool({ max: 1 });
 const client = await pool.connect();
 let TABLE = 'proposal';
 let BACKUP = 'proposal_borovje_sync_backup';

@@ -9,7 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import { Keypair } from '@solana/web3.js';
 import { createLensMember, DEFAULT_CREDENTIAL_NAME, LENS_MEMBER_KINDS, systemClock } from './member.js';
 import { createDevnetRegistryIdentity } from './identity/devnet-registry.js';
@@ -48,7 +48,7 @@ function usage(code = 0) {
         '                            what /lens/status reports this member attests.',
         '  --identity <adapter>      devnet-registry (default) | certilia (not configured yet).',
         '  --owners <file.json>      devnet-registry rows in memory: [{parcelUid, owner, ownerCount, establishedAt}].',
-        '                            Without it the registry is consensus.lens_devnet_owner (PG* env).',
+        '                            Without it the registry is consensus.lens_devnet_owner (DATABASE_URL).',
         '  --rights <file.json>      lens-rights-registry/v1 (abstract owners, exact shares, areas, signer wallets).',
         '                            Enables POST /lens/approval/{rights,challenge,authority}; without it they answer 503.',
         '  --approval-validity-days <n>  How long signed rights/authority facts stay usable (default 7).',
@@ -63,7 +63,7 @@ function usage(code = 0) {
         '  --name <text>             Directory name, e.g. "Notary office, Borovje". --description <text> is optional.',
         '  --help                    This text.',
         '',
-        'Env: PG* (Postgres), X402_NETWORK, X402_FACILITATOR_URL, X402_PAY_TO, LENS_OWNERSHIP_PRICE_USDC (0.01),',
+        'Env: DATABASE_URL (Postgres), X402_NETWORK, X402_FACILITATOR_URL, X402_PAY_TO, LENS_OWNERSHIP_PRICE_USDC (0.01),',
         '     LENS_OPERATOR_TOKEN (enables POST /lens/verdict and POST /lens/market-evidence).'
     ].join('\n'));
     process.exit(code);
@@ -129,7 +129,7 @@ async function main() {
     const dryRun = !!values['dry-run'];
     const clock = systemClock;
     const needsPg = (!dryRun && !values.store) || (!values.owners && values.identity === 'devnet-registry');
-    const pool = needsPg ? new pg.Pool() : null;
+    const pool = needsPg ? createPool() : null;
     pool?.on('error', error => console.error(`[${new Date().toISOString()}] [lens-member] idle pg client error:`, error.message));
 
     const keypair = dryRun ? null : Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync(values.keypair, 'utf8'))));

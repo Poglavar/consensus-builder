@@ -9,7 +9,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
-import pg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import { Keypair, PublicKey } from '@solana/web3.js';
 import {
     classifySupportExecution, eligibleSupportProposals, proposalAccount, selectSupportAction
@@ -158,10 +158,7 @@ async function main() {
     const apiBase = (args.api || process.env.AGENT_API_BASE || `http://localhost:${process.env.API_PORT || 3000}`).replace(/\/$/, '');
     const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
     const personas = loadPersonas(args.persona);
-    const pool = args.live ? new pg.Pool({
-        host: process.env.PGHOST, port: process.env.PGPORT, user: process.env.PGUSER,
-        password: process.env.PGPASSWORD, database: process.env.PGDATABASE
-    }) : null;
+    const pool = args.live ? createPool() : null;
     // Reads (existing support) happen in dry-run too; only --live signs anything.
     const connection = createRpcConnection(rpcUrl, 'confirmed');
     const report = [];

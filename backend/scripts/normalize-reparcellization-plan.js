@@ -20,12 +20,11 @@
 //   node scripts/normalize-reparcellization-plan.js --proposal 633
 //   node scripts/normalize-reparcellization-plan.js --proposal 633 --apply
 
-import pkg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import 'dotenv/config';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { Pool } = pkg;
 const turf = require('@turf/turf');
 const topo = require('../../frontend/js/proposals/plot-topology.js');
 
@@ -187,7 +186,7 @@ async function main() {
         console.log('Usage: node scripts/normalize-reparcellization-plan.js --proposal <id> [--apply]');
         process.exit(1);
     }
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    const pool = createPool();
     try {
         const { rows } = await pool.query('SELECT id, reparcellization FROM proposal WHERE id = $1', [args.proposalId]);
         if (!rows.length) throw new Error(`proposal ${args.proposalId} not found`);

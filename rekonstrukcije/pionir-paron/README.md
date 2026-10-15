@@ -58,7 +58,7 @@ Pergošićeva A1–A4 and Selska–Drniška remain building-only because the ava
 [`circulation-audit.json`](circulation-audit.json) records every candidate and rejection reason. Rebuild the companion proposals, canonical exports, plan manifests and audit with:
 
 ```sh
-PGHOST=localhost node backend/scripts/seed-pionir-observed-circulation.mjs --apply --export
+node backend/scripts/seed-pionir-observed-circulation.mjs --apply --export
 ```
 
 For environment migration, build a checksum-protected bundle from the canonical archives and inspect the target before applying it. The importer resolves proposal row ids independently in every database and writes all proposals and named plans in one transaction:

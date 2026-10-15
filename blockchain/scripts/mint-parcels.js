@@ -1380,13 +1380,8 @@ async function runMintParcels(cityConfig, argv = process.argv.slice(2)) {
         }
     }
 
-    const dbClient = new Client({
-        host: process.env.PGHOST,
-        port: Number(process.env.PGPORT),
-        user: process.env.PGUSER,
-        password: process.env.PGPASSWORD,
-        database: process.env.PGDATABASE,
-    });
+    if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
+    const dbClient = new Client({ connectionString: process.env.DATABASE_URL });
 
     await dbClient.connect();
 

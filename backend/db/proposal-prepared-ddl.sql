@@ -6,7 +6,7 @@
 -- names its artifact in proposal_data.preparation; rows here are never updated.
 --
 -- Applied by deploy-backend.sh (DDL_FILES) as geo_user; locally:
---   PGHOST=127.0.0.1 psql -U zagreb_user -d geodata -c 'SET ROLE geo_user' -f backend/db/proposal-prepared-ddl.sql
+--   psql "$DATABASE_URL" -c 'SET ROLE geo_user' -f backend/db/proposal-prepared-ddl.sql   (DATABASE_URL from backend/.env)
 -- Idempotent; safe to re-run.
 
 CREATE SCHEMA IF NOT EXISTS consensus;

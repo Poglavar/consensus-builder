@@ -34,7 +34,7 @@ The last two values use `DGU footprint × GDI height / 3 m`. They are diagnostic
 Rebuild and store all configured historical observed proposals with:
 
 ```sh
-PGHOST=localhost node backend/scripts/seed-pionir-observed-proposals.mjs --apply --export
+node backend/scripts/seed-pionir-observed-proposals.mjs --apply --export
 ```
 
 The export performs an export/import/export identity check before writing each canonical GeoJSON.

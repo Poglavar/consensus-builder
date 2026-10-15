@@ -2,7 +2,7 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import pg from 'pg';
+import { createPool, describeDatabase, isLocalDatabase } from '../db/connection.cjs';
 import { attachBuildingFloorPlans } from '../proposals/building-floor-plans.js';
 import { saveFloorModel, buildingSourceId } from '../buildings/floor-models.js';
 
@@ -30,10 +30,11 @@ export function parseArgs(args) {
 }
 
 function assertTarget(options, env) {
-    if (!['localhost', '127.0.0.1', '::1'].includes(env.PGHOST) || env.PGDATABASE !== 'geodata') {
+    const db = describeDatabase(env);
+    if (!isLocalDatabase(env) || db.database !== 'geodata') {
         throw new Error('Connect to geodata over localhost, directly or through the configured production tunnel.');
     }
-    if (options.target === 'local' && (Number(env.PGPORT || 5432) !== 5432 || env.NODE_ENV === 'production')) {
+    if (options.target === 'local' && (db.port !== 5432 || env.NODE_ENV === 'production')) {
         throw new Error('Local imports require local geodata on port 5432 outside NODE_ENV=production.');
     }
     if (options.target === 'production' && env.NODE_ENV !== 'production') {
@@ -101,7 +102,7 @@ async function main() {
     const options = parseArgs(args);
     assertTarget(options, process.env);
     const input = options.archive || options.models ? JSON.parse(await readFile(resolve(options.archive || options.models), 'utf8')) : null;
-    const pool = new pg.Pool();
+    const pool = createPool();
     const client = await pool.connect();
     try {
         await client.query('BEGIN');

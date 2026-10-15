@@ -13,7 +13,7 @@
 // the -v3 plans by name-plans.mjs.
 //
 //   node fit-streets.mjs --capture --app <app url> --backend <api>         # the app's own footprints → data/street-footprints.json (agent-browser)
-//   PGHOST=127.0.0.1 node fit-streets.mjs --compute --backend <api>        # → data/streets-fit.json (local PostGIS)
+//   node fit-streets.mjs --compute --backend <api>                         # → data/streets-fit.json (local PostGIS)
 //   node fit-streets.mjs --backend <api> --origin <app> [--apply]          # publish the -v3 records
 import os from 'node:os';
 import path from 'node:path';
@@ -48,7 +48,7 @@ const { values } = parseArgs({ options: {
 if (values.help || !values.backend) {
     console.log(`Usage:
   node fit-streets.mjs --capture --app <app url> --backend <api>     # needs agent-browser and a running app
-  PGHOST=127.0.0.1 node fit-streets.mjs --compute --backend <api>
+  node fit-streets.mjs --compute --backend <api>
   node fit-streets.mjs --backend <api> --origin <app> [--apply]
 --capture and --compute read records from --backend and change nothing. The publish step is a dry run
 unless --apply; existing -v3 records are left alone.`);
@@ -107,8 +107,8 @@ async function capture() {
 async function compute() {
     const { footprints } = JSON.parse(await readFile(FOOTPRINT_FILE, 'utf8'));
     require('dotenv').config({ path: new URL('../../backend/.env', import.meta.url).pathname, quiet: true });
-    const { Pool } = require('pg');
-    const pool = new Pool({ max: 1, ...(process.env.DATABASE_URL ? { connectionString: process.env.DATABASE_URL } : {}) });
+    const { createPool } = require('./db/connection.cjs');
+    const pool = createPool({ max: 1 });
     const db = await pool.connect();
     const q = (sql, params) => db.query(sql, params);
     try {

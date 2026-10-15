@@ -11,7 +11,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
-import pg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import { Keypair, PublicKey } from '@solana/web3.js';
 import {
     assertAttestedLiveAllowed, attestedCasePlan, attestedCaseSteps, canonicalCaseConfig, canonicalProposalBody,
@@ -201,10 +201,7 @@ async function main() {
         return;
     }
 
-    const pool = new pg.Pool({
-        host: process.env.PGHOST, port: process.env.PGPORT, user: process.env.PGUSER,
-        password: process.env.PGPASSWORD, database: process.env.PGDATABASE
-    });
+    const pool = createPool();
     const connection = createRpcConnection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
     const proposerSigner = loadKeypair(proposer);
     const supporterSigner = loadKeypair(supporter);

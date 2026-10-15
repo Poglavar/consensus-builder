@@ -5,6 +5,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
+const { createPool } = require('../db/connection.cjs');
 
 const BUNDLE_SCHEMA = 'consensus-builder.pionir-reconstruction-bundle.v1';
 const ARCHIVE_ROOT = path.resolve(__dirname, '../../rekonstrukcije/pionir-paron');
@@ -349,8 +350,7 @@ async function readBundle(bundlePath) {
 async function runDatabaseAction(args) {
     assertRuntimeTarget(args);
     const bundle = await readBundle(args.bundlePath);
-    const { Pool } = require('pg');
-    const pool = new Pool();
+    const pool = createPool();
     try {
         const proposalTable = await resolveProposalTable(pool);
         const before = await inspectBundle(pool, proposalTable, bundle);

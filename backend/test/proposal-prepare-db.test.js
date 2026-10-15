@@ -2,7 +2,7 @@
 // the server builds a street's land, binds it to real parcels and signs the artifact without storing
 // it; the publication stores the artifact beside a row that carries exactly that land, site (same
 // on-chain site hash), binding and declaration. A street published unprepared is refused. Run with
-// RUN_DB_TESTS=1 (and PG* pointing at the local database).
+// RUN_DB_TESTS=1 (and DATABASE_URL pointing at the local database).
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import express from 'express';
@@ -30,14 +30,8 @@ live('prepare → publish on the real cadastre (rolled back)', () => {
     beforeAll(async () => {
         // this server's signing key (proposals/prepare.js), whatever the local .env holds
         process.env.PREPARE_SIGNING_KEY = 'c3'.repeat(32);
-        const { default: pg } = await import('pg');
-        client = new pg.Client({
-            host: process.env.PGHOST || 'localhost',
-            port: Number(process.env.PGPORT) || 5432,
-            user: process.env.PGUSER,
-            password: process.env.PGPASSWORD,
-            database: process.env.PGDATABASE || 'geodata'
-        });
+        const { createClient } = await import('../db/connection.cjs');
+        client = createClient();
         await client.connect();
         await client.query('BEGIN');
         // Every statement of both routes runs on this one transaction.

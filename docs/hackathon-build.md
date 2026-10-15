@@ -84,11 +84,7 @@ The API expects PostgreSQL/PostGIS and the existing Urban Game Theory datasets. 
 `backend/.env` containing at least:
 
 ```dotenv
-PGHOST=localhost
-PGPORT=5432
-PGUSER=consensus
-PGPASSWORD=replace-me
-PGDATABASE=consensus
+DATABASE_URL=postgres://consensus:replace-me@localhost:5432/consensus
 API_PORT=3000
 ENABLE_DEV_CORS=true
 ```
@@ -119,7 +115,7 @@ Agent planning can be deterministic and does not require an Anthropic key:
 
 ```sh
 cd backend
-PGHOST=localhost node agents/run.mjs --dry-run
+node agents/run.mjs --dry-run
 node agents/support-run.mjs --dry-run --api https://api.urbangametheory.xyz
 npm run demo:x402 -- --dry-run --url https://api.urbangametheory.xyz
 ```
