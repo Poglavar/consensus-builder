@@ -228,6 +228,13 @@ function refuseForeignProposal(cityId) {
         { city: label(foreignCity), current: label(manager.getCurrentCityId()) })), { code: 'proposal-in-other-city', cityId: foreignCity });
 }
 
+function corridorOsmFormApi() {
+    const root = typeof window !== 'undefined' ? window : globalThis;
+    if (root && root.__corridorOsmForm) return root.__corridorOsmForm;
+    if (typeof require === 'function') return require('../corridor-osm-form.js');
+    throw new Error('Cannot load proposal: the corridor record form is unavailable.');
+}
+
 function proposalRecordForPersistence(record) {
     if (!record || typeof record !== 'object') return record;
     const root = typeof window !== 'undefined' ? window : globalThis;
@@ -1547,6 +1554,9 @@ const proposalStorage = {
             }
             delete rp.parentFeatures;
             delete rp.childFeatures;
+            // A loaded road is its record (roads.md §11); what runs is the view decoded from it:
+            // the stretch and cross-section fields every reader consumes.
+            if (rp.definition && typeof rp.definition === 'object') rp.definition = corridorOsmFormApi().toView(rp.definition);
             proposal.roadProposal = rp;
         }
 

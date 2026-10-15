@@ -318,12 +318,22 @@ describe('corridor proposal adapter', () => {
         }
     };
 
-    it('round-trips canonical centerline, profile, tunnels, and width exactly', () => {
+    it('serializes the road as its record (roads.md §11), which reads back as the same centerline, profile, tunnels and width', () => {
         expect(corridorAdapter.canEdit(proposal)).toBe(true);
         const draft = draftFor(corridorAdapter, proposal);
         const replacement = corridorAdapter.serializeProposal(draft);
+        const osmForm = require('../../frontend/js/corridor-osm-form.js');
+        const P = require('../../frontend/js/corridor-profile.js');
 
-        expect(replacement.roadProposal.definition).toEqual(proposal.roadProposal.definition);
+        const record = replacement.roadProposal.definition;
+        osmForm.VIEW_FIELDS.forEach(field => expect(record[field], field).toBeUndefined());
+        expect(record.osm.elements.filter(element => element.type === 'way')).toHaveLength(1);
+        expect(record).toMatchObject({ tunnels: proposal.roadProposal.definition.tunnels, polygon: proposal.roadProposal.definition.polygon, metadata: proposal.roadProposal.definition.metadata });
+        const view = osmForm.toView(record);
+        expect(view.points).toEqual(proposal.roadProposal.definition.points);
+        expect(view.segmentIds).toEqual(['segment-a']);
+        expect(JSON.stringify(P.normalizeCorridorProfile(view.profile))).toBe(JSON.stringify(P.normalizeCorridorProfile(proposal.roadProposal.definition.profile)));
+        expect(view.width).toBe(12);
         expect(replacement.sourceProposalId).toBeUndefined();
         expect(replacement.proposalId).toBeUndefined();
     });

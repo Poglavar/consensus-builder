@@ -141,7 +141,7 @@ describe('atomic corridor authoring plan', () => {
         expect({ through, branch }).toEqual(originals);
     });
 
-    it('writes the OSM form onto the new record and every joined record (roads.md §11)', () => {
+    it('authors views that the store records as OSM documents, the joined road as two ways sharing the node (roads.md §11)', () => {
         const osmForm = require('../../frontend/js/corridor-osm-form.js');
         const through = corridor('through', [[P(0, 0), P(0, 10)]]);
         const branch = corridor(null, [[P(5, 5), P(0, 5)]]);
@@ -149,11 +149,13 @@ describe('atomic corridor authoring plan', () => {
         branch.roadProposal.definition.profile = { strips: [{ type: 'driving', width: 3 }] };
         const result = plan(branch, [through]);
         [result.proposal.roadProposal.definition, result.existingChanges[0].definition].forEach(definition => {
-            expect(definition.osm.elements.some(element => element.type === 'way')).toBe(true);
-            expect(osmForm.osmFormAgreement(definition)).toEqual({ ok: true, checked: true });
+            // what the editor hands on is the view; nothing carries a form until it is stored
+            expect(definition.osm).toBeUndefined();
+            const record = osmForm.toRecord(definition);
+            expect(record.osm.elements.some(element => element.type === 'way')).toBe(true);
+            expect(osmForm.toView(record).points).toEqual(definition.points);
         });
-        // The joined road was split at the node: two ways sharing it.
-        const joined = result.existingChanges[0].definition.osm.elements.filter(element => element.type === 'way');
+        const joined = osmForm.toRecord(result.existingChanges[0].definition).osm.elements.filter(element => element.type === 'way');
         expect(joined).toHaveLength(2);
         expect(joined[0].nodes[joined[0].nodes.length - 1]).toBe(joined[1].nodes[0]);
     });

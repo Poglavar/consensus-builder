@@ -3,6 +3,10 @@
 // proposal id `<base id>-v<version>`. Pure: record and change in, record out. The cadastral declaration is
 // left to the target backend, which binds the new site.
 
+import { createRequire } from 'node:module';
+
+const osmForm = () => createRequire(import.meta.url)('../../../frontend/js/corridor-osm-form.js');
+
 export const REPAIR_VERSION = 'borovje-cadastral-snap-v1';
 export const VERSION_SUFFIX = '-v2';
 
@@ -36,7 +40,10 @@ export function revisedRecord(original, change, { version = 2, repair = REPAIR_V
         record.site = multi(change.pool);
     }
     if (change.polygon) {
-        const definition = record.roadProposal.definition;
+        // The row holds the record (roads.md §11); the revision edits its view and the caller
+        // stores it again through the serializer, which writes the record.
+        const definition = osmForm().toView(record.roadProposal.definition);
+        record.roadProposal.definition = definition;
         definition.polygon = change.polygon;
         if (change.segments) {
             // points and segments are the same polylines (road-drawing.js keeps them so); a segment added

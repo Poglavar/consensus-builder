@@ -1,7 +1,7 @@
 // Tests for frontend/js/corridor-osm-form.js: the road record as an OSM document (roads.md §11).
 // A cross-section round-trips through standard OSM tags exactly, a definition becomes ways sharing
-// nodes and comes back as the same stretches, and the agreement guard catches a record whose cached
-// fields were edited behind its form's back.
+// nodes and comes back as the same stretches, and a definition is stored as its form alone
+// (toRecord) and runs as the stretch fields decoded from it (toView).
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -139,33 +139,76 @@ describe('definition <-> form', () => {
     });
 });
 
-describe('agreement between a record and its form', () => {
-    it('claims nothing for a record without a form, and agrees with the form it was given', () => {
-        expect(form.osmFormAgreement(twoStretches())).toEqual({ ok: true, checked: false });
-        const definition = form.withOsmForm(twoStretches());
-        expect(definition.osm.elements.length).toBe(5);
-        expect(form.osmFormAgreement(definition)).toEqual({ ok: true, checked: true });
+describe('record <-> view (step two: the form is stored, the stretch fields run)', () => {
+    const VIEW = form.VIEW_FIELDS;
+
+    it('stores a drawn road as its form alone and reads the same stretches back', () => {
+        const view = { ...twoStretches(), tunnels: [{ edgeKey: 'k' }], junctions: [{ id: 'j1' }], metadata: { highway: 'residential' }, polygon: { type: 'Polygon', coordinates: [] } };
+        const record = form.toRecord(view);
+        expect(form.isRecord(record)).toBe(true);
+        VIEW.forEach(field => expect(record[field], field).toBeUndefined());
+        expect(record.osm.elements.filter(element => element.type === 'way')).toHaveLength(2);
+        expect(record).toMatchObject({ tunnels: [{ edgeKey: 'k' }], junctions: [{ id: 'j1' }], metadata: { highway: 'residential' }, polygon: { type: 'Polygon' } });
+        expect(record.osm.elements.find(element => element.type === 'way').tags.highway).toBe('residential');
+
+        const back = form.toView(record);
+        expect(back.osm).toBeUndefined();
+        expect(back.points).toEqual([[A, B], [B, C]]); // the very numbers, not rounded
+        expect(back.segments).toBe(back.points);
+        expect(back.segmentIds).toEqual(['s1', 's2']);
+        expect(same(back.profile, strips(26)) && same(back.segmentProfiles.s2, strips(10))).toBe(true);
+        expect(back.width).toBeCloseTo(P.corridorProfileWidth(strips(26)), 3);
+        expect(back).toMatchObject({ tunnels: [{ edgeKey: 'k' }], junctions: [{ id: 'j1' }], polygon: { type: 'Polygon' } });
     });
 
-    it('refuses a record whose stretches, levels or cross-sections were edited behind the form', () => {
-        const moved = form.withOsmForm(twoStretches());
-        moved.points[1][1] = { lat: C.lat + 0.001, lng: C.lng };
-        moved.segments = moved.points;
-        expect(form.osmFormAgreement(moved)).toMatchObject({ ok: false, reason: 'stretch 2, point 2 differs' });
+    it('is idempotent in both directions and leaves what is not a drawn road alone', () => {
+        const record = form.toRecord(twoStretches());
+        expect(form.toRecord(record)).toEqual(record);
+        const view = form.toView(record);
+        expect(form.toView(view)).toBe(view);
+        const designation = { polygon: { type: 'Polygon', coordinates: [] }, kind: 'road', width: 12 };
+        expect(form.toRecord(designation)).toEqual(designation);
+        expect(form.toView(designation)).toBe(designation);
+        expect(form.isRecord(designation)).toBe(false);
+    });
 
-        const relaned = form.withOsmForm(twoStretches());
-        relaned.segmentProfiles.s2 = strips(18);
-        expect(form.osmFormAgreement(relaned)).toMatchObject({ ok: false, reason: 'stretch 2 cross-section differs' });
+    it('keeps a stretch without an id nameless, and names one only when its own cross-section needs a key', () => {
+        const nameless = form.toView(form.toRecord({ points: [[A, B], [B, C]], segments: [[A, B], [B, C]], profile: strips(10) }));
+        expect(nameless.segmentIds).toBeUndefined();
+        expect(nameless.segmentProfiles).toBeUndefined();
+        const elements = form.toRecord({ points: [[A, B], [B, C]], segments: [[A, B], [B, C]], segmentIds: [null, 'wide'], profile: strips(10), segmentProfiles: { wide: strips(26) } }).osm.elements;
+        expect(elements.filter(element => element.type === 'way').map(way => way.tags['cb:segment'])).toEqual([undefined, 'wide']);
+        const imported = form.definitionFromOsmForm({ elements: elements.map(element => (element.type === 'way' ? { ...element, tags: { ...element.tags, 'cb:segment': undefined } } : element)) });
+        expect(imported.segmentIds).toEqual([null, 'way-2']);
+        expect(same(imported.segmentProfiles['way-2'], strips(26))).toBe(true);
+    });
 
-        const lowered = form.withOsmForm(twoStretches());
-        lowered.points[0][1] = { ...B, level: -2 };
-        lowered.segments = lowered.points;
-        expect(form.osmFormAgreement(lowered)).toMatchObject({ ok: false, reason: 'stretch 1, point 2 level differs' });
+    it('records a legacy width-only road through the cross-section it implies, at the millimetre', () => {
+        const legacy = { points: [A, B, C], width: 12, sidewalkWidth: 2, metadata: { isTrack: false } };
+        const view = form.toView(form.toRecord(legacy));
+        expect(view.points).toEqual([[A, B, C]]);
+        expect(same(view.profile, P.corridorProfileOf(legacy))).toBe(true);
+        expect(view.sidewalkWidth).toBeUndefined();
+        const odd = { ...twoStretches(), profile: { strips: [{ type: 'driving', width: 6.354701782356649, direction: 'both' }] }, segmentProfiles: {} };
+        const back = form.toView(form.toRecord(odd));
+        expect(back.profile.strips[0].width).toBe(6.355);
+        expect(back.width).toBe(6.355);
+    });
 
-        const split = form.withOsmForm(twoStretches());
-        split.points = [[A, B]];
-        split.segments = split.points;
-        split.segmentIds = ['s1'];
-        expect(form.osmFormAgreement(split).ok).toBe(false);
+    it('carries a level and a measured height on the node, and reads both back', () => {
+        const measured = { points: [[A, { ...B, elevationM: 112.4 }, C]], segments: [[A, { ...B, elevationM: 112.4 }, C]], profile: strips(10) };
+        const record = form.toRecord(measured);
+        const node = record.osm.elements.find(element => element.type === 'node' && element.tags && element.tags.ele);
+        expect(node.tags).toEqual({ 'cb:level': '-1', ele: '112.4' });
+        expect(form.toView(record).points[0][1]).toEqual({ ...B, elevationM: 112.4 });
+    });
+
+    it('refuses to record a road its form would read back differently', () => {
+        // no cross-section at all: the form would read the class default back
+        expect(() => form.toRecord({ points: [[A, B]], segments: [[A, B]] })).toThrow(/cross-section differs/);
+        expect(form.disagreement(twoStretches(), form.osmFormOf({ ...twoStretches(), segmentProfiles: { s2: strips(18) } }))).toBe('stretch 2 cross-section differs');
+        expect(form.disagreement(twoStretches(), form.osmFormOf({ ...twoStretches(), points: [[A, { ...B, level: -2 }], [B, C]], segments: [[A, { ...B, level: -2 }], [B, C]] }))).toBe('stretch 1, point 2 level differs');
+        expect(form.disagreement(twoStretches(), form.osmFormOf({ ...twoStretches(), points: [[A, B]], segments: [[A, B]], segmentIds: ['s1'] }))).toMatch(/stretches/);
+        expect(form.disagreement(twoStretches(), form.osmFormOf(twoStretches()))).toBeNull();
     });
 });

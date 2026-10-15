@@ -1490,9 +1490,9 @@
                         data-i18n-key="panel.road.crossSectionButton">Cross-section</span><span
                         class="road-cross-section-width"></span></button>
                 <button type="button" id="importRoadsButton" class="btn btn-sm"
-                    onclick="openCorridorImportPicker()"><i class="fas fa-file-import" aria-hidden="true"></i><span
+                    onclick="openCorridorImportChooser()"><i class="fas fa-file-import" aria-hidden="true"></i><span
                         data-i18n-key="panel.road.importButton">Import…</span></button>
-                <input type="file" id="corridorImportInput" accept=".xodr" hidden>
+                <input type="file" id="corridorImportInput" accept=".osm,.json,.xodr" hidden>
                 <!-- In the header's flex row, not absolutely positioned over it: out of flow, the header
                      could not reserve their width and the Cross-section button slid underneath them. -->
                 <div class="road-panel-actions">
@@ -1872,6 +1872,11 @@
             'js/proposals/state.js',
             'js/proposals/lifecycle.js',
             'js/proposals/parcel-id.js?v=20261008-geometry-reference',
+            // The road record form and its lane vocabulary load before the proposal store: a stored
+            // road is decoded through them at load. corridor-profile.js is a bare classic script, so
+            // it stays outside the bundles.
+            'js/corridor-profile.js',
+            'js/corridor-osm-form.js',
             // bundle:start proposal-geometry
             'js/proposals/footprint-parts.js',
             'js/proposals/plan-order.js',
@@ -2091,9 +2096,8 @@
             'js/corridor-junction.js',
             'js/corridor-junction-paint.js',
             'js/corridor-transition.js',
-            'js/corridor-profile.js',
-            'js/corridor-osm-form.js',
             'js/corridor-import-opendrive.js',
+            'js/corridor-import-osm.js',
             'js/corridor-import.js',
             'js/corridor-footprint.js',
             'js/corridor-terrain-formation.js',

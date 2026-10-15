@@ -25,6 +25,7 @@ const require = createRequire(import.meta.url);
 
 globalThis.turf = require('@turf/turf');
 globalThis.stableStringify = require('../../frontend/js/shared-utils.js').stableStringify;
+const corridorOsmForm = require('../../frontend/js/corridor-osm-form.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
 const ownershipFlowApi = require('../../frontend/js/proposals/ownership-flow.js');
 const sharingApi = require('../../frontend/js/proposals/sharing.js');
@@ -100,7 +101,9 @@ function baseStretchId(segmentId, index) {
 }
 
 function definitionEntry(row) {
-    const definition = clone(row.road_proposal?.definition || {});
+    // The row holds the record (roads.md §11); the repair works on its decoded view and the
+    // write below stores the record again.
+    const definition = corridorOsmForm.toView(clone(row.road_proposal?.definition || {}));
     const segments = corridorCenterline(definition);
     const ids = Array.isArray(definition.segmentIds) ? definition.segmentIds.slice(0, segments.length) : [];
     while (ids.length < segments.length) ids.push(null);
@@ -402,6 +405,11 @@ function describeRepair(result) {
 }
 
 async function updateProposal(client, change) {
+    // The row holds the record (roads.md §11): the repaired view is encoded before it is stored.
+    if (change.roadProposal?.definition) change.roadProposal = { ...change.roadProposal, definition: corridorOsmForm.toRecord(change.roadProposal.definition) };
+    if (change.proposalData?.roadProposal?.definition) {
+        change.proposalData = { ...change.proposalData, roadProposal: { ...change.proposalData.roadProposal, definition: corridorOsmForm.toRecord(change.proposalData.roadProposal.definition) } };
+    }
     await client.query(
         `UPDATE proposal
          SET proposal_id = $1,

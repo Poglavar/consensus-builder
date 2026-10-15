@@ -6,6 +6,7 @@ import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { createJsonBodyValidator, validators } from '../utils/request-validation.js';
+const corridorOsmForm = createRequire(import.meta.url)('../../frontend/js/corridor-osm-form.js');
 import { defaultThumbnailQueue } from '../thumbnails/thumbnail-queue.js';
 import { publicApiBaseUrl } from '../utils/public-base-url.js';
 import { imageFileExists } from '../utils/image-store.js';
@@ -743,6 +744,19 @@ export function createProposalCreateHandler(pool) {
             }
             const { validated, type, cadastreParcelIds, ownershipFlow } = precheck.value;
             const proposal = stripLocalProposalState(req.body);
+            // A corridor is stored as its record (roads.md §11: the OSM document, no stretch
+            // fields), whether the body spelled it that way or as stretches. The validated road
+            // proposal is the same object, so it sees the record too.
+            if (proposal.roadProposal?.definition && typeof proposal.roadProposal.definition === 'object') {
+                try {
+                    proposal.roadProposal.definition = corridorOsmForm.toRecord(proposal.roadProposal.definition);
+                } catch (error) {
+                    return res.status(400).json({ code: 'invalid-site', error: `The corridor cannot be recorded: ${String(error.message).replace(/^corridor-osm-form: /, '')}.` });
+                }
+                if (validated.roadProposal && validated.roadProposal !== proposal.roadProposal) {
+                    validated.roadProposal.definition = proposal.roadProposal.definition;
+                }
+            }
             if (!req.chainMirror && Object.prototype.hasOwnProperty.call(req.body || {}, 'approvalConfig')) {
                 proposal.approvalConfig = validated.approvalConfig;
             }

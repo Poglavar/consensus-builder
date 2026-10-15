@@ -986,7 +986,8 @@ button.cb-link {
     outline-offset: 2px;
 }
 
-.cb-tile:disabled {
+.cb-tile:disabled,
+.cb-tile[aria-disabled="true"] {
     opacity: 0.5;
     cursor: not-allowed;
 }

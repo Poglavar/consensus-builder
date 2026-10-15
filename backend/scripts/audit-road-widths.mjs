@@ -26,6 +26,7 @@ const require = createRequire(import.meta.url);
 // metric-frame.js reads the proj4 global first, so the backend's copy serves it from any cwd.
 globalThis.proj4 = globalThis.proj4 || proj4;
 const { corridorSegmentEntries, corridorProfileWidth } = require('../../frontend/js/corridor-profile.js');
+const corridorOsmForm = require('../../frontend/js/corridor-osm-form.js');
 const { frameFor, geodesicDistance } = require('../../frontend/js/metric-frame.js');
 const { acquiringSpans } = require('../../frontend/js/proposals/corridor-levels.js');
 
@@ -261,8 +262,10 @@ export function measureRecord(row) {
         status: null
     };
     const roadProposal = parseJson(row.road_proposal);
-    const definition = roadProposal && roadProposal.definition;
-    if (!definition || typeof definition !== 'object') return { ...record, status: 'no-definition' };
+    const stored = roadProposal && roadProposal.definition;
+    if (!stored || typeof stored !== 'object') return { ...record, status: 'no-definition' };
+    // The row holds the record (roads.md §11); the stretches are read from its decoded view.
+    const definition = corridorOsmForm.toView(stored);
 
     const polygon = readPolygon(definition.polygon);
     record.polygon = polygon.kind;

@@ -110,6 +110,12 @@
     //
     // Government-plan road features are authored, but live under roadProposal.definition.features
     // rather than the runtime-sounding childFeatures field.
+    function corridorOsmForm() {
+        if (global.__corridorOsmForm) return global.__corridorOsmForm;
+        if (typeof require === 'function') return require('../corridor-osm-form.js');
+        throw new Error('Cannot project authored proposal: the corridor record form is unavailable.');
+    }
+
     function stripDerivedRecordData(record) {
         if (!record || typeof record !== 'object') return record;
         const out = { ...record };
@@ -142,6 +148,9 @@
                 delete clean.definition.surfaceFootprint;
                 delete clean.definition.demolishedBuildings;
                 delete clean.definition.demolitionScanned;
+                // The authored road is its record (roads.md §11): the OSM document, encoded here
+                // from the stretch fields the editor works on, which are not stored.
+                clean.definition = corridorOsmForm().toRecord(clean.definition);
             }
             delete clean.childFeatures;
             out[key] = clean;

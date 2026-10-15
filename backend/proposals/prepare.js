@@ -97,15 +97,27 @@ function signatureMatches(expected, given) {
 export function isConstructedCorridor(record) {
     const definition = record?.roadProposal?.definition;
     if (!definition || typeof definition !== 'object') return false;
-    return corridorProfile.corridorCenterlineOf(definition).length > 0;
+    return corridorProfile.corridorCenterlineOf(corridorOsmForm.toView(definition)).length > 0;
 }
 
-// The authored part of a corridor definition: what its land is built from.
+// The authored part of a corridor definition, as the record stores it (roads.md §11: the OSM
+// document, no stretch fields): what preparation digests and publication must present again.
 export function authoredDefinition(definition) {
     const copy = JSON.parse(JSON.stringify(definition || {}));
     for (const field of DERIVED_DEFINITION_FIELDS) delete copy[field];
     if (copy.metadata && typeof copy.metadata === 'object') delete copy.metadata.ownershipAndAcquisitionStats;
-    return copy;
+    return corridorOsmForm.toRecord(copy);
+}
+
+// The same, decoded into the stretch and cross-section fields the land is built from.
+export const authoredView = definition => corridorOsmForm.toView(authoredDefinition(definition));
+
+function corridorRecordOf(definition) {
+    try {
+        return authoredDefinition(definition);
+    } catch (error) {
+        throw preparationError(BINDING_CODES.invalidSite, `The corridor cannot be recorded: ${String(error.message).replace(/^corridor-osm-form: /, '')}.`, 400);
+    }
 }
 
 // Everything about a record that decides its site and binding. Preparation records its digest;
@@ -167,22 +179,19 @@ export async function prepareProposal(db, record, { city = null, parcelSourceId 
         const siteError = validateSiteGeometry(draft.site);
         if (siteError) throw preparationError(BINDING_CODES.invalidSite, siteError, 400);
     }
+    // The record is its OSM form (roads.md §11); a body that still spells the road as stretch
+    // fields is taken as the same record, and a road the form cannot carry is not prepared.
+    const recorded = isConstructedCorridor(draft) ? corridorRecordOf(draft.roadProposal.definition) : null;
     const inputs = geometricInputsDigest(draft);
 
     let corridor = null;
     let site = draft.site ? normalizeSiteGeometry(draft.site) : null;
-    if (isConstructedCorridor(draft)) {
+    if (recorded) {
         // The server builds the corridor's land from its lanes; a client polygon is never used.
-        const definition = authoredDefinition(draft.roadProposal.definition);
-        // The record is its OSM form (roads.md §11); the stretch fields are a cache of it. A record
-        // whose two disagree was edited behind the form's back and is not prepared.
-        const agreement = corridorOsmForm.osmFormAgreement(definition);
-        if (!agreement.ok) {
-            throw preparationError(BINDING_CODES.invalidSite, `The corridor's OSM form and its stretches disagree: ${agreement.reason}.`, 400);
-        }
+        const definition = recorded;
         let materialized;
         try {
-            materialized = corridorFootprint.materialize(definition);
+            materialized = corridorFootprint.materialize(corridorOsmForm.toView(definition));
         } catch (error) {
             throw preparationError(BINDING_CODES.invalidSite, `The corridor cannot be built: ${String(error.message).replace(/^(corridor-footprint|metric-frame): /, '')}.`, 400);
         }
@@ -318,7 +327,9 @@ export function verifyPreparation(body, { city = null, signingKey } = {}) {
     if ((artifact.parcelSourceId || null) !== (body.parcelSourceId || null)) throw mismatch('parcel source');
     const tolerance = parseTolerance(body.toleranceM);
     if (!tolerance.ok || tolerance.value !== artifact.toleranceM) throw mismatch('tolerance');
-    if (geometricInputsDigest(body) !== artifact.inputs) throw mismatch('geometry');
+    let inputs = null;
+    try { inputs = geometricInputsDigest(body); } catch (_) { inputs = null; } // a road the form cannot carry is not the prepared one
+    if (inputs !== artifact.inputs) throw mismatch('geometry');
     const declared = (Array.isArray(body.cadastreParcelIds) ? body.cadastreParcelIds.map(String) : []).sort();
     if (stableStringify(declared) !== stableStringify([...(artifact.cadastreParcelIds || [])].sort())) throw mismatch('parcel declaration');
 
@@ -332,9 +343,9 @@ export function verifyPreparation(body, { city = null, signingKey } = {}) {
         // authoritative — it is never replaced after minting.
         const provenance = artifact.corridor.constructionFrame;
         const frame = metricFrame.frameFromProvenance(provenance);
-        const current = corridorFootprint.materialize(authoredDefinition(definition), { frame }).constructionFrame;
+        const current = corridorFootprint.materialize(authoredView(definition), { frame }).constructionFrame;
         if (current.algorithm === provenance.algorithm && current.proj4 === provenance.proj4 && current.turf === provenance.turf) {
-            const again = corridorFootprint.materialize(authoredDefinition(definition), { frame }).polygon;
+            const again = corridorFootprint.materialize(authoredView(definition), { frame }).polygon;
             if (stableStringify(again) !== stableStringify(artifact.corridor.polygon)) {
                 const { separationM, sameShape } = agreement(again, artifact.corridor.polygon, frame);
                 if (!sameShape || separationM > AGREEMENT_M) {

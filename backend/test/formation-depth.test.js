@@ -14,6 +14,33 @@ beforeAll(() => {
 const BASE = 'HR-335550-1791/25';
 const OTHER = 'HR-335550-1804/1';
 
+describe('the authored road is its record (roads.md §11)', () => {
+    const A = { lat: 45.8001, lng: 15.9701 };
+    const B = { lat: 45.8004, lng: 15.9712 };
+    const P = require('../../frontend/js/corridor-profile.js');
+    const osmForm = require('../../frontend/js/corridor-osm-form.js');
+    const profile = { strips: P.CORRIDOR_PROFILE_PRESETS[10].map(lane => ({ ...lane })) };
+
+    it('projects the stretch fields the editor works on into the OSM document, and nothing else about the road changes', () => {
+        const record = records.stripDerivedRecordData({
+            goal: 'road-track', cadastreParcelIds: [BASE], applied: true,
+            roadProposal: { definition: { points: [[A, B]], segments: [[A, B]], profile, width: 10, tunnels: [], metadata: { isRoad: true }, polygon: { type: 'Polygon', coordinates: [] }, surfaceFootprint: {}, demolishedBuildings: [] } }
+        });
+        const definition = record.roadProposal.definition;
+        osmForm.VIEW_FIELDS.forEach(field => expect(definition[field], field).toBeUndefined());
+        expect(definition.osm.elements.filter(element => element.type === 'way')).toHaveLength(1);
+        expect(definition).toMatchObject({ tunnels: [], metadata: { isRoad: true }, polygon: { type: 'Polygon' } });
+        expect(definition.surfaceFootprint).toBeUndefined();
+        expect(osmForm.toView(definition).points).toEqual([[A, B]]);
+        expect(records.stripDerivedRecordData(record).roadProposal.definition).toEqual(definition);
+    });
+
+    it('leaves a designation (land, no centre line) as it is', () => {
+        const designation = { kind: 'road', polygon: { type: 'Polygon', coordinates: [] }, width: 12 };
+        expect(records.stripDerivedRecordData({ goal: 'road-track', cadastreParcelIds: [BASE], roadProposal: { definition: designation } }).roadProposal.definition).toEqual(designation);
+    });
+});
+
 describe('proposal role reporting', () => {
     it('reports authored intent without observing materialized output', () => {
         expect(records.roleOf({ goal: 'single', childParcelIds: ['opaque-output'] }))

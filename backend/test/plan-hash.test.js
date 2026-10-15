@@ -4,7 +4,7 @@
 import { describe, it, expect } from 'vitest';
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
-import { memberHash, memberContent, planHash, nextVersionSlug, stableStringify, changedMembers } from '../plans/plan-hash.js';
+import { memberHash, memberContent, planHash, nextVersionSlug, stableStringify, changedMembers, roadContent } from '../plans/plan-hash.js';
 import { createPlanStore } from '../plans/plan-store.js';
 
 const require = createRequire(import.meta.url);
@@ -83,6 +83,26 @@ describe('memberHash', () => {
         const road = { id: 8, type: 'road', road_proposal: { definition: { segments: [[{ lat: 1, lng: 2 }, { lat: 1, lng: 3 }]], width: 19 } } };
         const moved = { ...road, road_proposal: { definition: { segments: [[{ lat: 1, lng: 2 }, { lat: 1.0001, lng: 3 }]], width: 19 } } };
         expect(memberHash(moved)).not.toBe(memberHash(road));
+    });
+
+    it('hashes a road by its stretches and cross-sections, whichever shape the row spells them in', () => {
+        const osmForm = require('../../frontend/js/corridor-osm-form.js');
+        const P = require('../../frontend/js/corridor-profile.js');
+        const profile = { strips: P.CORRIDOR_PROFILE_PRESETS[10].map(lane => ({ ...lane })) };
+        const points = [{ lat: 45.8, lng: 15.97 }, { lat: 45.8004, lng: 15.9712, level: -1, elevationM: 120.5 }];
+        const nested = { id: 8, type: 'road', road_proposal: { definition: { points: [points], segments: [points], segmentIds: [null], segmentProfiles: {}, profile, width: 10 } } };
+        const flat = { ...nested, road_proposal: { definition: { points, width: 10, profile } } };
+        const recorded = { ...nested, road_proposal: { definition: osmForm.toRecord(nested.road_proposal.definition) } };
+        const legacy = { ...nested, road_proposal: { definition: { points, width: 10 } } }; // the 10 m preset, as a width alone
+        expect(recorded.road_proposal.definition.points).toBeUndefined();
+        expect(memberHash(flat)).toBe(memberHash(nested));
+        expect(memberHash(recorded)).toBe(memberHash(nested));
+        expect(memberHash(legacy)).toBe(memberHash(nested));
+        const relaned = { ...nested, road_proposal: { definition: { ...nested.road_proposal.definition, profile: { strips: [{ type: 'driving', width: 5 }] } } } };
+        expect(memberHash(relaned)).not.toBe(memberHash(nested));
+        const raised = { ...nested, road_proposal: { definition: { ...nested.road_proposal.definition, points: [[points[0], { ...points[1], elevationM: 121 }]], segments: undefined } } };
+        expect(memberHash(raised)).not.toBe(memberHash(nested));
+        expect(roadContent({ polygon: { type: 'Polygon', coordinates: [] }, kind: 'road', width: 12 })).toEqual({ stretches: [], width: 12, kind: 'road' });
     });
 
     it('does not depend on key order or parcel order', () => {

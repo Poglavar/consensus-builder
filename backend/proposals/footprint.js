@@ -8,6 +8,7 @@ import { createRequire } from 'node:module';
 
 const requireCjs = createRequire(import.meta.url);
 const footprintPartsApi = requireCjs('../../frontend/js/proposals/footprint-parts.js');
+const corridorOsmForm = requireCjs('../../frontend/js/corridor-osm-form.js');
 
 export const { footprintParts, hasFootprint, MAX_FOOTPRINT_VERTICES } = footprintPartsApi;
 
@@ -21,9 +22,13 @@ export const INVALID_FOOTPRINT = 'invalid-footprint';
 // is authoritative (the serializer reads it the same way).
 export function proposalGeometryView(row) {
     const data = row && row.proposal_data && typeof row.proposal_data === 'object' ? row.proposal_data : {};
+    const roadProposal = row?.road_proposal ?? data.roadProposal;
     return {
         ...data,
-        roadProposal: row?.road_proposal ?? data.roadProposal,
+        // The row holds the record (roads.md §11); the land is built from its decoded stretches.
+        roadProposal: roadProposal?.definition && typeof roadProposal.definition === 'object'
+            ? { ...roadProposal, definition: corridorOsmForm.toView(roadProposal.definition) }
+            : roadProposal,
         buildingProposal: row?.building_proposal ?? data.buildingProposal,
         structureProposal: row?.structure_proposal ?? data.structureProposal,
         reparcellization: row?.reparcellization ?? data.reparcellization

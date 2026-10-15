@@ -6,6 +6,37 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const reparcellizationDeal = require('../../frontend/js/reparcellization-deal.js');
+const corridorOsmForm = require('../../frontend/js/corridor-osm-form.js');
+const corridorProfile = require('../../frontend/js/corridor-profile.js');
+
+const finite = value => typeof value === 'number' && Number.isFinite(value);
+
+// What a road member builds: its stretches (points with their level and measured height) and the
+// cross-section of each, as the road is, not as the row happens to spell it. A record (roads.md
+// §11, the OSM document) and the view decoded from it hash the same; so do a flat point list and
+// the same points nested, a missing id list and one of nulls, an override equal to the default and
+// none. The stored width and legacy sidewalk width are what the cross-section says, so they are
+// not repeated. A designation (land with no centre line) commits to its kind and width alone.
+export function roadContent(definition) {
+    if (!definition || typeof definition !== 'object') return null;
+    const view = corridorOsmForm.toView(definition);
+    const raw = (Array.isArray(view.points) && view.points.length && view.points) || (Array.isArray(view.segments) && view.segments) || [];
+    const rawStretches = raw.length ? (Array.isArray(raw[0]) ? raw : [raw]) : [];
+    const stretches = corridorProfile.corridorSegmentEntries(view).map((entry, index) => ({
+        id: entry.segmentId,
+        points: entry.points.map((point, p) => {
+            const canonical = { lat: point.lat, lng: point.lng };
+            if (finite(point.level)) canonical.level = point.level;
+            const source = (rawStretches[index] || [])[p];
+            if (source && finite(source.elevationM)) canonical.elevationM = source.elevationM;
+            return canonical;
+        }),
+        profile: corridorOsmForm.profileAtMillimetre(entry.profile)
+    }));
+    return stretches.length
+        ? { stretches, kind: view.kind ?? null }
+        : { stretches: [], width: view.width ?? null, kind: view.kind ?? null };
+}
 
 function approvalContextFor(proposal) {
     if (!proposal || typeof proposal !== 'object') return null;
@@ -51,13 +82,7 @@ export function memberContent(row) {
         type: row.type ?? null,
         goal: row.goal ?? null,
         parcels: Array.isArray(row.cadastre_parcel_ids) ? [...row.cadastre_parcel_ids].map(String).sort() : [],
-        road: row.road_proposal?.definition
-            ? { segments: row.road_proposal.definition.segments ?? row.road_proposal.definition.points ?? null,
-                segmentIds: row.road_proposal.definition.segmentIds ?? null,
-                segmentProfiles: row.road_proposal.definition.segmentProfiles ?? null,
-                width: row.road_proposal.definition.width ?? null,
-                kind: row.road_proposal.definition.kind ?? null }
-            : null,
+        road: roadContent(row.road_proposal?.definition),
         building: row.building_proposal?.parameters ?? null,
         structure: row.structure_proposal
             ? { kind: row.structure_proposal.kind ?? null, geometry: row.structure_proposal.geometry ?? null }

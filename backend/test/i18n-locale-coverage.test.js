@@ -36,6 +36,7 @@ const DYNAMIC_KEY_PREFIXES = [
     'panel.proposal.market.next.',  // market-view.js lifecycle() nextKey (proposal-market-view.test.js pins the keys)
     'panel.proposal.market.state.', // and stateKey
     'panel.parcel.ownershipType.',
+    'panel.road.',                  // corridor-import.js: the import chooser's format labels and hints (corridor-import.test.js pins the six formats)
     'panel.proposal.bindingDrift.coverageKinds.', // plot-crossings.test.js checks all four kinds, all locales
     'proposalDrafts.validation.issues.',
     'proposalDrafts.placement.',

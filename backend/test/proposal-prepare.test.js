@@ -137,18 +137,20 @@ describe('prepareProposal', () => {
         expect(db.statements).toEqual([]);
     });
 
-    it('prepares a record whose OSM form agrees with its stretches, and refuses one edited behind it', async () => {
+    it('prepares the record (the OSM document, no stretch fields) from a body in either shape, to one digest and one land', async () => {
         const osmForm = require('../../frontend/js/corridor-osm-form.js');
-        const withForm = road();
-        osmForm.withOsmForm(withForm.roadProposal.definition);
-        expect(withForm.roadProposal.definition.osm.elements.length).toBeGreaterThan(0);
-        const db = cadastreDb();
-        const prepared = await prepareProposal(db, clone(withForm), { city: 'zagreb', ...sign });
-        expect(prepared.proposal.roadProposal.definition.osm).toEqual(withForm.roadProposal.definition.osm);
-
-        const drifted = clone(withForm);
-        drifted.roadProposal.definition.width = 14; // the cached cross-section no longer matches the form
-        await expect(prepareProposal(cadastreDb(), drifted, { city: 'zagreb', ...sign })).rejects.toMatchObject({ code: 'invalid-site', status: 400 });
+        const asView = road();
+        const asRecord = { ...asView, roadProposal: { definition: osmForm.toRecord(clone(asView.roadProposal.definition)) } };
+        expect(asRecord.roadProposal.definition.points).toBeUndefined();
+        expect(isConstructedCorridor(asRecord)).toBe(true);
+        const fromView = await prepareProposal(cadastreDb(), clone(asView), { city: 'zagreb', ...sign });
+        const fromRecord = await prepareProposal(cadastreDb(), clone(asRecord), { city: 'zagreb', ...sign });
+        expect(fromView.artifact.inputs).toBe(fromRecord.artifact.inputs);
+        expect(fromView.artifact.corridor.polygon).toEqual(fromRecord.artifact.corridor.polygon);
+        const stored = fromView.proposal.roadProposal.definition;
+        expect(stored.osm).toEqual(asRecord.roadProposal.definition.osm);
+        osmForm.VIEW_FIELDS.forEach(field => expect(stored[field], field).toBeUndefined());
+        expect(stored.polygon).toEqual(fromView.artifact.corridor.polygon);
     });
 
     it('refuses a partial corridor: nothing is bound or stored', async () => {
@@ -211,11 +213,15 @@ describe('verifyPreparation', () => {
             mutate(body);
             return verify(body, extra).then(() => null, error => error);
         };
-        const moved = await refusal(body => { body.roadProposal.definition.points[1].lng += 1e-6; body.roadProposal.definition.segments[0][1].lng += 1e-6; });
+        const node = elements => elements.find(element => element.type === 'node' && Math.abs(element.lat - B.lat) < 1e-9);
+        const way = elements => elements.find(element => element.type === 'way');
+        const moved = await refusal(body => { node(body.roadProposal.definition.osm.elements).lon += 1e-6; });
         expect(moved).toMatchObject({ code: PREPARE_CODES.mismatch, status: 422 });
         expect(moved.message).toMatch(/geometry/);
-        expect(await refusal(body => { body.roadProposal.definition.width = 13; })).toMatchObject({ code: PREPARE_CODES.mismatch });
-        expect(await refusal(body => { body.roadProposal.definition.profile = { lanes: [] }; })).toMatchObject({ code: PREPARE_CODES.mismatch });
+        expect(await refusal(body => { way(body.roadProposal.definition.osm.elements).tags['width:lanes'] = '4|4'; })).toMatchObject({ code: PREPARE_CODES.mismatch });
+        expect(await refusal(body => { way(body.roadProposal.definition.osm.elements).tags['cb:lanes'] = 'driving:3:forward'; })).toMatchObject({ code: PREPARE_CODES.mismatch });
+        // the prepared record spelled as stretches again is the same record
+        expect(await refusal(body => { body.roadProposal.definition = require('../../frontend/js/corridor-osm-form.js').toView(body.roadProposal.definition); })).toBeNull();
         expect((await refusal(body => { body.toleranceM = 0.5; })).message).toMatch(/tolerance/);
         expect((await refusal(() => {}, { city: 'split' })).message).toMatch(/city/);
         expect((await refusal(body => { body.parcelSourceId = 'some-source'; })).message).toMatch(/parcel source/);

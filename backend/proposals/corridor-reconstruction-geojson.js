@@ -8,6 +8,10 @@
 // All three remain ordinary GeoJSON features. Proposal-only state lives in the
 // collection's foreign `reconstruction` member, which GeoJSON explicitly permits.
 
+import { createRequire } from 'node:module';
+
+const corridorOsmForm = createRequire(import.meta.url)('../../frontend/js/corridor-osm-form.js');
+
 export const CORRIDOR_RECONSTRUCTION_GEOJSON_SCHEMA = 'consensus-builder.corridor-reconstruction.v1';
 
 const PROPOSAL_RUNTIME_KEYS = new Set([
@@ -91,8 +95,12 @@ function stripArchiveProperties(input) {
 
 export function corridorProposalToReconstructionGeoJSON(proposal, siteFeature) {
     if (!proposal || typeof proposal !== 'object') throw new Error('Proposal is required.');
-    const definition = proposal.roadProposal?.definition;
-    if (!definition || typeof definition !== 'object') throw new Error('Road proposal definition is required.');
+    const stored = proposal.roadProposal?.definition;
+    if (!stored || typeof stored !== 'object') throw new Error('Road proposal definition is required.');
+    // The archive carries the record (roads.md §11: the OSM document); the centreline features
+    // beside it are the same stretches for a GIS viewer, and read back they must say the same.
+    const definition = corridorOsmForm.toView(stored);
+    const record = corridorOsmForm.toRecord(definition);
 
     const site = geometryFeature(siteFeature, ['Polygon', 'MultiPolygon'], 'Site');
     const footprint = polygonFeature(definition.polygon, 'Corridor footprint');
@@ -108,7 +116,7 @@ export function corridorProposalToReconstructionGeoJSON(proposal, siteFeature) {
             schema: CORRIDOR_RECONSTRUCTION_GEOJSON_SCHEMA,
             proposal: withoutKeys(proposal, PROPOSAL_RUNTIME_KEYS),
             roadProposal: withoutKeys(proposal.roadProposal, ROAD_RUNTIME_KEYS),
-            definition: withoutKeys(definition, DEFINITION_GEOMETRY_KEYS)
+            definition: withoutKeys(record, DEFINITION_GEOMETRY_KEYS)
         },
         features: [
             withRole(site, 'site'),
@@ -151,13 +159,19 @@ export function corridorReconstructionGeoJSONToProposal(collection) {
         return line.geometry.coordinates.map(([lng, lat]) => ({ lat: Number(lat), lng: Number(lng) }));
     });
     const segmentIds = centrelineFeatures.map(entry => entry.properties?.['consensus:segment-id'] ?? null);
-    const definition = {
-        ...clone(collection.reconstruction.definition || {}),
-        points,
-        segments: clone(points),
-        segmentIds,
-        polygon: clone(footprint.geometry)
-    };
+    const archived = clone(collection.reconstruction.definition || {});
+    const decoded = archived.osm ? corridorOsmForm.toView(archived) : null;
+    if (decoded) {
+        // The record is the road; the centreline features must be the same stretches.
+        const same = decoded.segments.length === points.length && decoded.segments.every((segment, index) => (
+            segment.length === points[index].length && segment.every((point, p) => (
+                Math.abs(point.lat - points[index][p].lat) < 1e-7 && Math.abs(point.lng - points[index][p].lng) < 1e-7))
+            && String((decoded.segmentIds || [])[index] ?? '') === String(segmentIds[index] ?? '')));
+        if (!same) throw new Error('The centreline features do not match the archived road record.');
+    }
+    const definition = decoded
+        ? { ...decoded, polygon: clone(footprint.geometry) }
+        : { ...archived, points, segments: clone(points), segmentIds, polygon: clone(footprint.geometry) };
     const proposal = {
         ...clone(collection.reconstruction.proposal || {}),
         applied: false,

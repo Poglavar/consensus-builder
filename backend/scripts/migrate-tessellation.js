@@ -37,6 +37,7 @@ import { createHash } from 'node:crypto';
 // The corridor contiguity test lives in the frontend engine (classic script with a CJS tail).
 const requireCjs = createRequire(import.meta.url);
 const formationEdit = requireCjs('../../frontend/js/proposals/formation-edit.js');
+const corridorOsmForm = requireCjs('../../frontend/js/corridor-osm-form.js');
 const authoredRecord = requireCjs('../../frontend/js/proposals/authored-record.js');
 
 const CRUMB_DEG2 = 1.2e-10;
@@ -780,7 +781,9 @@ export function normalizeProposalRow(row) {
 
 // Centerline segments as stored: modern graphs keep [[{lat,lng},…],…]; the legacy shape is one
 // flat point list (a single segment, which cannot be disconnected).
-export function centerlineSegmentsOf(definition) {
+export function centerlineSegmentsOf(stored) {
+    // The row holds the record (roads.md §11); the stretches are read from its decoded view.
+    const definition = corridorOsmForm.toView(stored);
     const raw = (definition && (definition.segments || definition.points)) || null;
     if (!Array.isArray(raw) || !raw.length) return [];
     const isPoint = value => value && Number.isFinite(Number(value.lat)) && Number.isFinite(Number(value.lng));
@@ -800,7 +803,8 @@ export function roadDisconnection(definition) {
 // One definition per connected component, largest first. Each part re-derives its corridor
 // footprint at apply (corridorSurfaceFootprintForDefinition), so the stale whole-graph
 // polygon is dropped rather than mis-shared.
-export function splitDefinitionByComponents(definition, segments, components) {
+export function splitDefinitionByComponents(stored, segments, components) {
+    const definition = corridorOsmForm.toView(stored);
     const ids = Array.isArray(definition.segmentIds) ? definition.segmentIds : [];
     return components.map(indices => {
         const part = clone(definition);
@@ -1174,12 +1178,12 @@ export async function run(argv = process.argv.slice(2)) {
                     for (let k = 1; k < parts.length; k += 1) {
                         const siblingId = row.proposal_id + '-split-' + k;
                         const siblingTitle = baseTitle + ' (' + (k + 1) + ')';
-                        const siblingRoad = { ...clone(baseRoad), definition: clone(parts[k]) };
+                        const siblingRoad = { ...clone(baseRoad), definition: corridorOsmForm.toRecord(clone(parts[k])) };
                         const siblingData = clone(baseData);
                         siblingData.proposalId = siblingId;
                         siblingData.title = siblingTitle;
                         if (siblingData.name) siblingData.name = siblingTitle;
-                        siblingData.roadProposal = { ...(siblingData.roadProposal || {}), definition: clone(parts[k]) };
+                        siblingData.roadProposal = { ...(siblingData.roadProposal || {}), definition: siblingRoad.definition };
                         await insertSplitSibling(db, row, tableColumns, {
                             proposal_id: siblingId,
                             title: siblingTitle,
@@ -1188,9 +1192,9 @@ export async function run(argv = process.argv.slice(2)) {
                             proposal_data: siblingData
                         });
                     }
-                    const keepRoad = { ...clone(baseRoad), definition: clone(parts[0]) };
+                    const keepRoad = { ...clone(baseRoad), definition: corridorOsmForm.toRecord(clone(parts[0])) };
                     const keepData = clone(baseData);
-                    keepData.roadProposal = { ...(keepData.roadProposal || {}), definition: clone(parts[0]) };
+                    keepData.roadProposal = { ...(keepData.roadProposal || {}), definition: keepRoad.definition };
                     await db.query(
                         'UPDATE proposal SET road_proposal = $1::jsonb, proposal_data = $2::jsonb, updated_at = now() WHERE id = $3',
                         [JSON.stringify(keepRoad), JSON.stringify(keepData), row.id]

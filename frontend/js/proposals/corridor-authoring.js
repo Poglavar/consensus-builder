@@ -125,14 +125,6 @@
         });
     }
 
-    // The record IS its OSM form (roads.md §11): every definition authoring writes carries one,
-    // and publication refuses a record whose stretches and form disagree.
-    function osmFormApi() {
-        if (global && global.__corridorOsmForm) return global.__corridorOsmForm;
-        if (typeof require === 'function') return require('../corridor-osm-form.js');
-        throw new Error('corridor-osm-form is not available');
-    }
-
     function definitionFromEntry(entry) {
         const definition = cloneValue(entry.definition);
         const segments = cloneValue(entry.segments);
@@ -151,7 +143,7 @@
         } else {
             delete definition.segmentProfiles;
         }
-        return osmFormApi().withOsmForm(definition);
+        return definition;
     }
 
     function writeDefinition(record, definition) {

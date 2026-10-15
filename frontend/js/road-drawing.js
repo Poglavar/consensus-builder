@@ -717,9 +717,6 @@ function rebuildRoadDefinitionFootprint(definition) {
     // An edited definition is no longer the one its provenance describes: its land is rebuilt in the
     // edited centre line's own frame, and publishing prepares it anew.
     delete definition.constructionFrame;
-    // The stretches or cross-sections just changed: the record's OSM form (roads.md §11) is
-    // written again with the land, so the two cannot drift apart.
-    if (typeof window !== 'undefined' && window.__corridorOsmForm) window.__corridorOsmForm.withOsmForm(definition);
     const polygon = corridorSurfaceFootprintForDefinition(definition);
     definition.polygon = polygon;
     definition.latLngPairs = convertRoadPolygonToLatLngPairs(roadPolygonFromGeoJSON(polygon));
