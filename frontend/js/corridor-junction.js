@@ -31,6 +31,14 @@
     const STOP_LINE_GAP = 0.5;
     const STOP_LINE_THICKNESS = 0.35;
     const NODE_KEY_M = 0.01;
+    // An arm's box starts this far BEHIND the node, so the boxes of two arms that continue
+    // through it overlap instead of merely touching along the node line: united they are one
+    // surface with no seam, and a strip clipped to them keeps no sub-pixel sliver between them.
+    const BOX_OVERLAP = 0.05;
+    // A fillet's corner piece reaches this far into the boxes along its two straight edges, and a
+    // footway corner band this far past the kerb arc into that piece, for the same reason: pieces
+    // that overlap unite into one surface, pieces that only touch leave a hairline between them.
+    const PIECE_OVERLAP = 0.02;
 
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     const hypot = (x, y) => Math.hypot(x, y);
@@ -249,8 +257,15 @@
         const aI = angleOf([Ti[0] - C[0], Ti[1] - C[1]]);
         const aJ = angleOf([Tj[0] - C[0], Tj[1] - C[1]]);
         const kerbArc = arcPoints(C, radius, radius, aI, aJ);
-        // The carriageway gained at the corner: between the sharp corner K and the fillet.
-        const surface = cleanRing([K.point, ...kerbArc]);
+        // The carriageway gained at the corner: between the sharp corner K and the fillet. Its two
+        // straight edges run on the arms' carriageway edges, so they are pushed PIECE_OVERLAP into
+        // the carriageway to overlap the arm boxes rather than touch them.
+        const intoI = [-i.normal[0] * PIECE_OVERLAP, -i.normal[1] * PIECE_OVERLAP];
+        const intoJ = [j.normal[0] * PIECE_OVERLAP, j.normal[1] * PIECE_OVERLAP];
+        const surface = cleanRing([
+            [K.point[0] + intoI[0] + intoJ[0], K.point[1] + intoI[1] + intoJ[1]],
+            add(Ti, intoI), ...kerbArc, add(Tj, intoJ)
+        ]);
 
         // The footway wraps the kerb at each arm's own outer-band width. Where the band is narrower
         // than the fillet radius the back of the footway is an arc too (and the land has to follow,
@@ -280,8 +295,10 @@
         } else {
             outer = O ? [TiOuter, O.point, TjOuter] : [TiOuter, TjOuter];
         }
+        // The band's kerb edge reaches PIECE_OVERLAP past the kerb arc (away from C, the corner
+        // piece's side), so it overlaps the corner piece rather than touching it along the arc.
         const sidewalk = (i.oL > 0.05 || j.oR > 0.05)
-            ? cleanRing([...kerbArc, ...outer.slice().reverse()])
+            ? cleanRing([...arcPoints(C, radius + PIECE_OVERLAP, radius + PIECE_OVERLAP, aI, aJ), ...outer.slice().reverse()])
             : null;
         return { i, j, K: K.point, tK, uK, radius, tangent, C, Ti, Tj, surface, sidewalk, land };
     }
@@ -396,7 +413,15 @@
                 const i = arms[index];
                 const j = arms[(index + 1) % degree];
                 const theta = ccwAngle(i.dir, j.dir);
-                if (theta < MIN_CORNER_ANGLE || theta > MAX_CORNER_ANGLE) continue;
+                if (theta > MAX_CORNER_ANGLE) {
+                    // A continuation that is not dead straight leaves a wedge between the two
+                    // boxes' node-line ends on the outside of its slight bend, like a bend's
+                    // notch (buildBend): the surface covers it, so the box has no seam there.
+                    const notch = cleanRing([node, armPoint(node, i, 0, i.eL), armPoint(node, j, 0, -j.eR)]);
+                    if (notch && Math.abs(ringArea(notch)) > 0.01) surface.push(notch);
+                    continue;
+                }
+                if (theta < MIN_CORNER_ANGLE) continue;
                 const corner = buildCorner(node, i, j, theta);
                 if (!corner) continue;
                 i.cutLeft = Math.max(i.cutLeft, corner.tK + corner.tangent);
@@ -417,8 +442,8 @@
         arms.forEach(arm => {
             if (arm.cut > 0.01) {
                 const box = cleanRing([
-                    armPoint(node, arm, 0, arm.eL), armPoint(node, arm, arm.cut, arm.eL),
-                    armPoint(node, arm, arm.cut, -arm.eR), armPoint(node, arm, 0, -arm.eR)
+                    armPoint(node, arm, -BOX_OVERLAP, arm.eL), armPoint(node, arm, arm.cut, arm.eL),
+                    armPoint(node, arm, arm.cut, -arm.eR), armPoint(node, arm, -BOX_OVERLAP, -arm.eR)
                 ]);
                 if (box) surface.push(box);
             }

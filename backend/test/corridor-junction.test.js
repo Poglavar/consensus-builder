@@ -35,6 +35,33 @@ function tJunction() {
 }
 
 describe('corridor-junction', () => {
+    // Point-in-ring (even-odd) over a planar ring, for "does the surface cover this spot".
+    const ringContains = (ring, [x, y]) => {
+        let inside = false;
+        for (let i = 0, j = ring.length - 1; i < ring.length; j = i, i += 1) {
+            const [xi, yi] = ring[i]; const [xj, yj] = ring[j];
+            if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside;
+        }
+        return inside;
+    };
+
+    it('covers the wedge a slightly bent continuation leaves between its two boxes at the node', () => {
+        // East leaves 5° south of straight: the two through boxes' node-line ends diverge on the
+        // north side, where no third arm lies, so only the continuation notch can cover it.
+        const bend = -5 * Math.PI / 180;
+        const j = J.buildJunction([0, 0], [
+            { dir: [Math.cos(bend), Math.sin(bend)], edges: main, hasSidewalk: true, length: 100, label: 'east' },
+            { dir: [-1, 0], edges: main, reversed: true, hasSidewalk: true, length: 100, label: 'west' },
+            { dir: [0, -1], edges: alley, hasSidewalk: true, length: 60, label: 'south' }
+        ]);
+        // 5 m north of the node and 0.2 m east: outside the west box (x ≤ 0.05) and short of the
+        // east box's tilted end (x ≥ 5·tan 5° ≈ 0.44).
+        expect(j.surface.some(ring => ringContains(ring, [0.2, 5]))).toBe(true);
+        // The boxes themselves start a hair behind the node, so neighbours overlap rather than touch.
+        const westBox = j.surface.find(ring => ring.length === 4 && ring.every(([x]) => x <= 0.051) && ring.some(([x]) => x > 0));
+        expect(westBox).toBeTruthy();
+    });
+
     it('picks the kerb-return radius from the narrower arm: 6 / 9 / 12 m by class', () => {
         expect(J.kerbReturnRadius(7.5, 26)).toBe(6);
         expect(J.kerbReturnRadius(26, 18)).toBe(9);

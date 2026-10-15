@@ -17,6 +17,13 @@
 // at 660/670.
 const CORRIDOR_STRIPS_PANE = 'corridorStripsPane';
 const CORRIDOR_JUNCTIONS_PANE = 'corridorJunctionsPane';
+// Every painted road surface — lane strips, the footway's edge fill, a junction's carriageway and
+// its footway corners — at ONE opacity, so a junction is the same asphalt as the lanes beside it
+// (the basemap ghosts through all of them alike). The junction can share the strips' opacity
+// because it no longer lies over them: corridor-junction-paint.js clips each arm's strips to what
+// the junction paints, and unites the junction's own pieces so nothing is painted twice.
+const CORRIDOR_SURFACE_OPACITY = 0.85;
+const corridorJunctionPaint = () => (typeof window !== 'undefined' && window.__corridorJunctionPaint) || null;
 const CORRIDOR_MARKINGS_PANE = 'corridorMarkingsPane';
 const CORRIDOR_HIT_PANE = 'corridorHitPane';
 const CORRIDOR_RAIL_PANE = 'corridorRailPane';
@@ -124,16 +131,23 @@ function renderCorridorLaneMarkings(markings, group, pane) {
     });
 }
 
-// One junction's drawing (corridor-profile.js junctionTreatmentFor): the carriageway surface over
-// every arm's strips, the footway band around each corner in that footway's own surface, then the
-// paint — stop lines and zebras — on the markings pane, above every surface own or shared.
+// One junction's drawing (corridor-profile.js junctionTreatmentFor): the carriageway surface where
+// the arms' strips stop (they are clipped to it, corridor-junction-paint.js), the footway band
+// around each corner in that footway's own surface, then the paint — stop lines and zebras — on
+// the markings pane, above every surface own or shared.
 function renderCorridorJunctions(junctions, group, pane) {
     if (!Array.isArray(junctions)) return;
     const paintPane = (pane === CORRIDOR_JUNCTIONS_PANE && typeof CORRIDOR_MARKINGS_PANE !== 'undefined') ? CORRIDOR_MARKINGS_PANE : pane;
+    const paint = corridorJunctionPaint();
+    // The junction's asphalt IS the driving lane's surface (3D paints it with the driving lane's
+    // material for the same reason), never a shade of its own.
+    const asphalt = (typeof corridorStripSurface === 'function') ? corridorStripSurface({ type: 'driving' }) : '#2b2b2b';
     junctions.forEach(junction => {
-        (junction.surfacePolygons || []).forEach(polygon => {
+        // United, so the arm boxes that overlap one another in the box paint once at this opacity.
+        const surfacePolygons = paint ? paint.junctionSurfacePolygons(junction) : (junction.surfacePolygons || []);
+        surfacePolygons.forEach(polygon => {
             L.polygon(polygon, {
-                color: '#2b2b2b', weight: 0, fillColor: '#2b2b2b', fillOpacity: 1,
+                color: asphalt, weight: 0.5, fillColor: asphalt, fillOpacity: CORRIDOR_SURFACE_OPACITY,
                 interactive: false, pane: pane || undefined,
                 renderer: corridorCanvasFor(pane),
                 className: 'corridor-junction-surface'
@@ -145,7 +159,7 @@ function renderCorridorJunctions(junctions, group, pane) {
                 ? corridorStripSurface(strip)
                 : (((typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {}).surface || '#d8d2c4');
             L.polygon(corner.polygon, {
-                color: surface, weight: 0.5, fillColor: surface, fillOpacity: 1,
+                color: surface, weight: 0.5, fillColor: surface, fillOpacity: CORRIDOR_SURFACE_OPACITY,
                 interactive: false, pane: pane || undefined,
                 renderer: corridorCanvasFor(pane),
                 className: 'corridor-junction-corner'
@@ -477,7 +491,7 @@ function corridorOwnerClass(id) {
 function renderCorridorStrips(strips, options = {}) {
     if (!Array.isArray(strips) || !strips.length) return null;
     const group = L.layerGroup();
-    const fillOpacity = Number.isFinite(options.fillOpacity) ? options.fillOpacity : 0.85;
+    const fillOpacity = Number.isFinite(options.fillOpacity) ? options.fillOpacity : CORRIDOR_SURFACE_OPACITY;
     const ownerClass = options.ownerClass ? ` ${options.ownerClass}` : '';
 
     strips.forEach(strip => {
@@ -845,27 +859,34 @@ function clearAppliedCorridorStrips() {
 
 // The filled footway of one corridor, as Leaflet polygons. Derived by the one shared builder
 // (corridor-edge-fill-scene.js), so the map cannot disagree with the editor's preview or with 3D.
-function renderCorridorEdgeFill(definition, group, ownerClass) {
+function renderCorridorEdgeFill(definition, group, ownerClass, junctions = []) {
     if (!definition || !group || !window.CorridorEdgeFill || typeof L === 'undefined') return;
     let regions = [];
     try { regions = window.CorridorEdgeFill.regionsFor(definition) || []; } catch (error) {
         console.warn('[corridor-render] edge fill could not be derived', error);
         return;
     }
+    const paint = corridorJunctionPaint();
     regions.forEach(region => {
+        // The fill stops where a junction paints, like the strips it extends: a footway's fill
+        // across a side street's mouth would otherwise ghost through the junction's asphalt.
+        const geojson = (paint && region.geojson && region.geojson.geometry && junctions.length)
+            ? (() => { const geometry = paint.clipGeometry(region.geojson.geometry, junctions); return geometry ? { ...region.geojson, geometry } : null; })()
+            : region.geojson;
+        if (!geojson) return;
         const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[region.type]) || {};
         const surface = (typeof corridorStripSurface === 'function')
             ? corridorStripSurface({ type: region.type, paving: region.paving })
             : (lane.surface || '#c2beb4');
         const pavingClass = region.paving === 'paved' ? ' corridor-strip--paved' : '';
-        L.geoJSON(region.geojson, {
+        L.geoJSON(geojson, {
             pane: CORRIDOR_STRIPS_PANE,
             interactive: false,
             style: {
                 color: surface,
                 weight: 0.5,
                 fillColor: surface,
-                fillOpacity: 0.85,
+                fillOpacity: CORRIDOR_SURFACE_OPACITY,
                 className: `corridor-strip corridor-strip--${region.type}${pavingClass}${ownerClass ? ' ' + ownerClass : ''}`
             }
         }).addTo(group);
@@ -907,14 +928,18 @@ function corridorRenderHash(proposal, definition, preview) {
     return JSON.stringify([definition, corridorOwnerClass(key), previewPart]);
 }
 
-// What a corridor's own drawing takes from the junctions it meets: where each of its arms is cut
-// and where its lane lines stop. A neighbour's edit that moves those rebuilds this corridor too.
+// What a corridor's own drawing takes from the junctions it meets: where each of its arms is cut,
+// where its lane lines stop, and the shape the junction paints (its strips are clipped to it). A
+// neighbour's edit that moves any of those rebuilds this corridor too.
 function corridorJunctionSignature(corridorId, junctions) {
     const id = String(corridorId);
+    const ringKey = ring => (ring || []).map(point => `${Number(point.lat).toFixed(7)},${Number(point.lng).toFixed(7)}`).join(' ');
     return JSON.stringify((junctions || [])
         .map(treatment => [
             Number(treatment.lat).toFixed(7), Number(treatment.lng).toFixed(7),
-            (treatment.arms || []).filter(arm => String(arm.corridorId) === id).map(arm => [arm.cut, arm.markingTrim, arm.toward])
+            (treatment.arms || []).filter(arm => String(arm.corridorId) === id).map(arm => [arm.cut, arm.markingTrim, arm.toward]),
+            (treatment.surfacePolygons || []).map(ringKey),
+            (treatment.cornerPolygons || []).map(corner => ringKey(corner && corner.polygon))
         ])
         // A junction none of whose arms is this corridor's asks nothing of its drawing.
         .filter(([, , arms]) => arms.length)
@@ -1007,7 +1032,12 @@ function buildCorridorRender(proposal, junctions = []) {
                 const junctionTrims = (typeof corridorEntryJunctionTrims === 'function' && junctions.length)
                     ? corridorEntryJunctionTrims(candidate.points.map(point => frame.latLngToMetric(point.lat, point.lng)), junctions, frame)
                     : null;
-                const segmentGroup = renderCorridorStrips(strips, {
+                // Painted strips stop where the junctions this corridor meets paint their own
+                // asphalt and corners (corridor-junction-paint.js); the whole strips stay the
+                // hit targets, so a click in the junction still lands on the road.
+                const paint = corridorJunctionPaint();
+                const painted = (paint && junctions.length) ? paint.clipStrips(strips, junctions) : strips;
+                const segmentGroup = renderCorridorStrips(painted, {
                     pane: CORRIDOR_STRIPS_PANE, markings: [], decorations, junctions: [], ownerClass, junctionTrims,
                     // A placed corridor's rails and sleepers are both black, read against the
                     // ballast texture under them rather than against each other's colour. Rails,
@@ -1025,7 +1055,7 @@ function buildCorridorRender(proposal, junctions = []) {
                 // The pavement where the footway fills out to the frontage, in the lane's own
                 // surface — so the 2D map shows the same road width the 3D model and photo view do,
                 // rather than the drawn minimum. Over the strips, under the junctions' pane.
-                renderCorridorEdgeFill(definition, group, ownerClass);
+                renderCorridorEdgeFill(definition, group, ownerClass, junctions);
                 // Junctions are not drawn here: every junction, this road's own included, is one
                 // keyed layer of its own (refreshCorridorJunctionLayers), so the same object is
                 // drawn once whichever corridors meet there.
