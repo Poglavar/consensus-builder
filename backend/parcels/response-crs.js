@@ -13,5 +13,13 @@ const GEOJSON_CRS_NAMES = Object.freeze({
 
 export function geoJsonResponseCrsMatches(crs, expectedSrid, { required = false } = {}) {
     if (crs === undefined || crs === null) return !required;
-    return crs.type === 'name' && GEOJSON_CRS_NAMES[expectedSrid]?.has(crs.properties?.name) === true;
+    if (crs.type !== 'name') return false;
+    const name = crs.properties?.name;
+    return GEOJSON_CRS_NAMES[expectedSrid]?.has(name) === true
+        || (Number.isSafeInteger(expectedSrid) && expectedSrid > 0 &&
+            [
+                `EPSG:${expectedSrid}`,
+                `urn:ogc:def:crs:EPSG::${expectedSrid}`,
+                `http://www.opengis.net/def/crs/EPSG/0/${expectedSrid}`
+            ].includes(name));
 }
