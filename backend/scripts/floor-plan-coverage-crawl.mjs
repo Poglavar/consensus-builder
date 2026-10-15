@@ -14,7 +14,7 @@ import { runSiteCrawl } from './floor-plan-site-crawl.mjs';
 
 const DEFAULTS = Object.freeze({ maxTotalPages: 10000, maxTotalMinutes: 360, maxSitePages: 150, maxSiteMinutes: 15 });
 const RETENTION_LIMIT = 100;
-const RETENTION_MAX_MS = 15000;
+const RETENTION_MAX_MS = 120000;
 const HELP = [
   'Usage: node scripts/floor-plan-coverage-crawl.mjs --run --hosts FILE --run-dir DIR [options]',
   '',
