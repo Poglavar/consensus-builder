@@ -15,7 +15,8 @@
     "prove:controls": "node scripts/prove-controls.mjs",
     "check:controls": "node --test scripts/control-source.test.mjs scripts/control-report.test.mjs scripts/control-coverage.test.mjs && node scripts/check-control-contract.mjs",
     "report": "playwright show-report",
-    "check:features": "node scripts/check-feature-inventory.mjs"
+    "check:features": "node scripts/check-feature-inventory.mjs",
+    "test:helpers": "node --test helpers/*.test.cjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.50.0",

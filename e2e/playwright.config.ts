@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 import { enableBackgroundChromium } from './helpers/background-chromium.cjs';
 
+// Headed runs open their windows behind the active app instead of taking focus (macOS).
 enableBackgroundChromium();
 
 const baseURL = process.env.BASE_URL || 'http://localhost:8080';
