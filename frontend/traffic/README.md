@@ -39,6 +39,21 @@ Suprotni prilazi imaju zeleno zajedno, a okomiti smjerovi izmjenjuju se. Svaka f
 ilustrativnih 24 sekunde zelenog, 3 sekunde žutog i 2 sekunde svecrvenog vremena za raščišćavanje.
 To nisu stvarni signalni planovi, izmjerena vremena ni podaci o trenutačnom prometu.
 
+Pri povećanom prikazu klik na pojedinu glavu semafora mijenja samo tu glavu redom crveno → zeleno
+→ žuto → crveno. Brojač u crvenoj i zelenoj glavi prikazuje preostale simulirane sekunde. Ručno
+odabrano zeleno traje 24 sekunde, žuto 3 sekunde, a crveno cijeli uobičajeni crveni interval te
+glave: `max(2, broj_faza) × 29 − 27` sekundi. Svaki novi klik bira sljedeću boju prema trenutačno
+prikazanoj boji i ponovno pokreće njezino trajanje. Vrijeme je simulirano, pa se brojač i povratak
+na raspored zaustavljaju dok je simulacija pauzirana. Po isteku se automatski nastavlja izvorni
+raspored kontrolera, a oznaka povratka ostaje vidljiva tri sekunde simulacije. Ponovno pokretanje
+prometa briše ručne izmjene. OSM poveznice u opisu semafora ostaju dostupne; gumb „Prikaži semafor”
+samo otvara opis i ne mijenja boju.
+
+Runtime API u `signal-plan.js` koristi `cycle(signal, phase, time)` za ručnu promjenu te
+`state(signal, phase, time, enabled)` za boju, preostalo trajanje, stanje izmjene i kratku oznaku
+povratka. `aspect(signal, phase, time, enabled)` vraća boju koju koriste i prikaz karte i simulator;
+izmjena se čuva po ID-u glave, ne mijenja plan kontrolera i istječe prema simuliranom vremenu.
+
 ## Geometrija i alati
 
 `surfaceLanes` opisuje fizički prikaz traka tipa `driving` i `bus`, uključujući trake koje nisu

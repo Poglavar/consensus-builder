@@ -10,6 +10,7 @@
     }
     const Engine = window.TrafficSimulation, G = window.TrafficGeometry;
     const Scenario = window.TrafficScenario, Meters = window.TrafficMeters;
+    const SignalPlan = window.TrafficSignals;
     const Vehicles = window.TrafficVehicles;
     const Trams = window.TrafficTramTracks;
     const counters = new Meters.Counters();
@@ -36,7 +37,7 @@
     let tramTracks = [];
     let network, sim, running = !reduced, rate = 2, seed = 52, selected = null, following = false;
     let selectedInfo = null;
-    let signalPopup = null;
+    let signalPopup = null, signalPopupSignal = null;
     let transform, size = { x: 0, y: 0 }, previousFrame = null, uiTime = 0, frameId = null;
     let screenCars = [], frameCount = 0, tileErrors = 0;
     const honkCounts = new Map();
@@ -197,11 +198,27 @@
             const p = screen(network.project(signal.point));
             if (!visible(p)) continue;
             const radius = map.getZoom() >= 19 ? 8 : 6;
-            const aspect = Engine.signalAspect(signal, signal.phase, sim.time);
+            const state = SignalPlan.state(signal, signal.phase, sim.time, sim.signals);
+            const aspect = state.aspect;
             ctx.beginPath(); ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
             ctx.fillStyle = { green: '#308868', red: '#c26354', amber: '#d7a13a', unknown: '#74827c' }[aspect];
             ctx.fill();
             ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+            if (aspect === 'red' || aspect === 'green') {
+                const label = `${Math.ceil(state.remaining)}`;
+                ctx.font = `700 ${map.getZoom() >= 19 ? 12 : 11}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                const width = Math.max(22, ctx.measureText(label).width + 8), height = map.getZoom() >= 19 ? 18 : 16;
+                const x = p.x + radius + 2, y = p.y - height / 2;
+                ctx.fillStyle = '#fffff2f2'; ctx.fillRect(x, y, width, height);
+                ctx.strokeStyle = '#31544d'; ctx.lineWidth = .8; ctx.strokeRect(x, y, width, height);
+                ctx.fillStyle = '#173c3a'; ctx.fillText(label, x + width / 2, y + height / 2);
+            }
+            if (state.reverted) {
+                ctx.font = '700 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#875c19';
+                ctx.fillText('↺', p.x + radius, p.y - radius);
+            }
         }
     }
 
@@ -495,7 +512,7 @@
         }
         drawCars();
         if (editor?.update()) { network = sim.network; drawGuides(); }
-        if (now - uiTime > 250) { updateUI(); updateAudio(); uiTime = now; }
+        if (now - uiTime > 250) { updateUI(); updateAudio(); updateSignalPopup(); uiTime = now; }
         if (running && !document.hidden) frameId = requestAnimationFrame(animate);
     }
     function wake() { previousFrame = null; if (frameId == null && !document.hidden) frameId = requestAnimationFrame(animate); }
@@ -521,7 +538,9 @@
                 return { signal, distance: Math.hypot(p.x - pointer.x, p.y - pointer.y) };
             }).sort((a, b) => a.distance - b.distance)[0] : null;
         if (mapped?.distance < 12 && mapped.distance < (nearest?.distance ?? Infinity)) {
-            following = false; updateUI(); openSignal(mapped.signal);
+            following = false;
+            SignalPlan.cycle(mapped.signal, mapped.signal.phase, sim.time);
+            updateUI(); drawCars(); openSignal(mapped.signal);
             return;
         }
         selected = nearest?.distance < 6 ? nearest.id : null;
@@ -530,10 +549,12 @@
     });
     function openSignal(signal) {
         $('status').hidden = true;
+        signalPopupSignal = signal;
         const content = document.createElement('div');
         const title = document.createElement('strong'); title.textContent = t('signalSource', { road: signal.name || t('unnamed'), direction: t(`direction${signal.direction}`) });
         const detail = document.createElement('p'); detail.textContent = t('signalDetails');
-        content.append(title, detail);
+        const stateLabel = document.createElement('p'); stateLabel.className = 'signal-popup-state';
+        content.append(title, detail, stateLabel);
         for (const source of signal.sourceIds) {
             const id = source.replace('osm-node:', ''), link = document.createElement('a');
             link.textContent = `${t('signalLink')} · ${id}`;
@@ -544,6 +565,19 @@
             .setLatLng([signal.point[1], signal.point[0]]).setContent(content).openOn(map);
         const close = signalPopup.getElement().querySelector('.leaflet-popup-close-button');
         if (close) { close.setAttribute('aria-label', t('closePopup')); close.title = t('closePopup'); }
+        updateSignalPopup();
+    }
+    function updateSignalPopup() {
+        if (!signalPopup?.isOpen() || !signalPopupSignal || !sim) return;
+        const signal = network.signals.get(signalPopupSignal.id);
+        const status = signalPopup.getElement()?.querySelector('.signal-popup-state');
+        if (!signal || !status) return;
+        signalPopupSignal = signal;
+        const state = SignalPlan.state(signal, signal.phase, sim.time, sim.signals);
+        status.dataset.state = state.reverted ? 'reverted' : state.overridden ? 'override' : 'scheduled';
+        status.textContent = state.reverted ? t('signalReverted') : state.overridden
+            ? t('signalOverride', { aspect: t(`aspect${state.aspect[0].toUpperCase()}${state.aspect.slice(1)}`), seconds: Math.ceil(state.remaining) })
+            : t('signalScheduled', { aspect: t(`aspect${state.aspect[0].toUpperCase()}${state.aspect.slice(1)}`), seconds: Math.ceil(state.remaining) });
     }
     $('show-signal').addEventListener('click', () => {
         const car = sim.cars.find(item => item.id === selected);
@@ -562,6 +596,7 @@
         $('status').hidden = true; updateUI();
     });
     $('reset').addEventListener('click', () => {
+        SignalPlan.clearOverrides();
         sim = new Engine.Simulation(network, { physicalNetwork: baseNetwork, count: Number($('density').value), seed: ++seed, signals: $('lights').checked });
         honkCounts.clear();
         editor.setSimulation(sim); attachCounters();
@@ -596,6 +631,7 @@
             const response = await fetch('/api/promet/simulator/network', { cache: 'no-store' });
             if (!response.ok) throw new Error(`Traffic data: HTTP ${response.status}`);
             const data = await response.json();
+            SignalPlan.clearOverrides();
             network = baseNetwork = Engine.createNetwork(data);
             laneIndex = new Meters.LaneIndex(baseNetwork);
             surface = window.TrafficSurface.build(baseNetwork, data.surfaceLanes);

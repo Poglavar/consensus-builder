@@ -5,7 +5,8 @@
     if (root) root.TrafficSignals = api;
 })(typeof window !== 'undefined' ? window : null, function (G) {
     'use strict';
-    const GREEN = 24, AMBER = 3, CLEAR = 2, SLOT = GREEN + AMBER + CLEAR;
+    const GREEN = 24, AMBER = 3, CLEAR = 2, SLOT = GREEN + AMBER + CLEAR, REVERT_NOTICE = 3;
+    const overrides = new Map();
     const distance = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
     const angleGap = (a, b) => Math.acos(Math.min(1, Math.abs(Math.cos(a - b))));
     const hash = text => [...text].reduce((n, c) => (n * 31 + c.charCodeAt(0)) >>> 0, 0);
@@ -133,7 +134,7 @@
         return { signals, controllers };
     }
 
-    function aspect(signal, phase, time, enabled = true) {
+    function scheduledAspect(signal, phase, time, enabled = true) {
         if (!enabled) return 'green';
         const index = signal.phases.indexOf(phase);
         if (index < 0) return 'red';
@@ -142,5 +143,49 @@
         if (Math.floor(t / SLOT) !== index) return 'red';
         return t % SLOT < GREEN ? 'green' : t % SLOT < GREEN + AMBER ? 'amber' : 'red';
     }
-    return { build, aspect, GREEN, AMBER, CLEAR, SLOT };
+
+    function state(signal, phase, time, enabled = true) {
+        const override = overrides.get(signal.id);
+        if (enabled && override && time < override.expiresAt) {
+            return { aspect: override.aspect, remaining: override.expiresAt - time,
+                overridden: true, reverted: false, expiresAt: override.expiresAt };
+        }
+        const aspect = scheduledAspect(signal, phase, time, enabled);
+        const index = signal.phases.indexOf(phase);
+        let remaining = 0;
+        if (enabled && index >= 0) {
+            const cycle = Math.max(2, signal.phases.length) * SLOT;
+            const t = ((time + signal.offset) % cycle + cycle) % cycle;
+            const phaseTime = ((t - index * SLOT) % cycle + cycle) % cycle;
+            const boundary = aspect === 'green' ? GREEN
+                : aspect === 'amber' ? GREEN + AMBER : cycle;
+            remaining = boundary - phaseTime;
+        }
+        const reverted = !!override && time >= override.expiresAt
+            && time < override.expiresAt + REVERT_NOTICE;
+        return { aspect, remaining: Math.max(0, remaining), overridden: false, reverted,
+            expiresAt: override?.expiresAt ?? null };
+    }
+
+    function aspect(signal, phase, time, enabled = true) {
+        return state(signal, phase, time, enabled).aspect;
+    }
+
+    function duration(signal, aspect) {
+        if (aspect === 'green') return GREEN;
+        if (aspect === 'amber') return AMBER;
+        return Math.max(1, Math.max(2, signal.phases.length) * SLOT - GREEN - AMBER);
+    }
+
+    function cycle(signal, phase, time) {
+        const current = state(signal, phase, time).aspect;
+        const next = ({ red: 'green', green: 'amber', amber: 'red' })[current] || 'green';
+        const expiresAt = time + duration(signal, next);
+        overrides.set(signal.id, { aspect: next, expiresAt });
+        return state(signal, phase, time);
+    }
+
+    function clearOverrides() { overrides.clear(); }
+
+    return { build, aspect, state, cycle, clearOverrides, GREEN, AMBER, CLEAR, SLOT, REVERT_NOTICE };
 });

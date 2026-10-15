@@ -853,17 +853,9 @@
                         m.index++; m.s = 0;
                         if (m.segments[m.index].gear !== segment.gear) { m.shiftUntil = this.time + .6; car.speed = 0; }
                     } else {
-                        const landing = { ...car, ...m.landing, maneuver: null, change: null };
-                        for (const [key, s] of this.carOccupancies(landing)) {
-                            const blocker = (occupied.get(key) || []).find(entry => entry.car.id !== car.id
-                                && Math.abs(entry.s - s) < GAP - .001);
-                            if (blocker) {
-                                const held = Math.min(travel, .02);
-                                m.blockerId = blocker.car.id; m.s -= held; m.travelled -= held;
-                                car.s = this.projectStation(route, Maneuvers.pose(m));
-                                return travel - held;
-                            }
-                        }
+                        // The tick's swept-body guard also checks the final lane pose.
+                        // Projected lane-change occupancies are queue reservations, not
+                        // physical obstacles: they must not trap a completed retreat.
                         const oldMove = car.mode === 'connection' && this.network.connections.get(car.connectionId);
                         Object.assign(car, m.landing); car.maneuver = null; car.change = null;
                         car.next = m.landing.next || (car.mode === 'lane' ? this.chooseRoute(this.network.lanes.get(car.laneId), car) : car.connectionId);

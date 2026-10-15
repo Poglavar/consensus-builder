@@ -133,7 +133,10 @@
             elapsed: 'Simulirano vrijeme',
             lightLegend: 'OSM podaci · izvedeni položaj · simulirani ciklus',
             signalSource: 'Semafor · {road} · {direction}',
-            signalDetails: 'Izveden položaj · simulirani ciklus.',
+            signalDetails: 'Kliknite svjetlo za ciklus crveno → zeleno → žuto → crveno. Izmjena traje jednu fazu.',
+            signalOverride: 'Ručno postavljeno na {aspect} · još {seconds} s simuliranog vremena.',
+            signalScheduled: 'Planirano {aspect} · promjena za {seconds} s simuliranog vremena.',
+            signalReverted: 'Vraćeno na planirani ciklus.',
             signalLink: 'OSM',
             sourceLink: 'Referenca oznaka za promjenu trake'
     });

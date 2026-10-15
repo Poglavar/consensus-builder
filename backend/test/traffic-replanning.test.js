@@ -59,6 +59,55 @@ function vehicle(id, laneId, s, { type = 'car', cruise = 8, speed = 0, driver = 
 }
 
 describe('traffic recovery replanning', () => {
+    function retreat(sim, bus, progress) {
+        const route = sim.network.lanes.get(bus.laneId).path;
+        const a = Traffic.sample(route, 80), b = Traffic.sample(route, 76.8);
+        bus.maneuver = { kind: 'yield', segments: [{ gear: -1, path: path([[a.x, a.y], [b.x, b.y]]) }],
+            index: 0, s: progress, travelled: progress, stops: [],
+            landing: { mode: 'lane', laneId: bus.laneId, connectionId: null, s: 76.8, next: 'out-0' } };
+        bus.s = 80 - progress;
+    }
+
+    it('finishes a bus retreat despite a non-overlapping adjacent lane-change reservation', () => {
+        const sim = new Simulation(makeNetwork(), { count: 0, signals: false, laneChangeRate: 0 });
+        const bus = vehicle(186, 'lane-0', 80, { type: 'bus', driver: { patience: Infinity, reaction: Infinity } });
+        const adjacent = vehicle(129, 'lane-1', 74.4, { cruise: 0, driver: { patience: Infinity, reaction: Infinity } });
+        adjacent.change = { to: 'lane-0', progress: 0, duration: Infinity };
+        adjacent.next = 'out-1'; bus.next = 'out-0';
+        retreat(sim, bus, 3.1877659);
+        sim.cars.push(bus, adjacent);
+        const before = sim.pose(bus);
+        expect(Collision.overlaps(before, sim.pose(adjacent))).toBe(false);
+        expect(sim.carOccupancies(adjacent).some(([id, s]) => id === bus.laneId && Math.abs(s - 76.8) < Traffic.GAP)).toBe(true);
+
+        sim.advance(.1);
+
+        expect(bus.maneuver).toBeNull();
+        expect(bus.lastManeuver.kind).toBe('yield');
+        expect(Math.hypot(sim.pose(bus).x - before.x, sim.pose(bus).y - before.y)).toBeCloseTo(.0122341, 5);
+        const landed = bus.s;
+        sim.advance(.5);
+        expect(bus.s).toBeGreaterThan(landed);
+        expect(Collision.overlaps(sim.pose(bus), sim.pose(adjacent))).toBe(false);
+    });
+
+    it('keeps an unfinished retreat outside an actual vehicle body at the landing', () => {
+        const sim = new Simulation(makeNetwork(), { count: 0, signals: false, laneChangeRate: 0 });
+        const bus = vehicle(186, 'lane-0', 80, { type: 'bus', driver: { patience: Infinity, reaction: Infinity } });
+        const rear = vehicle(129, 'lane-0', 68.4, { cruise: 0, driver: { patience: Infinity, reaction: Infinity } });
+        rear.next = 'out-0'; bus.next = 'out-0';
+        retreat(sim, bus, 3);
+        sim.cars.push(bus, rear);
+        expect(Collision.overlaps(sim.pose(bus), sim.pose(rear))).toBe(false);
+        for (let tick = 0; tick < 50; tick++) {
+            sim.advance(.1);
+            expect(Collision.overlaps(sim.pose(bus), sim.pose(rear))).toBe(false);
+        }
+        expect(bus.maneuver).not.toBeNull();
+        expect(bus.collisionBlocker).toBe(rear.id);
+        expect(bus.lastManeuver).toBeUndefined();
+    });
+
     it('lets a stopped follower start moving when a stopped leader is just beyond its gap', () => {
         const network = makeNetwork();
         const sim = new Simulation(network, { count: 0, signals: false, laneChangeRate: 0 });

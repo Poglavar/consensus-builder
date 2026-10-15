@@ -48,6 +48,9 @@ h2 { margin: 0 0 11px; font-size: 11px; font-weight: 650; }
 #selected-signal[data-aspect="red"] { color: #9d4035; }
 #selected-signal[data-aspect="amber"] { color: #8c641c; }
 #selected-signal[data-aspect="green"] { color: #216b4c; }
+.leaflet-popup-content .signal-popup-state { margin-top: 10px; padding: 7px 9px; border-left: 3px solid #56746c; background: #f0f4ec; color: #29423b; font-size: 12px; line-height: 1.4; font-variant-numeric: tabular-nums; }
+.signal-popup-state[data-state="override"] { border-left-color: #bd8127; background: #fff6df; }
+.signal-popup-state[data-state="reverted"] { border-left-color: #36876b; background: #e8f3e9; }
 #show-signal { margin: 0 15px 12px 0; }
 .text-button { border: 0; padding: 0; background: transparent; color: var(--accent); font-size: 11px; font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
 .about { margin-top: 14px; font-size: 11px; line-height: 1.6; color: var(--muted); }
