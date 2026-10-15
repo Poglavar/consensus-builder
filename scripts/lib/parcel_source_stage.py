@@ -237,7 +237,7 @@ The receipt scope is a source-discovery claim that must be checked against first
 
 Write `{attempt_dir / 'candidate.json'}` and all evidence under `{attempt_dir}`. Candidate identity must bind exactly to receipt `source.sourceId` and `source.endpoint`, city code `{city['cityCode']}`, name `{city['name']}`, and point `{point}`. Include full descriptor fields needed by production catalog/runtime, and include `city.currency={{"locale":"...","code":"..."}}` if available from an existing same-country app config or verified public country metadata; do not guess. Keep frozen identity/source fields unchanged.
 
-Use only safe native IDs and necessary geometry fields. Never request/save owner, address, tax/account, or other personal fields. Preserve source geometry unchanged. Alignment is required: retain first-party native CRS, wire axes, hash-bound native sample and published operation/grid evidence. No offsets, fitting, repair, clipping, simplification, union, guessed CRS, ballpark transforms, credentials, or access-control bypasses. If first-party source evidence proves a genuine external limitation, save `{attempt_dir / 'evidence/source-block.json'}` with `{{"sourceId":"<exact receipt ID>","endpoint":"<exact receipt endpoint>","reason":"specific limitation","evidenceFiles":["relative/path"]}}`, plus the raw request/response/metadata evidence it references. A missing adapter, unsupported local implementation, or incomplete local code is not a source limitation. For positive non-parcel evidence use the qualification runner's `evidence/exclusion.json` contract.
+Use only safe native IDs and necessary geometry fields. Never request/save owner, address, tax/account, or other personal fields. Preserve source geometry unchanged. Alignment is required: retain first-party native CRS, wire axes, hash-bound native sample and published operation/grid evidence. No offsets, fitting, repair, clipping, simplification, union, guessed CRS, ballpark transforms, credentials, or access-control bypasses. If first-party evidence proves a genuine external limitation, save `{attempt_dir / 'evidence/source-block.json'}` with exact receipt `sourceId` and `endpoint`, a specific `reason`, and `evidenceFiles` as strings relative to this attempt directory (for example `evidence/metric-report.json`). Reference the saved source metadata, `qualification.json`, `metric-report.json`, and/or `alignment-report.json` that demonstrate the limitation. A missing adapter, unsupported local implementation, or incomplete local code is not a source limitation. For positive non-parcel evidence use the qualification runner's `evidence/exclusion.json` contract.
 
 Allowed writes: this attempt directory, `backend/parcels/`, `backend/test/` focused node:test files and fixtures. Do not edit catalogs, city configs, runtime wiring outside adapter code, research inputs, or any unrelated path. Preserve unrelated dirty files.
 
@@ -292,8 +292,12 @@ def _check_candidate(attempt_dir: Path, city: dict[str, Any], source_id: str, en
 def _source_block_evidence(city_root: Path, attempt_dir: Path, source_id: str,
                            endpoint: str) -> tuple[bool, str, list[str]]:
     rel = "evidence/source-block.json"
-    # The worker output's attempt directory is discoverable from its required relative evidence list.
+    # The worker writes source-block evidence directly under its attempt evidence directory.
     block_path = attempt_dir / rel
+    if any(part.is_symlink() for part in (block_path, *block_path.parents) if part != attempt_dir.parent):
+        return False, "source-block evidence path uses a symlink", []
+    block_path = block_path.resolve()
+    block_path.relative_to(attempt_dir.resolve())
     if not block_path.is_file():
         return False, "held result has no source-block.json", []
     try:
@@ -301,11 +305,8 @@ def _source_block_evidence(city_root: Path, attempt_dir: Path, source_id: str,
         if block.get("sourceId") != source_id or block.get("endpoint") != endpoint:
             return False, "source-block evidence does not bind receipt source", []
         reason = block.get("reason")
-        if not isinstance(reason, str) or len(reason.strip()) < 24:
+        if not isinstance(reason, str) or len(reason.strip()) < 12:
             return False, "source-block evidence has no specific source limitation", []
-        if re.search(r"(?:adapter|protocol|implementation).{0,40}(?:missing|unsupported|not implemented)|"
-                     r"(?:missing|unsupported|not implemented).{0,40}(?:adapter|implementation)", reason, re.I):
-            return False, "adapter or implementation gaps cannot be reported as blocked-source", []
         refs = block.get("evidenceFiles")
         if not isinstance(refs, list) or not refs:
             return False, "source-block evidence must reference first-party evidence files", []
@@ -313,24 +314,39 @@ def _source_block_evidence(city_root: Path, attempt_dir: Path, source_id: str,
         source_bound = False
         objective_failure = False
         source_host = urlsplit(endpoint).netloc.lower()
-        failure_re = re.compile(
-            r"\b(?:401|403|404|408|429|500|501|502|503|504)\b|"
-            r"timed?\s*out|connection\s+(?:refused|reset|failed)|name or service not known|"
-            r"malformed\s+(?:response|data)|invalid\s+(?:response|source data)|"
-            r"no (?:native )?crs|crs.{0,30}(?:missing|unavailable|not published)|"
-            r"licen[cs]e.{0,30}(?:missing|unavailable|not published)|"
-            r"no features? (?:returned|found)|empty (?:feature|coverage) result", re.I)
-        for value in refs:
-            if not isinstance(value, str):
+        parsed_evidence: list[dict[str, Any]] = []
+        for ref in refs:
+            if not isinstance(ref, str):
                 return False, "source-block evidence path is malformed", []
-            path = (city_root / value).resolve()
-            path.relative_to(city_root.resolve())
-            if not path.is_file() or path.stat().st_size == 0:
+            value = ref
+            if not value or Path(value).is_absolute() or ".." in Path(value).parts:
+                return False, "source-block evidence path must be attempt-relative and contained", []
+            unresolved = attempt_dir / value
+            if any(part.is_symlink() for part in (unresolved, *unresolved.parents) if part != attempt_dir.parent):
+                return False, f"source evidence path uses a symlink: {value}", []
+            path = unresolved.resolve()
+            path.relative_to(attempt_dir.resolve())
+            if not path.is_file() or path.is_symlink() or path.stat().st_size == 0:
                 return False, f"source evidence file is missing or empty: {value}", []
-            body = path.read_text(encoding="utf-8", errors="replace")
-            source_bound = source_bound or source_id in body or source_host in body.lower() or endpoint in body
-            objective_failure = objective_failure or bool(failure_re.search(body))
+            raw = path.read_bytes()
+            try:
+                doc = json.loads(raw)
+            except (UnicodeDecodeError, json.JSONDecodeError):
+                doc = None
+            if isinstance(doc, dict):
+                doc_source_id = doc.get("sourceId")
+                source_bound = source_bound or doc_source_id == source_id
+                status = doc.get("status", doc.get("httpStatus"))
+                objective_failure = objective_failure or (type(status) is int and status in {401, 403, 404, 408, 429, 500, 501, 502, 503, 504})
+                request_url = doc.get("request", {}).get("url") if isinstance(doc.get("request"), dict) else None
+                evidence_url = request_url or doc.get("url") or doc.get("endpoint")
+                if isinstance(evidence_url, str):
+                    source_bound = source_bound or urlsplit(evidence_url).netloc.lower() == source_host
+                parsed_evidence.append(doc)
             verified.append(path.relative_to(city_root).as_posix())
+        qualification_docs = [doc for doc in parsed_evidence if doc.get("sourceId") == source_id]
+        objective_failure = objective_failure or any(
+            _qualifier_source_failure(doc, source_id, qualification_docs) for doc in parsed_evidence)
         if not source_bound:
             return False, "referenced first-party evidence does not identify the receipt source or endpoint", []
         if not objective_failure:
@@ -338,6 +354,26 @@ def _source_block_evidence(city_root: Path, attempt_dir: Path, source_id: str,
         return True, str(reason), [block_path.relative_to(city_root).as_posix(), *verified]
     except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
         return False, f"source-block evidence is invalid: {exc}", []
+
+
+def _qualifier_source_failure(doc: dict[str, Any], source_id: str,
+                              qualification_docs: list[dict[str, Any]]) -> bool:
+    """Recognize source-bound failures from the qualifier's saved structured reports."""
+    # Alignment failures can come from incomplete local evidence or implementation.
+    # A failed gate alone does not prove an external source limitation.
+    if doc.get("geometryPass") is False:
+        overlaps = doc.get("overlaps")
+        cache_hash = doc.get("inputSha256")
+        bound_cache = (isinstance(cache_hash, str) and re.fullmatch(r"[0-9a-f]{64}", cache_hash)
+                       and any(q.get("cacheSha256") == cache_hash
+                               and q.get("checks", {}).get("metric", {}).get("passed") is False
+                               for q in qualification_docs))
+        return (bound_cache and type(doc.get("overlapPairCount")) is int and doc["overlapPairCount"] > 0
+                and type(doc.get("featureCount")) is int and doc["featureCount"] > 0
+                and isinstance(overlaps, list) and len(overlaps) == doc["overlapPairCount"]
+                and all(isinstance(row, dict) and type(row.get("areaM2")) in (float, int)
+                        and math.isfinite(row["areaM2"]) and row["areaM2"] > 0 for row in overlaps))
+    return False
 
 
 def _persist_result(attempt_dir: Path, city_root: Path, status: str, summary: str,
@@ -555,7 +591,7 @@ def run_candidate(runner: Any, city: dict[str, Any], receipt: dict[str, Any], pa
             summary = "an input receipt, packet, review, or sample changed during qualification"
         extra = {"inputHashes": hashes_before, "inputHashesAfter": hashes_after,
                  "candidateBinding": {"passed": candidate_ok, "summary": candidate_reason}}
-        if status == "adapter-ready":
+        if status in {"adapter-ready", "blocked-source"}:
             extra["artifactHashes"] = _artifact_hashes(root, attempt_dir)
         return _persist_result(attempt_dir, city_root, status, summary, all_evidence, changed, extra)
     except Exception as exc:

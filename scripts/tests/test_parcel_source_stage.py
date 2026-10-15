@@ -69,7 +69,9 @@ class FakeBuild:
 class Harness:
     def __init__(self, root: Path, attempt_dir: Path, *, answer_status="technical-qualified",
                  wrong_binding=False, code_change=False, outside_change=False, mutate_input=False,
-                 mutate_review=False, block_reason=None, no_result=False, interrupted=False):
+                 mutate_review=False, block_reason=None, block_type=None, block_path_override=None,
+                 block_http_status=503,
+                 no_result=False, interrupted=False):
         self.root = root
         self.state_dir = root / "state"
         self.attempt_dir = attempt_dir
@@ -80,6 +82,9 @@ class Harness:
         self.mutate_input = mutate_input
         self.mutate_review = mutate_review
         self.block_reason = block_reason
+        self.block_type = block_type
+        self.block_path_override = block_path_override
+        self.block_http_status = block_http_status
         self.no_result = no_result
         self.interrupted = interrupted
         self.stop_requested = False
@@ -106,11 +111,36 @@ class Harness:
                 "sourceUrl": "https://example.test/source", "excerpt": "First-party excerpt."}))
             rel_evidence = self.attempt_dir.relative_to(city_root).as_posix() + "/evidence/exclusion.json"
         if self.block_reason is not None:
-            (evidence / "source-response.json").write_text(json.dumps({"url": "https://example.test/source", "status": 503,
-                                                                       "error": "Official endpoint returned HTTP 503"}))
+            source_response = {"url": "https://example.test/source", "status": self.block_http_status,
+                               "error": "Official endpoint returned HTTP 503"}
+            evidence_file = "evidence/source-response.json"
+            if self.block_type == "material-overlaps":
+                metric = {"geometryPass": False, "inputSha256": "a" * 64,
+                          "featureCount": 22, "overlapPairCount": 3,
+                          "overlaps": [{"areaM2": value} for value in (12.23, 2.01, 0.045)]}
+                (evidence / "metric-report.json").write_text(json.dumps(metric))
+                (evidence / "qualification.json").write_text(json.dumps({"sourceId": "source-1",
+                    "cacheSha256": "a" * 64, "checks": {"metric": {"passed": False}}}))
+                evidence_file = "evidence/metric-report.json"
+            elif self.block_type == "null-native-crs":
+                (evidence / "source-metadata.json").write_text(json.dumps({"request": {
+                    "url": "https://example.test/source?f=json"}, "responseSelectedSafeMetadata": {
+                    "sourceSpatialReference": None, "spatialReference": {"wkid": 3857}}}))
+                evidence_file = "evidence/source-metadata.json"
+                source_response["status"] = 200
+            elif self.block_type == "failed-alignment":
+                (evidence / "alignment-report.json").write_text(json.dumps({"schemaVersion": 1,
+                    "passed": False, "sourceId": "source-1", "nativeCrs": None}))
+                evidence_file = "evidence/alignment-report.json"
+                source_response["status"] = 200
+            response_path = evidence / Path(evidence_file).name
+            if not response_path.exists():
+                response_path.write_text(json.dumps(source_response))
+            ref_path = self.block_path_override or evidence_file
             block = {"sourceId": "source-1", "endpoint": "https://example.test/source",
                      "reason": self.block_reason,
-                     "evidenceFiles": [self.attempt_dir.relative_to(city_root).as_posix() + "/evidence/source-response.json"]}
+                     "evidenceFiles": [ref_path, "evidence/qualification.json"]
+                     if self.block_type == "material-overlaps" else [ref_path]}
             (evidence / "source-block.json").write_text(json.dumps(block))
         if self.answer_status == "technical-qualified":
             descriptor = {"id": "source-1", "endpoint": "https://example.test/source"}
@@ -226,6 +256,63 @@ class ParcelSourceStageTests(unittest.TestCase):
         self.assertEqual(result["status"], "blocked-source")
         self.assertTrue(any("source-response.json" in path for path in result["evidenceFiles"]))
 
+    def test_attempt_relative_structured_overlap_failure_is_accepted(self):
+        harness = Harness(self.root, self.attempt_dir, answer_status="held",
+                          block_reason="Independent qualifier geometry check found material overlaps.",
+                          block_type="material-overlaps", block_http_status=200)
+        result = self.call_stage(harness)
+        self.assertEqual(result["status"], "blocked-source")
+        self.assertIn("attempt-01/evidence/metric-report.json", result["evidenceFiles"])
+        self.assertIn("evidence/metric-report.json", result["artifactHashes"]["artifacts"])
+
+    def test_alignment_failure_alone_cannot_prove_external_source_limitation(self):
+        harness = Harness(self.root, self.attempt_dir, answer_status="held",
+                          block_reason="The saved alignment report records a failed source alignment gate.",
+                          block_type="failed-alignment")
+        result = self.call_stage(harness)
+        self.assertEqual(result["status"], "failed")
+        self.assertIn("observable source limitation", result["summary"])
+
+    def test_attempt_relative_null_native_crs_alone_is_not_source_block(self):
+        harness = Harness(self.root, self.attempt_dir, answer_status="held",
+                          block_reason="Source metadata omits its native CRS.",
+                          block_type="null-native-crs")
+        result = self.call_stage(harness)
+        self.assertEqual(result["status"], "failed")
+
+    def test_source_block_path_escape_and_missing_paths_are_rejected(self):
+        for ref in ("../../outside.json", "evidence/not-present.json"):
+            with self.subTest(ref=ref):
+                harness = Harness(self.root, self.attempt_dir, answer_status="held",
+                                  block_reason="The official endpoint returned HTTP 503.",
+                                  block_path_override=ref)
+                result = self.call_stage(harness)
+                self.assertEqual(result["status"], "failed")
+
+    def test_source_block_symlink_evidence_is_rejected(self):
+        harness = Harness(self.root, self.attempt_dir, answer_status="held",
+                          block_reason="The official endpoint returned HTTP 503.",
+                          block_path_override="evidence/linked.json")
+        original_run_calls = harness.run_calls
+
+        def with_symlink(calls):
+            result = original_run_calls(calls)
+            outside = self.root / "outside.json"
+            outside.write_text('{"url":"https://example.test/source","status":503}')
+            (self.attempt_dir / "evidence/linked.json").symlink_to(outside)
+            return result
+
+        harness.run_calls = with_symlink
+        result = self.call_stage(harness)
+        self.assertEqual(result["status"], "failed")
+
+    def test_missing_adapter_claim_is_not_a_structured_source_block(self):
+        harness = Harness(self.root, self.attempt_dir, answer_status="held",
+                          block_reason="Adapter implementation is missing for this source.",
+                          block_http_status=200)
+        result = self.call_stage(harness)
+        self.assertEqual(result["status"], "failed")
+
     def test_positive_non_parcel_evidence_maps_to_rejected_source(self):
         harness = Harness(self.root, self.attempt_dir, answer_status="excluded")
         result = self.call_stage(harness)
@@ -241,7 +328,8 @@ class ParcelSourceStageTests(unittest.TestCase):
 
     def test_adapter_missing_claim_cannot_be_reported_as_source_block(self):
         harness = Harness(self.root, self.attempt_dir, answer_status="held",
-                          block_reason="Adapter implementation is missing for this source.")
+                          block_reason="Adapter implementation is missing for this source.",
+                          block_http_status=200)
         result = self.call_stage(harness)
         self.assertEqual(result["status"], "failed")
 

@@ -40,7 +40,7 @@ const COUNTRY_NAMES = {
     SI: { en: 'Slovenia', es: 'Eslovenia', hr: 'Slovenija', sr: 'Словенија' }
 };
 const CURRENCY = {
-    US: ['en-US', 'USD'], DE: ['de-DE', 'EUR'], NL: ['nl-NL', 'EUR'], PL: ['pl-PL', 'PLN'], BE: ['nl-BE', 'EUR'],
+    US: ['en-US', 'USD'], DE: ['de-DE', 'EUR'], NL: ['nl-NL', 'EUR'], PL: ['pl-PL', 'PLN'], BE: ['nl-BE', 'EUR'], ET: ['am-ET', 'ETB'],
     FR: ['fr-FR', 'EUR'], GR: ['el-GR', 'EUR'], IL: ['he-IL', 'ILS'], NZ: ['en-NZ', 'NZD'], LV: ['lv-LV', 'EUR'],
     LT: ['lt-LT', 'EUR'], EE: ['et-EE', 'EUR'], BR: ['pt-BR', 'BRL'], AU: ['en-AU', 'AUD'], ZM: ['en-ZM', 'ZMW'],
     ES: ['es-ES', 'EUR'], UA: ['uk-UA', 'UAH'], SI: ['sl-SI', 'EUR'], IT: ['it-IT', 'EUR'], GB: ['en-GB', 'GBP'], IN: ['en-IN', 'INR']
@@ -145,11 +145,30 @@ export function validateCountryConfig(config, expectedCountryCode = null) {
     return { countryCode, currency: { locale, code: currency.code } };
 }
 
+// Existing opt-in sources stay opt-in. A newly discovered source has no production
+// default policy yet; after city-specific qualification, admission makes that new
+// source the default for its first narrowly scoped production city binding.
+export function sourceActivationDecision(candidateDescriptor, existingDescriptor = null) {
+    if (existingDescriptor) {
+        if (existingDescriptor.defaultForCity === false) {
+            return { eligible: false, descriptor: existingDescriptor, activation: null };
+        }
+        return { eligible: true, descriptor: existingDescriptor,
+            activation: { policy: 'existing_catalog_default', defaultForCity: true } };
+    }
+    const descriptor = { ...candidateDescriptor, cityIds: [], defaultForCity: true };
+    return { eligible: true, descriptor, activation: {
+        policy: 'newly_qualified_city_default', candidateDefaultForCity: candidateDescriptor.defaultForCity ?? null,
+        defaultForCity: true, scope: 'admitted_city_ids',
+        reason: 'new source descriptor promoted after nine-gate qualification; catalog scope is limited to admitted cities'
+    } };
+}
+
 function countryName(code, locale) {
     return new Intl.DisplayNames([locale], { type: 'region' }).of(code);
 }
 
-function currencyFor(countryCode, explicit) {
+export function currencyFor(countryCode, explicit) {
     if (explicit) return validateCountryConfig(explicit, countryCode).currency;
     const known = CURRENCY[countryCode];
     return known ? { locale: known[0], code: known[1] } : null;
@@ -326,13 +345,19 @@ async function main() {
         const candidate = readJson(ev.candidate);
         const candidateDescriptor = candidate.descriptor;
         const candidateSourceId = candidateDescriptor?.id;
-        const catalogSource = catalogDoc.sources.find(s => s.id === candidateSourceId) || candidateDescriptor;
+        const existingCatalogSource = catalogDoc.sources.find(s => s.id === candidateSourceId) || null;
+        const catalogSource = existingCatalogSource || candidateDescriptor;
         const checked = verifyAdmissionEvidence(ev, catalogSource);
         if (typeof checked === 'string') { refused.push({ code, name: outcome.cityName, reason: checked }); continue; }
-        // An opt-in alternative (Ljubljana's GURS service) is skipped by default resolution, so it cannot be a city's only source.
-        if (catalogSource.defaultForCity === false) { refused.push({ code, name: outcome.cityName, reason: `${catalogSource.id} is an opt-in alternative (defaultForCity false)` }); continue; }
+        const activation = sourceActivationDecision(candidateDescriptor, existingCatalogSource);
+        if (!activation.eligible) {
+            refused.push({ code, name: outcome.cityName,
+                reason: `${catalogSource.id} is an existing opt-in alternative (defaultForCity false)` });
+            continue;
+        }
+        const selectedSource = activation.descriptor;
         const w = wup.get(code)?.['2025'];
-        const countryCode = catalogSource.countryCode || outcome.countryCode;
+        const countryCode = selectedSource.countryCode || outcome.countryCode;
         let currency;
         const candidateCountry = candidate.city?.currency ? { countryCode, currency: candidate.city.currency } : null;
         try { currency = currencyFor(countryCode, explicitCountry || candidateCountry); }
@@ -340,15 +365,14 @@ async function main() {
         if (!currency) { refused.push({ code, name: outcome.cityName, reason: `no verified currency configuration for ${countryCode}` }); continue; }
         for (const l of LOCALES) countryNames[l][countryCode] ??= countryName(countryCode, l);
         if (!LOCALES.every(l => countryNames[l][countryCode])) { refused.push({ code, name: outcome.cityName, reason: `no localized country label for ${countryCode}` }); continue; }
-        if (!catalogDoc.sources.some(s => s.id === candidateSourceId)) {
+        if (!existingCatalogSource) {
             const endpoint = candidateDescriptor?.endpoint;
             if (!candidateDescriptor || !candidateSourceId || !/^https?:\/\//i.test(endpoint || '')
                 || !candidateDescriptor.adapter || !candidateDescriptor.idPrefix || !candidateDescriptor.name) {
                 refused.push({ code, name: outcome.cityName, reason: 'new source descriptor lacks a public HTTP(S) endpoint, adapter, display name or ID prefix' }); continue;
             }
-            // A new source arrives without production city bindings; the candidate is its contract.
-            candidateDescriptor.cityIds = [];
-            candidateDescriptor.countryCode ||= countryCode;
+            // The production descriptor is a separate copy. The candidate and its hash stay unchanged.
+            selectedSource.countryCode ||= countryCode;
         }
         // A live city configured without a WUP code is the same place when its centre is this close.
         const pointLatLon = [checked.candidate.city.point[1], checked.candidate.city.point[0]];
@@ -356,15 +380,16 @@ async function main() {
             && (catalogDoc.sources.find(s => s.id === c.sourceId)?.countryCode ?? countryCode) === countryCode);
         if (twin) { refused.push({ code, name: outcome.cityName, reason: `already live as ${twin.id} (${haversineKm(twin.lat, twin.lon, ...pointLatLon).toFixed(1)} km away)` }); continue; }
         let appCityId = slug(outcome.cityName);
-        if (taken.has(appCityId)) appCityId = `${appCityId}_${(catalogSource.stateCode || countryCode).toLowerCase()}`;
+        if (taken.has(appCityId)) appCityId = `${appCityId}_${(selectedSource.stateCode || countryCode).toLowerCase()}`;
         if (taken.has(appCityId)) appCityId = `${appCityId}_${code}`;
         taken.add(appCityId);
         const point = checked.candidate.city.point; // [longitude, latitude]
         const metricCrs = checked.metric.metricCrs || checked.qualification.checks.metric.metricCrs;
         // Same-named cities in one country are told apart by their state or region code.
         const takenLabels = new Set([...Object.values(i18n.en.city?.labels || {}), ...plan.map(item => item.label)]);
-        const qualifier = takenLabels.has(`${outcome.cityName}, ${countryNames.en[countryCode]}`) ? ` (${catalogSource.stateCode || code})` : '';
-        plan.push({ code, appCityId, outcome, evidence: ev, ...checked, catalogSource, countryCode, currency, qualifier,
+        const qualifier = takenLabels.has(`${outcome.cityName}, ${countryNames.en[countryCode]}`) ? ` (${selectedSource.stateCode || code})` : '';
+        plan.push({ code, appCityId, outcome, evidence: ev, ...checked, catalogSource: selectedSource,
+            activationDecision: activation.activation, countryCode, currency, qualifier,
             name: outcome.cityName, label: `${outcome.cityName}${qualifier}, ${countryNames.en[countryCode]}`,
             center: [point[1], point[0]], metricSrid: Number(String(metricCrs).split(':')[1]),
             population2025: w?.pop ?? null, population2015: wup.get(code)?.['2015']?.pop ?? null, countryName: countryNames.en[countryCode] });
@@ -465,7 +490,8 @@ async function main() {
                 ...Object.fromEntries(['inputSha256', 'metricCrs', 'featureCount', 'geometryChangedOrRepaired', 'geometryPass', ...BLOCKERS].map(k => [k, item.independent[k]])) },
             sourceProfile: { adapter: item.descriptor.adapter, endpoint: item.descriptor.endpoint, idField: item.descriptor.idField ?? null,
                 idFields: item.descriptor.idFields ?? null, idPrefix: item.descriptor.idPrefix, metricSrid: item.metricSrid,
-                evidence: [item.descriptor.discovery?.jurisdiction?.basis].filter(Boolean) },
+                evidence: [item.descriptor.discovery?.jurisdiction?.basis].filter(Boolean),
+                activationDecision: item.activationDecision },
             verifiedAt: args.release.slice(0, 10),
             primaryReview: { status: 'admitted', method: 'Qualification evidence re-verified offline: nine gates, independent geometry and native CRS alignment audits, production descriptor identity and query contract.' }
         });

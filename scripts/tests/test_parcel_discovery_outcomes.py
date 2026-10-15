@@ -138,6 +138,9 @@ class DiscoveryPipelineTests(unittest.TestCase):
         self.args = runner.build_parser().parse_args(["--repo-root", str(self.root), "--queue", "cohort/queue.json", "--state-dir", "state", "--with-adapters"])
         self.instance = runner.Runner(self.args)
         self.instance.models = {"review": {"model": "test", "effort": "low"}}
+        self.snapshot = patch.object(self.instance, "_candidate_workspace_snapshot", return_value={})
+        self.snapshot.start()
+        self.addCleanup(self.snapshot.stop)
         self.instance.state = {"queuePath": str(self.cohort / "queue.json"), "cities": {}, "rootReviewTasks": {}}
         self.city = {"cityCode": 42, "name": "Example", "rank": 1, "country": "Example", "iso2": "EX", "point": [1, 2], "pop2025k": 10}
         for file in ("city.json", "review.json"):
@@ -219,6 +222,33 @@ class DiscoveryPipelineTests(unittest.TestCase):
         self.assertIsNone(answer)
         self.assertEqual(calls.call_count, 1)
         self.assertNotIn("discoveryDecision", self.instance._city_entry(self.city))
+
+    def test_failed_city_with_unchanged_workspace_does_not_block_next_candidate(self):
+        self.accept("candidate")
+        build = Mock(return_value={"status": "failed", "summary": "Worker could not establish source evidence"})
+        with patch.dict(sys.modules, {"parcel_source_stage": SimpleNamespace(run_candidate=build, revalidate_stage=Mock()), "parcel_source_admission": SimpleNamespace(admit_candidate=Mock())}), patch.object(self.instance, "_packet", return_value=self.packet):
+            self.assertTrue(self.instance._advance_candidate([self.city], self.cohort))
+            self.assertNotIn("adapterStageBlocked", self.instance.state)
+            # A distinct candidate still starts, while the failed one remains recorded.
+            second = {**self.city, "cityCode": 43}
+            self.instance._city_entry(second)["discoveryDecision"] = "candidate"
+            self.instance._receipt_path("city:43").write_text(json.dumps(self.receipt))
+            with patch.object(self.instance, "_reviewed_city_receipt", return_value=self.receipt):
+                self.assertTrue(self.instance._advance_candidate([self.city, second], self.cohort))
+        self.assertEqual(build.call_count, 2)
+        self.assertTrue(self.instance._has_failures())
+
+    def test_failed_city_with_changed_or_unknown_workspace_pauses_mutations(self):
+        for after in ({"backend/parcels/source.js": "changed"}, None):
+            with self.subTest(after=after):
+                self.instance.state.pop("adapterStageBlocked", None)
+                self.instance._city_entry(self.city).pop("qualification", None)
+                self.accept("candidate")
+                build = Mock(side_effect=RuntimeError("worker crashed"))
+                with patch.dict(sys.modules, {"parcel_source_stage": SimpleNamespace(run_candidate=build, revalidate_stage=Mock()), "parcel_source_admission": SimpleNamespace(admit_candidate=Mock())}), patch.object(self.instance, "_packet", return_value=self.packet), patch.object(self.instance, "_candidate_workspace_snapshot", side_effect=[{}, after]):
+                    self.assertTrue(self.instance._advance_candidate([self.city], self.cohort))
+                    self.assertFalse(self.instance._advance_candidate([self.city], self.cohort))
+                self.assertEqual(self.instance.state["adapterStageBlocked"]["cityCode"], "42")
 
     def test_failed_reclassification_does_not_retry_old_held_forever(self):
         self.instance._city_entry(self.city).update(status="reviewed-held", attempts=1)

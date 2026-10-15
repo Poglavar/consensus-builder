@@ -1210,6 +1210,21 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 return None
         return receipt
 
+    def _candidate_workspace_snapshot(self) -> dict[str, str | None] | None:
+        """Independently detect code/data changes even when a worker fails to report them."""
+        from parcel_source_stage import _support
+        try:
+            _qualification, build = _support(self.root)
+            return build.worktree_snapshot(self.root)
+        except Exception as exc:
+            self.log("candidate workspace snapshot unavailable", error=str(exc))
+            return None
+
+    def _has_failures(self) -> bool:
+        return bool(self.state.get("failedItems") or self.state.get("adapterStageBlocked") or any(
+            row.get("qualification", {}).get("status") == "failed"
+            for row in self.state.get("cities", {}).values()))
+
     def _advance_candidate(self, cities: list[dict[str, Any]], cohort_dir: Path) -> bool:
         """One serial build/qualification/admission between discovery batches."""
         if not getattr(self.args, "with_adapters", False) or self.stop_requested or self.state.get("adapterStageBlocked"):
@@ -1241,6 +1256,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                     stage = {**stage, "status": "adapter-ready"}
             elif stage.get("status") not in {None, "pending", "running", "interrupted", "adapter-ready"}:
                 continue
+            workspace_before = self._candidate_workspace_snapshot()
             if stage.get("status") != "adapter-ready":
                 entry["qualification"] = {"status": "running", "startedAt": utc_now(), "receiptSha256": digest}
                 self.save_state()
@@ -1267,9 +1283,15 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
             self.log("candidate stage checkpoint", cityCode=str(city["cityCode"]),
                      status=entry["qualification"]["status"], summary=entry["qualification"].get("summary"))
             if entry["qualification"]["status"] == "failed":
-                self.state["adapterStageBlocked"] = {"cityCode": str(city["cityCode"]),
-                                                      "reason": entry.get("admission", entry["qualification"]).get("summary"),
-                                                      "at": utc_now()}
+                workspace_after = self._candidate_workspace_snapshot()
+                unchanged = workspace_before is not None and workspace_after == workspace_before
+                entry["qualification"]["workspaceUnchangedAfterFailure"] = unchanged
+                if not unchanged:
+                    self.state["adapterStageBlocked"] = {"cityCode": str(city["cityCode"]),
+                                                          "reason": entry.get("admission", entry["qualification"]).get("summary"),
+                                                          "at": utc_now()}
+                else:
+                    self.log("candidate failed without workspace changes; continuing other candidates", cityCode=str(city["cityCode"]))
                 self.save_state()
             return True
         return False
@@ -1538,7 +1560,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                     self.save_state()
                     return 0
                 if getattr(self.args, "stop_after_queue", False):
-                    self.state["status"] = "complete-with-failures" if self.state.get("failedItems") or self.state.get("adapterStageBlocked") else "complete"
+                    self.state["status"] = "complete-with-failures" if self._has_failures() else "complete"
                     self.state["completedAt"] = utc_now()
                     self.save_state()
                     self.log("finite city queue exhausted", total=len(self._load_queue(current_queue)[1]))
@@ -1546,7 +1568,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 if range_end is None:
                     range_end = self.state.get("currentRankEnd") or 0
                 if range_end >= int(self.state.get("totalRankCount", 12138)):
-                    self.state["status"] = "complete-with-failures" if self.state.get("failedItems") or self.state.get("adapterStageBlocked") else "complete"
+                    self.state["status"] = "complete-with-failures" if self._has_failures() else "complete"
                     self.state["completedAt"] = utc_now()
                     self.save_state()
                     self.log("all ranked WUP city research ranges exhausted", totalRankCount=range_end)
