@@ -130,9 +130,9 @@ this cleanup on production; a future application rollout still needs these
 checks against the then-current data. Architecture studios enter the existing `floor_plan.site`
 queue through the implemented `architecture-sites --file FILE` command and
 the agent-maintained `backend/floor-plans/architecture-studios.json`. The
-verified HKA/MPGI-backed roster contains 18 studio sites and is a partial seed,
+verified HKA/MPGI-backed roster contains 20 studio sites and is a partial seed,
 not a complete studio register. The national MPGI lists authorize particular
-spatial-planning work; 49 unverified Zagreb leads are kept separately from seeds.
+spatial-planning work; 47 unresolved or excluded Zagreb leads are kept separately from seeds.
 Applying this source policy also resets older verified listing-to-building
 associations whose evidence lacks `locationPolicy=explicit-address-v1` and
 clears their canonical links. Rerun exact resolution from current source
@@ -269,3 +269,40 @@ the monitor entry when deliberately stopping the job so absence is not mistaken
 for an unnoticed failure.
 
 The October 13 refinement adds heuristic site location, site adjudication, sheet-context collection and site-model assembly to the daily wrapper. Shared provider stages are filtered by reader before collection. Site-model failures or incomplete passes remain partial; saved run status is checked against its live advisory lock. The user explicitly kept recurring scheduling disabled; the local repeat crawl is a separate fetch-only pass.
+
+## Valhalla one-off collection, October 14
+
+The laptop repeat job is stopped. The approved replacement is the transient
+`novogradnje-coverage-20261014.service` on Valhalla, running the isolated
+`consensus-builder-novogradnje-crawl` checkout, initially at `7e13f2d5`; the ignored
+`launch.json` records subsequent collector revisions. It visits 198 source domains,
+up to 50 requests with a 90-second crawl deadline per host, and cumulative limits of
+10,000 requests and six hours. In-flight work can finish after a cooperative deadline.
+Systemd enforces a separate 6-hour-15-minute runtime limit and 2 GiB memory limit;
+there is no timer, boot startup, automatic restart or paid-model submission.
+
+The first pilot preserved 31 requests at a controlled pause. A follow-up refinement
+drains source retention between hosts with a fresh deadline of up to 15 seconds,
+independent of an expired host deadline but bounded by the remaining global budget.
+Cleanup time is checkpointed separately from crawl time; an interrupted cleanup
+retains its reserved allowance on resume. Deferred cleanup remains visibly partial.
+
+Actual inspection found Valhalla's local container has the legacy `consensus`
+database, not a local `geodata` database. The existing database owner imported only
+the absent `floor_plan` schema and `public.street`; all imported objects were assigned
+to `geo_user`. No database was created, existing data replaced, or role privileges
+expanded. All 20 table fingerprints and all copied file checksums matched the laptop
+before collection. The source laptop copy remains intact.
+
+This is a collection snapshot. The full geodata reference tables, later location
+resolution and reviewed-model publication are separate; server collection does not
+automatically update the public catalogue. Preserve URL/hash and processing history
+when reconciling subsequent results, and never replace a newer source snapshot blindly.
+
+Run artifacts are ignored under `backend/logs/novogradnje-valhalla-20261014/`:
+`launch.json`, `collector.log`, `hosts.json`, table fingerprint manifests, and
+`run/summary.json` plus per-host progress/results/traces. The process uses the existing
+server credentials with `PGDATABASE=consensus`, a 2 GiB physical archive cap and a
+5 GiB free-space reserve on both the archive and Docker database filesystem. Capacity
+stops are partial and preserve pending sources. Check the live unit and these artifacts
+before resuming; recurring scheduling remains disabled.

@@ -128,7 +128,8 @@ describe('read-only tab write reporting', () => {
         guard.scope.__cbReportSecondaryWriteBlocked();
         expect(guard.toasts).toHaveLength(1);
         expect(guard.toasts[0].text).toMatch(/NOT saved/i);
-        expect(guard.toasts[0].text).toMatch(/reload/i);
+        expect(guard.toasts[0].text).toMatch(/main tab/i);
+        expect(guard.toasts[0].text).toMatch(/recovery copy/i);
         // Never the raw i18n key, which is what a missing translation resolves to.
         expect(guard.toasts[0].text).not.toContain('multitab.');
     });

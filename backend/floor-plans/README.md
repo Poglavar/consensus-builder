@@ -18,9 +18,14 @@ A completion forecast is labeled separately; absent or conflicting years remain
 unknown. Advertised apartment area and physical net plan area remain separate.
 Translated aliases of one posting contribute evidence without multiplying its
 apartments or source links. Commercial-only projects are omitted from this catalogue.
+Search, map and sitemap include only projects with at least one apartment record.
+Located leads without apartments stay in the collection backlog; existing deep links
+explain the missing inventory, link to the source and remain `noindex,follow`.
+The building viewer requires a supported footprint and storey height/elevation.
 
-The source roster reconciles every known agency domain and the 20 evidenced studio
-seeds. Unverified architecture leads remain leads. Discovery still spans the broad
+The source roster reconciles every known agency domain, the 20 evidenced studio
+seeds and the independently checked developer roster. Unverified architecture and
+developer leads remain leads. Discovery still spans the broad
 source set, while **asset fetching now requires a located/probable site or a verified
 building match and current listing ownership**. This concentrates download and
 interpretation work on objects that can actually appear on the map. The deeper
@@ -36,10 +41,98 @@ available. An envelope image is discarded only after both classification and she
 reading finish, with its structured result preserved and no plan consumer waiting.
 
 `floor-plan-retention.mjs` audits by default; `--apply` commits evidence and tombstones
-before deleting files. It is also the final bounded `daily` stage. A repeated apply
+before deleting files. The final `daily` stage drains committed batches within its
+deadline and reports unfinished cleanup as partial. A repeated apply
 resumes interrupted file pruning. Compacted raw HTML cannot be reparsed as HTML;
 that command reports skipped compacted sources rather than treating them as empty.
 Models, revisions, processing results and cost records are retained.
+
+### Processing a fixed collection cohort
+
+Pin the collected listing URLs before processing. `locateSites({urls})`, the image
+and plan enqueue functions' `urls` option, and `enqueueSheetTasks({listingUrls})`
+can restrict preparation to that cohort. Pass an explicit `taskIds` allowlist to
+each paid worker; a chunk size alone does not restrict its global queue.
+`processAssets({listingUrls})` scopes both extraction and pending-work counts.
+`buildSiteModels({urls})` rebuilds affected sites with all their current sibling
+postings and never retires unrelated site models.
+
+An archive can use a separate read-only spatial connection: pass `referencesDb`
+to `locateSites` and `buildSiteModels`. Archive evidence and writes still use the
+main connection. Image workers accept
+`dispositionOptions: {referencesDb, prune}`: registered-model protection uses the
+reference connection, and `prune` runs after the archive transaction commits.
+When files live on another host, that callback must delete files on the archive
+host. A local processing mirror must not clear remote storage metadata. Keep
+existing credentials on their configured hosts and verify source sizes/hashes
+before using a mirror.
+
+Known Eurovilla photo variants are grouped by property ID and source image ID.
+The parser chooses the largest observed variant, preferring JPEG at equal size,
+and retains other observed URLs in `alternateUrls`; it does not invent an original
+URL. Generic region pictures are not listing-owned. This grouping is separate
+from byte-hash deduplication and keeps resized copies out of future paid queues.
+
+For a partial publication, upsert only the affected `site_model` rows and copy
+only their retained plan originals. The existing `push-site-models-to-prod.sh`
+replaces the whole production model set and must not be used with a partial
+archive. Read back the public catalogue and source hashes after publication.
+These processing steps do not enable recurring scheduling.
+
+### Developer sources
+
+`developers.json` is a partial roster of 12 Zagreb residential developers, supported
+by their own company/project pages and 19 project or portfolio seeds. Import it with
+`developer-sites --file backend/floor-plans/developers.json`; manual source-roster
+refresh also imports it. The importer validates the whole document before writing.
+Developer role evidence is kept under `site.evidence.developerSource`, separately
+from agency registry identity and studio provenance. Shared domains keep their
+existing agency/studio parser identity; newly admitted domains use
+`source_kind=developer`. A company role check does not verify every building location
+and does not establish permission to republish its media.
+
+The two public Lankea investor-directory pages supplied 94 company/profile leads in
+`developer-leads.json`. That directory also contains agencies and a studio, so its
+labels are not accepted as proof of a developer role. HUP has a developers'
+association, but its public board page is explicitly for 2020–2024 and is used only
+as a historical discovery lead, without asserting current membership. Each active
+website is checked against its own project evidence; corporate office addresses
+must never substitute for project locations. DOMinvest Development remains deferred
+because its former domain now redirects to a construction-company site whose
+current pages do not establish the named developer entity.
+
+Collection now also compacts completed sources every 50 changed responses and at
+the end of each bounded crawl chunk. The file writer checks actual archive usage,
+including temporary and orphaned files, before a new allocation. Defaults are a
+**2 GiB archive cap** (`FLOOR_PLAN_MAX_ARCHIVE_BYTES`) and **5 GiB free-space reserve**
+(`FLOOR_PLAN_MIN_FREE_BYTES`). Both require positive integer byte values. Optional
+`FLOOR_PLAN_STORAGE_PATHS` is a JSON array of database/log filesystem paths to check
+alongside the archive. Capacity exhaustion stops the pass as partial; it does not
+mark the selected source gone or discard pending plans. URL/hash evidence remains
+after compaction so later visits can reuse completed work. Retained plans, metadata
+and logs still consume space: this is a bounded collector, not unlimited storage.
+
+For broad coverage, use a host manifest in an ignored run directory:
+
+```sh
+node backend/scripts/floor-plan-coverage-crawl.mjs --run \
+  --hosts backend/logs/coverage/hosts.json --run-dir backend/logs/coverage/run \
+  --max-total-pages 10000 --max-total-minutes 360 \
+  --max-site-pages 150 --max-site-minutes 3
+```
+
+The manifest is a JSON array of hostnames. Per-host and total budgets survive
+restarts; rerun the same command to resume a capacity/interruption stop. Each host
+gets a short turn, pages and eligible assets interleave, and known pages are checked
+again with validators/hash reuse. Explicit new-build project members receive higher
+priority, including previously queued children. Ordinary property pages labeled
+“Tlocrt” remain pages until their actual plan assets are discovered. This command
+also drains source retention between hosts with a fresh deadline of up to 15 seconds,
+so a host reaching its crawl deadline does not indefinitely defer file deletion.
+Cleanup time counts toward the cumulative budget and is reserved in the checkpoint
+before cleanup starts. Deferred or failed cleanup keeps the host result partial.
+These are cooperative deadlines; an in-flight operation can finish after the deadline.
+This command does not schedule future runs, submit AI batches or publish models.
 For a large existing archive, use `--apply --until-complete --limit 250` after
 reviewing a sample audit. Each batch commits and verifies its evidence before file
 removal, reports cumulative reclaimed bytes, and is skipped on restart. Exact
@@ -107,11 +200,30 @@ Use `--interleave-assets` to alternate the site's remaining pages and assets. It
 
 Use `--revisit-known` with a **new run directory** for a repeat pass over a processed site. It makes known, eligible discovery pages due once and prioritizes them before new pages. Resuming that directory does not reset them again. HTTP 304 responses reuse retained evidence without a body; identical HTTP 200 bodies skip parsing, discovery and source/extraction writes. Servers without validators must still transfer a body to establish whether it changed. Per-run `notModified` and `identicalBodies` counters expose the distinction. Source hashes and consumed facts preserve classification and plan-task identities, and sheet context is reused across URL aliases of the same source. A completed run directory remains a completed checkpoint; use another directory for the next visit.
 
-On October 13, the user approved a local repeat pass and explicitly kept scheduling disabled. The persistent `fp-local-repeat-20261013` job revisits the existing 18-studio roster, Eurovilla and Opereta; it is fetch-only, with a 5,000-request / 30-minute cap per host. An Urbanistica check and second pass each reused all 14 known pages without changing source bytes or creating processing tasks. The server returned HTTP 200 without validators, so HTML was transferred but not archived or processed again. Reports are under the ignored `backend/logs/floor-plan-repeat-20261014/` directory.
+On October 13, the user approved a local repeat pass and explicitly kept scheduling disabled. The initial persistent `fp-local-repeat-20261013` job covered the existing 18-studio roster, Eurovilla and Opereta; it was fetch-only, with a 5,000-request / 30-minute cap per host. An Urbanistica check and second pass each reused all 14 known pages without changing source bytes or creating processing tasks. The server returned HTTP 200 without validators, so HTML was transferred but not archived or processed again. Reports are under the ignored `backend/logs/floor-plan-repeat-20261014/` directory.
+
+The October 14 local source cleanup removed **10,499 raw files / 10,075,824,256 bytes**,
+leaving **424 retained files / 108,277,154 bytes** in the content-addressed archive.
+The separate reconstruction bundle was preserved. Every compacted observation had
+valid URL/hash evidence, no file deletions remained pending, all retained files
+were present, and original model-source plans passed SHA-256 verification.
+Full-row fingerprints for extractions, revisions, processed plans, tasks, batches
+and all 68 site models were unchanged, as were recorded costs. A fresh Urbanistica
+pass after deletion reused all 14 identical HTTP 200 responses (519,741 decoded
+body bytes) with zero archive growth, new processing work or additional model cost.
+The ignored `backend/logs/novogradnje-20261014/repeat-proof.json` records the checks.
+
+The one-off `fp-local-repeat-20261014-resume` then resumed from the 3LHD checkpoint.
+Its 144-host queue combines all 140 previously processed hosts with the current
+20-studio roster and agency seeds. Each host retains its 5,000-request / 30-minute
+cap, followed by independently committed cleanup batches with a 15-minute cleanup
+cap. Unfinished cleanup and source failures remain explicit partial results.
+This pass submits no AI work and creates no recurring schedule; inspect its live
+summary and per-host results before making a coverage claim.
 
 `daily` now locates sites, queues/collects site adjudication, queues/collects sheet context and assembles site models. Only the selected reader can submit a new chunk; all readers collect their own outstanding batches. Plan and sheet readers, and building and site readers, cannot consume each other's batches despite sharing storage-stage names. Failed or deferred site-model builds make the overall run partial. SIGINT/SIGTERM checkpoint interrupted work; status responses also check the worker's advisory lock so a saved `running` row cannot masquerade as a live process after a crash. Scheduling and the outcome monitor remain disabled.
 
-The run directory retains atomic progress and result snapshots plus a per-fetch trace with decoded body bytes. Reuse the same directory, site and asset mode to resume; already committed sources are skipped by the database queue. Request and active-time limits apply across resumes (`--max-pages 50000`, `--max-minutes 360` by default). Three consecutive HTTP 403/429 responses stop the run for inspection. Exhausting the queue with failures remains a partial result. A site run uses the existing due queue: it does not force previously successful pages or the root sitemap due again.
+The run directory retains atomic progress and result snapshots plus a per-fetch trace with decoded body bytes. Reuse the same directory, site and asset mode to resume; already committed sources are skipped by the database queue. Request and active-time limits apply across resumes (`--max-pages 50000`, `--max-minutes 360` by default). Three consecutive HTTP 403/429 responses stop the run for inspection. Exhausting the queue with failures remains a partial result. Without `--revisit-known`, a site run uses the existing due queue and does not force previously successful pages or the root sitemap due again.
 
 ## Site location (heuristic)
 
@@ -138,7 +250,7 @@ User decision 2026-10-12: match postings to places the way a person would, with 
 - `target` is the due queue. Home pages, public sitemaps and project/listing/pagination/contact links are discovered. Image and document targets are admitted only after their owner supplies its own exact street and house number; nongallery images can qualify when ownership is explicit. New-build wording is retained; resale is included too. Zagreb URLs receive priority.
 - `blob` stores file metadata by SHA-256; `observation` connects URLs, page evidence and runs. HTTP validators reduce both page and asset downloads. Existing assets are conditionally rechecked every 30 days, so a changed drawing at an unchanged URL is detected without transferring unchanged bytes when its server supports validators. An ordinary page edit does not make the entire gallery due again; a new asset URL or newly explicit plan label does. Missing or discarded cache files are requested unconditionally. Confirmed non-plan images can have their bytes discarded after classification, while URL and hash tombstones retain evidence and prevent refetching the same discarded bytes. A changed hash is processed afresh; a current explicit plan label or other protected plan source prevents deletion. Robots rules, DNS/private-address checks, bounded downloads and host serialization apply. Access blocks remain explicit gaps.
 - `listing` stores source claims. Only a street and house number explicitly stated for the advertised property or architecture project qualify; a studio/agency contact address, postcode, locality alone or nearby landmark does not. `listingOwned` limits assets to the matching property/project and excludes footer, agent, contact, related-property and legal artifacts. Main Eurovilla plan buttons remain public download endpoints only for an address-qualified owner; access rules still apply. Reviewed source manifests can also supply ownership, but only when listing identity, archived source URL and exact source hash agree. Excluded sources leave a minimal permanent identity/URL/hash/reason ledger entry; old raw HTML, images and OCR are removed unless shared or reviewed evidence protects them. Building identity needs an independently supported city and exact source address, with an unambiguous reviewed binding, a cadastral/survey match with >=90% overlap in both directions, or an official house-number point: the exact street and number must name exactly one point in the source's settlement in cadastre-data's `public.overture_address` (DGU's register for Croatia, imported by `addresses/fetch-overture-addresses.js`), and that point must lie inside exactly one surveyed 3D footprint. Courtyard numbers such as `Ilica 10/1` are distinct points. Postcode-only strings and proximity alone never verify a building.
-- `image_task` records one classification per source hash. Download and screening require a current address-qualified owner, though they do not require a resolved building. Explicitly labelled current plans can be accepted locally. Other eligible raster images receive a small structured reading that distinguishes plans, uncertain images, photos and renders. Confirmed non-plans may be discarded only after source and ownership checks; uncertain or shared/protected sources stay for review. An untriaged image does not enter extraction.
+- `image_task` records one classification per source hash. Downloads require a current address-qualified owner and a located/probable site or verified building match. Screening preserves its current ownership and source checks. Explicitly labelled current plans can be accepted locally. Other eligible raster images receive a small structured reading that distinguishes plans, uncertain images, photos and renders. Confirmed non-plans may be discarded only after source and ownership checks; uncertain or shared/protected sources stay for review. An untriaged image does not enter extraction.
 - `extraction` stores OCR/PDF text, normalized source linework and screening evidence. OCR/line extraction requires current location evidence as defined under `building_task`; this applies to all assets, explicit source hashes and old queued tasks. Raster images also require a current floor-plan/uncertain classification or an explicit listing-owned floor-plan label. Generic drafts are **not architectural models**: they can include furniture, dimensions and annotations and have no metric scale or placement. PDFs are bounded at 30 pages, with truncation recorded. `model_revision` retains every draft or reviewed unit revision.
 - Reviewed Avenue V unit models use `consensus-builder.floor-architecture.v1`. Import requires the exact source hash already archived at the declared URL. They are available for local 2D/3D review and are not published to `consensus.building_floor_model` while global placement is unresolved.
 - `plan_task` identifies archived source hash + page + listing URL + the floor, unit and area facts actually sent to the reader. Queueing and interpretation require current location evidence as defined under `building_task`. The vision reader receives public page images and measured source candidates; building IDs, footprints and coordinates are absent. OpenCV proposes source strokes, possible gaps and printed scale bars; the reader selects their IDs and identifies wall, opening and railing semantics. Geometry and scale candidates have separate labelled source crops. Slab vertices reference measured anchors. The AI cannot invent wall coordinates. Original evidence, selections, application-validated structured response and per-page cost are retained. One source owned by two listings can create separate tasks; changed source bytes or consumed facts create a new task. If location evidence is lost before applying a paid response, retain its result and cost for review and produce no geometry.
@@ -148,7 +260,7 @@ User decision 2026-10-12: match postings to places the way a person would, with 
 
 Map placement additionally requires `source.registrationEvidence` with schema `floor-plan-registration-evidence.v1`, the exact `sourceSha256` and `page`, and separately verified `scale` and `orientation` entries. Each needs `status:'verified'` and a nonempty `basis`; scale candidate ID, endpoints, metric length and quote, and the north vector must exactly match the processed source. The AI response cannot populate this object. Source-only geometry remains available for local review. Publication waits for a current verified listing-to-building association and footprint as well as independent registration; a square footprint cannot prove a scale or orientation reading.
 
-`ai_batch` records its `images`, `plans` or `buildings` stage and reserves the token-count estimate plus 20% input headroom and the full output limit **before** submission. Image classification uses the shared `cheap` tier and caps output at 1,024 tokens per item (512 truncated a dense axonometric). Classifier v2 (`listing-image-kind-v2`) also marks **envelope evidence**: exterior photos/renders, sections, elevations, site plans and massing diagrams are kept as `image_kind='envelope'` for envelope reconstruction and are never discarded; only high-confidence interior or unrelated photos/renders are. Completed costs are stored in the corresponding task table and appended to the shared LLM cost ledger. The shared cap counts completed cost for batches submitted that UTC day plus all unresolved reservations. A pending batch in one stage does not stop another stage; an interrupted/ambiguous submission is marked `unknown`, retains its reservation and blocks all three until the provider batch ID is reconciled. A paid response is checkpointed before domain validation so replay does not charge or ledger it again.
+`ai_batch` records its `images`, `plans` or `buildings` stage and reserves the token-count estimate plus 20% input headroom and the full output limit **before** submission. Image classification uses the shared `cheap` tier and caps output at 1,024 tokens per item (512 truncated a dense axonometric). Classifier v2 (`listing-image-kind-v2`) also marks **envelope evidence**: exterior photos/renders, sections, elevations, site plans and massing diagrams are kept as `image_kind='envelope'` for envelope reconstruction. Classification alone cannot discard them. Completed photo/render sources become eligible for the separate retention stage only after their sheet reading is saved and no plan consumer needs the bytes; other envelope evidence remains protected. Completed costs are stored in the corresponding task table and appended to the shared LLM cost ledger. The shared cap counts completed cost for batches submitted that UTC day plus all unresolved reservations. A pending batch in one stage does not stop another stage; an interrupted/ambiguous submission is marked `unknown`, retains its reservation and blocks all three until the provider batch ID is reconciled. A paid response is checkpointed before domain validation so replay does not charge or ledger it again.
 
 Confirm a small batch's results and costs before requesting approval for a large paid run. A new explicit floor-plan label clears a previous negative URL decision; ordinary listing edits do not. Byte disposal removes the source file while retaining its metadata. Removing a legacy PostgreSQL byte column requires an explicit migration finalization; `--reclaim-space` also compacts that table.
 

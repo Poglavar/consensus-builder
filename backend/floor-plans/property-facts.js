@@ -15,7 +15,13 @@ function recordYear(value) {
 
 function inferType(title, text, sourceType) {
     const t = clean(title).toLocaleLowerCase('hr');
-    if (sourceType === 'architecture-project') {
+    if (sourceType === 'architecture-project' || sourceType === 'developer-project') {
+        if (sourceType === 'developer-project') {
+            if (/\b(hotel|ured|office|poslovn\w*|trgov\w*|muzej|galerij\w*)\b/.test(t)) return 'commercial';
+            if (/\b(stamben\w*|residential|housing|zgrada|building|dom)\b/.test(t)) return 'residential';
+            if (/\b(kuća|kuca|house|villa|vila)\b/.test(t)) return 'house';
+            return 'unknown';
+        }
         if (/\b(hotel|ured|office|poslovn\w*|trgov\w*|muzej|galerij\w*|izložb\w*|izlozb\w*)\b/.test(t)) return 'commercial';
         if (/\b(stamben\w*|residential|housing|zgrada|building|dom)\b/.test(t)) return 'residential';
         if (/\b(kuća|kuca|house|villa|vila)\b/.test(t)) return 'house';
@@ -39,11 +45,13 @@ function schemaEntries(record, fields) {
 }
 
 function roomWordEntries(text) {
-    const entries = valuesFor(text, /(?<![\d,.])\b([12345])\s*[- ]?(?:soban|sobna|sobno)\b/giu)
+    const roomForms = 'sob(?:an|na|no|ni|ne|nih)?';
+    const entries = valuesFor(text, new RegExp(`(?<![\\d,.])\\b([12345])\\s*[- ]?${roomForms}\\b`, 'giu'))
         .map(entry => ({ value: Number(entry.value), quote: entry.quote }));
     const words = [['dvo', 2], ['tro', 3], ['četvero', 4], ['cetvero', 4], ['petero', 5]];
     for (const [word, value] of words) {
-        const match = text.match(new RegExp(`\\b${word}sob(?:an|na|no|ni|ne|nih)?\\b`, 'iu'));
+        // JavaScript's traditional \b is ASCII-centric and misses Croatian initial č.
+        const match = text.match(new RegExp(`(?<![\\p{L}\\p{N}_])${word}${roomForms}(?![\\p{L}\\p{N}_])`, 'iu'));
         if (match) entries.push({ value, quote: clean(match[0]) });
     }
     const english = [['one', 1], ['two', 2], ['three', 3], ['four', 4], ['five', 5]];
@@ -52,6 +60,13 @@ function roomWordEntries(text) {
         if (match) entries.push({ value, quote: clean(match[0]) });
     }
     return entries;
+}
+
+function roomNotationEntries(title) {
+    // Croatian ad notation: nS+DB means n bedrooms plus a living room; extra
+    // suffixes such as +PM describe amenities and do not change the room count.
+    return [...title.matchAll(/(?<![\p{L}\p{N}_])([1-5])\s*S\s*\+\s*DB(?![\p{L}\p{N}_])/giu)]
+        .map(match => ({ value: Number(match[1]) + 1, quote: clean(match[0]) }));
 }
 
 function orientationCodes(value) {
@@ -94,7 +109,7 @@ export function extractPropertyFacts({ record = {}, title = '', text = '', sourc
     const labelledRooms = valuesFor(body, /(?:broj\s+soba|rooms?)\s*[:\-]?\s*(\d+(?:[,.]\d+)?)/giu)
         .map(entry => ({ value: Number(entry.value.replace(',', '.')), quote: entry.quote }));
     const schemaRoomCount = schemaRooms.map(value => ({ value, quote: 'numberOfRooms' }));
-    const roomEntries = [...labelledRooms, ...roomWordEntries(`${titleText} ${body}`), ...schemaRoomCount];
+    const roomEntries = [...labelledRooms, ...roomWordEntries(`${titleText} ${body}`), ...roomNotationEntries(titleText), ...schemaRoomCount];
     const decimalRoomEntries = valuesFor(`${titleText} ${body}`, /\b(\d+[,.]\d+)\s*[- ]?sob(?:an|na|no|ni|ne)?\b/giu)
         .map(entry => ({ value: Number(entry.value.replace(',', '.')), quote: entry.quote }));
     roomEntries.push(...decimalRoomEntries);

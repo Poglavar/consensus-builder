@@ -13,6 +13,8 @@ const model = { siteKey: 'permit:example', label: 'Primjer 12', location: { stat
     envelope: { footprint: { type: 'Polygon', coordinates: [[[15, 45], [15.001, 45], [15.001, 45.001], [15, 45]]] }, storeys: [] },
     placements: [], sources: [{ url: postings[0].url, label: 'Oglas stana' }], inventory: projectInventory(postings, [], { year: 2026 }) };
 const row = { site_key: model.siteKey, model, built_at: '2026-10-13T12:00:00Z' };
+const lead = { ...row, site_key: 'permit:discovered', model: { ...model, siteKey: 'permit:discovered',
+    label: 'Pronađen projekt', inventory: { ...model.inventory, apartments: [] } } };
 
 describe('source-backed residential catalogue', () => {
     it('merges language aliases and keeps unknown values separate from zero', () => {
@@ -49,7 +51,7 @@ describe('source-backed residential catalogue', () => {
 
 describe('public pages and metadata', () => {
     const app = express();
-    setupNovogradnjeRoute(app, { query: async sql => ({ rows: sql.includes('floor_plan.site_model') ? [row] : [] }) });
+    setupNovogradnjeRoute(app, { query: async sql => ({ rows: sql.includes('floor_plan.site_model') ? [row, lead] : [] }) });
     const project = publicProject(row);
     it('serves indexable project and apartment HTML before JavaScript with per-page canonical and JSON-LD', async () => {
         const page = await request(app).get(project.apartments[0].url).expect(200);
@@ -74,5 +76,19 @@ describe('public pages and metadata', () => {
         expect(filtered.text).toContain('noindex,follow');
         expect(filtered.text).toContain('href="https://zagreb.lol/parcele/"');
         expect(filtered.text).toContain('href="https://zagreb.lol/lovac/"');
+    });
+    it('keeps empty discovery leads out of search counts and sitemap while explaining existing links', async () => {
+        const pending = publicProject(lead);
+        const catalogue = await request(app).get('/novogradnje/api/projects').expect(200);
+        expect(catalogue.body.counts).toMatchObject({ projects: 1, apartments: 1 });
+        expect(catalogue.body.projects.map(p => p.id)).toEqual([project.id]);
+        const sitemap = await request(app).get('/novogradnje/sitemap.xml').expect(200);
+        expect(sitemap.text).not.toContain(pending.url);
+        const page = await request(app).get(pending.url).expect(200);
+        expect(page.text).toContain('noindex,follow');
+        expect(page.text).toContain('Još nemamo podatke o pojedinim stanovima ni tlocrte za pregled.');
+        expect(page.text).toContain(postings[0].url);
+        const detail = await request(app).get(`/novogradnje/api/projects/${pending.id}`).expect(200);
+        expect(detail.body.availability).toBe('discovered');
     });
 });

@@ -385,12 +385,16 @@
     // city-centre cells (75-153 parcels) came back in one 3-4 s page (2026-10-12), where nine cells
     // took nine such requests.
     // Other sources stay per cell: their per-query limits have not been measured for larger areas.
+    // HSAC Haryana answers each query in about 1.1 s however small; per-cell reads queued a
+    // 160-cell view for over a minute (2026-10-14), so its district layers read 4x4 blocks.
     const CELL_BLOCK_SIDE_BY_SOURCE = Object.freeze({ 'gb-hmlr-browser-v1': 5, 'pl-gugik-egib-wfs': 3 });
+    const CELL_BLOCK_SIDE_BY_SOURCE_FAMILY = Object.freeze([[/^in-hr-hsac-[a-z_]+-outlines$/, 4]]);
 
     function cellBlockSide(options = {}) {
         const provider = cityConfig(String(options.city || currentCity()))?.parcels;
         if (provider?.source !== 'parcel-source' || groundOverride(String(options.city || currentCity()))) return 1;
-        return CELL_BLOCK_SIDE_BY_SOURCE[provider.sourceId] || 1;
+        return CELL_BLOCK_SIDE_BY_SOURCE[provider.sourceId]
+            || CELL_BLOCK_SIDE_BY_SOURCE_FAMILY.find(([pattern]) => pattern.test(provider.sourceId))?.[1] || 1;
     }
 
     function geometryBox(geometry) {

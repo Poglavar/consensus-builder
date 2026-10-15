@@ -1,0 +1,65 @@
+{
+ "city": {
+  "code": "9663",
+  "name": "Ponnani",
+  "point": [
+   76.05195,
+   10.57075
+  ]
+ },
+ "sampleIds": [
+  "IN-KL-CZMP-g1~760497004~105717759~4ed2571ba34e09a60dcd00c744d836cce2bd96f80b6062f0ac81ce783d1b6a1f",
+  "IN-KL-CZMP-g1~760514150~105729505~2d3e51fd3c0f345d69ab2d1507c311c9d8351f63c9ab55c7672e17a30b090d76",
+  "IN-KL-CZMP-g1~760528975~105709313~ec2da641ac64bb51d57df5506e34d62d036f05a862b928aca6cfa7807b9eeb33"
+ ],
+ "absentId": "IN-KL-CZMP-g1~760497004~105717759~0000000000000000000000000000000000000000000000000000000000000000",
+ "metricEpsg": "EPSG:32643",
+ "sourceClassification": {
+  "isParcel": true,
+  "evidence": [
+   "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Kerala/MapServer/6",
+   "https://czmp.ncscm.res.in/",
+   "world-parcels/research/ncscm-czmp-cities-2026-10-13.json"
+  ]
+ },
+ "cellSizeDegrees": 0.001,
+ "descriptor": {
+  "adapter": "arcgis",
+  "identityKind": "geometry-sha256-v1",
+  "lookupCellSize": 0.001,
+  "objectIdField": "OBJECTID",
+  "maxFeatures": 2000,
+  "maxConcurrentQueries": 2,
+  "countryCode": "IN",
+  "catalogueUrl": "https://czmp.ncscm.res.in/",
+  "licenceNote": "No reuse licence is stated on the CZMP portal or the ArcGIS service; the plan is published for public viewing.",
+  "id": "in-kl-ncscm-czmp-ground",
+  "name": "NCSCM CZMP — Kerala survey plots (overlaps resolved)",
+  "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Kerala/MapServer/6",
+  "idPrefix": "IN-KL-CZMP-",
+  "parcelNumberField": "Plot",
+  "outFields": [
+   "OBJECTID",
+   "Plot",
+   "Village_Name",
+   "District_Name",
+   "State_Name"
+  ],
+  "pageSize": 1000,
+  "maxBboxKm2": 4,
+  "metricSrid": 32643,
+  "cityIds": [],
+  "scope": "Survey-plot outlines on the Kerala Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+  "evidenceFile": "research/ncscm-czmp-cities-2026-10-13.json",
+  "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.",
+  "caveats": [
+   "Coastal-zone planning maps, not the land-records register: plot outlines are a geometry reference, not proof of current title or ownership.",
+   "Survey labels can be repeated, blank or zero. They are shown as published, never used as identity; OBJECTID is a transport field.",
+   "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground. References still come from the published outline or key.",
+   "Application identity uses the source namespace plus canonical geometry SHA-256 at 1e-7-degree precision and a spatial locator. A changed outline gets a new reference; absence means that outline version was not returned.",
+   "The service answers browsers directly (CORS allows this site); no relay is used.",
+   "The service does not state the plan version or the survey date of the underlying plot maps."
+  ],
+  "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6"
+ }
+}

@@ -2,6 +2,7 @@
 import * as cheerio from 'cheerio';
 import { extractExplicitLocation, propertyDetailId } from './explicit-location.js';
 import { extractPropertyFacts } from './property-facts.js';
+import { developerProjectRoot, extractDeveloperProject } from './developer-projects.js';
 
 const TRACKING = /^(utm_|fbclid$|gclid$|mc_cid$|mc_eid$|ref$|source$)/i;
 const PLAN_WORD = /(tlocrt|floor[._ -]?plans?|ground[._ -]?plans?|blueprints?|etažni|etazni|tlocrti|\bgrundriss(?:e)?\b)/i;
@@ -20,6 +21,54 @@ export function normalizeUrl(raw, base) {
     [...url.searchParams.keys()].forEach(key => { if (TRACKING.test(key)) url.searchParams.delete(key); });
     url.hash = '';
     return url.href;
+}
+
+const EUROVILLA_PHOTO = /^https:\/\/static\.eurovilla-cdn\.com\/property-photos\/(\d+)\/(\d+)x(\d+)\/([a-f0-9]{32})\.(jpg|webp|avif)$/i;
+const EUROVILLA_REGION = /^https:\/\/static\.eurovilla-cdn\.com\/regions\//i;
+
+function eurovillaPhotoParts(asset) {
+    const match = String(asset?.url || '').match(EUROVILLA_PHOTO);
+    return match ? { propertyId: match[1], width: Number(match[2]), height: Number(match[3]), imageId: match[4].toLowerCase(), format: match[5].toLowerCase() } : null;
+}
+
+/** Group only the observed Eurovilla resized gallery-photo URLs; preserve nonmatching assets verbatim. */
+export function groupEurovillaPhotoVariants(assets = []) {
+    const groups = new Map(), passthrough = [];
+    for (const asset of assets) {
+        const photo = eurovillaPhotoParts(asset);
+        if (EUROVILLA_REGION.test(String(asset?.url || ''))) {
+            const cleaned = { ...asset, listingOwned: false };
+            delete cleaned.ownerSourceId;
+            delete cleaned.ownerListingUrl;
+            passthrough.push(cleaned);
+            continue;
+        }
+        if (!photo || asset?.kind === 'floor-plan' || asset?.kind === 'document') { passthrough.push(asset); continue; }
+        const key = `${photo.propertyId}/${photo.imageId}`;
+        if (!groups.has(key)) groups.set(key, []);
+        const variants = groups.get(key), duplicate = variants.findIndex(item => item.asset.url === asset.url);
+        if (duplicate < 0) variants.push({ asset, photo });
+        else if (asset.listingOwned && !variants[duplicate].asset.listingOwned) variants[duplicate] = { asset, photo };
+    }
+    for (const variants of groups.values()) {
+        variants.sort((a, b) => (b.photo.width * b.photo.height) - (a.photo.width * a.photo.height)
+            || Number(b.photo.width) - Number(a.photo.width) || Number(b.photo.height) - Number(a.photo.height)
+            || Number(a.photo.format !== 'jpg') - Number(b.photo.format !== 'jpg') || a.asset.url.localeCompare(b.asset.url));
+        const chosen = { ...variants[0].asset };
+        const owned = variants.find(({ asset }) => asset.listingOwned);
+        if (owned && !chosen.listingOwned) {
+            chosen.listingOwned = true;
+            for (const key of ['ownerSourceId', 'ownerListingUrl', 'listingGallery']) {
+                if (chosen[key] === undefined && owned.asset[key] !== undefined) chosen[key] = owned.asset[key];
+            }
+        }
+        const alternatives = [...new Set([...variants.slice(1).map(({ asset }) => asset.url),
+            ...variants.flatMap(({ asset }) => asset.alternateUrls || [])])].filter(url => url !== chosen.url);
+        if (alternatives.length) chosen.alternateUrls = alternatives;
+        else delete chosen.alternateUrls;
+        passthrough.push(chosen);
+    }
+    return passthrough;
 }
 
 function jsonScripts($) { const out = []; $('script[type="application/ld+json"]').each((_, el) => { try { const value = JSON.parse($(el).contents().text()); (Array.isArray(value) ? value : [value]).forEach(item => out.push(item)); } catch (_) {} }); return out; }
@@ -189,6 +238,18 @@ function assetOwnership($, el, listing, pageUrl, url, label, forcedKind = null, 
             && !sameDocumentUrl(linkedIdentity, pageUrl, pageUrl);
         return { listingOwned: Boolean(inMain && !globalArtifact && !recommendation && !otherProjectCard && !hasConflictingOwner && !otherProjectLink) };
     }
+    if (listing?.sourceType === 'developer-project') {
+        const root = developerProjectRoot($, pageUrl);
+        const inRoot = Boolean(root?.length && (root[0] === element[0] || root.find(element).length));
+        const hiddenProjectDialog = element.closest('[role="dialog"],[aria-hidden="true"],[hidden],[data-elementor-type="popup"],[class*="modal" i],[class*="dialog" i],[class*="popup" i],.uk-nav,.sticky-section,[class~="uk-hidden@m"]').length > 0
+            || element.parents('section').toArray().some(section => $(section).find('form').length > 0);
+        const otherProjectCard = element.closest('[class*="other-project" i],[class*="more-project" i],[class*="project-card" i],[class*="related" i],[class*="recommend" i]').length > 0;
+        const linkedProject = element.closest('a[href]').attr('href');
+        const linkedIdentity = linkedProject && normalizeUrl(linkedProject, pageUrl);
+        const otherProjectLink = linkedIdentity && /\/(?:projects?|projekti?|prodaja-nekretnina)\//i.test(new URL(linkedIdentity).pathname)
+            && !sameDocumentUrl(linkedIdentity, pageUrl, pageUrl);
+        return { listingOwned: Boolean(inRoot && !globalArtifact && !hiddenProjectDialog && !recommendation && !otherProjectCard && !otherProjectLink && !hasConflictingOwner) };
+    }
     const listingOwned = Boolean(listing) && !globalArtifact && !hasConflictingOwner && !otherCarousel
         && (explicitMatch || (!recommendation && !row.length && (gallery || floorPlan)));
     return { listingOwned, ...(ownerSourceId ? { ownerSourceId } : {}), ...(ownerListingUrl ? { ownerListingUrl } : {}) };
@@ -244,6 +305,9 @@ export function extractPageEvidence(html, pageUrl, { sourceKind = null, discover
         projectUrl: normalizeUrl(record.isPartOf?.url, pageUrl),
         locality: first(record.address?.addressLocality, record.address?.addressRegion)
     } : null;
+    const developerProject = extractDeveloperProject($, pageUrl);
+    if (developerProject) listing = { ...(listing || {}), title: developerProject.title,
+        sourceId: first(listing?.sourceId, normalizeUrl(pageUrl, pageUrl)), sourceType: 'developer-project' };
     if (sourceKind === 'architecture') {
         const route = architectureDetailRoute(pageUrl, $);
         const fragmentId = route === 'njiric-fragment' ? new URL(pageUrl).searchParams.get('id') : null;
@@ -265,7 +329,8 @@ export function extractPageEvidence(html, pageUrl, { sourceKind = null, discover
     }
     if (listing) {
         const factText = propertyEvidenceText($, sourceKind);
-        const propertyDetails = extractPropertyFacts({ record, title: listing.title || listingTitle || '', text: factText, sourceType: listing.sourceType || null });
+        const propertyDetails = extractPropertyFacts({ record, title: listing.title || listingTitle || '',
+            text: developerProject?.text || factText, sourceType: listing.sourceType || null });
         listing.propertyDetails = propertyDetails;
         if (propertyDetails.newBuild !== null) listing.newBuild = propertyDetails.newBuild;
     }
@@ -293,6 +358,15 @@ export function extractPageEvidence(html, pageUrl, { sourceKind = null, discover
         const url = normalizeUrl(raw, pageUrl), element = $(el);
         if (!url) return;
         const label = `${element.attr('alt') || ''} ${element.text()}`.trim();
+        const parsedAssetUrl = new URL(url), parsedPageUrl = new URL(pageUrl);
+        const sameSitePropertyPage = element.is('a[href]')
+            && parsedAssetUrl.hostname.replace(/^www\./i, '') === parsedPageUrl.hostname.replace(/^www\./i, '')
+            && /^\/(?:[a-z]{2}\/)?(?:nekretnina|property)(?:\/|$)/i.test(parsedAssetUrl.pathname)
+            && !/\.(?:pdf|png|jpe?g|webp|avif)(?:$|[?#])/i.test(url);
+        // Unit/detail pages are navigable HTML even when their anchor says “Tlocrt”.
+        // Their actual drawings are discovered from the child page itself; the
+        // Eurovilla blueprint handler below still enters through forcedKind.
+        if (!forcedKind && sameSitePropertyPage) return;
         if (!forcedKind && !/\.(?:pdf|png|jpe?g|webp|avif)(?:$|[?#])/i.test(url) && !PLAN_WORD.test(`${url} ${label}`)) return;
         const pdf = /\.pdf(?:$|[?#])/i.test(url);
         const { gallery } = galleryMembership(element, mainCarousel);
@@ -306,8 +380,13 @@ export function extractPageEvidence(html, pageUrl, { sourceKind = null, discover
     };
     $('img[src], img[data-src], source[srcset], source[data-srcset], a[href]').each((_, el) => {
         const element = $(el);
-        const raw = element.attr('src') || element.attr('data-src') || element.attr('href') || (element.attr('srcset') || element.attr('data-srcset') || '').split(',')[0].trim().split(' ')[0];
-        addAsset(el, raw);
+        const raw = element.attr('src') || element.attr('data-src') || element.attr('href');
+        if (raw) addAsset(el, raw);
+        const srcset = element.attr('srcset') || element.attr('data-srcset') || '';
+        const candidates = srcset.split(',').map(candidate => candidate.trim().split(/\s+/)[0]).filter(Boolean);
+        const eurovillaCandidates = candidates.filter(candidate => EUROVILLA_PHOTO.test(normalizeUrl(candidate, pageUrl) || ''));
+        if (eurovillaCandidates.length) eurovillaCandidates.forEach(candidate => addAsset(el, candidate));
+        else if (!raw && candidates.length) addAsset(el, candidates[0]);
     });
     // Eurovilla's ordinary plan button uses this public URL in its click handler.
     // Keep the exact data-bp value; the fetcher follows the site's redirect to bytes.
@@ -319,7 +398,7 @@ export function extractPageEvidence(html, pageUrl, { sourceKind = null, discover
             }
         });
     }
-    assets.push(...assetsByUrl.values());
+    assets.push(...groupEurovillaPhotoVariants([...assetsByUrl.values()]));
     // Membership is taken only from the project's own unit table, never recommendation cards.
     const projectListings=[];
     if (/\/(?:projekt|project)\//i.test(new URL(pageUrl).pathname)) {

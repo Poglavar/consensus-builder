@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { extractPageEvidence, normalizeUrl } from '../floor-plans/page-evidence.js';
+import { extractPageEvidence, groupEurovillaPhotoVariants, normalizeUrl } from '../floor-plans/page-evidence.js';
 
 describe('retention audit evidence', () => {
     it('keeps an opaque translated property route subject to the address gate', () => {
@@ -25,6 +25,23 @@ describe('retention audit evidence', () => {
             { sourceKind: 'architecture', discovery: false });
         expect(incomplete.listing.sourceType).toBe('architecture-project');
         expect(incomplete.listing.address).toBeNull();
+    });
+});
+
+describe('property-detail page links', () => {
+    it('keeps a “Tlocrt” unit-detail link as a page and reserves plan assets for actual file endpoints', () => {
+        const pageUrl='https://eurovilla.hr/projekt/zagreb-kuniscak-residence/945/';
+        const childUrl='https://eurovilla.hr/nekretnina/zagreb-kuniscak-stan-001/144012/';
+        const page=extractPageEvidence(`<script type="application/ld+json">{"@type":"Residence","name":"Kuniščak Residence - stambena novogradnja","address":{"streetAddress":"Kuniščak 14, Zagreb"}}</script>
+            <main><table id="property-project-items-table"><tr><td><a href="/nekretnina/zagreb-kuniscak-stan-001/144012/">Tlocrt</a></td></tr></table>
+            <a href="/files/stan-001-tlocrt.pdf">Tlocrt PDF</a></main>`,pageUrl);
+
+        expect(page.projectListings).toEqual([{url:childUrl}]);
+        expect(page.links).toContainEqual(expect.objectContaining({url:childUrl,kind:'listing'}));
+        expect(page.assets.map(asset=>asset.url)).not.toContain(childUrl);
+        expect(page.assets).toContainEqual(expect.objectContaining({
+            url:'https://eurovilla.hr/files/stan-001-tlocrt.pdf',kind:'floor-plan',listingOwned:true,
+        }));
     });
 });
 
@@ -161,6 +178,43 @@ describe('floor-plan page evidence', () => {
         expect(result.listing).toMatchObject({ sourceId: '842475', floor: '5', areaM2: 80.58 });
         expect(result.assets.some(asset => asset.kind === 'floor-plan')).toBe(true);
         expect(result.listing.coordinates).toMatchObject({ lat: 45.801079807845, lng: 15.989073531216 });
+    });
+    it('groups only observed Eurovilla property-photo variants and removes region imagery from listing ownership', () => {
+        const photo = (size, ext, id = '0123456789abcdef0123456789abcdef', property = '248372') =>
+            `https://static.eurovilla-cdn.com/property-photos/${property}/${size}/${id}.${ext}`;
+        const unknown = 'https://static.eurovilla-cdn.com/property-photos/248372/original/0123456789abcdef0123456789abcdef.jpg';
+        const blueprint = 'https://eurovilla.hr/api/blueprint/?link=248372%2F05.png';
+        const html = `<script type="application/ld+json">{"@type":"Apartment","identifier":"248372","address":{"streetAddress":"Kuniščak 10, Zagreb"}}</script>
+          <div data-propertyid="248372" class="swiper"><img src="${photo('398x224','webp')}" srcset="${photo('800x533','avif')} 800w, ${photo('800x533','jpg')} 800w, ${photo('398x224','jpg')} 398w">
+          <img src="https://static.eurovilla-cdn.com/regions/800x800/zagreb.jpg"></div>
+          <a href="${unknown}">Unknown form</a><a class="property-blueprint" data-bp="248372/05.png" onclick="window.open(api+'blueprint/?link='+this.dataset.bp,'_blank')">Plan</a>`;
+        const result = extractPageEvidence(html, 'https://eurovilla.hr/nekretnina/248372/');
+        expect(result.assets.filter(a => a.url.includes('/property-photos/'))).toEqual([
+            expect.objectContaining({ url: unknown }),
+            expect.objectContaining({ url: photo('800x533','jpg'), alternateUrls: expect.arrayContaining([photo('800x533','avif'),photo('398x224','webp'),photo('398x224','jpg')]) }),
+        ]);
+        expect(result.assets.find(a => a.url.includes('/regions/'))).toMatchObject({ listingOwned: false });
+        expect(result.assets.find(a => a.url === blueprint)).toMatchObject({ kind: 'floor-plan', listingOwned: true });
+        const grouped = groupEurovillaPhotoVariants([
+            { url: photo('90x60','jpg'), kind:'image' }, { url: photo('130x86','webp'), kind:'image' },
+            { url: photo('800x533','avif'), kind:'image' }, { url: photo('800x533','jpg'), kind:'image' },
+            { url: photo('800x533','jpg','ffffffffffffffffffffffffffffffff','675992'), kind:'image' },
+            { url: blueprint, kind:'floor-plan' },
+        ]);
+        expect(grouped).toHaveLength(3);
+        expect(grouped.find(a => a.url.includes('/248372/'))).toMatchObject({ url: photo('800x533','jpg'), alternateUrls: expect.arrayContaining([photo('90x60','jpg'),photo('130x86','webp'),photo('800x533','avif')]) });
+        expect(grouped.find(a => a.url.includes('/675992/')).url).toContain('/675992/');
+        expect(grouped.find(a => a.kind === 'floor-plan').url).toBe(blueprint);
+        const mixedOwnership = groupEurovillaPhotoVariants([
+            { url:photo('800x533','jpg'), kind:'image', listingOwned:false },
+            { url:photo('398x224','webp'), kind:'image', listingOwned:true, ownerSourceId:'248372', listingGallery:true },
+            { url:'https://static.eurovilla-cdn.com/regions/398x398/zagreb.avif', kind:'image', listingOwned:true, ownerSourceId:'248372' },
+        ]);
+        expect(mixedOwnership.find(a => a.url === photo('800x533','jpg'))).toMatchObject({ listingOwned:true, ownerSourceId:'248372', listingGallery:true });
+        expect(mixedOwnership.find(a => a.url.includes('/regions/'))).toMatchObject({ listingOwned:false });
+        expect(groupEurovillaPhotoVariants(mixedOwnership)).toEqual(mixedOwnership);
+        const unknownSrcset = extractPageEvidence(`<script type="application/ld+json">{"@type":"Apartment","identifier":"main","address":{"streetAddress":"Ilica 10, Zagreb"}}</script><div class="gallery"><img src="/photo.jpg" srcset="/small.jpg 1x, /large.jpg 2x"></div>`, 'https://agency.test/property');
+        expect(unknownSrcset.assets.map(a => a.url)).toEqual(['https://agency.test/photo.jpg']);
     });
 });
 

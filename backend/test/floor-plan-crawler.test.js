@@ -16,6 +16,25 @@ const response = (body, contentType = 'text/html') => ({ body: Buffer.from(body)
 const explicitLocation = { schema: 'explicit-listing-location.v1', street: 'Ilica', houseNumber: '12', address: 'Ilica 12', quote: 'Ilica 12', basis: 'structured-property-address', sourceUrl: 'https://agency.test/listing' };
 
 describe('floor-plan crawler boundaries', () => {
+    it('stops before a request when archive capacity is exhausted without changing the target', async () => {
+        const calls=[];
+        const db={query:vi.fn(async(sql)=>{calls.push(sql);if(sql.includes('pg_try_advisory_lock'))return{rows:[{locked:true}]};if(sql.includes('AS allowed FROM floor_plan.target'))return{rows:[{allowed:true}]};if(sql.includes('SELECT count(*) AS n'))return{rows:[{n:'1'}]};if(sql.includes('AS total,count(website)'))return{rows:[{total:1,websites:1}]};return{rows:[]};})};
+        const fetcher=vi.fn();
+        const result=await crawl(db,{maxPages:2,maxMinutes:1,selectTarget:async()=>({url:'https://agency.test/a',kind:'page'}),fetcher,storageRoot:'/tmp/floor-plan-test',storageCheck:async()=>{throw Object.assign(new Error('full'),{code:'ARCHIVE_CAPACITY',reason:'free-space'});},compactSourcesFn:async()=>({deferred:0}),log:()=>{}});
+        expect(result).toMatchObject({status:'partial',stopReason:'archive-capacity'});
+        expect(result.counters.requestsAttempted).toBe(0);
+        expect(fetcher).not.toHaveBeenCalled();
+        expect(calls.some(sql=>sql.includes('UPDATE floor_plan.target SET state=')||sql.includes('UPDATE floor_plan.target SET state ='))).toBe(false);
+    });
+
+    it('keeps the selected target unchanged when the blob write hits the capacity guard', async () => {
+        const calls=[];let selected=false;
+        const db={query:vi.fn(async(sql)=>{calls.push(sql);if(sql.includes('pg_try_advisory_lock'))return{rows:[{locked:true}]};if(sql.includes('AS allowed FROM floor_plan.target'))return{rows:[{allowed:true}]};if(sql.includes('SELECT count(*) AS n'))return{rows:[{n:'1'}]};if(sql.includes('AS total,count(website)'))return{rows:[{total:1,websites:1}]};return{rows:[]};})};
+        const result=await crawl(db,{maxPages:2,maxMinutes:1,selectTarget:async()=>selected?null:(selected=true,{url:'https://agency.test/plan.pdf',kind:'asset'}),fetcher:async url=>({status:200,body:Buffer.from('%PDF-1.7'),headers:{contentType:'application/pdf'},finalUrl:url}),saveObservationFn:async()=>{throw Object.assign(new Error('full'),{code:'ARCHIVE_CAPACITY',reason:'archive-limit'});},storageCheck:async()=>{},compactSourcesFn:async()=>({deferred:0}),log:()=>{}});
+        expect(result).toMatchObject({status:'partial',stopReason:'archive-capacity',counters:{requestsAttempted:1,failed:0,blocked:0}});
+        expect(calls.some(sql=>sql.startsWith('UPDATE floor_plan.target'))).toBe(false);
+    });
+
     it('discovers same-site sitemap URLs and rejects cross-host entries', () => {
         const result = discoverTargets(
             { kind: 'sitemap', url: 'https://agency.test/sitemap.xml' },
@@ -101,6 +120,39 @@ describe('floor-plan crawler boundaries', () => {
             links: [{ url, kind: 'other' }],
             listing: { explicitLocation }, assets: [{ url, kind: 'floor-plan', listingOwned: true }],
         })).toEqual([{ url, kind: 'asset', priority: 100 }]);
+    });
+
+    it('prioritizes only same-site child listings explicitly identified by a new-build project table', () => {
+        const projectUrl='https://eurovilla.hr/projekt/zagreb-kuniscak-residence/945/';
+        const child='https://eurovilla.hr/nekretnina/zagreb-kuniscak-stan-001/144012/';
+        const metadataOnlyChild='https://eurovilla.hr/property/zagreb-kuniscak-stan-002/144013/';
+        const ordinary='https://eurovilla.hr/nekretnina/zagreb-stan-older/133001/';
+        const result=discoverTargetsWithStats({kind:'page',url:projectUrl},
+            {...response('html'),finalUrl:projectUrl},
+            {listing:{explicitLocation,newBuild:true},links:[
+                {url:child,kind:'listing'},{url:ordinary,kind:'listing'},
+                {url:'https://eurovilla.hr/projekti/zagreb/',kind:'project'},
+                {url:'https://external.test/nekretnina/unit/1',kind:'listing'},
+            ],projectListings:[{url:child},{url:metadataOnlyChild},{url:'https://external.test/nekretnina/unit/2'}],
+            assets:[{url:'https://cdn.eurovilla.hr/stan-001-tlocrt.pdf',kind:'floor-plan',listingOwned:true}]});
+
+        expect(result.targets).toEqual(expect.arrayContaining([
+            {url:child,kind:'page',priority:100},
+            {url:metadataOnlyChild,kind:'page',priority:100},
+            {url:ordinary,kind:'page',priority:20},
+            {url:'https://eurovilla.hr/projekti/zagreb/',kind:'page',priority:30},
+            {url:'https://cdn.eurovilla.hr/stan-001-tlocrt.pdf',kind:'asset',priority:100},
+        ]));
+        expect(result.targets.some(item=>item.url.startsWith('https://external.test/'))).toBe(false);
+    });
+
+    it('does not prioritize project-table children when the parent is not a new build', () => {
+        const url='https://eurovilla.hr/projekt/zagreb-renovation/12/';
+        const child='https://eurovilla.hr/nekretnina/renovated-flat/11/';
+        const result=discoverTargets({kind:'page',url},{...response('html'),finalUrl:url},{
+            listing:{explicitLocation,newBuild:false},links:[{url:child,kind:'listing'}],projectListings:[{url:child}],assets:[],
+        });
+        expect(result).toEqual([{url:child,kind:'page',priority:20}]);
     });
 
     it('keeps same-site links after a legitimate cross-domain redirect', () => {
@@ -455,7 +507,10 @@ it('reports search sitemap URLs filtered during a crawl and still enqueues canon
         if (sql.includes('pg_try_advisory_lock')) return { rows: [{ locked: true }] };
         if (sql.includes('SELECT count(*) AS n')) return { rows: [{ n: '0' }] };
         if (sql.includes('AS total,count(website)')) return { rows: [{ total: 0, websites: 0 }] };
-        if (sql.startsWith('INSERT INTO floor_plan.target(url,agency_id,kind')) enqueued.push(params[0]);
+        if (sql.startsWith('INSERT INTO floor_plan.target(url,agency_id,kind')) {
+            enqueued.push(params[0]);
+            return {rowCount:1,rows:[{inserted:true}]};
+        }
         return { rowCount: 1, rows: [] };
     }) };
     let selected = false;

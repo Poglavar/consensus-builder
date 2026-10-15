@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest';
 import '../../frontend/js/building-floor-plans.js';
 
 const require = createRequire(import.meta.url);
-const { filterProjects, matchesApartment, placementTransform, encodeFilters, decodeFilters } = require('../../frontend/novogradnje/catalogue.js');
+const { filterProjects, matchesApartment, placementTransform, hasEnvelope, encodeFilters, decodeFilters } = require('../../frontend/novogradnje/catalogue.js');
 
 const projects = [
     { id:'a',slug:'aurora',name:'Aurora',address:'Ilica 12',kind:'new_build',apartments:[
@@ -32,10 +32,17 @@ const planArchitecture = {
 
 describe('novogradnje public filters', () => {
     it('defaults to new builds and matches searchable Croatian project text without diacritics', () => {
-        expect(filterProjects(projects,{}).map(p=>p.id)).toEqual(['a','d']);
+        expect(filterProjects(projects,{}).map(p=>p.id)).toEqual(['a']);
         expect(filterProjects(projects,{q:'tresnjevka',kind:'all'}).map(p=>p.id)).toEqual(['c']);
         expect(filterProjects([{...projects[0],titles:['Kvart Trešnjevka']}],{q:'tresnjevka'}).map(p=>p.id)).toEqual(['a']);
         expect(filterProjects([{...projects[0],apartments:[{...projects[0].apartments[0],sourceTitle:'Vrtni stan'}]}],{q:'vrtni'}).map(p=>p.id)).toEqual(['a']);
+    });
+    it('does not offer empty discovery leads or an unsupported building viewer', () => {
+        expect(filterProjects([projects[3]],{kind:'all'})).toEqual([]);
+        const footprint={type:'Polygon',coordinates:[[[15,45],[16,45],[16,46],[15,45]]]};
+        expect(hasEnvelope({envelope:{footprint,storeys:[],heightM:0}})).toBe(false);
+        expect(hasEnvelope({envelope:{footprint,storeys:[{heightM:3,elevationM:null}]}})).toBe(false);
+        expect(hasEnvelope({envelope:{footprint,storeys:[{heightM:3,elevationM:0}]}})).toBe(true);
     });
     it('never treats unknown area or room counts as zero or as a numeric match', () => {
         expect(matchesApartment(projects[0].apartments[1],{minArea:0,maxArea:null,rooms:null,orientation:''})).toBe(false);

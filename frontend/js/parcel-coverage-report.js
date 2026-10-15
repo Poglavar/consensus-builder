@@ -1,11 +1,12 @@
 // Renders the research snapshot; every table shares numeric-aware, reversible header sorting.
-import { nextSort, sortRows, filterCities, filterCountries } from './parcel-coverage-report-model.mjs?v=3';
-import { reportMessages } from './parcel-coverage-report-i18n.mjs?v=3';
+import { nextSort, sortRows, filterCities, filterCountries, countSupportedCities } from './parcel-coverage-report-model.mjs?v=4';
+import { reportMessages } from './parcel-coverage-report-i18n.mjs?v=5';
 
 const params = new URLSearchParams(location.search);
 let language = Object.hasOwn(reportMessages, params.get('lang')) ? params.get('lang') : 'en';
 const validCohorts = new Set(['all', 'largest200', 'growth200', 'growth-top20', 'india-africa', 'india', 'africa']);
 const initialCohort = validCohorts.has(params.get('cohort')) ? params.get('cohort') : 'all';
+const initialSupport = ['yes', 'no'].includes(params.get('support')) ? params.get('support') : 'all';
 const isGrowthCohort = cohort => cohort === 'growth200' || cohort === 'growth-top20';
 let report;
 const sorts = { cities: { key: 'name', direction: 'asc' }, countries: { key: 'name', direction: 'asc' }, breakdown: { key: 'landAreaKm2', direction: 'desc' } };
@@ -81,11 +82,43 @@ function renderHeader(kind) {
     byId(tableId[kind]).tHead.replaceChildren(row);
 }
 
+function showIntegrationDetails(city) {
+    const dialog = byId('integration-dialog');
+    byId('integration-city-name').textContent = city.name;
+    const current = node('p', undefined, 'integration-current');
+    current.append(node('strong', tr('integrationCurrent')), node('span', tr(city.appCityIds.length ? 'integrationAvailable' : 'integrationUnavailable')));
+    const attempts = node('ol', undefined, 'integration-attempts');
+    for (const attempt of city.integrationAttempts) {
+        const item = node('li');
+        const header = node('div', undefined, 'integration-attempt-heading');
+        const label = { qualified: 'integrationPassed', held: 'integrationHeld', unchecked: 'integrationUnchecked' }[attempt.outcome];
+        header.append(node('strong', tr(label)));
+        const date = node('time', attempt.checkedAt?.slice(0, 10) || tr('integrationDateMissing'));
+        if (attempt.checkedAt) { date.dateTime = attempt.checkedAt; date.title = attempt.checkedAt; }
+        header.append(date);
+        item.append(header, node('p', attempt.summary || tr('integrationReasonMissing')));
+        if (attempt.sources.length) item.append(node('p', tr('integrationSources', { sources: attempt.sources.map(source => source.name).join(' · ') }), 'integration-sources'));
+        const links = node('div', undefined, 'integration-evidence');
+        links.append(safeLink(attempt.evidenceUrl, tr('integrationRecord')));
+        if (attempt.diagnosticsUrl) links.append(safeLink(attempt.diagnosticsUrl, tr('integrationDiagnostics')));
+        item.append(links); attempts.append(item);
+    }
+    byId('integration-content').replaceChildren(current, node('p', tr('integrationHistoryNote'), 'small-note'), attempts);
+    dialog.showModal();
+}
+
 function cityCell(city, key, className) {
     const td = node('td', undefined, className);
     if (key === 'name') {
         td.append(node('strong', city.name));
         if (city.appCityIds.length) td.append(node('span', tr('inApp'), 'cell-detail'));
+        if (city.integrationAttempts.length) {
+            const button = node('button', tr('integrationDetails'), 'cb-link cb-link--quiet city-integration-button'); button.type = 'button';
+            button.setAttribute('aria-label', tr('integrationDetailsFor', { city: city.name }));
+            button.setAttribute('aria-haspopup', 'dialog'); button.setAttribute('aria-controls', 'integration-dialog');
+            button.addEventListener('click', () => showIntegrationDetails(city));
+            td.append(button);
+        }
     } else if (key === 'population2025' || key === 'annualGrowthPct2015To2025') {
         td.textContent = key === 'population2025' ? number(city[key]) : percentage(city[key]);
         td.title = city.population2025 !== null ? tr('populationMatch', { name: city.wupName || city.name, quality: city.populationPlausibility2025 || tr('unknown') }) : tr('unknownValue');
@@ -119,8 +152,8 @@ function countryCell(country, key, className) {
         const button = node('button', country.name, 'cb-link'); button.type = 'button';
         button.title = tr('showCountryCities', { country: country.name });
         button.addEventListener('click', () => {
-            byId('city-country').value = country.code; byId('city-search').value = ''; byId('city-checked').value = 'all'; byId('city-registry').value = 'all'; byId('city-cohort').value = 'all';
-            const url = new URL(location.href); url.searchParams.delete('cohort'); url.hash = 'cities'; history.replaceState(null, '', url);
+            byId('city-country').value = country.code; byId('city-search').value = ''; byId('city-checked').value = 'all'; byId('city-registry').value = 'all'; byId('city-cohort').value = 'all'; byId('city-support').value = 'all';
+            updateCityFilterUrl('cities');
             renderTable('cities'); byId('cities').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
         });
         td.append(button, node('span', `${country.code}${country.statisticsIncluded === false ? ` · ${tr('supplementary')}` : country.landAreaKm2 === null ? ` · ${tr('noStatistics')}` : ''}`, 'cell-detail'));
@@ -134,7 +167,7 @@ function countryCell(country, key, className) {
 function renderTable(kind) {
     renderHeader(kind);
     let rows;
-    if (kind === 'cities') rows = filterCities(report.cities, { query: byId('city-search').value, checked: byId('city-checked').value, registry: byId('city-registry').value, country: byId('city-country').value, cohort: byId('city-cohort').value });
+    if (kind === 'cities') rows = filterCities(report.cities, { query: byId('city-search').value, checked: byId('city-checked').value, registry: byId('city-registry').value, country: byId('city-country').value, cohort: byId('city-cohort').value, support: byId('city-support').value });
     else if (kind === 'countries') rows = filterCountries(report.countries, { query: byId('country-search').value, category: byId('country-category').value });
     else rows = report.breakdown.map(row => ({ ...row, label: tr(categoryKey(row.id)) }));
     rows = sortRows(rows, sorts[kind], language);
@@ -156,12 +189,14 @@ function renderTable(kind) {
     }
     if (!rows.length) { const row = node('tr'); const td = node('td', tr('noRows'), 'empty-row'); td.colSpan = columns[kind].length; row.append(td); fragment.append(row); }
     byId(tableId[kind]).tBodies[0].replaceChildren(fragment);
-    if (kind !== 'breakdown') byId(kind === 'cities' ? 'city-count' : 'country-count').textContent = tr('rowsShown', { shown: number(rows.length), total: number(report[kind].length) });
+    if (kind === 'cities') byId('city-count').textContent = tr('cityRowsShown', { supported: number(countSupportedCities(rows)), shown: number(rows.length), total: number(report.cities.length) });
+    else if (kind === 'countries') byId('country-count').textContent = tr('rowsShown', { shown: number(rows.length), total: number(report.countries.length) });
 }
 
 function renderSummary() {
     const meta = report.metadata;
     byId('snapshot-date').textContent = tr('snapshot', { date: meta.asOf });
+    byId('supported-city-count').textContent = number(meta.configuredAppCityCount);
     byId('summary-cards').replaceChildren(...[
         ['cardChecked', meta.checkedCityCount], ['cardFound', meta.cityRegistryFoundCount], ['cardNational', meta.nationalCadastreCount], ['cardQueued', meta.uncheckedCityCount]
     ].map(([key, value]) => { const card = node('article', undefined, 'summary-card'); card.append(node('strong', number(value)), node('span', tr(key))); return card; }));
@@ -196,7 +231,7 @@ function renderSummary() {
 
 function render() {
     applyLanguage(); renderSummary();
-    const selected = byId('city-country').value;
+    const selected = byId('city-country').options.length ? byId('city-country').value : params.get('country') || '';
     byId('city-country').replaceChildren(new Option(tr('all'), ''), ...sortRows(report.countries, { key: 'name', direction: 'asc' }, language).map(country => new Option(country.name, country.code)));
     byId('city-country').value = selected;
     for (const kind of Object.keys(columns)) renderTable(kind);
@@ -208,15 +243,35 @@ byId('report-language').addEventListener('change', event => {
     if (report) render(); else applyLanguage();
 });
 byId('print-report').addEventListener('click', () => window.print());
-for (const id of ['city-search', 'city-checked', 'city-registry', 'city-country']) byId(id).addEventListener(id.endsWith('search') ? 'input' : 'change', () => renderTable('cities'));
+byId('integration-close').addEventListener('click', () => byId('integration-dialog').close());
+byId('integration-dialog').addEventListener('click', event => {
+    if (event.target === event.currentTarget) event.currentTarget.close();
+});
+function updateCityFilterUrl(hash) {
+    const url = new URL(location.href);
+    for (const key of ['cohort', 'support', 'country']) {
+        const value = byId(`city-${key}`).value;
+        if (!value || value === 'all') url.searchParams.delete(key); else url.searchParams.set(key, value);
+    }
+    if (hash) url.hash = hash;
+    history.replaceState(null, '', url);
+}
+for (const id of ['city-search', 'city-checked', 'city-registry', 'city-country', 'city-support']) byId(id).addEventListener(id.endsWith('search') ? 'input' : 'change', () => {
+    updateCityFilterUrl(); renderTable('cities');
+});
 byId('city-cohort').value = initialCohort;
+byId('city-support').value = initialSupport;
+byId('show-supported-cities').addEventListener('click', event => {
+    event.preventDefault();
+    byId('city-search').value = ''; byId('city-country').value = ''; byId('city-checked').value = 'all'; byId('city-registry').value = 'all'; byId('city-cohort').value = 'all'; byId('city-support').value = 'yes';
+    updateCityFilterUrl('cities');
+    renderTable('cities'); byId('cities').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+});
 byId('city-cohort').addEventListener('change', event => {
     const cohort = validCohorts.has(event.target.value) ? event.target.value : 'all';
     event.target.value = cohort;
     if (isGrowthCohort(cohort)) sorts.cities = { key: 'annualGrowthPct2015To2025', direction: 'desc' };
-    const url = new URL(location.href);
-    if (cohort === 'all') url.searchParams.delete('cohort'); else url.searchParams.set('cohort', cohort);
-    history.replaceState(null, '', url);
+    updateCityFilterUrl();
     renderTable('cities');
 });
 for (const id of ['country-search', 'country-category']) byId(id).addEventListener(id.endsWith('search') ? 'input' : 'change', () => renderTable('countries'));

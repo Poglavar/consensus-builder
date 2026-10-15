@@ -127,9 +127,11 @@ function cityPaths(city) {
 
 const CITY_FILE_FIELDS = [
     'researchFile', 'previousResearchFile', 'retryFile', 'latestAttemptFile',
-    'latestAssessmentFile', 'capitalResearchFile', 'liveAcceptanceFile', 'availabilityAudit'
+    'latestAssessmentFile', 'capitalResearchFile', 'liveAcceptanceFile', 'availabilityAudit',
+    'qualificationEvidenceFile'
 ];
 const SOURCE_FILE_FIELDS = ['evidenceFile', 'latestResearchFile', 'latestResearchFiles'];
+const QUALIFICATION_GATES = ['classification', 'exactIds', 'stableGeometry', 'explicitAbsence', 'sampling', 'completeness', 'binding', 'metric'];
 const POSITIVE_NATIONAL = new Set([
     'national_online_cadastre_verified_sample', 'national_cadastre_credentialed_or_paid',
     'national_cadastre_viewer_only', 'covered_by_parent_source'
@@ -189,6 +191,19 @@ export function collectReportEvidence({ registry, repoRoot, appCities = [], sour
         const registryFound = sourceIds.length || verifiedSample ? true
             : hasDiscovery ? discovery.registryFound
                 : status === 'no_verified_open_endpoint_after_attempts' ? false : null;
+        const qualification = city.qualificationEvidenceFile && readEvidence(repoRoot, city.qualificationEvidenceFile, warnings);
+        const qualifiedSource = sourceRows.find(source => source.sourceId === qualification?.sourceId);
+        const qualified = verifiedSample && qualification?.status === 'technical-qualified'
+            && city.wupCityCode != null && String(qualification.cityCode) === String(city.wupCityCode)
+            && qualifiedSource && Number.isInteger(qualification.featureCount) && qualification.featureCount > 0
+            && QUALIFICATION_GATES.every(gate => qualification.checks?.[gate]?.passed === true);
+        if (qualified && Array.isArray(qualification.requests)) {
+            // Request timestamps record the actual check, unlike an export or admission date.
+            qualification.requests.forEach((request, index) => {
+                const date = normalizeDate(request.startedAt);
+                if (date) evidenceDates.push({ date, path: city.qualificationEvidenceFile, field: `$.requests[${index}].startedAt` });
+            });
+        }
         const rankedDates = evidenceDates.sort((a, b) => b.date.localeCompare(a.date));
         const meaningfulVerifiedSource = sourceRows.some(source =>
             typeof source.verificationStatus === 'string' && source.verificationStatus.startsWith('verified_')
@@ -229,7 +244,9 @@ export function collectReportEvidence({ registry, repoRoot, appCities = [], sour
             checkedDate: rankedDates[0]?.date || null,
             checkedDateEvidence: rankedDates[0] || null,
             registryFound,
-            registryBasis: discovery?.registryBasis || null,
+            registryBasis: qualified
+                ? `Verified ${qualification.featureCount} parcel outlines at the recorded sample location using ${qualifiedSource.name || qualifiedSource.sourceId}. Coverage is bounded; citywide completeness remains unverified.`
+                : discovery?.registryBasis || null,
             verifiedSample,
             sourceIds,
             evidenceUrls: safeUrls([...(discovery?.registryEvidenceUrls || []), ...sourceRows.map(source => source.endpoint)]),

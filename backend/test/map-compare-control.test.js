@@ -8,6 +8,11 @@ const control = require('../../frontend/js/ui/map-compare-control.js');
 class FakeTarget {
     listeners = new Map();
     attributes = new Map();
+    capturedPointers = new Set();
+
+    setPointerCapture(id) { this.capturedPointers.add(id); }
+    hasPointerCapture(id) { return this.capturedPointers.has(id); }
+    releasePointerCapture(id) { this.capturedPointers.delete(id); }
 
     addEventListener(type, listener) {
         const group = this.listeners.get(type) || new Set();
@@ -20,7 +25,7 @@ class FakeTarget {
     getAttribute(name) { return this.attributes.get(name) ?? null; }
 
     dispatch(type, event = {}) {
-        const enriched = { type, cancelable: true, preventDefault: vi.fn(), ...event };
+        const enriched = { type, target: this, cancelable: true, preventDefault: vi.fn(), stopPropagation: vi.fn(), ...event };
         for (const listener of [...(this.listeners.get(type) || [])]) listener(enriched);
         return enriched;
     }
@@ -96,4 +101,65 @@ describe('MapCompareControl', () => {
         expect(doc.listeners.get('pointercancel')?.size || 0).toBe(0);
         expect(win.listeners.get('resize').size).toBe(0);
     });
+    it('keeps divider clicks out of the host without swallowing ordinary document clicks', () => {
+        const doc = new FakeTarget();
+        const container = new FakeTarget();
+        container.ownerDocument = doc;
+        container.getBoundingClientRect = () => ({ left: 0, width: 200 });
+        const handle = new FakeTarget();
+        const instance = control.create({ container, handle, onChange: vi.fn() });
+
+        expect(handle.dispatch('pointerdown', { pointerId: 3, button: 2 }).stopPropagation).not.toHaveBeenCalled();
+        expect(handle.dispatch('pointerdown', { pointerId: 3, button: 0 }).stopPropagation).toHaveBeenCalledOnce();
+        doc.dispatch('pointermove', { pointerId: 3, clientX: 150 });
+        doc.dispatch('pointerup', { pointerId: 3 });
+        expect(instance.getValue()).toBe(75);
+        expect(handle.dispatch('click').stopPropagation).toHaveBeenCalledOnce();
+        expect(doc.dispatch('click').stopPropagation).not.toHaveBeenCalled();
+        instance.dispose();
+        expect(handle.dispatch('click').stopPropagation).not.toHaveBeenCalled();
+    });
+
+    it('captures the active pointer and releases it on cancel and disposal', () => {
+        const doc = new FakeTarget();
+        const container = new FakeTarget();
+        container.ownerDocument = doc;
+        container.getBoundingClientRect = () => ({ left: 0, width: 200 });
+        const handle = new FakeTarget();
+        const instance = control.create({ container, handle, onChange: vi.fn() });
+
+        handle.dispatch('pointerdown', { pointerId: 4, pointerType: 'touch', button: 0 });
+        expect(handle.hasPointerCapture(4)).toBe(true);
+        doc.dispatch('pointercancel', { pointerId: 5 });
+        expect(handle.hasPointerCapture(4)).toBe(true);
+        doc.dispatch('pointercancel', { pointerId: 4 });
+        expect(handle.hasPointerCapture(4)).toBe(false);
+        doc.dispatch('pointermove', { pointerId: 4, clientX: 0 });
+        expect(instance.getValue()).toBe(50);
+        handle.dispatch('pointerdown', { pointerId: 6, button: 0 });
+        instance.dispose();
+        expect(handle.hasPointerCapture(6)).toBe(false);
+        expect(handle.listeners.get('lostpointercapture')?.size || 0).toBe(0);
+    });
+
+    it('ends a drag when capture is lost and tolerates synthetic pointers without native capture', () => {
+        const doc = new FakeTarget();
+        const container = new FakeTarget();
+        container.ownerDocument = doc;
+        container.getBoundingClientRect = () => ({ left: 0, width: 200 });
+        const handle = new FakeTarget();
+        const instance = control.create({ container, handle, onChange: vi.fn() });
+        handle.dispatch('pointerdown', { pointerId: 1, button: 0 });
+        handle.dispatch('lostpointercapture', { pointerId: 1 });
+        doc.dispatch('pointermove', { pointerId: 1, clientX: 0 });
+        expect(instance.getValue()).toBe(50);
+        handle.setPointerCapture = () => { throw new Error('No active native pointer'); };
+        handle.dispatch('pointerdown', { pointerId: 2, button: 0 });
+        doc.dispatch('pointermove', { pointerId: 2, clientX: 150 });
+        expect(instance.getValue()).toBe(75);
+        doc.dispatch('pointerup', { pointerId: 2 });
+        expect(handle.hasPointerCapture(2)).toBe(false);
+        instance.dispose();
+    });
+
 });

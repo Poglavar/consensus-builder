@@ -18,11 +18,27 @@ export const IMAGE_EXTRACTION_READY_SQL=`(lower(b.media_type) NOT LIKE 'image/%'
    WHERE image_listing.facts->>'sourceEvidenceStatus' IS DISTINCT FROM 'not-a-listing'
    AND image_listing.asset_urls @> jsonb_build_array(jsonb_build_object('url',image_target.url,'listingOwned',true,'kind','floor-plan'))))))`;
 
+const listingCohortAssetSql=parameter=>`(${parameter}::text[] IS NULL OR EXISTS (
+ SELECT 1 FROM floor_plan.target cohort_asset JOIN floor_plan.listing cohort_listing
+  ON cohort_listing.url=ANY(${parameter}::text[])
+ WHERE cohort_asset.kind='asset' AND cohort_asset.current_sha256=e.sha256
+  AND cohort_listing.asset_urls @> jsonb_build_array(jsonb_build_object('url',cohort_asset.url,'listingOwned',true))))`;
+
+function validateListingUrls(listingUrls) {
+ if(listingUrls===null)return;
+ if(!Array.isArray(listingUrls)||listingUrls.length===0||listingUrls.some(url=>{
+  if(typeof url!=='string'||!url.trim()||url!==url.trim())return true;
+  try {const parsed=new URL(url);return !['http:','https:'].includes(parsed.protocol)||!parsed.hostname||Boolean(parsed.username||parsed.password);}
+  catch{return true;}
+ })||new Set(listingUrls).size!==listingUrls.length) throw new Error('listingUrls must be a nonempty array of unique absolute HTTP(S) URLs.');
+}
+
 export async function processAssets(db,{maxAssets=100,maxMinutes=45,
- python=process.env.FLOOR_PLAN_PYTHON || 'python3',log=console.log,now=Date.now,
+ listingUrls=null,python=process.env.FLOOR_PLAN_PYTHON || 'python3',log=console.log,now=Date.now,
  extractor=({python,path,mediaType,timeout})=>exec(python,[fileURLToPath(new URL('../scripts/extract-floor-plan-draft.py',import.meta.url)),path,'--media-type',mediaType],{timeout,maxBuffer:16*1024*1024})}={}) {
  if(!Number.isInteger(maxAssets)||maxAssets<1) throw new Error('maxAssets must be a positive integer.');
  if(!Number.isFinite(maxMinutes)||maxMinutes<=0) throw new Error('maxMinutes must be positive.');
+ validateListingUrls(listingUrls);
  const locked=(await db.query(`SELECT pg_try_advisory_lock(hashtext('floor-plan-extraction')) AS locked`)).rows[0].locked;
  if(!locked) throw new Error('Another floor-plan extraction is running.');
  const started=now(),deadline=started+maxMinutes*60000;
@@ -30,7 +46,7 @@ export async function processAssets(db,{maxAssets=100,maxMinutes=45,
  try {
   const rows=(await db.query(`SELECT e.sha256,b.media_type,b.storage_path,b.byte_count,b.bytes_available FROM floor_plan.extraction e JOIN floor_plan.blob b USING(sha256)
    WHERE e.status='pending' AND b.bytes_available AND ${IMAGE_EXTRACTION_READY_SQL}
-   AND ${LOCATED_ASSET_SQL} ORDER BY e.created_at,e.sha256 LIMIT $1`,[maxAssets])).rows;
+   AND ${LOCATED_ASSET_SQL} AND ${listingCohortAssetSql('$2')} ORDER BY e.created_at,e.sha256 LIMIT $1`,[maxAssets,listingUrls])).rows;
   result.selected=rows.length;
   for(const row of rows) {
    if(now()>=deadline) {result.unprocessed=rows.length-result.processed;break;}
@@ -60,13 +76,13 @@ export async function processAssets(db,{maxAssets=100,maxMinutes=45,
   if(!result.unprocessed) result.unprocessed=rows.length-result.processed;
   result.pending=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.extraction e JOIN floor_plan.blob b USING(sha256)
    WHERE e.status='pending' AND b.bytes_available AND ${IMAGE_EXTRACTION_READY_SQL}
-   AND ${LOCATED_ASSET_SQL}`)).rows[0].n);
+   AND ${LOCATED_ASSET_SQL} AND ${listingCohortAssetSql('$1')}`,[listingUrls])).rows[0].n);
   result.awaitingImageClassification=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.extraction e
    JOIN floor_plan.blob b USING(sha256) WHERE e.status='pending' AND b.bytes_available
-   AND NOT ${IMAGE_EXTRACTION_READY_SQL} AND ${LOCATED_ASSET_SQL}`)).rows[0].n);
+   AND NOT ${IMAGE_EXTRACTION_READY_SQL} AND ${LOCATED_ASSET_SQL} AND ${listingCohortAssetSql('$1')}`,[listingUrls])).rows[0].n);
   result.deferredUnmatched=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.extraction e
    JOIN floor_plan.blob b USING(sha256) WHERE e.status='pending' AND b.bytes_available
-   AND NOT ${LOCATED_ASSET_SQL}`)).rows[0].n);
+   AND NOT ${LOCATED_ASSET_SQL} AND ${listingCohortAssetSql('$1')}`,[listingUrls])).rows[0].n);
   result.elapsedMs=now()-started;
   result.status=result.failed||result.pending||result.unprocessed||result.awaitingImageClassification||result.deferredUnmatched?'partial':'complete';return result;
  } finally {await db.query(`SELECT pg_advisory_unlock(hashtext('floor-plan-extraction'))`);}

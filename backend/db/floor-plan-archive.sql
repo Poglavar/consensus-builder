@@ -191,7 +191,10 @@ CREATE INDEX IF NOT EXISTS floor_plan_exclusion_url ON floor_plan.exclusion(url)
 ALTER TABLE floor_plan.target ADD COLUMN IF NOT EXISTS source_identity text;
 ALTER TABLE floor_plan.target ADD COLUMN IF NOT EXISTS exclusion_reason text;
 ALTER TABLE floor_plan.target ADD COLUMN IF NOT EXISTS source_kind text NOT NULL DEFAULT 'agency'
- CHECK(source_kind IN ('agency','architecture'));
+ CHECK(source_kind IN ('agency','architecture','developer'));
+ALTER TABLE floor_plan.target DROP CONSTRAINT IF EXISTS target_source_kind_check;
+ALTER TABLE floor_plan.target ADD CONSTRAINT target_source_kind_check
+ CHECK(source_kind IN ('agency','architecture','developer'));
 CREATE INDEX IF NOT EXISTS floor_plan_target_source_identity ON floor_plan.target(source_identity);
 RESET ROLE;
 

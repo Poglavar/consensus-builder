@@ -58,6 +58,38 @@ describe('collectReportEvidence', () => {
         expect(result.cities[2].evidenceUrls).toEqual(['https://public.example/layer']);
     });
 
+    it('uses matching passed qualification evidence over stale discovery text and dates', () => {
+        const repoRoot = fixtureRoot();
+        put(repoRoot, 'research/old-city.json', { cityId: 'city-a', checkedAt: '2026-10-01' });
+        const qualification = {
+            status: 'technical-qualified', cityCode: '123', sourceId: 'city-source', featureCount: 18,
+            checks: Object.fromEntries(['classification', 'exactIds', 'stableGeometry', 'explicitAbsence', 'sampling', 'completeness', 'binding', 'metric'].map(gate => [gate, { passed: true }])),
+            generatedAt: '2099-01-01', requests: [{ startedAt: '2026-10-13T21:20:00Z' }]
+        };
+        const city = { cityId: 'city-a', wupCityCode: 123, parcelStatus: 'verified_sample_partial_coverage',
+            sourceIds: ['city-source'], researchFile: 'research/old-city.json',
+            qualificationEvidenceFile: 'research/qualification.json',
+            dataFindings: { registryFound: null, registryBasis: 'No parcel polygon was obtained.' } };
+        const registry = { cities: [city], sources: [{ sourceId: 'city-source', name: 'Public survey plots' }] };
+        put(repoRoot, 'research/qualification.json', qualification);
+        const [row] = collectReportEvidence({ registry, repoRoot }).cities;
+        expect(row).toMatchObject({ checkedDate: '2026-10-13', verifiedSample: true,
+            checkedDateEvidence: { path: 'research/qualification.json', field: '$.requests[0].startedAt' } });
+        expect(row.registryBasis).toContain('Verified 18 parcel outlines');
+        expect(row.registryBasis).toContain('citywide completeness remains unverified');
+        expect(row.evidenceFiles).toContain('research/old-city.json');
+        expect(city.dataFindings.registryBasis).toBe('No parcel polygon was obtained.');
+        for (const invalid of [
+            { status: 'technical-hold' }, { cityCode: '456' }, { sourceId: 'other-source' },
+            { checks: { ...qualification.checks, metric: { passed: false } } }
+        ]) {
+            put(repoRoot, 'research/qualification.json', { ...qualification, ...invalid });
+            const [unchanged] = collectReportEvidence({ registry, repoRoot }).cities;
+            expect(unchanged.registryBasis).toBe('No parcel polygon was obtained.');
+            expect(unchanged.checkedDate).toBe('2026-10-01');
+        }
+    });
+
     it('does not turn a two-region sample, a missing date, or a generated timestamp into national completeness', () => {
         const repoRoot = fixtureRoot();
         put(repoRoot, 'research/two-regions.json', { verifiedAt: '2026-09-30T10:00:00Z' });

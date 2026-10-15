@@ -63,6 +63,46 @@ export function buildingEvidenceWithCandidates(sourceEvidence, candidates = []) 
     }) };
 }
 
+const RETENTION_WORK_COUNTERS = ['htmlSources', 'htmlBlobs', 'htmlBytes', 'envelopeSources', 'envelopeBlobs',
+    'envelopeBytes', 'sourceReadErrors', 'filesDeleted', 'bytesDeleted'];
+const RETENTION_INVENTORY_COUNTERS = ['protectedEnvelopeSources', 'retainedPendingPlans', 'retainedPendingEnvelopes'];
+
+// Run independently committed compaction batches until the bounded selector drains,
+// a source fails, or the caller's deadline/abort signal asks us to stop.
+export async function drainSourceRetention(db, { compact = compactSources, limit = 1000, deadline = Infinity,
+    signal, log = () => {}, now = Date.now } = {}) {
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100000) throw new Error('Retention limit must be 1..100000.');
+    const totals = { apply: true, batches: 0, partial: false, remaining: false, deferred: 0,
+        ...Object.fromEntries(RETENTION_WORK_COUNTERS.map(key => [key, 0])),
+        ...Object.fromEntries(RETENTION_INVENTORY_COUNTERS.map(key => [key, 0])) };
+    const expired = () => Number.isFinite(deadline) && now() >= deadline;
+    let stopReason = null;
+    while (true) {
+        if (signal?.aborted) { stopReason = 'interrupted'; break; }
+        if (expired()) { stopReason = 'deadline'; break; }
+        const batch = await compact(db, { apply: true, limit, deadline, signal, log });
+        totals.batches++;
+        for (const key of RETENTION_WORK_COUNTERS) totals[key] += Number(batch?.[key] || 0);
+        for (const key of RETENTION_INVENTORY_COUNTERS) totals[key] = Number(batch?.[key] || 0);
+        totals.deferred = Number(batch?.deferred || 0);
+        log({ phase: 'source-retention-checkpoint', batch: totals.batches,
+            ...Object.fromEntries(RETENTION_WORK_COUNTERS.map(key => [key, totals[key]])),
+            ...Object.fromEntries(RETENTION_INVENTORY_COUNTERS.map(key => [key, totals[key]])),
+            deferred: totals.deferred });
+        if (signal?.aborted) { stopReason = 'interrupted'; break; }
+        if (expired()) { stopReason = 'deadline'; break; }
+        if (Number(batch?.sourceReadErrors || 0) > 0) { stopReason = 'source-errors'; break; }
+        // A full selection may be the final batch, so one empty follow-up confirms exhaustion.
+        const selectionFull = Number(batch?.htmlBlobs || 0) >= limit
+            || Number(batch?.envelopeSources || 0) >= limit || Number(batch?.filesDeleted || 0) >= limit;
+        if (totals.deferred <= 0 && !selectionFull) break;
+    }
+    if (stopReason) {
+        totals.status = 'partial'; totals.partial = true; totals.remaining = true; totals.stopReason = stopReason;
+    } else totals.status = 'complete';
+    return totals;
+}
+
 // Prefer the exact URL/hash observation packet. Raw bytes are a fallback only while retained.
 export async function readSourceEvidence(db, { url, sha256, facts = {} } = {}) {
     const row = (await db.query(`SELECT evidence->'sourcePacket' AS packet FROM floor_plan.observation
@@ -99,9 +139,9 @@ function emptyRetentionResult(apply) {
 
 // Compact complete content-hash groups only. Shared bytes stay available if any current reference
 // is unsupported or cannot be given its own exact-URL evidence packet.
-export async function compactSources(db, { apply = false, limit = 50000, deadline = Infinity, prune = pruneDiscardedFiles, log = () => {} } = {}) {
+export async function compactSources(db, { apply = false, limit = 50000, deadline = Infinity, signal, prune = pruneDiscardedFiles, log = () => {} } = {}) {
     if (!Number.isInteger(limit) || limit < 1 || limit > 100000) throw new Error('Retention limit must be 1..100000.');
-    const expired = () => Number.isFinite(deadline) && Date.now() >= deadline;
+    const expired = () => Boolean(signal?.aborted) || (Number.isFinite(deadline) && Date.now() >= deadline);
     let locked = false, inTransaction = false;
     const result = emptyRetentionResult(apply), htmlHashes = new Map(), sourcePackets = [];
     try {

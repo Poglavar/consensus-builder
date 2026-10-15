@@ -74,15 +74,13 @@ describe('Kerala village city configs', () => {
         }
     });
 
-    it('keeps unsettled Kozhikode and Thiruvananthapuram entries out of the app config', () => {
+    // Their Ente Bhoomi village sources never settled; both cities were later admitted on the
+    // NCSCM coastal survey-plot layer instead, so only the village-source binding stays out.
+    it('keeps Kozhikode and Thiruvananthapuram off the unsettled Ente Bhoomi village sources', () => {
         for (const heldCityId of ['kozhikode', 'thiruvananthapuram']) {
-            expect(cityContext.CityConfigManager.getCityConfig(heldCityId)).toBeNull();
-        }
-        for (const locale of ['en', 'es', 'hr', 'sr']) {
-            const labels = JSON.parse(read(`../../frontend/i18n/${locale}.json`)).city.labels;
-            for (const heldCityId of ['kozhikode', 'thiruvananthapuram']) {
-                expect(labels).not.toHaveProperty(heldCityId);
-            }
+            const config = cityContext.CityConfigManager.getCityConfig(heldCityId);
+            expect(config.parcels.sourceId).toMatch(/^in-kl-ncscm-czmp-/);
+            expect(parcelSources.filter(source => source.adapter === 'kerala-entebhoomi' && source.cityIds.includes(heldCityId))).toEqual([]);
         }
     });
 });

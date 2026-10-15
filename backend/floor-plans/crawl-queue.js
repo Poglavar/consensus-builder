@@ -97,7 +97,7 @@ export function createTargetSelector({ agencyId = null, site = null, discoveryOn
         ${current === 'assets' ? '' : `AND NOT ${DEFERRED_GENERATED_SEARCH_SQL}`}
         AND NOT (${HOST_SQL}=ANY($2::text[]))
         ${current === 'assets' ? assetFilters : ''}
-      ORDER BY (t.last_fetched_at IS NULL) ${knownFirst ? 'ASC' : 'DESC'}, t.priority DESC,
+      ORDER BY t.priority DESC, (t.last_fetched_at IS NULL) ${knownFirst ? 'ASC' : 'DESC'},
         t.next_check_at, ${HOST_SQL}, t.url
       LIMIT 1`;
     return (await db.query(sql, site ? [agencyId, excluded, site] : [agencyId, excluded])).rows[0] || null;

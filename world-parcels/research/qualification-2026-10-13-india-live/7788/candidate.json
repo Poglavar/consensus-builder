@@ -1,0 +1,74 @@
+{
+ "city": {
+  "code": "7788",
+  "name": "Ambala",
+  "point": [
+   76.8141196644984,
+   30.380225522836298
+  ]
+ },
+ "sampleIds": [
+  "IN-HR-HSAC-AMBALA-01//006//02868//0//26",
+  "IN-HR-HSAC-AMBALA-01//006//02868//15//22/2",
+  "IN-HR-HSAC-AMBALA-01//006//02868//20//9/1"
+ ],
+ "absentId": "IN-HR-HSAC-AMBALA-99//999//99999//0//999999",
+ "metricEpsg": "EPSG:32643",
+ "sourceClassification": {
+  "isParcel": true,
+  "evidence": [
+   "The Haryana Space Applications Centre's EODB cadastral map service publishes one layer per district of khasra parcels keyed by district, tehsil, village, murabba and khasra number (uq).",
+   "ramSeraph/indian_cadastrals lists HSAC as the original source of its Haryana cadastral release; the Ambala layer was read live on 2026-10-13."
+  ]
+ },
+ "cellSizeDegrees": 0.001,
+ "descriptor": {
+  "id": "in-hr-hsac-ambala",
+  "name": "HSAC Haryana cadastral map — Ambala district",
+  "adapter": "arcgis",
+  "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/1",
+  "idField": "uq",
+  "idType": "string",
+  "objectIdField": "OBJECTID",
+  "idPrefix": "IN-HR-HSAC-AMBALA-",
+  "parcelNumberField": "n_khas_no",
+  "outFields": [
+   "OBJECTID",
+   "n_d_name",
+   "n_t_name",
+   "n_v_name",
+   "n_murr_no",
+   "n_khas_no",
+   "uq"
+  ],
+  "attributeExclusions": {
+   "n_khas_no": [
+    "0"
+   ]
+  },
+  "pageSize": 1000,
+  "maxFeatures": 4000,
+  "maxBboxKm2": 4,
+  "maxConcurrentQueries": 2,
+  "countryCode": "IN",
+  "stateCode": "HR",
+  "metricSrid": 32643,
+  "cityIds": [],
+  "scope": "Khasra (field) parcels of Ambala district on the Haryana Space Applications Centre's cadastral map, keyed by district, tehsil, village, murabba and khasra number. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+  "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+  "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+  "catalogueUrl": "https://hsacggm.in/map/",
+  "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+  "caveats": [
+   "Rural field-survey parcels: not proof of current title or ownership.",
+   "The uq key joins district, tehsil, village, murabba and khasra codes; OBJECTID is a transport field.",
+   "A khasra can be published as several adjacent pieces under one key; they are joined into one parcel, and overlapping pieces are rejected.",
+   "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+   "The service answers browsers directly (CORS allows this site); no relay is used."
+  ],
+  "boundsQueryMode": "object-ids",
+  "idsQueryMode": "object-ids",
+  "nativeGeometryMode": "parts",
+  "disjointParts": true
+ }
+}

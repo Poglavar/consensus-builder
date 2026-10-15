@@ -3,16 +3,21 @@
 import studios from './architecture-studios.json' with { type: 'json' };
 import { importArchitectureSites } from './architecture-sites.js';
 import { importWebsiteCandidates, seedKnownSites } from './agency-sites.js';
+import developers from './developers.json' with { type: 'json' };
+import { importDeveloperSites } from './developer-sites.js';
+
+async function importDeveloperRoster(db) { return importDeveloperSites(db, developers); }
 
 export async function refreshSourceRoster(db) {
     const architecture = await importArchitectureSites(db, studios);
+    const developers = await importDeveloperRoster(db);
     const records = (await db.query(`SELECT registry_id,registry_record,registry_source FROM floor_plan.agency
         WHERE in_scope AND COALESCE(registry_record->>'website','')<>''`)).rows;
     const agencies = await importWebsiteCandidates(db, records.map(row => ({ registry_id: row.registry_id,
         website: row.registry_record.website, evidenceUrl: row.registry_source, basis: 'official-registry-website' })));
     const seeded = await seedKnownSites(db);
     const ranked = await prioritizeResidentialSources(db);
-    return { architecture, agencies, ...seeded, ...ranked };
+    return { architecture, developers, agencies, ...seeded, ...ranked };
 }
 
 export async function prioritizeResidentialSources(db) {

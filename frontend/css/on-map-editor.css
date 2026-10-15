@@ -1,13 +1,13 @@
-/* Geometry editors share the main view. Only their controls consume pointer input. */
+/* Geometry editors share the main view. Their positioned children own the editor layer. */
 .on-map-editor {
-    position: fixed;
-    inset: 0;
-    z-index: var(--cb-z-editor);
     pointer-events: none;
     color: var(--cb-text);
     font-family: var(--cb-font-sans);
 }
-.on-map-editor__panel, .on-map-editor__tools { pointer-events: auto; }
+.on-map-editor__panel, .on-map-editor__tools {
+    z-index: var(--cb-z-editor);
+    pointer-events: auto;
+}
 .on-map-editor__panel {
     position: absolute;
     top: 76px;
@@ -59,8 +59,8 @@
     flex-shrink: 0;
     padding-inline: var(--cb-space-2);
 }
-.on-map-editor__toggle[aria-expanded="true"] { background: var(--cb-primary-soft); color: var(--cb-primary-soft-ink); }
-.on-map-editor__toggle i { font-size: 10px; }
+.on-map-editor__header .btn[aria-expanded="true"] { background: var(--cb-primary-soft); color: var(--cb-primary-soft-ink); }
+.on-map-editor__header .btn > i { font-size: 10px; }
 .on-map-editor__toggle[aria-expanded="false"] i { transform: rotate(180deg); }
 .on-map-editor__header > .close-circle-btn { flex-shrink: 0; }
 .on-map-editor__body[hidden] { display: none; }
@@ -97,7 +97,7 @@ body.on-map-editing .map-shell-slot--tray { display: none; }
     .on-map-editor__header { min-height: 40px; gap: var(--cb-space-1); }
     .on-map-editor__header .on-map-editor__toggle,
     .on-map-editor__header > .close-circle-btn { min-height: 40px; }
-    .on-map-editor__toggle { font-size: var(--cb-text-sm); padding-inline: var(--cb-space-1); }
+    .on-map-editor__header .btn { font-size: var(--cb-text-sm); padding-inline: var(--cb-space-1); }
     .on-map-editor__footer > .btn { flex: 1 1 0; min-width: 0; min-height: 40px; }
     .on-map-editor__header h2 { font-size: var(--cb-text-base); }
     .on-map-editor__hint { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
@@ -116,7 +116,7 @@ body.on-map-editing .map-sheet { z-index: var(--cb-z-open-menu); }
     gap: 4px 16px;
     padding-bottom: 8px;
     margin-bottom: 10px;
-    border-bottom: 1px solid var(--border-color, #dbe2ea);
+    border-bottom: 1px solid var(--cb-line);
 }
 .on-map-editor__placement-option {
     display: flex;
@@ -132,8 +132,8 @@ body.on-map-editing .map-sheet { z-index: var(--cb-z-open-menu); }
     margin: 0 0 8px;
     padding: 8px 10px;
     border-radius: 6px;
-    background: #fff6df;
-    color: #704a08;
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
     font-size: 12px;
     line-height: 1.4;
 }

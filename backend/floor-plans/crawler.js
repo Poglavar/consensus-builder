@@ -12,6 +12,9 @@ import { isGeneratedSearchTarget } from './discovery-policy.js';
 import { ALLOWED_TARGET_SQL,canFetchTarget,qualifyPageEvidence,listingQualifies } from './source-policy.js';
 import { purgeExcludedContent } from './source-retention.js';
 import { pruneDiscardedFiles,sourceFilePath } from './blob-store.js';
+import { archiveRoot } from './blob-store.js';
+import { assertArchiveCapacity } from './storage-budget.js';
+import { compactSources } from './compact-sources.js';
 import { crawlMetricCounters, crawlMetricTelemetry, emptyCrawlMetrics, recordCrawlAttempt, recordCrawlResponse, recordCrawlSuccess } from './crawl-metrics.js';
 const sameSite=(a,b)=>new URL(a).hostname.replace(/^www\./,'')===new URL(b).hostname.replace(/^www\./,'');
 export function discoverTargetsWithStats(target,response,evidence) {
@@ -23,10 +26,22 @@ export function discoverTargetsWithStats(target,response,evidence) {
   const $=cheerio.load(response.body.toString(),{xmlMode:true});
   candidates=$('loc').toArray().map(el=>({url:$(el).text().trim(),kind:$(el).parent().is('sitemap')?'sitemap':/\.(?:pdf|png|jpe?g|webp|avif)(?:$|\?)/i.test($(el).text().trim())?'asset':'page',priority:/zagreb|sesvete/i.test($(el).text())?45:(/novograd|new-build|projekt|project/i.test($(el).text())?30:10)}));
  } else {
-  const links=(evidence.links || []).filter(link=>sameSite(link.url,response.finalUrl || target.url)
+  const sourceUrl=response.finalUrl || target.url;
+  const projectPath=/\/(?:projekt|project)\/[^/]+(?:\/|$)/i.test(new URL(sourceUrl).pathname);
+  const strongNewBuild=listingQualifies(evidence.listing)
+   && (evidence.listing?.newBuild===true || evidence.listing?.propertyDetails?.newBuild===true);
+  // page-evidence derives these exact members from the project's own unit table.
+  // They are more reliable than elevating every listing-looking/navigation link.
+  const projectChildren=new Set((strongNewBuild&&projectPath?(evidence.projectListings||[]):[])
+   .map(item=>typeof item==='string'?item:item?.url)
+   .filter(url=>typeof url==='string' && sameSite(url,sourceUrl)
+    && /\/(?:nekretnina|property)\/[^/]+(?:\/|$)/i.test(new URL(url).pathname)));
+  const links=(evidence.links || []).filter(link=>sameSite(link.url,sourceUrl)
    && !/\.(?:css|js|woff2?|zip|mp4|svg|png|jpe?g|webp|pdf|avif)(?:$|\?)/i.test(link.url)
    && !/logout|login|prijava|register|registracija|cart|wp-admin|\?s=|[?&](?:sort|order|share)=/i.test(link.url));
-  candidates=[...links.map(link=>({url:link.url,kind:'page',priority:{project:30,listing:20,pagination:25,contact:55,other:0}[link.kind] || 0})),
+  const linkUrls=new Set(links.map(link=>link.url));
+  candidates=[...links.map(link=>({url:link.url,kind:'page',priority:projectChildren.has(link.url)?100:({project:30,listing:20,pagination:25,contact:55,other:0}[link.kind] || 0)})),
+   ...[...projectChildren].filter(url=>!linkUrls.has(url)).map(url=>({url,kind:'page',priority:100})),
    ...(listingQualifies(evidence.listing)?(evidence.assets || []):[]).filter(asset=>asset.listingOwned===true && ['floor-plan','document','image'].includes(asset.kind)).map(asset=>({url:asset.url,kind:'asset',priority:asset.kind==='image'?15:100}))];
  }
  const sameSiteCandidates=sitemapResponse?candidates.filter(item=>{try{return sameSite(item.url,target.url);}catch{return false;}}):candidates;
@@ -36,25 +51,28 @@ export function discoverTargetsWithStats(target,response,evidence) {
 export function discoverTargets(target,response,evidence) {
  return discoverTargetsWithStats(target,response,evidence).targets;
 }
-export async function crawl(db,{maxPages=1000,maxMinutes=45,agencyId=null,site=null,fetcher=fetchPublic,log=console.log,now=Date.now,selectTarget=null,discoveryOnly=false,assetOnly=false,matchedAssetsOnly=false,ownedAssetsOnly=false,planAssetsOnly=false,knownFirst=false,signal}={}) {
+export async function crawl(db,{maxPages=1000,maxMinutes=45,agencyId=null,site=null,fetcher=fetchPublic,saveObservationFn=saveObservation,log=console.log,now=Date.now,selectTarget=null,discoveryOnly=false,assetOnly=false,matchedAssetsOnly=false,ownedAssetsOnly=false,planAssetsOnly=false,knownFirst=false,signal,storageCheck=assertArchiveCapacity,storageRoot=archiveRoot(),compactSourcesFn=compactSources}={}) {
  site=normalizeSiteHost(site);
  if(discoveryOnly&&assetOnly) throw new Error('Choose discovery-only or assets-only, not both.');
  const locked=(await db.query(`SELECT pg_try_advisory_lock(hashtext('floor-plan-crawl')) AS locked`)).rows[0].locked;
  if(!locked) throw new Error('Another floor-plan crawl is already running.');
  const pageBudget=Number.isFinite(maxPages)?Math.max(0,Math.floor(maxPages)):1000;
  const timeBudgetMinutes=Number.isFinite(maxMinutes)?Math.max(0,maxMinutes):45;
- const id=randomUUID(),started=now(),metrics=emptyCrawlMetrics(),counters={...crawlMetricCounters(metrics),unchanged:0,notModified:0,identicalBodies:0,changed:0,discovered:0,excluded:0,filteredGeneratedSearchTargets:0,failed:0,blocked:0},errors=[];
+ const id=randomUUID(),started=now(),deadline=started+timeBudgetMinutes*60000,metrics=emptyCrawlMetrics(),counters={...crawlMetricCounters(metrics),unchanged:0,notModified:0,identicalBodies:0,changed:0,discovered:0,excluded:0,filteredGeneratedSearchTargets:0,failed:0,blocked:0},errors=[];
+ const cleanup={compactions:0,deferred:0,errors:[]};let stopReason=null,capacityStop=false,lastCompactedChanges=0,exitCompacted=false;
+ const compact=async({final=false}={})=>{try{const result=await compactSourcesFn(db,{apply:true,limit:100,deadline,...(final?{}:{signal}),log});cleanup.compactions++;cleanup.deferred+=Number(result?.deferred||0);if(Number(result?.sourceReadErrors||0))cleanup.errors.push({reason:'source-read-errors',count:Number(result.sourceReadErrors)});if(Number(result?.deferred||0))cleanup.errors.push({reason:'deferred-sources',count:Number(result.deferred)});}catch(error){cleanup.errors.push({reason:'compaction-error',error:error.message});}lastCompactedChanges=counters.changed;};
  const nextTarget=selectTarget || createTargetSelector({agencyId,site,discoveryOnly,assetOnly,matchedAssetsOnly,ownedAssetsOnly,planAssetsOnly,knownFirst});
  try {
   await db.query(`UPDATE floor_plan.run SET status='interrupted',finished_at=now(),updated_at=now() WHERE status='running'`);
   await db.query(`INSERT INTO floor_plan.run(id,status) VALUES($1,'running')`,[id]);
-  while(!signal?.aborted && counters.requestsAttempted<pageBudget && now()-started<timeBudgetMinutes*60000) {
+  while(!capacityStop && !signal?.aborted && counters.requestsAttempted<pageBudget && now()-started<timeBudgetMinutes*60000) {
    const target=await nextTarget(db);
    if(!target) break;
    if(!await canFetchTarget(db,target)) {counters.excluded++;continue;}
-   Object.assign(metrics,recordCrawlAttempt(metrics,target.url));
-   Object.assign(counters,crawlMetricCounters(metrics));
    try {
+    await storageCheck({additionalBytes:12*1024*1024,root:storageRoot,checkArchiveBytes:false});
+    Object.assign(metrics,recordCrawlAttempt(metrics,target.url));
+    Object.assign(counters,crawlMetricCounters(metrics));
     const processed=target.cached_processed===true;
     let cached=Boolean(target.current_sha256)&&(processed||target.cached_bytes_available!==false);
     if(cached&&!processed&&target.cached_bytes_available===true&&!target.cached_storage_path) cached=false;
@@ -88,7 +106,7 @@ export async function crawl(db,{maxPages=1000,maxMinutes=45,agencyId=null,site=n
      Object.assign(counters,crawlMetricCounters(metrics));
      await db.query('BEGIN');
      try {
-      const saved=await saveObservation(db,target,response,evidence,id);
+      const saved=await saveObservationFn(db,target,response,evidence,id);
       if(saved.excluded) counters.excluded++;
       counters[saved.changed?'changed':'unchanged']++;
       if(target.kind==='asset') await db.query(`UPDATE floor_plan.target SET next_check_at=now()+interval '30 days',updated_at=now() WHERE url=$1`,[target.url]);
@@ -107,8 +125,10 @@ export async function crawl(db,{maxPages=1000,maxMinutes=45,agencyId=null,site=n
       }
       await db.query('COMMIT');
      } catch(error) {await db.query('ROLLBACK');throw error;}
+     if(counters.changed-lastCompactedChanges>=50) await compact();
     }
    } catch(error) {
+    if(error?.code==='ARCHIVE_CAPACITY') {capacityStop=true;stopReason='archive-capacity';if(errors.length<100)errors.push({url:target.url,code:error.code,reason:error.reason,error:error.message});break;}
     counters[error.blocked?'blocked':'failed']++;
     if(errors.length<100) errors.push({url:target.url,error:error.message});
     await db.query(`UPDATE floor_plan.target SET state=$2,failure=$3,http_status=$4,last_fetched_at=now(),next_check_at=now()+interval '1 day',updated_at=now() WHERE url=$1`,[target.url,error.blocked?'blocked':([404,410].includes(error.httpStatus)?'gone':'error'),error.message,error.httpStatus || null]);
@@ -122,13 +142,17 @@ export async function crawl(db,{maxPages=1000,maxMinutes=45,agencyId=null,site=n
    catch(error) {await db.query('ROLLBACK');throw error;}
    await pruneDiscardedFiles(db);
   }
+  await compact({final:true});
+  exitCompacted=true;
   const {pending,deferredUnmatchedAssets,deferredUnownedAssets,deferredGeneratedSearchTargets}=await countPendingTargets(db,{agencyId,site,discoveryOnly,assetOnly,matchedAssetsOnly,ownedAssetsOnly,planAssetsOnly});
-  const status=signal?.aborted?'interrupted':counters.failed||counters.blocked||pending?'partial':'complete';
-  const result={id,status,counters,telemetry:crawlMetricTelemetry(metrics),pending,deferredUnmatchedAssets,deferredUnownedAssets,deferredGeneratedSearchTargets,errors,coverage:await coverage(db)};
-  await db.query(`UPDATE floor_plan.run SET status=$2,counters=$3,errors=$4,finished_at=now(),updated_at=now() WHERE id=$1`,[id,status,JSON.stringify({...counters,pending,deferredUnmatchedAssets,deferredUnownedAssets,deferredGeneratedSearchTargets}),JSON.stringify(errors)]);
+  const status=capacityStop||cleanup.errors.length?'partial':signal?.aborted?'interrupted':counters.failed||counters.blocked||pending?'partial':'complete';
+  if(!stopReason&&cleanup.errors.length)stopReason='cleanup-incomplete';
+  const result={id,status,...(stopReason?{stopReason}:{}),counters,cleanup,telemetry:crawlMetricTelemetry(metrics),pending,deferredUnmatchedAssets,deferredUnownedAssets,deferredGeneratedSearchTargets,errors,coverage:await coverage(db)};
+  await db.query(`UPDATE floor_plan.run SET status=$2,counters=$3,errors=$4,finished_at=now(),updated_at=now() WHERE id=$1`,[id,status,JSON.stringify({...counters,cleanup,pending,deferredUnmatchedAssets,deferredUnownedAssets,deferredGeneratedSearchTargets}),JSON.stringify(errors)]);
   return result;
  } catch(error) {
-  await db.query(`UPDATE floor_plan.run SET status='failed',errors=$2,finished_at=now(),updated_at=now() WHERE id=$1`,[id,JSON.stringify([...errors,{error:error.message}])]);
+  if(!exitCompacted) await compact({final:true});
+  await db.query(`UPDATE floor_plan.run SET status='failed',counters=$3,errors=$2,finished_at=now(),updated_at=now() WHERE id=$1`,[id,JSON.stringify([...errors,{error:error.message},...(cleanup.errors.length?[{cleanup}]:[])]),JSON.stringify({...counters,cleanup})]);
   throw error;
  } finally {await db.query(`SELECT pg_advisory_unlock(hashtext('floor-plan-crawl'))`);}
 }

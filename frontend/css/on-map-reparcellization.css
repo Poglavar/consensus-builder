@@ -335,7 +335,7 @@
 }
 
 .reparcel-agreement-options label:focus-within {
-    outline: 3px solid rgba(27, 153, 139, 0.35);
+    outline: 3px solid color-mix(in srgb, var(--cb-success) 35%, transparent);
     outline-offset: 2px;
 }
 
@@ -367,15 +367,15 @@
     width: 22px;
     height: 22px;
     box-sizing: border-box;
-    border: 3px solid #fff;
+    border: 3px solid var(--cb-surface);
     border-radius: 50%;
-    background: #7a1cac;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+    background: var(--cb-primary);
+    box-shadow: 0 1px 4px color-mix(in srgb, var(--cb-text-strong) 45%, transparent);
     cursor: grab;
 }
 
 .reparcel-sweep-handle:active {
-    background: #5c1382;
+    background: var(--cb-primary-hover);
     cursor: grabbing;
 }
 
@@ -383,15 +383,15 @@
     width: 14px;
     height: 14px;
     box-sizing: border-box;
-    border: 2px solid #137547;
+    border: 2px solid var(--cb-success);
     border-radius: 50%;
     background: var(--cb-surface);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 1px 3px color-mix(in srgb, var(--cb-text-strong) 35%, transparent);
     cursor: grab;
 }
 
 .reparcel-vertex-handle:active {
-    background: #d1fae5;
+    background: var(--cb-success-soft);
     cursor: grabbing;
 }
 

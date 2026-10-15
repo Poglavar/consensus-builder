@@ -73,6 +73,20 @@ describe('floor-plan daily pipeline',()=>{
   expect(db.query.mock.calls.some(([sql])=>sql.includes("SET status=$2,result=$3,finished_at=now()"))).toBe(true);
  });
 
+ it('drains source retention through injected compaction with the daily deadline and signal',async()=>{
+  const order=[],operations=deps(order),controller=new AbortController(),log=vi.fn(),compact=operations.compactSources;
+  let drainOptions;
+  operations.drainSourceRetention=async(_db,options)=>{order.push('retention-drain');drainOptions=options;
+   return {status:'partial',partial:true,remaining:true,stopReason:'deadline',batches:2,filesDeleted:4};};
+  const result=await daily(fakeDb(),{maxMinutes:5,retentionLimit:3,signal:controller.signal,log,dependencies:operations});
+  expect(drainOptions).toMatchObject({compact,limit:3,signal:controller.signal,log});
+  expect(drainOptions.deadline).toBeGreaterThan(Date.now());
+  expect(typeof drainOptions.now).toBe('function');
+  expect(order.at(-1)).toBe('retention-drain');
+  expect(result.stages.sourceRetention).toMatchObject({status:'partial',remaining:true,batches:2,filesDeleted:4});
+  expect(result.status).toBe('partial');
+ });
+
  it('collects prior AI work without submitting new batches in no-AI mode',async()=>{
   const order=[],result=await daily(fakeDb(),{maxMinutes:5,noAI:true,dependencies:deps(order)});
   expect(result.status).toBe('complete');

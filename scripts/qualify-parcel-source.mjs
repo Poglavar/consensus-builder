@@ -97,6 +97,13 @@ function checkWithDetails(passed, previous, details = {}) {
     return checkRecord(passed, { ...oldDetails, ...details });
 }
 
+// An outline-derived reference is read back through the source's bounds path, so an outline
+// source that pages by object-ID lists proves completeness the way an object-ID source does.
+export function forcedEvidenceMode(descriptor) {
+    if (descriptor.idsQueryMode) return descriptor.idsQueryMode;
+    return descriptor.identityKind === 'geometry-sha256-v1' && descriptor.boundsQueryMode === 'object-ids' ? 'object-ids' : undefined;
+}
+
 export function assessForcedQueryEvidence({ requests, expectedIds, returnedIds, complete, mode }) {
     const expected = [...expectedIds].sort();
     const returned = [...returnedIds].sort();
@@ -539,7 +546,7 @@ async function main() {
                     const evidence = assessForcedQueryEvidence({ requests: observed, expectedIds: forcedIds, returnedIds,
                         // getExact returns only after verifying the production adapter's complete flag,
                         // exact cardinality, absence list, and exact requested ID set.
-                        complete: true, mode: candidate.descriptor.idsQueryMode });
+                        complete: true, mode: forcedEvidenceMode(candidate.descriptor) });
                     checks.completeness = checkWithDetails(checks.completeness.passed && evidence.passed, checks.completeness,
                         { forcedPageSize: 1, forcedKnownIdCount: forcedIds.length, ...evidence });
                     ingest([...forced.values()]);

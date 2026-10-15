@@ -8,7 +8,7 @@ const row={id:'test-studio',name:'Test Studio',registered_address:'Ilica 12, Zag
  website:'https://studio.test/',website_evidence_url:'https://studio.test/contact/',
  verification_basis:'The official website company name and seat match the HKA employer entry.',
  seed_project_urls:['https://studio.test/project/one/']};
-const db=()=>({query:vi.fn(async()=>({rows:[],rowCount:1}))});
+const db=()=>({query:vi.fn(async sql=>({rows:sql.startsWith('INSERT INTO floor_plan.target')?[{inserted:true}]:[],rowCount:1}))});
 
 describe('architecture studio source import',()=>{
  it('keeps HKA company provenance and seeds the portfolio parser on the shared queue',async()=>{

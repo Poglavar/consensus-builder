@@ -107,6 +107,13 @@ describe('cadastral parcel fetch transport', () => {
         expect(poland.cellBlockSide({ city: 'szczecin' })).toBe(3);
     });
 
+    it('queries HSAC Haryana district layers in 4x4 blocks, not the uq-keyed layers they replace', () => {
+        const haryana = bootTransport('panipat', vi.fn(), { source: 'parcel-source', sourceId: 'in-hr-hsac-panipat-outlines', gridSize: 0.001 });
+        expect(haryana.cellBlockSide({ city: 'panipat' })).toBe(4);
+        const keyed = bootTransport('panipat', vi.fn(), { source: 'parcel-source', sourceId: 'in-hr-hsac-panipat', gridSize: 0.001 });
+        expect(keyed.cellBlockSide({ city: 'panipat' })).toBe(1);
+    });
+
     it('keeps every other source on per-cell queries', () => {
         const other = bootTransport('richmond', vi.fn(), { source: 'parcel-source', sourceId: 'us-va-richmond-parcels', gridSize: 0.001 });
         const legacy = bootTransport('zagreb', vi.fn(), { source: 'parcel-bg' });

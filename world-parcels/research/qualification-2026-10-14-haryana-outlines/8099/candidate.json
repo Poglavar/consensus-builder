@@ -1,0 +1,69 @@
+{
+ "city": {
+  "code": "8099",
+  "name": "Karnal",
+  "point": [
+   77.0241809146046,
+   29.683358416672
+  ]
+ },
+ "sampleIds": [
+  "IN-HR-HSAC2-KARNAL-g1~770220105~296838070~7ddc2652658880cda7e164dc27cae1b07383416314529a8820bcdaf453403970",
+  "IN-HR-HSAC2-KARNAL-g1~770243857~296829840~f41d5d12d682d2575ee3940117843590b8d0df66f01a3d09654afaa4ee6df27a",
+  "IN-HR-HSAC2-KARNAL-g1~770251863~296828663~771d16a2f3950ffcae27f1ce2a017a92ba4a797727d86d6b83090596ac5f4a18"
+ ],
+ "absentId": "IN-HR-HSAC2-KARNAL-g1~770220105~296838070~0000000000000000000000000000000000000000000000000000000000000000",
+ "metricEpsg": "EPSG:32643",
+ "sourceClassification": {
+  "isParcel": true,
+  "evidence": [
+   "The Haryana Space Applications Centre's EODB cadastral map service publishes one layer per district of khasra parcels with district, tehsil, village, murabba and khasra number (uq).",
+   "ramSeraph/indian_cadastrals lists HSAC as the original source of its Haryana cadastral release; the Karnal layer was read live on 2026-10-14."
+  ]
+ },
+ "cellSizeDegrees": 0.001,
+ "descriptor": {
+  "id": "in-hr-hsac-karnal-outlines",
+  "name": "HSAC Haryana cadastral map — Karnal district",
+  "adapter": "arcgis",
+  "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/10",
+  "objectIdField": "OBJECTID",
+  "idPrefix": "IN-HR-HSAC2-KARNAL-",
+  "parcelNumberField": "n_khas_no",
+  "outFields": [
+   "OBJECTID",
+   "n_d_name",
+   "n_t_name",
+   "n_v_name",
+   "n_murr_no",
+   "n_khas_no",
+   "uq"
+  ],
+  "attributeExclusions": {
+   "n_khas_no": [
+    "0"
+   ]
+  },
+  "pageSize": 1000,
+  "maxFeatures": 2000,
+  "maxBboxKm2": 4,
+  "maxConcurrentQueries": 2,
+  "countryCode": "IN",
+  "stateCode": "HR",
+  "metricSrid": 32643,
+  "cityIds": [],
+  "scope": "Khasra (field) parcels of Karnal district on the Haryana Space Applications Centre's cadastral map, with the khasra number and village shown. References are derived from each outline: a khasra can be drawn as several pieces, and joining them by key took several requests per map cell. Unnumbered (khasra 0) polygons are excluded: they cover village settlements and urban cores that the field survey does not divide, so older town centres show no parcels.",
+  "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+  "attribution": "Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.",
+  "catalogueUrl": "https://hsacggm.in/map/",
+  "licenceNote": "No reuse licence is stated on the public HSAC map service.",
+  "caveats": [
+   "Rural field-survey parcels: not proof of current title or ownership.",
+   "Application identity is the outline hash (geometry-sha256-v1); the published uq key (district//tehsil//village//murabba//khasra) is shown as a source property. It replaces the earlier uq-keyed source, whose per-cell piece joins were too slow in browsers.",
+   "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals), which lists HSAC as an original source; the map is read live from HSAC.",
+   "The service answers browsers directly (CORS allows this site); no relay is used."
+  ],
+  "identityKind": "geometry-sha256-v1",
+  "lookupCellSize": 0.001
+ }
+}

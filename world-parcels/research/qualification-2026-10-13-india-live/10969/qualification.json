@@ -1,0 +1,1179 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "10969",
+  "cityName": "Chirand",
+  "sourceId": "in-br-matribhoomi-chapra",
+  "candidateSha256": "24de97ce1211d229566087487ace7cb6bd5a3676f75da5a99f584fdfe3e3146e",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 30,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 30,
+      "collectedUniqueCount": 30
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 52,
+      "sampleCentroidCell": {
+        "index": 4,
+        "dx": 0,
+        "dy": 0,
+        "bbox": [
+          84.879,
+          25.747,
+          84.88,
+          25.748
+        ],
+        "reason": "WUP point had no containing sampled parcel; sample centroid cell added.",
+        "complete": true,
+        "featureCount": 10,
+        "ids": [
+          "IN-BR-MB-CHAPRA-RS1701004852701~893~%20",
+          "IN-BR-MB-CHAPRA-RS1701004852701~896~%20",
+          "IN-BR-MB-CHAPRA-RS1701004852701~897~%20",
+          "IN-BR-MB-CHAPRA-RS1701004852701~908~%20",
+          "IN-BR-MB-CHAPRA-RS1701004852701~909~%20",
+          "IN-BR-MB-CHAPRA-RS1701004852701~910~%20",
+          "IN-BR-MB-CHAPRA-RS1701004852701~912~%20",
+          "IN-BR-MB-CHAPRA-RS1701004852701~913~%20",
+          "IN-BR-MB-CHAPRA-RS1701004852701~927~%20",
+          "IN-BR-MB-CHAPRA-RS1701004852701~928~%20"
+        ]
+      }
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 10,
+      "distinctFeatureQueries": 10,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "34e00b2ed10868e123090d0de5d5c5645b226494a62987852305c1c9b604b10d",
+      "featureCount": 30,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32645",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "34e00b2ed10868e123090d0de5d5c5645b226494a62987852305c1c9b604b10d",
+  "featureCount": 30,
+  "sampleIds": [
+    "IN-BR-MB-CHAPRA-RS1701004852701~893~%20",
+    "IN-BR-MB-CHAPRA-RS1701004852701~913~%20",
+    "IN-BR-MB-CHAPRA-RS1701004852701~928~%20"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        84.879,
+        25.747,
+        84.88,
+        25.748
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "IN-BR-MB-CHAPRA-RS1701004852701~897~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~927~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~928~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~913~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~912~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~909~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~910~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~908~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~896~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~893~%20"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        84.88,
+        25.747,
+        84.881,
+        25.748
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "IN-BR-MB-CHAPRA-RS1701004852701~929~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~931~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~927~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~928~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~893~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~932~%20"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        84.881,
+        25.747,
+        84.882,
+        25.748
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        84.879,
+        25.748,
+        84.88,
+        25.749
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        84.88,
+        25.748,
+        84.881,
+        25.749
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        84.881,
+        25.748,
+        84.882,
+        25.749
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        84.879,
+        25.749,
+        84.88,
+        25.75
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        84.88,
+        25.749,
+        84.881,
+        25.75
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        84.881,
+        25.749,
+        84.882,
+        25.75
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        84.88,
+        25.746,
+        84.881,
+        25.747
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "IN-BR-MB-CHAPRA-RS1701004852701~924~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~926~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~929~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~931~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~933~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~934~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~930~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~925~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~927~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~932~%20"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        84.88,
+        25.75,
+        84.881,
+        25.751
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        84.878,
+        25.748,
+        84.879,
+        25.749
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        84.882,
+        25.748,
+        84.883,
+        25.749
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        84.879,
+        25.747,
+        84.88,
+        25.748
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "IN-BR-MB-CHAPRA-RS1701004852701~893~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~896~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~897~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~908~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~909~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~910~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~912~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~913~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~927~%20",
+        "IN-BR-MB-CHAPRA-RS1701004852701~928~%20"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 44,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:07:46.237Z",
+      "queryHash": "4bfc72540a53b1180482a394200ff12cf4a0a4666f9a6feff0ffce887e1d4cd9",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 4553
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:07:50.797Z",
+      "queryHash": "4bfc72540a53b1180482a394200ff12cf4a0a4666f9a6feff0ffce887e1d4cd9",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 4289
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:07:55.090Z",
+      "queryHash": "ec5b46e0c1a5f3d73631c2d73cc0dd4823ff38ee6975b3e9fbd9054e5d6f9962",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 4228
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:07:59.322Z",
+      "queryHash": "fde36839532f0c7329d79affdcb5a056d8a0c096338f50dd78f0d47ed699c992",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1564
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:00.887Z",
+      "queryHash": "4233771e89d47fbdb8f910a5b3990df6b4216af0744d7212c248b7db47fe65b7",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 805
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:01.694Z",
+      "queryHash": "325bf092d1947bc17122e739b0f0921b03cfcf9eaf04a6744dc4e6f308d1e2f5",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 876
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:02.571Z",
+      "queryHash": "ec043d91a4c0b1232412cffe5301beead1387fd29f444be8c12ed9c0b4a6c26e",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 787
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:03.359Z",
+      "queryHash": "1b9bd790dba73369a6b080954826d058550f14d22aa4857f4fadf1ae252260f0",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 797
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:04.159Z",
+      "queryHash": "4445eb8f646f6f287c140308e1d69b0e8d7c0827c84bf72e198f1605104dc812",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 746
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:04.908Z",
+      "queryHash": "d93349a7e327705e40c813daf72dd033eef84010f8e0087d89d75a79bfb19518",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 808
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:05.717Z",
+      "queryHash": "4daeb51ed8f48e5d07ae2901803dfe23f5ed5ac155db253869fb8476789d7f4c",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 770
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:06.489Z",
+      "queryHash": "ec5e32ea372ac7ad9726ac464094584118645a46410624bb17cdfa906ce190c8",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 831
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:07.321Z",
+      "queryHash": "ec7301b3e497e086850868232d449e01ce70a22d54983db38f1ce4e2719aea43",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 816
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:08.137Z",
+      "queryHash": "d555ed58dc6751633bf36f03968fa62ac1ed4fa93d2eb9751ec8f2d4d08c5f9f",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 745
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:08.882Z",
+      "queryHash": "8ee39d64b2a9e6f6a88ae65f550d54d00d976fd53b01ed868fbbdd88b21144d9",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 795
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:09.679Z",
+      "queryHash": "1d4e795b3b87d8f0be7e0ccb7f6280e7baffa192045ba56c7bfdb1437c74d24b",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 814
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:10.497Z",
+      "queryHash": "fde36839532f0c7329d79affdcb5a056d8a0c096338f50dd78f0d47ed699c992",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 855
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:11.356Z",
+      "queryHash": "4233771e89d47fbdb8f910a5b3990df6b4216af0744d7212c248b7db47fe65b7",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1389
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:12.747Z",
+      "queryHash": "325bf092d1947bc17122e739b0f0921b03cfcf9eaf04a6744dc4e6f308d1e2f5",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 812
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:13.561Z",
+      "queryHash": "ec043d91a4c0b1232412cffe5301beead1387fd29f444be8c12ed9c0b4a6c26e",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 808
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:14.370Z",
+      "queryHash": "1b9bd790dba73369a6b080954826d058550f14d22aa4857f4fadf1ae252260f0",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 802
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:15.172Z",
+      "queryHash": "4445eb8f646f6f287c140308e1d69b0e8d7c0827c84bf72e198f1605104dc812",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 717
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:15.890Z",
+      "queryHash": "d93349a7e327705e40c813daf72dd033eef84010f8e0087d89d75a79bfb19518",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 861
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:16.765Z",
+      "queryHash": "4daeb51ed8f48e5d07ae2901803dfe23f5ed5ac155db253869fb8476789d7f4c",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 803
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:17.569Z",
+      "queryHash": "ec5e32ea372ac7ad9726ac464094584118645a46410624bb17cdfa906ce190c8",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 807
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:18.377Z",
+      "queryHash": "ec7301b3e497e086850868232d449e01ce70a22d54983db38f1ce4e2719aea43",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 641
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:19.020Z",
+      "queryHash": "d555ed58dc6751633bf36f03968fa62ac1ed4fa93d2eb9751ec8f2d4d08c5f9f",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 790
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:19.810Z",
+      "queryHash": "8ee39d64b2a9e6f6a88ae65f550d54d00d976fd53b01ed868fbbdd88b21144d9",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 830
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:20.641Z",
+      "queryHash": "1d4e795b3b87d8f0be7e0ccb7f6280e7baffa192045ba56c7bfdb1437c74d24b",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 814
+    },
+    {
+      "stage": "sample-centroid-cell-pass-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:21.464Z",
+      "queryHash": "fde36839532f0c7329d79affdcb5a056d8a0c096338f50dd78f0d47ed699c992",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 704
+    },
+    {
+      "stage": "sample-centroid-cell-pass-two",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:22.171Z",
+      "queryHash": "fde36839532f0c7329d79affdcb5a056d8a0c096338f50dd78f0d47ed699c992",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 791
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:22.967Z",
+      "queryHash": "aeb44ebfdc0b63600fa522c8e3edeff97d58b8a3952f6545d7b9cf25de638d50",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 3573
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:26.540Z",
+      "queryHash": "e5af53db8dbff0ce46277c2757af7494e3fa4cc9f2b8d5a5a9ff53a36ae15c5a",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 3392
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:29.934Z",
+      "queryHash": "933d2409d4c2c59183f7a1c722c69b25cc55e4d7b7004821c08b0a06d4617637",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 3264
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:33.202Z",
+      "queryHash": "ec5fde955a03f09b6262c6be38127943781e88fa68a275dfab153292547d0b39",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 3514
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:36.716Z",
+      "queryHash": "4fcb9aee89e6f36ed6220bc900e5e1be3a1ae365adfd35c8aefd0b088349c214",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 3527
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:40.245Z",
+      "queryHash": "77a2592d45e113f3b3f91125aa559f5f1116c3f120803e07d3f2289d56b37231",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 3722
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:43.971Z",
+      "queryHash": "6e7eebf8443bbd09342fa9e51099e8785f56cab0076302b90d6c56a64faf2352",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 3272
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:47.244Z",
+      "queryHash": "766ee1b095e81783e6215c23a49ca7c02b4427f796624e9b6eb85edd493f9569",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 3531
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:50.776Z",
+      "queryHash": "5443b433940cad4b4e311b8fd7ae812773c7403d27752c089c868c9581f3bf2e",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 3581
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:54.358Z",
+      "queryHash": "dd7ca54395f457e80f68c4c97a924dd8d3dbc72a6547f1dd18bcac8b072f18ae",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 3368
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:08:57.730Z",
+      "queryHash": "4bfc72540a53b1180482a394200ff12cf4a0a4666f9a6feff0ffce887e1d4cd9",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 3433
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "mapservice.gov.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:09:01.194Z",
+      "queryHash": "05a26d10e667a49ff028499837355af0bdf6f036b35b9d851b76c6b3f3329363",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 855
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "mapservice.gov.in",
+      "method": "POST",
+      "startedAt": "2026-10-13T13:09:02.116Z",
+      "queryHash": "d6adeaf5a7355ae03e53430b9f7238aef35abf6d0e389a611ae0d7df349005d2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 3981
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

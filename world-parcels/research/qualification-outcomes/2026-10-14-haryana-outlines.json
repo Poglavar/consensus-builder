@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 1,
+  "basis": "Haryana cities re-qualified on HSAC's district cadastral layers with outline-derived references, replacing the uq-keyed sources whose per-cell piece joins were too slow in browsers (2026-10-14)",
+  "pointOrder": "latitude-longitude",
+  "counts": {
+    "qualified": 13,
+    "held": 1
+  },
+  "cities": [
+    {
+      "cityCode": 6392,
+      "cityName": "Sirsa",
+      "countryCode": "IN",
+      "point": [
+        29.536704378771,
+        75.035515266935
+      ],
+      "sourceIds": [
+        "in-hr-hsac-sirsa-outlines"
+      ],
+      "outcome": "qualified",
+      "summary": "All eight gates passed on HSAC Haryana cadastral map — Sirsa district (52 parcels, 96 requests); independent metric audit passed.",
+      "finishedAt": "2026-10-14T05:51:22.638Z"
+    },
+    {
+      "cityCode": 7285,
+      "cityName": "Hisar",
+      "countryCode": "IN",
+      "point": [
+        29.150778973288602,
+        75.75211620569911
+      ],
+      "sourceIds": [
+        "in-hr-hsac-hisar-outlines"
+      ],
+      "outcome": "qualified",
+      "summary": "All eight gates passed on HSAC Haryana cadastral map — Hisar district (64 parcels, 93 requests); independent metric audit passed.",
+      "finishedAt": "2026-10-14T05:44:30.810Z"
+    },
+    {
+      "cityCode": 7670,
+      "cityName": "Kaithal",
+      "countryCode": "IN",
+      "point": [
+        29.7995897199337,
+        76.4055225188099
+      ],
+      "sourceIds": [
+        "in-hr-hsac-kaithal-outlines"
+      ],
+      "outcome": "qualified",
+      "summary": "All eight gates passed on HSAC Haryana cadastral map — Kaithal district (56 parcels, 79 requests); independent metric audit passed.",
+      "finishedAt": "2026-10-14T05:45:43.572Z"
+    },
+    {
+      "cityCode": 7788,
+      "cityName": "Ambala",
+      "countryCode": "IN",
+      "point": [
+        30.380225522836298,
+        76.8141196644984
+      ],
+      "sourceIds": [
+        "in-hr-hsac-ambala-outlines"
+      ],
+      "outcome": "qualified",
+      "summary": "All eight gates passed on HSAC Haryana cadastral map — Ambala district (92 parcels, 101 requests); independent metric audit passed.",
+      "finishedAt": "2026-10-14T05:43:12.994Z"
+    },
+    {
+      "cityCode": 7797,
+      "cityName": "Jind",
+      "countryCode": "IN",
+      "point": [
+        29.3176729893746,
+        76.3185369205235
+      ],
+      "sourceIds": [
+        "in-hr-hsac-jind-outlines"
+      ],
+      "outcome": "qualified",
+      "summary": "All eight gates passed on HSAC Haryana cadastral map — Jind district (56 parcels, 93 requests); independent metric audit passed.",
+      "finishedAt": "2026-10-14T05:45:09.260Z"
+    },
+    {
+      "cityCode": 7878,
+      "cityName": "Bhiwani",
+      "countryCode": "IN",
+      "point": [
+        28.7971298761814,
+        76.1384878765419
+      ],
+      "sourceIds": [
+        "in-hr-hsac-bhiwani-outlines"
+      ],
+      "outcome": "qualified",
+      "summary": "All eight gates passed on HSAC Haryana cadastral map — Bhiwani district (50 parcels, 93 requests); independent metric audit passed.",
+      "finishedAt": "2026-10-14T05:43:50.986Z"
+    },
+    {
+      "cityCode": 7952,
+      "cityName": "Kurukshetra",
+      "countryCode": "IN",
+      "point": [
+        29.9674026272771,
+        76.8569110935626
+      ],
+      "sourceIds": [
+        "in-hr-hsac-kurukshetra-outlines"
+      ],
+      "outcome": "qualified",
+      "summary": "All eight gates passed on HSAC Haryana cadastral map — Kurukshetra district (53 parcels, 96 requests); independent metric audit passed.",
+      "finishedAt": "2026-10-14T05:47:33.054Z"
+    },
+    {
+      "cityCode": 8085,
+      "cityName": "Rohtak",
+      "countryCode": "IN",
+      "point": [
+        28.8730362473323,
+        76.5954147246247
+      ],
+      "sourceIds": [
+        "in-hr-hsac-rohtak-outlines"
+      ],
+      "outcome": "qualified",
+      "summary": "All eight gates passed on HSAC Haryana cadastral map — Rohtak district (69 parcels, 112 requests); independent metric audit passed.",
+      "finishedAt": "2026-10-14T05:50:45.287Z"
+    },
+    {
+      "cityCode": 8099,
+      "cityName": "Karnal",
+      "countryCode": "IN",
+      "point": [
+        29.683358416672,
+        77.0241809146046
+      ],
+      "sourceIds": [
+        "in-hr-hsac-karnal-outlines"
+      ],
+      "outcome": "qualified",
+      "summary": "All eight gates passed on HSAC Haryana cadastral map — Karnal district (131 parcels, 101 requests); independent metric audit passed.",
+      "finishedAt": "2026-10-14T05:46:55.425Z"
+    },
+    {
+      "cityCode": 8155,
+      "cityName": "Yamunanagar",
+      "countryCode": "IN",
+      "point": [
+        30.1406382796101,
+        77.2876280768151
+      ],
+      "sourceIds": [
+        "in-hr-hsac-yamunanagar-outlines"
+      ],
+      "outcome": "held",
+      "summary": "Held: metric (72 parcels, 103 requests) {\"metric\":{\"errorType\":\"Error\",\"code\":\"metric-report-failed\"}}",
+      "finishedAt": "2026-10-14T05:52:42.560Z"
+    },
+    {
+      "cityCode": 8162,
+      "cityName": "Panipat",
+      "countryCode": "IN",
+      "point": [
+        29.400963638737302,
+        76.98281629834831
+      ],
+      "sourceIds": [
+        "in-hr-hsac-panipat-outlines"
+      ],
+      "outcome": "qualified",
+      "summary": "All eight gates passed on HSAC Haryana cadastral map — Panipat district (97 parcels, 97 requests); independent metric audit passed.",
+      "finishedAt": "2026-10-14T05:49:06.829Z"
+    },
+    {
+      "cityCode": 8316,
+      "cityName": "Rewari",
+      "countryCode": "IN",
+      "point": [
+        28.194482321657,
+        76.62843094297341
+      ],
+      "sourceIds": [
+        "in-hr-hsac-rewari-outlines"
+      ],
+      "outcome": "qualified",
+      "summary": "All eight gates passed on HSAC Haryana cadastral map — Rewari district (75 parcels, 117 requests); independent metric audit passed.",
+      "finishedAt": "2026-10-14T05:49:57.903Z"
+    },
+    {
+      "cityCode": 8337,
+      "cityName": "Sonipat",
+      "countryCode": "IN",
+      "point": [
+        28.9827143736227,
+        77.03440734666691
+      ],
+      "sourceIds": [
+        "in-hr-hsac-sonipat-outlines"
+      ],
+      "outcome": "qualified",
+      "summary": "All eight gates passed on HSAC Haryana cadastral map — Sonipat district (66 parcels, 87 requests); independent metric audit passed.",
+      "finishedAt": "2026-10-14T05:51:58.498Z"
+    },
+    {
+      "cityCode": 8691,
+      "cityName": "Palwal",
+      "countryCode": "IN",
+      "point": [
+        28.141468469378,
+        77.3328111663979
+      ],
+      "sourceIds": [
+        "in-hr-hsac-palwal-outlines"
+      ],
+      "outcome": "qualified",
+      "summary": "All eight gates passed on HSAC Haryana cadastral map — Palwal district (53 parcels, 94 requests); independent metric audit passed.",
+      "finishedAt": "2026-10-14T05:48:16.234Z"
+    }
+  ]
+}

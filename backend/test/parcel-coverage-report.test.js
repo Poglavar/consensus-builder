@@ -1,6 +1,6 @@
 // Regressions for comparable report totals, null preservation and every column's sorting behavior.
 import { describe, expect, it } from 'vitest';
-import { nextSort, sortRows, filterCities, countryCategory, summarizeJurisdictions, mapLinks } from '../../frontend/js/parcel-coverage-report-model.mjs';
+import { nextSort, sortRows, filterCities, countSupportedCities, countryCategory, summarizeJurisdictions, mapLinks } from '../../frontend/js/parcel-coverage-report-model.mjs';
 import { buildParcelReport } from '../../scripts/build-parcel-coverage-report.mjs';
 import { reportMessages } from '../../frontend/js/parcel-coverage-report-i18n.mjs';
 import { readFileSync } from 'node:fs';
@@ -52,6 +52,23 @@ describe('parcel coverage report', () => {
         expect(filterCities(cities, { cohort: 'largest200' }).map(row => row.name)).toEqual(['Largest only']);
         expect(filterCities(cities, { cohort: 'growth200' }).map(row => row.name)).toEqual(['Growth rank one', 'Growth rank twenty', 'Growth rank twenty-one', 'Missing growth rank']);
         expect(filterCities(cities, { cohort: 'growth-top20' }).map(row => row.name)).toEqual(['Growth rank one', 'Growth rank twenty', 'Numeric rank without cohort tag']);
+    });
+
+    it('counts distinct app cities and filters support independently of research findings', () => {
+        const cities = [
+            { name: 'Metro area', countryCode: 'AA', appCityIds: ['north', 'south'], registryFound: true },
+            { name: 'North research record', countryCode: 'AA', appCityIds: ['north'], registryFound: true },
+            { name: 'Verified but not integrated', countryCode: 'AA', appCityIds: [], registryFound: true, verifiedSample: true },
+            { name: 'Other country', countryCode: 'BB', appCityIds: ['other'] },
+            { name: 'Unresearched', countryCode: 'AA' }
+        ];
+        expect(countSupportedCities(cities)).toBe(3);
+        const supported = filterCities(cities, { support: 'yes', country: 'AA' });
+        expect(supported.map(row => row.name)).toEqual(['Metro area', 'North research record']);
+        expect(countSupportedCities(supported)).toBe(2);
+        expect(filterCities(cities, { support: 'no', registry: 'yes' }).map(row => row.name)).toEqual(['Verified but not integrated']);
+        expect(filterCities(cities, { support: 'yes', query: 'unresearched' })).toEqual([]);
+        expect(countSupportedCities([])).toBe(0);
     });
 
     it('does not count a dependency twice or silently lose unallocated world amounts', () => {
@@ -203,5 +220,8 @@ describe('parcel coverage report', () => {
         const missing = registry.sources.filter(source => source.liveIntegration?.status === 'enabled')
             .flatMap(source => (source.liveIntegration.cityIds || []).filter(id => !published.has(id)).map(id => `${source.sourceId}:${id}`));
         expect(missing).toEqual([]);
+        expect(countSupportedCities(report.cities)).toBe(report.metadata.configuredAppCityCount);
+        const coverage = read('../../frontend/data/world-coverage.json');
+        expect([...published].sort()).toEqual(coverage.liveCities.map(city => city.id).sort());
     });
 });

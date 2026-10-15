@@ -1,0 +1,63 @@
+{
+ "city": {
+  "code": "10081",
+  "name": "Colachel",
+  "point": [
+   77.18283,
+   8.26132
+  ]
+ },
+ "sampleIds": [
+  "IN-TN-CZMP-g1~771789303~82603605~1c8c9474e69fb7ae122cfba285601fa03dd85ac25d307dbafa9e6cb5aebef6bb",
+  "IN-TN-CZMP-g1~771820149~82605015~1f3c6aaae31043e0cc42181d4589b04fd354c1438102e1722a5d69e567221c2a",
+  "IN-TN-CZMP-g1~771831082~82628016~f6d3003a3d7d397310d1946d78afd203e3621a399931a75f7ac87fc6ad170c73"
+ ],
+ "absentId": "IN-TN-CZMP-g1~771789303~82603605~0000000000000000000000000000000000000000000000000000000000000000",
+ "metricEpsg": "EPSG:32643",
+ "sourceClassification": {
+  "isParcel": true,
+  "evidence": [
+   "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_TamilNadu/MapServer/6",
+   "https://czmp.ncscm.res.in/",
+   "world-parcels/research/ncscm-czmp-cities-2026-10-13.json"
+  ]
+ },
+ "cellSizeDegrees": 0.001,
+ "descriptor": {
+  "adapter": "arcgis",
+  "identityKind": "geometry-sha256-v1",
+  "lookupCellSize": 0.001,
+  "objectIdField": "OBJECTID",
+  "maxFeatures": 2000,
+  "maxConcurrentQueries": 2,
+  "countryCode": "IN",
+  "catalogueUrl": "https://czmp.ncscm.res.in/",
+  "licenceNote": "No reuse licence is stated on the CZMP portal or the ArcGIS service; the plan is published for public viewing.",
+  "id": "in-tn-ncscm-czmp-survey-plots",
+  "name": "NCSCM CZMP — Tamil Nadu survey plots",
+  "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_TamilNadu/MapServer/6",
+  "idPrefix": "IN-TN-CZMP-",
+  "parcelNumberField": "Survey_Number",
+  "outFields": [
+   "OBJECTID",
+   "Survey_Number",
+   "Village",
+   "Taluk",
+   "District"
+  ],
+  "pageSize": 1000,
+  "maxBboxKm2": 4,
+  "metricSrid": 32644,
+  "cityIds": [],
+  "scope": "Survey-plot outlines on the Tamil Nadu Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+  "evidenceFile": "research/ncscm-czmp-cities-2026-10-13.json",
+  "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Tamil Nadu. Plot labels shown as published; references derived from geometry. Adapted to WGS84.",
+  "caveats": [
+   "Coastal-zone planning maps, not the land-records register: plot outlines are a geometry reference, not proof of current title or ownership.",
+   "Survey labels can be repeated, blank or zero. They are shown as published, never used as identity; OBJECTID is a transport field.",
+   "Application identity uses the source namespace plus canonical geometry SHA-256 at 1e-7-degree precision and a spatial locator. A changed outline gets a new reference; absence means that outline version was not returned.",
+   "The service answers browsers directly (CORS allows this site); no relay is used.",
+   "The service does not state the plan version or the survey date of the underlying plot maps."
+  ]
+ }
+}

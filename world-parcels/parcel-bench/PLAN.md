@@ -4,9 +4,9 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-14 (expanded selection frozen; fresh baseline and resolution-augmentation comparison in preparation). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-14 (expanded selection and 12-run resolution comparison complete; baseline retained). Status values: todo · running · done · dropped (with the reason).
 
-## Where we stand (2026-10-13)
+## Where we stand (2026-10-14)
 
 | Benchmark | OSM rules baseline | Best model | Best model's split |
 |---|---:|---:|---|
@@ -19,7 +19,9 @@ layered v0 recipe (convnext_tiny encoder, U-Net decoder, RGB + OSM rasters in; b
 distance maps out; watershed reconstruction). The method holds up; absolute quality is not yet usable.
 Round 2 now has three seeds and paired intervals. The v1 selection sets contain only four geographic
 blocks; tile-level intervals understate geographic uncertainty. Each v2 now has 12 blocks (48 tiles),
-with the original final sets preserved. Every v2 arm must be refit from ImageNet initialization: the added
+with the original final sets preserved. All 12 fresh v2 runs are complete: resolution augmentation helps
+coarsened Zagreb imagery and Zagreb-to-Split transfer, but lowers clean Zagreb precision. The default
+recipe stays unchanged; no final split was scored in this round. Every v2 arm must be refit from ImageNet initialization: the added
 selection tiles appeared in prior full-pool training. Those old checkpoints cannot validate v2. The visibility audit describes image
 support but does not measure a recoverability ceiling. More data, image quality, training and reconstruction
 remain hypotheses to compare; a nonsignificant gain does not identify which one limits performance.
@@ -56,7 +58,7 @@ in three lanes, two Split runs about 40 minutes; a 1,600-tile 30-epoch run is ab
 | 8 | Ljubljana and a Spanish Csa city | laptop + GPU | todo |
 | 9 | Serving check (CPU inference) | laptop | todo |
 | 10 | Product decision: show guesses where the score clears a bar | the user | todo |
-| 11 | Satellite domain: score and train for satellite-like input | laptop + GPU | (a) done; (b) expanded splits frozen, GPU setup running; (c) real imagery pending |
+| 11 | Satellite domain: score and train for satellite-like input | laptop + GPU | (a) done; (b) resolution trial done, not adopted; other degradations and (c) real imagery pending |
 | 12 | Nearby same-climate donor: a Dalmatian (Csa) city's tiles scored zero-shot and few-shot on Split | laptop + GPU | todo |
 
 **1. Bootstrap confidence intervals.** Resample tiles to give every pooled score a 95% interval and the
@@ -88,11 +90,13 @@ machine judgments and aggregate edge signal do not establish an accuracy ceiling
 labels. Weak support also does not mean zero recoverability at IoU 0.5: context and shape priors can help.
 No user labelling or spot-check is required. Actual spend: $0 billed, $7.05 estimated plan-use equivalent.
 
-**6. Zagreb levers, one at a time, three seeds each.** In order: the full 2,143-tile pool with a longer
-schedule; scale and colour augmentation (for 0.5 m cities such as Split); flip/rotate test-time
+**6. Zagreb levers, one at a time, three seeds each.** In order: the eligible v2 pool (1,623 tiles) with a longer
+schedule; colour augmentation; flip/rotate test-time
 averaging (no training); convnext_small. Success: each kept only by the loop's rule. Failure signal:
 three rejections in a row triggers reassessment of data, targets and optimization; it does not prove a data limit. ETA
-about 3 GPU-h, about $1.50.
+about 3 GPU-h, about $1.50. The first resolution-augmentation trial is recorded under step 11; it did not
+pass the clean-precision guard. Freeze the longer schedule before renting again and compare with the
+saved three-seed v2 baselines on the same manifests.
 
 **7. Milestone 4.** Freeze the recipe, score both final splits once. Proposed targets: Zagreb final
 ≥ 0.38, Split final ≥ 0.20.
@@ -131,7 +135,7 @@ fresh test. Expand geographic selection coverage before the next model-selection
 spatial buffers absent from every compared checkpoint's training data, or refit all arms after freezing
 the larger split. Reassigning previously trained tiles would not create new held-out evidence.
 
-The first step 11(b) comparison is frozen in `gpu/plans/selection-v2-resolution.json`: three seeds per
+The first step 11(b) comparison completed on 2026-10-14, frozen in `gpu/plans/selection-v2-resolution.json`: three seeds per
 city and arm, all 1,623 eligible Zagreb / 395 Split training tiles, 30 epochs, the existing encoder,
 optimizer and reconstruction, and clean selection checkpoint choice every two epochs. The only changed
 training setting is a 50% probability of RGB-only box down/up-sampling, with GSD sampled uniformly from
@@ -139,14 +143,19 @@ the 0.3 m model input grid to 1.0 m. Rotation, flipping, OSM dropout and targets
 Compare clean, 0.5 m and 1.0 m inputs with paired 12-block intervals and report seed ranges. These are
 synthetic resolution tests; real satellite transfer remains unmeasured. Do not compare v2 absolute
 scores with v1 to claim a training gain: both the holdout composition and training pool changed.
+The resolution-only trial is complete, not the broader satellite work. Keep the baseline recipe because
+the augmentation loses clean precision; retain its checkpoints for a separately defined donor-transfer
+comparison. Detailed results and the uncertainty limits are below.
 
 **12. Nearby same-climate donor.** The direct test of the practice-region thesis that round 2 could not
 make (Zagreb and Split differ in climate as well as distance): export a Dalmatian Csa city 60–120 km from Split
 (Šibenik or Zadar; same national parcel table and DGU imagery, so `export_city.py` covers it), train on it, and
 score on Split's selection split zero-shot and as a fine-tune donor at 50 tiles. Success: a paired difference
-against the Zagreb donor (0.122 zero-shot) whose interval excludes zero supports a benefit from this nearby
+against the fresh v2 Zagreb donor (baseline zero-shot F1 0.156 over three seeds) whose interval excludes zero supports a benefit from this nearby
 same-climate donor on these blocks. Quantify label savings against the target-only learning curve; an
-unresolved difference leaves the donor effect uncertain. ETA about
+unresolved difference leaves the donor effect uncertain. The old 0.122 donor score and target-only curve
+use v1 and cannot be compared directly with v2; refit any target-label curve under v2. Hold the training
+recipe fixed across donors, including whether resolution augmentation is used. ETA about
 half a day (export) plus 1 GPU-h, about $0.50.
 
 ## ETA and spend
@@ -159,13 +168,56 @@ half a day (export) plus 1 GPU-h, about $0.50.
 | Total | 4–5 working days | about 8–11 h with overhead | about $4–7 |
 
 Spend log: 2026-10-12 $1.40; 2026-10-13 round 2 (36 runs, 105 min of queue, about 2.4 h of box) $1.20.
-Vast.ai credit after round 2: $7.38. Credit before the v2 run: $7.3517. The first empty rental was terminated after a stalled image pull;
-the current RTX 4090 is $0.5333/hour including 60 GB storage. Startup is still in progress after
-switching to the provider's own PyTorch 2.13 image. Actual spend will be reconciled after termination.
+Vast.ai credit after round 2: $7.38. The v2 round used two concurrent jobs on an RTX 4090 at
+$0.5611/hour including 60 GB storage. Credit decreased from $7.3517 to $6.1831, about $1.17 including
+two failed image-pull rentals, setup, evaluation and transfers; this is an account-balance change, not
+an itemized invoice. All three rentals were destroyed, and the provider inventory was empty at
+2026-10-13 22:25 UTC. Verification and the balance receipt are in `output/runs/selection-v2-rental.json`.
 2026-10-13 imagery sensitivity: 72 fixed-checkpoint evaluations, about 10 minutes of local analysis,
 $0 billed; no new training or GPU rental.
 
 ## Learned (newest first)
+
+- 2026-10-14, step 11(b), resolution augmentation: 12 fresh ConvNeXt-Tiny runs, 30 epochs each,
+  three seeds per city and arm, recipe `48de5c48dab295de`. Means below are over three seed-pooled
+  scores; brackets show seed min–max. Differences use 2,000 paired geographic-block bootstrap
+  replicates over 12 blocks. These 95% intervals condition on the fitted seeds, are unadjusted for
+  multiple comparisons, and do not measure uncertainty across new cities or sensors.
+
+  | City | RGB input | Baseline F1 (seed range) | Augmented F1 (seed range) | Difference (95% block interval) |
+  |---|---|---|---|---|
+  | Zagreb | clean | 0.293 (0.290–0.297) | 0.292 (0.282–0.300) | −0.001 (−0.009 to +0.012) |
+  | Zagreb | resampled 0.5 m | 0.272 (0.265–0.280) | 0.283 (0.279–0.286) | +0.011 (+0.004 to +0.020) |
+  | Zagreb | resampled 1 m | 0.237 (0.236–0.238) | 0.280 (0.276–0.286) | +0.043 (+0.024 to +0.062) |
+  | Split | clean | 0.227 (0.219–0.231) | 0.230 (0.224–0.236) | +0.003 (−0.008 to +0.011) |
+  | Split | resampled 0.5 m | 0.218 (0.213–0.228) | 0.226 (0.221–0.229) | +0.007 (−0.006 to +0.020) |
+  | Split | resampled 1 m | 0.205 (0.201–0.208) | 0.216 (0.212–0.219) | +0.011 (−0.007 to +0.026) |
+
+  Decision: keep the baseline default. Zagreb clean precision falls 0.513 → 0.465, difference
+  −0.048 (−0.073 to −0.027), and 0.5 m precision falls 0.030 (−0.057 to −0.012). Clean area-weighted
+  recall improves by 0.025 (+0.006 to +0.050), so the clean F1 average hides a precision/recall tradeoff.
+  Split's F1 gains remain unresolved; intervals crossing zero establish neither equivalence nor a
+  recoverability ceiling. Its mean precision and area recall fall slightly, with intervals crossing zero.
+  Density checks are descriptive: Split low/medium F1 declines in all three conditions (clean deltas
+  −0.018/−0.008), and Zagreb clean medium/dense declines by 0.005/0.004. Split low density has only
+  one block; the other cited bins have three. Seed directions disagree in 15 of 24 city/case/bin cells.
+
+  Exploratory clean-input transfer is promising in one direction: Zagreb → Split F1 0.156 → 0.195,
+  difference +0.039 (+0.016 to +0.062); seed ranges 0.143–0.169 and 0.177–0.224. Area recall improves
+  by 0.077 (+0.034 to +0.134), boundary F1 by 0.052 (+0.031 to +0.074), and precision by 0.033
+  (−0.017 to +0.082). Dense-bin F1 improves in all three seeds, but the low-bin gain comes from one
+  seed on its single block. Split → Zagreb is unresolved: 0.218 → 0.215, difference −0.004
+  (−0.014 to +0.011). This supports a follow-up donor-transfer comparison, not a general replacement.
+
+  Artifacts: `output/runs/selection-v2-resolution/`, `output/runs/selection-v2-imagery/{zagreb,split}-v2/`,
+  and `output/runs/selection-v2-cross-city.json`. The ledger adds 48 distinct selection rows: 24 clean
+  own/cross-city evaluations and 24 same-city resampled evaluations. Both best and resume checkpoints,
+  probability maps, polygons, scores, input/code hashes and runtime records were copied locally;
+  all 8,890 transferred files (9.06 GB) match the sealed manifest. Independent checks recomputed the
+  pooled scores from all 1,728 study tile results and rescored 36 saved polygons, including newly added
+  selection geography. The 41 pure/forward checks and rented-GPU training/resume/ancestry checks passed.
+  No final split was scored, no model was promoted, and no GPU remains rented. Resampled orthophotos
+  still do not establish real satellite performance.
 
 - 2026-10-14, validation expansion: `expand_selection.py` deterministically selects eight additional
   2×2 blocks per city from cached training metadata, with at least 500 m separation and disjoint parcel

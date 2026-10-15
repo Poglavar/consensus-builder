@@ -10080,6 +10080,294 @@
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mh-ncscm-czmp-survey-plots', idPrefix: 'IN-MH-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 26, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP 2019 survey plots, Maharashtra. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        sirsa: {
+            id: 'sirsa', wupCityCode: '6392',
+            label: translateCityText('city.labels.sirsa', 'Sirsa, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.536704378771, 75.035515266935], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.536704378771, 75.035515266935], fallbackDataset: [75.035515266935, 29.536704378771] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-sirsa-outlines', idPrefix: 'IN-HR-HSAC2-SIRSA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        hisar: {
+            id: 'hisar', wupCityCode: '7285',
+            label: translateCityText('city.labels.hisar', 'Hisar, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.150778973288602, 75.75211620569911], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.150778973288602, 75.75211620569911], fallbackDataset: [75.75211620569911, 29.150778973288602] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-hisar-outlines', idPrefix: 'IN-HR-HSAC2-HISAR-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        kaithal: {
+            id: 'kaithal', wupCityCode: '7670',
+            label: translateCityText('city.labels.kaithal', 'Kaithal, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.7995897199337, 76.4055225188099], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.7995897199337, 76.4055225188099], fallbackDataset: [76.4055225188099, 29.7995897199337] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-kaithal-outlines', idPrefix: 'IN-HR-HSAC2-KAITHAL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ambala: {
+            id: 'ambala', wupCityCode: '7788',
+            label: translateCityText('city.labels.ambala', 'Ambala, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [30.380225522836298, 76.8141196644984], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [30.380225522836298, 76.8141196644984], fallbackDataset: [76.8141196644984, 30.380225522836298] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-ambala-outlines', idPrefix: 'IN-HR-HSAC2-AMBALA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        jind: {
+            id: 'jind', wupCityCode: '7797',
+            label: translateCityText('city.labels.jind', 'Jind, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.3176729893746, 76.3185369205235], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.3176729893746, 76.3185369205235], fallbackDataset: [76.3185369205235, 29.3176729893746] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-jind-outlines', idPrefix: 'IN-HR-HSAC2-JIND-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bhiwani: {
+            id: 'bhiwani', wupCityCode: '7878',
+            label: translateCityText('city.labels.bhiwani', 'Bhiwani, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.7971298761814, 76.1384878765419], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.7971298761814, 76.1384878765419], fallbackDataset: [76.1384878765419, 28.7971298761814] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-bhiwani-outlines', idPrefix: 'IN-HR-HSAC2-BHIWANI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        kurukshetra: {
+            id: 'kurukshetra', wupCityCode: '7952',
+            label: translateCityText('city.labels.kurukshetra', 'Kurukshetra, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.9674026272771, 76.8569110935626], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.9674026272771, 76.8569110935626], fallbackDataset: [76.8569110935626, 29.9674026272771] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-kurukshetra-outlines', idPrefix: 'IN-HR-HSAC2-KURUKSHETRA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        rohtak: {
+            id: 'rohtak', wupCityCode: '8085',
+            label: translateCityText('city.labels.rohtak', 'Rohtak, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.8730362473323, 76.5954147246247], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.8730362473323, 76.5954147246247], fallbackDataset: [76.5954147246247, 28.8730362473323] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-rohtak-outlines', idPrefix: 'IN-HR-HSAC2-ROHTAK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        panipat: {
+            id: 'panipat', wupCityCode: '8162',
+            label: translateCityText('city.labels.panipat', 'Panipat, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.400963638737302, 76.98281629834831], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.400963638737302, 76.98281629834831], fallbackDataset: [76.98281629834831, 29.400963638737302] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-panipat-outlines', idPrefix: 'IN-HR-HSAC2-PANIPAT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        sonipat: {
+            id: 'sonipat', wupCityCode: '8337',
+            label: translateCityText('city.labels.sonipat', 'Sonipat, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.9827143736227, 77.03440734666691], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.9827143736227, 77.03440734666691], fallbackDataset: [77.03440734666691, 28.9827143736227] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-sonipat-outlines', idPrefix: 'IN-HR-HSAC2-SONIPAT-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        palwal: {
+            id: 'palwal', wupCityCode: '8691',
+            label: translateCityText('city.labels.palwal', 'Palwal, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.141468469378, 77.3328111663979], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.141468469378, 77.3328111663979], fallbackDataset: [77.3328111663979, 28.141468469378] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-palwal-outlines', idPrefix: 'IN-HR-HSAC2-PALWAL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        chirand: {
+            id: 'chirand', wupCityCode: '10969',
+            label: translateCityText('city.labels.chirand', 'Chirand, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.7481087475537, 84.8804993475657], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.7481087475537, 84.8804993475657], fallbackDataset: [84.8804993475657, 25.7481087475537] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-matribhoomi-chapra-ground', idPrefix: 'IN-BR-MB-CHAPRA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bhavnagar: {
+            id: 'bhavnagar', wupCityCode: '6440',
+            label: translateCityText('city.labels.bhavnagar', 'Bhavnagar, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [21.76805, 72.14945], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [21.76805, 72.14945], fallbackDataset: [72.14945, 21.76805] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-gj-ncscm-czmp-survey-plots', idPrefix: 'IN-GJ-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Gujarat. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        vapi: {
+            id: 'vapi', wupCityCode: '7770',
+            label: translateCityText('city.labels.vapi', 'Vapi, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [20.40655, 72.90785], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [20.40655, 72.90785], fallbackDataset: [72.90785, 20.40655] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-gj-ncscm-czmp-survey-plots', idPrefix: 'IN-GJ-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Gujarat. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        vasai_virar: {
+            id: 'vasai_virar', wupCityCode: '7917',
+            label: translateCityText('city.labels.vasai_virar', 'Vasai-Virar, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [19.41325, 72.82985], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [19.41325, 72.82985], fallbackDataset: [72.82985, 19.41325] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mh-ncscm-czmp-survey-plots', idPrefix: 'IN-MH-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP 2019 survey plots, Maharashtra. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        panvel: {
+            id: 'panvel', wupCityCode: '8148',
+            label: translateCityText('city.labels.panvel', 'Panvel, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [19.04165, 73.10615], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [19.04165, 73.10615], fallbackDataset: [73.10615, 19.04165] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-mh-ncscm-czmp-survey-plots', idPrefix: 'IN-MH-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP 2019 survey plots, Maharashtra. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        kozhikode: {
+            id: 'kozhikode', wupCityCode: '9587',
+            label: translateCityText('city.labels.kozhikode', 'Kozhikode, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [11.19465, 75.84215], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [11.19465, 75.84215], fallbackDataset: [75.84215, 11.19465] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-kl-ncscm-czmp-ground', idPrefix: 'IN-KL-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ponnani: {
+            id: 'ponnani', wupCityCode: '9663',
+            label: translateCityText('city.labels.ponnani', 'Ponnani, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [10.57075, 76.05195], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [10.57075, 76.05195], fallbackDataset: [76.05195, 10.57075] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-kl-ncscm-czmp-ground', idPrefix: 'IN-KL-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        thiruvananthapuram: {
+            id: 'thiruvananthapuram', wupCityCode: '10013',
+            label: translateCityText('city.labels.thiruvananthapuram', 'Thiruvananthapuram, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [8.46953, 76.93828], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [8.46953, 76.93828], fallbackDataset: [76.93828, 8.46953] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-kl-ncscm-czmp-ground', idPrefix: 'IN-KL-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        colachel: {
+            id: 'colachel', wupCityCode: '10081',
+            label: translateCityText('city.labels.colachel', 'Colachel, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [8.26132, 77.18283], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [8.26132, 77.18283], fallbackDataset: [77.18283, 8.26132] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-tn-ncscm-czmp-survey-plots', idPrefix: 'IN-TN-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Tamil Nadu. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        chennai: {
+            id: 'chennai', wupCityCode: '10747',
+            label: translateCityText('city.labels.chennai', 'Chennai, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [13.0878, 80.2785], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [13.0878, 80.2785], fallbackDataset: [80.2785, 13.0878] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-tn-ncscm-czmp-survey-plots', idPrefix: 'IN-TN-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Tamil Nadu. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        kakinada: {
+            id: 'kakinada', wupCityCode: '11081',
+            label: translateCityText('city.labels.kakinada', 'Kakinada, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [16.98045, 82.22035], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [16.98045, 82.22035], fallbackDataset: [82.22035, 16.98045] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-ap-ncscm-czmp-survey-plots', idPrefix: 'IN-AP-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Andhra Pradesh. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        visakhapatnam: {
+            id: 'visakhapatnam', wupCityCode: '11255',
+            label: translateCityText('city.labels.visakhapatnam', 'Visakhapatnam, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [17.69725, 83.22115], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [17.69725, 83.22115], fallbackDataset: [83.22115, 17.69725] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-ap-ncscm-czmp-survey-plots', idPrefix: 'IN-AP-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Andhra Pradesh. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        karnal: {
+            id: 'karnal', wupCityCode: '8099',
+            label: translateCityText('city.labels.karnal', 'Karnal, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [29.683358416672, 77.0241809146046], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [29.683358416672, 77.0241809146046], fallbackDataset: [77.0241809146046, 29.683358416672] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-karnal-outlines', idPrefix: 'IN-HR-HSAC2-KARNAL-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        rewari: {
+            id: 'rewari', wupCityCode: '8316',
+            label: translateCityText('city.labels.rewari', 'Rewari, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [28.194482321657, 76.62843094297341], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [28.194482321657, 76.62843094297341], fallbackDataset: [76.62843094297341, 28.194482321657] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-hr-hsac-rewari-outlines', idPrefix: 'IN-HR-HSAC2-REWARI-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Haryana Space Applications Centre (HSAC) — cadastral (khasra) map. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        mangaluru: {
+            id: 'mangaluru', wupCityCode: '9265',
+            label: translateCityText('city.labels.mangaluru', 'Mangaluru, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [12.89765, 74.83355], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [12.89765, 74.83355], fallbackDataset: [74.83355, 12.89765] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-ka-ncscm-czmp-ground', idPrefix: 'IN-KA-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP 2019 survey plots, Karnataka. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        thalassery: {
+            id: 'thalassery', wupCityCode: '9497',
+            label: translateCityText('city.labels.thalassery', 'Thalassery, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [11.67935, 75.55185], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [11.67935, 75.55185], fallbackDataset: [75.55185, 11.67935] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-kl-ncscm-czmp-ground', idPrefix: 'IN-KL-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Kerala. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        puducherry: {
+            id: 'puducherry', wupCityCode: '10741',
+            label: translateCityText('city.labels.puducherry', 'Puducherry, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [11.92255, 79.81165], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [11.92255, 79.81165], fallbackDataset: [79.81165, 11.92255] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-py-ncscm-czmp-ground', idPrefix: 'IN-PY-CZMP-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Puducherry. Plot labels shown as published; references derived from geometry. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        barharia: {
+            id: 'barharia', wupCityCode: '10755',
+            label: translateCityText('city.labels.barharia', 'Barharia, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.3601802570443, 84.4656501175913], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.3601802570443, 84.4656501175913], fallbackDataset: [84.4656501175913, 26.3601802570443] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-matribhoomi-manjha-ground', idPrefix: 'IN-BR-MB-MANJHA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        masrakh: {
+            id: 'masrakh', wupCityCode: '10911',
+            label: translateCityText('city.labels.masrakh', 'Masrakh, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [26.1235979448259, 84.7958100370138], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [26.1235979448259, 84.7958100370138], fallbackDataset: [84.7958100370138, 26.1235979448259] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-matribhoomi-masrakh-ground', idPrefix: 'IN-BR-MB-MASRAKH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        chhapra: {
+            id: 'chhapra', wupCityCode: '10917',
+            label: translateCityText('city.labels.chhapra', 'Chhapra, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.7832172997632, 84.7523408466032], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.7832172997632, 84.7523408466032], fallbackDataset: [84.7523408466032, 25.7832172997632] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-matribhoomi-chapra-ground', idPrefix: 'IN-BR-MB-CHAPRA-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        kotwali: {
+            id: 'kotwali', wupCityCode: '11477',
+            label: translateCityText('city.labels.kotwali', 'Kotwali, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [25.1134775298077, 87.0693959423189], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [25.1134775298077, 87.0693959423189], fallbackDataset: [87.0693959423189, 25.1134775298077] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'in-br-matribhoomi-goradih-ground', idPrefix: 'IN-BR-MB-GORADIH-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.' },
+            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
     };
 
     function ensureProjectionDefinitions() {

@@ -207,11 +207,13 @@ export async function runSiteCrawl(options, dependencies = {}) {
     completedStages: [],
     activeElapsedMs: 0,
     counters: { failed: 0, blocked: 0, unchanged: 0, changed: 0, discovered: 0, filteredGeneratedSearchTargets: 0 },
+    cleanupIssues: false,
     chunks: [],
   };
   progress.counters ||= { failed: 0, blocked: 0, unchanged: 0, changed: 0, discovered: 0, filteredGeneratedSearchTargets: 0 };
   progress.completedStages ||= [];
   progress.chunks ||= [];
+  progress.cleanupIssues ||= false;
   progress.foldedRunIds ||= [];
 
   const connection = process.env.DATABASE_URL
@@ -361,7 +363,8 @@ export async function runSiteCrawl(options, dependencies = {}) {
             writeJsonAtomicSync(paths.progress, { ...progress, updatedAt: isoNow(), activeElapsedMs: Math.round(activeElapsedMs()) });
           }
           const approximatePending = Math.max(0, pendingBefore.pending - Number(event.requestsAttempted || 0) + Number(event.discovered || 0));
-          log(JSON.stringify(makeSnapshot(options, progress, trace, { ...pendingBefore, pending: approximatePending }, {
+          log(JSON.stringify(makeSnapshot(options, { ...progress, activeElapsedMs: Math.round(activeElapsedMs()) }, trace,
+            { ...pendingBefore, pending: approximatePending }, {
             current: event.current ? safeUrl(event.current) : null,
             lastStatus: traceRows.at(-1)?.status ?? null,
             newlyDiscovered: Number(event.discovered || 0),
@@ -370,6 +373,7 @@ export async function runSiteCrawl(options, dependencies = {}) {
           })));
         },
       });
+      if (result.cleanup?.errors?.length || Number(result.cleanup?.deferred || 0) > 0) progress.cleanupIssues = true;
 
       if (!result.id || !progress.foldedRunIds.includes(result.id)) {
         addCounters(progress.counters, result.counters);
@@ -389,6 +393,9 @@ export async function runSiteCrawl(options, dependencies = {}) {
         notModified: Number(result.counters?.notModified || 0),
         identicalBodies: Number(result.counters?.identicalBodies || 0),
         blocked: Number(result.counters?.blocked || 0),
+        status: result.status || null,
+        stopReason: result.stopReason || null,
+        cleanup: result.cleanup || null,
         pendingBefore: pendingBefore.pending,
         pendingAfter: pendingAfter.pending,
         runId: result.id || null,
@@ -403,6 +410,7 @@ export async function runSiteCrawl(options, dependencies = {}) {
       })));
 
       if (controller.signal.aborted) { stopReason = 'interrupted'; break; }
+      if (result.stopReason === 'archive-capacity') { stopReason = 'archive-capacity'; break; }
       if (denialStop) { stopReason = 'sustained-http-denials'; break; }
       if (!Number(result.counters?.requestsAttempted || 0) && pendingAfter.pending > 0) {
         stopReason = 'no-progress';
@@ -419,7 +427,7 @@ export async function runSiteCrawl(options, dependencies = {}) {
       assets: await pendingForStage(db, { ...options, stage: 'assets' }, countFn),
     };
     const complete = progress.stage === 'done';
-    const hadFailures = progress.counters.failed > 0 || progress.counters.blocked > 0 || trace.failedFetches > 0;
+    const hadFailures = progress.counters.failed > 0 || progress.counters.blocked > 0 || trace.failedFetches > 0 || progress.cleanupIssues;
     const status = controller.signal.aborted ? 'interrupted' : complete && !hadFailures ? 'complete' : 'partial';
     const result = {
       at: isoNow(),
@@ -437,6 +445,7 @@ export async function runSiteCrawl(options, dependencies = {}) {
         decodedResponseBodyBytes: trace.decodedBytes,
         fetchElapsedMs: trace.fetchElapsedMs,
         fetchErrors: trace.failedFetches,
+        cleanupIssues: Boolean(progress.cleanupIssues),
       },
       before: await readJson(paths.before),
       after,

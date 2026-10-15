@@ -33,6 +33,7 @@ export function publicProject(row, { detail = false, retained = new Set() } = {}
         return value;
     });
     const value = { id, slug, url, label, name: inventory.name || label, address: label,
+        availability: apartments.length ? 'ready' : 'discovered',
         kind: inventory.kind, constructionYear: inventory.constructionYear, completionYear: inventory.completionYear,
         titles: inventory.titles || [], location: location(model), apartments,
         sourceCount: inventory.sourceCount, planCount: apartments.filter(a => a.hasPlan).length,
@@ -45,7 +46,8 @@ export function publicProject(row, { detail = false, retained = new Set() } = {}
 
 export async function readPublicCatalogue(db) {
     const rows = (await db.query('SELECT site_key,model,built_at FROM floor_plan.site_model ORDER BY site_key')).rows;
-    const projects = rows.map(row => publicProject(row)).filter(Boolean)
+    // Located leads stay in the collection database; search and the sitemap promise usable homes.
+    const projects = rows.map(row => publicProject(row)).filter(project => project?.availability === 'ready')
         .sort((a, b) => Number(b.kind === 'new_build') - Number(a.kind === 'new_build') || b.planCount - a.planCount || a.label.localeCompare(b.label, 'hr'));
     return { projects, counts: { projects: projects.length, apartments: projects.reduce((n, p) => n + p.apartments.length, 0),
         withPlans: projects.filter(p => p.planCount > 0).length },

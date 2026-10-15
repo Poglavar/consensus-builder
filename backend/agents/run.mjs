@@ -44,6 +44,7 @@ import { chooseArea, contestParcels, parcelsFromSource, pickedParcelIds, runKeyF
 import { planCandidates } from './planner.js';
 import { prepareAgentPublication, verifyPublicationReadable, mirrorAgentPublication } from './chain-publication.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
+import { fetchSourceParcels } from './source-fetch.js';
 import { bindingRejection, checkCandidateBinding, preflightCandidates, prioritizedPlannedCandidates } from './candidate-preflight.js';
 import { checkProposalBinding } from '../proposals/binding.js';
 import { hash32, selectAlgorithmicPicks } from './algorithmic-picker.js';
@@ -289,13 +290,6 @@ async function retireStage({ pool, connection, entries, day, dryRun, controller,
     }
 }
 
-async function fetchSourceParcels(apiBase, sourceId, bbox) {
-    const url = `${apiBase}/parcel-sources/${encodeURIComponent(sourceId)}?bbox=${bbox.join(',')}`;
-    const response = await fetch(url, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(60_000) });
-    if (!response.ok) throw new Error(`${url} returned HTTP ${response.status}`);
-    return response.json();
-}
-
 // The parcels one run plans on, from the area this run visits; parcels the persona already minted
 // on are dropped, so no run proposes the same land twice.
 async function parcelsForArea({ pool, apiBase, area, persona, runKey, day, runs, limit }) {
@@ -312,7 +306,7 @@ async function parcelsForArea({ pool, apiBase, area, persona, runKey, day, runs,
     }
     const window = windowIn(area.bbox, runKey, persona.name, area.windowM ?? 350);
     if (area.sourceId) {
-        const collection = await fetchSourceParcels(apiBase, area.sourceId, window);
+        const collection = await fetchSourceParcels(apiBase, area.sourceId, window, { log });
         const parcels = fresh(parcelsFromSource(collection, { turf, place: area.label ?? null }))
             .map(parcel => (area.floorCap ? { ...parcel, floorCap: area.floorCap } : parcel));
         return { parcels: parcels.slice(0, limit), city: area.city, where: `${area.city} ${window.join(',')}` };
@@ -749,7 +743,7 @@ async function main() {
         await pool.end();
     }
 
-    const headline = `Agents ${day}: ${report.join(' | ') || 'nothing to do'}`;
+    const headline = `UGT proposing bots ${day}: ${report.join(' | ') || 'nothing to do'}`;
     log(headline);
     if (failures.length) {
         const text = `${headline}\n${failures.length} FAILURE(S):\n- ${failures.join('\n- ')}`;
@@ -765,6 +759,6 @@ async function main() {
 
 main().catch(async (err) => {
     console.error(`[${new Date().toISOString()}] FAILED:`, safeFailureDiagnostic(err));
-    await sendTelegram(`Agents runner FAILED: ${safeFailureDiagnostic(err)}`, { alert: true });
+    await sendTelegram(`UGT proposing bots FAILED: ${safeFailureDiagnostic(err)}`, { alert: true });
     process.exit(1);
 });

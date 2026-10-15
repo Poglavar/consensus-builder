@@ -3,6 +3,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { mkdir, open, readFile, rename, rm } from 'node:fs/promises';
 import { dirname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { assertArchiveCapacity } from './storage-budget.js';
 
 const DEFAULT_ROOT = fileURLToPath(new URL('../../data/floor-plan-downloads/', import.meta.url));
 const HASH = /^[a-f0-9]{64}$/;
@@ -65,16 +66,18 @@ export async function readBlob(db, hash, options={}) {
 }
 
 // Migration also uses this write-and-readback primitive before removing any database copy.
-export async function writeSourceFile(bytes, hash, mediaType, options={}) {
+async function writeSourceFileUnchecked(bytes, hash, mediaType, options={}) {
  checkHash(hash);
  const body=Buffer.from(bytes);
  verifyBytes(body,hash,body.length);
- const storagePath=options.storagePath || sourceStoragePath(hash,mediaType), path=sourceFilePath(storagePath,hash,options);
- await mkdir(dirname(path),{recursive:true,mode:0o700});
+ const {capacityOptions={},...pathOptions}=options;
+ const storagePath=pathOptions.storagePath || sourceStoragePath(hash,mediaType), path=sourceFilePath(storagePath,hash,pathOptions);
  try {
   verifyBytes(await readFile(path),hash,body.length);
   return storagePath;
  } catch(error) {if(error.code!=='ENOENT') throw error;}
+ await assertArchiveCapacity({additionalBytes:body.length,root:pathOptions.root || archiveRoot(),...capacityOptions});
+ await mkdir(dirname(path),{recursive:true,mode:0o700});
  const temporary=`${path}.${randomUUID()}.tmp`;
  let handle;
  try {
@@ -94,6 +97,10 @@ export async function writeSourceFile(bytes, hash, mediaType, options={}) {
  }
 }
 
+export async function writeSourceFile(bytes, hash, mediaType, options={}) {
+ return writeSourceFileUnchecked(bytes,hash,mediaType,options);
+}
+
 // Mutating callers use one PostgreSQL client, as the crawler's advisory-lock contract already requires.
 async function withSourceLock(db,hash,work) {
  await db.query(`SELECT pg_advisory_lock(hashtext('floor-plan-files'),hashtext($1))`,[hash]);
@@ -101,18 +108,26 @@ async function withSourceLock(db,hash,work) {
  finally {await db.query(`SELECT pg_advisory_unlock(hashtext('floor-plan-files'),hashtext($1))`,[hash]);}
 }
 
+async function withCapacityLock(db,work) {
+ await db.query(`SELECT pg_advisory_lock(hashtext('floor-plan-files-capacity'),hashtext('archive'))`);
+ try {return await work();}
+ finally {await db.query(`SELECT pg_advisory_unlock(hashtext('floor-plan-files-capacity'),hashtext('archive'))`);}
+}
+
 export async function writeBlob(db,bytes,mediaType='application/octet-stream',options={}) {
  const body=Buffer.from(bytes),hash=contentHash(body);
  return withSourceLock(db,hash,async()=>{
-  const existing=(await db.query(`SELECT storage_path FROM floor_plan.blob WHERE sha256=$1 FOR UPDATE`,[hash])).rows[0];
-  // One hash keeps one file even if a later response supplies a different MIME spelling.
-  const storagePath=await writeSourceFile(body,hash,mediaType,{...options,storagePath:existing?.storage_path});
-  await db.query(`INSERT INTO floor_plan.blob(sha256,media_type,byte_count,storage_path,bytes_available,stored_at)
-   VALUES($1,$2,$3,$4,true,now()) ON CONFLICT(sha256) DO UPDATE SET
-    media_type=excluded.media_type,byte_count=excluded.byte_count,storage_path=excluded.storage_path,
-    bytes_available=true,stored_at=now(),discarded_at=NULL,discard_reason=NULL,updated_at=now()`,
-  [hash,mediaType || 'application/octet-stream',body.length,storagePath]);
-  return hash;
+  return withCapacityLock(db,async()=>{
+   const existing=(await db.query(`SELECT storage_path FROM floor_plan.blob WHERE sha256=$1 FOR UPDATE`,[hash])).rows[0];
+   // One hash keeps one file even if a later response supplies a different MIME spelling.
+   const storagePath=await writeSourceFileUnchecked(body,hash,mediaType,{...options,storagePath:existing?.storage_path});
+   await db.query(`INSERT INTO floor_plan.blob(sha256,media_type,byte_count,storage_path,bytes_available,stored_at)
+    VALUES($1,$2,$3,$4,true,now()) ON CONFLICT(sha256) DO UPDATE SET
+     media_type=excluded.media_type,byte_count=excluded.byte_count,storage_path=excluded.storage_path,
+     bytes_available=true,stored_at=now(),discarded_at=NULL,discard_reason=NULL,updated_at=now()`,
+   [hash,mediaType || 'application/octet-stream',body.length,storagePath]);
+   return hash;
+  });
  });
 }
 

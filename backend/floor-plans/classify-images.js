@@ -33,9 +33,9 @@ async function explicitlyLabelledPlan(db,sha) {
    AND ${eligibleListingSql()}) AS labelled`,[sha])).rows[0]?.labelled);
 }
 
-export async function storeImageReading(db,task,reading,{sourceUrl,model=null}={}) {
+export async function storeImageReading(db,task,reading,{sourceUrl,model=null,dispositionOptions={}}={}) {
  const kind=dispositionKind(reading);
- const disposition=await recordImageDisposition(db,{sourceUrl,sha256:task.source_sha256,kind,
+ const disposition=await recordImageDisposition(db,{...dispositionOptions,sourceUrl,sha256:task.source_sha256,kind,
   classificationId:task.id,confirmed:reading.discardConfirmed,confidence:reading.confidence});
  const status=kind==='uncertain'||['stale','protected','needs_review'].includes(disposition.status)?'needs_review':'complete';
  await db.query(`UPDATE floor_plan.image_task SET status=$2,result=result||$3::jsonb,error=NULL,updated_at=now() WHERE id=$1`,
@@ -44,7 +44,7 @@ export async function storeImageReading(db,task,reading,{sourceUrl,model=null}={
   discarded:disposition.status==='discarded'?1:0,protected:disposition.status==='protected'?1:0};
 }
 
-export async function enqueueImageTasks(db,{limit=1000,site=null,urls=null,deadline=Infinity}={}) {
+export async function enqueueImageTasks(db,{limit=1000,site=null,urls=null,deadline=Infinity,dispositionOptions={}}={}) {
  if(!Number.isInteger(limit)||limit<1||limit>5000) throw new Error('Image queue limit must be 1..5000.');
  site=normalizeSiteHost(site);
  if(urls!==null&&(!Array.isArray(urls)||urls.some(url=>typeof url!=='string'||!/^https?:\/\//.test(url))))
@@ -65,14 +65,14 @@ export async function enqueueImageTasks(db,{limit=1000,site=null,urls=null,deadl
   const source=await currentImageSource(db,task,{site,urls});
   if(!source) continue;
   if(await explicitlyLabelledPlan(db,task.source_sha256)) {
-   const disposition=await recordImageDisposition(db,{sourceUrl:source.source_url,sha256:task.source_sha256,
+   const disposition=await recordImageDisposition(db,{...dispositionOptions,sourceUrl:source.source_url,sha256:task.source_sha256,
     kind:'floor_plan',classificationId:`${task.id}:current-listing-label`});
    if(disposition.status==='retained') reused++;
    continue;
   }
   const reading=task.result.reading;
   const kind=dispositionKind(reading);
-  const disposition=await recordImageDisposition(db,{sourceUrl:source.source_url,sha256:task.source_sha256,kind,
+  const disposition=await recordImageDisposition(db,{...dispositionOptions,sourceUrl:source.source_url,sha256:task.source_sha256,kind,
    classificationId:task.id,confirmed:reading.discardConfirmed,confidence:reading.confidence});
   if(['discarded','retained','already_discarded'].includes(disposition.status)) reused++;
  }
@@ -95,7 +95,7 @@ export async function enqueueImageTasks(db,{limit=1000,site=null,urls=null,deadl
  return {selected:rows.length,enqueued,reused,deferred,reuseDeferred};
 }
 
-export function imageStageAdapter({render=renderImageForClassification,maxOutputTokens=IMAGE_MAX_OUTPUT_TOKENS,verifyLabelled=false}={}) {
+export function imageStageAdapter({render=renderImageForClassification,maxOutputTokens=IMAGE_MAX_OUTPUT_TOKENS,verifyLabelled=false,dispositionOptions={}}={}) {
  return {stage:'images',processor:IMAGE_PROCESSOR,schema:IMAGE_SCHEMA,
   counters:{classified:0,needsReview:0,discarded:0,protected:0},
   async prepare(db,task,llm,{deadline}) {
@@ -105,7 +105,7 @@ export function imageStageAdapter({render=renderImageForClassification,maxOutput
    if(!verifyLabelled&&await explicitlyLabelledPlan(db,task.source_sha256)) {
     const reading={kind:'floor_plan',containsPlan:true,envelopeEvidence:false,confidence:'high',
      reason:'Current listing explicitly labels this source as a floor plan.',discardConfirmed:false};
-    return {localResult:await storeImageReading(db,task,reading,{sourceUrl:source.source_url,model:'local-explicit-label'})};
+    return {localResult:await storeImageReading(db,task,reading,{sourceUrl:source.source_url,model:'local-explicit-label',dispositionOptions})};
    }
    const image=await render(db,{...task,source_url:source.source_url},{deadline});
    return {request:buildImageRequest(llm,{...task,source_url:source.source_url},image,{maxOutputTokens}),
@@ -120,13 +120,13 @@ export function imageStageAdapter({render=renderImageForClassification,maxOutput
      [task.id,JSON.stringify({reading,model:item.model,disposition:{status:'stale'}})]);
     return {needsReview:1};
    }
-   return storeImageReading(db,task,reading,{sourceUrl:source.source_url,model:item.model});
+   return storeImageReading(db,task,reading,{sourceUrl:source.source_url,model:item.model,dispositionOptions});
   }
  };
 }
 
-export async function classifyImages(db,{render=renderImageForClassification,maxOutputTokens=IMAGE_MAX_OUTPUT_TOKENS,verifyLabelled=false,...options}={}) {
- return runBatchStage(db,imageStageAdapter({render,maxOutputTokens,verifyLabelled}),{...options,maxOutputTokens});
+export async function classifyImages(db,{render=renderImageForClassification,maxOutputTokens=IMAGE_MAX_OUTPUT_TOKENS,verifyLabelled=false,dispositionOptions={},...options}={}) {
+ return runBatchStage(db,imageStageAdapter({render,maxOutputTokens,verifyLabelled,dispositionOptions}),{...options,maxOutputTokens});
 }
 
 export async function imageClassificationStatus(db,{limit=20}={}) {

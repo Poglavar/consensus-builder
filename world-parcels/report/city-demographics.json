@@ -2381,11 +2381,14 @@
       "registryCityIds": [
         "geonames:1264527"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "chennai"
+      ],
       "wupCityCode": 10747,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 10092351,
       "population2025": 11153205,
@@ -2449,7 +2452,10 @@
           "distanceKm": 9.457
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "parcelSourceId": "in-tn-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/10747/qualification.json"
     },
     {
       "id": "wup2025:1854",
@@ -5373,11 +5379,14 @@
       "registryCityIds": [
         "wup2025:9587"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "kozhikode"
+      ],
       "wupCityCode": 9587,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 3874719,
       "population2025": 6123872,
@@ -5441,7 +5450,10 @@
           "distanceKm": 0.001
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "parcelSourceId": "in-kl-ncscm-czmp-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9587/qualification.json"
     },
     {
       "id": "wup2025:10098",
@@ -13364,11 +13376,14 @@
       "registryCityIds": [
         "wup2025:10013"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "thiruvananthapuram"
+      ],
       "wupCityCode": 10013,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 2366175,
       "population2025": 2946119,
@@ -13432,7 +13447,10 @@
           "distanceKm": 0
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "parcelSourceId": "in-kl-ncscm-czmp-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10013/qualification.json"
     },
     {
       "id": "wup2025:11531",
@@ -18211,10 +18229,13 @@
       "latitude": 26.1211707275585,
       "longitude": 84.7950953210667,
       "registryCityIds": [],
-      "appCityIds": [],
+      "appCityIds": [
+        "masrakh"
+      ],
       "wupCityCode": 10911,
       "cohorts": [
-        "growth200"
+        "growth200",
+        "app"
       ],
       "population2015": 109020,
       "population2025": 228857,
@@ -18248,7 +18269,10 @@
           "distanceKm": 0
         }
       ],
-      "wikipediaLookupStatus": "attempted_no_verified_article"
+      "wikipediaLookupStatus": "attempted_no_verified_article",
+      "parcelSourceId": "in-br-matribhoomi-masrakh-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10911/qualification.json"
     },
     {
       "id": "wup2025:2362",
@@ -19715,10 +19739,13 @@
       "latitude": 25.7489853409713,
       "longitude": 84.887639805399,
       "registryCityIds": [],
-      "appCityIds": [],
+      "appCityIds": [
+        "chirand"
+      ],
       "wupCityCode": 10969,
       "cohorts": [
-        "growth200"
+        "growth200",
+        "app"
       ],
       "population2015": 87247,
       "population2025": 169348,
@@ -19770,7 +19797,10 @@
           "distanceKm": 0
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "parcelSourceId": "in-br-matribhoomi-chapra-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10969/qualification.json"
     },
     {
       "id": "wup2025:2793",
@@ -32249,10 +32279,13 @@
       "registryCityIds": [
         "wup2025:9663"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "ponnani"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -32270,7 +32303,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-kl-ncscm-czmp-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9663/qualification.json"
     },
     {
       "id": "wup2025:9895",
@@ -34243,10 +34279,13 @@
       "registryCityIds": [
         "wup2025:11255"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "visakhapatnam"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -34264,7 +34303,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-ap-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/11255/qualification.json"
     },
     {
       "id": "wup2025:4627",
@@ -34917,10 +34959,13 @@
       "registryCityIds": [
         "wup2025:7917"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "vasai_virar"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -34938,7 +34983,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-mh-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/7917/qualification.json"
     },
     {
       "id": "wup2025:7158",
@@ -39210,10 +39258,13 @@
       "registryCityIds": [
         "wup2025:10755"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "barharia"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -39231,7 +39282,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-br-matribhoomi-manjha-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10755/qualification.json"
     },
     {
       "id": "wup2025:9497",
@@ -39242,10 +39296,13 @@
       "registryCityIds": [
         "wup2025:9497"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "thalassery"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -39263,7 +39320,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-kl-ncscm-czmp-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9497/qualification.json"
     },
     {
       "id": "wup2025:7505",
@@ -39786,10 +39846,13 @@
       "registryCityIds": [
         "wup2025:10741"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "puducherry"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -39807,7 +39870,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-py-ncscm-czmp-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10741/qualification.json"
     },
     {
       "id": "wup2025:8108",
@@ -39850,10 +39916,13 @@
       "registryCityIds": [
         "wup2025:9265"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "mangaluru"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -39871,7 +39940,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-ka-ncscm-czmp-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/9265/qualification.json"
     },
     {
       "id": "wup2025:5218",
@@ -43030,10 +43102,13 @@
       "registryCityIds": [
         "wup2025:11477"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "kotwali"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -43051,7 +43126,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-br-matribhoomi-goradih-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/11477/qualification.json"
     },
     {
       "id": "wup2025:10440",
@@ -43094,10 +43172,13 @@
       "registryCityIds": [
         "wup2025:10081"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "colachel"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -43115,7 +43196,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-tn-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/10081/qualification.json"
     },
     {
       "id": "wup2025:10231",
@@ -45993,10 +46077,13 @@
       "registryCityIds": [
         "wup2025:6440"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "bhavnagar"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -46014,7 +46101,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-gj-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/6440/qualification.json"
     },
     {
       "id": "wup2025:10802",
@@ -46953,10 +47043,13 @@
       "registryCityIds": [
         "wup2025:8162"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "panipat"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -46974,7 +47067,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-hr-hsac-panipat-outlines",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8162/qualification.json"
     },
     {
       "id": "wup2025:4547",
@@ -47663,10 +47759,13 @@
       "registryCityIds": [
         "wup2025:8148"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "panvel"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -47684,7 +47783,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-mh-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/8148/qualification.json"
     },
     {
       "id": "wup2025:4711",
@@ -47919,10 +48021,13 @@
       "registryCityIds": [
         "wup2025:7770"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "vapi"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -47940,7 +48045,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-gj-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/7770/qualification.json"
     },
     {
       "id": "wup2025:7010",
@@ -50605,10 +50713,13 @@
       "registryCityIds": [
         "wup2025:7788"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "ambala"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -50626,7 +50737,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-hr-hsac-ambala-outlines",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7788/qualification.json"
     },
     {
       "id": "wup2025:6724",
@@ -53809,10 +53923,13 @@
       "registryCityIds": [
         "wup2025:10917"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "chhapra"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -53830,7 +53947,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
-      }
+      },
+      "parcelSourceId": "in-br-matribhoomi-chapra-ground",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-overlap-ground/10917/qualification.json"
     },
     {
       "id": "wup2025:9475",
@@ -55076,10 +55196,13 @@
       "registryCityIds": [
         "wup2025:7285"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "hisar"
+      ],
       "cohorts": [
         "registry",
-        "overnight-followon-1001-1100"
+        "overnight-followon-1001-1100",
+        "app"
       ],
       "population2015": null,
       "annualGrowthPct2015To2025": null,
@@ -55099,7 +55222,10 @@
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
         "evidenceFile": "research/overnight-followon-2026-10-09/ranked-population.json"
-      }
+      },
+      "parcelSourceId": "in-hr-hsac-hisar-outlines",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7285/qualification.json"
     },
     {
       "id": "wup2025:9632",
@@ -56303,11 +56429,17 @@
       "registryCityIds": [
         "wup2025:8085"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "rohtak"
+      ],
       "cohorts": [
         "registry",
-        "overnight-followon-1001-1100"
-      ]
+        "overnight-followon-1001-1100",
+        "app"
+      ],
+      "parcelSourceId": "in-hr-hsac-rohtak-outlines",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8085/qualification.json"
     },
     {
       "id": "wup2025:6791",
@@ -57842,11 +57974,17 @@
       "registryCityIds": [
         "wup2025:11081"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "kakinada"
+      ],
       "cohorts": [
         "registry",
-        "overnight-next-1101-1200"
-      ]
+        "overnight-next-1101-1200",
+        "app"
+      ],
+      "parcelSourceId": "in-ap-ncscm-czmp-survey-plots",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-india-coastal/11081/qualification.json"
     },
     {
       "id": "wup2025:11208",
@@ -58800,11 +58938,17 @@
       "registryCityIds": [
         "wup2025:8099"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "karnal"
+      ],
       "cohorts": [
         "registry",
-        "overnight-next-1101-1200"
-      ]
+        "overnight-next-1101-1200",
+        "app"
+      ],
+      "parcelSourceId": "in-hr-hsac-karnal-outlines",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8099/qualification.json"
     },
     {
       "id": "wup2025:870",
@@ -67886,6 +68030,262 @@
       "parcelSourceId": "pl-gugik-egib-wfs",
       "parcelQualification": "technical-qualified-bounded",
       "qualificationEvidence": "world-parcels/research/qualification-2026-10-12-pl-egib/3344/qualification.json"
+    },
+    {
+      "id": "wup2025:6392",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Sirsa",
+      "countryCode": "IN",
+      "latitude": 29.536704378771,
+      "longitude": 75.035515266935,
+      "wupLatitude": 29.536704378771,
+      "wupLongitude": 75.035515266935,
+      "wupName": "Sirsa",
+      "wupCityCode": 6392,
+      "appCityIds": [
+        "sirsa"
+      ],
+      "population2025": 300414,
+      "population2015": 288565,
+      "annualGrowthPct2015To2025": 0.402412,
+      "registryCityIds": [
+        "wup2025:6392"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "in-hr-hsac-sirsa-outlines",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/6392/qualification.json"
+    },
+    {
+      "id": "wup2025:7670",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Kaithal",
+      "countryCode": "IN",
+      "latitude": 29.7995897199337,
+      "longitude": 76.4055225188099,
+      "wupLatitude": 29.7995897199337,
+      "wupLongitude": 76.4055225188099,
+      "wupName": "Kaithal",
+      "wupCityCode": 7670,
+      "appCityIds": [
+        "kaithal"
+      ],
+      "population2025": 265502,
+      "population2015": 240214,
+      "annualGrowthPct2015To2025": 1.000922,
+      "registryCityIds": [
+        "wup2025:7670"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "in-hr-hsac-kaithal-outlines",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7670/qualification.json"
+    },
+    {
+      "id": "wup2025:7797",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Jind",
+      "countryCode": "IN",
+      "latitude": 29.3176729893746,
+      "longitude": 76.3185369205235,
+      "wupLatitude": 29.3176729893746,
+      "wupLongitude": 76.3185369205235,
+      "wupName": "Jind",
+      "wupCityCode": 7797,
+      "appCityIds": [
+        "jind"
+      ],
+      "population2025": 270881,
+      "population2015": 241491,
+      "annualGrowthPct2015To2025": 1.148474,
+      "registryCityIds": [
+        "wup2025:7797"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "in-hr-hsac-jind-outlines",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7797/qualification.json"
+    },
+    {
+      "id": "wup2025:7878",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Bhiwani",
+      "countryCode": "IN",
+      "latitude": 28.7971298761814,
+      "longitude": 76.1384878765419,
+      "wupLatitude": 28.7971298761814,
+      "wupLongitude": 76.1384878765419,
+      "wupName": "Bhiwani",
+      "wupCityCode": 7878,
+      "appCityIds": [
+        "bhiwani"
+      ],
+      "population2025": 288360,
+      "population2015": 269930,
+      "annualGrowthPct2015To2025": 0.66047,
+      "registryCityIds": [
+        "wup2025:7878"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "in-hr-hsac-bhiwani-outlines",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7878/qualification.json"
+    },
+    {
+      "id": "wup2025:7952",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Kurukshetra",
+      "countryCode": "IN",
+      "latitude": 29.9674026272771,
+      "longitude": 76.8569110935626,
+      "wupLatitude": 29.9674026272771,
+      "wupLongitude": 76.8569110935626,
+      "wupName": "Kurukshetra",
+      "wupCityCode": 7952,
+      "appCityIds": [
+        "kurukshetra"
+      ],
+      "population2025": 353119,
+      "population2015": 318311,
+      "annualGrowthPct2015To2025": 1.037762,
+      "registryCityIds": [
+        "wup2025:7952"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "in-hr-hsac-kurukshetra-outlines",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/7952/qualification.json"
+    },
+    {
+      "id": "wup2025:8337",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Sonipat",
+      "countryCode": "IN",
+      "latitude": 28.9827143736227,
+      "longitude": 77.03440734666691,
+      "wupLatitude": 28.9827143736227,
+      "wupLongitude": 77.03440734666691,
+      "wupName": "Sonipat",
+      "wupCityCode": 8337,
+      "appCityIds": [
+        "sonipat"
+      ],
+      "population2025": 394583,
+      "population2015": 365677,
+      "annualGrowthPct2015To2025": 0.760791,
+      "registryCityIds": [
+        "wup2025:8337"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "in-hr-hsac-sonipat-outlines",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8337/qualification.json"
+    },
+    {
+      "id": "wup2025:8691",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Palwal",
+      "countryCode": "IN",
+      "latitude": 28.141468469378,
+      "longitude": 77.3328111663979,
+      "wupLatitude": 28.141468469378,
+      "wupLongitude": 77.3328111663979,
+      "wupName": "Palwal",
+      "wupCityCode": 8691,
+      "appCityIds": [
+        "palwal"
+      ],
+      "population2025": 262399,
+      "population2015": 249647,
+      "annualGrowthPct2015To2025": 0.498183,
+      "registryCityIds": [
+        "wup2025:8691"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "in-hr-hsac-palwal-outlines",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8691/qualification.json"
+    },
+    {
+      "id": "wup2025:8316",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Rewari",
+      "countryCode": "IN",
+      "latitude": 28.194482321657,
+      "longitude": 76.62843094297341,
+      "wupLatitude": 28.194482321657,
+      "wupLongitude": 76.62843094297341,
+      "wupName": "Rewari",
+      "wupCityCode": 8316,
+      "appCityIds": [
+        "rewari"
+      ],
+      "population2025": 220564,
+      "population2015": 209700,
+      "annualGrowthPct2015To2025": 0.5051,
+      "registryCityIds": [
+        "wup2025:8316"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "in-hr-hsac-rewari-outlines",
+      "parcelQualification": "technical-qualified-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-10-14-haryana-outlines/8316/qualification.json"
     }
   ],
   "wikipediaLookupErrors": [

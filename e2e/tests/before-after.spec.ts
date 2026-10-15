@@ -4,7 +4,7 @@
 // modal's own divider is covered by land-readjustment-audit.spec.ts and designer-controls.spec.ts.
 import { test, expect } from '../helpers/fixtures';
 import type { Page } from '@playwright/test';
-import { openCity, openParcel, createSpace, showProposal, drawCorridor, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, showProposal, drawCorridor, clickMapPoint, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
 
 const PROPOSAL_ACCOUNT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
 // A 1×1 PNG stands in for a rendered picture; the dialog accepts data URLs like any other image.
@@ -92,6 +92,42 @@ test.describe('Before / after on the main map @features', () => {
     expect(await dragging(page)).toBe(true);
   });
 
+  test('divider release preserves comparison and normal parcel selection still works', async ({ mockApi: page }) => {
+    await openCity(page);
+    const id = await createSpace(page, 'park');
+    await showProposal(page, id);
+    const button = page.locator('#proposal-details-panel .btn-compare-proposal');
+    await button.click();
+    const state = () => page.evaluate(() => {
+      const w = window as any;
+      return { center: w.map.getCenter(), proposal: w.currentlyHighlightedProposalId, parcel: w.selectedParcelId };
+    });
+    const original = await state();
+    await page.evaluate(() => {
+      const w = window as any; w.__dividerMapClicks = 0;
+      w.map.on('click', () => w.__dividerMapClicks++);
+    });
+    const mapBox = (await page.locator('#map').boundingBox())!;
+    for (const percent of [72, 28]) {
+      const grip = (await divider(page).locator('.map-compare__grip').boundingBox())!;
+      await page.mouse.move(grip.x + grip.width / 2, grip.y + grip.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(mapBox.x + mapBox.width * percent / 100, grip.y + grip.height / 2 + (percent === 72 ? 80 : 0), { steps: 24 });
+      await page.mouse.up();
+      await expect(divider(page)).toBeVisible();
+      await expect.poll(async () => Number(await divider(page).getAttribute('aria-valuenow'))).toBeCloseTo(percent, 1);
+      await expect(button).toHaveAttribute('aria-pressed', 'true');
+      expect(await state()).toEqual(original);
+    }
+    await divider(page).locator('.map-compare__grip').click();
+    expect(await page.evaluate(() => (window as any).__dividerMapClicks)).toBe(0);
+    await clickMapPoint(page, 15.9829, 45.80025);
+    await expect(page.locator('#parcel-menu')).toBeVisible();
+    await expect(page.locator('#parcel-menu')).toContainText('1235');
+    await expect(beforeMap(page)).toHaveCount(0);
+    expect(await dragging(page)).toBe(true);
+  });
+
   test('a record that replaces an earlier version outlines that version on the before side', async ({ mockApi: page }) => {
     await openCity(page);
     const previousId = await page.evaluate(([parcelId, geometry]) => (window as any).proposalStorage.addProposal({
@@ -174,7 +210,50 @@ test.describe('Before / after on the main map @features', () => {
 });
 
 test.describe('Before / after on a phone @features', () => {
-  test.use({ viewport: { width: 390, height: 844 } });
+  test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+
+  test('touch divider release and tap preserve comparison, and cancellation ends the drag', async ({ mockApi: page }) => {
+    await openCity(page);
+    const id = await createSpace(page, 'park');
+    await showProposal(page, id);
+    await page.evaluate(() => (window as any).toggleProposalDetailsPanelMinimized(true));
+    const button = page.locator('#proposal-details-panel .btn-compare-proposal');
+    await button.click();
+    const cdp = await page.context().newCDPSession(page);
+    const mapBox = (await page.locator('#map').boundingBox())!;
+    const originalCenter = await page.evaluate(() => (window as any).map.getCenter());
+    const grip = (await divider(page).locator('.map-compare__grip').boundingBox())!;
+    const point = { x: grip.x + grip.width / 2, y: grip.y + grip.height / 2, radiusX: 1, radiusY: 1, force: 1, id: 1 };
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point] });
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ ...point, x: mapBox.x + mapBox.width * .75 }] });
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await expect(divider(page)).toBeVisible();
+    await expect.poll(async () => Number(await divider(page).getAttribute('aria-valuenow'))).toBeCloseTo(75, 1);
+    await divider(page).locator('.map-compare__grip').tap();
+    await expect(button).toHaveAttribute('aria-pressed', 'true');
+    expect(await page.evaluate(() => (window as any).map.getCenter())).toEqual(originalCenter);
+    const next = (await divider(page).locator('.map-compare__grip').boundingBox())!;
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...point, x: next.x + next.width / 2 }] });
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] });
+    await page.mouse.move(mapBox.x + mapBox.width * .2, point.y);
+    await expect.poll(async () => Number(await divider(page).getAttribute('aria-valuenow'))).toBeCloseTo(75, 1);
+    // Cancellation must allow a fresh finger gesture, rather than leaving the controller active.
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...point, x: next.x + next.width / 2 }] });
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ ...point, x: mapBox.x + mapBox.width * .25 }] });
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await expect.poll(async () => Number(await divider(page).getAttribute('aria-valuenow'))).toBeCloseTo(25, 1);
+    const outside = await page.evaluate(() => {
+      const w = window as any, p = w.map.latLngToContainerPoint([45.80025, 15.9829]);
+      const box = w.map.getContainer().getBoundingClientRect();
+      return { x: box.left + p.x, y: box.top + p.y };
+    });
+    await page.touchscreen.tap(outside.x, outside.y);
+    await expect(page.locator('#parcel-menu')).toBeVisible();
+    await expect(page.locator('#parcel-menu')).toContainText('1235');
+    await expect(beforeMap(page)).toHaveCount(0);
+    expect(await dragging(page)).toBe(true);
+    await cdp.detach();
+  });
 
   test('the compact card offers the comparison and the divider stays inside the viewport', async ({ mockApi: page }) => {
     await openCity(page);

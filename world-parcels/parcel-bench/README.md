@@ -157,13 +157,13 @@ $PY $B/layered/train.py --smoke --no-pretrained --dataset $DS --output /tmp/smok
 
 ## Compute
 
-Training runs on a rented GPU box; the laptop is for scoring, tests and docs. `gpu/` holds a provider-agnostic kit, written on macOS and not yet exercised on a CUDA host:
+Training runs on a rented GPU box; the laptop is for scoring, tests and docs. `gpu/` holds a provider-agnostic kit, exercised on rented CUDA hosts:
 
 - `gpu/bootstrap.sh`: venv, requirements, GPU check (exits non-zero if PyTorch sees no CUDA device).
 - `gpu/job.sh`: start, status, log, stop for jobs that outlive the SSH session (the Linux stand-in for the laptop's `run-job`).
 - `gpu/requirements.txt`: the stack the spike used, with CUDA wheels from PyPI on Linux.
 
-`gpu/sync.sh push <ssh-url>` sends this directory, `../guess-spike/*.py` (the exporter and baseline), and the training subset of the exported dataset (about 55 MB for Zagreb; the 13 GB of feature caches and SAM 3 adapters on the laptop are not needed for the new direction). What to bring back: `results.json`, per-tile GeoJSON predictions and the pooled scores; weights stay on the box or in object storage. Guardrails: checkpoint every few updates, resume on restart, `job.sh status` before leaving, and stop the instance when nothing is running.
+`gpu/sync.sh push <ssh-url>` sends this directory, `../guess-spike/*.py` (the exporter and baseline), and the selected dataset. Bring back training recipes and results, both best and resume checkpoints, per-tile probability maps and GeoJSON predictions, pooled scores and logs. Verify hashes against a remote file manifest before destroying the rental. Rebuildable caches can be omitted. Guardrails: checkpoint every few updates, resume on restart, check `job.sh status`, and destroy the temporary instance after the completed work is backed up and verified.
 
 ## Commands
 
@@ -243,6 +243,15 @@ on clean selection, then compared on clean and additionally resampled 0.5 m / 1 
 are reserved for a later milestone. Absolute v1/v2 scores are not a treatment comparison because both
 the training pool and selection composition changed.
 
+Completed 2026-10-14: all 12 runs finished 30 epochs, with 48 selection ledger rows. At additional 1 m
+resampling, Zagreb F1 improves 0.237 → 0.280 (95% paired block difference +0.024 to +0.062); Split
+changes 0.205 → 0.216 (−0.007 to +0.026). Zagreb clean precision falls 0.513 → 0.465, so the
+augmentation does not pass the rule for changing the default. Exploratory Zagreb → Split transfer
+improves 0.156 → 0.195 (+0.016 to +0.062), which warrants a separate donor comparison. Intervals
+condition on three fitted seeds and 12 blocks, without multiple-comparison adjustment. The baseline
+remains the default, both final splits are unscored for this round, and the rental is destroyed.
+Full guard metrics, seed ranges, validation evidence and spend are in [PLAN.md](PLAN.md#learned-newest-first).
+
 ## Status
 
 Done 2026-10-12: scorer with 19 behavioural tests, ledger, Zagreb manifest frozen, rules baseline recorded on both splits, practice-region donors computed for all researched cities, GPU kit written, layered model v0 built with OSM sidecars for all 96 training tiles and an end-to-end CPU smoke test (train, resume, evaluate-only).
@@ -313,4 +322,7 @@ The study changes RGB alone at model input and cannot measure accuracy on a diff
 provider. Full metrics, per-block differences and hashes: `output/imagery-study-20261013/`; ledger methods
 `layered-imagery-*`. No final split was scored.
 
-Next (the living plan with status, success checks, ETA and spend is `PLAN.md`): broader geographic selection coverage, satellite-domain augmentation, a nearby same-climate donor for Split, then Ljubljana and a Spanish Csa city.
+Next (the living plan with status, success checks, ETA and spend is `PLAN.md`): a frozen longer-schedule
+comparison against the fresh v2 baselines, then the remaining model levers and a nearby same-climate
+donor for Split. Broader selection and the first resolution-augmentation trial are complete; real
+satellite transfer, Ljubljana and a Spanish Csa city remain pending.

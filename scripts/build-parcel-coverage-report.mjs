@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { collectReportEvidence } from './parcel-report-evidence.mjs';
+import { readIntegrationOutcomeBatches, indexIntegrationHistory, integrationCityKey, integrationHistoryForCity } from './parcel-integration-history.mjs';
 import { countryCategory, mapLinks, summarizeJurisdictions } from '../frontend/js/parcel-coverage-report-model.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -13,12 +14,16 @@ const finiteOrNull = value => typeof value === 'number' && Number.isFinite(value
 const unique = values => [...new Set(values.filter(Boolean))];
 const latest = records => records.filter(Boolean).sort((a, b) => (b.date || '').localeCompare(a.date || ''))[0] || null;
 
-export function buildParcelReport({ registry, evidence, enrichment, countryData, coverage, sourceCatalog, growthQueue = [], focusQueue = [] }) {
+export function buildParcelReport({ registry, evidence, enrichment, countryData, coverage, sourceCatalog, growthQueue = [], focusQueue = [], integrationOutcomeBatches = [] }) {
     const checkedById = new Map([...evidence.cities, ...(evidence.appCities || [])].map(row => [row.cityId, row]));
     const countryEvidence = new Map(evidence.countries.map(row => [row.countryCode, row]));
     const countryNames = new Map(countryData.countries.map(row => [row.code, row.name]));
     const liveById = new Map(coverage.liveCities.map(row => [row.id, row]));
     const sourceById = new Map(registry.sources.map(row => [row.sourceId, row]));
+    const integrationHistory = indexIntegrationHistory(integrationOutcomeBatches, new Map([
+        ...registry.sources.map(source => [source.sourceId, source.name]),
+        ...(sourceCatalog.sources || []).map(source => [source.id, source.name])
+    ]));
     const growthRankByCode = new Map(growthQueue.map(row => [String(row.cityCode), row.rank]));
     const focusByCode = new Map(focusQueue.map(row => [String(row.wupCityCode), row]));
     const inputCities = enrichment.cities.map(row => ({ ...row, registryCityIds: [...row.registryCityIds], appCityIds: [...row.appCityIds] }));
@@ -35,6 +40,23 @@ export function buildParcelReport({ registry, evidence, enrichment, countryData,
             continue;
         }
         inputCities.push({ id: city.cityId, name: city.name, countryCode: city.countryCode, latitude: city.centerLatLon?.[0], longitude: city.centerLatLon?.[1], registryCityIds: [city.cityId], appCityIds: [], cohorts: ['registry'] });
+    }
+    // Failed candidates need a row too. Admission/enrichment only contain some of the cities
+    // attempted; use their explicit outcome identities without inventing app bindings or statistics.
+    const knownOutcomeCities = new Set(inputCities.map(integrationCityKey).filter(Boolean));
+    for (const { data } of integrationOutcomeBatches) {
+        for (const record of data.cities) {
+            const key = `${record.countryCode}:${Number(record.cityCode)}`;
+            if (knownOutcomeCities.has(key)) continue;
+            if (typeof record.cityName !== 'string' || !record.cityName.trim()) throw new Error(`Missing outcome city name: ${key}`);
+            inputCities.push({
+                id: `wup2025:${Number(record.cityCode)}`, wupCityCode: Number(record.cityCode),
+                name: record.cityName, countryCode: record.countryCode,
+                latitude: record.point?.[0], longitude: record.point?.[1],
+                registryCityIds: [], appCityIds: [], cohorts: ['integration-attempt']
+            });
+            knownOutcomeCities.add(key);
+        }
     }
     // Registry source integrations are explicit links when a source verifies exactly one registry
     // city and the configured app city points back to that same source. Ambiguous or stale links
@@ -78,9 +100,11 @@ export function buildParcelReport({ registry, evidence, enrichment, countryData,
         const configuredSources = (sourceCatalog.sources || []).filter(source => source.cityIds?.some(id => city.appCityIds.includes(id)));
         const sourceIds = unique([...checks.flatMap(row => row.sourceIds), ...configuredSources.map(source => source.id), ...city.appCityIds.map(id => liveById.get(id)?.sourceId)]);
         const knownSources = sourceIds.map(id => sourceById.get(id)).filter(Boolean);
-        const checkedDateEvidence = latest(checks.map(row => row.checkedDateEvidence));
+        const integrationAttempts = integrationHistoryForCity(city, integrationHistory);
+        const completedAttempts = integrationAttempts.filter(attempt => attempt.outcome !== 'unchecked');
+        const checkedDateEvidence = latest([...checks.map(row => row.checkedDateEvidence), ...completedAttempts.map(attempt => attempt.checkedDateEvidence)]);
         const found = checks.some(row => row.registryFound === true) || configuredSources.length > 0;
-        const checked = checks.some(row => row.checked);
+        const checked = checks.some(row => row.checked) || completedAttempts.length > 0;
         return {
             id: city.id, name: city.name, country: countryNames.get(city.countryCode), countryCode: city.countryCode,
             latitude: finiteOrNull(city.latitude), longitude: finiteOrNull(city.longitude),
@@ -97,6 +121,7 @@ export function buildParcelReport({ registry, evidence, enrichment, countryData,
             registryFindingBasis: checks.some(row => row.registryFound === true) ? 'recorded_evidence' : configuredSources.length ? 'configured_source' : null,
             registryBasis: unique(checks.map(row => row.registryBasis)).join('\n') || null,
             verifiedSample: checks.some(row => row.verifiedSample), impliedParcelsTried: checks.some(row => row.impliedParcelsTried === true) ? true : null,
+            integrationAttempts,
             sourceIds, evidenceUrls: unique([...checks.flatMap(row => row.evidenceUrls), ...knownSources.map(source => source.endpoint)]).filter(value => typeof value === 'string' && /^https?:\/\//.test(value)),
             evidenceFiles: unique([...checks.flatMap(row => row.evidenceFiles), ...configuredSources.map(source => source.evidenceFile)]),
             ...mapLinks(city.latitude, city.longitude), wikipediaUrl: city.wikipediaUrl || null, wikipediaEvidence: city.wikipediaEvidence || null
@@ -148,6 +173,7 @@ export function buildParcelReport({ registry, evidence, enrichment, countryData,
             growthRanking: 'Saved UN WUP 2025 queue: average annual exponential population growth during 2015–2025, at least 50,000 people at both endpoints, and Moderate or High 2025 population plausibility. Rank is among this quality-filtered urban-centre cohort, not municipalities or a forecast.',
             nationalCadastreFound: 'Identified national, parent-country, credentialed or viewer-only cadastre, or a recorded multi-region sample. This is not a claim of territorial completeness.',
             impliedParcelsTried: 'True only for a documented inferred-parcel experiment. A missing historical record remains null.',
+            integrationAttempts: 'Recorded qualification outcomes matched by exact country and WUP city identity, newest first. Historical failures remain visible after later success; current app availability comes from appCityIds. Unscoped provider attempts are not assigned to individual cities.',
             cityPopulationAggregation: 'City populations are not added to estimate world coverage. WUP urban centres can overlap municipal identities; jurisdiction statistics supply the additive denominators.',
             countryRoster: countryData.scope,
             rebuild: 'node scripts/build-parcel-coverage-report.mjs --run'
@@ -170,6 +196,7 @@ export function runBuild(repoRoot = REPO) {
     const sourceCatalog = readJson(path.join(repoRoot, 'backend/parcels/source-catalog.json'));
     const report = buildParcelReport({
         registry, evidence: collectReportEvidence({ registry, repoRoot, appCities: coverage.liveCities, sourceCatalog }),
+        integrationOutcomeBatches: readIntegrationOutcomeBatches(repoRoot),
         enrichment: readJson(path.join(repoRoot, 'world-parcels/report/city-demographics.json')),
         growthQueue: readJson(path.join(repoRoot, 'world-parcels/queue-growth-top200.json')),
         focusQueue: readJson(path.join(repoRoot, 'world-parcels/queue-india-africa.json')).cities,

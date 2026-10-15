@@ -38,6 +38,29 @@ describe('extractPropertyFacts', () => {
         expect(extractPropertyFacts({ title: 'Three-room flat' }).roomCount).toBe(3);
     });
 
+    it('parses accented Croatian room words and numeric adjective forms with exact quotes', () => {
+        expect(extractPropertyFacts({ title: 'Atraktivan četverosoban stan 102 m2' })).toMatchObject({
+            roomCount: 4, evidence: { roomCount: 'četverosoban' }
+        });
+        expect(extractPropertyFacts({ title: '4-sobni stan' })).toMatchObject({
+            roomCount: 4, evidence: { roomCount: '4-sobni' }
+        });
+        expect(extractPropertyFacts({ title: '4 sobne jedinice' })).toMatchObject({
+            roomCount: 4, evidence: { roomCount: '4 sobne' }
+        });
+    });
+
+    it('parses only title-based S+DB notation, ignores amenity suffixes, and preserves conflicts', () => {
+        expect(extractPropertyFacts({ title: 'Stan Podsused 40 m2 (1S+DB+PM) NOVOGRADNJA',
+            text: 'Godina izgradnje: 2025. Završetak gradnje: 2026.' })).toMatchObject({
+            roomCount: 2, evidence: { roomCount: '1S+DB', constructionYear: 'Godina izgradnje: 2025', completionYear: 'Završetak gradnje: 2026' },
+            constructionYear: 2025, completionYear: 2026, newBuild: true
+        });
+        expect(extractPropertyFacts({ title: 'Stan', text: 'Oglas: (1S+DB+PM)' }).roomCount).toBeNull();
+        expect(extractPropertyFacts({ record: { numberOfRooms: 5 }, title: 'Stan 3S+DB' }).roomCount).toBeNull();
+        expect(extractPropertyFacts({ title: 'četverosoban stan', text: 'Broj soba: 3' }).roomCount).toBeNull();
+    });
+
     it('uses canonical eight-way orientation codes and preserves cardinal pairs', () => {
         expect(extractPropertyFacts({ text: 'Orijentacija: sjeveroistok.' }).orientation).toEqual(['NE']);
         expect(extractPropertyFacts({ text: 'Facing north-east.' }).orientation).toEqual(['NE']);

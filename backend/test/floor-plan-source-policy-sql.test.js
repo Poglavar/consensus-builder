@@ -143,6 +143,19 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST === '1')('floor-plan sour
             pg_temp.image_task, pg_temp.building_task, pg_temp.plan_task, pg_temp.building_floor_model`);
     });
 
+    it('promotes a known project child without counting it twice or changing its fetch state', async () => {
+        const url='https://agency.test/nekretnina/example/123/';
+        expect(await enqueue(db,url,{priority:20})).toBe(true);
+        await db.query("UPDATE floor_plan.target SET state='ok',etag='unchanged',current_sha256=$2 WHERE url=$1",[url,hash('a')]);
+        expect(await enqueue(db,url,{priority:100})).toBe(false);
+        expect(await enqueue(db,url,{priority:30})).toBe(false);
+        expect((await db.query('SELECT priority,state,etag,current_sha256 FROM floor_plan.target WHERE url=$1',[url])).rows[0])
+            .toEqual({priority:100,state:'ok',etag:'unchanged',current_sha256:hash('a')});
+        await db.query("UPDATE floor_plan.target SET exclusion_reason='excluded' WHERE url=$1",[url]);
+        expect(await enqueue(db,url,{priority:150})).toBe(false);
+        expect((await db.query('SELECT priority FROM floor_plan.target WHERE url=$1',[url])).rows[0].priority).toBe(100);
+    });
+
     it('stores only a content-free tombstone for a property page without an explicit address', async () => {
         const url = 'https://opereta.hr/nekretnina/stan/4812-oglas';
         await db.query(`INSERT INTO floor_plan.target(url,kind,current_sha256) VALUES($1,'page',NULL)`, [url]);

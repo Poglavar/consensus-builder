@@ -4,8 +4,8 @@ import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
 import { mkdtemp,rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { agencyIdentityEvidence,compactSources,prepareSourceEvidence,readSourceEvidence,sourceEvidenceMatches } from '../floor-plans/compact-sources.js';
-import { writeSourceFile } from '../floor-plans/blob-store.js';
+import { agencyIdentityEvidence,compactSources,drainSourceRetention,prepareSourceEvidence,readSourceEvidence,sourceEvidenceMatches } from '../floor-plans/compact-sources.js';
+import { readBlobRow,writeSourceFile } from '../floor-plans/blob-store.js';
 import { crawl } from '../floor-plans/crawler.js';
 import { createTargetSelector } from '../floor-plans/crawl-queue.js';
 
@@ -265,6 +265,86 @@ describe('source compaction',()=>{
   expect(db.query.mock.calls.some(([sql])=>sql.startsWith('UPDATE floor_plan.observation'))).toBe(false);
   expect(db.query.mock.calls.some(([sql])=>sql.startsWith('UPDATE floor_plan.blob SET bytes_available=false'))).toBe(false);
   expect(prune).not.toHaveBeenCalled();
+ });
+
+ it('preserves retained source bytes when compaction starts with an aborted signal',async()=>{
+  const body=Buffer.from('<html><body>interrupted source</body></html>'),hash=sha(body),path=await writeSourceFile(body,hash,'text/html');
+  const row={url:'https://agency.test/interrupted',kind:'page',sha256:hash,media_type:'text/html',byte_count:body.length,
+   storage_path:path,bytes_available:true,facts:{}};
+  const db={query:vi.fn(async sql=>{
+   if(sql.includes('pg_try_advisory_lock'))return {rows:[{locked:true}]};
+   if(sql.includes('WITH candidate_hashes'))return {rows:[row]};
+   if(sql.includes('SELECT DISTINCT t.url'))return {rows:[]};
+   if(sql.includes('SELECT sha256 FROM floor_plan.blob'))return {rows:[]};
+   if(sql.includes('AS n FROM floor_plan.target')||sql.includes('AS n FROM floor_plan.blob')||sql.includes('discard_reason IN'))return {rows:[{n:0}]};
+   return {rows:[],rowCount:1};
+  })};
+  const controller=new AbortController();controller.abort();
+  const prune=vi.fn();
+  const result=await compactSources(db,{apply:true,signal:controller.signal,prune});
+  expect(result.deferred).toBeGreaterThan(0);
+  expect(await readBlobRow(row)).toEqual(body);
+  expect(db.query.mock.calls.some(([sql])=>sql.startsWith('UPDATE floor_plan.observation'))).toBe(false);
+  expect(db.query.mock.calls.some(([sql])=>sql.startsWith('UPDATE floor_plan.blob SET bytes_available=false'))).toBe(false);
+  expect(prune).not.toHaveBeenCalled();
+ });
+});
+
+describe('bounded source retention drain',()=>{
+ it('aggregates committed batch work and keeps the final inventory snapshot',async()=>{
+  const batches=[
+   {htmlSources:4,htmlBlobs:2,htmlBytes:200,envelopeSources:1,envelopeBlobs:1,envelopeBytes:30,
+    sourceReadErrors:0,filesDeleted:3,bytesDeleted:230,deferred:1,protectedEnvelopeSources:8,retainedPendingPlans:4,retainedPendingEnvelopes:3},
+   {htmlSources:3,htmlBlobs:1,htmlBytes:90,envelopeSources:0,envelopeBlobs:0,envelopeBytes:0,
+    sourceReadErrors:0,filesDeleted:1,bytesDeleted:90,deferred:0,protectedEnvelopeSources:7,retainedPendingPlans:2,retainedPendingEnvelopes:1},
+  ];
+  const compact=vi.fn(async()=>batches.shift());
+  const result=await drainSourceRetention({}, {compact,limit:2});
+  expect(compact).toHaveBeenCalledTimes(2);
+  expect(result).toMatchObject({status:'complete',partial:false,remaining:false,batches:2,
+   htmlSources:7,htmlBlobs:3,htmlBytes:290,envelopeSources:1,envelopeBlobs:1,envelopeBytes:30,
+   filesDeleted:4,bytesDeleted:320,sourceReadErrors:0,deferred:0,
+   protectedEnvelopeSources:7,retainedPendingPlans:2,retainedPendingEnvelopes:1});
+ });
+
+ it('confirms an exactly full final batch with one empty follow-up and logs cumulative checkpoints',async()=>{
+  const batches=[
+   {htmlSources:2,htmlBlobs:2,htmlBytes:100,envelopeSources:0,envelopeBlobs:0,envelopeBytes:0,
+    sourceReadErrors:0,filesDeleted:2,bytesDeleted:100,deferred:0,protectedEnvelopeSources:3,retainedPendingPlans:4,retainedPendingEnvelopes:5},
+   {htmlSources:0,htmlBlobs:0,htmlBytes:0,envelopeSources:0,envelopeBlobs:0,envelopeBytes:0,
+    sourceReadErrors:0,filesDeleted:0,bytesDeleted:0,deferred:0,protectedEnvelopeSources:2,retainedPendingPlans:1,retainedPendingEnvelopes:1},
+  ];
+  const compact=vi.fn(async()=>batches.shift()),log=vi.fn();
+  const result=await drainSourceRetention({}, {compact,limit:2,log});
+  expect(compact).toHaveBeenCalledTimes(2);
+  expect(result).toMatchObject({status:'complete',batches:2,htmlBlobs:2,htmlBytes:100,filesDeleted:2,
+   protectedEnvelopeSources:2,retainedPendingPlans:1,retainedPendingEnvelopes:1});
+  expect(log).toHaveBeenCalledTimes(2);
+  expect(log.mock.calls.map(([entry])=>entry)).toEqual([
+   expect.objectContaining({phase:'source-retention-checkpoint',batch:1,htmlBlobs:2,filesDeleted:2,protectedEnvelopeSources:3}),
+   expect.objectContaining({phase:'source-retention-checkpoint',batch:2,htmlBlobs:2,filesDeleted:2,protectedEnvelopeSources:2}),
+  ]);
+ });
+
+ it('stops partial on source errors, abort, or deadline and preserves completed work',async()=>{
+  const failed=await drainSourceRetention({}, {limit:5,compact:async()=>({htmlBlobs:1,htmlSources:1,sourceReadErrors:1,
+   filesDeleted:2,bytesDeleted:20,deferred:3,retainedPendingPlans:6})});
+  expect(failed).toMatchObject({status:'partial',partial:true,remaining:true,stopReason:'source-errors',batches:1,
+   htmlBlobs:1,filesDeleted:2,sourceReadErrors:1,deferred:3,retainedPendingPlans:6});
+
+  const controller=new AbortController();
+  const aborted=await drainSourceRetention({}, {limit:5,signal:controller.signal,compact:async()=>{
+   controller.abort();return {htmlBlobs:1,htmlSources:1,sourceReadErrors:0,filesDeleted:1,bytesDeleted:10,deferred:2};
+  }});
+  expect(aborted).toMatchObject({status:'partial',partial:true,remaining:true,stopReason:'interrupted',batches:1,
+   htmlBlobs:1,filesDeleted:1});
+
+  let clock=0;
+  const timed=await drainSourceRetention({}, {limit:5,deadline:1,now:()=>clock,compact:async()=>{
+   clock=1;return {htmlBlobs:1,htmlSources:1,filesDeleted:1,bytesDeleted:10,deferred:2};
+  }});
+  expect(timed).toMatchObject({status:'partial',partial:true,remaining:true,stopReason:'deadline',batches:1,
+   htmlBlobs:1,filesDeleted:1});
  });
 });
 

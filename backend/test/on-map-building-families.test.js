@@ -118,11 +118,62 @@ describe('floating building-family editors', () => {
         expect(rowHouse).toContain('if (!rowHousePlacementLocked() && (rowHouseBlock?.syntheticSite || !fitsParcelUnion))');
 
         const blockEditor = readFileSync(new URL('../../frontend/js/building-blocks.js', import.meta.url), 'utf8');
-        expect(blockEditor).toContain(': [JSON.parse(JSON.stringify(generatedBuildingFeature))]');
-        expect(blockEditor).toContain('blockMassing = blockifyMode !== \'existing\' && generatedBuildingFeature?.geometry');
-        expect(blockEditor).toContain("...(blockifyMode !== 'existing' ? { placement: { site: blockifyClone(generatedBuildingFeature || clonedFeature), free: true } } : {})");
-        expect(blockEditor).toContain("blockifyPlacementLocked() ? originalSuperparcel : false");
-        expect(blockEditor).toContain('simplifyAndClipOutline(outerBuilding, 0, blockifyPlacementBoundary())');
+        const saveStart = blockEditor.indexOf('async function saveBlockifyDesignForProposal()');
+        const saveEnd = blockEditor.indexOf('// DEPRECATED: createProposalWithBuilding', saveStart);
+        expect(saveStart).toBeGreaterThanOrEqual(0);
+        expect(saveEnd).toBeGreaterThan(saveStart);
+
+        const feature = {
+            type: 'Feature',
+            properties: { typology: 'block', edited: true },
+            geometry: { type: 'Polygon', coordinates: [[[1, 2], [3, 2], [3, 4], [1, 2]]] }
+        };
+        let savedContext = null;
+        const sandbox = {
+            window: { UrbanRuleVariation: { massingWithRule: value => JSON.parse(JSON.stringify(value)) } },
+            generatedBuildingFeature: feature,
+            generatedBuildingFeatures: null,
+            blockifyMode: 'parametric',
+            blockifyVariationSeed: 7,
+            currentBuildingWidth: 16,
+            currentBuildingHeight: 12,
+            currentSetback: 0,
+            currentChamferM: 0,
+            currentSimplifyM: 0,
+            currentProposedHeightFloors: 4,
+            currentAdditionalFloors: 0,
+            currentFloorHeightM: 3,
+            gapPositions: [],
+            wingPositions: [],
+            manualOuterRing: null,
+            blockExcludedParcels: [],
+            blockVariationSeed: 7,
+            blockifyPlacementTransform: { translationMeters: [0, 0], rotationDegrees: 0 },
+            blockifyGenerationSite: feature,
+            turf: {},
+            multiParcelSelection: { selectedParcels: new Set(), updateUI() {}, clearSelection() {} },
+            document: { getElementById: () => null },
+            confirmBlockSizeIfOversized: async () => true,
+            getActiveBlockifyBlock: () => ({ syntheticSite: true, parcels: [{}], site: feature }),
+            blockifyDesignBoundary: () => feature,
+            blockifyClone: value => JSON.parse(JSON.stringify(value)),
+            currentBlockRule: () => ({ kind: 'exact' }),
+            getBlockifyDisplayName: () => 'Test block',
+            setPendingBuildingProposalContext: value => { savedContext = value; },
+            closeBlockifyModal() {},
+            translateBuildingText: (_key, fallback) => fallback,
+            console
+        };
+        const saveFunction = blockEditor.slice(saveStart, saveEnd);
+        runInNewContext(`${saveFunction}\nthis.save = saveBlockifyDesignForProposal;`, sandbox);
+
+        return sandbox.save().then(() => {
+            expect(savedContext.buildings).toHaveLength(1);
+            expect(savedContext.buildings[0].geometry).toEqual(feature.geometry);
+            expect(savedContext.blockMassing.geometry).toEqual(feature.geometry);
+            expect(savedContext.placement.site.geometry).toEqual(feature.geometry);
+            expect(savedContext.placement.free).toBe(true);
+        });
     });
 
     it.each([
