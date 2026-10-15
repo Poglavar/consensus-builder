@@ -1484,6 +1484,10 @@
                     onclick="openRoadDrawingCrossSectionEditor()"><i class="fas fa-road" aria-hidden="true"></i><span
                         data-i18n-key="panel.road.crossSectionButton">Cross-section</span><span
                         class="road-cross-section-width"></span></button>
+                <button type="button" id="importRoadsButton" class="btn btn-sm"
+                    onclick="openCorridorImportPicker()"><i class="fas fa-file-import" aria-hidden="true"></i><span
+                        data-i18n-key="panel.road.importButton">Import…</span></button>
+                <input type="file" id="corridorImportInput" accept=".xodr" hidden>
                 <!-- In the header's flex row, not absolutely positioned over it: out of flow, the header
                      could not reserve their width and the Cross-section button slid underneath them. -->
                 <div class="road-panel-actions">
@@ -2066,6 +2070,9 @@
             'js/corridor-junction-paint.js',
             'js/corridor-transition.js',
             'js/corridor-profile.js',
+            'js/corridor-osm-form.js',
+            'js/corridor-import-opendrive.js',
+            'js/corridor-import.js',
             'js/corridor-footprint.js',
             'js/corridor-terrain-formation.js',
             'js/corridor-clearance.js',

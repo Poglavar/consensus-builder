@@ -31,6 +31,7 @@ const requireCjs = createRequire(import.meta.url);
 const corridorFootprint = requireCjs('../../frontend/js/corridor-footprint.js');
 const metricFrame = requireCjs('../../frontend/js/metric-frame.js');
 const corridorProfile = requireCjs('../../frontend/js/corridor-profile.js');
+const corridorOsmForm = requireCjs('../../frontend/js/corridor-osm-form.js');
 const siteHashApi = requireCjs('../../frontend/js/proposals/site-hash.js');
 
 export const PREPARE_PROTOCOL = 'prepare/1';
@@ -173,6 +174,12 @@ export async function prepareProposal(db, record, { city = null, parcelSourceId 
     if (isConstructedCorridor(draft)) {
         // The server builds the corridor's land from its lanes; a client polygon is never used.
         const definition = authoredDefinition(draft.roadProposal.definition);
+        // The record is its OSM form (roads.md §11); the stretch fields are a cache of it. A record
+        // whose two disagree was edited behind the form's back and is not prepared.
+        const agreement = corridorOsmForm.osmFormAgreement(definition);
+        if (!agreement.ok) {
+            throw preparationError(BINDING_CODES.invalidSite, `The corridor's OSM form and its stretches disagree: ${agreement.reason}.`, 400);
+        }
         let materialized;
         try {
             materialized = corridorFootprint.materialize(definition);

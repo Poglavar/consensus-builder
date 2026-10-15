@@ -137,6 +137,20 @@ describe('prepareProposal', () => {
         expect(db.statements).toEqual([]);
     });
 
+    it('prepares a record whose OSM form agrees with its stretches, and refuses one edited behind it', async () => {
+        const osmForm = require('../../frontend/js/corridor-osm-form.js');
+        const withForm = road();
+        osmForm.withOsmForm(withForm.roadProposal.definition);
+        expect(withForm.roadProposal.definition.osm.elements.length).toBeGreaterThan(0);
+        const db = cadastreDb();
+        const prepared = await prepareProposal(db, clone(withForm), { city: 'zagreb', ...sign });
+        expect(prepared.proposal.roadProposal.definition.osm).toEqual(withForm.roadProposal.definition.osm);
+
+        const drifted = clone(withForm);
+        drifted.roadProposal.definition.width = 14; // the cached cross-section no longer matches the form
+        await expect(prepareProposal(cadastreDb(), drifted, { city: 'zagreb', ...sign })).rejects.toMatchObject({ code: 'invalid-site', status: 400 });
+    });
+
     it('refuses a partial corridor: nothing is bound or stored', async () => {
         const db = cadastreDb();
         const broken = road({ points: [A, { lat: Number.NaN, lng: 15.971 }, C], segments: [[A, { lat: Number.NaN, lng: 15.971 }, C]] });
