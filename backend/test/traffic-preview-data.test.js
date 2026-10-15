@@ -146,12 +146,12 @@ describe('exported traffic preview', () => {
                 }
                 if (car.mode === 'lane') {
                     const lane = network.lanes.get(car.laneId);
-                    if (!lane || car.s < -.01 || car.s > lane.path.length + .01
+                    if (!lane || !car.maneuver && (car.s < -.01 || car.s > lane.path.length + .01)
                         || car.next && !lane.outgoing.includes(car.next)) validRoutes = false;
                 } else if (car.mode === 'connection') {
                     const movement = network.connections.get(car.connectionId);
                     if (!movement || movement.fromLaneId !== car.laneId
-                        || car.s < -.01 || car.s > movement.path.length + .01) validRoutes = false;
+                        || !car.maneuver && (car.s < -.01 || car.s > movement.path.length + .01)) validRoutes = false;
                 } else validRoutes = false;
             }
         }
@@ -174,6 +174,7 @@ describe('exported traffic preview', () => {
         for (let tick = 0; tick < 650; tick++) {
             const before = new Map(sim.cars.map(car => [car.id, {
                 mode: car.mode, laneId: car.laneId, s: car.s, connectionId: car.connectionId, changeTo: car.change?.to,
+                maneuver: car.maneuver && { kind: car.maneuver.kind, landing: { ...car.maneuver.landing } },
                 recovery: car.change?.recovery ? {
                     sourceLaneId: car.laneId, sourceMode: car.mode, sourceConnectionId: car.connectionId || null,
                     sourceReceivingLaneId: car.mode === 'connection'
@@ -189,8 +190,15 @@ describe('exported traffic preview', () => {
                 const previous = before.get(car.id);
                 const pose = sim.pose(car);
                 if (![car.s, pose.x, pose.y, pose.angle].every(Number.isFinite)) violations.push('nonfinite position');
-                if (previous?.mode === 'connection' && car.mode === 'lane' && !car.traversed?.length) {
+                if (previous?.mode === 'connection' && car.mode === 'lane' && !car.traversed?.length && !previous.maneuver) {
                     if (network.connections.get(previous.connectionId).toLaneId !== car.laneId) violations.push('wrong receiving lane');
+                }
+                if (previous?.maneuver && !car.maneuver) {
+                    const landing = previous.maneuver.landing;
+                    if (car.mode !== landing.mode || car.laneId !== landing.laneId
+                        || (car.connectionId || null) !== (landing.connectionId || null)
+                        || Math.abs(car.s - landing.s) > .001
+                        || car.lastManeuver?.kind !== previous.maneuver.kind) violations.push('manoeuvre landing mismatch');
                 }
                 if (car.change?.recovery) {
                     const recovery = previous?.recovery || {
@@ -244,7 +252,7 @@ describe('exported traffic preview', () => {
                     }
                 }
                 if (previous?.mode === 'lane' && car.mode === 'lane' && previous.laneId !== car.laneId
-                    && !car.traversed?.length && (previous.changeTo !== car.laneId || !previous.recovery
+                    && !car.traversed?.length && !previous.maneuver && (previous.changeTo !== car.laneId || !previous.recovery
                         && !Traffic.laneChangeAllowed(network.lanes.get(previous.laneId), network.lanes.get(car.laneId)))) {
                     violations.push('illegal lane change');
                 }
@@ -288,7 +296,7 @@ describe('exported traffic preview', () => {
                 if (!network.lanes.has(id)) continue;
                 // An active recovery car is physically on its own curved path, so its
                 // projection onto the original lane is not a meaningful queue station.
-                const ordered = occupants.filter(item => item.s >= 0 && !item.car.change?.recovery)
+                const ordered = occupants.filter(item => item.s >= 0 && !item.car.change?.recovery && !item.car.maneuver)
                     .sort((a, b) => a.s - b.s);
                 for (let i = 1; i < ordered.length; i++) {
                     if (ordered[i].car.id !== ordered[i - 1].car.id && ordered[i].s - ordered[i - 1].s < Traffic.GAP - .01) violations.push('queue overlap');

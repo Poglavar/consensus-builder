@@ -10,6 +10,7 @@
     }
     const Engine = window.TrafficSimulation, G = window.TrafficGeometry;
     const Scenario = window.TrafficScenario, Meters = window.TrafficMeters;
+    const Vehicles = window.TrafficVehicles;
     const Trams = window.TrafficTramTracks;
     const counters = new Meters.Counters();
     const audio = new window.TrafficAudio.Sound();
@@ -38,6 +39,7 @@
     let signalPopup = null;
     let transform, size = { x: 0, y: 0 }, previousFrame = null, uiTime = 0, frameId = null;
     let screenCars = [], frameCount = 0, tileErrors = 0;
+    const honkCounts = new Map();
     tiles.on('tileerror', () => { tileErrors++; });
 
     const scene = new window.TrafficSceneLayer([guideCanvas, carCanvas, meterCanvas], () => {
@@ -231,27 +233,56 @@
         }
         for (const car of sim.cars) {
             const pose = running ? sim.renderPose(car) : sim.pose(car), p = screen([pose.x, pose.y]);
-            if (!visible(p)) continue;
-            screenCars.push({ id: car.id, x: p.x, y: p.y });
-            const length = 4.4 * transform.sx;
-            const width = 1.8 * transform.sx;
-            if (scene.zoom < 17) { ctx.beginPath(); ctx.arc(p.x, p.y, 1.25, 0, Math.PI * 2); ctx.fillStyle = colors[car.color]; ctx.fill(); continue; }
+            const vehicle = Vehicles.get(car.vehicleType), metres = Math.abs(transform.sx);
+            const length = vehicle.length * metres, width = vehicle.width * metres;
+            if (p.x < -length / 2 || p.x > size.x + length / 2 || p.y < -length / 2 || p.y > size.y + length / 2) continue;
+            screenCars.push({ id: car.id, x: p.x, y: p.y, halfLength: length / 2, halfWidth: width / 2, angle: -pose.angle });
+            if (scene.zoom < 17) { ctx.beginPath(); ctx.arc(p.x, p.y, 1.25, 0, Math.PI * 2); ctx.fillStyle = vehicle.bodyColor || colors[car.color]; ctx.fill(); continue; }
             ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(-pose.angle);
             if (selected === car.id) {
-                ctx.beginPath(); ctx.arc(0, 0, length * .9, 0, Math.PI * 2);
+                ctx.beginPath(); ctx.arc(0, 0, Math.max(length, width) * .65 + 3, 0, Math.PI * 2);
                 ctx.strokeStyle = '#177c6eb0'; ctx.lineWidth = 1.5; ctx.stroke();
             } else if (selectedInfo?.carId === car.id) {
-                ctx.beginPath(); ctx.arc(0, 0, length * .9, 0, Math.PI * 2);
+                ctx.beginPath(); ctx.arc(0, 0, Math.max(length, width) * .65 + 3, 0, Math.PI * 2);
                 ctx.strokeStyle = '#bb7926'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]); ctx.stroke(); ctx.setLineDash([]);
             }
             ctx.shadowColor = '#16362644'; ctx.shadowBlur = .8; ctx.shadowOffsetY = 1;
-            ctx.fillStyle = colors[car.color]; ctx.strokeStyle = '#243e465c'; ctx.lineWidth = .6;
+            ctx.fillStyle = vehicle.bodyColor || colors[car.color]; ctx.strokeStyle = '#243e465c'; ctx.lineWidth = .6;
             ctx.beginPath(); ctx.roundRect(-length / 2, -width / 2, length, width, Math.min(2, width * .24)); ctx.fill(); ctx.stroke();
             ctx.shadowColor = 'transparent'; ctx.shadowOffsetY = 0;
-            ctx.fillStyle = '#143e4ec9'; ctx.fillRect(length * .12, -width * .34, length * .17, width * .68);
-            ctx.fillStyle = '#143e4e70'; ctx.fillRect(-length * .28, -width * .3, length * .11, width * .6);
+            if (vehicle.type === 'car') {
+                ctx.fillStyle = '#143e4ec9'; ctx.fillRect(length * .12, -width * .34, length * .17, width * .68);
+                ctx.fillStyle = '#143e4e70'; ctx.fillRect(-length * .28, -width * .3, length * .11, width * .6);
+            } else if (vehicle.type === 'bus') {
+                ctx.fillStyle = '#123f54'; ctx.fillRect(-length * .32, -width * .35, length * .72, width * .7);
+                ctx.fillStyle = vehicle.accentColor; ctx.fillRect(-length * .35, -width * .09, length * .72, width * .18);
+                ctx.fillStyle = '#123f54'; ctx.fillRect(length * .35, -width * .31, length * .1, width * .62);
+                if (scene.zoom >= 19 && length > 24) {
+                    ctx.fillStyle = '#fff'; ctx.font = `600 ${Math.max(3, width * .38)}px system-ui`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText('ZET', -length * .1, 0);
+                }
+            } else {
+                ctx.fillStyle = vehicle.accentColor;
+                if (vehicle.type === 'police') ctx.fillRect(-length * .12, -width * .39, length * .55, width * .2);
+                else {
+                    ctx.fillRect(-length * .34, -width * .29, length * .68, width * .17);
+                    ctx.fillRect(-length * .34, width * .12, length * .68, width * .17);
+                    ctx.fillRect(-width * .11, -width * .31, width * .22, width * .62);
+                }
+                if (scene.zoom >= 19 && length > 17) {
+                    ctx.fillStyle = vehicle.type === 'police' ? '#fff' : vehicle.accentColor;
+                    ctx.font = `700 ${Math.max(3, width * .32)}px system-ui`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText(vehicle.type === 'police' ? 'POLICIJA' : '✚', -length * .16, 0);
+                }
+                const barLength = Math.max(2, Math.min(length * .24, width * .72));
+                const barHeight = Math.max(1.5, Math.min(width * .35, 3));
+                ctx.fillStyle = '#dce7ed'; ctx.fillRect(-barLength / 2, -barHeight / 2, barLength, barHeight);
+                ctx.fillStyle = vehicle.roofBar; ctx.fillRect(-barLength / 2, -barHeight / 2, barLength / 2, barHeight);
+                ctx.fillStyle = '#3288ff'; ctx.fillRect(0, -barHeight / 2, barLength / 2, barHeight);
+            }
             ctx.fillStyle = car.braking ? '#ff5742' : '#a95445';
-            ctx.fillRect(-length / 2, -width * .38, 1.5, width * .22); ctx.fillRect(-length / 2, width * .16, 1.5, width * .22);
+            ctx.fillRect(-length / 2, -width * .38, Math.max(1.5, metres * .3), width * .22);
+            ctx.fillRect(-length / 2, width * .16, Math.max(1.5, metres * .3), width * .22);
             if (car.change && Math.floor(sim.time * 3) % 2 === 0) {
                 const from = network.lanes.get(car.laneId), to = network.lanes.get(car.change.to);
                 ctx.fillStyle = '#ffc653'; ctx.fillRect(length * .25, to.ordinal < from.ordinal ? -width / 2 - 1 : width / 2 - 1, 3, 2);
@@ -276,13 +307,21 @@
         if (!car) { selected = null; following = false; }
         document.querySelector('.inspector').hidden = !car;
         selectedInfo = car ? sim.inspectCar(car) : null;
-        $('selected-title').textContent = car ? t('selected', { id: car.id }) : t('follow');
+        const vehicle = car && Vehicles.get(car.vehicleType);
+        $('selected-title').textContent = car ? t('selected', { vehicle: t(`vehicle_${vehicle.type}`), id: car.id }) : t('follow');
         $('follow').textContent = t(following ? 'unfollow' : 'follow');
         $('selected-status').hidden = !car;
         if (car) {
+            const driver = sim.driverState(car);
+            const mood = driver.mood;
+            const moodLabel = t(`mood${mood[0].toUpperCase()}${mood.slice(1)}`);
+            $('driver-face').textContent = { happy: '😊', neutral: '😐', unhappy: '🙁', angry: '😠' }[mood];
+            $('driver-face').setAttribute('aria-label', moodLabel);
+            $('driver-mood').dataset.mood = mood;
+            $('driver-message').textContent = `${moodLabel}${driver.stuckFor > 0 ? ` · ${t('stuckFor', { seconds: Math.floor(driver.stuckFor) })}` : ''}${driver.maneuver ? ` · ${t(`maneuver_${driver.maneuver}`)}` : ''}`;
             const lane = network.lanes.get(car.laneId);
             $('selected-detail').textContent = `${lane.name || t('unnamed')} · ${t('lane', { number: lane.ordinal + 1 })}\n${t('exits', { count: lane.outgoing.length })}`;
-            document.querySelector('.car-swatch').style.backgroundColor = colors[car.color];
+            document.querySelector('.car-swatch').style.backgroundColor = vehicle.bodyColor || colors[car.color];
             const reason = !running && ['starting', 'moving'].includes(selectedInfo.kind) ? 'paused' : selectedInfo.kind;
             $('selected-reason-label').textContent = t(reason === 'moving' ? 'moving' : 'stopReason');
             $('selected-reason').textContent = t(`reason${reason[0].toUpperCase()}${reason.slice(1)}`, {
@@ -407,11 +446,31 @@
         const southwest = network.project([bounds.getWest(), bounds.getSouth()]);
         const northeast = network.project([bounds.getEast(), bounds.getNorth()]);
         const center = network.project([map.getCenter().lng, map.getCenter().lat]);
+        const extent = { minX: southwest[0], minY: southwest[1], maxX: northeast[0], maxY: northeast[1] };
         audio.update(window.TrafficAudio.mix(sim.cars.map(car => ({ pose: sim.pose(car), speed: car.speed })), {
             center: { x: center[0], y: center[1] },
-            extent: { minX: southwest[0], minY: southwest[1], maxX: northeast[0], maxY: northeast[1] }
+            extent
         }, running && !document.hidden && $('sound').checked));
+        const canHonk = audio.active && running && !document.hidden && $('sound').checked;
+        const visibleIds = new Set(screenCars.map(car => car.id));
+        for (const car of sim.cars) {
+            const state = sim.driverState(car);
+            const count = state.honkCount;
+            const previous = honkCounts.get(car.id);
+            if (previous != null && count > previous && canHonk && visibleIds.has(car.id)) {
+                const pose = sim.pose(car), distance = Math.hypot(pose.x - center[0], pose.y - center[1]);
+                const radius = Math.max(1, Math.hypot(extent.maxX - extent.minX, extent.maxY - extent.minY) / 2);
+                audio.honk({ type: car.vehicleType, gain: Math.max(.15, 1 - .75 * distance / radius) });
+            }
+            honkCounts.set(car.id, count);
+        }
+        for (const id of honkCounts.keys()) if (!sim.cars.some(car => car.id === id)) honkCounts.delete(id);
     }
+    function captureHonkCounts() {
+        if (!sim) return;
+        for (const car of sim.cars) honkCounts.set(car.id, sim.driverState(car).honkCount);
+    }
+    map.on('dragstart zoomstart', captureHonkCounts);
     function soundError(error) {
         $('sound').checked = false;
         console.error(`[${new Date().toISOString()}] Traffic sound:`, error);
@@ -446,7 +505,15 @@
     map.on('click', event => {
         if (handleToolClick(event)) return;
         const pointer = scene.point(event.containerPoint);
-        const nearest = screenCars.map(car => ({ ...car, distance: Math.hypot(car.x - pointer.x, car.y - pointer.y) }))
+        const nearest = screenCars.map(car => {
+            const dx = pointer.x - car.x, dy = pointer.y - car.y;
+            const localX = Math.cos(car.angle) * dx + Math.sin(car.angle) * dy;
+            const localY = -Math.sin(car.angle) * dx + Math.cos(car.angle) * dy;
+            const distance = scene.zoom < 17 ? Math.hypot(dx, dy) : Math.hypot(
+                Math.max(0, Math.abs(localX) - car.halfLength),
+                Math.max(0, Math.abs(localY) - car.halfWidth));
+            return { ...car, distance };
+        })
             .sort((a, b) => a.distance - b.distance)[0];
         const mapped = network && $('lights').checked && map.getZoom() >= 17
             ? [...network.signals.values()].map(signal => {
@@ -457,7 +524,7 @@
             following = false; updateUI(); openSignal(mapped.signal);
             return;
         }
-        selected = nearest?.distance < 22 ? nearest.id : null;
+        selected = nearest?.distance < 6 ? nearest.id : null;
         following = false; updateUI(); drawCars();
         if (selected != null) document.querySelector('.inspector').scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
     });
@@ -490,12 +557,13 @@
     new ResizeObserver(() => { map.invalidateSize({ animate: false }); resize(); }).observe(document.querySelector('.map-stage'));
     document.addEventListener('visibilitychange', () => { if (document.hidden) { cancelAnimationFrame(frameId); frameId = null; previousFrame = null; } else wake(); });
     $('play').addEventListener('click', () => {
-        running = !running; syncSound(true);
+        running = !running; syncSound(true); updateAudio();
         if (!running) { cancelAnimationFrame(frameId); frameId = null; } else wake();
         $('status').hidden = true; updateUI();
     });
     $('reset').addEventListener('click', () => {
-        sim = new Engine.Simulation(network, { count: Number($('density').value), seed: ++seed, signals: $('lights').checked });
+        sim = new Engine.Simulation(network, { physicalNetwork: baseNetwork, count: Number($('density').value), seed: ++seed, signals: $('lights').checked });
+        honkCounts.clear();
         editor.setSimulation(sim); attachCounters();
         for (const meter of counters.meters) counters.reset(meter.id, 0);
         selected = null; following = false; updateUI(); drawCars(); wake();
@@ -533,7 +601,7 @@
             surface = window.TrafficSurface.build(baseNetwork, data.surfaceLanes);
             buildRoadEdges();
             tramTracks = Trams.build(data.tramTracks, baseNetwork.project, offsetPolylinePlanar);
-            sim = new Engine.Simulation(network, { count: Number($('density').value), seed });
+            sim = new Engine.Simulation(network, { physicalNetwork: baseNetwork, count: Number($('density').value), seed });
             editor = new Scenario.Editor(baseNetwork, sim); attachCounters();
             if (!network.spawnLanes.length) throw new Error('The exported graph has no usable starting lanes.');
             L.rectangle([[data.bbox[1], data.bbox[0]], [data.bbox[3], data.bbox[2]]], {

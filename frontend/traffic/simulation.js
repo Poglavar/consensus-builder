@@ -1,14 +1,19 @@
 // Deterministic traffic motion over an explicit directed lane graph; no DOM or map dependencies.
-// Unknown turns are never inferred. Signal phases are deliberately illustrative.
+// Ordinary routes use mapped connections; physical low-speed escapes are planned separately.
+// Signal phases are deliberately illustrative.
 (function (root, factory) {
     const geometry = typeof module !== 'undefined' && module.exports ? require('./geometry.js') : root.TrafficGeometry;
     const collision = typeof module !== 'undefined' && module.exports ? require('./collision.js') : root.TrafficCollision;
     const signals = typeof module !== 'undefined' && module.exports ? require('./signal-plan.js') : root.TrafficSignals;
     const movements = typeof module !== 'undefined' && module.exports ? require('./movement-conflicts.js') : root.TrafficMovementConflicts;
-    const api = factory(geometry, collision, signals, movements);
+    const vehicles = typeof module !== 'undefined' && module.exports ? require('./vehicles.js') : root.TrafficVehicles;
+    const drivers = typeof module !== 'undefined' && module.exports ? require('./drivers.js') : root.TrafficDrivers;
+    const maneuvers = typeof module !== 'undefined' && module.exports ? require('./maneuvers.js') : root.TrafficManeuvers;
+    const surface = typeof module !== 'undefined' && module.exports ? require('./surface.js') : root.TrafficSurface;
+    const api = factory(geometry, collision, signals, movements, vehicles, drivers, maneuvers, surface);
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
     if (root) root.TrafficSimulation = api;
-})(typeof window !== 'undefined' ? window : null, function (Geometry, Collision, Signals, Movements) {
+})(typeof window !== 'undefined' ? window : null, function (Geometry, Collision, Signals, Movements, Vehicles, Drivers, Maneuvers, Surface) {
     'use strict';
     const GAP = Collision.LENGTH + .4;
     const STEP = 0.1;
@@ -277,7 +282,7 @@
     }
 
     class Simulation {
-        constructor(network, { count = 220, seed = 42, signals = true, laneChangeRate = .055 } = {}) {
+        constructor(network, { count = 220, seed = 42, signals = true, laneChangeRate = .055, physicalNetwork = network } = {}) {
             this.network = network;
             this.random = randomGenerator(seed);
             this.time = 0;
@@ -291,10 +296,168 @@
             this.targetCount = 0;
             this.listeners = new Set();
             this.gates = [];
+            this.physicalNetwork = physicalNetwork;
+            this.space = null;
+            this.planningTask = null;
+            this.nextPlanAt = 0;
             this.setCount(count);
         }
 
         choose(list) { return list.length ? list[Math.floor(this.random() * list.length)] : null; }
+
+        driverState(car) { return Drivers.view(car); }
+
+        projectStation(route, pose) {
+            const near = Geometry.nearest(route, [pose.x, pose.y]);
+            if (near.s < .01 || near.s > route.length - .01) {
+                const end = sample(route, near.s < .01 ? 0 : route.length);
+                const along = (pose.x - end.x) * Math.cos(end.angle) + (pose.y - end.y) * Math.sin(end.angle);
+                return near.s < .01 ? Math.min(0, along) : route.length + Math.max(0, along);
+            }
+            return near.s;
+        }
+
+        localStops(start) {
+            // Include the search radius, its final landing curve and a full bus body.
+            const horizon = Maneuvers.MAX_DISTANCE + Maneuvers.MAX_TAIL + Vehicles.get('bus').length;
+            return [...this.network.lanes.values()].filter(lane => lane.signals.length).map(lane => ({ lane,
+                controls: lane.signals.filter(control => {
+                    const p = sample(lane.path, control.stopS);
+                    return Math.hypot(p.x - start.x, p.y - start.y) <= horizon;
+                }) })).filter(record => record.controls.length);
+        }
+
+        maneuverBlocked(car, pose, before, onPavement = true, stops = car.maneuver?.stops || []) {
+            const n = this.network, vehicle = Vehicles.get(car.vehicleType);
+            const body = { ...pose, length: vehicle.length, width: vehicle.width };
+            if (onPavement && !this.space.contains(pose, vehicle)) return true;
+            if ((n.closureBlocks || []).some(block => Collision.overlapsRectangle(body, block.pose, block.length, block.width))) return true;
+            if (this.signals && before) {
+                // Check actual local stop-line crossings in the direction they control.
+                // Reversing away from a stop never grants permission to cross it forwards.
+                for (const { lane, controls } of stops) {
+                    if (pose.x < lane.path.bounds[0] - 4 || pose.x > lane.path.bounds[2] + 4
+                        || pose.y < lane.path.bounds[1] - 4 || pose.y > lane.path.bounds[3] + 4) continue;
+                    const a = Geometry.nearest(lane.path, [before.x, before.y]), b = Geometry.nearest(lane.path, [pose.x, pose.y]);
+                    if (a.distance > lane.width / 2 + .2 || b.distance > lane.width / 2 + .2 || b.s <= a.s) continue;
+                    for (const control of controls) {
+                        if (a.s <= control.stopS + 1e-6 && b.s > control.stopS + 1e-6
+                            && signalAspect(n.signals.get(control.signalId), control.phase, this.time) !== 'green') return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        maneuverClear(car, pose, before, onPavement = true, stops) {
+            const vehicle = Vehicles.get(car.vehicleType);
+            const body = { ...pose, length: vehicle.length, width: vehicle.width };
+            const previous = { ...before, length: vehicle.length, width: vehicle.width };
+            return !this.maneuverBlocked(car, pose, before, onPavement, stops)
+                && this.bodyIndex.blocker(car.id, body, previous) == null;
+        }
+
+        advanceSearch() {
+            const task = this.planningTask;
+            if (!task) return;
+            const current = this.pose(task.car);
+            if (task.car.retired || task.car.change || task.car.maneuver || task.network !== this.network
+                || Math.hypot(current.x - task.start.x, current.y - task.start.y) > .2
+                || Math.abs(Math.atan2(Math.sin(current.angle - task.start.angle), Math.cos(current.angle - task.start.angle))) > .08) {
+                task.car.planning = false; this.planningTask = null; return;
+            }
+            task.search.advance(45);
+            if (!task.search.done) return;
+            const plan = task.search.result;
+            if (plan && Maneuvers.validate(plan, (pose, before) => this.maneuverClear(task.car, pose, before, true, task.stops), current)) {
+                plan.stops = task.stops; task.car.maneuver = plan; task.car.speed = 0;
+            }
+            task.car.planning = false; this.planningTask = null;
+            this.nextPlanAt = this.time + .7;
+        }
+
+        yieldWinner(a, b) {
+            const aa = this.routeInfo(a), bb = this.routeInfo(b);
+            const am = aa.move || this.network.connections.get(a.next), bm = bb.move || this.network.connections.get(b.next);
+            if (am && bm && am.toLaneId === bm.toLaneId) {
+                const receiving = this.network.lanes.get(am.toLaneId).path;
+                const difference = this.projectStation(receiving, this.pose(a)) - this.projectStation(receiving, this.pose(b));
+                if (Math.abs(difference) > .2) return difference > 0 ? a : b;
+            }
+            return (a.driver?.priority ?? a.id) < (b.driver?.priority ?? b.id) ? a : b;
+        }
+
+        backToGiveWay(car) {
+            const { lane, move, route } = this.routeInfo(car);
+            const joined = move ? path([...lane.path.points, ...route.points.slice(1)]) : route;
+            const station = (move ? lane.path.length : 0) + car.s;
+            const start = this.pose(car), stops = this.localStops(start);
+            for (const distance of [3.2, 2, 1, .5, .2]) {
+                const end = Math.max(.1, station - distance);
+                if (station - end < .15) continue;
+                const reverse = Geometry.slice(joined, end, station);
+                const intoLane = move && end < lane.path.length;
+                const landing = intoLane || !move ? { mode: 'lane', laneId: lane.id, connectionId: null, s: end, next: move?.id || car.next }
+                    : { mode: 'connection', laneId: lane.id, connectionId: move.id, s: end - lane.path.length, next: car.next };
+                const plan = { kind: 'yield', segments: [{ gear: -1, path: path([...reverse.points].reverse()) }],
+                    landing, index: 0, s: 0, travelled: 0, stops };
+                // A retreat retraces an already mapped route. It needs actual rear space,
+                // and never moves through another vehicle, closure, or forward red stop.
+                if (Maneuvers.validate(plan, (pose, before) => this.maneuverClear(car, pose, before, false, stops), start)) {
+                    car.maneuver = plan; car.speed = 0; return true;
+                }
+            }
+            return false;
+        }
+
+        tryDriverAction(car, occupied, previousBlocker) {
+            const d = car.driver;
+            if (!d || car.change || car.maneuver || car.speed > .4 || (car.blockedFor || 0) < d.reaction) return;
+            const partner = this.carsById.get(previousBlocker);
+            const mutual = partner && this.previousWait.get(partner.id) === car.id;
+            if (mutual && this.yieldWinner(car, partner) !== car && this.time >= (d.nextYieldAt || 0)) {
+                d.nextYieldAt = this.time + 1.5 + this.random() * 2;
+                if (this.backToGiveWay(car)) return;
+            }
+            if (d.stuckFor < d.patience || this.time < d.nextTryAt || this.planningTask || this.time < this.nextPlanAt) return;
+            const limits = this.limits(car, occupied);
+            if (limits.signal < .4) return;
+            d.nextTryAt = this.time + 5 + this.random() * 8;
+            if (!this.physicalNetwork.data?.surfaceLanes) return;
+            if (!this.space) {
+                const surface = Surface.build(this.physicalNetwork, this.physicalNetwork.data.surfaceLanes);
+                this.space = new Maneuvers.Space([...surface.lanes, ...surface.connections]);
+            }
+            const n = this.network, { lane, move } = this.routeInfo(car), start = this.pose(car), goals = [];
+            const addLane = (target, kind) => {
+                if (!target || target.ghost || !target.routes.length || target.width < Vehicles.get(car.vehicleType).width + .2) return;
+                const near = Geometry.nearest(target.path, [start.x, start.y]);
+                if (near.distance > 15 || target.path.length - near.s < 4) return;
+                let maxS = target.path.length;
+                for (const signal of target.signals) {
+                    if (signal.stopS >= near.s - .1 && signalAspect(n.signals.get(signal.signalId), signal.phase, this.time) !== 'green') maxS = Math.min(maxS, signal.stopS - .2);
+                }
+                goals.push({ route: target.path, kind, maxS, landing: { mode: 'lane', laneId: target.id, connectionId: null } });
+            };
+            if (move) addLane(n.lanes.get(move.toLaneId), 'escape');
+            for (const id of lane.routes) {
+                const connection = n.connections.get(id);
+                if (connection.id === move?.id || connection.id === car.next || !this.canEnter(car, connection, occupied, false)) continue;
+                addLane(n.lanes.get(connection.toLaneId), 'reroute');
+            }
+            const roads = new Set([lane.sectionId, move && n.lanes.get(move.toLaneId).sectionId].filter(Boolean));
+            for (const target of n.lanes.values()) {
+                if (!roads.has(target.sectionId) || target.id === lane.id || target.ghost) continue;
+                const near = Geometry.nearest(target.path, [start.x, start.y]);
+                if (near.distance <= 9 && Math.cos(near.angle - start.angle) < -.5) addLane(target, 'turnaround');
+            }
+            if (!goals.length) return;
+            const stops = this.localStops(start);
+            const search = new Maneuvers.Search({ start, vehicle: Vehicles.get(car.vehicleType), goals,
+                clear: (pose, before) => this.maneuverClear(car, pose, before, true, stops) });
+            this.planningTask = { search, car, start, network: n, stops }; car.planning = true;
+            this.nextPlanAt = this.time + .7;
+        }
 
         chooseRoute(lane, car = null) {
             if (!lane.fragment) {
@@ -314,6 +477,17 @@
         }
 
         carOccupancies(car) {
+            if (car.maneuver) {
+                const pose = this.pose(car), { lane, move, route } = this.routeInfo(car);
+                const station = this.projectStation(route, pose);
+                const entries = move ? [[move.id, station], [lane.id, lane.path.length + station],
+                    [move.toLaneId, station - route.length]] : [[lane.id, station]];
+                const landing = car.maneuver.landing;
+                const target = landing.mode === 'connection' ? this.network.connections.get(landing.connectionId) : this.network.lanes.get(landing.laneId);
+                const near = Geometry.nearest(target.path, [pose.x, pose.y]);
+                if (near.distance < Vehicles.get(car.vehicleType).width / 2 + 2) entries.push([target.id, near.s]);
+                return entries;
+            }
             if (car.change?.recovery) {
                 const change = car.change;
                 const entries = this.carOccupancies({ ...car, change: null });
@@ -351,17 +525,22 @@
             const n = this.network;
             if (!n.spawnLanes.length) return false;
             const occupied = this.occupants();
+            const vehicle = Vehicles.pick(this.random), driver = Drivers.create(this.random, this.time);
+            const candidate = { vehicleType: vehicle.type, driver, speed: 0 };
             for (let attempt = 0; attempt < 80; attempt++) {
                 const pick = this.random() * n.totalWeight;
                 let lo = 0, hi = n.weights.length - 1;
                 while (lo < hi) { const mid = (lo + hi) >> 1; if (n.weights[mid] < pick) lo = mid + 1; else hi = mid; }
                 const lane = n.spawnLanes[lo];
-                const s = 8 + this.random() * Math.max(0, lane.path.length - 32);
-                if ((occupied.get(lane.id) || []).some(entry => Math.abs(entry.s - s) < GAP * 2)) continue;
-                const pose = sample(lane.path, s);
+                if (lane.width < vehicle.width + .25 || lane.path.length < vehicle.length * 3) continue;
+                const s = Math.max(8, vehicle.length / 2 + 2) + this.random() * Math.max(0, lane.path.length - Math.max(32, vehicle.length + 24));
+                if ((occupied.get(lane.id) || []).some(entry => Math.abs(entry.s - s)
+                    < Math.max(GAP * 2, (entry.s > s ? Drivers.gap(candidate, entry.car) : Drivers.gap(entry.car, candidate)) + 2))) continue;
+                const pose = { ...sample(lane.path, s), length: vehicle.length, width: vehicle.width };
                 if (this.cars.some(other => Collision.overlaps(pose, this.pose(other)))) continue;
                 this.cars.push({ id: this.nextId++, laneId: lane.id, mode: 'lane', s, speed: 0,
-                    cruise: 7.5 + this.random() * 4.5, color: Math.floor(this.random() * 7),
+                    cruise: (7.5 + this.random() * 4.5) * vehicle.cruiseFactor, color: Math.floor(this.random() * 7),
+                    vehicleType: vehicle.type, driver,
                     next: this.chooseRoute(lane), state: 'driving', change: null,
                     cooldown: this.time + 4 + this.random() * 10 });
                 return true;
@@ -390,7 +569,7 @@
         canEnter(car, connection, occupied, checkSignal = true) { return this.entryBlocker(car, connection, occupied, checkSignal) == null; }
 
         tryRecovery(car, occupied) {
-            if (car.change || (car.blockedFor || 0) < 1) return;
+            if (car.change || car.maneuver || (car.blockedFor || 0) < (car.driver?.reaction || 1)) return;
             const n = this.network, { lane, move, route } = this.routeInfo(car), start = this.pose(car);
             const choices = [];
             const consider = (target, mode, station) => {
@@ -417,7 +596,7 @@
                 if (path.length < 1 || path.length > 22) return;
                 // A tactical change may cross a lane marking, never a barrier.
                 for (let s = 0; s <= path.length + .5; s += .5) {
-                    const pose = sample(path, Math.min(s, path.length));
+                    const pose = { ...sample(path, Math.min(s, path.length)), length: start.length, width: start.width };
                     if ((n.closureBlocks || []).some(block => Collision.overlapsRectangle(pose, block.pose, block.length, block.width))) return;
                 }
                 choices.push({ to: source.id, toConnectionId: mode === 'connection' ? target.id : null,
@@ -450,12 +629,13 @@
 
         tryLaneChange(car, occupied) {
             const from = this.network.lanes.get(car.laneId);
-            if (this.gates.length || from.fragment || car.change || car.speed < 2 || car.s < 15 || from.path.length - car.s < Math.max(40, car.speed * 5)
+            if (this.gates.length || from.fragment || car.change || car.maneuver || car.speed < 2 || car.s < 15 || from.path.length - car.s < Math.max(40, car.speed * 5)
                 || this.time < car.cooldown || this.random() >= this.laneChangeRate * STEP) return;
             const candidates = from.adjacent.filter(id => {
                 const to = this.network.lanes.get(id);
                 const s = car.s * to.path.length / from.path.length;
-                return !(occupied.get(id) || []).some(entry => entry.car !== car && Math.abs(entry.s - s) < GAP + car.speed * 2);
+                return !(occupied.get(id) || []).some(entry => entry.car !== car
+                    && Math.abs(entry.s - s) < (entry.s > s ? Drivers.gap(car, entry.car) : Drivers.gap(entry.car, car)) + car.speed);
             });
             const to = this.choose(candidates);
             if (!to) return;
@@ -485,7 +665,7 @@
                         if (other.toLaneId === key && other.id !== move.id
                             && other.fromLaneId !== move.fromLaneId) continue;
                     }
-                    const distance = (entry.s - station - GAP) / ratio;
+                    const distance = (entry.s - station - Drivers.gap(car, entry.car)) / ratio;
                     if (entry.car.id !== car.id && entry.s >= station - 1e-7 && distance < clearance) {
                         clearance = distance; leader = entry.car.id;
                     }
@@ -506,6 +686,23 @@
                 signal = Math.min(signal, signalStoppingDistance(n, target, car.s * ratio, this.time, this.signals) / ratio);
             }
             const connection = !move && n.connections.get(car.next);
+            const intended = move || connection;
+            if (intended) {
+                const receiving = n.lanes.get(intended.toLaneId).path, currentPose = this.pose(car);
+                const station = this.projectStation(receiving, currentPose);
+                for (const entry of occupied.get(intended.toLaneId) || []) {
+                    const other = entry.car;
+                    if (other.id === car.id || other.mode !== 'connection' || other.maneuver) continue;
+                    const otherMove = n.connections.get(other.connectionId);
+                    if (otherMove.toLaneId !== intended.toLaneId || otherMove.fromLaneId === intended.fromLaneId) continue;
+                    const otherPose = this.pose(other), range = (Vehicles.get(car.vehicleType).length + Vehicles.get(other.vehicleType).length) / 2 + 3;
+                    if (Math.hypot(otherPose.x - currentPose.x, otherPose.y - currentPose.y) > range) continue;
+                    const otherStation = this.projectStation(receiving, otherPose), delta = otherStation - station;
+                    if (delta < -.2 || Math.abs(delta) <= .2 && this.yieldWinner(car, other) === car) continue;
+                    const distance = Math.max(0, delta - Drivers.gap(car, other));
+                    if (distance < clearance) { clearance = distance; leader = other.id; }
+                }
+            }
             const entry = move ? null : car.change ? { kind: 'changing' }
                 : this.entryBlocker(car, connection, occupied, false);
             const available = !!move || entry == null;
@@ -587,6 +784,45 @@
         }
 
         advanceCar(car, distance, occupied) {
+            if (car.maneuver) {
+                const m = car.maneuver, segment = m.segments[m.index], start = this.pose(car);
+                m.blockerId = null;
+                const remaining = segment.path.length - m.s;
+                const travel = this.time < (m.shiftUntil || 0) ? 0 : Math.min(distance, remaining);
+                m.s += travel;
+                const after = Maneuvers.pose(m);
+                if (this.maneuverBlocked(car, after, start, m.kind !== 'yield')) { m.s -= travel; return 0; }
+                m.travelled += travel;
+                const { route } = this.routeInfo(car);
+                car.s = this.projectStation(route, after);
+                if (segment.path.length - m.s < 1e-6) {
+                    if (m.index + 1 < m.segments.length) {
+                        m.index++; m.s = 0;
+                        if (m.segments[m.index].gear !== segment.gear) { m.shiftUntil = this.time + .6; car.speed = 0; }
+                    } else {
+                        const landing = { ...car, ...m.landing, maneuver: null, change: null };
+                        for (const [key, s] of this.carOccupancies(landing)) {
+                            const blocker = (occupied.get(key) || []).find(entry => entry.car.id !== car.id
+                                && Math.abs(entry.s - s) < GAP - .001);
+                            if (blocker) {
+                                const held = Math.min(travel, .02);
+                                m.blockerId = blocker.car.id; m.s -= held; m.travelled -= held;
+                                car.s = this.projectStation(route, Maneuvers.pose(m));
+                                return travel - held;
+                            }
+                        }
+                        const oldMove = car.mode === 'connection' && this.network.connections.get(car.connectionId);
+                        Object.assign(car, m.landing); car.maneuver = null; car.change = null;
+                        car.next = m.landing.next || (car.mode === 'lane' ? this.chooseRoute(this.network.lanes.get(car.laneId), car) : car.connectionId);
+                        if (oldMove && m.landing.laneId === oldMove.toLaneId && this.network.nodes.get(oldMove.nodeId)?.degree >= 3) this.crossings++;
+                        if (m.kind !== 'yield') this.laneChanges++;
+                        car.maneuverCompletedAt = this.time;
+                        car.lastManeuver = { kind: m.kind, gearChanges: m.segments.length - 1, distance: m.travelled };
+                        car.blockedFor = 0; car.cooldown = this.time + 6;
+                    }
+                }
+                return travel;
+            }
             if (car.change?.recovery) {
                 const change = car.change, { route, move } = this.routeInfo(car);
                 const limits = this.limits(car, occupied);
@@ -600,7 +836,7 @@
                     for (const [key, s] of this.carOccupancies(landing)) {
                         if (!this.network.lanes.has(key) || s < 0) continue;
                         const blocker = (occupied.get(key) || []).find(entry => entry.car.id !== car.id
-                            && entry.s >= 0 && Math.abs(entry.s - s) < GAP - .001);
+                            && entry.s >= 0 && Math.abs(entry.s - s) < (entry.s > s ? Drivers.gap(car, entry.car) : Drivers.gap(entry.car, car)) - .001);
                         if (blocker) { change.blockerId = blocker.car.id; travel = Math.min(travel, Math.max(0, remaining - .02)); break; }
                     }
                 }
@@ -645,9 +881,14 @@
             for (const car of this.cars) {
                 const pose = this.pose(car); bodies.set(car.id, pose); this.posesByCar.set(car, pose);
             }
+            this.bodyIndex = bodies;
+            this.carsById = new Map(this.cars.map(car => [car.id, car]));
+            this.previousWait = new Map(this.cars.map(car => [car.id, car.waitingFor ?? car.collisionBlocker]));
+            this.advanceSearch();
             for (const car of this.cars) {
                 this.processingCar = car;
-                const before = this.pose(car), snapshot = { ...car, change: car.change && { ...car.change }, traversed: [] };
+                const journal = () => ({ ...car, change: car.change && { ...car.change }, maneuver: car.maneuver && { ...car.maneuver }, traversed: [...car.traversed || []] });
+                const before = this.pose(car), snapshot = { ...journal(), traversed: [] };
                 const counts = [this.crossings, this.laneChanges];
                 car.traversed = [];
                 car.collisionBlocker = null;
@@ -658,6 +899,7 @@
                     && (beforeLimits.stopping < .25 || snapshot.collisionBlocker != null || snapshot.state === 'queue');
                 const blockedFor = blocked ? (car.blockedFor || 0) + STEP : 0;
                 car.blockedFor = blockedFor;
+                this.tryDriverAction(car, occupied, snapshot.collisionBlocker ?? snapshot.waitingFor ?? beforeLimits.leader);
                 this.tryRecovery(car, occupied);
                 if (!move) this.tryLaneChange(car, occupied);
                 const limits = this.limits(car, occupied);
@@ -665,19 +907,22 @@
                 if (!move && !limits.entering && route.length - car.s < 12) car.state = !limits.connection ? 'blocked' : 'queue';
                 if (limits.clearance < 15 || limits.gate < 15) car.state = 'queue';
                 if (limits.signal < 12 && limits.signal <= limits.clearance) car.state = 'red';
+                if (car.maneuver) car.state = 'maneuvering';
                 const roadLimit = lane.maxSpeed > 0 ? lane.maxSpeed / 3.6 : 13.9;
                 const receivingLimit = move ? this.network.lanes.get(move.toLaneId).maxSpeed / 3.6 : Infinity;
                 const cruise = Math.min(car.cruise, roadLimit, receivingLimit > 0 ? receivingLimit : Infinity, move && !move.geometryKind ? 6 : Infinity);
-                const desired = car.change?.recovery ? Math.min(cruise, 2.5, Math.sqrt(6 * Math.min(limits.signal, limits.gate)))
+                const desired = car.maneuver ? (this.time < (car.maneuver.shiftUntil || 0) ? 0 : Math.min(1.2,
+                    Math.sqrt(3 * (car.maneuver.segments[car.maneuver.index].path.length - car.maneuver.s))))
+                    : car.change?.recovery ? Math.min(cruise, 2.5, Math.sqrt(6 * Math.min(limits.signal, limits.gate)))
                     : Math.min(cruise, Math.sqrt(6 * limits.stopping));
                 const oldSpeed = car.speed;
                 car.speed = clamp(desired, Math.max(0, car.speed - 3.5 * STEP), car.speed + 2 * STEP);
                 const requested = car.speed * STEP;
                 // Every collision trial starts from its own untouched path journal.
-                const motionStart = { ...car, change: car.change && { ...car.change }, traversed: [] };
+                const motionStart = journal();
                 const restore = state => {
                     for (const key of Object.keys(car)) if (!(key in state)) delete car[key];
-                    Object.assign(car, state, { change: state.change && { ...state.change }, traversed: [...state.traversed || []] });
+                    Object.assign(car, state, { change: state.change && { ...state.change }, maneuver: state.maneuver && { ...state.maneuver }, traversed: [...state.traversed || []] });
                 };
                 let travel = this.advanceCar(car, requested, occupied);
                 let after = this.pose(car);
@@ -694,7 +939,7 @@
                         if (bodies.blocker(car.id, this.pose(car), before) != null) high = distance;
                         else {
                             low = distance; travel = advanced;
-                            best = { ...car, change: car.change && { ...car.change }, traversed: [...car.traversed] };
+                            best = journal();
                             bestCounts = [this.crossings, this.laneChanges];
                         }
                     }
@@ -704,13 +949,17 @@
                     after = this.pose(car);
                 }
                 if (travel < requested - .001) car.speed = travel / STEP;
+                car.waitingFor = car.speed < .5 ? car.collisionBlocker ?? car.maneuver?.blockerId ?? limits.leader : null;
+                Drivers.update(car, STEP, travel, limits.signal < .4, this.random, this.time);
                 car.braking = car.speed < oldSpeed - .05 || (car.speed < .5 && car.state !== 'driving');
                 for (const listener of this.listeners) listener(car, before, after, this.time);
                 car.previousPose = before;
                 const pose = this.pose(car);
                 bodies.set(car.id, pose); this.posesByCar.set(car, pose);
                 for (const id of previousKeys) {
-                    const entries = occupied.get(id), index = entries.findIndex(entry => entry.car === car);
+                    const entries = occupied.get(id);
+                    if (!entries) continue;
+                    const index = entries.findIndex(entry => entry.car === car);
                     if (index >= 0) entries.splice(index, 1);
                 }
                 for (const [id, s] of this.carOccupancies(car)) {
@@ -718,7 +967,7 @@
                     occupied.get(id).push({ car, s });
                 }
             }
-            this.posesByCar = null; this.processingCar = null;
+            this.posesByCar = null; this.processingCar = null; this.bodyIndex = null;
             while (this.cars.length < this.targetCount && this.spawn()) { /* fill requested density */ }
         }
 
@@ -732,6 +981,12 @@
 
         pose(car) {
             if (this.posesByCar && car !== this.processingCar && this.posesByCar.has(car)) return this.posesByCar.get(car);
+            const vehicle = Vehicles.get(car.vehicleType);
+            return { ...this.pathPose(car), length: vehicle.length, width: vehicle.width };
+        }
+
+        pathPose(car) {
+            if (car.maneuver) return Maneuvers.pose(car.maneuver);
             if (car.change?.recovery) return sample(car.change.path, car.change.s);
             if (car.mode === 'connection') return sample(this.network.connections.get(car.connectionId).path, car.s);
             const from = this.network.lanes.get(car.laneId);

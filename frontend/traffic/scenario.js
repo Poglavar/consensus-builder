@@ -222,8 +222,8 @@
             const activating = this.closures.filter(c => c.status === 'pending' && !this.busy(c));
             if (activating.length) changed = true;
             if (changed) {
-                // Keep the two paths of a tactical change intact until it lands.
-                if (this.sim.cars.some(car => car.change?.recovery)) { this.updateGates(); return false; }
+                // Keep a physical manoeuvre and its landing route intact until it finishes.
+                if (this.sim.cars.some(car => car.change?.recovery || car.maneuver)) { this.updateGates(); return false; }
                 const active = this.closures.filter(c => c.status === 'active' || activating.includes(c));
                 const anchors = this.sim.cars.filter(c => c.mode === 'connection').map(car => {
                     const move = this.sim.network.connections.get(car.connectionId), target = this.sim.network.lanes.get(move.toLaneId);

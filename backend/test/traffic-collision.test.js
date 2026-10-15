@@ -8,7 +8,8 @@ function polygonOverlap(a, b, margin) {
     const corners = body => {
         const along = [Math.cos(body.angle), Math.sin(body.angle)];
         const across = [-along[1], along[0]];
-        const halfLength = LENGTH / 2 + margin, halfWidth = WIDTH / 2 + margin;
+        const halfLength = (body.length ?? LENGTH) / 2 + margin;
+        const halfWidth = (body.width ?? WIDTH) / 2 + margin;
         return [-1, 1].flatMap(longitudinal => [-1, 1].map(lateral => [
             body.x + longitudinal * halfLength * along[0] + lateral * halfWidth * across[0],
             body.y + longitudinal * halfLength * along[1] + lateral * halfWidth * across[1]
@@ -93,6 +94,32 @@ describe('traffic vehicle collision geometry', () => {
         mutable.angle = Math.PI / 2;
         expect(overlaps(mutable, other, .37)).toBe(polygonOverlap(mutable, other, .37));
         expect(overlaps(mutable, other, .37)).toBe(false);
+    });
+
+    it('uses different bus and car dimensions in rotated SAT checks and rectangle checks', () => {
+        const bus = { ...pose(0, 0, Math.PI / 4), length: 12, width: 2.5 };
+        const car = { ...pose(4, 2.5, -Math.PI / 6), length: 4.1, width: 1.7 };
+        expect(overlaps(bus, car)).toBe(polygonOverlap(bus, car, .12));
+        expect(overlaps(bus, car)).toBe(true);
+        expect(overlapsRectangle(bus, pose(3, 3), 1, 2)).toBe(true);
+        expect(overlaps(pose(0, 0), pose(5, 2.4), .37)).toBe(true);
+    });
+
+    it('finds a long bus across multiple grid cells and preserves its dimensions while sweeping', () => {
+        const index = new Index();
+        const bus = { ...pose(-.1, 0), length: 12, width: 2.5 };
+        const car = pose(8, 2);
+        index.set('bus', bus);
+        expect(index.nearby(car).has('bus')).toBe(true);
+        expect(index.blocked('car', car)).toBe(true);
+
+        const crossing = new Index();
+        crossing.set('car', pose(0, 0));
+        const before = { ...pose(-12, 0), length: 12, width: 2.5 };
+        const after = { ...pose(12, 0), length: 12, width: 2.5 };
+        expect(overlaps(before, pose(0, 0))).toBe(false);
+        expect(overlaps(after, pose(0, 0))).toBe(false);
+        expect(crossing.blocked('bus', after, before)).toBe(true);
     });
 
     it('rejects a swept movement whose endpoints are clear but whose middle crosses another car', () => {

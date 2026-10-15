@@ -11,11 +11,20 @@ Na zelenom ulaze i kada je nizvodno red; prolaze slobodni dio koraka pa čekaju 
 Već prijeđeni semafor ne zaustavlja ih ponovno. Pri velikoj gustoći mogu nastati zastoji i potpune
 blokade; simulator ne optimizira tok prometa.
 Ako je vozilo blokirano, može se polako prestrojiti u slobodnu susjednu traku i unutar raskrižja,
-uključujući prelazak oznake koja inače ograničava promjenu trake. Ne prelazi u suprotni smjer
-niti prolazi kroz vozila, crveno svjetlo ili zatvorenu dionicu.
+uključujući prelazak oznake koja inače ograničava promjenu trake. Vozači imaju različite razmake,
+vremena reakcije i pragove strpljenja. Bliska vozila koja se spajaju u istu traku daju prednost
+onome koje je već dalje; pri uzajamnoj blokadi jedno pokušava uzmaknuti ako iza njega ima mjesta.
+Nestrpljivi vozač traži drugi dopušteni izlaz ili okretanje prema postojećoj suprotnoj traci iste
+ceste. Pretraživanje je ograničeno i raspoređeno kroz korake simulacije. Okretanje može sadržavati
+više vožnji naprijed i natrag, uz provjeru cijele karoserije na kolniku, ostalih vozila, zatvorenih
+dionica i stvarnih lokalnih crta zaustavljanja. Ako nema sigurnog puta, vozilo ostaje u redu.
+Zadovoljstvo vozača, trenutačno trajanje zastoja i manevar prikazani su pri odabiru vozila.
+Plavi gradski autobusi, policijska vozila i vozila hitne pomoći imaju vlastite dimenzije i polumjere
+okretanja; slijede iste prometne signale i pravila propuštanja.
 
 Prekidač **Zvuk** uključuje tihu, udaljenu buku motora i guma vozila u vidljivom području.
-Zvuk počinje nakon interakcije sa stranicom i utiša se pri pauziranju ili skrivanju kartice.
+Nestrpljivi vozači povremeno kratko trube; čuju se samo vidljiva vozila, uz ograničen broj i učestalost
+zvukova. Zvuk počinje nakon interakcije sa stranicom i utiša se pri pauziranju ili skrivanju kartice.
 
 ## Prometni signali
 
@@ -30,7 +39,8 @@ To nisu stvarni signalni planovi, izmjerena vremena ni podaci o trenutačnom pro
 
 `surfaceLanes` opisuje fizički prikaz traka tipa `driving` i `bus`, uključujući trake koje nisu
 dopuštene osobnim automobilima, primjerice privatne ili zajedničke središnje trake. Te površine
-služe samo za prikaz. Simulacijski graf `lanes` sadrži trake dostupne automobilima, a `connections`
+određuju i provjeru dostupnog kolnika pri okretanju. Simulacijski graf `lanes` sadrži trake dostupne
+automobilima, a `connections`
 njihove izričito dopuštene veze. Površinska geometrija ne dodaje kretanja u graf.
 Površine koriste pune izvorne putanje; odmaci koji odvajaju simulacijske trake od raskrižja
 ne prekidaju kolnik ni kada nastavak nije riješen. Samo stvarni prijelaz broja traka ili

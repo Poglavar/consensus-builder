@@ -36,6 +36,9 @@ h2 { margin: 0 0 11px; font-size: 11px; font-weight: 650; }
 .inspector-top { display: flex; align-items: center; gap: 8px; }
 .inspector h2 { margin: 0; }
 .car-swatch { width: 17px; height: 8px; border-radius: 3px; background: #257c78; border: 1px solid #245b59; }
+.driver-mood { display: flex; align-items: center; gap: 6px; min-height: 18px; }
+.driver-mood[data-mood="angry"], .driver-mood[data-mood="unhappy"] { color: #a14d34; }
+.driver-mood[data-mood="happy"] { color: #28765a; }
 .inspector p { margin: 8px 0; color: #61716a; font-size: 11px; line-height: 1.5; }
 #selected-detail { white-space: pre-line; }
 .inspection-field { display: flex; flex-direction: column; gap: 4px; margin: 12px 0; font-size: 11px; line-height: 1.5; }

@@ -6,6 +6,8 @@
 })(typeof window !== 'undefined' ? window : null, function () {
     'use strict';
     const MAX_GAIN = .05;
+    const HONK_GAP = .8;
+    const MAX_HONKS = 3;
     const clamp = (value, low, high) => Math.max(low, Math.min(high, value));
 
     // viewport = { center: { x, y }, extent: { minX, minY, maxX, maxY } }.
@@ -47,11 +49,16 @@
             this.nodes = null;
             this.value = { gain: 0, rumble: 0, rolling: 0 };
             this.active = false;
+            this.muted = false;
+            this.horns = new Set();
+            this.lastHonkAt = null;
         }
 
         create() {
             if (!this.Context) throw new Error('Web Audio is unavailable');
+            this.stopHorns();
             const context = this.context = new this.Context();
+            this.lastHonkAt = null;
             const master = context.createGain();
             const filter = context.createBiquadFilter();
             const noiseGain = context.createGain();
@@ -66,13 +73,15 @@
             low.type = 'sine'; low.frequency.value = 46;
             high.type = 'sine'; high.frequency.value = 67;
             const lowGain = context.createGain(), highGain = context.createGain();
+            const output = context.createGain();
             lowGain.gain.value = .65; highGain.gain.value = .35;
             noise.connect(filter).connect(noiseGain).connect(master);
             low.connect(lowGain).connect(toneGain); high.connect(highGain).connect(toneGain);
-            toneGain.connect(master); master.connect(context.destination);
+            toneGain.connect(master); master.connect(output); output.connect(context.destination);
             master.gain.value = 0;
+            output.gain.value = 0;
             noise.start(); low.start(); high.start();
-            this.nodes = { master, noiseGain, toneGain };
+            this.nodes = { master, noiseGain, toneGain, output };
         }
 
         ramp(param, value) {
@@ -90,9 +99,71 @@
             } : { gain: 0, rumble: 0, rolling: 0 };
             if (!this.context || !this.nodes) return;
             const audible = this.active && this.value.gain > 0;
+            this.ramp(this.nodes.output.gain, this.active && !this.muted ? 1 : 0);
             this.ramp(this.nodes.master.gain, audible ? this.value.gain : 0);
             this.ramp(this.nodes.noiseGain.gain, audible ? .3 + .6 * this.value.rolling : 0);
             this.ramp(this.nodes.toneGain.gain, audible ? .15 + .15 * this.value.rumble : 0);
+        }
+
+        honk({ type, gain = 1 } = {}) {
+            if (!this.active || this.muted || !this.context || !this.nodes || this.context.state !== 'running') return false;
+            const level = Number.isFinite(gain) ? clamp(gain, 0, 1) : 0;
+            if (level <= 0 || this.horns.size >= MAX_HONKS) return false;
+            const now = this.context.currentTime;
+            if (this.lastHonkAt != null && now - this.lastHonkAt < HONK_GAP) return false;
+
+            const bus = String(type || '').toLowerCase() === 'bus';
+            const duration = bus ? .5 : .34;
+            const peak = (bus ? .13 : .16) * level;
+            const oscillator = this.context.createOscillator();
+            const envelope = this.context.createGain();
+            const first = bus ? 196 : 392, second = bus ? 247 : 494;
+            oscillator.type = 'triangle';
+            oscillator.frequency.setValueAtTime?.(first, now);
+            oscillator.frequency.setValueAtTime?.(second, now + duration * .48);
+            if (!oscillator.frequency.setValueAtTime) oscillator.frequency.value = first;
+            envelope.gain.setValueAtTime?.(0, now);
+            envelope.gain.linearRampToValueAtTime?.(peak, now + .025);
+            envelope.gain.setValueAtTime?.(peak, now + duration - .08);
+            envelope.gain.linearRampToValueAtTime?.(0, now + duration);
+            oscillator.connect(envelope).connect(this.nodes.output);
+            const voice = { oscillator, envelope };
+            this.horns.add(voice);
+            oscillator.onended = () => this.finishHorn(voice);
+            oscillator.start(now);
+            oscillator.stop(now + duration);
+            this.lastHonkAt = now;
+            return true;
+        }
+
+        finishHorn(voice) {
+            if (!this.horns.delete(voice)) return;
+            try { voice.oscillator.disconnect(); } catch {}
+            try { voice.envelope.disconnect(); } catch {}
+        }
+
+        stopHorns() {
+            const now = this.context?.currentTime || 0;
+            for (const voice of [...this.horns]) {
+                voice.oscillator.onended = null;
+                try { voice.oscillator.stop(now); } catch {}
+                try { voice.oscillator.disconnect(); } catch {}
+                try { voice.envelope.disconnect(); } catch {}
+                this.horns.delete(voice);
+            }
+        }
+
+        setMuted(muted) {
+            this.muted = !!muted;
+            if (this.muted) this.stopHorns();
+            if (this.nodes && this.context) {
+                const output = this.nodes.output.gain, now = this.context.currentTime;
+                output.cancelScheduledValues?.(now);
+                if (this.muted) {
+                    if (output.setValueAtTime) output.setValueAtTime(0, now);
+                    else output.value = 0;
+                } else this.ramp(output, this.active ? 1 : 0);
+            }
         }
 
         async start() {
@@ -104,20 +175,22 @@
 
         async stop() {
             this.active = false;
+            this.stopHorns();
             this.update({ gain: 0 });
             const context = this.context;
             if (!context || context.state === 'closed') return;
             const now = context.currentTime;
-            const master = this.nodes.master.gain;
-            master.cancelScheduledValues?.(now);
-            if (master.setValueAtTime) master.setValueAtTime(0, now);
-            else master.value = 0;
+            const output = this.nodes.output.gain;
+            output.cancelScheduledValues?.(now);
+            if (output.setValueAtTime) output.setValueAtTime(0, now);
+            else output.value = 0;
             if (context.state === 'running') await context.suspend();
         }
 
         async dispose() {
             this.active = false;
             const context = this.context;
+            this.stopHorns();
             this.context = null; this.nodes = null;
             if (context && context.state !== 'closed') await context.close();
         }
