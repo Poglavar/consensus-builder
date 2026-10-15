@@ -206,29 +206,61 @@ def _input_paths(hashes: dict[str, Any]) -> set[str]:
     return paths
 
 
-def _copy_inputs(parent: Path, child: Path, paths: set[str]) -> None:
+def _check_inputs(parent: Path, child: Path, paths: set[str], owned: dict[str, str]) -> dict[str, str]:
+    """Identify only unchanged, runner-owned ignored copies that need refreshing."""
     ignored = _ignored_inventory(child)
+    replacements = {}
     for rel in sorted(paths):
         raw = Path(rel)
-        if raw.is_absolute() or ".." in raw.parts or not raw.parts:
+        if raw.is_absolute() or ".." in raw.parts or not raw.parts or _sensitive_path(rel):
             raise ValueError(f"qualification input path is unsafe: {rel}")
         source, destination = parent / raw, child / raw
+        for root in (parent, child):
+            if any((root / Path(*raw.parts[:index])).is_symlink() for index in range(1, len(raw.parts) + 1)):
+                raise RuntimeError(f"qualification input cannot follow a symlink: {rel}")
         if not source.is_file():
             raise ValueError(f"qualification input is missing: {rel}")
+        if destination.exists() and not destination.is_file():
+            raise RuntimeError(f"qualification input collides with a directory: {rel}")
         if rel in ignored:
-            if destination.is_file() and _sha(destination.read_bytes()) == _sha(source.read_bytes()):
+            digest = _sha(destination.read_bytes())
+            if digest == _sha(source.read_bytes()):
                 continue
-            raise RuntimeError(f"qualification input conflicts with ignored private data: {rel}")
+            if owned.get(rel) != digest:
+                raise RuntimeError(f"qualification input conflicts with ignored private data: {rel}")
+            replacements[rel] = digest
+    return replacements
+
+
+def _copy_inputs(parent: Path, child: Path, paths: set[str], owned: dict[str, str], history: Path) -> dict[str, str]:
+    replacements = _check_inputs(parent, child, paths, owned)
+    if replacements:
+        entries = []
+        for rel, digest in sorted(replacements.items()):
+            stored_rel = f"files/{rel}"
+            _copy_file(child / rel, history / stored_rel)
+            with (history / stored_rel).open("rb") as stream:
+                os.fsync(stream.fileno())
+            entries.append({"path": rel, "kind": "file", "storedPath": stored_rel, "sha256": digest})
+        manifest = {"entries": entries}
+        _json_write(history / "manifest.json", manifest)
+        _verify_archive(history, manifest)
+    copied = dict(owned)
+    for rel in sorted(paths):
+        source, destination = parent / rel, child / rel
+        if rel in replacements and _sha(destination.read_bytes()) != replacements[rel]:
+            raise RuntimeError(f"qualification input changed during backup: {rel}")
+        # Even equal bytes need the current source mtime for seed provenance checks.
         if destination.exists() or destination.is_symlink():
-            if destination.is_dir() and not destination.is_symlink():
-                raise RuntimeError(f"qualification input collides with a directory: {rel}")
             destination.unlink()
         _copy_file(source, destination)
-        if destination.is_file() and not destination.is_symlink():
-            if _sha(destination.read_bytes()) != _sha(source.read_bytes()):
-                raise IOError(f"qualification input copy verification failed: {rel}")
-            if destination.stat().st_mtime_ns != source.stat().st_mtime_ns:
-                raise IOError(f"qualification input copy did not preserve mtime: {rel}")
+        digest = _sha(destination.read_bytes())
+        if digest != _sha(source.read_bytes()):
+            raise IOError(f"qualification input copy verification failed: {rel}")
+        if destination.stat().st_mtime_ns != source.stat().st_mtime_ns:
+            raise IOError(f"qualification input copy did not preserve mtime: {rel}")
+        copied[rel] = digest
+    return copied
 
 
 def _remap_value(value: Any, parent: Path, child: Path) -> Any:
@@ -254,12 +286,20 @@ def _remap_value(value: Any, parent: Path, child: Path) -> Any:
 
 def _archive_changes(root: Path, state_dir: Path, run_id: str) -> dict[str, Any]:
     history = state_dir / "qualification-workspaces/history" / run_id
-    if history.exists():
-        raise RuntimeError(f"workspace history already exists: {history}")
-    history.mkdir(parents=True)
     snapshot = _snapshot(root)
     tracked_changes = set(_read_nul_paths(_git(root, "diff", "--no-renames", "--name-only", "-z", "HEAD").stdout.encode()))
     untracked = _untracked_paths(root)
+    if history.exists():
+        # A failed preparation can leave a complete backup before any reset.
+        manifest = _read_metadata(history / "manifest.json")
+        _verify_archive(history, manifest)
+        expected = {entry["path"]: entry["sha256"] for entry in manifest["entries"]}
+        actual = {rel: _sha(os.fsencode(os.readlink(root / rel))) if (root / rel).is_symlink()
+                  else snapshot.get(rel) for rel in tracked_changes | untracked}
+        if manifest.get("runId") != run_id or manifest.get("root") != str(root) or expected != actual:
+            raise RuntimeError("workspace history differs from current changes; refusing reuse")
+        return manifest
+    history.mkdir(parents=True)
     entries: list[dict[str, Any]] = []
     for rel in sorted(tracked_changes | untracked):
         if rel not in snapshot or snapshot[rel] is None:
@@ -378,6 +418,8 @@ def prepare_workspace(root: Path, state_dir: Path, slot: int, city: dict[str, An
     parent_hashes = stage._input_hashes(root, city, receipt, packet)
     inputs = _input_paths(parent_hashes)
     tracked_overlay, untracked_overlay = _parent_overlay_paths(root)
+    run_id = uuid.uuid4().hex
+    owned_inputs = {}
 
     if metadata_path.exists():
         metadata = _read_metadata(metadata_path)
@@ -394,6 +436,8 @@ def prepare_workspace(root: Path, state_dir: Path, slot: int, city: dict[str, An
         if actual != metadata["finishSnapshot"]:
             raise RuntimeError("qualification worktree changed after finish; refusing to overwrite foreign drift")
 
+        owned_inputs = metadata.get("inputCopies", {})
+        _check_inputs(root, child, inputs, owned_inputs)
         ignored = _ignored_inventory(child)
         ignored_before = _ignored_snapshot(child)
         parent_paths = tracked_overlay | untracked_overlay | _tracked_paths(root, parent_head)
@@ -414,9 +458,9 @@ def prepare_workspace(root: Path, state_dir: Path, slot: int, city: dict[str, An
         _git(root, "worktree", "add", "-b", branch, str(child), parent_head)
         _apply_parent_overlay(root, child, tracked_overlay, untracked_overlay)
 
-    _copy_inputs(root, child, inputs)
+    owned_inputs = _copy_inputs(root, child, inputs, owned_inputs,
+                                state_dir / "qualification-workspaces/input-history" / run_id)
     _ensure_node_modules(root, child)
-    run_id = uuid.uuid4().hex
     worker_state = child / "tmp/parcel-qualification-jobs" / run_id
     worker_state.mkdir(parents=True, exist_ok=False)
     child_city = _remap_value(city, root, child)
@@ -427,7 +471,8 @@ def prepare_workspace(root: Path, state_dir: Path, slot: int, city: dict[str, An
     snapshot_after_prepare = _snapshot(child)
     metadata = {"schemaVersion": 1, "slot": slot, "root": str(child), "branch": branch,
                 "status": "prepared", "runId": run_id, "parentHead": parent_head,
-                "preparedSnapshot": snapshot_after_prepare, "metadataPath": str(metadata_path)}
+                "preparedSnapshot": snapshot_after_prepare, "metadataPath": str(metadata_path),
+                "inputCopies": owned_inputs}
     _write_metadata(metadata_path, metadata)
     return {"root": child, "stateDir": worker_state, "city": child_city, "receipt": child_receipt,
             "packet": child_packet, "baseSnapshot": snapshot_after_prepare,
