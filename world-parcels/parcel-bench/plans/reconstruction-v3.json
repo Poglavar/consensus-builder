@@ -1,0 +1,72 @@
+{
+  "purpose": "Prospective CPU-only selection diagnostic agreed after four Claude review rounds; freeze all source and input hashes before new real-tile scores.",
+  "name": "reconstruction-v3",
+  "dataset": "output/pool/hr-pool-v1/dataset",
+  "manifests": {"zagreb-v2": "manifests/zagreb-v2.json", "split-v2": "manifests/split-v2.json"},
+  "split": "selection",
+  "expected_tiles_per_city": 48,
+  "expected_blocks_per_city": 12,
+  "expected_tiles_per_block": 4,
+  "seeds": [1, 2, 3],
+  "run_groups": [
+    {"arm": "zagreb-base", "source_city": "zagreb-v2", "run_pattern": "output/runs/selection-v2-resolution/zagreb-base-n1623-s{seed}", "eval_cities": ["zagreb-v2", "split-v2"]},
+    {"arm": "split-base", "source_city": "split-v2", "run_pattern": "output/runs/selection-v2-resolution/split-base-n395-s{seed}", "eval_cities": ["split-v2"]},
+    {"arm": "zagreb-resolution", "source_city": "zagreb-v2", "run_pattern": "output/runs/selection-v2-resolution/zagreb-resolution-n1623-s{seed}", "eval_cities": ["zagreb-v2", "split-v2"]}
+  ],
+  "frozen_reconstruction": {"method": "watershed", "cost": "distance", "recon_size": 256, "min_area_m2": 40.0, "min_region_m2": 120.0, "keep_out_px": 2, "hard_barrier": false},
+  "exact_targets": {"size": 512, "margin_px": 2, "dilate_px": 1, "cap_m": 12.0, "resize": "cv2.INTER_AREA"},
+  "native_factorial": {"threshold": "results.json best config", "interior_seeds": [false, true], "seed_rim_px": [0, 1]},
+  "common_config": {"threshold": 0.3, "interior_seeds": true, "seed_rim_px": 1},
+  "advancement_candidate": {
+    "name": "rim1-original-source-chooser",
+    "seed_rim_px": 1,
+    "thresholds": [0.3, 0.5, 0.7],
+    "interior_seeds": [false, true],
+    "ranking": ["parcel_f1 descending", "area_weighted_recall descending", "original config key ascending"],
+    "selection_city": "source only",
+    "checkpoint": "fixed existing best.pt; no checkpoint re-selection",
+    "control": "immutable original selected config",
+    "selection_change_requires_improvement_gate": true,
+    "max_candidates_advancing": 1
+  },
+  "tracks": [
+    {"name": "zagreb-to-split", "arm": "zagreb-base", "eval_city": "split-v2", "role": "primary transfer development"},
+    {"name": "zagreb-own", "arm": "zagreb-base", "eval_city": "zagreb-v2", "role": "own-city development"},
+    {"name": "split-own", "arm": "split-base", "eval_city": "split-v2", "role": "own-city development"}
+  ],
+  "diagnostics": {
+    "augmentation_transfer": "Compare base and resolution donor maps on Split under identical common config, alongside original selected-pipeline scores.",
+    "augmentation_source": "Own-city source maps support only original-control verification and the bounded source chooser; no target-side choices.",
+    "oracle_cases": ["label-raster-vector-roundtrip", "exact-native-common-threshold", "exact-seeds-off-no-rim", "exact-seeds-off-rim1", "exact-seeds-on-no-rim", "exact-seeds-on-rim1", "exact-seeds-on-rim1-no-merge"],
+    "marker_surface_cells": ["learned-markers-learned-surface", "truth-markers-learned-surface", "learned-markers-exact-surface", "truth-markers-exact-surface"],
+    "truth_marker_rule": "One deterministic interior distance maximum per connected reference-raster component outside the original fixed OSM barrier; same parcel ID across components; ties use row-major order.",
+    "unreachable_references": "Record absent raster IDs and references with no allowed marker pixels; keep every reference in vector scoring. A marker inside the barrier is an assertion failure.",
+    "no_merge_case": "One common-config learned-marker/learned-surface counterpart with min_region_m2=0; diagnosis only.",
+    "marker_associations": "Report each marker/free-interior component's positive-pixel overlap with zero, one or multiple raster reference IDs, including rejected components.",
+    "region_associations": "Report overlaps covering at least 10% of each raster reference's area, including references associated with zero, one or multiple predicted regions and regions associated with multiple references.",
+    "required_outputs": ["all seed metrics", "clipped and interior matched counts and recall", "whole-tile parcel F1 and precision", "area-weighted recall", "boundary F1", "density strata", "seed/component decisions", "unmatched reference IDs"],
+    "interpretation": "Truth substitutions are diagnostic probes, not deployable scores or mathematical upper bounds; point and region markers differ and interactions are reported. No-merge/truth cells cannot advance from this study."
+  },
+  "statistics": {
+    "unit": "whole touching 2x2 geographic block",
+    "grouping": "layered.imagery_study.geographic_blocks and group_scores before bootstrap.bootstrap",
+    "replicates": 2000,
+    "seed": 0,
+    "level": 0.95,
+    "pairing": "Same sampled blocks across all arms and three fixed fitted seeds; preserve repeated-block multiplicity.",
+    "required_self_checks": ["same-arm paired deltas are exactly zero", "duplicate block draws retain duplicate weight"],
+    "limits": "Conditional on the fitted seeds and repeatedly used selection geography; not selection-adjusted, not uncertainty across fitted seeds or new cities."
+  },
+  "gates": {
+    "advancement_mean_f1_delta_min": 0.01,
+    "advancement_f1_interval_low_strict_min": 0.0,
+    "median_seed_f1_delta_strict_min": 0.0,
+    "mean_after_dropping_best_seed_strict_min": 0.0,
+    "guard_interval_low_strict_min": {"precision": -0.02, "interior_recall": -0.01, "area_weighted_recall": -0.01},
+    "fixed_config_correctness_f1_interval_low_strict_min": -0.01,
+    "fresh_confirmation_mean_f1_delta_min": 0.02,
+    "failed_or_inconclusive": "No automatic default replacement. Failure closes this rim recipe only. A one-city win remains a specialization."
+  },
+  "prohibited_changes": ["new neural inference or training during this diagnostic", "final split scoring", "target-driven config selection", "new thresholds or rim-width search", "new merge-size search", "GSD/tile-size change", "dropping clipped references", "automatic promotion from diagnostic truth-assisted cells"],
+  "next_training_decision": "Margin-0 targets are the presumptive first three-seed arm; a documented marker/surface bottleneck may move one targeted marker or loss treatment ahead. A fresh arm must encode margin in targets, recipe, checkpoint and a separate verified cache namespace."
+}

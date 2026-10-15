@@ -335,7 +335,9 @@ The study changes RGB alone at model input and cannot measure accuracy on a diff
 provider. Full metrics, per-block differences and hashes: `output/imagery-study-20261013/`; ledger methods
 `layered-imagery-*`. No final split was scored.
 
-Next (the living plan with status, success checks, ETA and spend is `PLAN.md`): colour augmentation,
-then flip/rotate test-time averaging, the larger encoder and a nearby same-climate donor for Split.
+Next (the living plan with status, success checks, ETA and spend is `PLAN.md`): the bounded saved-map
+reconstruction diagnostic in `plans/reconstruction-v3.json`, then a fresh target treatment and nearby
+Dalmatian donor comparison. Source-city selection stays separate from Split development and a
+provisionally untouched confirmation city. Colour augmentation and larger encoders are deferred.
 Broader selection, resolution augmentation and the longer-schedule trial are complete; the baseline
 default remains unchanged. Real satellite transfer, Ljubljana and a Spanish Csa city remain pending.

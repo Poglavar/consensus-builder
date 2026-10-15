@@ -4,7 +4,7 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-14 (resolution and three-seed 60-epoch comparisons complete; default unchanged). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-15 (bounded reconstruction diagnostic running after four review rounds; default unchanged). Status values: todo · running · done · dropped (with the reason).
 
 ## Where we stand (2026-10-14)
 
@@ -38,9 +38,14 @@ claim about uncovered cities is read against satellite-like input (step 11). Sou
 2. Train on the rented GPU (never the laptop), three seeds whenever the expected effect is smaller
    than the seed spread (about 0.02 on Zagreb selection).
 3. Score on the selection split only; one ledger row per run with recipe hash and seed.
-4. Keep the change only if the mean gain exceeds the seed spread and the bootstrap interval, and no
-   guard metric (precision, area-weighted recall, boundary F1, per-stratum F1) regresses.
-5. After a few kept changes: freeze the recipe, score each final split once, record a milestone.
+4. Apply the prospectively frozen development gate: mean F1 gain ≥ 0.01, paired geographic-block
+   interval strictly above zero, positive median seed gain and positive mean after dropping the best
+   seed. Precision, interior recall and whole-tile area recall have explicit non-inferiority guards.
+   Report boundary and density diagnostics, including small denominators. A fixed-configuration
+   correctness change can meet its separate non-inferiority gate without claiming a quality gain.
+5. Freeze the complete supported policy before fresh confirmation (F1 gain ≥ 0.02 plus the interval
+   and guard checks). Repeated selection scores do not replace fresh evidence. A numbered stage
+   finishing does not automatically authorize consuming a final split.
 6. Destroy the GPU instance; update this file (status, what we learned, spend).
 
 Cost basis (measured 2026-10-12, RTX 4090 at about $0.40/h): fifteen curve runs took about 85 minutes
@@ -53,15 +58,45 @@ in three lanes, two Split runs about 40 minutes; a 1,600-tile 30-epoch run is ab
 | 1 | Bootstrap confidence intervals in the scorer | laptop | done 2026-10-13 (`bootstrap.py`) |
 | 2 | Transfer table with three seeds | GPU | done 2026-10-13 (round 2) |
 | 3 | Split learning curve and Zagreb-donor fine-tune curve | GPU | done 2026-10-13 (round 2) |
-| 4 | Per-city reconstruction settings | laptop | done 2026-10-13: no lever |
+| 4 | Per-city reconstruction settings and seed connectivity | laptop | initial study done; bounded saved-map diagnostic running 2026-10-15 |
 | 5 | Visibility audit (image support) | laptop + vision model | done 2026-10-13 (machine labels; interpretation corrected) |
-| 6 | Zagreb model levers, one at a time | GPU | 60-epoch trial done, not adopted; colour augmentation next |
+| 6 | Zagreb model levers, one at a time | GPU | 60-epoch trial done, not adopted; target margin or diagnosed marker/surface treatment next |
 | 7 | Milestone 4 on both final splits | GPU or laptop | todo |
 | 8 | Ljubljana and a Spanish Csa city | laptop + GPU | todo |
 | 9 | Serving check (CPU inference) | laptop | todo |
 | 10 | Product decision: show guesses where the score clears a bar | the user | todo |
 | 11 | Satellite domain: score and train for satellite-like input | laptop + GPU | (a) done; (b) resolution trial done, not adopted; other degradations and (c) real imagery pending |
-| 12 | Nearby same-climate donor: a Dalmatian (Csa) city's tiles scored zero-shot and few-shot on Split | laptop + GPU | todo |
+| 12 | Nearby Dalmatian donor: zero-shot development on Split and untouched-city confirmation | laptop + GPU | eligibility audit in progress; target fine-tuning deferred |
+
+### Agreed reconstruction and transfer sequence (2026-10-15)
+
+Four Claude CLI review rounds ratified the protocol in `plans/reconstruction-v3.json` and the archived
+review under `output/reviews/claude-consensus-20261015/`. The user authorized execution. The saved
+three-seed, 30-epoch ConvNeXt controls, 153.6 m tile contract, all clipped references and geographic
+separation remain fixed. The review changes the next experiments from colour/longer tuning to:
+
+1. A CPU-only saved-map diagnostic: a one-pixel seed-connectivity rim on the 256 grid, the original
+   six source-only configurations, native-threshold factorial controls, exact-map controls, a full
+   learned/truth-marker × learned/exact-surface comparison and one no-merge diagnostic. Freeze all
+   code/input hashes first; verify the original control scores and seeds-off negative controls.
+   Report 12-block paired intervals, every seed, clipped/interior recall, marker associations,
+   split/merge cases and density strata. Truth substitutions are probes, not accuracy ceilings.
+2. A fresh three-seed target-margin-zero arm is the presumptive first training treatment. A strong
+   marker/surface diagnosis may move one targeted treatment ahead of it. Change one factor, keep
+   target metadata and cache identities explicit, and verify the generated targets. RGB normalization
+   remains a separate fresh-training experiment, using the actual pretrained configuration.
+3. Compare a nearby donor with a nested Zagreb subset under matched recipe, label count and budget,
+   with configuration selection on source data only. Zadar is the provisional donor and Šibenik the
+   provisional untouched target. Freeze roles after imagery/density/exposure eligibility checks and
+   before model scoring. Split is development geography; donor holdouts are not new-city confirmation.
+   A city-specific win remains a specialization. Defer target fine-tuning and the conditional DINOv3
+   challenger until evidence supports them.
+
+`layered/reconstruction_study.py` owns freezing and resumable per-tile scoring;
+`layered/reconstruction_analysis.py` owns source-only choice, block intervals and the declared gates.
+The rim affects only free-interior connectivity, never OSM markers, barriers or the flood domain.
+No default changes automatically. The prepaid GPU balance was checked at 08:22 UTC: $5.1650,
+with no active rental; the diagnostic itself uses no GPU credit.
 
 **1. Bootstrap confidence intervals.** Resample tiles to give every pooled score a 95% interval and the
 minimum detectable effect per benchmark. Success: every comparison in the ledger reads as a difference
@@ -92,13 +127,11 @@ machine judgments and aggregate edge signal do not establish an accuracy ceiling
 labels. Weak support also does not mean zero recoverability at IoU 0.5: context and shape priors can help.
 No user labelling or spot-check is required. Actual spend: $0 billed, $7.05 estimated plan-use equivalent.
 
-**6. Zagreb levers, one at a time, three seeds each.** In order: the eligible v2 pool (1,623 tiles) with a longer
-schedule; colour augmentation; flip/rotate test-time
-averaging (no training); convnext_small. Success: each kept only by the loop's rule. Failure signal:
-three rejections in a row triggers reassessment of data, targets and optimization; it does not prove a data limit. ETA
-about 3 GPU-h, about $1.50. The first resolution-augmentation trial is recorded under step 11; it did not
-pass the clean-precision guard. The longer-schedule comparison is also complete and not adopted;
-keep the saved three-seed 30-epoch v2 baselines as the control for the colour-augmentation trial.
+**6. Zagreb levers, one at a time, three seeds each.** The eligible v2 pool has 1,623 training tiles.
+The longer schedule and first resolution trial are complete and were not adopted. Keep the saved
+three-seed 30-epoch controls. The 2026-10-15 sequence above replaces the queued colour augmentation,
+test-time averaging and larger-encoder trials with bounded reconstruction/target work and nearby-donor
+transfer. A failed treatment closes that recipe; it does not establish a universal data or model limit.
 
 The first schedule comparison completed on 2026-10-14, frozen in `gpu/plans/selection-v2-longer.json`: three fresh Zagreb
 fits at 60 epochs versus the saved 30-epoch baselines, seeds 1–3, 1,623 training tiles and the same

@@ -3,6 +3,7 @@ import sys
 import unittest
 from pathlib import Path
 
+import cv2
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -112,6 +113,65 @@ class ReconstructTests(unittest.TestCase):
         self.assertEqual(len(without['features']), 2)
         self.assertEqual(len(with_seeds['features']), 3)
         self.assertEqual(int(labels[5, 10]), 3)  # the top-left lot (row 5 = y 59) is the new parcel
+
+    def exact_half_size_maps(self):
+        """The production 2:1 target/reconstruction ratio leaves a one-pixel cleared rim."""
+        target = targets.tile_targets(TRUTH, BBOX, 128, margin_px=2)
+        return {name: cv2.resize(target[name].astype(np.float32), (64, 64), interpolation=cv2.INTER_AREA)
+                for name in ('boundary', 'interior', 'distance')}
+
+    def test_seed_rim_separates_two_clipped_lots_without_cropping_the_flood(self):
+        maps = self.exact_half_size_maps()
+        before = {name: array.copy() for name, array in maps.items()}
+        control, _ = reconstruct.reconstruct(maps['boundary'], maps['interior'], {}, BBOX,
+                                              distance_prob=maps['distance'], threshold=0.3)
+        corrected, labels = reconstruct.reconstruct(maps['boundary'], maps['interior'], {}, BBOX,
+                                                     distance_prob=maps['distance'], threshold=0.3, seed_rim_px=1)
+        self.assertEqual(len(control['features']), 1)
+        self.assertEqual(len(corrected['features']), 2)
+        self.assertTrue((labels > 0).all())  # connectivity exclusion must not exclude the outer flood pixels
+        self.assertNotEqual(labels[32, 10], labels[32, 50])
+        for name in maps:
+            np.testing.assert_array_equal(maps[name], before[name])
+
+    def test_seed_rim_keeps_building_halo_from_discarding_the_other_lot(self):
+        maps = self.exact_half_size_maps()
+        osm = {'buildings': [self.OSM['buildings'][0]], 'roads': [], 'water': []}
+        building_seeds, original_barrier = reconstruct.baseline_seeds(osm, BBOX, 64)
+        control, _ = reconstruct.reconstruct(maps['boundary'], maps['interior'], osm, BBOX,
+                                              distance_prob=maps['distance'], threshold=0.3)
+        corrected, _ = reconstruct.reconstruct(maps['boundary'], maps['interior'], osm, BBOX,
+                                                distance_prob=maps['distance'], threshold=0.3, seed_rim_px=1)
+        seeds, barrier = reconstruct.seed_maps(maps['boundary'], maps['interior'], osm, BBOX,
+                                                threshold=0.3, seed_rim_px=1)
+        self.assertEqual(len(control['features']), 1)
+        self.assertEqual(len(corrected['features']), 2)
+        np.testing.assert_array_equal(barrier, original_barrier)
+        np.testing.assert_array_equal(seeds[building_seeds > 0], building_seeds[building_seeds > 0])
+
+    def test_seed_rim_is_exactly_inert_with_interior_seeds_off(self):
+        maps = self.exact_half_size_maps()
+        kwargs = dict(distance_prob=maps['distance'], threshold=0.3, interior_seeds=False)
+        original, labels = reconstruct.reconstruct(maps['boundary'], maps['interior'], self.OSM, BBOX, **kwargs)
+        corrected, corrected_labels = reconstruct.reconstruct(maps['boundary'], maps['interior'], self.OSM, BBOX,
+                                                               seed_rim_px=1, **kwargs)
+        self.assertEqual(corrected, original)
+        self.assertEqual(corrected_labels.tobytes(), labels.tobytes())
+
+    def test_explicit_seed_path_matches_production_and_rejects_a_marker_in_a_barrier(self):
+        maps = self.exact_half_size_maps()
+        seeds, barrier = reconstruct.seed_maps(maps['boundary'], maps['interior'], self.OSM, BBOX,
+                                                threshold=0.3, seed_rim_px=1)
+        original, labels = reconstruct.reconstruct(maps['boundary'], maps['interior'], self.OSM, BBOX,
+                                                    distance_prob=maps['distance'], threshold=0.3, seed_rim_px=1)
+        explicit, explicit_labels = reconstruct.reconstruct_from_seeds(maps['boundary'], seeds, barrier, BBOX,
+                                                                        distance_prob=maps['distance'], threshold=0.3)
+        self.assertEqual(explicit, original)
+        np.testing.assert_array_equal(explicit_labels, labels)
+        barrier[seeds > 0] = True
+        with self.assertRaisesRegex(ValueError, 'seed cannot lie'):
+            reconstruct.reconstruct_from_seeds(maps['boundary'], seeds, barrier, BBOX,
+                                                distance_prob=maps['distance'])
 
     def test_merge_by_seed_joins_fragments(self):
         collection = {'type': 'FeatureCollection', 'features': [
