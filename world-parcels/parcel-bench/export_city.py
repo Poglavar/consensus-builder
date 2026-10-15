@@ -10,10 +10,12 @@ DGU DOF 2023/24 INSPIRE WMS (anonymous, native 0.5 m), the within-country transf
 from __future__ import annotations
 
 import argparse
+import hashlib
 import io
 import json
 import os
 import random
+import re
 import sys
 import time
 from collections import Counter
@@ -56,6 +58,29 @@ def tile_range(spec):
     x0, x1 = map(int, xs.split(':'))
     y0, y1 = map(int, ys.split(':'))
     return [(x, y) for x in range(x0, x1) for y in range(y0, y1)]
+
+
+def tile_list_ids(path):
+    """Read a JSON tile list and return its sorted, unique lattice coordinates."""
+    data = json.loads(Path(path).read_text())
+    if not isinstance(data, dict) or not isinstance(data.get('tiles'), list):
+        raise ValueError("tile list must be a JSON object with a 'tiles' array")
+    cells, ids = [], set()
+    for record in data['tiles']:
+        tile_id = record if isinstance(record, str) else record.get('id') if isinstance(record, dict) else None
+        if not isinstance(tile_id, str) or not re.fullmatch(r'tile_\d+_\d+', tile_id):
+            raise ValueError(f'invalid tile id: {tile_id!r}')
+        if tile_id in ids:
+            raise ValueError(f'duplicate tile id: {tile_id}')
+        ids.add(tile_id)
+        _, x, y = tile_id.split('_')
+        cell = (int(x), int(y))
+        if tile_id != f'tile_{cell[0]}_{cell[1]}':
+            raise ValueError(f'tile id is not canonical: {tile_id!r}')
+        cells.append(cell)
+    if not cells:
+        raise ValueError('tile list must not be empty')
+    return sorted(cells)
 
 
 def cached_tile(path):
@@ -144,12 +169,30 @@ def screen_tile(conn, tile_id, bbox, image_path):
             'overlap_fraction': round(overlap, 4), 'source_ids': sorted(str(row['source_id']) for row in rows)}, None
 
 
-def choose_blocks(screened, seed, per_split=4):
-    """per_split < 4 (smoke runs) takes the first strata only."""
-    """Held-out 2x2 blocks: for each split (selection first) and each density stratum one block, all four tiles
-    screened, 500 m from every block already chosen and sharing no parcel id with it, the farthest from the chosen
-    ones first (seeded tie-break). Returns [(block_tiles, split, bin)] or raises when a stratum has no candidate."""
+def choose_blocks(screened, seed, per_split=4, *, selection_blocks_per_stratum=None,
+                  final_blocks_per_stratum=None, strict_strata=False):
+    """Choose separated 2x2 holdouts, returning validation (selection) and test (final) roles.
+
+    Omitted count keywords preserve the legacy first-N-strata-once behavior of per_split. Explicit counts
+    repeat each true density stratum that many times. Every chosen block is at least 500 m from earlier blocks
+    and shares no parcel source id; strict_strata disables the existing nearest-bin fallback.
+    """
     by_id = {info['id']: info for info in screened}
+    requested = (selection_blocks_per_stratum, final_blocks_per_stratum)
+    if any(value is not None for value in requested):
+        if any(value is None for value in requested):
+            raise ValueError('selection and final block counts must be provided together')
+        if any(not isinstance(value, int) or value < 0 for value in requested) or sum(requested) <= 0:
+            raise ValueError('selection and final block counts must be nonnegative and sum to more than zero')
+        selection_split, final_split = 'validation', 'test'
+        split_counts = {selection_split: selection_blocks_per_stratum, final_split: final_blocks_per_stratum}
+        strata_by_split = {split: [s['name'] for s in STRATA for _ in range(count)]
+                           for split, count in split_counts.items()}
+    else:
+        selection_split, final_split = 'validation', 'test'
+        split_counts = {selection_split: per_split, final_split: per_split}
+        # Preserve the legacy interpretation: first N distinct strata once each.
+        strata_by_split = {split: [s['name'] for s in STRATA][:count] for split, count in split_counts.items()}
     cells = {tuple(map(int, tile_id.split('_')[1:])): tile_id for tile_id in by_id}
     blocks = []
     for (x, y), tile_id in sorted(cells.items()):
@@ -168,13 +211,15 @@ def choose_blocks(screened, seed, per_split=4):
         order = {block['origin']: rng.random() for block in blocks}
         chosen, notes = [], []
         try:
-            for split in ('validation', 'test'):
-                for stratum in [s['name'] for s in STRATA][:per_split]:
+            for split in (selection_split, final_split):
+                for stratum in strata_by_split[split]:
                     free = [b for b in blocks if b['origin'] not in {c['origin'] for c, _ in chosen}
                             and all(bbox_gap(b['bbox'], c['bbox']) >= 500 and not (b['source_ids'] & c['source_ids'])
                                     for c, _ in chosen)]
                     eligible = [b for b in free if b['bin'] == stratum]
                     if not eligible:
+                        if strict_strata:
+                            raise LookupError(f'no {stratum} block for the {split} split')
                         # A city may have no 2x2 block in a stratum; take the free block nearest that stratum and say so.
                         if not free:
                             raise LookupError(f'no separated block left for the {split} split ({stratum})')
@@ -190,26 +235,68 @@ def choose_blocks(screened, seed, per_split=4):
         for note in notes:
             log(f'  {note}')
         return chosen
-    raise RuntimeError(f'could not place {2 * per_split} separated held-out blocks in 25 attempts')
+    total = sum(len(strata) for strata in strata_by_split.values())
+    raise RuntimeError(f'could not place {total} separated held-out blocks in 25 attempts')
+
+
+def export_options(args, grid):
+    tile_sha = hashlib.sha256(('\n'.join(f'tile_{x}_{y}' for x, y in sorted(grid)) + '\n').encode()).hexdigest()
+    return {'tile_list_sha256': tile_sha if args.tile_list else None,
+            'rectangle': args.tiles if args.tiles else None,
+            'city': args.city, 'source': args.source, 'seed': args.seed, 'limit': args.limit,
+            'requested_block_counts': {'selection': args.selection_blocks_per_stratum,
+                                       'final': args.final_blocks_per_stratum}
+                                      if args.selection_blocks_per_stratum is not None else
+                                      {'per_split': args.blocks_per_split},
+            'strict_strata': args.strict_strata, 'no_training': args.no_training}
+
+
+def training_pool(screened, holdout, holdout_bboxes, holdout_sources, no_training=False):
+    """Return screened non-holdout tiles eligible for training, or none for donor/confirmation exports."""
+    if no_training:
+        return []
+    return [info for info in screened if info['id'] not in holdout
+            and all(bbox_gap(info['bbox'], bbox) >= 500 for bbox in holdout_bboxes)
+            and not (set(info['source_ids']) & holdout_sources)]
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--city', required=True, help='slug, e.g. split')
-    parser.add_argument('--tiles', required=True, help='tile index range x0:x1,y0:y1 (153.6 m EPSG:3765 grid)')
+    tile_args = parser.add_mutually_exclusive_group(required=True)
+    tile_args.add_argument('--tiles', help='tile index range x0:x1,y0:y1 (153.6 m EPSG:3765 grid)')
+    tile_args.add_argument('--tile-list', type=Path, help="JSON object with a 'tiles' array of tile IDs")
     parser.add_argument('--source', default='dgu-dof-2023-2024', choices=sorted(SOURCES))
     parser.add_argument('--output', type=Path, help='dataset dir (default output/city/<city>/dataset)')
     parser.add_argument('--cache', type=Path, help='tile cache (default output/city/<city>/tiles)')
     parser.add_argument('--db-env', type=Path, default=DEFAULT_DB_ENV)
     parser.add_argument('--seed', type=int, default=20261012)
     parser.add_argument('--blocks-per-split', type=int, default=4, help='held-out 2x2 blocks per split (4 = one per stratum)')
+    parser.add_argument('--selection-blocks-per-stratum', type=int)
+    parser.add_argument('--final-blocks-per-stratum', type=int)
+    parser.add_argument('--strict-strata', action='store_true')
+    parser.add_argument('--no-training', action='store_true',
+                        help='omit eligible non-holdout tiles; keep heldout split labels as validation/test')
     parser.add_argument('--limit', type=int, default=0, help='fetch at most this many tiles (smoke test)')
     parser.add_argument('--run', action='store_true', help='required; without it only the plan prints')
     args = parser.parse_args(argv)
     source = SOURCES[args.source]
     root = args.output or HERE / 'output' / 'city' / args.city / 'dataset'
     cache = args.cache or HERE / 'output' / 'city' / args.city / 'tiles'
-    grid = tile_range(args.tiles)
+    grid = tile_list_ids(args.tile_list) if args.tile_list else tile_range(args.tiles)
+    if args.blocks_per_split < 0:
+        parser.error('--blocks-per-split must be nonnegative')
+    try:
+        signature = export_options(args, grid)
+        # Validate paired counts without requiring any screened candidates.
+        if (args.selection_blocks_per_stratum is None) != (args.final_blocks_per_stratum is None):
+            raise ValueError('selection and final block counts must be provided together')
+        if args.selection_blocks_per_stratum is not None and (min(args.selection_blocks_per_stratum,
+                                                                    args.final_blocks_per_stratum) < 0 or
+                                                               args.selection_blocks_per_stratum + args.final_blocks_per_stratum <= 0):
+            raise ValueError('selection and final block counts must be nonnegative and sum to more than zero')
+    except ValueError as error:
+        parser.error(str(error))
     log(f'{args.city}: {len(grid)} grid tiles, source {args.source}')
     if not args.run:
         print('dry run; pass --run')
@@ -219,7 +306,12 @@ def main(argv=None):
         raise SystemExit(f'DATABASE_URL missing from {args.db_env}')
     root.mkdir(parents=True, exist_ok=True)
     progress_path = root / 'progress.json'
-    progress = json.loads(progress_path.read_text()) if progress_path.exists() else {'prescreen': {}, 'screen': {}}
+    progress = (json.loads(progress_path.read_text()) if progress_path.exists() else
+                {'prescreen': {}, 'screen': {}, 'export_options': signature})
+    if progress.get('export_options') != signature:
+        raise ValueError('export options differ from progress.json; use a fresh output directory')
+    progress['provenance'] = {'export_options': signature}
+    atomic_write_json(progress_path, progress)
     options = '-c statement_timeout=60000 -c lock_timeout=3000 -c default_transaction_read_only=on'
     # Autocommit: read-only queries must not hold a transaction open across the long fetch phase, or the
     # server's idle-in-transaction guard terminates the session.
@@ -262,13 +354,14 @@ def main(argv=None):
         log(f'{len(screened)} tiles pass all screens; rejected {dict(rejected)}; strata '
             f'{dict(Counter(density_bin(i["parcel_count"], STRATA) for i in screened))}')
         # Phase 4: held-out blocks, then the training pool at 500 m from them with disjoint parcel ids.
-        blocks = choose_blocks(screened, args.seed, args.blocks_per_split)
+        blocks = choose_blocks(screened, args.seed, args.blocks_per_split,
+                               selection_blocks_per_stratum=args.selection_blocks_per_stratum,
+                               final_blocks_per_stratum=args.final_blocks_per_stratum,
+                               strict_strata=args.strict_strata)
         holdout = {tile_id: split for block, split in blocks for tile_id in block['tiles']}
         holdout_sources = set().union(*(block['source_ids'] for block, _ in blocks))
         holdout_bboxes = [block['bbox'] for block, _ in blocks]
-        pool = [info for info in screened if info['id'] not in holdout
-                and all(bbox_gap(info['bbox'], b) >= 500 for b in holdout_bboxes)
-                and not (set(info['source_ids']) & holdout_sources)]
+        pool = training_pool(screened, holdout, holdout_bboxes, holdout_sources, args.no_training)
         log(f'phase 4: {len(blocks)} held-out blocks ({len(holdout)} tiles), training pool {len(pool)} tiles')
         # Phase 5: write the dataset (export_tile re-screens and writes image, truth, input, OSM sidecar).
         samples = []
@@ -291,7 +384,7 @@ def main(argv=None):
         'cadastre_date': 'current at export time', 'exported_at': datetime.now(timezone.utc).isoformat(timespec='seconds'),
         'provenance': {'imagery': source['note'], 'cadastre': 'public.parcel current geometries',
                        'cadastral_clip': 'tile intersection; legal area > 0.1 m²', 'wms': source['url'], 'layer': source['layer'],
-                       'native_gsd_m': source['native_gsd_m']},
+                       'native_gsd_m': source['native_gsd_m'], 'export_options': signature},
         'warning': 'Current cadastral geometry is compared with 2023/2024 imagery; changes may be temporal.',
         'crs': 'EPSG:3765', 'tile_size_m': TILE_M, 'split_sizes': dict(counts),
         'stratification': {'bins': STRATA},
@@ -299,7 +392,8 @@ def main(argv=None):
                                'requested_bin': block['requested_bin'], 'mean_parcel_count': round(block['mean'], 1)}
                               for block, split in blocks],
         'exclusions': {'prior_tile_ids': [], 'cross_split_distance_m': 500, 'source_ids_disjoint_across_splits': True,
-                       'grid': args.tiles, 'prescreen_rejected': len(grid) - len(candidates), 'screen_rejected': dict(rejected)},
+                       'grid': args.tiles, 'tile_list_sha256': signature['tile_list_sha256'],
+                       'prescreen_rejected': len(grid) - len(candidates), 'screen_rejected': dict(rejected)},
         'samples': samples,
     }
     (root / 'manifest.json').write_text(json.dumps(manifest, indent=1, sort_keys=True) + '\n')

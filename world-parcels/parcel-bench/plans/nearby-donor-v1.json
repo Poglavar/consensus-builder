@@ -1,0 +1,47 @@
+{
+  "name": "nearby-donor-v1",
+  "purpose": "Freeze city roles and eligibility rules before imagery export or any new-city model scores. Training recipe and exact matched label budget are frozen separately after screening and the reconstruction diagnostic.",
+  "roles": {
+    "zadar": {
+      "role": "nearby Dalmatian donor",
+      "candidate_grid_union": ["2580:2608,31800:31830", "2608:2636,31770:31850"],
+      "selection_blocks_per_stratum": 3,
+      "reserved_final_blocks_per_stratum": 1,
+      "training": "All screened tiles satisfying the within-city and historical separation audit form the eligible pool; the matched study uses a frozen subset."
+    },
+    "sibenik": {
+      "role": "untouched city for conditional confirmation",
+      "candidate_grid_union": ["2929:2945,31530:31546", "2945:2961,31522:31554"],
+      "selection_blocks_per_stratum": 0,
+      "reserved_final_blocks_per_stratum": 3,
+      "training": "None; no model or reconstruction choices use this city."
+    },
+    "split-v2": {"role": "reused transfer development geography; no confirmation claim"},
+    "zagreb-v2": {"role": "matched distant donor using nested source-only subsets"}
+  },
+  "eligibility": {
+    "imagery_source": "dgu-dof-2023-2024",
+    "exporter": "export_city.py",
+    "seed": 20261012,
+    "tile_size_m": 153.6,
+    "crs": "EPSG:3765",
+    "heldout_block_tiles": 4,
+    "strict_density_strata": true,
+    "maximum_deterministic_layout_attempts": 25,
+    "minimum_bbox_gap_m": 500,
+    "source_ids_disjoint": true,
+    "screening": "Existing parcel-count, coverage, overlap and imagery-no-data screens, unchanged. No model output participates.",
+    "historical_exposure": "All eleven inventoried city/pool/dataset manifests, including previous training, selection, final and diagnostic geography, plus cross-checks between the new cities.",
+    "geography_choice": "Each listed extension was declared before querying it because the compact coastal core had fragile density/block coverage. Stop at these unions; a failure is reported before any alternate geography is chosen.",
+    "post_export_audit": "Verify actual image/truth/OSM hashes, true density bins, complete source-ID and bbox separation, final tile lists and zero confirmation-city training/selection exposure before training."
+  },
+  "future_comparison": {
+    "seeds": [1, 2, 3],
+    "recipe": "One common recipe selected from the preceding bounded diagnostic/training stage; no concurrent encoder, loss, preprocessing or resolution change in the donor comparison.",
+    "selection": "Each donor uses only its own development blocks for checkpoint and reconstruction selection. Freeze the complete comparison before Split outcomes and before any confirmation scoring.",
+    "budget": "Match annotated label budget and training updates prospectively; record actual tile, parcel-instance and unique-source counts for each fit. Freeze the exact subset algorithm and counts after screening, before training.",
+    "confirmation": "Use the reconstruction-v3 development and fresh-confirmation gates. Keep the confirmation city unscored unless the predeclared development gate passes and the full compared policies are frozen.",
+    "interpretation": "A regional donor advantage bundles geography, cadastral fabric and imagery programme; it does not isolate climate or establish global transfer.",
+    "spending": "Use the existing prepaid GPU balance only, after a fresh balance/offer check and bounded rental plan."
+  }
+}
