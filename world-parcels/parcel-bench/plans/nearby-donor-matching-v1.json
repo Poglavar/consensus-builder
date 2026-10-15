@@ -1,0 +1,43 @@
+{
+  "name": "nearby-donor-matching-v1",
+  "purpose": "Specify the matched annotated-label budget before new-city model scores. City roles and geography remain those frozen in nearby-donor-v1.json.",
+  "distant_source": "zagreb-v2",
+  "nearby_source": "zadar-v1",
+  "implementation": "match_donor_pools.py",
+  "seed": 20261015,
+  "eligible_inputs": "Only each source's frozen training pool, after the actual-artifact, source-ID and geographic separation audits. Verify all four file hashes per tile and count actual truth features; never use model outputs or transfer-target labels to choose training subsets.",
+  "matching": {
+    "unit": "A completely annotated 153.6 m tile; parcel-instance count includes clipped references.",
+    "bucket": "Exact integer parcel-instance count in the tile.",
+    "within_source_order": "Within each count bucket, sort by SHA256(seed|manifest_version|tile_id), then tile_id.",
+    "pairing": "Pair corresponding entries in the two sorted lists up to the smaller bucket size. Omit unmatched entries.",
+    "pair_order": "Sort all pairs by SHA256(seed|parcel_count|distant_id|nearby_id), then distant_id and nearby_id.",
+    "chosen_prefix": "All available matched pairs. No label-budget sweep in this comparison.",
+    "nesting": "Every prefix yields nested source subsets with equal tile counts, exact equal parcel-instance counts and equal tile-density histograms.",
+    "minimum_pairs": 200,
+    "minimum_pairs_in_each_density_bin": 12,
+    "density_bins": [
+      {"name": "low", "min_inclusive": 0, "max_exclusive": 12},
+      {"name": "medium", "min_inclusive": 12, "max_exclusive": 25},
+      {"name": "high", "min_inclusive": 25, "max_exclusive": 45},
+      {"name": "dense", "min_inclusive": 45, "max_exclusive": null}
+    ],
+    "unique_source_ids": "Report each arm's distinct cadastral source-ID count separately; repeated clipped instances mean these counts need not be equal.",
+    "failure": "Report inadequate common count coverage; do not change geography, relax matching or inspect target outcomes to rescue eligibility."
+  },
+  "training_budget": {
+    "seeds": [1, 2, 3],
+    "subset": "The same frozen matched pools for all fitted seeds.",
+    "epochs": 30,
+    "batch": 6,
+    "updates_per_fit": "30 * ceil(matched_tile_count / 6), identical for both donors.",
+    "initialization": "Fresh pinned ImageNet initialization for each donor and seed.",
+    "recipe": "Use margin 0 only if the predeclared primary margin-training development gate passes; otherwise retain margin 2. Keep the original rim-0 reconstruction and six source-only configurations. Freeze the complete GPU plan, counts and file hashes before fitting either donor."
+  },
+  "evaluation": {
+    "checkpoint_and_reconstruction_selection": "Each fitted donor uses its own 48 source selection tiles only.",
+    "development_target": "Reused Split selection geography; compare nearby donor minus equally budgeted distant donor with the reconstruction-v3 development gate and guards.",
+    "confirmation_target": "The 48 untouched Sibenik final tiles stay unscored unless the development gate passes and both complete policies are frozen. Fresh confirmation requires the >=0.02 mean F1 rule and the same interval, fragility and guard checks.",
+    "interpretation": "The matched training subsets cover the parcel-count distribution shared by these donors. Regional differences still bundle geography, cadastral fabric and imagery programme. This is not a global transfer claim."
+  }
+}
