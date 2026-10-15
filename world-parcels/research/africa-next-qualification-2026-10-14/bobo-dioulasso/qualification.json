@@ -1,0 +1,203 @@
+{
+  "schemaVersion": 2,
+  "purpose": "Bounded source qualification preflight; no unsupported runtime adapter or fabricated native CRS is used.",
+  "qualificationStage": "source-contract-preflight",
+  "runtimeQualifierExecuted": false,
+  "status": "held",
+  "cityCode": "378",
+  "cityName": "Bobo-Dioulasso",
+  "cityPoint": [
+    -4.28974790525362,
+    11.1847197779143
+  ],
+  "sourceId": "bf-dgi-ecadastre-public-geojson",
+  "sourceProfileSha256": "e8e5b39c01b6ad3c838a3fcec803b1b32c72baeab5bd9d419f129b76bb2944e7",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "scope": "Source preflight only",
+      "evidence": [
+        "https://ecadastre.dgi.bf/",
+        "https://ecadastre.dgi.bf/main.d0f438b0f6cdaf6e.js"
+      ]
+    },
+    "exactIds": {
+      "passed": false,
+      "reason": "A standalone exact native-ID geometry route is not established. The two tested viewer-derived paths returned HTTP 500 for a known and a nonexistent ID; no direct-ID or absence claim follows."
+    },
+    "stableGeometry": {
+      "passed": true,
+      "scope": "144-ID bounded viewport re-read, not an independent exact-ID route",
+      "comparedCount": 144
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "The known and nonexistent-ID routes both failed; absence cannot be inferred from an error or the empty exact WUP viewport."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Two bounded windows checked; 13-cell runtime qualification stopped at source-contract preflight blockers.",
+      "observedWindowCounts": {
+        "exactWup": 0,
+        "nearby": 144
+      }
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "The source ignored paging=true, limit=1 and page=0 and returned all 144 features without count/transfer-limit metadata. No complete paging or native-ID manifest contract is established.",
+      "forcedLimit": 1,
+      "observedCount": 144
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Runtime source binding is not qualified while durable exact-ID reads and complete query semantics remain unestablished."
+    },
+    "metric": {
+      "passed": true,
+      "inputSha256": "1433964a73996feee4af1ed69a95aecf4c6e74d86f9231c5fdfd40e159b4c808",
+      "featureCount": 144,
+      "metricCrs": "EPSG:32630",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "The parcel JSON explicitly declares its EPSG:4326 wire frame, but no independent unchanged-native-coordinate proof was established. The WMS UTM code belongs to raster coverages and must not be borrowed for these polygons.",
+      "sourceGeoreferencing": "unverified",
+      "fittedOffsetApplied": false
+    }
+  },
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "1433964a73996feee4af1ed69a95aecf4c6e74d86f9231c5fdfd40e159b4c808",
+  "geometryReport": "metric-report.json",
+  "featureCount": 144,
+  "requestCount": 11,
+  "requests": [
+    {
+      "stage": "wup",
+      "url": "https://ecadastre.dgi.bf/api/locations/geojson?minX=-4.29074790525362&minY=11.1837197779143&maxX=-4.28874790525362&maxY=11.1857197779143",
+      "observedAt": "2026-10-14T13:14:12.138380+00:00",
+      "httpStatus": 200,
+      "bodyBytes": 98,
+      "featureCount": 0,
+      "propertyKeys": []
+    },
+    {
+      "stage": "metadata",
+      "url": "https://data2d.ecadastre.dgi.bf/geoserver/cadastre2D/wms?service=WMS&version=1.3.0&request=GetCapabilities",
+      "observedAt": "2026-10-14T13:14:13.450466+00:00",
+      "httpStatus": 200,
+      "bodyBytes": 392356
+    },
+    {
+      "stage": "viewer",
+      "url": "https://ecadastre.dgi.bf/",
+      "observedAt": "2026-10-14T13:14:19.467188+00:00",
+      "httpStatus": 200,
+      "bodyBytes": 12525
+    },
+    {
+      "stage": "viewer-script",
+      "url": "https://ecadastre.dgi.bf/main.d0f438b0f6cdaf6e.js",
+      "httpStatus": 200,
+      "bodyBytes": 4440862,
+      "observedAt": "2026-10-14T13:17:03.701067+00:00",
+      "observedAtBasis": "File modification time after response capture, not publisher update time."
+    },
+    {
+      "stage": "nearby",
+      "url": "https://ecadastre.dgi.bf/api/locations/geojson?minX=-4.29474790525362&minY=11.1797197779143&maxX=-4.28474790525362&maxY=11.1897197779143&type=PLOT",
+      "observedAt": "2026-10-14T13:17:51.817906+00:00",
+      "httpStatus": 200,
+      "bodyBytes": 64211,
+      "featureCount": 144,
+      "responseKeys": [
+        "type",
+        "crs",
+        "features"
+      ],
+      "propertyKeys": [
+        "DONE",
+        "FID",
+        "NAME",
+        "OK"
+      ]
+    },
+    {
+      "stage": "wfs",
+      "url": "https://data2d.ecadastre.dgi.bf/geoserver/cadastre2D/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "observedAt": "2026-10-14T13:17:53.358184+00:00",
+      "httpStatus": 200,
+      "bodyBytes": 92373
+    },
+    {
+      "stage": "describe-layer",
+      "url": "https://data2d.ecadastre.dgi.bf/geoserver/cadastre2D/wms?service=WMS&version=1.1.1&request=DescribeLayer&layers=cadastre&outputFormat=application%2Fjson",
+      "observedAt": "2026-10-14T13:20:18.995220+00:00",
+      "httpStatus": 200,
+      "bodyBytes": 21438
+    },
+    {
+      "stage": "known-id-route",
+      "url": "https://ecadastre.dgi.bf/api/locations/geojson/aN1k1sijuxh?minX=-4.29474790525362&minY=11.1797197779143&maxX=-4.28474790525362&maxY=11.1897197779143&type=PLOT",
+      "observedAt": "2026-10-14T13:21:27.460754+00:00",
+      "errorType": "HTTPError",
+      "reason": "HTTP Error 500: ",
+      "httpStatus": 500
+    },
+    {
+      "stage": "absent-id-route",
+      "url": "https://ecadastre.dgi.bf/api/locations/geojson/ZZZZZZZZZZZ?minX=-4.29474790525362&minY=11.1797197779143&maxX=-4.28474790525362&maxY=11.1897197779143&type=PLOT",
+      "observedAt": "2026-10-14T13:21:28.794792+00:00",
+      "errorType": "HTTPError",
+      "reason": "HTTP Error 500: ",
+      "httpStatus": 500
+    },
+    {
+      "stage": "repeat-nearby",
+      "url": "https://ecadastre.dgi.bf/api/locations/geojson?minX=-4.29474790525362&minY=11.1797197779143&maxX=-4.28474790525362&maxY=11.1897197779143&type=PLOT",
+      "observedAt": "2026-10-14T13:26:58.754487+00:00",
+      "httpStatus": 200,
+      "featureCount": 144,
+      "safeFile": "repeat-nearby-safe.geojson",
+      "safeSha256": "ae99de035d5a2046ddc0af67da7a24c4dc372d95f667292c58501b3dc44c9926",
+      "idsEqualFid": true,
+      "responseMetadataKeys": [
+        "type",
+        "crs"
+      ],
+      "sameIdsAndGeometry": true
+    },
+    {
+      "stage": "forced-limit-one",
+      "url": "https://ecadastre.dgi.bf/api/locations/geojson?minX=-4.29474790525362&minY=11.1797197779143&maxX=-4.28474790525362&maxY=11.1897197779143&type=PLOT&paging=true&limit=1&page=0",
+      "observedAt": "2026-10-14T13:27:01.604079+00:00",
+      "httpStatus": 200,
+      "featureCount": 144,
+      "safeFile": "forced-limit-one-safe.geojson",
+      "safeSha256": "ae99de035d5a2046ddc0af67da7a24c4dc372d95f667292c58501b3dc44c9926",
+      "idsEqualFid": true,
+      "responseMetadataKeys": [
+        "type",
+        "crs"
+      ]
+    }
+  ],
+  "limits": {
+    "requests": 300,
+    "timeoutSeconds": 20,
+    "bodyBytes": 1500000,
+    "viewerScriptBodyBytes": 8000000
+  },
+  "finishedAt": "2026-10-14T14:10:16.047926+00:00",
+  "limitations": [
+    "Bounded nearby geometry is present; the exact WUP window returned no polygon. Neither establishes citywide coverage or absence.",
+    "The metric audit does not establish source survey accuracy or agreement with imagery.",
+    "No geometry was repaired, clipped, simplified, filtered by overlap, or shifted.",
+    "Stop qualification at unproved source contracts; an unavailable adapter is not itself evidence of source absence."
+  ]
+}

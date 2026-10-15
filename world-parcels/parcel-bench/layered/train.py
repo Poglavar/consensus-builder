@@ -37,10 +37,11 @@ from imagery import augment_resolution  # noqa: E402
 from model import ParcelNet  # noqa: E402
 from reconstruct import RECON_DEFAULTS, reconstruct  # noqa: E402
 from targets import load_image, osm_channels, tile_targets  # noqa: E402
+from target_config import cache_namespace, from_args, recorded_targets, target_definition  # noqa: E402
 
 DEFAULT_MANIFEST = HERE.parent / 'manifests' / 'zagreb-v1.json'
 RECIPE_FILES = [HERE / 'train.py', HERE / 'model.py', HERE / 'targets.py', HERE / 'reconstruct.py',
-                HERE / 'exposure.py', HERE / 'imagery.py',
+                HERE / 'exposure.py', HERE / 'imagery.py', HERE / 'target_config.py',
                 HERE.parent.parent / 'guess-spike' / 'guess.py']
 
 
@@ -103,18 +104,22 @@ def subset_ids(ids, count, seed):
     return order[:count] if count else order
 
 
-def prepare_tile(entry, size, cap_m, dilate_px):
+def prepare_tile(entry, size, cap_m, dilate_px, *, margin_px=2):
+    definition = target_definition(size, cap_m=cap_m, dilate_px=dilate_px, margin_px=margin_px)
     image = load_image(entry['image'], size)
-    targets = tile_targets(read_json(entry['truth']), entry['bbox'], size, dilate_px=dilate_px, cap_m=cap_m)
+    targets = tile_targets(read_json(entry['truth']), entry['bbox'], size, dilate_px=dilate_px,
+                           cap_m=cap_m, margin_px=margin_px)
     osm_input = read_json(entry['osm']) if entry['osm'] else None
     osm = osm_channels(osm_input, entry['bbox'], size) if osm_input else np.zeros((3, size, size), np.float32)
     return {'image': image.astype(np.float16), 'osm': osm.astype(np.uint8), 'boundary': targets['boundary'],
             'interior': targets['interior'], 'distance': targets['distance'].astype(np.float16),
-            'osm_present': np.array(osm_input is not None)}
+            'osm_present': np.array(osm_input is not None),
+            'target_definition': np.array(json.dumps(definition, sort_keys=True))}
 
 
-def load_cache(entries, size, cap_m, dilate_px, cache_dir):
-    """Per-tile arrays, computed once per (size, cap, dilation) and kept on disk so restarts are quick."""
+def load_cache(entries, size, cap_m, dilate_px, cache_dir, *, margin_px=2):
+    """Per-tile arrays, keyed and checked by the explicit target definition before reuse."""
+    definition = target_definition(size, cap_m=cap_m, dilate_px=dilate_px, margin_px=margin_px)
     cache_dir.mkdir(parents=True, exist_ok=True)
     cache = {}
     for entry in entries:
@@ -122,9 +127,12 @@ def load_cache(entries, size, cap_m, dilate_px, cache_dir):
         if not path.exists():
             # Written under a temporary name and renamed, so concurrent runs sharing the cache never read a torn file.
             temporary = path.with_name(f'.{path.name}.{os.getpid()}.tmp.npz')
-            np.savez_compressed(temporary, **prepare_tile(entry, size, cap_m, dilate_px))
+            np.savez_compressed(temporary, **prepare_tile(entry, size, cap_m, dilate_px, margin_px=margin_px))
             os.replace(temporary, path)
         with np.load(path) as arrays:
+            if ('target_definition' not in arrays.files or
+                    json.loads(str(arrays['target_definition'].item())) != definition):
+                raise ValueError(f'{entry["id"]}: cache target definition differs; use its explicit namespace')
             cache[entry['id']] = {key: arrays[key] for key in arrays.files}
     return cache
 
@@ -207,7 +215,8 @@ def predict(model, cache, tile_id, device, blank_osm=False):
     return {name: torch.sigmoid(outputs[name])[0, 0].float().cpu().numpy() for name in ('boundary', 'interior', 'distance')}
 
 
-def evaluate(model, index, cache, ids, configs, device, *, recon_size, workers, out_dir=None, osm_mode='full'):
+def evaluate(model, index, cache, ids, configs, device, *, recon_size, workers, out_dir=None, osm_mode='full',
+             target_spec=None):
     """Predict every tile once, reconstruct and score under every config, pool per config, pick the best.
     Writes GeoJSON, per-tile scores and pooled.json for the best config when out_dir is given.
     osm_mode 'model-blank' zeroes the model's OSM input channels; 'none' also withholds OSM seeds and barriers
@@ -249,6 +258,8 @@ def evaluate(model, index, cache, ids, configs, device, *, recon_size, workers, 
                   'boundary_f1': 2 * precision * recall / max(precision + recall, 1e-9),
                   'distance_mae': pixel['distance_abs'] / max(pixel['pixels'], 1)},
     }
+    if target_spec is not None:
+        summary['target_definition'] = target_spec
     if out_dir is not None:
         out_dir.mkdir(parents=True, exist_ok=True)
         for tile_id in ids:
@@ -302,6 +313,9 @@ def pick_device(name):
 
 
 def train(args):
+    definition = from_args(args)
+    for key in ('cap_m', 'dilate_px', 'margin_px'):
+        setattr(args, key, definition[key])
     out = args.output
     out.mkdir(parents=True, exist_ok=True)
     torch.manual_seed(args.seed)
@@ -320,7 +334,8 @@ def train(args):
               'manifest_sha256': hashlib.sha256(args.manifest.read_bytes()).hexdigest(),
               'dataset_sha256': hashlib.sha256((args.dataset / 'manifest.json').read_bytes()).hexdigest(),
               'pool': index.pool_name, 'n_train': len(train_ids), 'subset_seed': subset_seed, 'reconstruction': RECON_DEFAULTS,
-              'init': init, 'train_tiles': train_ids, 'selection_tiles': selection_ids, 'exposure': exposure}
+              'init': init, 'train_tiles': train_ids, 'selection_tiles': selection_ids, 'exposure': exposure,
+              'target_definition': definition}
     resume_state = None
     if args.resume and not (out / 'recipe.json').exists():
         raise ValueError('--resume requires the original recipe.json')
@@ -331,12 +346,15 @@ def train(args):
         if not (out / 'last.pt').exists():
             raise ValueError('--resume requires last.pt')
         resume_state = torch.load(out / 'last.pt', map_location='cpu', weights_only=False)
+        if recorded_targets(resume_state, read_json(out / 'recipe.json')) != definition:
+            raise ValueError('resume target definition differs')
         validate_exposure(resume_state.get('exposure'), index.manifest)
         if resume_state.get('exposure') != exposure:
             raise ValueError('resume checkpoint does not match the recorded training exposure')
-    cache_dir = out.parent / 'cache' / f's{args.size}-cap{args.cap_m:g}-d{args.dilate_px}'
+    cache_dir = out.parent / 'cache' / cache_namespace(definition)
     t0 = time.time()
-    cache = load_cache([index.tiles[t] for t in train_ids + selection_ids], args.size, args.cap_m, args.dilate_px, cache_dir)
+    cache = load_cache([index.tiles[t] for t in train_ids + selection_ids], args.size, args.cap_m,
+                       args.dilate_px, cache_dir, margin_px=args.margin_px)
     with_osm = sum(bool(cache[t]['osm_present']) for t in train_ids)
     log(f"cache ready in {time.time() - t0:.0f}s: {len(train_ids)} training tiles ({with_osm} with OSM), "
         f"{len(selection_ids)} selection tiles, size {args.size}, device {device}")
@@ -404,11 +422,12 @@ def train(args):
         journal.flush()
         state = {'model': model.state_dict(), 'optimizer': optimizer.state_dict(), 'scheduler': scheduler.state_dict(),
                  'scaler': scaler.state_dict(), 'epoch': epoch, 'best': best, 'encoder': args.encoder, 'in_chans': 6,
-                 'size': args.size, 'recon_size': args.recon_size, 'exposure': exposure}
+                 'size': args.size, 'recon_size': args.recon_size, 'exposure': exposure,
+                 'target_definition': definition}
         if (epoch + 1) % args.eval_every == 0 or epoch + 1 == args.epochs:
             t1 = time.time()
             summary = evaluate(model, index, cache, selection_ids, configs, device, recon_size=args.recon_size,
-                               workers=args.eval_workers)
+                               workers=args.eval_workers, target_spec=definition)
             chosen = summary['configs'][summary['best_config']]
             journal.write(json.dumps({'kind': 'eval', 'epoch': epoch, 'split': 'selection', **summary}) + '\n'); journal.flush()
             log(f"selection after epoch {epoch + 1}: best config {summary['best_config']} parcel F1 "
@@ -425,7 +444,8 @@ def train(args):
                 (out / 'results.json').write_text(json.dumps({'best': best, 'recipe_hash': recipe['recipe_hash'],
                                                               'manifest_version': index.manifest['version'],
                                                               'pool': index.pool_name, 'n_train': len(train_ids),
-                                                              'seed': args.seed, 'subset_seed': subset_seed, 'init': init},
+                                                              'seed': args.seed, 'subset_seed': subset_seed, 'init': init,
+                                                              'target_definition': definition},
                                                              indent=2, sort_keys=True) + '\n')
                 log(f"new best checkpoint saved (epoch {epoch + 1}, parcel F1 {best['parcel_f1']:.3f})")
         # Save after evaluation so resume restores the newest checkpoint choice too.
@@ -452,10 +472,14 @@ def evaluate_only(args):
     state = torch.load(checkpoint, map_location=device, weights_only=False)
     validate_exposure(state.get('exposure'), index.manifest)
     results = read_json(checkpoint.parent / 'results.json')
+    definition = recorded_targets(state, read_json(checkpoint.parent / 'recipe.json'),
+                                  {key: getattr(args, key) for key in ('cap_m', 'dilate_px', 'margin_px')},
+                                  results=results)
     config = results['best']['config']
     ids = index.ids(args.split)[:args.selection_tiles] if args.selection_tiles else index.ids(args.split)
-    cache_dir = args.output.parent / 'cache' / f"s{state['size']}-cap{args.cap_m:g}-d{args.dilate_px}"
-    cache = load_cache([index.tiles[t] for t in ids], state['size'], args.cap_m, args.dilate_px, cache_dir)
+    cache_dir = args.output.parent / 'cache' / cache_namespace(definition)
+    cache = load_cache([index.tiles[t] for t in ids], state['size'], definition['cap_m'],
+                       definition['dilate_px'], cache_dir, margin_px=definition['margin_px'])
     if args.degrade_gsd:
         # In memory only, so the shared tile cache stays the real imagery.
         for tile_id in ids:
@@ -475,7 +499,7 @@ def evaluate_only(args):
         suffix += f"-{index.manifest['version']}"      # scored against another city's manifest: keep the run's own eval
     out_dir = args.output / f'{args.split}-eval{suffix}'
     summary = evaluate(model, index, cache, ids, configs, device, recon_size=state['recon_size'],
-                       workers=args.eval_workers, out_dir=out_dir, osm_mode=args.osm_mode)
+                       workers=args.eval_workers, out_dir=out_dir, osm_mode=args.osm_mode, target_spec=definition)
     metrics = summary['configs'][summary['best_config']]
     log(f"{args.split} (osm {args.osm_mode}{f', imagery degraded to {args.degrade_gsd:g} m' if args.degrade_gsd else ''}): "
         f"{len(ids)} tiles, config {summary['best_config']}, parcel F1 {metrics['parcel_f1']:.3f} precision "
@@ -494,8 +518,9 @@ def main(argv=None):
     parser.add_argument('--no-pretrained', action='store_true')
     parser.add_argument('--size', type=int, default=512, help='model input/target grid')
     parser.add_argument('--recon-size', type=int, default=256, help='reconstruction grid (the baseline uses 256)')
-    parser.add_argument('--cap-m', type=float, default=12.0, help='distance target cap in metres')
-    parser.add_argument('--dilate-px', type=int, default=1)
+    parser.add_argument('--cap-m', type=float, help='distance target cap in metres (training default 12; evaluation uses fitted value)')
+    parser.add_argument('--dilate-px', type=int, help='boundary dilation (training default 1; evaluation uses fitted value)')
+    parser.add_argument('--margin-px', type=int, help='target boundary margin (training default 2; evaluation uses fitted value)')
     parser.add_argument('--batch', type=int, default=6)
     parser.add_argument('--epochs', type=int, default=20)
     parser.add_argument('--lr', type=float, default=3e-4)

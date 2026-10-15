@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Test fixture for frontend/js/corridor-import-opendrive.js: a hand-written OpenDRIVE 1.6 T-junction.
+     A west-east main street (road 1 west of junction 1, road 2 east of it with a line then an arc and a
+     second lane section where a cycle lane tapers in) and a branch street (road 3) leaving north with a
+     spiral. Connecting road 10 lies inside the junction and must be skipped by the import. The junction
+     box spans x 457994..458006 and y up to 5074009, so the road ends stop short of its centre. -->
+<OpenDRIVE>
+    <header revMajor="1" revMinor="6" name="t-junction" version="1.00" date="2026-10-15" north="5074090" south="5073990" east="458110" west="457890">
+        <geoReference><![CDATA[+proj=tmerc +lat_0=0 +lon_0=16.5 +k=0.9999 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs]]></geoReference>
+    </header>
+
+    <!-- Road 1: Main Street, west part, 100 m straight, ends at the junction's west edge. -->
+    <road name="Main Street" length="100.0" id="1" junction="-1" rule="RHT">
+        <link>
+            <successor elementType="junction" elementId="1"/>
+        </link>
+        <type s="0.0" type="town"/>
+        <planView>
+            <geometry s="0.0" x="457894.0" y="5074000.0" hdg="0.0" length="100.0">
+                <line/>
+            </geometry>
+        </planView>
+        <lanes>
+            <laneOffset s="0.0" a="0.0" b="0.0" c="0.0" d="0.0"/>
+            <laneSection s="0.0">
+                <left>
+                    <lane id="3" type="sidewalk" level="false"><width sOffset="0.0" a="2.0" b="0.0" c="0.0" d="0.0"/></lane>
+                    <lane id="2" type="parking" level="false"><width sOffset="0.0" a="2.5" b="0.0" c="0.0" d="0.0"/></lane>
+                    <lane id="1" type="driving" level="false"><width sOffset="0.0" a="3.5" b="0.0" c="0.0" d="0.0"/></lane>
+                </left>
+                <center>
+                    <lane id="0" type="none" level="false"/>
+                </center>
+                <right>
+                    <lane id="-1" type="driving" level="false"><width sOffset="0.0" a="3.5" b="0.0" c="0.0" d="0.0"/></lane>
+                    <lane id="-2" type="parking" level="false"><width sOffset="0.0" a="2.5" b="0.0" c="0.0" d="0.0"/></lane>
+                    <lane id="-3" type="sidewalk" level="false"><width sOffset="0.0" a="2.0" b="0.0" c="0.0" d="0.0"/></lane>
+                </right>
+            </laneSection>
+        </lanes>
+    </road>
+
+    <!-- Road 2: Main Street, east part, starts at the junction's east edge: 40 m line, then a 60 m arc. -->
+    <road name="Main Street" length="100.0" id="2" junction="-1" rule="RHT">
+        <link>
+            <predecessor elementType="junction" elementId="1"/>
+        </link>
+        <type s="0.0" type="town"/>
+        <planView>
+            <geometry s="0.0" x="458006.0" y="5074000.0" hdg="0.0" length="40.0">
+                <line/>
+            </geometry>
+            <geometry s="40.0" x="458046.0" y="5074000.0" hdg="0.0" length="60.0">
+                <arc curvature="0.005"/>
+            </geometry>
+        </planView>
+        <lanes>
+            <laneSection s="0.0">
+                <left>
+                    <lane id="3" type="sidewalk" level="false"><width sOffset="0.0" a="2.0" b="0.0" c="0.0" d="0.0"/></lane>
+                    <lane id="2" type="parking" level="false"><width sOffset="0.0" a="2.5" b="0.0" c="0.0" d="0.0"/></lane>
+                    <lane id="1" type="driving" level="false"><width sOffset="0.0" a="3.5" b="0.0" c="0.0" d="0.0"/></lane>
+                </left>
+                <center>
+                    <lane id="0" type="none" level="false"/>
+                </center>
+                <right>
+                    <lane id="-1" type="driving" level="false"><width sOffset="0.0" a="3.5" b="0.0" c="0.0" d="0.0"/></lane>
+                    <lane id="-2" type="parking" level="false"><width sOffset="0.0" a="2.5" b="0.0" c="0.0" d="0.0"/></lane>
+                    <lane id="-3" type="sidewalk" level="false"><width sOffset="0.0" a="2.0" b="0.0" c="0.0" d="0.0"/></lane>
+                </right>
+            </laneSection>
+            <!-- From s=40 a cycle lane opens on the right: 0 m at s=40, 1.5 m from s=60 on. -->
+            <laneSection s="40.0">
+                <left>
+                    <lane id="3" type="sidewalk" level="false"><width sOffset="0.0" a="2.0" b="0.0" c="0.0" d="0.0"/></lane>
+                    <lane id="2" type="parking" level="false"><width sOffset="0.0" a="2.5" b="0.0" c="0.0" d="0.0"/></lane>
+                    <lane id="1" type="driving" level="false"><width sOffset="0.0" a="3.5" b="0.0" c="0.0" d="0.0"/></lane>
+                </left>
+                <center>
+                    <lane id="0" type="none" level="false"/>
+                </center>
+                <right>
+                    <lane id="-1" type="driving" level="false"><width sOffset="0.0" a="3.5" b="0.0" c="0.0" d="0.0"/></lane>
+                    <lane id="-2" type="biking" level="false">
+                        <width sOffset="0.0" a="0.0" b="0.075" c="0.0" d="0.0"/>
+                        <width sOffset="20.0" a="1.5" b="0.0" c="0.0" d="0.0"/>
+                    </lane>
+                    <lane id="-3" type="parking" level="false"><width sOffset="0.0" a="2.5" b="0.0" c="0.0" d="0.0"/></lane>
+                    <lane id="-4" type="sidewalk" level="false"><width sOffset="0.0" a="2.0" b="0.0" c="0.0" d="0.0"/></lane>
+                </right>
+            </laneSection>
+        </lanes>
+    </road>
+
+    <!-- Road 3: Branch Street, starts at the junction's north edge heading north: 30 m spiral, then 50 m line. -->
+    <road name="Branch Street" length="80.0" id="3" junction="-1" rule="RHT">
+        <link>
+            <predecessor elementType="junction" elementId="1"/>
+        </link>
+        <type s="0.0" type="townLocal"/>
+        <planView>
+            <geometry s="0.0" x="458000.0" y="5074009.0" hdg="1.5707963267948966" length="30.0">
+                <spiral curvStart="0.0" curvEnd="0.01"/>
+            </geometry>
+            <geometry s="30.0" x="457998.502409" y="5074038.932571" hdg="1.720796326794896" length="50.0">
+                <line/>
+            </geometry>
+        </planView>
+        <lanes>
+            <laneSection s="0.0">
+                <left>
+                    <lane id="2" type="sidewalk" level="false"><width sOffset="0.0" a="2.0" b="0.0" c="0.0" d="0.0"/></lane>
+                    <lane id="1" type="driving" level="false"><width sOffset="0.0" a="3.0" b="0.0" c="0.0" d="0.0"/></lane>
+                </left>
+                <center>
+                    <lane id="0" type="none" level="false"/>
+                </center>
+                <right>
+                    <lane id="-1" type="driving" level="false"><width sOffset="0.0" a="3.0" b="0.0" c="0.0" d="0.0"/></lane>
+                    <lane id="-2" type="sidewalk" level="false"><width sOffset="0.0" a="2.0" b="0.0" c="0.0" d="0.0"/></lane>
+                </right>
+            </laneSection>
+        </lanes>
+    </road>
+
+    <!-- Road 10: connecting road inside junction 1 (road 1 to road 2); the import skips it. -->
+    <road name="" length="12.0" id="10" junction="1" rule="RHT">
+        <link>
+            <predecessor elementType="road" elementId="1" contactPoint="end"/>
+            <successor elementType="road" elementId="2" contactPoint="start"/>
+        </link>
+        <type s="0.0" type="town"/>
+        <planView>
+            <geometry s="0.0" x="457994.0" y="5074000.0" hdg="0.0" length="12.0">
+                <line/>
+            </geometry>
+        </planView>
+        <lanes>
+            <laneSection s="0.0">
+                <left>
+                    <lane id="1" type="driving" level="false"><width sOffset="0.0" a="3.5" b="0.0" c="0.0" d="0.0"/></lane>
+                </left>
+                <center>
+                    <lane id="0" type="none" level="false"/>
+                </center>
+                <right>
+                    <lane id="-1" type="driving" level="false"><width sOffset="0.0" a="3.5" b="0.0" c="0.0" d="0.0"/></lane>
+                </right>
+            </laneSection>
+        </lanes>
+    </road>
+
+    <junction id="1" name="Main/Branch">
+        <connection id="0" incomingRoad="1" connectingRoad="10" contactPoint="start">
+            <laneLink from="-1" to="-1"/>
+        </connection>
+    </junction>
+</OpenDRIVE>

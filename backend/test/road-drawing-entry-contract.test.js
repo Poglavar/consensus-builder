@@ -37,15 +37,30 @@ describe('entering the drawing tool', () => {
 });
 
 describe('an edge under decision', () => {
-    // Between computing the edge's footprint and the first dialog, nothing else may happen: the
-    // whole point is that the band is up BEFORE the user is asked about it.
-    it('is drawn at its real width before any placement dialog opens', () => {
-        const decision = sourceSection(
+    // This was "is drawn at its real width before any placement dialog opens": a click used to ask
+    // about the buildings, plots, parks and crossings of its edge right there. Since road-editor.md
+    // decision 5 a click only FINDS them (they are reviewed once at Finish), so the band now covers
+    // the async part of the placement: it is up before the footprint preload starts.
+    it('is drawn at its real width before its footprints load and its obstacles are found', () => {
+        const placement = sourceSection(
             drawingSource,
             'const segmentPolygon = calculateRoadPolygon(segmentPoints, activeSegmentWidth, roadSessionFrame(segmentPoints));',
-            'await resolvePedestrianRoadCrossings('
+            'await ensureBuildingFootprintsForRoadEdge('
         );
-        expect(decision).toContain('showPendingRoadSegment(segmentPolygon);');
+        expect(placement).toContain('showPendingRoadSegment(segmentPolygon);');
+    });
+
+    it('opens no dialog: what the edge runs into is recorded for the Finish review', () => {
+        const click = sourceSection(
+            drawingSource,
+            'async function handleRoadClick(e)',
+            '// Handle road mouse movement for preview'
+        );
+        expect(click).toContain('detectRoadEdgeConflicts(');
+        expect(click).toContain('recordRoadEdgeConflicts(conflict);');
+        ['resolvePedestrianRoadCrossings(', 'resolvePlotCrossings(', 'resolveBuildingObstacles(',
+            'resolveStructureCrossings(', 'showStyledChoice(', 'clipCorridorEdgeThroughBuildings(']
+            .forEach(call => expect(click, call).not.toContain(call));
     });
 
     it('is taken down however the click ends — committed, refused or thrown', () => {

@@ -999,14 +999,30 @@
     // `baseZ` is the semantic bottom offset from the formation; `depth` grows upward, so a curb
     // with baseZ=0 and depth=.15 has a top .15 m above the road formation. With depth=0 only the
     // non-indexed top triangles are emitted. Every interval is an explicit ruled quad.
+    //
+    // `left` and `right` are metres, or FUNCTIONS of the fraction of the formation's length
+    // (0 at the first station, 1 at the last) for a strip whose offsets change along it — a
+    // transition zone (corridor-transition.js) tapers this way in 3D exactly as it does in 2D.
     function buildRuledStripPositions(profile, left, right, baseZ, depth) {
         const stations = profile && Array.isArray(profile.stations) ? profile.stations : [];
         // Corridor strip offsets are authored in true metres. Stations stay in the scene's XY
         // frame, so undo the scene→ground distance scale before adding lateral coordinates.
         const sceneUnitsPerGroundM = profile && finite(profile.distanceScale) && profile.distanceScale > 0
             ? 1 / profile.distanceScale : 1;
-        const leftOffset = (finite(left) ? left : 0) * sceneUnitsPerGroundM;
-        const rightOffset = (finite(right) ? right : 0) * sceneUnitsPerGroundM;
+        const fractions = [];
+        let chain = 0;
+        stations.forEach(function (station, index) {
+            if (index > 0) chain += Math.hypot(station.x - stations[index - 1].x, station.y - stations[index - 1].y);
+            fractions.push(chain);
+        });
+        fractions.forEach(function (value, index) { fractions[index] = chain > 0 ? value / chain : 0; });
+        const offsetAt = function (value, index) {
+            const metres = typeof value === 'function' ? Number(value(fractions[index])) : value;
+            return (finite(metres) ? metres : 0) * sceneUnitsPerGroundM;
+        };
+        const leftOffset = offsetAt(left, 0);
+        const rightOffset = offsetAt(right, 0);
+        const varying = typeof left === 'function' || typeof right === 'function';
         const bottomOffset = finite(baseZ) ? baseZ : 0;
         const semanticDepth = finite(depth) ? Math.max(0, depth) : 0;
         const empty = {
@@ -1018,7 +1034,7 @@
             triangleCount: 0,
             topTriangleCount: 0
         };
-        if (stations.length < 2 || Math.abs(leftOffset - rightOffset) <= EPSILON
+        if (stations.length < 2 || (!varying && Math.abs(leftOffset - rightOffset) <= EPSILON)
             || stations.some(function (station) { return !finite(station.z); })) return empty;
 
         const closed = stations.length >= 4
@@ -1093,8 +1109,8 @@
             const hairpin = previous && next
                 ? Math.sqrt(Math.max(0, (1 + directionDot) / 2)) <= 0.25
                 : false;
-            const bottomLeft = boundaryAt(station, previous, next, leftOffset, bottomOffset);
-            const bottomRight = boundaryAt(station, previous, next, rightOffset, bottomOffset);
+            const bottomLeft = boundaryAt(station, previous, next, offsetAt(left, index), bottomOffset);
+            const bottomRight = boundaryAt(station, previous, next, offsetAt(right, index), bottomOffset);
             const lift = function (point) { return [point[0], point[1], point[2] + semanticDepth]; };
             return {
                 bottomLeft: bottomLeft,
@@ -1106,9 +1122,9 @@
                 hairpin: hairpin
             };
         });
-        const stationVertices = stations.map(function (station) {
-            const bottomLeft = offsetPoint(station, leftOffset, bottomOffset);
-            const bottomRight = offsetPoint(station, rightOffset, bottomOffset);
+        const stationVertices = stations.map(function (station, index) {
+            const bottomLeft = offsetPoint(station, offsetAt(left, index), bottomOffset);
+            const bottomRight = offsetPoint(station, offsetAt(right, index), bottomOffset);
             const topLeft = [bottomLeft[0], bottomLeft[1], bottomLeft[2] + semanticDepth];
             const topRight = [bottomRight[0], bottomRight[1], bottomRight[2] + semanticDepth];
             return {

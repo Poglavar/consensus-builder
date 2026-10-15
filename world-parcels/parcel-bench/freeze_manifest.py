@@ -22,6 +22,10 @@ CITIES = {
                'imagery_rights': RIGHTS},
     'split': {'slug': 'split', 'name': 'Split', 'country_code': 'HR', 'geonames_id': 3190261, 'legal_tradition': LEGAL,
               'imagery_rights': RIGHTS},
+    'zadar': {'slug': 'zadar', 'name': 'Zadar', 'country_code': 'HR', 'legal_tradition': LEGAL,
+              'imagery_rights': RIGHTS},
+    'sibenik': {'slug': 'sibenik', 'name': 'Šibenik', 'country_code': 'HR', 'legal_tradition': LEGAL,
+                'imagery_rights': RIGHTS},
 }
 RULES = (
     'selection tiles choose checkpoints, thresholds and cleanup; final tiles are scored once per milestone '

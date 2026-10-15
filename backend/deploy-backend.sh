@@ -75,7 +75,7 @@ npm ci
 # every file in ONE transaction with ON_ERROR_STOP: any error rolls all of it back and, via set -e,
 # aborts the deploy with the old process still serving. SET ROLE geo_user because DDL needs
 # ownership and every geodata object is owned by geo_user (same rule as cadastre-data's
-# api/scripts/apply_ddl.js). Connection comes from the PG* variables in this dir's .env.
+# api/scripts/apply_ddl.js). Connection comes from DATABASE_URL in this dir's .env.
 #
 # Explicit list, NOT a glob: every file here was checked to be idempotent and to resolve to the
 # schema the live table is in. Deliberately excluded:
@@ -113,7 +113,7 @@ done
     # shellcheck disable=SC1091
     . ./.env
     set +a
-    psql "${PSQL_ARGS[@]}"
+    psql "${DATABASE_URL:?DATABASE_URL is not set in backend/.env}" "${PSQL_ARGS[@]}"
 )
 echo "DDL applied."
 

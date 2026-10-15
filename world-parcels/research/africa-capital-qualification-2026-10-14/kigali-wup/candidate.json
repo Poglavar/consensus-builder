@@ -1,0 +1,51 @@
+{
+  "city": {
+    "code": "580",
+    "name": "Kigali",
+    "point": [
+      30.0945497299371,
+      -1.95092395958257
+    ],
+    "capitalId": "capital:RW:kigali",
+    "wupCityCode": 580
+  },
+  "descriptor": {
+    "id": "rw-nla-rsdi-kigali-parcels",
+    "adapter": "arcgis",
+    "endpoint": "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11",
+    "idField": "upi",
+    "idType": "string",
+    "idPrefix": "RW-LAIS-KGL-",
+    "idPattern": "^[0-9]+(?:/[0-9]+){4}$",
+    "objectIdField": "objectid",
+    "outFields": [
+      "objectid",
+      "upi"
+    ],
+    "pageSize": 2000,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "boundsQueryMode": "offset",
+    "idsQueryMode": "offset",
+    "scope": "Bounded qualification only for the City of Kigali LAIS parcel layer; citywide completeness remains unverified.",
+    "licenceNote": "Saved research reports no licence text on layer; publisher reuse terms unread.",
+    "attribution": "National Land Authority (NLA), Rwanda Spatial Data Infrastructure (RSDI), Kigali Parcels (LAIS).",
+    "queryFormat": "esri-json"
+  },
+  "metricEpsg": "EPSG:32736",
+  "sampleIds": [
+    "RW-LAIS-KGL-1/01/09/03/1018",
+    "RW-LAIS-KGL-1/01/09/03/1021",
+    "RW-LAIS-KGL-1/01/09/03/1022"
+  ],
+  "absentId": "RW-LAIS-KGL-1/01/09/03/999999",
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Saved layer metadata identifies Polygon feature layer Kigali Parcels.",
+      "Saved bounded sample records native UPI values and closed parcel rings."
+    ]
+  }
+}

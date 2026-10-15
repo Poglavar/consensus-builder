@@ -35,7 +35,7 @@ The last two figures are `DGU footprint × six documented above-ground storeys`.
 Rebuild and store the local proposal with:
 
 ```sh
-PGHOST=localhost node backend/scripts/seed-selska-drniska-proposal.mjs --apply --export
+node backend/scripts/seed-selska-drniska-proposal.mjs --apply --export
 ```
 
 The export performs an export/import/export identity check before writing the canonical GeoJSON.

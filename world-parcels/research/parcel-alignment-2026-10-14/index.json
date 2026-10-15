@@ -1,0 +1,273 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-14T12:05:46.916766+00:00",
+  "observedAtStart": "2026-10-14T11:02:11.978Z",
+  "observedAtEnd": "2026-10-14T11:19:01.657Z",
+  "scope": {
+    "sourceCount": 253,
+    "adapterTypes": [
+      "arcgis",
+      "bev-tiles",
+      "catastro-wfs",
+      "dda-public-plots",
+      "dgu-wfs",
+      "dlrs-sheet",
+      "frankfurt-wfs",
+      "geojson-snapshot",
+      "gml-snapshot",
+      "gml-wfs",
+      "hamburg-alkis-wfs",
+      "hmlr-browser",
+      "kazakhstan-pkk",
+      "kerala-entebhoomi",
+      "msda-point",
+      "nairobi-outlines",
+      "ogc-api",
+      "pl-uldk-point",
+      "pulse-public",
+      "shenzhen-land-certain",
+      "socrata",
+      "tkgm-point",
+      "vector-tiles",
+      "wfs"
+    ],
+    "adapterCounts": {
+      "arcgis": {
+        "total": 181,
+        "defaultEligible": 178,
+        "optIn": 3
+      },
+      "bev-tiles": {
+        "total": 1,
+        "defaultEligible": 1,
+        "optIn": 0
+      },
+      "catastro-wfs": {
+        "total": 1,
+        "defaultEligible": 1,
+        "optIn": 0
+      },
+      "dda-public-plots": {
+        "total": 1,
+        "defaultEligible": 1,
+        "optIn": 0
+      },
+      "dgu-wfs": {
+        "total": 1,
+        "defaultEligible": 0,
+        "optIn": 1
+      },
+      "dlrs-sheet": {
+        "total": 1,
+        "defaultEligible": 1,
+        "optIn": 0
+      },
+      "frankfurt-wfs": {
+        "total": 1,
+        "defaultEligible": 1,
+        "optIn": 0
+      },
+      "geojson-snapshot": {
+        "total": 6,
+        "defaultEligible": 6,
+        "optIn": 0
+      },
+      "gml-snapshot": {
+        "total": 2,
+        "defaultEligible": 0,
+        "optIn": 2
+      },
+      "gml-wfs": {
+        "total": 7,
+        "defaultEligible": 7,
+        "optIn": 0
+      },
+      "hamburg-alkis-wfs": {
+        "total": 1,
+        "defaultEligible": 1,
+        "optIn": 0
+      },
+      "hmlr-browser": {
+        "total": 1,
+        "defaultEligible": 1,
+        "optIn": 0
+      },
+      "kazakhstan-pkk": {
+        "total": 1,
+        "defaultEligible": 1,
+        "optIn": 0
+      },
+      "kerala-entebhoomi": {
+        "total": 3,
+        "defaultEligible": 3,
+        "optIn": 0
+      },
+      "msda-point": {
+        "total": 1,
+        "defaultEligible": 1,
+        "optIn": 0
+      },
+      "nairobi-outlines": {
+        "total": 1,
+        "defaultEligible": 1,
+        "optIn": 0
+      },
+      "ogc-api": {
+        "total": 3,
+        "defaultEligible": 3,
+        "optIn": 0
+      },
+      "pl-uldk-point": {
+        "total": 1,
+        "defaultEligible": 1,
+        "optIn": 0
+      },
+      "pulse-public": {
+        "total": 2,
+        "defaultEligible": 2,
+        "optIn": 0
+      },
+      "shenzhen-land-certain": {
+        "total": 1,
+        "defaultEligible": 1,
+        "optIn": 0
+      },
+      "socrata": {
+        "total": 3,
+        "defaultEligible": 3,
+        "optIn": 0
+      },
+      "tkgm-point": {
+        "total": 1,
+        "defaultEligible": 1,
+        "optIn": 0
+      },
+      "vector-tiles": {
+        "total": 14,
+        "defaultEligible": 14,
+        "optIn": 0
+      },
+      "wfs": {
+        "total": 18,
+        "defaultEligible": 16,
+        "optIn": 2
+      }
+    },
+    "defaultEligibleSourceCount": 245,
+    "optInSourceCount": 8,
+    "sourcesWithoutCityIds": [
+      "us-ri-ridem-statewide-tax-parcels",
+      "us-nh-granit-parcel-mosaic",
+      "us-hi-statewide-tmk-parcels",
+      "us-nv-ndwr-statewide-county-parcels",
+      "in-br-matribhoomi-munger-ground",
+      "in-tg-tgrac-cadastral",
+      "in-hr-hsac-faridabad-outlines",
+      "in-hr-hsac-gurugram-outlines",
+      "in-hr-hsac-panchkula-outlines",
+      "in-hr-hsac-yamunanagar-outlines"
+    ],
+    "bindingCount": 652
+  },
+  "cityCount": 649,
+  "transportSummary": {
+    "format": "parcel-alignment-audit-v1",
+    "completedAt": "2026-10-14T11:19:01.657Z",
+    "sourceCount": 253,
+    "cityCount": 649,
+    "bindingCount": 652,
+    "selectedSourceId": null,
+    "requests": 1426,
+    "statuses": {
+      "adapter-output-exact-passthrough": 142,
+      "empty": 17,
+      "held": 277,
+      "request-error": 216
+    },
+    "progress": {
+      "requests": 1426,
+      "requestsThisRun": 1426,
+      "completedSources": 253,
+      "sourceTotal": 253,
+      "completedBindings": 652,
+      "bindingTotal": 652
+    }
+  },
+  "independentSummary": {
+    "bindingCount": 652,
+    "cityCount": 649,
+    "fittedOffsetApplied": false,
+    "generatedAt": "2026-10-14T12:05:12.576577+00:00",
+    "mismatches": [],
+    "schemaVersion": 1,
+    "sourceCount": 253,
+    "sourceGeometryChanged": false,
+    "sourceGeoreferencing": "unverified for every source",
+    "statusCounts": {
+      "crs-transform-mismatch": 0,
+      "crs-transform-verified": 96,
+      "held": 556
+    },
+    "surveyToImageryAlignment": "unverified for every source"
+  },
+  "verdict": "Partial verification: every configured source inventoried; every city binding attempted or explicitly held; 96 independently verified and 556 unresolved. No inferred source-georeferencing correction.",
+  "limitations": [
+    "Native proof verifies the selected operation against bounded output, not absolute cadastral survey accuracy or a basemap.",
+    "Archive reuse, unavailable services, missing native evidence, custom CRS and unavailable grids remain held; empty responses do not establish absence.",
+    "30 NAD83-family comparisons remain held because the publisher operation/reference-frame realization is unresolved; metre-level differences are not proven adapter defects.",
+    "The audit samples precede the UK OSTN15 runtime change. UK fix is verified separately against official control points and browser-native fixtures.",
+    "Historical qualifications retain their original gate results. Future qualification and admission require nine gates including native CRS proof.",
+    "Six initially verified service-CRS conversions were downgraded to held because first-party storage/source CRS differs or is custom. The gate now requires storage/source evidence when published; service projection alone cannot prove it."
+  ],
+  "policy": {
+    "preserveNativeGeometry": true,
+    "fitOffsetRotationScale": false,
+    "guessCrsOrAxisFromMap": false,
+    "correctOnlyKnownCoordinateContracts": true,
+    "requiredEvidence": [
+      "first-party storage/source CRS (preferred over service extent CRS), wire axis order and units",
+      "native ID plus unchanged polygon and source metadata hashes",
+      "documented datum/reference-frame operation; required grid available",
+      "independent PROJ comparison bound to adapter cache and production coordinate contract"
+    ],
+    "comparisonToleranceM": 0.25,
+    "alignmentGate": "Unknown or unavailable operation is held; no ballpark transform, no best-operation fallback."
+  },
+  "fixes": [
+    {
+      "change": "UK OSGB36 conversion uses official OSTN15 grid rather than approximate Helmert transform",
+      "gridSha256": "bcb9c6b3b2760e2740fd80e2182fd2eec4e79038165bac703a9415ed1813dee2",
+      "firstPartySource": "https://www.ordnancesurvey.co.uk/geodesy-positioning/coordinate-transformations/resources",
+      "officialControlPointCount": 40,
+      "maximumControlErrorM": 0.007804331,
+      "previousMaximumControlErrorM": 4.931955,
+      "scope": "Coordinate operation only; official sample coordinate accuracy is not source survey accuracy."
+    },
+    {
+      "change": "Frontend carries explicit source CRS through transport and conversion independently of active city",
+      "scope": "Direct national cadastral responses declaring EPSG:3765 are converted using that CRS; unsupported/mixed explicit CRS fails."
+    },
+    {
+      "change": "ArcGIS/WFS GeoJSON responses with declared incompatible CRS are rejected",
+      "scope": "RFC 7946 responses may omit CRS; present declarations must match requested coordinate system."
+    }
+  ],
+  "legacyStoredRoutes": {
+    "result": "No additional known CRS mismatch found by static ETL/DDL/route review",
+    "contracts": {
+      "Croatia": "stored and returned EPSG:3765",
+      "Ljubljana": "EPSG:3794 ETL explicitly transformed to stored EPSG:3765",
+      "Belgrade": "stored and returned EPSG:32634",
+      "Buenos Aires / NYC / Colorado": "stored and returned EPSG:4326"
+    },
+    "databaseReadPerformed": false
+  },
+  "evidence": {
+    "tmp/parcel-alignment-2026-10-14/inventory.json": "1ceefdc6f426a244b41f121fc390e1f238a5ca1e7cc498e90a5394ee9f459b25",
+    "tmp/parcel-alignment-2026-10-14/summary.json": "48e21c33c3a95b4c3ff105fd31405b57d476721100ceffa66b2e1b4caf6b6bcc",
+    "tmp/parcel-alignment-2026-10-14/independent/summary.json": "ad1fea157d51326beefd0e7a2b8d8a6ef1ce6f5429f9e113319b804abd453b33",
+    "world-parcels/research/parcel-alignment-2026-10-14/sources.json": "2739c91768ed0192e86e2670038f0195ec791783d0e5a30c047c7daa3054a09e",
+    "world-parcels/research/parcel-alignment-2026-10-14/bindings.json": "6523add89315ba4f5e333b51691414d839e2c11e019bed8224858bf10411eb6f"
+  },
+  "rawEvidenceLocation": "Ignored tmp/parcel-alignment-2026-10-14 retains hash-bound metadata, native/canonical samples and independent reports."
+}

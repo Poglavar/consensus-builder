@@ -1,9 +1,10 @@
-// Adapts fixed WFS 1.1/2.0 GeoJSON layers with attribute IDs or verified native feature-ID routes.
+// Adapts fixed WFS 1.0/1.1/2.0 GeoJSON layers with attribute IDs or verified native feature-ID routes.
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import proj4 from 'proj4';
 import { HttpError } from '../utils/helpers.js';
 import { concatBytes } from './byte-utils.js';
 import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
+import { geoJsonResponseCrsMatches } from './response-crs.js';
 
 const sourceRequestQueues = new Map();
 
@@ -31,6 +32,10 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
     const { id, endpoint, featureType, idField, idPrefix, outFields } = descriptor;
     const version = descriptor.version ?? '2.0.0';
     const responseSrid = descriptor.responseSrid;
+    // Projected responses require a published operation in the descriptor and independent
+    // native-coordinate alignment evidence before the source is admitted.
+    const responseProjection = responseSrid !== undefined && responseSrid !== 3857
+        ? descriptor.projection : undefined;
     const responseCoordinatePrecision = descriptor.responseCoordinatePrecision;
     const requestProperties = descriptor.requestProperties;
     const idBatchSize = descriptor.idBatchSize ?? 80;
@@ -47,8 +52,11 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
         : typeof idField !== 'string' || !identifier.test(idField)) || !['string', 'integer'].includes(idType)
         || (descriptor.nativeIdMode !== undefined && !featureIdMode)
         || (!featureIdMode && descriptor.featureIdParameter !== undefined)
-        || !['1.1.0', '2.0.0'].includes(version)
-        || (responseSrid !== undefined && responseSrid !== 3857)
+        || !['1.0.0', '1.1.0', '2.0.0'].includes(version)
+        || (responseSrid !== undefined && responseSrid !== 3857
+            && (!Number.isSafeInteger(responseSrid) || responseSrid <= 0 || typeof responseProjection !== 'string'))
+        || (responseProjection !== undefined && (responseSrid === undefined || responseSrid === 3857
+            || !/^\+proj=/.test(responseProjection)))
         || (responseCoordinatePrecision !== undefined && (responseSrid !== 3857
             || !Number.isInteger(responseCoordinatePrecision) || responseCoordinatePrecision < 0 || responseCoordinatePrecision > 8))
         || (requestProperties !== undefined && typeof requestProperties !== 'boolean')
@@ -78,7 +86,8 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
     }
     // A few GeoServer deployments round GeoJSON to four decimal places. Asking for
     // metres preserves their source precision; transform only an explicitly tagged CRS.
-    const toWgs84 = responseSrid === 3857 ? proj4('EPSG:3857', 'EPSG:4326') : null;
+    const toWgs84 = responseSrid === 3857 ? proj4('EPSG:3857', 'EPSG:4326')
+        : responseProjection ? proj4(responseProjection, 'EPSG:4326') : null;
     function wgs84Geometry(geometry) {
         if (!toWgs84) return geometry;
         try {
@@ -140,11 +149,14 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
         for (;;) {
             const search = new URLSearchParams({
                 service: 'WFS', version, request: 'GetFeature',
-                ...(version === '1.1.0' ? { typeName: featureType } : { typeNames: featureType }),
-                outputFormat: 'application/json', srsName: responseSrid === 3857 ? 'EPSG:3857' : 'CRS:84',
+                ...(version !== '2.0.0' ? { typeName: featureType } : { typeNames: featureType }),
+                outputFormat: 'application/json', srsName: responseSrid ? `EPSG:${responseSrid}` : version === '1.0.0' ? 'EPSG:4326' : 'CRS:84',
                 ...(!featureIdMode ? { sortBy: idField } : {}),
                 ...(requestProperties ? { propertyName: [...new Set([descriptor.geometryField, ...outFields])].join(',') } : {}),
-                ...(version === '1.1.0' ? { maxFeatures: String(pageSize) } : { count: String(pageSize) }),
+                // GeoServer accepts count beside WFS 1.0 maxFeatures; both advertise the
+                // same observed limit to the qualification request recorder.
+                ...(version === '1.0.0' ? { maxFeatures: String(pageSize), count: String(pageSize) }
+                    : version === '1.1.0' ? { maxFeatures: String(pageSize) } : { count: String(pageSize) }),
                 // GeoServer requests a natural primary-key sort even for startIndex=0.
                 // A feature-ID-only layer has no attribute to invent for that sort.
                 ...(!featureIdMode || offset > 0 ? { startIndex: String(offset) } : {}), ...params
@@ -171,17 +183,18 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
                 throw upstreamError('Parcel provider is unavailable.');
             }
             if (payload?.type !== 'FeatureCollection' || !Array.isArray(payload.features)) throw upstreamError('WFS parcel provider returned an invalid FeatureCollection.');
-            if (toWgs84 && payload.features.length && (payload.crs?.type !== 'name' || ![
-                'EPSG:3857', 'urn:ogc:def:crs:EPSG::3857', 'http://www.opengis.net/def/crs/EPSG/0/3857'
-            ].includes(payload.crs?.properties?.name))) {
-                throw upstreamError('WFS parcel provider omitted or changed its projected response CRS.');
+            if (!geoJsonResponseCrsMatches(payload.crs, responseSrid ?? 4326,
+                { required: toWgs84 !== null && payload.features.length > 0 })) {
+                throw upstreamError(toWgs84
+                    ? 'WFS parcel provider omitted or changed its projected response CRS.'
+                    : 'WFS parcel provider declared an unsupported or mismatched response CRS.');
             }
             const page = payload.features;
             if (page.length > pageSize) throw upstreamError('WFS parcel provider returned more features than the configured page limit.');
-            const pageMatched = version === '1.1.0' ? payload.totalFeatures : payload.numberMatched;
+            const pageMatched = version !== '2.0.0' ? payload.totalFeatures : payload.numberMatched;
             if (!Number.isSafeInteger(pageMatched) || pageMatched < 0
                 || (version === '2.0.0' && payload.numberReturned !== page.length)
-                || (version === '1.1.0' && ((payload.numberMatched !== undefined && payload.numberMatched !== pageMatched)
+                || (version !== '2.0.0' && ((payload.numberMatched !== undefined && payload.numberMatched !== pageMatched)
                     || (payload.numberReturned !== undefined && payload.numberReturned !== page.length)))
                 || (matched !== undefined && pageMatched !== matched)) {
                 throw upstreamError('WFS parcel provider returned missing, inconsistent or changing match counts.');
@@ -222,7 +235,7 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
             const spatial = `BBOX(${descriptor.geometryField},${west},${south},${east},${north},'CRS:84')`;
             return query({ cql_filter: `(${attributeFilter.where}) AND (${spatial})` });
         }
-        const result = query({ bbox: `${bbox.join(',')},CRS:84` });
+        const result = query({ bbox: `${bbox.join(',')},${version === '1.0.0' ? 'EPSG:4326' : 'CRS:84'}` });
         return featureIdMode ? verifyFeatureIds(result) : result;
     }
 

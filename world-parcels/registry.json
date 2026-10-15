@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-12",
+  "updatedAt": "2026-10-14",
   "queueSource": "UN DESA WUP 2025 city identifiers; qualification-admission-2026-10-12.json",
   "sources": [
     {
@@ -18066,6 +18066,644 @@
       "appCityIds": [
         "kotwali"
       ]
+    },
+    {
+      "sourceId": "rw-nla-rsdi-kigali-parcels",
+      "name": "Rwanda NLA / RSDI — Kigali LAIS parcels",
+      "operator": "National Land Authority, Rwanda Spatial Data Infrastructure",
+      "countryCode": "RW",
+      "scope": "City of Kigali layer; fresh tests cover 13 bounded cells near the WUP centre and exact sample identities. Citywide completeness is unverified.",
+      "endpoint": "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11",
+      "method": "GET",
+      "responseFormat": "ArcGIS JSON polygon geometry with native UPI references",
+      "verificationStatus": "verified_nonempty_sample",
+      "reuseStatus": "terms_unconfirmed",
+      "verifiedCityIds": [
+        "wup2025:580"
+      ],
+      "evidenceFile": "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
+      "liveIntegration": {
+        "status": "held_quality_review",
+        "evidenceFile": "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
+        "technicalBlockers": [
+          "All protocol checks passed at the WUP centre, but 82 unchanged features contain one material overlap of 6.96 m² (0.463% of the smaller parcel). No geometry was repaired or filtered."
+        ]
+      }
+    },
+    {
+      "sourceId": "in-br-ncog-tiles",
+      "name": "Bihar cadastral maps — indianopenmaps tile snapshot (NCOG_Bihar_Cadastrals)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Cadastral parcels of Bihar from the NCOG_Bihar_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-15 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/bihar/ncog/{z}/{x}/{y}.pbf",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11363/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:11363",
+        "wup2025:10681",
+        "wup2025:10889",
+        "wup2025:11117",
+        "wup2025:11221",
+        "wup2025:11415"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "munger",
+          "bhore",
+          "dighwara",
+          "ekangar_sarai",
+          "bibhutpur",
+          "asarganj"
+        ],
+        "additionalCityEvidence": {
+          "munger": "world-parcels/research/qualification-2026-10-14-india-tiles/11363/qualification.json",
+          "bhore": "world-parcels/research/qualification-2026-10-14-india-tiles/10681/qualification.json",
+          "dighwara": "world-parcels/research/qualification-2026-10-14-india-tiles/10889/qualification.json",
+          "ekangar_sarai": "world-parcels/research/qualification-2026-10-14-india-tiles/11117/qualification.json",
+          "bibhutpur": "world-parcels/research/qualification-2026-10-14-india-tiles/11221/qualification.json",
+          "asarganj": "world-parcels/research/qualification-2026-10-14-india-tiles/11415/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "munger",
+        "bhore",
+        "dighwara",
+        "ekangar_sarai",
+        "bibhutpur",
+        "asarganj"
+      ]
+    },
+    {
+      "sourceId": "in-jk-lris-khasra-tiles",
+      "name": "Jammu and Kashmir cadastral maps — indianopenmaps tile snapshot (LRIS_JK_Khasra_Cadastrals)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Cadastral parcels of Jammu and Kashmir from the LRIS_JK_Khasra_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-15 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/jammu-and-kashmir/khasras/lris/{z}/{x}/{y}.pbf",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/1967/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:1967",
+        "wup2025:3577"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "srinagar",
+          "jammu"
+        ],
+        "additionalCityEvidence": {
+          "srinagar": "world-parcels/research/qualification-2026-10-14-india-tiles/1967/qualification.json",
+          "jammu": "world-parcels/research/qualification-2026-10-14-india-tiles/3577/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "srinagar",
+        "jammu"
+      ]
+    },
+    {
+      "sourceId": "in-gj-ncog-tiles",
+      "name": "Gujarat cadastral maps — indianopenmaps tile snapshot (NCOG_Gujarat_Cadastrals)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Cadastral parcels of Gujarat from the NCOG_Gujarat_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-13 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/gujarat/ncog/{z}/{x}/{y}.pbf",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/6960/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:6960",
+        "wup2025:7337"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "anand",
+          "vadodara"
+        ],
+        "additionalCityEvidence": {
+          "anand": "world-parcels/research/qualification-2026-10-14-india-tiles/6960/qualification.json",
+          "vadodara": "world-parcels/research/qualification-2026-10-14-india-tiles/7337/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "anand",
+        "vadodara"
+      ]
+    },
+    {
+      "sourceId": "in-rj-ncog-tiles",
+      "name": "Rajasthan cadastral maps — indianopenmaps tile snapshot (NCOG_Rajasthan_Cadastrals)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Cadastral parcels of Rajasthan from the NCOG_Rajasthan_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-15 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/rajasthan/ncog/{z}/{x}/{y}.pbf",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/6990/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:6990"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "udaipur"
+        ],
+        "additionalCityEvidence": {
+          "udaipur": "world-parcels/research/qualification-2026-10-14-india-tiles/6990/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "udaipur"
+      ]
+    },
+    {
+      "sourceId": "in-dl-gsdl-tiles",
+      "name": "Delhi cadastral maps — indianopenmaps tile snapshot (GSDL_Cadastrals)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Cadastral parcels of Delhi from the GSDL_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-13 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/delhi/urban/gsdl/{z}/{x}/{y}.pbf",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8430/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:8430"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "rasoi"
+        ],
+        "additionalCityEvidence": {
+          "rasoi": "world-parcels/research/qualification-2026-10-14-india-tiles/8430/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "rasoi"
+      ]
+    },
+    {
+      "sourceId": "in-mh-mrsac-tiles",
+      "name": "Maharashtra cadastral maps — indianopenmaps tile snapshot (MRSAC_Cadastrals)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Cadastral parcels of Maharashtra from the MRSAC_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-13 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/maharashtra/mrsac/{z}/{x}/{y}.pbf",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8697/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:8697",
+        "wup2025:8893",
+        "wup2025:8925",
+        "wup2025:9007",
+        "wup2025:9521"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "malegaon",
+          "ahmednagar",
+          "kolhapur",
+          "sangli",
+          "nanded"
+        ],
+        "additionalCityEvidence": {
+          "malegaon": "world-parcels/research/qualification-2026-10-14-india-tiles/8697/qualification.json",
+          "ahmednagar": "world-parcels/research/qualification-2026-10-14-india-tiles/8893/qualification.json",
+          "kolhapur": "world-parcels/research/qualification-2026-10-14-india-tiles/8925/qualification.json",
+          "sangli": "world-parcels/research/qualification-2026-10-14-india-tiles/9007/qualification.json",
+          "nanded": "world-parcels/research/qualification-2026-10-14-india-tiles/9521/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "malegaon",
+        "ahmednagar",
+        "kolhapur",
+        "sangli",
+        "nanded"
+      ]
+    },
+    {
+      "sourceId": "in-up-ncog-tiles",
+      "name": "Uttar Pradesh cadastral maps — indianopenmaps tile snapshot (NCOG_UttarPradesh_Cadastrals)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Cadastral parcels of Uttar Pradesh from the NCOG_UttarPradesh_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-14 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/uttar-pradesh/ncog/{z}/{x}/{y}.pbf",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8730/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:8730",
+        "wup2025:9349",
+        "wup2025:9485",
+        "wup2025:9797",
+        "wup2025:10065",
+        "wup2025:10097",
+        "wup2025:10281",
+        "wup2025:10311",
+        "wup2025:10399",
+        "wup2025:10427",
+        "wup2025:10429",
+        "wup2025:10479",
+        "wup2025:10481",
+        "wup2025:10501"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "hapur",
+          "farrukhabad",
+          "hardoi",
+          "fatehpur",
+          "faizabad",
+          "sultanpur",
+          "gyanpur",
+          "mehdawal",
+          "gorakhpur",
+          "jianpur",
+          "azamgarh",
+          "chauri_chaura",
+          "dohrighat",
+          "saidpur"
+        ],
+        "additionalCityEvidence": {
+          "hapur": "world-parcels/research/qualification-2026-10-14-india-tiles/8730/qualification.json",
+          "farrukhabad": "world-parcels/research/qualification-2026-10-14-india-tiles/9349/qualification.json",
+          "hardoi": "world-parcels/research/qualification-2026-10-14-india-tiles/9485/qualification.json",
+          "fatehpur": "world-parcels/research/qualification-2026-10-14-india-tiles/9797/qualification.json",
+          "faizabad": "world-parcels/research/qualification-2026-10-14-india-tiles/10065/qualification.json",
+          "sultanpur": "world-parcels/research/qualification-2026-10-14-india-tiles/10097/qualification.json",
+          "gyanpur": "world-parcels/research/qualification-2026-10-14-india-tiles/10281/qualification.json",
+          "mehdawal": "world-parcels/research/qualification-2026-10-14-india-tiles/10311/qualification.json",
+          "gorakhpur": "world-parcels/research/qualification-2026-10-14-india-tiles/10399/qualification.json",
+          "jianpur": "world-parcels/research/qualification-2026-10-14-india-tiles/10427/qualification.json",
+          "azamgarh": "world-parcels/research/qualification-2026-10-14-india-tiles/10429/qualification.json",
+          "chauri_chaura": "world-parcels/research/qualification-2026-10-14-india-tiles/10479/qualification.json",
+          "dohrighat": "world-parcels/research/qualification-2026-10-14-india-tiles/10481/qualification.json",
+          "saidpur": "world-parcels/research/qualification-2026-10-14-india-tiles/10501/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "hapur",
+        "farrukhabad",
+        "hardoi",
+        "fatehpur",
+        "faizabad",
+        "sultanpur",
+        "gyanpur",
+        "mehdawal",
+        "gorakhpur",
+        "jianpur",
+        "azamgarh",
+        "chauri_chaura",
+        "dohrighat",
+        "saidpur"
+      ]
+    },
+    {
+      "sourceId": "in-mp-bhulekh-survey-tiles",
+      "name": "Madhya Pradesh cadastral maps — indianopenmaps tile snapshot (MPBhulekh_MP_Survey_Cadastrals)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Cadastral parcels of Madhya Pradesh from the MPBhulekh_MP_Survey_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-14 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/madhya-pradesh/surveys/mpbhulekh/{z}/{x}/{y}.pbf",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8820/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:8820",
+        "wup2025:8886",
+        "wup2025:9121",
+        "wup2025:9213",
+        "wup2025:9851",
+        "wup2025:9969"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "ujjain",
+          "indore",
+          "gwalior",
+          "bhopal",
+          "jabalpur",
+          "satna"
+        ],
+        "additionalCityEvidence": {
+          "ujjain": "world-parcels/research/qualification-2026-10-14-india-tiles/8820/qualification.json",
+          "indore": "world-parcels/research/qualification-2026-10-14-india-tiles/8886/qualification.json",
+          "gwalior": "world-parcels/research/qualification-2026-10-14-india-tiles/9121/qualification.json",
+          "bhopal": "world-parcels/research/qualification-2026-10-14-india-tiles/9213/qualification.json",
+          "jabalpur": "world-parcels/research/qualification-2026-10-14-india-tiles/9851/qualification.json",
+          "satna": "world-parcels/research/qualification-2026-10-14-india-tiles/9969/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "ujjain",
+        "indore",
+        "gwalior",
+        "bhopal",
+        "jabalpur",
+        "satna"
+      ]
+    },
+    {
+      "sourceId": "in-ka-kgis-tiles",
+      "name": "Karnataka cadastral maps — indianopenmaps tile snapshot (KGISMAPS_KN_Cadastrals)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Cadastral parcels of Karnataka from the KGISMAPS_KN_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-13 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/karnataka/kgismaps/{z}/{x}/{y}.pbf",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9189/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:9189",
+        "wup2025:9475",
+        "wup2025:9701"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "dharwad",
+          "davanagere",
+          "ballari"
+        ],
+        "additionalCityEvidence": {
+          "dharwad": "world-parcels/research/qualification-2026-10-14-india-tiles/9189/qualification.json",
+          "davanagere": "world-parcels/research/qualification-2026-10-14-india-tiles/9475/qualification.json",
+          "ballari": "world-parcels/research/qualification-2026-10-14-india-tiles/9701/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "dharwad",
+        "davanagere",
+        "ballari"
+      ]
+    },
+    {
+      "sourceId": "in-tn-tngis-tiles",
+      "name": "Tamil Nadu cadastral maps — indianopenmaps tile snapshot (TNGIS_TN_Cadastrals)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Cadastral parcels of Tamil Nadu from the TNGIS_TN_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-14 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/tamil-nadu/tngis/{z}/{x}/{y}.pbf",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9895/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:9895",
+        "wup2025:10021",
+        "wup2025:10121",
+        "wup2025:10445"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "coimbatore",
+          "tiruppur",
+          "erode",
+          "vellore"
+        ],
+        "additionalCityEvidence": {
+          "coimbatore": "world-parcels/research/qualification-2026-10-14-india-tiles/9895/qualification.json",
+          "tiruppur": "world-parcels/research/qualification-2026-10-14-india-tiles/10021/qualification.json",
+          "erode": "world-parcels/research/qualification-2026-10-14-india-tiles/10121/qualification.json",
+          "vellore": "world-parcels/research/qualification-2026-10-14-india-tiles/10445/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "coimbatore",
+        "tiruppur",
+        "erode",
+        "vellore"
+      ]
+    },
+    {
+      "sourceId": "in-ap-apsac-tiles",
+      "name": "Andhra Pradesh cadastral maps — indianopenmaps tile snapshot (APSAC_AP_Cadastrals)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Cadastral parcels of Andhra Pradesh from the APSAC_AP_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-13 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/andhra-pradesh/apsac/{z}/{x}/{y}.pbf",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10489/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:10489"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "tirupati"
+        ],
+        "additionalCityEvidence": {
+          "tirupati": "world-parcels/research/qualification-2026-10-14-india-tiles/10489/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "tirupati"
+      ]
+    },
+    {
+      "sourceId": "in-od-odisha4kgeo-tiles",
+      "name": "Odisha cadastral maps — indianopenmaps tile snapshot (Odisha4kgeo_OD_Cadastrals)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Cadastral parcels of Odisha from the Odisha4kgeo_OD_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-14 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/odisha/odisha4kgeo/{z}/{x}/{y}.pbf",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11301/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:11301",
+        "wup2025:11467",
+        "wup2025:11569",
+        "wup2025:11573",
+        "wup2025:11581"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "rourkela",
+          "brahmapur",
+          "cuttack",
+          "bhubaneshwar",
+          "choudwar"
+        ],
+        "additionalCityEvidence": {
+          "rourkela": "world-parcels/research/qualification-2026-10-14-india-tiles/11301/qualification.json",
+          "brahmapur": "world-parcels/research/qualification-2026-10-14-india-tiles/11467/qualification.json",
+          "cuttack": "world-parcels/research/qualification-2026-10-14-india-tiles/11569/qualification.json",
+          "bhubaneshwar": "world-parcels/research/qualification-2026-10-14-india-tiles/11573/qualification.json",
+          "choudwar": "world-parcels/research/qualification-2026-10-14-india-tiles/11581/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "rourkela",
+        "brahmapur",
+        "cuttack",
+        "bhubaneshwar",
+        "choudwar"
+      ]
+    },
+    {
+      "sourceId": "in-jh-jsac-tiles",
+      "name": "Jharkhand cadastral maps — indianopenmaps tile snapshot (JSAC_JH_Cadastrals)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Cadastral parcels of Jharkhand from the JSAC_JH_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-15 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/jharkhand/jsac/{z}/{x}/{y}.pbf",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11445/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:11445"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "dhanbad"
+        ],
+        "additionalCityEvidence": {
+          "dhanbad": "world-parcels/research/qualification-2026-10-14-india-tiles/11445/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "dhanbad"
+      ]
+    },
+    {
+      "sourceId": "in-wb-amrut-tiles",
+      "name": "West Bengal cadastral maps — indianopenmaps tile snapshot (WB_AMRUT_Cadastrals)",
+      "operator": null,
+      "countryCode": "IN",
+      "scope": "Cadastral parcels of West Bengal from the WB_AMRUT_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-15 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/west-bengal/urban/wb-amrut/{z}/{x}/{y}.pbf",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11531/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:11531",
+        "wup2025:11561",
+        "wup2025:11623",
+        "wup2025:11711",
+        "wup2025:11829"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "asansol",
+          "siliguri",
+          "jalpaiguri",
+          "kharagpur",
+          "krishnanagar"
+        ],
+        "additionalCityEvidence": {
+          "asansol": "world-parcels/research/qualification-2026-10-14-india-tiles/11531/qualification.json",
+          "siliguri": "world-parcels/research/qualification-2026-10-14-india-tiles/11561/qualification.json",
+          "jalpaiguri": "world-parcels/research/qualification-2026-10-14-india-tiles/11623/qualification.json",
+          "kharagpur": "world-parcels/research/qualification-2026-10-14-india-tiles/11711/qualification.json",
+          "krishnanagar": "world-parcels/research/qualification-2026-10-14-india-tiles/11829/qualification.json"
+        }
+      },
+      "appCityIds": [
+        "asansol",
+        "siliguri",
+        "jalpaiguri",
+        "kharagpur",
+        "krishnanagar"
+      ]
+    },
+    {
+      "sourceId": "tz-mlhhsd-eardhi-current-tp-spatial-units",
+      "name": "Tanzania e-Ardhi current town-plan planning-survey footprints",
+      "operator": "United Republic of Tanzania Ministry of Lands, Housing and Human Settlements Development",
+      "countryCode": "TZ",
+      "scope": "The Ministry e-Ardhi TP Drawing / current town-plan layer returned 87 unchanged planning-survey footprints around the unchanged WUP locator. All nine bounded qualification gates and independent primary review passed. These footprints do not establish legal cadastral title, citywide completeness, the internal storage frame or absolute survey accuracy.",
+      "endpoint": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows",
+      "method": "Bounded safe ID and unchanged geometry reads; independent metric audit and primary review",
+      "responseFormat": "WFS GeoJSON and declared-default GML 3.2",
+      "crs": "Publisher-declared default EPSG:4326 GML north,east; GeoJSON east,north; metric EPSG:32736. Internal storage CRS and epoch unverified.",
+      "reuseStatus": "Anonymous public geometry and publisher attribution verified; explicit reuse conditions, legal title and survey accuracy remain informational and unconfirmed.",
+      "evidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/mwanza/evidence/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:1868"
+      ],
+      "verificationStatus": "verified_sample_partial_coverage",
+      "runtimeReadiness": "technical_qualified_pending_admission",
+      "appCityIds": [],
+      "adapterCandidateFile": "world-parcels/research/africa-next-qualification-2026-10-14/mwanza/candidate.json",
+      "alignmentEvidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/mwanza/evidence/alignment-report.json"
+    },
+    {
+      "sourceId": "bf-dgi-ecadastre-public-geojson",
+      "name": "Burkina Faso DGI public cadastral plot footprints",
+      "operator": "Direction générale des Impôts du Burkina Faso",
+      "countryCode": "BF",
+      "scope": "The current DGI public PLOT route returned 144 unchanged nearby polygons with stable provider IDs on repeated viewport reads; independent GEOS found no invalid geometries, duplicate geometry or material overlaps. Exact native-ID reads, explicit absence, complete paging/manifest semantics and an independent native-coordinate proof remain unestablished. The empty WUP viewport does not establish citywide absence.",
+      "endpoint": "https://ecadastre.dgi.bf/api/locations/geojson",
+      "method": "Bounded safe ID and unchanged geometry reads; independent metric audit and primary review",
+      "responseFormat": "Public bounded GeoJSON PLOT route",
+      "crs": "EPSG:4326 declared JSON wire frame; native/storage coordinate operation unverified. Metric EPSG:32630.",
+      "reuseStatus": "Anonymous public geometry and publisher attribution verified; explicit reuse conditions, legal title and survey accuracy remain informational and unconfirmed.",
+      "evidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/bobo-dioulasso/qualification.json",
+      "verifiedCityIds": [
+        "wup2025:378"
+      ],
+      "verificationStatus": "verified_sample_partial_coverage",
+      "runtimeReadiness": "held_source_contract_preflight",
+      "appCityIds": [],
+      "sourceContractEvidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/bobo-dioulasso/source-profile.json"
     }
   ],
   "countryCoverage": [
@@ -22670,9 +23308,11 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 136,
-      "parcelStatus": "temporarily_unavailable",
-      "sourceIds": [],
-      "researchFile": "research/indore.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-mp-bhulekh-survey-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8886/qualification.json",
       "previousResearchFile": "research/indore.json",
       "retryFile": "research/retry/cities/indore.json",
       "aliases": [
@@ -22705,7 +23345,13 @@
           "research/india-africa-batch4-2026-10-08/indore-municipal-diagnostic.json",
           "research/india-africa-batch4-2026-10-08/india-secondary-network-checks.json"
         ]
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8886/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8886/metric-report.json",
+      "population2025": 3476423,
+      "population2015": 2968258,
+      "appCityId": "indore",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:9912",
@@ -23518,9 +24164,11 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 167,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/asansol.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-wb-amrut-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11531/qualification.json",
       "previousResearchFile": "research/asansol.json",
       "retryFile": "research/retry/cities/asansol.json",
       "aliases": [
@@ -23541,7 +24189,13 @@
         "freshVerifiedSample": false,
         "technicalBlocker": "No public, unauthenticated parcel geometry/sample verified in this pass. Banglarbhumi host direct fetch timed out; official WBUDMA service is OTP based and describes record lookup, without public parcel geometry confirmed.",
         "nextStep": "Find a reachable official cadastral map route for the WUP point, confirm its mouza, then verify a plot boundary/map sheet with stable plot identity. Search and shared WB urban-service leads do not establish parcel geometry."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11531/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11531/metric-report.json",
+      "population2025": 2924741,
+      "population2015": 2777163,
+      "appCityId": "asansol",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:1601",
@@ -24234,9 +24888,11 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 199,
-      "parcelStatus": "no_verified_sample_candidate_citywide",
-      "sourceIds": [],
-      "researchFile": "research/bhopal.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-mp-bhulekh-survey-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9213/qualification.json",
       "previousResearchFile": "research/bhopal.json",
       "retryFile": "research/retry/cities/bhopal.json",
       "aliases": [
@@ -24257,7 +24913,13 @@
         "freshVerifiedSample": false,
         "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
         "nextStep": "Open the official WebGIS in a live browser session, resolve the WUP point to district/tehsil/village, and verify the parcel feature geometry and stable khasra identifier."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9213/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9213/metric-report.json",
+      "population2025": 2487205,
+      "population2015": 2119456,
+      "appCityId": "bhopal",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:6446",
@@ -28711,14 +29373,16 @@
       ],
       "largestRank": null,
       "growthRank": 95,
-      "sourceIds": [],
-      "researchFile": "research/india-africa-2026-10-08/india-city-10427.json",
+      "sourceIds": [
+        "in-up-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10427/qualification.json",
       "aliases": [
         "wup2025:10427",
         "Jianpur"
       ],
       "latestAssessmentFile": "research/india-africa-2026-10-08/india-city-10427.json",
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "verified_sample_partial_coverage",
       "dataFindings": {
         "registryFound": null,
         "registryBasis": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
@@ -28732,7 +29396,13 @@
         "freshVerifiedSample": false,
         "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
         "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10427/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10427/metric-report.json",
+      "population2025": 286148,
+      "population2015": 157465,
+      "appCityId": "jianpur",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:5479",
@@ -29041,14 +29711,16 @@
       ],
       "largestRank": null,
       "growthRank": 106,
-      "sourceIds": [],
-      "researchFile": "research/india-africa-2026-10-08/india-city-10481.json",
+      "sourceIds": [
+        "in-up-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10481/qualification.json",
       "aliases": [
         "wup2025:10481",
         "Dohrighat"
       ],
       "latestAssessmentFile": "research/india-africa-2026-10-08/india-city-10481.json",
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "verified_sample_partial_coverage",
       "dataFindings": {
         "registryFound": null,
         "registryBasis": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
@@ -29062,7 +29734,13 @@
         "freshVerifiedSample": false,
         "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
         "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10481/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10481/metric-report.json",
+      "population2025": 239251,
+      "population2015": 134093,
+      "appCityId": "dohrighat",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:10829",
@@ -29366,14 +30044,16 @@
       ],
       "largestRank": null,
       "growthRank": 126,
-      "sourceIds": [],
-      "researchFile": "research/india-africa-2026-10-08/india-city-11581.json",
+      "sourceIds": [
+        "in-od-odisha4kgeo-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11581/qualification.json",
       "aliases": [
         "wup2025:11581",
         "Choudwar"
       ],
       "latestAssessmentFile": "research/india-africa-2026-10-08/india-city-11581.json",
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "verified_sample_partial_coverage",
       "dataFindings": {
         "registryFound": null,
         "registryBasis": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target.",
@@ -29387,7 +30067,13 @@
         "freshVerifiedSample": false,
         "technicalBlocker": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target.",
         "nextStep": "Select the WUP location in the official district/tahsil/village/RI-circle map viewer, then verify a plot response with nonempty geometry and stable plot identifier."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11581/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11581/metric-report.json",
+      "population2025": 150970,
+      "population2015": 87893,
+      "appCityId": "choudwar",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:11285",
@@ -29600,14 +30286,16 @@
       ],
       "largestRank": null,
       "growthRank": 138,
-      "sourceIds": [],
-      "researchFile": "research/india-africa-2026-10-08/india-city-11415.json",
+      "sourceIds": [
+        "in-br-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11415/qualification.json",
       "aliases": [
         "wup2025:11415",
         "Asarganj"
       ],
       "latestAssessmentFile": "research/india-africa-2026-10-08/india-city-11415.json",
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "verified_sample_partial_coverage",
       "dataFindings": {
         "registryFound": null,
         "registryBasis": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
@@ -29621,7 +30309,13 @@
         "freshVerifiedSample": false,
         "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
         "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11415/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11415/metric-report.json",
+      "population2025": 204072,
+      "population2015": 120595,
+      "appCityId": "asarganj",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:6187",
@@ -29678,14 +30372,16 @@
       ],
       "largestRank": null,
       "growthRank": 140,
-      "sourceIds": [],
-      "researchFile": "research/india-africa-2026-10-08/india-city-10501.json",
+      "sourceIds": [
+        "in-up-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10501/qualification.json",
       "aliases": [
         "wup2025:10501",
         "Saidpur"
       ],
       "latestAssessmentFile": "research/india-africa-2026-10-08/india-city-10501.json",
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "verified_sample_partial_coverage",
       "dataFindings": {
         "registryFound": null,
         "registryBasis": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
@@ -29699,7 +30395,13 @@
         "freshVerifiedSample": false,
         "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
         "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10501/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10501/metric-report.json",
+      "population2025": 121560,
+      "population2015": 72061,
+      "appCityId": "saidpur",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:3135",
@@ -29834,14 +30536,16 @@
       ],
       "largestRank": null,
       "growthRank": 145,
-      "sourceIds": [],
-      "researchFile": "research/india-africa-2026-10-08/india-city-10479.json",
+      "sourceIds": [
+        "in-up-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10479/qualification.json",
       "aliases": [
         "wup2025:10479",
         "Chauri Chaura"
       ],
       "latestAssessmentFile": "research/india-africa-2026-10-08/india-city-10479.json",
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "verified_sample_partial_coverage",
       "dataFindings": {
         "registryFound": null,
         "registryBasis": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
@@ -29855,7 +30559,13 @@
         "freshVerifiedSample": false,
         "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
         "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10479/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10479/metric-report.json",
+      "population2025": 126176,
+      "population2015": 74976,
+      "appCityId": "chauri_chaura",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:1780",
@@ -30029,14 +30739,16 @@
       ],
       "largestRank": null,
       "growthRank": 160,
-      "sourceIds": [],
-      "researchFile": "research/india-africa-2026-10-08/india-city-11117.json",
+      "sourceIds": [
+        "in-br-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11117/qualification.json",
       "aliases": [
         "wup2025:11117",
         "Ekangar Sarai"
       ],
       "latestAssessmentFile": "research/india-africa-2026-10-08/india-city-11117.json",
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "verified_sample_partial_coverage",
       "dataFindings": {
         "registryFound": null,
         "registryBasis": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
@@ -30050,7 +30762,13 @@
         "freshVerifiedSample": false,
         "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
         "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11117/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11117/metric-report.json",
+      "population2025": 94319,
+      "population2015": 56924,
+      "appCityId": "ekangar_sarai",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:6497",
@@ -30848,14 +31566,16 @@
       ],
       "largestRank": null,
       "growthRank": 200,
-      "sourceIds": [],
-      "researchFile": "research/india-africa-2026-10-08/india-city-10311.json",
+      "sourceIds": [
+        "in-up-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10311/qualification.json",
       "aliases": [
         "wup2025:10311",
         "Mehdawal"
       ],
       "latestAssessmentFile": "research/india-africa-2026-10-08/india-city-10311.json",
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "verified_sample_partial_coverage",
       "dataFindings": {
         "registryFound": null,
         "registryBasis": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
@@ -30869,7 +31589,13 @@
         "freshVerifiedSample": false,
         "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
         "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10311/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10311/metric-report.json",
+      "population2025": 91178,
+      "population2015": 56591,
+      "appCityId": "mehdawal",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "village:IN-KL-020301",
@@ -36099,9 +36825,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 365,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-10889-dighwara.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-br-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10889/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-10889-dighwara.json",
       "aliases": [
         "wup2025:10889",
@@ -36126,7 +36854,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-10889-dighwara.json",
         "checkedAt": "2026-10-08",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10889/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10889/metric-report.json",
+      "population2025": 2469443,
+      "population2015": 1783157,
+      "appCityId": "dighwara",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:7476",
@@ -36234,9 +36968,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 368,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-9895-coimbatore.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-tn-tngis-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9895/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-9895-coimbatore.json",
       "aliases": [
         "wup2025:9895",
@@ -36261,7 +36997,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-9895-coimbatore.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9895/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9895/metric-report.json",
+      "population2025": 2382988,
+      "population2015": 2176802,
+      "appCityId": "coimbatore",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:10119",
@@ -36705,9 +37447,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 379,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-7337-vadodara.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-gj-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/7337/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-7337-vadodara.json",
       "aliases": [
         "wup2025:7337",
@@ -36732,7 +37476,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-7337-vadodara.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/7337/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/7337/metric-report.json",
+      "population2025": 2270298,
+      "population2015": 2056818.0000000002,
+      "appCityId": "vadodara",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:12126",
@@ -37216,9 +37966,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 391,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-11445-dhanbad.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-jh-jsac-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11445/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-11445-dhanbad.json",
       "aliases": [
         "wup2025:11445",
@@ -37246,7 +37998,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-11445-dhanbad.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11445/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11445/metric-report.json",
+      "population2025": 2020181,
+      "population2015": 1827995,
+      "appCityId": "dhanbad",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:11483",
@@ -37858,9 +38616,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 406,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-11221-bibhutpur.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-br-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11221/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-11221-bibhutpur.json",
       "aliases": [
         "wup2025:11221",
@@ -37885,7 +38645,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-11221-bibhutpur.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11221/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11221/metric-report.json",
+      "population2025": 1904411,
+      "population2015": 1410467,
+      "appCityId": "bibhutpur",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:7749",
@@ -39304,9 +40070,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 440,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-9851-jabalpur.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-mp-bhulekh-survey-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9851/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-9851-jabalpur.json",
       "aliases": [
         "wup2025:9851",
@@ -39331,7 +40099,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-9851-jabalpur.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9851/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9851/metric-report.json",
+      "population2025": 1582131,
+      "population2015": 1487675,
+      "appCityId": "jabalpur",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:7709",
@@ -39646,9 +40420,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 448,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-9121-gwalior.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-mp-bhulekh-survey-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9121/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-9121-gwalior.json",
       "aliases": [
         "wup2025:9121",
@@ -39673,7 +40449,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-9121-gwalior.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9121/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9121/metric-report.json",
+      "population2025": 1554246,
+      "population2015": 1453111,
+      "appCityId": "gwalior",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:5852",
@@ -39959,9 +40741,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 455,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-10399-gorakhpur.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-up-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10399/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-10399-gorakhpur.json",
       "aliases": [
         "wup2025:10399",
@@ -39991,7 +40775,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-10399-gorakhpur.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10399/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10399/metric-report.json",
+      "population2025": 1519206,
+      "population2015": 1408643,
+      "appCityId": "gorakhpur",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:2214",
@@ -42753,9 +43543,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 517,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-10021-tiruppur.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-tn-tngis-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10021/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-10021-tiruppur.json",
       "aliases": [
         "wup2025:10021",
@@ -42782,7 +43574,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-10021-tiruppur.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10021/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10021/metric-report.json",
+      "population2025": 1242837,
+      "population2015": 1154563,
+      "appCityId": "tiruppur",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:7221",
@@ -42841,9 +43639,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 519,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-10281-gyanpur.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-up-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10281/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-10281-gyanpur.json",
       "aliases": [
         "wup2025:10281",
@@ -42870,7 +43670,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-10281-gyanpur.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10281/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10281/metric-report.json",
+      "population2025": 1237249,
+      "population2015": 901363,
+      "appCityId": "gyanpur",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:8604",
@@ -43683,9 +44489,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 538,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-3577-jammu.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-jk-lris-khasra-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/3577/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-3577-jammu.json",
       "aliases": [
         "wup2025:3577",
@@ -43715,7 +44523,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-3577-jammu.json",
         "checkedAt": "2026-10-08T23:57:31Z",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/3577/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/3577/metric-report.json",
+      "population2025": 1154466,
+      "population2015": 1084156,
+      "appCityId": "jammu",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:4622",
@@ -44333,9 +45147,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 552,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-11573-bhubaneshwar.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-od-odisha4kgeo-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11573/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-11573-bhubaneshwar.json",
       "aliases": [
         "wup2025:11573",
@@ -44366,7 +45182,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-11573-bhubaneshwar.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11573/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11573/metric-report.json",
+      "population2025": 1146434,
+      "population2015": 992915,
+      "appCityId": "bhubaneshwar",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:5489",
@@ -44564,9 +45386,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 557,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-1967-srinagar.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-jk-lris-khasra-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/1967/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-1967-srinagar.json",
       "aliases": [
         "wup2025:1967",
@@ -44598,7 +45422,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-1967-srinagar.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/1967/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/1967/metric-report.json",
+      "population2025": 1126638,
+      "population2015": 975366,
+      "appCityId": "srinagar",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:378",
@@ -44613,30 +45443,33 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 558,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "bf-dgi-ecadastre-public-geojson"
+      ],
       "researchFile": "research/overnight-cities-2026-10-08/city-378-bobo-dioulasso.json",
-      "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-378-bobo-dioulasso.json",
+      "latestAssessmentFile": "research/africa-next-qualification-2026-10-14/bobo-dioulasso/qualification.json",
       "aliases": [
         "wup2025:378",
         "Bobo-Dioulasso",
         "bobo dioulasso"
       ],
-      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeReadiness": "held_source_contract_preflight",
       "dataFindings": {
         "registryFound": true,
-        "registryBasis": "The official commune site publishes a city-plan page as a static image. National DGI sources document a cadastral office for Bobo-Dioulasso and cadastral-extract workflows; official government sources identify SyC@D/sif.bf as the integrated cadastre/domain procedure platform. The inspected app exposes an Angular shell and authenticated workflow routes, not an anonymous parcel feature/schema contract. No data form or parcel lookup was used.",
+        "registryBasis": "The current DGI public PLOT route returned 144 unchanged nearby polygons with stable provider IDs on repeated viewport reads; independent GEOS found no invalid geometries, duplicate geometry or material overlaps. Exact native-ID reads, explicit absence, complete paging/manifest semantics and an independent native-coordinate proof remain unestablished. The empty WUP viewport does not establish citywide absence.",
         "registryEvidenceUrls": [
           "https://mairie-bobo.bf/plan-de-la-ville/",
           "https://dgi.bf/contacts/",
           "https://dgi.bf/faq/",
           "https://gouvernement.gov.bf/actualites/foncier-lancement-de-la-plateforme-https-sif-bf-pour-une-gestion-transparente-des-procedures/",
           "https://dgi.impots.gov.bf/",
-          "https://sif.bf/"
+          "https://sif.bf/",
+          "https://ecadastre.dgi.bf/api/locations/geojson"
         ],
-        "verifiedSample": false,
-        "publicParcelGeometryFound": false,
-        "reason": "The publicly indexed Cadastre Burkina host currently returns a default nginx page by anonymous HTTPS, and its www hostname fails standard certificate hostname verification. No TLS bypass was attempted. The official Syc@D portal returns an application shell; static client routes include authentication, geoserver and parcel-procedure APIs, but no public anonymous geometry/schema contract was established. No login or API data call was made."
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true,
+        "reason": "The current DGI public PLOT route returned 144 unchanged nearby polygons with stable provider IDs on repeated viewport reads; independent GEOS found no invalid geometries, duplicate geometry or material overlaps. Exact native-ID reads, explicit absence, complete paging/manifest semantics and an independent native-coordinate proof remain unestablished. The empty WUP viewport does not establish citywide absence."
       },
       "populationResearch": {
         "cohort": "overnight-top1000",
@@ -44647,7 +45480,9 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-378-bobo-dioulasso.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/bobo-dioulasso/qualification.json",
+      "metricReportFile": "world-parcels/research/africa-next-qualification-2026-10-14/bobo-dioulasso/metric-report.json"
     },
     {
       "cityId": "wup2025:7228",
@@ -47752,9 +48587,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 624,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-9189-dharwad.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-ka-kgis-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9189/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-9189-dharwad.json",
       "aliases": [
         "wup2025:9189",
@@ -47782,7 +48619,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-9189-dharwad.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9189/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9189/metric-report.json",
+      "population2025": 965667,
+      "population2015": 934963,
+      "appCityId": "dharwad",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:10358",
@@ -48024,9 +48867,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 630,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-10065-faizabad.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-up-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10065/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-10065-faizabad.json",
       "aliases": [
         "wup2025:10065",
@@ -48057,7 +48902,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-10065-faizabad.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10065/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10065/metric-report.json",
+      "population2025": 952074,
+      "population2015": 991741,
+      "appCityId": "faizabad",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:11153",
@@ -48299,26 +49150,29 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 636,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "tz-mlhhsd-eardhi-current-tp-spatial-units"
+      ],
       "researchFile": "research/overnight-cities-2026-10-08/city-1868-mwanza.json",
-      "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-1868-mwanza.json",
+      "latestAssessmentFile": "research/africa-next-qualification-2026-10-14/mwanza/evidence/qualification.json",
       "aliases": [
         "wup2025:1868",
         "Mwanza",
         "mwanza"
       ],
-      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeReadiness": "technical_qualified_pending_admission",
       "dataFindings": {
         "registryFound": true,
-        "registryBasis": "Mwanza City Council’s own strategic plan documents its Urban Planning, Land and Natural Resources activity, city survey-and-mapping capacity, surveyed plots and title-deed preparation. The figures are historical aggregate evidence, so they establish city-local land survey/registry work but not current database coverage or a public parcel geometry route.",
+        "registryBasis": "The Ministry e-Ardhi TP Drawing / current town-plan layer returned 87 unchanged planning-survey footprints around the unchanged WUP locator. All nine bounded qualification gates and independent primary review passed. These footprints do not establish legal cadastral title, citywide completeness, the internal storage frame or absolute survey accuracy.",
         "registryEvidenceUrls": [
           "https://www.mwanzacc.go.tz/storage/app/uploads/public/5bb/74d/e80/5bb74de803120412478265.pdf",
-          "https://www.mwanzacc.go.tz/"
+          "https://www.mwanzacc.go.tz/",
+          "https://eardhi.lands.go.tz/map/geoserver/taspro/ows"
         ],
-        "verifiedSample": false,
-        "publicParcelGeometryFound": false,
-        "reason": "Historical city-local government evidence confirms surveying/land administration, but no safe anonymous map or schema-bearing parcel feature endpoint was exposed by the inspected official public HTML. The national property-specific e-Ardhi estimator was not used."
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true,
+        "reason": "The Ministry e-Ardhi TP Drawing / current town-plan layer returned 87 unchanged planning-survey footprints around the unchanged WUP locator. All nine bounded qualification gates and independent primary review passed. These footprints do not establish legal cadastral title, citywide completeness, the internal storage frame or absolute survey accuracy."
       },
       "populationResearch": {
         "cohort": "overnight-top1000",
@@ -48329,7 +49183,9 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-1868-mwanza.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/africa-next-qualification-2026-10-14/mwanza/evidence/qualification.json",
+      "metricReportFile": "world-parcels/research/africa-next-qualification-2026-10-14/mwanza/evidence/metric-report.json"
     },
     {
       "cityId": "wup2025:1014",
@@ -48438,9 +49294,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 639,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-11829-krishnanagar.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-wb-amrut-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11829/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-11829-krishnanagar.json",
       "aliases": [
         "wup2025:11829",
@@ -48470,7 +49328,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-11829-krishnanagar.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11829/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11829/metric-report.json",
+      "population2025": 948788,
+      "population2015": 903598,
+      "appCityId": "krishnanagar",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:4368",
@@ -49658,9 +50522,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 665,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-10121-erode.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-tn-tngis-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10121/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-10121-erode.json",
       "aliases": [
         "wup2025:10121",
@@ -49689,7 +50555,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-10121-erode.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10121/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10121/metric-report.json",
+      "population2025": 892758,
+      "population2015": 893378,
+      "appCityId": "erode",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:8695",
@@ -52139,9 +53011,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 718,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-10445-vellore.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-tn-tngis-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10445/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-10445-vellore.json",
       "aliases": [
         "wup2025:10445",
@@ -52170,7 +53044,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-10445-vellore.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10445/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10445/metric-report.json",
+      "population2025": 820103,
+      "population2015": 782098,
+      "appCityId": "vellore",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:8925",
@@ -52185,9 +53065,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 719,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-8925-kolhapur.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-mh-mrsac-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8925/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-8925-kolhapur.json",
       "aliases": [
         "wup2025:8925",
@@ -52217,7 +53099,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-8925-kolhapur.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8925/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8925/metric-report.json",
+      "population2025": 819671,
+      "population2015": 776032,
+      "appCityId": "kolhapur",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:4011",
@@ -52363,9 +53251,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 723,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-11363-munger.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-br-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11363/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-11363-munger.json",
       "aliases": [
         "wup2025:11363",
@@ -52392,7 +53282,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-11363-munger.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11363/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11363/metric-report.json",
+      "population2025": 814325,
+      "population2015": 703539,
+      "appCityId": "munger",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:5015",
@@ -52823,9 +53719,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 733,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-6990-udaipur.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-rj-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/6990/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-6990-udaipur.json",
       "aliases": [
         "wup2025:6990",
@@ -52852,7 +53750,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-6990-udaipur.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/6990/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/6990/metric-report.json",
+      "population2025": 807617,
+      "population2015": 768653,
+      "appCityId": "udaipur",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:10092",
@@ -53965,9 +54869,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 758,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-11301-rourkela.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-od-odisha4kgeo-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11301/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-11301-rourkela.json",
       "aliases": [
         "wup2025:11301",
@@ -53996,7 +54902,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-11301-rourkela.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11301/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11301/metric-report.json",
+      "population2025": 776631,
+      "population2015": 677240,
+      "appCityId": "rourkela",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:11711",
@@ -54011,9 +54923,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 759,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-11711-kharagpur.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-wb-amrut-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11711/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-11711-kharagpur.json",
       "aliases": [
         "wup2025:11711",
@@ -54040,7 +54954,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-11711-kharagpur.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11711/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11711/metric-report.json",
+      "population2025": 776133,
+      "population2015": 732867,
+      "appCityId": "kharagpur",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:7568",
@@ -54379,9 +55299,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 767,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-11569-cape-town.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-od-odisha4kgeo-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11569/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-11569-cape-town.json",
       "aliases": [
         "wup2025:11569",
@@ -54406,7 +55328,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-11569-cape-town.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11569/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11569/metric-report.json",
+      "population2025": 770260,
+      "population2015": 728122,
+      "appCityId": "cuttack",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:9521",
@@ -54421,9 +55349,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 768,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-9521-nanded.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-mh-mrsac-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9521/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-9521-nanded.json",
       "aliases": [
         "wup2025:9521",
@@ -54452,7 +55382,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-9521-nanded.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9521/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9521/metric-report.json",
+      "population2025": 770215,
+      "population2015": 715379,
+      "appCityId": "nanded",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:4160",
@@ -54755,9 +55691,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 775,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-9007-sangli.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-mh-mrsac-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9007/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-9007-sangli.json",
       "aliases": [
         "wup2025:9007",
@@ -54786,7 +55724,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-9007-sangli.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9007/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9007/metric-report.json",
+      "population2025": 761451,
+      "population2015": 782362,
+      "appCityId": "sangli",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:4536",
@@ -57316,9 +58260,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 829,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-8430-rasoi.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-dl-gsdl-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8430/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-8430-rasoi.json",
       "aliases": [
         "wup2025:8430",
@@ -57348,7 +58294,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-8430-rasoi.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8430/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8430/metric-report.json",
+      "population2025": 703790,
+      "population2015": 590098,
+      "appCityId": "rasoi",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:10362",
@@ -59928,9 +60880,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 884,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-6960-anand.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-gj-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/6960/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-6960-anand.json",
       "aliases": [
         "wup2025:6960",
@@ -59963,7 +60917,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-6960-anand.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/6960/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/6960/metric-report.json",
+      "population2025": 664789,
+      "population2015": 633748,
+      "appCityId": "anand",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:7051",
@@ -60403,9 +61363,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 894,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-11561-siliguri.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-wb-amrut-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11561/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-11561-siliguri.json",
       "aliases": [
         "wup2025:11561",
@@ -60435,7 +61397,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-11561-siliguri.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11561/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11561/metric-report.json",
+      "population2025": 658183,
+      "population2015": 627291,
+      "appCityId": "siliguri",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:4713",
@@ -61117,9 +62085,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 909,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-11623-jalpaiguri.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-wb-amrut-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11623/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-11623-jalpaiguri.json",
       "aliases": [
         "wup2025:11623",
@@ -61149,7 +62119,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-11623-jalpaiguri.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11623/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11623/metric-report.json",
+      "population2025": 642158,
+      "population2015": 631842,
+      "appCityId": "jalpaiguri",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:8679",
@@ -62370,9 +63346,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 936,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-8697-malegaon.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-mh-mrsac-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8697/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-8697-malegaon.json",
       "aliases": [
         "wup2025:8697",
@@ -62403,7 +63381,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-8697-malegaon.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8697/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8697/metric-report.json",
+      "population2025": 618133,
+      "population2015": 654936,
+      "appCityId": "malegaon",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:9349",
@@ -62418,9 +63402,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 937,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-9349-farrukhabad.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-up-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9349/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-9349-farrukhabad.json",
       "aliases": [
         "wup2025:9349",
@@ -62450,7 +63436,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-9349-farrukhabad.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9349/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9349/metric-report.json",
+      "population2025": 615831,
+      "population2015": 830939,
+      "appCityId": "farrukhabad",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:3110",
@@ -64515,9 +65507,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 982,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-11467-brahmapur.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-od-odisha4kgeo-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11467/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-11467-brahmapur.json",
       "aliases": [
         "wup2025:11467",
@@ -64547,7 +65541,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-11467-brahmapur.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11467/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/11467/metric-report.json",
+      "population2025": 590028,
+      "population2015": 557724,
+      "appCityId": "brahmapur",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:10948",
@@ -64846,9 +65846,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 989,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-9701-ballari.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-ka-kgis-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9701/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-9701-ballari.json",
       "aliases": [
         "wup2025:9701",
@@ -64877,7 +65879,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-9701-ballari.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9701/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9701/metric-report.json",
+      "population2025": 587340,
+      "population2015": 561132,
+      "appCityId": "ballari",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:10549",
@@ -65262,9 +66270,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 998,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-8820-ujjain.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-mp-bhulekh-survey-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8820/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-8820-ujjain.json",
       "aliases": [
         "wup2025:8820",
@@ -65294,7 +66304,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-8820-ujjain.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8820/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8820/metric-report.json",
+      "population2025": 583405,
+      "population2015": 539351,
+      "appCityId": "ujjain",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:7606",
@@ -66920,9 +67936,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 1034,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-10097-sultanpur.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-up-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10097/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-10097-sultanpur.json",
       "aliases": [
         "wup2025:10097",
@@ -66949,7 +67967,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-10097-sultanpur.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10097/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10097/metric-report.json",
+      "population2025": 562032,
+      "population2015": 555139,
+      "appCityId": "sultanpur",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:5394",
@@ -67193,9 +68217,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 1040,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-9475-davanagere.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-ka-kgis-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9475/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-9475-davanagere.json",
       "aliases": [
         "wup2025:9475",
@@ -67222,7 +68248,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-9475-davanagere.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9475/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9475/metric-report.json",
+      "population2025": 559117,
+      "population2015": 529506,
+      "appCityId": "davanagere",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:10684",
@@ -67842,9 +68874,11 @@
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "researchOrder": 1054,
       "checked": true,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/overnight-cities-2026-10-08/city-10429-azamgarh.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-up-ncog-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10429/qualification.json",
       "latestAssessmentFile": "research/overnight-cities-2026-10-08/city-10429-azamgarh.json",
       "aliases": [
         "wup2025:10429",
@@ -67874,7 +68908,13 @@
         "evidenceFile": "research/overnight-cities-2026-10-08/city-10429-azamgarh.json",
         "checkedAt": "2026-10-09",
         "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10429/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10429/metric-report.json",
+      "population2025": 551621,
+      "population2015": 476447,
+      "appCityId": "azamgarh",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:11250",
@@ -68450,13 +69490,15 @@
       "checked": true,
       "checkedAt": "2026-10-09",
       "rootReviewedAt": "2026-10-09T05:33:34.746161+00:00",
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "parcelStatus": "verified_sample_partial_coverage",
       "registryFound": true,
       "verifiedSample": false,
       "publicParcelGeometryFound": false,
       "registryGeometryFound": false,
-      "sourceIds": [],
-      "researchFile": "research/overnight-followon-2026-10-09/city-10489-tirupati.json",
+      "sourceIds": [
+        "in-ap-apsac-tiles"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10489/qualification.json",
       "latestAssessmentFile": "research/overnight-followon-2026-10-09/city-10489-tirupati.json",
       "aliases": [
         "wup2025:10489",
@@ -68514,7 +69556,12 @@
           "rootReviewedAt": "2026-10-09T05:33:34.746161+00:00",
           "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim."
         }
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10489/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10489/metric-report.json",
+      "population2015": 522484.00000000006,
+      "appCityId": "tirupati",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:2187",
@@ -71518,10 +72565,12 @@
       "checked": true,
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "registryGeometryFound": false,
-      "researchFile": "research/overnight-followon-2026-10-09/city-8893-ahmednagar.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8893/qualification.json",
       "latestAssessmentFile": "research/overnight-followon-2026-10-09/city-8893-ahmednagar.json",
-      "parcelStatus": "no_open_geometry_found",
-      "sourceIds": [],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-mh-mrsac-tiles"
+      ],
       "aliases": [
         "wup2025:8893",
         "Ahmednagar"
@@ -71563,7 +72612,12 @@
           "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
           "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim."
         }
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8893/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8893/metric-report.json",
+      "population2015": 533508,
+      "appCityId": "ahmednagar",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:5917",
@@ -73237,10 +74291,12 @@
       "checked": true,
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "registryGeometryFound": false,
-      "researchFile": "research/overnight-followon-2026-10-09/city-10681-bhore.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10681/qualification.json",
       "latestAssessmentFile": "research/overnight-followon-2026-10-09/city-10681-bhore.json",
-      "parcelStatus": "no_open_geometry_found",
-      "sourceIds": [],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-br-ncog-tiles"
+      ],
       "aliases": [
         "wup2025:10681",
         "Bhore"
@@ -73282,7 +74338,12 @@
           "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
           "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim."
         }
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10681/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/10681/metric-report.json",
+      "population2015": 381431,
+      "appCityId": "bhore",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:5868",
@@ -73393,15 +74454,17 @@
       },
       "resultCategory": "no_verified_public_geometry",
       "technicalBlocker": "No source-native anonymous response containing a complete polygon at the exact WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public parcel geometry does not exist.",
-      "population2025": 517402,
+      "population2025": 517402.00000000006,
       "populationPlausibility2025": "High",
       "checked": true,
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "registryGeometryFound": false,
-      "researchFile": "research/overnight-followon-2026-10-09/city-9969-satna.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9969/qualification.json",
       "latestAssessmentFile": "research/overnight-followon-2026-10-09/city-9969-satna.json",
-      "parcelStatus": "no_open_geometry_found",
-      "sourceIds": [],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-mp-bhulekh-survey-tiles"
+      ],
       "aliases": [
         "wup2025:9969",
         "Satna"
@@ -73443,7 +74506,12 @@
           "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
           "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim."
         }
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9969/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9969/metric-report.json",
+      "population2015": 477068,
+      "appCityId": "satna",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:6683",
@@ -78608,10 +79676,12 @@
       "checked": true,
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "registryGeometryFound": false,
-      "researchFile": "research/overnight-next-2026-10-09/city-8730-hapur.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8730/qualification.json",
       "latestAssessmentFile": "research/overnight-next-2026-10-09/city-8730-hapur.json",
-      "parcelStatus": "no_open_geometry_found",
-      "sourceIds": [],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-up-ncog-tiles"
+      ],
       "aliases": [
         "wup2025:8730",
         "Hapur"
@@ -78653,7 +79723,12 @@
           "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
           "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim."
         }
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8730/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/8730/metric-report.json",
+      "population2015": 430762,
+      "appCityId": "hapur",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:9188",
@@ -78849,10 +79924,12 @@
       "checked": true,
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "registryGeometryFound": false,
-      "researchFile": "research/overnight-next-2026-10-09/city-9485-hardoi.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9485/qualification.json",
       "latestAssessmentFile": "research/overnight-next-2026-10-09/city-9485-hardoi.json",
-      "parcelStatus": "no_open_geometry_found",
-      "sourceIds": [],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-up-ncog-tiles"
+      ],
       "aliases": [
         "wup2025:9485",
         "Hardoi"
@@ -78894,7 +79971,12 @@
           "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
           "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim."
         }
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9485/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9485/metric-report.json",
+      "population2015": 750334,
+      "appCityId": "hardoi",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:9571",
@@ -79090,10 +80172,12 @@
       "checked": true,
       "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
       "registryGeometryFound": false,
-      "researchFile": "research/overnight-next-2026-10-09/city-9797-fatehpur.json",
+      "researchFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9797/qualification.json",
       "latestAssessmentFile": "research/overnight-next-2026-10-09/city-9797-fatehpur.json",
-      "parcelStatus": "no_open_geometry_found",
-      "sourceIds": [],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-up-ncog-tiles"
+      ],
       "aliases": [
         "wup2025:9797",
         "Fatehpur"
@@ -79134,7 +80218,12 @@
           "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
           "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim."
         }
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9797/qualification.json",
+      "metricReportFile": "world-parcels/research/qualification-2026-10-14-india-tiles/9797/metric-report.json",
+      "population2015": 503360,
+      "appCityId": "fatehpur",
+      "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
     },
     {
       "cityId": "wup2025:9846",
@@ -91103,6 +92192,47 @@
       "population2015": 209700,
       "appCityId": "rewari",
       "note": "Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified."
+    },
+    {
+      "cityId": "wup2025:580",
+      "wupCityCode": 580,
+      "name": "Kigali",
+      "country": "Rwanda",
+      "countryCode": "RW",
+      "centerLatLon": [
+        -1.95092395958257,
+        30.0945497299371
+      ],
+      "citySource": "UN DESA WUP 2025 City_Code 580; exact 2025 population-weighted centre from the archived bulk source.",
+      "aliases": [
+        "capital:RW:kigali",
+        "Kigali"
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "rw-nla-rsdi-kigali-parcels"
+      ],
+      "researchFile": "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
+      "latestAssessmentFile": "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
+      "qualificationEvidenceFile": "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
+      "runtimeReadiness": "held_quality_review",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The official NLA/RSDI Kigali LAIS FeatureServer returned full parcel polygons with native UPI references at the exact WUP centre. Fresh two-pass 13-cell sampling and exact ID rereads verified 82 unchanged features; coverage is bounded and topology remains held.",
+        "registryEvidenceUrls": [
+          "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11"
+        ],
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true,
+        "reason": "All protocol checks passed at the WUP centre, but 82 unchanged features contain one material overlap of 6.96 m² (0.463% of the smaller parcel). No geometry was repaired or filtered."
+      },
+      "liveIntegration": {
+        "status": "held_quality_review",
+        "evidenceFile": "research/africa-capital-qualification-2026-10-14/kigali-wup/qualification.json",
+        "technicalBlockers": [
+          "All protocol checks passed at the WUP centre, but 82 unchanged features contain one material overlap of 6.96 m² (0.463% of the smaller parcel). No geometry was repaired or filtered."
+        ]
+      }
     }
   ],
   "countryProbes": [

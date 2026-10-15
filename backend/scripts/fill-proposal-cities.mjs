@@ -8,13 +8,13 @@
 // Dry run by default (read-only transaction); --apply writes `city` and proposal_data.city in one
 // transaction. Idempotent: a second run finds nothing to fill.
 //
-//   PGHOST=127.0.0.1 node scripts/fill-proposal-cities.mjs                 # dry run, local
-//   PGHOST=127.0.0.1 node scripts/fill-proposal-cities.mjs --apply
+//   node scripts/fill-proposal-cities.mjs                 # dry run, local
+//   node scripts/fill-proposal-cities.mjs --apply
 //   node scripts/fill-proposal-cities.mjs --table consensus.proposal       # production layout
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createClient } from '../db/connection.cjs';
 import { bindingFrame } from '../proposals/binding.js';
 import { footprintParts, hasFootprint } from '../proposals/footprint.js';
 import { citiesCovering } from '../proposals/publication-city.js';
@@ -79,7 +79,7 @@ async function main() {
     const args = parseArgs(process.argv.slice(2));
     if (args.help) { console.log(USAGE); return; }
     dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
-    const client = new pg.Client();
+    const client = createClient();
     await client.connect();
     try {
         await client.query(args.apply ? 'BEGIN' : 'BEGIN READ ONLY');

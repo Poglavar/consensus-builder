@@ -69,14 +69,15 @@ function environment(proposals) {
     const L = leafletStub();
     const map = mapStub();
     const buildCorridorStrips = vi.fn(() => [{ type: 'lane', polygons: [[[0, 0], [0, 1], [1, 1]]] }]);
-    // One treatment per pair of distinct corridors in the input, so the render's keying and
-    // scoping can be observed without any geometry.
-    const buildCrossCorridorJunctionTreatments = vi.fn(entries => {
-        const ids = Array.from(new Set(entries.map(entry => String(entry.corridorId)))).sort();
+    // One treatment per pair of distinct corridors in the input (the junction set is found over
+    // [{ corridorId, entries }]), so the render's keying and scoping can be observed without any
+    // geometry. Arms are what a corridor's own drawing reads from a junction; none here.
+    const buildCorridorJunctionSet = vi.fn(corridors => {
+        const ids = Array.from(new Set(corridors.map(corridor => String(corridor.corridorId)))).sort();
         const out = [];
         for (let i = 0; i < ids.length; i += 1) {
             for (let j = i + 1; j < ids.length; j += 1) {
-                out.push({ lat: 1, lng: 1, degree: 3, surfacePolygons: [[[0, 0], [0, 1], [1, 1]]], crosswalkPolygons: [], corridorIds: [ids[i], ids[j]] });
+                out.push({ lat: 1, lng: 1, degree: 3, surfacePolygons: [[[0, 0], [0, 1], [1, 1]]], crosswalkPolygons: [], corridorIds: [ids[i], ids[j]], arms: [] });
             }
         }
         return out;
@@ -95,7 +96,7 @@ function environment(proposals) {
         buildCorridorStrips,
         buildCorridorLaneMarkingsForEntries: entries => entries.map(() => [{ kind: 'edge', lines: [[[0, 0], [0, 1]]] }]),
         buildCorridorJunctionTreatmentsForEntries: () => [],
-        buildCrossCorridorJunctionTreatments,
+        buildCorridorJunctionSet,
         calculateRoadPolygon: () => [[0, 0], [0, 1], [1, 1]],
         // every builder is stubbed, so any frame object serves (corridor-footprint.js frameForDefinition)
         __corridorFootprint: { frameForDefinition: () => ({ latLngToMetric: (lat, lng) => [lng, lat], metricToLatLng: (x, y) => [y, x] }) },
@@ -104,7 +105,7 @@ function environment(proposals) {
     context.window = context;
     context.globalThis = context;
     vm.runInNewContext(renderSource, context);
-    return { context, map, buildCorridorStrips, buildCrossCorridorJunctionTreatments, state: context.__corridorRenderState, proposals };
+    return { context, map, buildCorridorStrips, buildCorridorJunctionSet, state: context.__corridorRenderState, proposals };
 }
 
 const near = (lat, lng) => [{ lat, lng }, { lat: lat + 0.001, lng: lng + 0.001 }];
@@ -115,7 +116,7 @@ describe('keyed applied-corridor render', () => {
         env.context.refreshAppliedCorridorStrips();
         expect(env.buildCorridorStrips).toHaveBeenCalledTimes(3);
         expect(Array.from(env.state.byId.keys()).sort()).toEqual(['a', 'b', 'c']);
-        expect(Array.from(env.state.crossJunctions.keys()).sort()).toEqual(['a|b@1.000000,1.000000', 'a|c@1.000000,1.000000', 'b|c@1.000000,1.000000']);
+        expect(Array.from(env.state.junctions.keys()).sort()).toEqual(['a|b@1.000000,1.000000', 'a|c@1.000000,1.000000', 'b|c@1.000000,1.000000']);
         expect(env.map.layers.has(env.state.root)).toBe(true);
         expect(env.map.getPane('corridorJunctionsPane').style).toEqual({ zIndex: '656', pointerEvents: 'none' });
         expect(env.map.getPane('corridorMarkingsPane').style).toEqual({ zIndex: '657', pointerEvents: 'none' });
@@ -126,12 +127,12 @@ describe('keyed applied-corridor render', () => {
         const env = environment([road('a', near(0, 0)), road('b', near(0.0005, 0.0005))]);
         env.context.refreshAppliedCorridorStrips();
         const groupA = env.state.byId.get('a').group;
-        const junction = env.state.crossJunctions.get('a|b@1.000000,1.000000');
+        const junction = env.state.junctions.get('a|b@1.000000,1.000000');
         env.context.refreshAppliedCorridorStrips();
         expect(env.buildCorridorStrips).toHaveBeenCalledTimes(2);
-        expect(env.buildCrossCorridorJunctionTreatments).toHaveBeenCalledTimes(1);
+        expect(env.buildCorridorJunctionSet).toHaveBeenCalledTimes(1);
         expect(env.state.byId.get('a').group).toBe(groupA);
-        expect(env.state.crossJunctions.get('a|b@1.000000,1.000000')).toBe(junction);
+        expect(env.state.junctions.get('a|b@1.000000,1.000000')).toBe(junction);
     });
 
     it('rebuilds only the corridor whose definition changed, and only its junctions', () => {
@@ -141,8 +142,8 @@ describe('keyed applied-corridor render', () => {
         const groupA = env.state.byId.get('a').group;
         const groupB = env.state.byId.get('b').group;
         const groupC = env.state.byId.get('c').group;
-        const junctionAC = env.state.crossJunctions.get('a|c@1.000000,1.000000');
-        const junctionAB = env.state.crossJunctions.get('a|b@1.000000,1.000000');
+        const junctionAC = env.state.junctions.get('a|c@1.000000,1.000000');
+        const junctionAB = env.state.junctions.get('a|b@1.000000,1.000000');
 
         proposals[1].roadProposal.definition.points = near(0.0006, 0.0004);
         env.buildCorridorStrips.mockClear();
@@ -154,11 +155,14 @@ describe('keyed applied-corridor render', () => {
         expect(env.state.byId.get('b').group).not.toBe(groupB);
         expect(env.state.root.hasLayer(groupB)).toBe(false);
         expect(env.state.root.hasLayer(env.state.byId.get('b').group)).toBe(true);
-        expect(env.state.crossJunctions.get('a|c@1.000000,1.000000')).toBe(junctionAC);
-        expect(env.state.crossJunctions.get('a|b@1.000000,1.000000')).not.toBe(junctionAB);
+        expect(env.state.junctions.get('a|c@1.000000,1.000000')).toBe(junctionAC);
+        expect(env.state.junctions.get('a|b@1.000000,1.000000')).not.toBe(junctionAB);
         expect(env.state.root.hasLayer(junctionAB)).toBe(false);
     });
 
+    // The stubbed treatments carry no arms, so no corridor's own drawing depends on them; with real
+    // junctions the neighbours' lane lines are cut at the stop lines and the neighbours rebuild
+    // when a junction they met disappears (corridorJunctionSignature).
     it('unapplying a corridor removes its group and its junctions without rebuilding anything', () => {
         const proposals = [road('a', near(0, 0)), road('b', near(0.0005, 0.0005)), road('c', near(0.0002, 0.0008))];
         const env = environment(proposals);
@@ -170,7 +174,7 @@ describe('keyed applied-corridor render', () => {
         expect(env.buildCorridorStrips).not.toHaveBeenCalled();
         expect(env.state.byId.has('c')).toBe(false);
         expect(env.state.root.hasLayer(groupC)).toBe(false);
-        expect(Array.from(env.state.crossJunctions.keys()).sort()).toEqual(['a|b@1.000000,1.000000']);
+        expect(Array.from(env.state.junctions.keys()).sort()).toEqual(['a|b@1.000000,1.000000']);
     });
 
     it('only corridors whose bbox touches a changed one are handed to the junction finder', () => {
@@ -178,10 +182,10 @@ describe('keyed applied-corridor render', () => {
         const env = environment(proposals);
         env.context.refreshAppliedCorridorStrips();
         proposals[0].roadProposal.definition.points = near(0.0001, 0.0001);
-        env.buildCrossCorridorJunctionTreatments.mockClear();
+        env.buildCorridorJunctionSet.mockClear();
         env.context.refreshAppliedCorridorStrips();
-        expect(env.buildCrossCorridorJunctionTreatments).toHaveBeenCalledTimes(1);
-        const ids = env.buildCrossCorridorJunctionTreatments.mock.calls[0][0].map(entry => entry.corridorId);
+        expect(env.buildCorridorJunctionSet).toHaveBeenCalledTimes(1);
+        const ids = env.buildCorridorJunctionSet.mock.calls[0][0].map(corridor => corridor.corridorId);
         expect(ids).toEqual(['a', 'b']);
     });
 
@@ -223,5 +227,23 @@ describe('keyed render pure pieces', () => {
         expect(pure.corridorRenderBbox({}, [])).toBeNull();
         expect(pure.corridorBboxIntersects([0, 0, 1, 1], [1.00001, 0, 2, 1], 1e-4)).toBe(true);
         expect(pure.corridorBboxIntersects([0, 0, 1, 1], [1.001, 0, 2, 1], 1e-4)).toBe(false);
+    });
+});
+
+describe('road-scope preview that keeps per-stretch cross-sections', () => {
+    it('restyles only the stretches without their own cross-section when keepOverrides is set', () => {
+        const env = environment([road('a', near(0, 0), { definition: { segmentProfiles: { s1: { strips: [{ type: 'lane', left: 2, right: -2 }] } } } })]);
+        env.context.corridorSegmentEntries = definition => [
+            { segmentId: 's1', points: definition.points, profile: definition.segmentProfiles.s1, width: 4 },
+            { segmentId: 's2', points: definition.points, profile: definition.profile, width: 6 }
+        ];
+        env.context.refreshAppliedCorridorStrips();
+        const preview = { strips: [{ type: 'lane', left: 5, right: -5 }] };
+        env.context.setCorridorProfilePreview('a', preview, null, { keepOverrides: true });
+        const kept = env.context.corridorRenderEntries(env.proposals[0], env.proposals[0].roadProposal.definition);
+        expect(kept.map(entry => entry.profile === preview)).toEqual([false, true]);
+        env.context.setCorridorProfilePreview('a', preview, null);
+        const all = env.context.corridorRenderEntries(env.proposals[0], env.proposals[0].roadProposal.definition);
+        expect(all.map(entry => entry.profile === preview)).toEqual([true, true]);
     });
 });

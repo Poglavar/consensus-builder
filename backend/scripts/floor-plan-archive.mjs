@@ -3,7 +3,7 @@
 import { readFile,mkdir,writeFile,rename } from 'node:fs/promises';
 import { dirname,resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import pg from 'pg';
+import { createClient } from '../db/connection.cjs';
 import dotenv from 'dotenv';
 import { importAgencies,enqueue,coverage } from '../floor-plans/archive.js';
 import { crawl } from '../floor-plans/crawler.js';
@@ -71,14 +71,14 @@ const HELP=`Usage: node scripts/floor-plan-archive.mjs <command> [options]
  prune-files                  Retry removal of files already marked discarded in metadata
  daily [--max-pages 10000] [--max-minutes 180] [--max-assets 100] [--ai-stage sites|images|plans|sheets|buildings|none] [--ai-budget-usd 5|none] [--ai-chunk-size 1] [--run-stats FILE] [--no-ai]
  status                       Print coverage and recent run
- Environment: backend/.env, PGHOST override or DATABASE_URL. Public sources only.
+ Environment: DATABASE_URL from backend/.env. Public sources only.
  Models come from agents/lib/llm-cost/defaults.json; image triage uses its cheap tier.
  Daily prioritizes site adjudication by default. Extraction and plan interpretation wait for a located site.
  Recognition submits at most one chunk (1..20 items) per invocation. --budget-usd none removes
  the spend ceiling, not the chunk limit. --collect-only/--no-ai never submit new work.
  Incomplete, blocked, or deferred work returns status partial and exit code 2.`;
 
-export async function runCli(argv=process.argv.slice(2),{clientFactory=options=>new pg.Client(options),output=value=>console.log(JSON.stringify(value,null,2))}={}) {
+export async function runCli(argv=process.argv.slice(2),{clientFactory=()=>createClient(),output=value=>console.log(JSON.stringify(value,null,2))}={}) {
  const args=argv,action=args[0],has=name=>args.includes(name),option=name=>args[args.indexOf(name)+1];
  const all=name=>args.flatMap((arg,i)=>arg===name?[args[i+1]]:[]);
  if(!action||has('--help')) {console.log(HELP);return 0;}
@@ -98,8 +98,7 @@ export async function runCli(argv=process.argv.slice(2),{clientFactory=options=>
    crawlSite=normalizeSiteHost(value);
   }
  }
- const connectionString=process.env.DATABASE_URL;
- const client=clientFactory(connectionString?{connectionString,...(process.env.PGHOST?{host:process.env.PGHOST}:{})}:undefined);
+ const client=clientFactory();
  await client.connect();
  const controller=new AbortController(),stop=()=>controller.abort(),interruptible=['daily','crawl'].includes(action);
  if(interruptible) {process.once('SIGTERM',stop);process.once('SIGINT',stop);}

@@ -11,7 +11,7 @@ python3 backend/scripts/reconstruct-savica-floors.py \
   --sources rekonstrukcije/pionir-paron/savica-f1-f3/floor-plan-sources.json \
   --proposal rekonstrukcije/pionir-paron/savica-f1-f3/proposal.geojson \
   --cache-dir /tmp/savica-floor-cache --fetch --write
-PGHOST=localhost node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs \
+node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs \
   --archive rekonstrukcije/pionir-paron/savica-f1-f3/proposal.geojson
 ```
 
@@ -56,7 +56,7 @@ Rebuild the source snapshots and proposal with:
 
 ```sh
 node backend/scripts/fetch-pionir-edozvola-sources.mjs --project savica-f1-f3
-PGHOST=localhost node backend/scripts/seed-savica-f1-f3-proposal.mjs --apply --export
+node backend/scripts/seed-savica-f1-f3-proposal.mjs --apply --export
 ```
 
 The export path performs an export/import/export identity check before writing the canonical GeoJSON.

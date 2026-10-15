@@ -31,6 +31,7 @@ from model import ParcelNet  # noqa: E402
 from train import RECIPE_FILES, TileIndex, evaluate, load_cache, log, pick_device, read_json  # noqa: E402
 from exposure import validate_exposure  # noqa: E402
 from imagery import CASES, perturb_rgb  # noqa: E402
+from target_config import cache_namespace, recorded_targets  # noqa: E402
 
 METRICS = ('parcel_f1', 'precision', 'recall', 'area_weighted_recall', 'boundary_f1', 'overlap_fraction')
 
@@ -237,8 +238,9 @@ def main(argv=None):
             state = torch.load(run / 'best.pt', map_location='cpu', weights_only=False)
             for index in indexes:
                 validate_exposure(state.get('exposure'), index.manifest)
-            settings = read_json(run / 'recipe.json')['args']
-            config = read_json(run / 'results.json')['best']['config']
+            results = read_json(run / 'results.json')
+            definition = recorded_targets(state, read_json(run / 'recipe.json'), results=results)
+            config = results['best']['config']
             match = re.fullmatch(r't([0-9.]+)-seeds([01])-hard([01])', config)
             if not match:
                 raise ValueError(f'unknown frozen reconstruction config: {config}')
@@ -250,9 +252,10 @@ def main(argv=None):
             for index in indexes:
                 version = index.manifest['version']
                 ids = index.ids('selection')
-                cap, dilation = settings['cap_m'], settings['dilate_px']
+                cap, dilation = definition['cap_m'], definition['dilate_px']
                 cache = load_cache([index.tiles[t] for t in ids], size, cap, dilation,
-                                   args.output / 'cache' / version / f's{size}-cap{cap:g}-d{dilation}')
+                                   args.output / 'cache' / version / cache_namespace(definition),
+                                   margin_px=definition['margin_px'])
                 for case in cases:
                     destination = args.output / name / f'seed-{i + 1}' / version / case
                     if completed(destination, ids):
@@ -263,7 +266,7 @@ def main(argv=None):
                                 for t, data in cache.items()}
                     started = time.monotonic()
                     summary = evaluate(model, index, modified, ids, configs, device, recon_size=recon_size,
-                                       workers=args.eval_workers, out_dir=destination)
+                                       workers=args.eval_workers, out_dir=destination, target_spec=definition)
                     del modified
                     elapsed = time.monotonic() - started
                     mark_complete(destination, ids, elapsed)

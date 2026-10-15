@@ -33,6 +33,7 @@
 
         function open(options) {
             if (active || !env.map || !options?.owner) return null;
+            if (env.roadDrawingMode && options.owner !== 'corridor-editor') return null;
             if (!env.__mapEditLock?.claim(options.owner, options.title || options.owner)) return null;
             const modes = options.modes?.length ? options.modes.slice() : ['2d', 'model'];
             const root = node('section', 'on-map-editor');

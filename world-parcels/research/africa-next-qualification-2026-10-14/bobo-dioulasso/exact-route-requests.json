@@ -1,0 +1,18 @@
+[
+  {
+    "stage": "known-id-route",
+    "url": "https://ecadastre.dgi.bf/api/locations/geojson/aN1k1sijuxh?minX=-4.29474790525362&minY=11.1797197779143&maxX=-4.28474790525362&maxY=11.1897197779143&type=PLOT",
+    "observedAt": "2026-10-14T13:21:27.460754+00:00",
+    "errorType": "HTTPError",
+    "reason": "HTTP Error 500: ",
+    "httpStatus": 500
+  },
+  {
+    "stage": "absent-id-route",
+    "url": "https://ecadastre.dgi.bf/api/locations/geojson/ZZZZZZZZZZZ?minX=-4.29474790525362&minY=11.1797197779143&maxX=-4.28474790525362&maxY=11.1897197779143&type=PLOT",
+    "observedAt": "2026-10-14T13:21:28.794792+00:00",
+    "errorType": "HTTPError",
+    "reason": "HTTP Error 500: ",
+    "httpStatus": 500
+  }
+]

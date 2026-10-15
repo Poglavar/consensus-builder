@@ -27,10 +27,11 @@ const baseTask=()=>({id:'a'.repeat(64),source_sha256:'b'.repeat(64),source_url:'
  result:{},cost_usd:null,created_at:new Date().toISOString()});
 const notPlan={schema:'floor-plan-reading.v4',notPlan:true,issues:[],plans:[]};
 
-function makeDb({queued=[],batches=[],tasks=[],used=0}={}) {
+function makeDb({queued=[],batches=[],tasks=[],used=0,failQuery=null}={}) {
  const state={batches:structuredClone(batches).map(row=>({stage:'plans',...row})),tasks:structuredClone(tasks.length?tasks:queued),calls:[]};
  const query=vi.fn(async(sql,args=[])=>{
   state.calls.push({sql,args});
+  if(failQuery?.(sql,args))throw new Error('archive write unavailable');
   if(sql.includes('pg_try_advisory_lock')) return {rows:[{locked:true}]};
   if(sql.includes('pg_advisory_unlock')) return {rows:[]};
   if(sql.startsWith("UPDATE floor_plan.ai_batch SET status='unknown'")) {
@@ -134,6 +135,19 @@ const render=vi.fn(async()=>({data:Buffer.from('png'),annotation:Buffer.from('ma
 const price=vi.fn((_model,usage)=>usage.output_tokens===MAX_OUTPUT_TOKENS?0.25:0.02);
 
 describe('floor-plan paid batch worker',()=>{
+ it('holds an already paid related-unit response without rendering or creating geometry, and accounts it once',async()=>{
+  const url='https://agency.test/stan-s10-73m2';
+  const task={...baseTask(),status:'submitted',batch_id:'unit-batch',listing_url:url,source_url:'https://agency.test/s3-438x280.jpg',
+   context:{listingUrl:url,facts:{floor:'3',unitId:null,areaM2:73,title:'Trosoban stan 73 m²'}}};
+  const db=makeDb({tasks:[task],batches:[{id:'unit-batch',status:'submitted',provider_id:'provider-batch-1',reserved_usd:.25,created_at:new Date().toISOString()}]});
+  const remote=fakeClient(),runRender=vi.fn(),options={submit:false,client:remote.client,render:runRender,price,log:()=>{}};
+  expect(await interpretPlans(db,options)).toMatchObject({collected:1,associationReview:1,locationReview:0,needsReview:1});
+  expect(db.state.tasks[0]).toMatchObject({status:'needs_review',result:{reading:{method:'association-gate',plans:[]}}});
+  expect(runRender).not.toHaveBeenCalled();
+  expect(db.state.calls.some(({sql})=>sql.startsWith('INSERT INTO floor_plan.processed_plan'))).toBe(false);
+  expect(await interpretPlans(db,options)).toMatchObject({collected:0,costUsd:0});
+  expect(remote.results).toHaveBeenCalledOnce();
+ });
  it('writes ledger rows only to the throwaway test ledger',()=>{
   expect(LEDGER.startsWith(ledgerDir)).toBe(true);
  });
@@ -246,6 +260,43 @@ describe('floor-plan paid batch worker',()=>{
   expect(remote.results).toHaveBeenCalledOnce();
   expect(ledgerRows().slice(before)).toHaveLength(1);
   expect(db.state.tasks[0].cost_usd).toBe(cost);
+ });
+
+ it.each([
+  ['empty slab geometry',[]],
+  ['a slab anchor the model did not select',['W2:0']]
+ ])('retains paid model validation failures for review (%s)',async(_label,outer)=>{
+  const malformed={schema:'floor-plan-reading.v4',notPlan:false,issues:[],plans:[{id:'A1',label:'A1',scope:'unit',floor:1,
+   floorEvidence:'Listing floor 1',scale:null,dimensionHints:[],slabs:outer.length?[{outer,holes:[]}]:[],wallIds:['W1'],
+   railingIds:[],openings:[],rooms:[],wallHeightM:null,heightEvidence:'',elevationM:null,elevationEvidence:'',northPx:null,
+   northEvidence:'',issues:[]}]};
+  const task={...baseTask(),status:'submitted',batch_id:'model-batch',result:{image:{width:100,height:100,evidence}}};
+  const db=makeDb({tasks:[task],batches:[{id:'model-batch',provider_id:'provider-batch-1',model:LAYER_MODEL,status:'submitted',
+   reserved_usd:0.25,created_at:new Date().toISOString()}]});
+  const remote=fakeClient({response:malformed});
+  const result=await interpretPlans(db,{dailyBudgetUsd:0,client:remote.client,render,price,log:()=>{}});
+
+  expect(result).toMatchObject({collected:1,failed:0,needsReview:1,modelValidationReview:1,errors:0});
+  expect(db.state.tasks[0]).toMatchObject({status:'needs_review',error:null,cost_usd:expect.any(Number),
+   result:{reading:{method:'model-validation-review',notPlan:false,plans:[],issues:[expect.stringContaining('Paid model geometry failed validation:')]},
+    paidResponse:{text:JSON.stringify(malformed)},response:{model:LAYER_MODEL}}});
+  expect(db.state.calls.some(({sql})=>sql.startsWith('INSERT INTO floor_plan.processed_plan'))).toBe(false);
+  expect(remote.results).toHaveBeenCalledOnce();
+  expect(remote.create).not.toHaveBeenCalled();
+ });
+
+ it('does not convert a paid-response database write failure into model-validation review',async()=>{
+  const task={...baseTask(),status:'submitted',batch_id:'model-batch',result:{image:{width:100,height:100,evidence}}};
+  const db=makeDb({tasks:[task],batches:[{id:'model-batch',provider_id:'provider-batch-1',model:LAYER_MODEL,status:'submitted',
+   reserved_usd:0.25,created_at:new Date().toISOString()}],failQuery:sql=>sql.includes('SET usage=$2,cost_usd=$3')});
+  const remote=fakeClient({response:notPlan});
+
+  await expect(interpretPlans(db,{dailyBudgetUsd:0,client:remote.client,render,price,log:()=>{}}))
+   .rejects.toThrow('archive write unavailable');
+  expect(remote.results).toHaveBeenCalledOnce();
+  expect(db.state.tasks[0].status).toBe('submitted');
+  expect(db.state.tasks[0].result).not.toHaveProperty('reading');
+  expect(db.state.tasks[0].result).not.toHaveProperty('paidResponse');
  });
 
  it('collects the new answer, not a stale cached one, after a failed task is requeued and resubmitted',async()=>{

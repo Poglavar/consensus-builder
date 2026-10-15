@@ -1,0 +1,791 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "10427",
+  "cityName": "Jianpur",
+  "sourceId": "in-up-ncog-tiles",
+  "candidateSha256": "8819fa56d1e4f35981368c9f144481362414e44e089af89acc2547dbfa1e5327",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 68,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 68,
+      "collectedUniqueCount": 68
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 164
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "pagingRequired": false,
+      "reason": "Fixed tile snapshot: every tile is read whole and each row cut at a tile edge is followed into the neighbouring tile until it closes; pagination is not part of the protocol."
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "e8d559436306f88b03b17805da83138316d2b26985726e5b93dc874108eda3d0",
+      "featureCount": 68,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32644",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "e8d559436306f88b03b17805da83138316d2b26985726e5b93dc874108eda3d0",
+  "featureCount": 68,
+  "sampleIds": [
+    "IN-UP-NCOG-g1~832520986~261741432~4792e44af24ebebcc269ee52feb8f147ca6d1f87bd86eb6ca29686e8b64608d5",
+    "IN-UP-NCOG-g1~832542443~261768488~d5aa2fa6fc4d216f29e70db510931fd2870c17616759fb31c6fda02cf09b6bf2",
+    "IN-UP-NCOG-g1~832552958~261777539~a3cf2a3480e14db71472f60ac3b91b6b0921ba3455a7ee87614809541bbfde4e"
+  ],
+  "cellSizeDegrees": 0.0005,
+  "densityProbe": [
+    {
+      "cellSizeDegrees": 0.001,
+      "footprintBbox": [
+        83.252,
+        26.175,
+        83.257,
+        26.18
+      ],
+      "footprintFeatures": 239,
+      "perIdCost": 1.3333333333333333
+    },
+    {
+      "cellSizeDegrees": 0.0005,
+      "footprintBbox": [
+        83.253,
+        26.176,
+        83.2555,
+        26.1785
+      ],
+      "footprintFeatures": 62,
+      "perIdCost": 1.3333333333333333
+    }
+  ],
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        83.2535,
+        26.1765,
+        83.254,
+        26.177
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "IN-UP-NCOG-g1~832520986~261741432~4792e44af24ebebcc269ee52feb8f147ca6d1f87bd86eb6ca29686e8b64608d5",
+        "IN-UP-NCOG-g1~832529837~261769692~c6eb180922a3d65d076bb40f858f81907c685fa59849c98a87b6646d368505e1",
+        "IN-UP-NCOG-g1~832530105~261769643~08dfa96e26127a66af91ce477069e31c611aa5469f6351969a41fa0102325be6",
+        "IN-UP-NCOG-g1~832530695~261764300~7ee3da6ce3a8a5a6b5aa0658a1282b3656b7e6524083cc970d9679321856603a",
+        "IN-UP-NCOG-g1~832532519~261763240~0f2e862c4005c9e0c42ea9a3aea6e79a3e23109c497479040ad150c474e3e701",
+        "IN-UP-NCOG-g1~832533270~261767766~022e14b4742ddeaa0ef264459b925dc1113a374ac7e62049e1a6a1ba626b133e",
+        "IN-UP-NCOG-g1~832534289~261762229~8de79cc6aea5ee544b0710000f7807932063164d6e2392a97730148060b69fe7",
+        "IN-UP-NCOG-g1~832535684~261759774~b177eb477a40bf814362edf66b7ab622c3dc4cd6899bbaa7ee745ede5bca9f05"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        83.254,
+        26.1765,
+        83.2545,
+        26.177
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "IN-UP-NCOG-g1~832520986~261741432~4792e44af24ebebcc269ee52feb8f147ca6d1f87bd86eb6ca29686e8b64608d5",
+        "IN-UP-NCOG-g1~832531446~261775613~b624b5425052eca097c74b7f97269eb7fe2d70bfa069ed9c26a12068d003777f",
+        "IN-UP-NCOG-g1~832533109~261774843~1094daa2f19118c6f58163053c88e70ed42ae1f6b34027e21423121e814a0017",
+        "IN-UP-NCOG-g1~832533270~261767766~022e14b4742ddeaa0ef264459b925dc1113a374ac7e62049e1a6a1ba626b133e",
+        "IN-UP-NCOG-g1~832535684~261759774~b177eb477a40bf814362edf66b7ab622c3dc4cd6899bbaa7ee745ede5bca9f05",
+        "IN-UP-NCOG-g1~832540780~261766370~61605936e2555c79b0790bc4309007f061822c39809000b56984b583985aebac",
+        "IN-UP-NCOG-g1~832540888~261766514~1d5b2345c566df49f3d9bc335c6190611460eb53212bf6bf5cc3e0bacafcea2c",
+        "IN-UP-NCOG-g1~832541800~261767670~b2974339f6d171b63e457c2d349c1a370df256a20db0e504f8506fe178f8f53a",
+        "IN-UP-NCOG-g1~832542443~261768488~d5aa2fa6fc4d216f29e70db510931fd2870c17616759fb31c6fda02cf09b6bf2",
+        "IN-UP-NCOG-g1~832542980~261769210~f5ba997580fa33a7d1822d11967929b1a26363f8a4a54c62887abc3512bdb42d",
+        "IN-UP-NCOG-g1~832543033~261765214~f6fadc642fdf301f38140f6bf4802a88c6f66f6c213ed863adf7a42baa62f6ef",
+        "IN-UP-NCOG-g1~832544160~261764540~936ec3c32e0e76888ac977992d112f496d95841568cb371a3a60c5553ff99e8c"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        83.2545,
+        26.1765,
+        83.255,
+        26.177
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "ids": [
+        "IN-UP-NCOG-g1~832541800~261767670~b2974339f6d171b63e457c2d349c1a370df256a20db0e504f8506fe178f8f53a",
+        "IN-UP-NCOG-g1~832542443~261768488~d5aa2fa6fc4d216f29e70db510931fd2870c17616759fb31c6fda02cf09b6bf2",
+        "IN-UP-NCOG-g1~832542980~261769210~f5ba997580fa33a7d1822d11967929b1a26363f8a4a54c62887abc3512bdb42d",
+        "IN-UP-NCOG-g1~832544106~261770654~52a1afa41ca7719509ccc4685f61c6623c83ff1fe6d0a1a193371f814601ae64",
+        "IN-UP-NCOG-g1~832544160~261764540~936ec3c32e0e76888ac977992d112f496d95841568cb371a3a60c5553ff99e8c"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        83.2535,
+        26.177,
+        83.254,
+        26.1775
+      ],
+      "complete": true,
+      "featureCount": 4,
+      "ids": [
+        "IN-UP-NCOG-g1~832530105~261769643~08dfa96e26127a66af91ce477069e31c611aa5469f6351969a41fa0102325be6",
+        "IN-UP-NCOG-g1~832531446~261775613~b624b5425052eca097c74b7f97269eb7fe2d70bfa069ed9c26a12068d003777f",
+        "IN-UP-NCOG-g1~832533109~261774843~1094daa2f19118c6f58163053c88e70ed42ae1f6b34027e21423121e814a0017",
+        "IN-UP-NCOG-g1~832533270~261767766~022e14b4742ddeaa0ef264459b925dc1113a374ac7e62049e1a6a1ba626b133e"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        83.254,
+        26.177,
+        83.2545,
+        26.1775
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "IN-UP-NCOG-g1~832520986~261741432~4792e44af24ebebcc269ee52feb8f147ca6d1f87bd86eb6ca29686e8b64608d5",
+        "IN-UP-NCOG-g1~832531446~261775613~b624b5425052eca097c74b7f97269eb7fe2d70bfa069ed9c26a12068d003777f",
+        "IN-UP-NCOG-g1~832533109~261774843~1094daa2f19118c6f58163053c88e70ed42ae1f6b34027e21423121e814a0017",
+        "IN-UP-NCOG-g1~832533270~261767766~022e14b4742ddeaa0ef264459b925dc1113a374ac7e62049e1a6a1ba626b133e",
+        "IN-UP-NCOG-g1~832542980~261769210~f5ba997580fa33a7d1822d11967929b1a26363f8a4a54c62887abc3512bdb42d",
+        "IN-UP-NCOG-g1~832544106~261770654~52a1afa41ca7719509ccc4685f61c6623c83ff1fe6d0a1a193371f814601ae64"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        83.2545,
+        26.177,
+        83.255,
+        26.1775
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "IN-UP-NCOG-g1~832520986~261741432~4792e44af24ebebcc269ee52feb8f147ca6d1f87bd86eb6ca29686e8b64608d5",
+        "IN-UP-NCOG-g1~832533109~261774843~1094daa2f19118c6f58163053c88e70ed42ae1f6b34027e21423121e814a0017",
+        "IN-UP-NCOG-g1~832542980~261769210~f5ba997580fa33a7d1822d11967929b1a26363f8a4a54c62887abc3512bdb42d",
+        "IN-UP-NCOG-g1~832544106~261770654~52a1afa41ca7719509ccc4685f61c6623c83ff1fe6d0a1a193371f814601ae64",
+        "IN-UP-NCOG-g1~832544160~261764540~936ec3c32e0e76888ac977992d112f496d95841568cb371a3a60c5553ff99e8c",
+        "IN-UP-NCOG-g1~832545501~261772436~a555c931c9d72c637b606601d25b6457d8c90ab3799b55543d5d3da5324e8339",
+        "IN-UP-NCOG-g1~832545608~261772580~2a42d10d4d169213816f8f3486bc583022049b43bfa13875e2c094a81a0210e1",
+        "IN-UP-NCOG-g1~832547593~261775180~d6586191900f8f580ad2375cbda49949122c6567b3b80f7a4f5a7a6cd7d9c95b",
+        "IN-UP-NCOG-g1~832547700~261775324~9d2bcf1b58a027f184c19265f294f3f6a15f5bf36f89ba3c352889d7bd437f73"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        83.2535,
+        26.1775,
+        83.254,
+        26.178
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "ids": [
+        "IN-UP-NCOG-g1~832527477~261776913~f40022878c2987dbf4fcb50eab0fdd807b96f10622da921dbc78f31135260140",
+        "IN-UP-NCOG-g1~832532841~261784182~13222ed5b37383342d260dcbf11312f2d06b2920b064c0e883921987cc844f67",
+        "IN-UP-NCOG-g1~832533109~261774843~1094daa2f19118c6f58163053c88e70ed42ae1f6b34027e21423121e814a0017",
+        "IN-UP-NCOG-g1~832534289~261781968~1f764f03fabe9b2ad605d339436367b91963058279d2ac2e895b9964ba82d0ea",
+        "IN-UP-NCOG-g1~832538420~261780812~0e00505eb01611235bb225773167f84b46c73f69c8788b7c3e8b07fde671a9c9"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        83.254,
+        26.1775,
+        83.2545,
+        26.178
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "ids": [
+        "IN-UP-NCOG-g1~832532841~261784182~13222ed5b37383342d260dcbf11312f2d06b2920b064c0e883921987cc844f67",
+        "IN-UP-NCOG-g1~832533109~261774843~1094daa2f19118c6f58163053c88e70ed42ae1f6b34027e21423121e814a0017",
+        "IN-UP-NCOG-g1~832538420~261780812~0e00505eb01611235bb225773167f84b46c73f69c8788b7c3e8b07fde671a9c9"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        83.2545,
+        26.1775,
+        83.255,
+        26.178
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "IN-UP-NCOG-g1~832520986~261741432~4792e44af24ebebcc269ee52feb8f147ca6d1f87bd86eb6ca29686e8b64608d5",
+        "IN-UP-NCOG-g1~832532841~261784182~13222ed5b37383342d260dcbf11312f2d06b2920b064c0e883921987cc844f67",
+        "IN-UP-NCOG-g1~832533109~261774843~1094daa2f19118c6f58163053c88e70ed42ae1f6b34027e21423121e814a0017",
+        "IN-UP-NCOG-g1~832538420~261780812~0e00505eb01611235bb225773167f84b46c73f69c8788b7c3e8b07fde671a9c9",
+        "IN-UP-NCOG-g1~832545608~261772580~2a42d10d4d169213816f8f3486bc583022049b43bfa13875e2c094a81a0210e1",
+        "IN-UP-NCOG-g1~832547593~261775180~d6586191900f8f580ad2375cbda49949122c6567b3b80f7a4f5a7a6cd7d9c95b",
+        "IN-UP-NCOG-g1~832547700~261775324~9d2bcf1b58a027f184c19265f294f3f6a15f5bf36f89ba3c352889d7bd437f73",
+        "IN-UP-NCOG-g1~832548720~261776624~6448f02fbe2426a83d04650e05690bd5e938a4115dff0aa0e831c92a66bc696c"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        83.254,
+        26.176,
+        83.2545,
+        26.1765
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "ids": [
+        "IN-UP-NCOG-g1~832535684~261759774~b177eb477a40bf814362edf66b7ab622c3dc4cd6899bbaa7ee745ede5bca9f05",
+        "IN-UP-NCOG-g1~832540780~261766370~61605936e2555c79b0790bc4309007f061822c39809000b56984b583985aebac",
+        "IN-UP-NCOG-g1~832540888~261759389~cf73a3c0faa6597b50a0c4fcdab3c9249d7401c20ca44ad18305ce441506d944",
+        "IN-UP-NCOG-g1~832543033~261765214~f6fadc642fdf301f38140f6bf4802a88c6f66f6c213ed863adf7a42baa62f6ef",
+        "IN-UP-NCOG-g1~832544160~261764540~936ec3c32e0e76888ac977992d112f496d95841568cb371a3a60c5553ff99e8c"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        83.254,
+        26.178,
+        83.2545,
+        26.1785
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "IN-UP-NCOG-g1~832533056~261793570~b555c6fb9c2424a0dd13ac2d615e371e0df9b9e0b45fd914dd6793d7948c3ba5",
+        "IN-UP-NCOG-g1~832538420~261780812~0e00505eb01611235bb225773167f84b46c73f69c8788b7c3e8b07fde671a9c9"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        83.253,
+        26.177,
+        83.2535,
+        26.1775
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "IN-UP-NCOG-g1~832526618~261770654~ef26e75383b21daf8959702507a9c0617d8384818fdcb0534e350b77685d18e2",
+        "IN-UP-NCOG-g1~832527477~261776913~f40022878c2987dbf4fcb50eab0fdd807b96f10622da921dbc78f31135260140",
+        "IN-UP-NCOG-g1~832528549~261773687~f648c02d5631afeaef002f438c1614218333171e1e07211a803817e5a3f974d1",
+        "IN-UP-NCOG-g1~832529837~261769692~c6eb180922a3d65d076bb40f858f81907c685fa59849c98a87b6646d368505e1",
+        "IN-UP-NCOG-g1~832530105~261769643~08dfa96e26127a66af91ce477069e31c611aa5469f6351969a41fa0102325be6",
+        "IN-UP-NCOG-g1~832531446~261775613~b624b5425052eca097c74b7f97269eb7fe2d70bfa069ed9c26a12068d003777f",
+        "IN-UP-NCOG-g1~832533109~261774843~1094daa2f19118c6f58163053c88e70ed42ae1f6b34027e21423121e814a0017"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        83.255,
+        26.177,
+        83.2555,
+        26.1775
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "IN-UP-NCOG-g1~832544160~261764540~936ec3c32e0e76888ac977992d112f496d95841568cb371a3a60c5553ff99e8c",
+        "IN-UP-NCOG-g1~832545608~261772580~2a42d10d4d169213816f8f3486bc583022049b43bfa13875e2c094a81a0210e1",
+        "IN-UP-NCOG-g1~832547593~261775180~d6586191900f8f580ad2375cbda49949122c6567b3b80f7a4f5a7a6cd7d9c95b",
+        "IN-UP-NCOG-g1~832547700~261775324~9d2bcf1b58a027f184c19265f294f3f6a15f5bf36f89ba3c352889d7bd437f73",
+        "IN-UP-NCOG-g1~832548720~261776624~6448f02fbe2426a83d04650e05690bd5e938a4115dff0aa0e831c92a66bc696c",
+        "IN-UP-NCOG-g1~832550919~261773447~f7a57ab528fdb7b7742430662a6ee0a495df1098f516c6fc65fc425bed498b51",
+        "IN-UP-NCOG-g1~832551187~261773302~08393bf56cf9b75434f755358103ae18aa5352b0a15f8ccbba8737b18dc67fa8",
+        "IN-UP-NCOG-g1~832552958~261777539~a3cf2a3480e14db71472f60ac3b91b6b0921ba3455a7ee87614809541bbfde4e"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 40,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:18.860Z",
+      "queryHash": "09c6995ab6a5d17efce8a03700419b8d67e41066dd537d78699bde7aecccee7d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 236
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:18.862Z",
+      "queryHash": "4c752ccb5cb0952678f14818f75813d85312cab655134daf422f7d8a27c0acf8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1231
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:20.166Z",
+      "queryHash": "1fac36752c5bcba7eab7ad5ee001552104e3d203613bf2772b874942027cadd8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1021
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:20.167Z",
+      "queryHash": "8e73cea6e81527ce413307a0c140cafd1a1e2f729ed86357b51a0e7104f354ef",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 2118
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:22.459Z",
+      "queryHash": "09c6995ab6a5d17efce8a03700419b8d67e41066dd537d78699bde7aecccee7d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 938
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:22.460Z",
+      "queryHash": "4c752ccb5cb0952678f14818f75813d85312cab655134daf422f7d8a27c0acf8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 2032
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:24.627Z",
+      "queryHash": "1fac36752c5bcba7eab7ad5ee001552104e3d203613bf2772b874942027cadd8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 966
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:24.627Z",
+      "queryHash": "8e73cea6e81527ce413307a0c140cafd1a1e2f729ed86357b51a0e7104f354ef",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 2071
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:27.093Z",
+      "queryHash": "09c6995ab6a5d17efce8a03700419b8d67e41066dd537d78699bde7aecccee7d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 736
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:27.094Z",
+      "queryHash": "4c752ccb5cb0952678f14818f75813d85312cab655134daf422f7d8a27c0acf8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1799
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:28.983Z",
+      "queryHash": "1fac36752c5bcba7eab7ad5ee001552104e3d203613bf2772b874942027cadd8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1018
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:28.983Z",
+      "queryHash": "8e73cea6e81527ce413307a0c140cafd1a1e2f729ed86357b51a0e7104f354ef",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 2113
+    },
+    {
+      "stage": "density-probe",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:31.215Z",
+      "queryHash": "09c6995ab6a5d17efce8a03700419b8d67e41066dd537d78699bde7aecccee7d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 980
+    },
+    {
+      "stage": "density-probe",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:31.215Z",
+      "queryHash": "4c752ccb5cb0952678f14818f75813d85312cab655134daf422f7d8a27c0acf8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 2082
+    },
+    {
+      "stage": "density-probe",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:31.215Z",
+      "queryHash": "1fac36752c5bcba7eab7ad5ee001552104e3d203613bf2772b874942027cadd8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 3197
+    },
+    {
+      "stage": "density-probe",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:34.623Z",
+      "queryHash": "8e73cea6e81527ce413307a0c140cafd1a1e2f729ed86357b51a0e7104f354ef",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 879
+    },
+    {
+      "stage": "density-probe",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:35.821Z",
+      "queryHash": "09c6995ab6a5d17efce8a03700419b8d67e41066dd537d78699bde7aecccee7d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 777
+    },
+    {
+      "stage": "density-probe",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:35.821Z",
+      "queryHash": "4c752ccb5cb0952678f14818f75813d85312cab655134daf422f7d8a27c0acf8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1881
+    },
+    {
+      "stage": "density-probe",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:35.821Z",
+      "queryHash": "1fac36752c5bcba7eab7ad5ee001552104e3d203613bf2772b874942027cadd8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 2989
+    },
+    {
+      "stage": "density-probe",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:39.027Z",
+      "queryHash": "8e73cea6e81527ce413307a0c140cafd1a1e2f729ed86357b51a0e7104f354ef",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 884
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:40.138Z",
+      "queryHash": "09c6995ab6a5d17efce8a03700419b8d67e41066dd537d78699bde7aecccee7d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 873
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:40.138Z",
+      "queryHash": "4c752ccb5cb0952678f14818f75813d85312cab655134daf422f7d8a27c0acf8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1979
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:40.138Z",
+      "queryHash": "1fac36752c5bcba7eab7ad5ee001552104e3d203613bf2772b874942027cadd8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 3100
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:43.380Z",
+      "queryHash": "8e73cea6e81527ce413307a0c140cafd1a1e2f729ed86357b51a0e7104f354ef",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 962
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:46.087Z",
+      "queryHash": "09c6995ab6a5d17efce8a03700419b8d67e41066dd537d78699bde7aecccee7d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:46.088Z",
+      "queryHash": "4c752ccb5cb0952678f14818f75813d85312cab655134daf422f7d8a27c0acf8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1239
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:46.088Z",
+      "queryHash": "1fac36752c5bcba7eab7ad5ee001552104e3d203613bf2772b874942027cadd8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 2351
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:48.552Z",
+      "queryHash": "8e73cea6e81527ce413307a0c140cafd1a1e2f729ed86357b51a0e7104f354ef",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 958
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:50.155Z",
+      "queryHash": "09c6995ab6a5d17efce8a03700419b8d67e41066dd537d78699bde7aecccee7d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 458
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:50.155Z",
+      "queryHash": "4c752ccb5cb0952678f14818f75813d85312cab655134daf422f7d8a27c0acf8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1559
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:52.277Z",
+      "queryHash": "1fac36752c5bcba7eab7ad5ee001552104e3d203613bf2772b874942027cadd8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 546
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:52.277Z",
+      "queryHash": "8e73cea6e81527ce413307a0c140cafd1a1e2f729ed86357b51a0e7104f354ef",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1649
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:54.138Z",
+      "queryHash": "09c6995ab6a5d17efce8a03700419b8d67e41066dd537d78699bde7aecccee7d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 877
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:54.139Z",
+      "queryHash": "4c752ccb5cb0952678f14818f75813d85312cab655134daf422f7d8a27c0acf8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1982
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:54.139Z",
+      "queryHash": "1fac36752c5bcba7eab7ad5ee001552104e3d203613bf2772b874942027cadd8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 3082
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:57.318Z",
+      "queryHash": "8e73cea6e81527ce413307a0c140cafd1a1e2f729ed86357b51a0e7104f354ef",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1009
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:58.620Z",
+      "queryHash": "09c6995ab6a5d17efce8a03700419b8d67e41066dd537d78699bde7aecccee7d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 801
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:36:58.620Z",
+      "queryHash": "4c752ccb5cb0952678f14818f75813d85312cab655134daf422f7d8a27c0acf8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1906
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:37:00.631Z",
+      "queryHash": "8e73cea6e81527ce413307a0c140cafd1a1e2f729ed86357b51a0e7104f354ef",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1012
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:37:03.389Z",
+      "queryHash": "1fac36752c5bcba7eab7ad5ee001552104e3d203613bf2772b874942027cadd8",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 171
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

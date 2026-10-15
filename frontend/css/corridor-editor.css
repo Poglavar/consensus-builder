@@ -412,6 +412,27 @@ body.corridor-editor-open .leaflet-interactive {
     cursor: pointer;
 }
 
+/* Road scope: keep the stretches that have their own cross-section, or replace them too. */
+.corridor-editor-stretches {
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    padding: 6px 16px 0;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.corridor-editor-stretches-input {
+    margin-top: 2px;
+}
+
+/* The road-wide preview paints every stretch; this says what Apply will actually keep. */
+.corridor-editor-stretches-note {
+    padding: 2px 16px 0 35px;
+    font-size: var(--cb-text-xs);
+    color: var(--cb-text-muted);
+}
+
 /* Seam drag handles: the schematic's lane boundaries are grabbable (col-resize). */
 .corridor-section {
     position: relative;

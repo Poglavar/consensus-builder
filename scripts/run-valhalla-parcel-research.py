@@ -28,12 +28,11 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_ROOT = SCRIPT_DIR.parent
 sys.path.insert(0, str(SCRIPT_DIR / "lib"))
 import parcel_discovery_coordination as discovery_coord
+import parcel_discovery_outcomes as discovery_outcomes
 DEFAULT_QUEUE = Path("world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json")
 DEFAULT_SOURCE = Path("tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz")
 HANDOFF = Path("world-parcels/research/valhalla-handoff-2026-10-09.md")
 DEFAULT_STATE = Path("tmp/valhalla-parcel-research")
-RESEARCH_MODEL = "gpt-5.6-luna"
-REVIEW_MODEL = "gpt-6-sol"
 MAX_RETRIES = 3
 MAX_WORKERS = 3
 TURN_TIMEOUT_SECONDS = 90 * 60
@@ -233,7 +232,8 @@ def systemic_codex_failure(returncode: int | None, stdout_text: str, stderr_text
         if code in SYSTEMIC_ERROR_CODES:
             return True
         message = " ".join(str(error.get(key, "")) for key in ("message", "detail", "reason"))
-        if SYSTEMIC_ERROR.search(message):
+        if SYSTEMIC_ERROR.search(message) or re.search(
+                r"model.{0,100}(?:not supported|not found|does not exist)", message, re.I):
             return True
     return False
 
@@ -393,6 +393,32 @@ class Runner:
         self.state: dict[str, Any] = {}
         self.discovery_claims = {}
         self.discovery_waiting = False
+        self.codex_env = None
+        self.models = None
+        self.receipt_errors: dict[str, list[str]] = {}
+        self.validated_stages: set[tuple[str, str]] = set()
+        self.qualification_runners: list[Any] = []
+
+    def _model(self, role: str) -> dict[str, Any]:
+        if self.models is None:
+            self.models = self._accounting({"operation": "models",
+                                           "researchModel": getattr(self.args, "research_model", None),
+                                           "reviewModel": getattr(self.args, "review_model", None)})
+        return self.models[role]
+
+    def _accounting(self, request: dict[str, Any]) -> dict[str, Any]:
+        helper = self.root / "scripts/lib/parcel-research-accounting.cjs"
+        result = subprocess.run(["node", str(helper)], input=json.dumps(request),
+                                capture_output=True, text=True, timeout=60, cwd=self.root)
+        if result.returncode:
+            raise RuntimeError(f"subscription accounting failed: {result.stderr.strip()}")
+        return json.loads(result.stdout)
+
+    def _subscription_environment(self) -> dict[str, str]:
+        if self.codex_env is None:
+            keys = self._accounting({"operation": "environmentKeys"})["environmentKeys"]
+            self.codex_env = {key: value for key, value in os.environ.items() if key not in keys}
+        return self.codex_env
 
     def log(self, message: str, **fields: Any) -> None:
         event = {"at": utc_now(), "message": message, **fields}
@@ -408,7 +434,15 @@ class Runner:
              "startedAt": item["startedAt"], "callId": item["call"]["callId"]}
             for item in self.active_processes.values()
         ]
+        for worker in self.qualification_runners:
+            self.state["activeProcesses"].extend(
+                {**item, "role": "qualification", "worktree": str(worker.root)}
+                for item in worker.state.get("activeProcesses", []))
+        self.state["discoveryCounts"] = discovery_outcomes.counts(self.state)
         atomic_json(self.state_path, self.state)
+
+    def discovery_workflow(self) -> bool:
+        return bool(getattr(self.args, "discovery_only", False) or getattr(self.args, "with_adapters", False))
 
     def acquire_lock(self) -> None:
         self.state_dir.mkdir(parents=True, exist_ok=True)
@@ -477,6 +511,7 @@ class Runner:
     def _command(self, call: dict[str, Any], schema_path: Path, answer_path: Path) -> list[str]:
         return [self.codex, "--ask-for-approval", "never", "--search", "exec",
                 "--sandbox", "workspace-write", "-c", "sandbox_workspace_write.network_access=true",
+                "-c", 'forced_login_method="chatgpt"',
                 "-m", call["model"], "-c", f'model_reasoning_effort="{call["effort"]}"',
                 "--json", "--output-schema", str(schema_path), "--output-last-message", str(answer_path), "-"]
 
@@ -491,13 +526,13 @@ class Runner:
         stdout_path = call_dir / "stdout.jsonl"
         stderr_path = call_dir / "stderr.log"
         prompt_path.write_text(call["prompt"], encoding="utf-8")
-        atomic_json(schema_path, REVIEW_SCHEMA)
+        atomic_json(schema_path, call.get("schema", REVIEW_SCHEMA))
         out_stream = stdout_path.open("w", encoding="utf-8")
         err_stream = stderr_path.open("w", encoding="utf-8")
         try:
             proc = self.popen_factory(self._command(call, schema_path, answer_path), cwd=self.root,
                                       stdin=subprocess.PIPE, stdout=out_stream, stderr=err_stream,
-                                      text=True, start_new_session=True)
+                                      text=True, start_new_session=True, env=self._subscription_environment())
             try:
                 proc.stdin.write(call["prompt"])
                 proc.stdin.close()
@@ -582,6 +617,14 @@ class Runner:
                           "answerPath": str(item.get("answerPath", "")), "timedOut": item.get("timedOut", False),
                           "interrupted": item.get("interrupted", False), "systemic": systemic,
                           "error": item.get("error"), "elapsedSeconds": max(0, round(self.clock() - item.get("started", self.clock()), 2))}
+                if item.get("stdoutPath"):
+                    result["accounting"] = self._accounting({
+                        "operation": "record", "billing": "subscription", "stdoutPath": str(item["stdoutPath"]),
+                        "model": item["call"]["model"], "repo": "consensus-builder", "script": "parcel-research",
+                        "meta": {"callId": item["call"]["callId"], "jobName": self.args.job_name,
+                                 "taskId": item["call"].get("taskId"), "role": item["call"]["role"]}})
+                    self.state.setdefault("usage", {})[item["call"]["callId"]] = result["accounting"]
+                    self.log("subscription usage recorded", callId=item["call"]["callId"], **result["accounting"])
                 results.append(result)
                 if proc:
                     self.active_processes.pop(proc.pid, None)
@@ -614,25 +657,45 @@ class Runner:
         city_file = f"city-{code}-{slug}.json"
         review_file = f"{slug}-service-review.json"
         retry_block = ""
+        learning_files = getattr(self.args, "learning_file", [])
+        learning_block = "\nRead these current integration learning files before investigating this city:\n" + "\n".join(
+            f"- `{path}`" for path in learning_files) if learning_files else ""
         if previous_errors:
             retry_block = """
 
-This is an artifact-validation retry. The previous validation errors are listed below. Correct only these packet/schema issues in your existing city and service-review files and the referenced sample file when the error explicitly names it. Do not repeat web searches, network/API requests, or source investigation. You may normalize each retained sample feature's properties to exactly `{{"id": <the same existing verified native identity>}}` and move source-field/composite-key provenance into city/service-review metadata. Preserve each geometry object byte-for-byte/coordinate-for-coordinate, feature count, and native identity value; do not drop, simplify, transform, or reconstruct polygon coordinates. If the evidence cannot support a correction, leave the source finding held and clearly state the limitation.
+This is an artifact-validation retry. The previous validation errors are listed below. Correct only these packet/schema issues in your existing city and service-review files and the referenced sample file when the error explicitly names it. Do not repeat web searches, network/API requests, or source investigation. You may normalize each retained sample feature's properties to exactly `{{"id": <the same existing verified identity>}}` and move source-field/composite-key provenance into city/service-review metadata. Preserve each geometry object coordinate-for-coordinate, feature count, and identity value; do not drop, simplify, transform, or reconstruct polygon coordinates. If the evidence cannot support a correction, leave the source finding held and clearly state the limitation.
 Previous validator/turn errors:
 """ + "\n".join(f"- {error}" for error in previous_errors)
         return f"""You are one of three parallel anonymous cadastral-source researchers in a resumable WUP city queue.
+Your goal is to find a useful, systematic cadastral parcel dataset covering this city, then hand a concrete source to the adapter/qualification stage. A completed search with no actionable lead is a rejected search, not a qualification candidate. Rejection does not claim that the city has no cadastre.
 
 Your single immutable WUP queue record is:
 ```json
 {json.dumps(city, ensure_ascii=False, indent=2)}
 ```
 Attempt {attempt} of {self.args.max_retries}. Cohort directory: `{cohort_dir.relative_to(self.root)}`.
+{learning_block}
 
 Write only `{city_file}`, `{review_file}`, and at most one sample GeoJSON containing no more than three full parcel polygons in this cohort directory. Scratch/request caches and temporary qualification evidence belong under `tmp/valhalla-parcel-research/` (ignored); never clear prior logs or artifacts. Do not edit registry/catalog/runtime city config, global/generated reports, queue/identity ledgers, or another city's files. Do not commit, push, deploy, email, or contact anyone.
 
 Preserve `cityCode={code}`, rank {city.get('rank')}, country `{city.get('country')}` / `{city.get('iso2')}`, exact WUP point `{city.get('point')}` in latitude/longitude order, `population2025={round(float(city.get('pop2025k')) * 1000)}` persons, `population2025k={city.get('pop2025k')}`, and `populationUnit="persons"`. Do not shift a coordinate to force a parcel hit. A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.
 
-For retained GeoJSON samples, put exactly one canonical native identity in `properties`, preferably `{{"id": "<stable-native-identity>"}}`. Put native source field names, source-specific field mapping, and composite-key provenance in the city/service-review metadata, not in retained GeoJSON feature properties. Do not retain raw source-specific attribute sets. Existing legacy samples with only `OBJECTID` or `PARCEL_ID` remain valid. Never use an internal synthetic row number as the native identity unless source evidence proves that is the stable parcel identity.
+For retained GeoJSON samples, put exactly one safe stable identity in `properties`, preferably `{{"id": "<stable-identity>"}}`. Prefer native IDs or proven composite keys. If the provider exposes geometry without a safe durable key, a deterministic geometry-derived ID is acceptable: record the exact canonicalization/hash recipe, source namespace, collision/deduplication policy and stability limits. Do not label derived IDs native or reject otherwise usable geometry solely for lacking a native key. Never use response order, a random ID or an ephemeral row counter. Put source field mappings and identity provenance in metadata; retain no raw attribute sets.
+
+Use the queue's `priorEvidence` and `appBindings` as starting evidence, including past holds and qualification diagnostics. Read their referenced files before repeating work. Recheck current endpoints and investigate the specific unresolved blocker or another official route; a previous hold is a lead, not a permanent verdict. Existing app support is bounded coverage and must not be overwritten by a new failed probe.
+
+Apply these integration lessons explicitly:
+- Search the city's own government/cadastre sites, regional/state/provincial government, national cadastre/geodata portals, and general web results in both English and the actual local language. Record each level checked, actual URLs and outcomes, including why a regional level is inapplicable. Use official portals, viewer JavaScript/configuration, catalog searches and documented download routes rather than stopping at agency prose.
+- Probe promising sources for real parcel polygons. Exclude real-estate ads, offered lots, a single development, planning zones, buildings and administrative boundaries. A useful source is a systematic cadastral dataset intended to cover the city or a substantial part of it. First-party purpose/coverage evidence and actual distributed city probes are both necessary; a few polygons next to the WUP point do not establish useful city coverage.
+- Investigate a promising dataset deeply enough to identify its concrete endpoint/layer/download, protocol, safe ID scheme, source purpose and geographic scope. Probe at least three distinct areas distributed across the actual urban settlement, retaining response/request evidence in ignored scratch. Record bbox, returned count, polygon type and safe sample IDs for each probe, and explain the spatial distribution. At least two areas must return multiple cadastral parcels before recommending qualification. Keep partial coverage explicitly partial; do not assert 100% completeness from a sample.
+- Identify the actual cadastral layer rather than roads, buildings, planning zones, tax tables or a screenshot. A national registry or viewable raster alone does not prove accessible parcel polygons for this city.
+- Check the service extent against the exact WUP city and distinguish centre-point coverage from nearby/district/partial-city coverage. Use small bounded windows near that city, record each window and do not claim all-city coverage from a sample.
+- Inspect CRS, coordinate order, paging limits, maximum bbox area, stable IDs, duplicate geometries and overlapping/invalid parcels. Read exact case-sensitive field names from actual responses (for example objectid may differ from OBJECTID). Check WFS version/type names and ArcGIS layer IDs, ID-list/page support, current/historic validity fields and response transfer limits. Filter historic duplicates only with evidenced field semantics; do not suppress genuine overlaps.
+- Establish the native/source CRS separately from the service response CRS and the app's metric CRS. Record first-party CRS metadata, wire axis order, units, datum/reference-frame realization, coordinate epoch if actually published, and the documented conversion operation and required grid. A WGS84 response or plausible coordinate range alone does not prove the provider's conversion is correct. Preserve a bounded native ID+polygon sample and its matching output for independent qualification; keep native proof and hashes in ignored scratch evidence.
+- Follow the alignment policy in `world-parcels/research/parcel-alignment-2026-10-14/index.json`: fix only evidenced CRS/axis/unit/datum-operation mistakes. Never fit a translation, rotation or scale to OSM or imagery, guess a CRS, alter measured boundaries, or invent an epoch. Missing grids, ambiguous operations, custom CRS and unexplained source displacement remain held. Independently compare documented native-to-output conversion before admission; basemap agreement is not proof of cadastral survey accuracy.
+- Retain at most three full polygons unchanged, preserving rings, holes, multipolygons and precision. Attribute minimization must never simplify geometry. Record source authority, licence/reuse evidence or uncertainty, attribution, observation time and safe field allowlist.
+- Run one request at a time per provider host, honour Retry-After, use bounded timeouts and at most two retries for transient failures. Stop repeated 403/429/5xx or CAPTCHA failures and record them. Use official viewer configuration, WFS/ArcGIS/OGC endpoints or official downloadable polygon files as alternative routes; do not bypass access controls.
+- Record access failure, unsupported format, wrong extent, provider unavailability and geometry defects separately from unestablished registry presence. Include the next concrete qualification action where a source is promising. Discovery evidence alone never admits a source to the app.
 
 Required city JSON core schema example (include these fields with accurate evidence; additional established packet fields are welcome):
 ```json
@@ -641,7 +704,7 @@ Required city JSON core schema example (include these fields with accurate evide
 
 Perform separate first-party discovery queries in English and the country's local/native language; record the actual query text, search outcome, and URLs in `freshResearch.queries`. Follow the official viewer's current JavaScript/configuration to the public map/API service, inspect schema/CRS and a bounded anonymous ID+geometry response when available. Ordinary public GET/POST is allowed. Never log in, use credentials/private tokens, defeat CAPTCHA/Cloudflare, or request owner, address, contact, titleholder, personal, tax/account, or other unsafe fields. TLS verification is the default; only use a narrow, source-specific certificate exception when the user has already authorized that exact exception, and record its host, reason, and request. Never disable TLS verification globally. Retain full unchanged native geometry only with safe parcel IDs, at most three polygons total; keep larger raw evidence in ignored `tmp/`.
 
-Record every attempted route/request and distinguish a city/local registry custodian from general national agency prose. Use `registryFound=true` only when a local registry/cadastre/map/procedure is actually evidenced; otherwise use `null` (never `false`). Do not present packet completion as source integration/admission. Keep `runtimeReadiness` held unless the serial reviewer qualifies a real adapter independently.
+Record every attempted route/request and distinguish a city/local registry custodian from general national agency prose. Use `registryFound=true` only when a local registry/cadastre/map/procedure is actually evidenced; otherwise use `null` (never `false`). Do not present packet completion as source integration/admission. Recommend exactly one discovery outcome: candidate (concrete useful source for adapter qualification), blocked (specific promising source with an evidenced access/service blocker and concrete retry action), rejected (search exhausted without an actionable useful parcel source), or already-supported (this same useful source already serves this city in the app). Do not manufacture a vague future follow-up to avoid rejecting an exhausted search. Missing adapter code is work for the next stage, not a source rejection or access blocker.
 
 The paired service review MUST contain `"cityRecord": "{city_file}"` at the top level. Write and reread both named JSON files before returning. This report must document query and request outcomes, scope limits, safe field allowlist, and uncertainty. Mark the packet complete only after accurately recording all executed attempts. Never invent a successful query, registry, or geometry. End with a short machine-readable completion summary in your final response.{retry_block}"""
 
@@ -652,6 +715,36 @@ The paired service review MUST contain `"cityRecord": "{city_file}"` at the top 
         identity_text = "\n".join(f"- `identity:{item['cityCode']}` — resolve this held identity before any work on the next rank range." for item in identities)
         handoff = (self.root / HANDOFF).as_posix()
         receipt_dir = self._receipt_dir().relative_to(self.root).as_posix()
+        if self.discovery_workflow():
+            return f"""You are the serial evidence reviewer for a finite city cadastral discovery queue.
+Review only the city packets listed below. Write durable review receipts and supplemental request/response evidence under `{receipt_dir}`;
+do not edit registry, catalog, runtime, generated reports, queue identity or another city's packet.
+Do not perform admission, commit, push, deploy or contact anyone. Do not launch other research jobs.
+
+{city_text or '- (none)'}
+
+For each listed city, read both its city packet and paired service review and any retained sample.
+Check exact queue country/code/rank/point/population, actual bilingual searches and request results,
+prior evidence, source authority, extent and coverage limits, safe IDs and full unchanged polygons.
+Stable geometry-derived IDs are acceptable when provenance and deterministic recipe are explicit;
+native IDs are preferable but their absence alone is not a rejection. Distinguish raster viewers,
+partial extent, service/access failures, historic duplicate rows and true geometry defects.
+Do not turn unresolved evidence into absence or a worker's success label into qualification.
+Choose exactly one discovery decision for each city:
+- candidate: an actual accessible cadastral polygon dataset with first-party purpose/scope evidence and useful coverage across this city. Missing adapter code is allowed: the next stage builds or adapts it and runs all nine live gates.
+- blocked: a concrete promising parcel source is temporarily inaccessible or has a specific unresolved source blocker. Record the actual endpoint, blocker and a feasible next action. A national agency's existence or "search again later" is not a promising lead.
+- rejected: the recorded municipal, regional, national and bilingual web investigation found no actionable source of useful city parcel coverage, or only non-parcel/isolated land-sale/development sources. This is a search outcome, never an assertion that no cadastre exists. Do not queue it for qualification.
+- already-supported: the same useful source and city binding are already enabled in the current catalog/config; reference their actual appCityIds. Do not classify an unverified prior binding as new integration or overwrite it.
+
+Read existing evidence first. Old packets need an explicit decision under this policy, not repeat research automatically. If a packet contains a genuinely promising source but lacks geographic breadth evidence, make bounded supplemental public probes now (safe ID plus geometry only; normal TLS; no login/credentials/bypasses). Store these supplemental artifacts under this receipt directory; never rewrite the packet. Check at least three distinct non-overlapping areas spread across the actual city, at least two positive and at least four distinct safe parcel IDs overall. Explain the geographic distribution and partial scope; tiny neighbouring cells, metadata extent alone, and one development do not establish city coverage. No forced candidate for a failed probe. Respect one request per provider at a time, bounded timeouts, and stop repeated failures.
+
+Before adding an exact city:<code> ID to reviewedIds, write and reread its receipt at
+`{receipt_dir}/city_<code>.json` containing schemaVersion 2, exact taskId, decision (candidate|blocked|rejected|already-supported), nonempty evidenceFiles (repository-relative paths actually read and existing, including both packet and paired review), checkedAt ISO timestamp and substantive reason.
+Required searchCoverage object has exactly municipal, regional, national, web; each is {{"status":"checked","reason":"actual result","evidenceUrls":["https://..."]}}. Only regional may use status not-applicable with a reason. If the old evidence does not cover a level, complete that bounded search before deciding.
+For candidate/blocked/already-supported include source {{"sourceId":"stable-source-id","endpoint":"actual service/download URL","purpose":"cadastral-parcels","purposeEvidenceUrls":["first-party URL"]}}. Use current catalog IDs when the source already exists.
+For candidate include nextAction and coverage {{"scope":"citywide or substantial-city","basis":"first-party systematic cadastral coverage evidence, with limits","evidenceUrls":["https://..."],"distributedAcrossCity":true,"distributionBasis":"why these locations span the actual city rather than one block","probes":[{{"bbox":[minLon,minLat,maxLon,maxLat],"featureCount":0,"geometryType":"Polygon or MultiPolygon","sampleIds":[],"evidenceFile":"repository-relative saved request/response evidence","evidenceSha256":"actual SHA256"}}]}}. Counts and IDs must come from actual responses; preserve raw proof safely in ignored scratch. Include all probe evidence files in evidenceFiles.
+For blocked include blocker and concrete nextAction. For rejected include rejectionReason and nextAction:null. For already-supported include appCityIds.
+Only blocked decisions belong in heldIds; all completed valid decisions belong in reviewedIds. Return only the supplied JSON schema fields reviewedIds, heldIds, summary and systemicFailure. Never mark an unread task reviewed."""
         return f"""You are the one serial root reviewer for the persistent WUP parcel-research job. You own root review decisions and are the ONLY agent authorized in this job to edit `world-parcels/registry.json`, `backend/parcels/source-catalog.json`, `frontend/js/city-config.js`, and generated coverage/report artifacts. Research workers own only their named city packet/review/sample files. Provider-expansion paired city/review/sample files are immutable discovery evidence; put review decisions in separate receipts without rewriting those files. Do not commit, push, deploy, or contact anyone. Preserve the user's paused local-research goal and remote-job authorization; do not start any separate investigation outside these named tasks.
 
 Review at most three pending legacy/root items listed below in this turn, plus the new city batch. For each task, inspect the paired evidence and add only its exact ID to `reviewedIds` after a completed review; a hold is a completed review but must remain visibly held. Do not mark unreviewed tasks done. Use the handoff file when present: `{handoff}`.
@@ -726,6 +819,8 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
 
     def _ensure_root_tasks(self, cohort_dir: Path, cities: list[dict[str, Any]]) -> None:
         tasks = self.state.setdefault("rootReviewTasks", {})
+        if self.discovery_workflow():
+            return
         for task_id, description in ROOT_REVIEW_TASKS:
             tasks.setdefault(task_id, {"status": "pending", "description": description, "attempts": 0})
         # City review owns packet review. Reuse its proof instead of adding a second task.
@@ -748,22 +843,40 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
     def _reviewed_city_receipt(self, city: dict[str, Any], packet: dict[str, Any]) -> dict[str, Any] | None:
         """Trust a completed review only with valid, still-current paired evidence."""
         entry = self._city_entry(city)
-        if not packet.get("valid") or entry.get("status") not in {"reviewed", "reviewed-held"}:
+        if not packet.get("valid") or entry.get("status") not in discovery_outcomes.REVIEWED_STATUSES:
             return None
         receipt = self._review_receipt(f"city:{city['cityCode']}")
-        if receipt is None or ((entry["status"] == "reviewed-held") != (receipt["decision"] == "held")):
+        if receipt is None:
             return None
+        if self.discovery_workflow():
+            if entry.get("discoveryDecision") != receipt["decision"] or entry["status"] != "reviewed-" + receipt["decision"]:
+                return None
+        elif (entry["status"] == "reviewed-held") != (receipt["decision"] == "held"):
+            return None
+        return receipt if self._paired_evidence_current(receipt, packet) else None
+
+    def _paired_evidence_current(self, receipt: dict[str, Any], packet: dict[str, Any]) -> bool:
         evidence = [(self.root / raw).resolve() for raw in receipt["evidenceFiles"]]
         paired = [packet.get("cityPath"), packet.get("reviewPath")]
         if any(path is None or path.resolve() not in evidence for path in paired):
-            return None
+            return False
         checked = datetime.fromisoformat(receipt["checkedAt"].replace("Z", "+00:00"))
         if checked.tzinfo is None:
             checked = checked.replace(tzinfo=timezone.utc)
+        protected = {path.resolve() for path in paired}
+        coverage = receipt.get("coverage")
+        probes = coverage.get("probes") if isinstance(coverage, dict) else None
+        protected.update((self.root / probe["evidenceFile"]).resolve()
+                         for probe in (probes if isinstance(probes, list) else [])
+                         if isinstance(probe, dict) and probe.get("evidenceFile"))
+        source_evidence = [path for path in evidence if path in protected or
+                           path.relative_to(self.root.resolve()).as_posix() not in discovery_outcomes.APP_CONTEXT_FILES]
         # Receipts use whole seconds; allow only that timestamp's fractional second.
-        if any(path.stat().st_mtime >= checked.timestamp() + 1 for path in evidence):
-            return None
-        return receipt
+        # Shared app context changes as cities are admitted; source packets/probes
+        # remain immutable, and already-supported bindings are checked separately.
+        if any(path.stat().st_mtime >= checked.timestamp() + 1 for path in source_evidence):
+            return False
+        return True
 
     def _skip_item(self, task_id: str, entry: dict[str, Any], phase: str, reason: str) -> None:
         """Retain failure evidence without claiming successful research or review."""
@@ -781,7 +894,8 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
     def _skip_unreviewed(self, cities: list[dict[str, Any]], root_ids: list[str], reason: str) -> None:
         for city in cities:
             entry = self._city_entry(city)
-            if entry.get("status") not in {"reviewed", "reviewed-held", "failed-skipped"}:
+            packet = self._packet(city, Path(city.get("cohortDir", self._queue_path().parent)))
+            if entry.get("status") != "failed-skipped" and self._reviewed_city_receipt(city, packet) is None:
                 self._skip_item(f"city:{city['cityCode']}", entry, "review", reason)
         for task_id in root_ids:
             entry = self.state["rootReviewTasks"][task_id]
@@ -831,9 +945,24 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         return research, review_only
 
     def _review_call(self, city_items: list[dict[str, Any]], root_task_ids: list[str], identities: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+        if self.discovery_workflow():
+            # Preserve the original review before the new policy reclassifies it.
+            for city in city_items:
+                path = self._receipt_path(f"city:{city['cityCode']}")
+                if path.is_file():
+                    archived = path.parent / "history" / f"{path.stem}-{sha256_file(path)[:16]}.json"
+                    archived.parent.mkdir(parents=True, exist_ok=True)
+                    if not archived.exists():
+                        shutil.copy2(path, archived)
         task_id = "review:" + ",".join([f"city:{item['cityCode']}" for item in city_items]
                                         + root_task_ids + [f"identity:{item['cityCode']}" for item in (identities or [])])
-        return self._call("reviewer", task_id, self._build_review_prompt(city_items, root_task_ids, identities), REVIEW_MODEL, "high")
+        model = self._model("review")
+        prompt = self._build_review_prompt(city_items, root_task_ids, identities)
+        errors = {f"city:{city['cityCode']}": self.receipt_errors[f"city:{city['cityCode']}"]
+                  for city in city_items if f"city:{city['cityCode']}" in self.receipt_errors}
+        if errors:
+            prompt += "\nThe previous receipts were not accepted for these concrete reasons. Correct the receipt/evidence, do not invent passing evidence:\n" + json.dumps(errors)
+        return self._call("reviewer", task_id, prompt, model["model"], model.get("effort") or "high")
 
     def _record_city_attempts(self, cities: list[dict[str, Any]], cohort_dir: Path,
                               parallel_reviewer: dict[str, Any] | None = None) -> tuple[list[dict[str, Any]], dict[str, Any] | None, bool]:
@@ -862,10 +991,11 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 entry["status"] = "running"
                 entry["lastAttemptAt"] = utc_now()
                 entry["lastError"] = None
+                model = self._model("research")
                 calls.append(self._call("research", f"city:{code}",
                                         self._build_research_prompt(city, cohort_dir, entry["attempts"],
                                                                     entry.get("lastValidationErrors")),
-                                        RESEARCH_MODEL, "low"))
+                                        model["model"], model.get("effort") or "low"))
             if parallel_reviewer is not None and attempt_round == 0:
                 calls.append(parallel_reviewer)
             self.save_state()
@@ -960,7 +1090,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                     self.state.setdefault("rootReviewTasks", {}).setdefault(task_id, {"status": "pending", "attempts": 0})["attempts"] += 1
                 call = self._review_call(call_cities, call_roots, call_identities)
                 self.save_state()
-                result = self.run_calls([call])[0]
+                result = next(iter(self.run_calls([call])), None)
             answer = self._read_review_answer(result) if result else None
             if result:
                 systemic = systemic or bool(result.get("systemic"))
@@ -977,9 +1107,17 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 if answer is None or task_id in held_ids and task_id not in reviewed:
                     continue
                 receipt = self._review_receipt(task_id)
-                if receipt is None or ((task_id in held_ids) != (receipt.get("decision") == "held")):
+                is_hold = receipt and receipt.get("decision") in {"held", "blocked"}
+                if receipt is None or ((task_id in held_ids) != bool(is_hold)):
                     self.log("reviewer self-report lacks a valid persisted receipt; task remains pending", taskId=task_id)
                     continue
+                if task_id in city_ids:
+                    city = next(item for item in city_items if f"city:{item['cityCode']}" == task_id)
+                    packet = self._packet(city, Path(city.get("cohortDir", self._queue_path().parent)))
+                    if not packet.get("valid") or not self._paired_evidence_current(receipt, packet):
+                        self.receipt_errors[task_id] = ["receipt must name both current packet and paired service review; evidence must predate checkedAt"]
+                        self.log("review receipt is not bound to current paired city evidence", taskId=task_id)
+                        continue
                 newly_accepted.add(task_id)
             accepted.update(newly_accepted)
             held_accepted.update(newly_accepted & held_ids)
@@ -994,12 +1132,19 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 entry = self._city_entry(city)
                 packet = self._packet(city, Path(city.get("cohortDir", self._queue_path().parent)))
                 if packet.get("valid"):
-                    previously_held = entry.get("status") == "reviewed-held"
-                    entry["status"] = "reviewed-held" if task_id in held_ids else "reviewed"
+                    receipt = self._review_receipt(task_id)
+                    previously_held = entry.get("status") in {"reviewed-held", "reviewed-blocked"}
+                    if self.discovery_workflow():
+                        entry["discoveryDecision"] = receipt["decision"]
+                        entry["status"] = "reviewed-" + receipt["decision"]
+                        entry["discoveryReason"] = receipt["reason"]
+                        entry["discoveryReceiptSha256"] = sha256_file(self._receipt_path(task_id))
+                    else:
+                        entry["status"] = "reviewed-held" if task_id in held_ids else "reviewed"
                     entry["reviewedAt"] = utc_now()
                     entry["reviewPath"] = str(packet.get("reviewPath"))
                     entry["receiptPath"] = str(self._receipt_path(task_id))
-                    if entry["status"] == "reviewed-held" and not previously_held:
+                    if entry["status"] in {"reviewed-held", "reviewed-blocked"} and not previously_held:
                         self.state["heldCount"] = int(self.state.get("heldCount", 0)) + 1
                 else:
                     self._skip_item(f"city:{code}", entry, "review",
@@ -1041,8 +1186,25 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
             receipt = json_read(path)
         except (OSError, ValueError, TypeError):
             return None
-        if receipt.get("taskId") != task_id or receipt.get("decision") not in {"held", "qualified", "resolved", "reviewed"}:
+        if not isinstance(receipt, dict):
             return None
+        decisions = discovery_outcomes.DECISIONS if self.discovery_workflow() and task_id.startswith("city:") else {"held", "qualified", "resolved", "reviewed"}
+        if receipt.get("taskId") != task_id or receipt.get("decision") not in decisions:
+            return None
+        if self.discovery_workflow() and task_id.startswith("city:"):
+            errors = discovery_outcomes.validate_receipt(self.root, receipt)
+            if not errors and receipt["decision"] == "already-supported":
+                try:
+                    from parcel_source_admission import _existing_bindings
+                    bindings = _existing_bindings(self.root)
+                    errors.extend(discovery_outcomes.supported_binding_errors(self.root, receipt, bindings, task_id.split(":", 1)[1]))
+                except (OSError, ValueError, KeyError, TypeError, RuntimeError) as exc:
+                    errors.append(f"could not verify current app bindings: {exc}")
+            if errors:
+                self.receipt_errors[task_id] = errors
+                self.log("discovery receipt rejected by handoff contract", taskId=task_id, errors=errors)
+                return None
+            self.receipt_errors.pop(task_id, None)
         try:
             datetime.fromisoformat(str(receipt.get("checkedAt", "")).replace("Z", "+00:00"))
         except ValueError:
@@ -1051,6 +1213,8 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         if not isinstance(evidence, list) or not evidence:
             return None
         for raw in evidence:
+            if not isinstance(raw, str):
+                return None
             target = Path(raw)
             target = target if target.is_absolute() else self.root / target
             if not target.exists() or not target.is_file():
@@ -1060,6 +1224,95 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
             except ValueError:
                 return None
         return receipt
+
+    def _candidate_workspace_snapshot(self) -> dict[str, str | None] | None:
+        """Independently detect code/data changes even when a worker fails to report them."""
+        from parcel_source_stage import _support
+        try:
+            _qualification, build = _support(self.root)
+            return build.worktree_snapshot(self.root)
+        except Exception as exc:
+            self.log("candidate workspace snapshot unavailable", error=str(exc))
+            return None
+
+    def _has_failures(self) -> bool:
+        return bool(self.state.get("failedItems") or self.state.get("adapterStageBlocked") or any(
+            row.get("qualification", {}).get("status") == "failed"
+            for row in self.state.get("cities", {}).values()))
+
+    def _advance_candidate(self, cities: list[dict[str, Any]], cohort_dir: Path) -> bool:
+        """Advance one qualification batch; app admission always remains serial."""
+        if not getattr(self.args, "with_adapters", False) or self.stop_requested or self.state.get("adapterStageBlocked"):
+            return False
+        if getattr(self.args, "qualification_workers", 1) == 2:
+            from parcel_parallel_qualification import advance_candidates
+            return advance_candidates(self, cities, cohort_dir)
+        from parcel_source_stage import run_candidate, revalidate_stage
+        from parcel_source_admission import admit_candidate
+        for city in cities:
+            entry = self._city_entry(city)
+            if entry.get("discoveryDecision") != "candidate":
+                continue
+            stage = entry.get("qualification", {})
+            packet = self._packet(city, cohort_dir)
+            receipt = self._reviewed_city_receipt(city, packet)
+            if receipt is None:
+                continue
+            digest = sha256_file(self._receipt_path(f"city:{city['cityCode']}"))
+            if stage.get("receiptSha256") and stage["receiptSha256"] != digest:
+                entry.setdefault("qualificationHistory", []).append(stage)
+                stage = {}
+            stage_key = (str(city["cityCode"]), digest)
+            if stage.get("status") in {"integrated", "adapter-ready"} and stage_key not in self.validated_stages:
+                valid, reason = revalidate_stage(self, city, receipt, packet, stage)
+                if not valid:
+                    entry.setdefault("qualificationHistory", []).append({**stage, "invalidatedAt": utc_now(), "invalidationReason": reason})
+                    self.log("saved qualification changed; qualifying again from reviewed source", cityCode=str(city["cityCode"]), reason=reason)
+                    stage = {}
+                else:
+                    # Re-run idempotent admission to verify real app bindings and reports.
+                    stage = {**stage, "status": "adapter-ready"}
+            elif stage.get("status") not in {None, "pending", "running", "interrupted", "adapter-ready"}:
+                continue
+            workspace_before = self._candidate_workspace_snapshot()
+            if stage.get("status") != "adapter-ready":
+                entry["qualification"] = {"status": "running", "startedAt": utc_now(), "receiptSha256": digest}
+                self.save_state()
+                self.log("candidate entered adapter and live qualification stage", cityCode=str(city["cityCode"]), sourceId=receipt["source"]["sourceId"])
+                try:
+                    stage = run_candidate(self, city, receipt, packet)
+                except Exception as exc:
+                    stage = {"status": "failed", "summary": f"Workflow error: {type(exc).__name__}: {exc}"}
+                stage.update(receiptSha256=digest, finishedAt=utc_now())
+                entry["qualification"] = stage
+                self.save_state()
+            if stage.get("status") == "adapter-ready" and not self.stop_requested:
+                self.log("qualified adapter entered app integration", cityCode=str(city["cityCode"]))
+                try:
+                    admission = admit_candidate(self, city, receipt, stage)
+                except Exception as exc:
+                    admission = {"status": "failed", "summary": f"Admission error: {type(exc).__name__}: {exc}"}
+                entry["admission"] = admission
+                entry["qualification"] = {**stage, "status": admission["status"], "admission": admission,
+                                          "finishedAt": utc_now()}
+                if admission["status"] == "integrated":
+                    self.validated_stages.add(stage_key)
+                self.save_state()
+            self.log("candidate stage checkpoint", cityCode=str(city["cityCode"]),
+                     status=entry["qualification"]["status"], summary=entry["qualification"].get("summary"))
+            if entry["qualification"]["status"] == "failed":
+                workspace_after = self._candidate_workspace_snapshot()
+                unchanged = workspace_before is not None and workspace_after == workspace_before
+                entry["qualification"]["workspaceUnchangedAfterFailure"] = unchanged
+                if not unchanged:
+                    self.state["adapterStageBlocked"] = {"cityCode": str(city["cityCode"]),
+                                                          "reason": entry.get("admission", entry["qualification"]).get("summary"),
+                                                          "at": utc_now()}
+                else:
+                    self.log("candidate failed without workspace changes; continuing other candidates", cityCode=str(city["cityCode"]))
+                self.save_state()
+            return True
+        return False
 
     def _write_queue_builder(self, start_rank: int, end_rank: int) -> Path:
         research_root = self.root / "world-parcels" / "research"
@@ -1137,7 +1390,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                           for item in batch]
             task_ids = [f"identity:{item['cityCode']}" for item in identities]
             call = self._review_call([], [], identities)
-            result = self.run_calls([call])[0]
+            result = next(iter(self.run_calls([call])), None)
             success, answer, systemic = self._complete_review([], [], identities, result)
             if systemic or self.stop_requested:
                 self.state["status"] = "blocked" if systemic else "stopping"
@@ -1185,6 +1438,8 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                     end_rank = max(int(row["rank"]) for row in roster)
             except (ValueError, TypeError, KeyError):
                 pass
+        if getattr(self.args, "stop_after_queue", False):
+            total_rank_count = len(cities)
         self.state["queuePath"] = str(queue_path)
         self.state["queueSha256"] = sha256_file(queue_path)
         self.state["currentRankStart"] = start_rank
@@ -1195,15 +1450,24 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         for city in cities:
             entry = self._city_entry(city)
             packet = self._packet(city, cohort_dir)
-            if packet.get("valid") and entry.get("status") in {"reviewed", "reviewed-held"}:
+            if self._reviewed_city_receipt(city, packet) is not None:
                 validated_done += 1
         self.log("queue loaded", count=len(cities), rankStart=start_rank, rankEnd=end_rank,
                  validatedReviewedOnResume=validated_done, workers=self.args.workers)
+
+        # Start the existing qualification backlog promptly after a restart.
+        if getattr(self.args, "qualification_workers", 1) == 2:
+            if self._advance_candidate(cities, cohort_dir) and once:
+                return True, end_rank
 
         batch_number = 0
         while not self.stop_requested:
             research, review_only = self._select_batch(cities, cohort_dir)
             if not research and not review_only and not self._next_root_tasks(3):
+                if self._advance_candidate(cities, cohort_dir):
+                    if once:
+                        return True, end_rank
+                    continue
                 if self.discovery_waiting:
                     self.save_state()
                     self.sleep(5)
@@ -1221,7 +1485,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
             pending, review_result, systemic = self._record_city_attempts(research, cohort_dir, reviewer_call)
             if reviewer_call is not None and not preexisting_review_items and not research:
                 review_results = self.run_calls([reviewer_call])
-                review_result = review_results[0]
+                review_result = next(iter(review_results), None)
             success = True
             if preexisting_review_items or root_tasks:
                 success, _answer, review_systemic = self._complete_review(preexisting_review_items, root_tasks, first_result=review_result)
@@ -1241,7 +1505,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                     new_review_items.append({**city, "cityPath": str(packet["cityPath"]), "cohortDir": str(packet["cityPath"].parent)})
             if new_review_items:
                 new_reviewer = self._review_call(new_review_items, [])
-                result = self.run_calls([new_reviewer])[0]
+                result = next(iter(self.run_calls([new_reviewer])), None)
                 success, _answer, review_systemic = self._complete_review(new_review_items, [], first_result=result)
                 systemic = systemic or review_systemic
                 if not success:
@@ -1260,11 +1524,15 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 self.save_state()
                 self.log("stopping because a systemic failure persisted after bounded retries", details=self.state["systemicFailure"])
                 return False, None
+            self._advance_candidate(cities, cohort_dir)
             if once:
                 return True, end_rank
-            self.log("batch checkpoint", batch=batch_number, reviewedCount=sum(
-                1 for code in self.state["cities"] if self.state["cities"][code].get("status") in {"reviewed", "reviewed-held"}),
-                failedSkippedCount=sum(1 for code in self.state["cities"] if self.state["cities"][code].get("status") == "failed-skipped"))
+            reviewed_count = sum(1 for entry in self.state["cities"].values()
+                                 if entry.get("status") in discovery_outcomes.REVIEWED_STATUSES)
+            failed_count = sum(1 for entry in self.state["cities"].values() if entry.get("status") == "failed-skipped")
+            self.log(f"batch checkpoint: {reviewed_count + failed_count}/{len(cities)} cities processed",
+                     batch=batch_number, reviewedCount=reviewed_count, failedSkippedCount=failed_count,
+                     discoveryCounts=discovery_outcomes.counts(self.state))
             if self.stop_requested:
                 return False, None
 
@@ -1289,6 +1557,8 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         if not (1 <= self.args.max_retries <= MAX_RETRIES):
             raise ValueError("--max-retries must be between 1 and 3")
         self.acquire_lock()
+        self._subscription_environment()
+        self._model("research")
         queue_path = self._queue_path()
         self.load_state(queue_path)
         previous_handlers = {}
@@ -1312,10 +1582,16 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                     self.state["status"] = "paused-checkpointed"
                     self.save_state()
                     return 0
+                if getattr(self.args, "stop_after_queue", False):
+                    self.state["status"] = "complete-with-failures" if self._has_failures() else "complete"
+                    self.state["completedAt"] = utc_now()
+                    self.save_state()
+                    self.log("finite city queue exhausted", total=len(self._load_queue(current_queue)[1]))
+                    return 0
                 if range_end is None:
                     range_end = self.state.get("currentRankEnd") or 0
                 if range_end >= int(self.state.get("totalRankCount", 12138)):
-                    self.state["status"] = "complete-with-failures" if self.state.get("failedItems") else "complete"
+                    self.state["status"] = "complete-with-failures" if self._has_failures() else "complete"
                     self.state["completedAt"] = utc_now()
                     self.save_state()
                     self.log("all ranked WUP city research ranges exhausted", totalRankCount=range_end)
@@ -1354,13 +1630,21 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--status", action="store_true", help="report persisted state, actual PID identity, active children, and heartbeat")
     parser.add_argument("--stop", action="store_true", help="send SIGTERM to this runner only; it checkpoints and stops its owned Codex groups")
     parser.add_argument("--once", action="store_true", help="checkpoint after one batch (one to three city workers plus one review)")
+    parser.add_argument("--stop-after-queue", action="store_true", help="finish this finite queue without generating global rank ranges")
+    parser.add_argument("--discovery-only", action="store_true", help="review city evidence only; exclude legacy tasks and source admission")
+    parser.add_argument("--with-adapters", action="store_true", help="classify discovery, build/qualify candidate adapters and integrate passing cities in this worktree; never deploy")
     parser.add_argument("--workers", type=int, default=3, help="parallel city research workers (1-3; default 3)")
+    parser.add_argument("--qualification-workers", type=int, choices=(1, 2), default=1,
+                        help="parallel qualification cities in isolated worktrees (default 1); admission stays serial")
     parser.add_argument("--job-name", default="valhalla-parcel-research", help="persistent state/log job name")
     parser.add_argument("--repo-root", type=Path, default=DEFAULT_ROOT)
     parser.add_argument("--queue", type=Path, default=DEFAULT_QUEUE)
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE, help="official local WUP 2025 gzip source for later ranges")
     parser.add_argument("--state-dir", type=Path, default=DEFAULT_STATE)
     parser.add_argument("--codex", help="Codex CLI executable (default: codex from PATH)")
+    parser.add_argument("--research-model", help="override the shared cheap Codex research model")
+    parser.add_argument("--review-model", help="override the shared Codex review model")
+    parser.add_argument("--learning-file", action="append", default=[], help="repository-relative integration evidence to read before discovery")
     parser.add_argument("--max-turn-minutes", type=int, default=90, help="per Codex turn timeout, capped at 90 minutes")
     parser.add_argument("--max-retries", type=int, default=3, help="per-city/per-review retry cap (maximum 3)")
     parser.add_argument("--range-size", type=int, default=100, help="rank range generated after the first fixed queue")
@@ -1465,11 +1749,15 @@ def main(argv: list[str] | None = None) -> int:
                           "queuePath": state.get("queuePath"), "currentRankStart": state.get("currentRankStart"),
                           "currentRankEnd": state.get("currentRankEnd"), "activeProcesses": active,
                           "failedSkippedCount": len(state.get("failedItems", {})),
+                          "discoveryCounts": discovery_outcomes.counts(state),
+                          "adapterStageBlocked": state.get("adapterStageBlocked"),
                           "lastError": state.get("lastError")}, indent=2))
         return 0
     if not args.run:
         parser.print_help()
         return 0
+    if args.discovery_only and args.with_adapters:
+        parser.error("choose --discovery-only or --with-adapters, not both")
     if not 1 <= args.max_turn_minutes <= 90:
         parser.error("--max-turn-minutes must be between 1 and 90")
     if not 1 <= args.max_retries <= MAX_RETRIES:

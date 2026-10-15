@@ -1,6 +1,7 @@
 // Offline-first browser adapter for locally cached, SHA-verified HMLR authority snapshots.
 import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature as geoFeature } from '@turf/turf';
-import proj4 from 'proj4';
+import { hmlrRoutingProjection, hmlrRoutingBounds } from './hmlr-routing-projection.js';
+import { ensureOstn15 } from './osgb36-grid-loader.js';
 import { HttpError } from '../utils/helpers.js';
 import { providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
 import { sha256Hex } from './portable-hash.js';
@@ -425,7 +426,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
     // occupy, built by the archive scope policy. A candidate's enclosing rectangle can reach a
     // neighbouring council's land without any of its polygon doing so; that must not download it.
     async function authoritiesForParcels(manifest, candidates) {
-        const project = proj4('EPSG:27700', 'EPSG:4326'), cells = createHmlrArchiveScopeBuilder(point => project.forward(point));
+        const project = hmlrRoutingProjection, cells = createHmlrArchiveScopeBuilder(point => project.forward(point));
         for (const candidate of candidates) cells.addGeometry(candidate.feature.geometry);
         const occupied = cells.finish(null);
         return (await scopesNear(manifest, candidates.map(item => item.bboxWgs)))
@@ -541,7 +542,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
                 AbortSignal.any([AbortSignal.timeout(ARCHIVE_TIMEOUT_MS), cancelSignal]), cancelSignal);
             reportProgress({ phase: 'source-decompress', authority: authority.name });
             const signal = AbortSignal.any([AbortSignal.timeout(PARSE_TIMEOUT_MS), cancelSignal]);
-            const project = proj4('EPSG:27700', 'EPSG:4326');
+            const project = hmlrRoutingProjection;
             const seen = new Set(), rows = [], pendingWrites = []; let batch = [], writeFailure = null;
             const drainWrites = async () => {
                 if (pendingWrites.length) await Promise.all(pendingWrites.splice(0));
@@ -645,7 +646,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
         if (!feature) return invalidate(`HMLR ID directory references missing native parcel ${nativeId}.`);
         if (decimalId(feature.properties?.INSPIREID) !== nativeId) return invalidate(`HMLR stored parcel ${nativeId} has a mismatched native identity.`);
         let bounds;
-        try { bounds = collectBoxes(feature.geometry, proj4('EPSG:27700', 'EPSG:4326')); }
+        try { bounds = collectBoxes(feature.geometry, hmlrRoutingProjection); }
         catch { return invalidate(`HMLR stored parcel ${nativeId} has invalid geometry.`); }
         if (!withinBounds(bounds.bboxNative, authority.nativeBounds) || !withinBounds(bounds.bboxWgs, authority.bounds)
             || (expectedRow && (!Array.isArray(expectedRow.bboxNative) || !Array.isArray(expectedRow.bboxWgs)
@@ -697,12 +698,14 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
     }
     async function queryBounds(bounds, { signal } = {}) {
         validateBounds(bounds, descriptor.maxBboxKm2 ?? 25, descriptor);
-        const manifest = await getManifest(), viewport = bboxPolygon(bounds), initial = await authoritiesForBounds(manifest, [bounds]);
+        await ensureOstn15();
+        const routingBounds = hmlrRoutingBounds(bounds);
+        const manifest = await getManifest(), viewport = bboxPolygon(bounds), initial = await authoritiesForBounds(manifest, [routingBounds]);
         if (initial.length > MAX_QUERY_AUTHORITIES) throw upstreamError('HMLR viewport spans too many authority archives; use a smaller query.', 413);
         await Promise.all(initial.map(index => loadAuthority(index, signal)));
         reportProgress({ phase: 'source-prepare' });
         const loaded = initial.map(index => [index, authorityState.get(index)]);
-        const candidateRows = rowsMatching(loaded, [bounds]);
+        const candidateRows = rowsMatching(loaded, [routingBounds]);
         if (candidateRows.length > MAX_QUERY_FEATURES) throw upstreamError('HMLR browser query exceeds the parcel limit; use a smaller viewport.', 413);
         const features = [];
         for (let offset = 0; offset < candidateRows.length; offset += 250) {
@@ -710,11 +713,10 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
             features.push(...await Promise.all(candidateRows.slice(offset, offset + 250)
                 .map(row => featureFrom(manifest.releaseId, row.authorityIndex, row.nativeId, row))));
         }
-        // An enclosing rectangle that overlaps the query does not make a parcel part of it. Only
-        // polygons whose policy input meets the query become candidates, so an offscreen parcel
-        // cannot pull its overlap context (and neighbouring ZIPs) into this view. A rectangle
-        // wholly inside the query already proves it.
-        const undecided = candidateRows.map((row, index) => index).filter(index => !withinBounds(candidateRows[index].bboxWgs, bounds));
+        // The immutable index boxes are in the release routing frame. Check the actual OSTN15
+        // polygon against the public viewport; a box in another frame cannot prove containment.
+        // Only meeting polygons may pull their overlap context (and neighbouring ZIPs) into view.
+        const undecided = candidateRows.map((row, index) => index);
         const meets = undecided.length ? await (await getEngine()).intersectsBounds(undecided.map(index => features[index]), bounds) : [];
         const outside = new Set(undecided.filter((index, position) => !meets[position]));
         const candidates = candidateRows.map((row, index) => ({ ...row, feature: features[index] })).filter((_, index) => !outside.has(index));

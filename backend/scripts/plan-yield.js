@@ -15,11 +15,10 @@
 //   node scripts/plan-yield.js --city sibenik --json
 //   node scripts/plan-yield.js --city sibenik --housing-share 60 --apartment 70
 
-import pkg from 'pg';
+import { createPool, describeDatabase } from '../db/connection.cjs';
 import 'dotenv/config';
 import { createRequire } from 'node:module';
 
-const { Pool } = pkg;
 // plan-yield.js is a classic browser script (UMD), so it is CommonJS from node's point of view.
 const require = createRequire(import.meta.url);
 const { DEFAULTS, planYield } = require('../../frontend/js/proposals/plan-yield.js');
@@ -122,9 +121,9 @@ async function main() {
         floorHeightM: numberArg(argv, '--floor-height') ?? DEFAULTS.floorHeightM
     };
 
-    const pool = new Pool();
+    const pool = createPool();
     try {
-        if (!asJson) log(`database: ${process.env.PGDATABASE || 'geodata'} · city: ${city} · ${appliedOnly ? 'applied only' : 'all proposals'} (read-only)`);
+        if (!asJson) log(`database: ${describeDatabase().database} · city: ${city} · ${appliedOnly ? 'applied only' : 'all proposals'} (read-only)`);
 
         const { rows } = await pool.query(
             `SELECT id, proposal_id, name, applied, epoch_year, building_proposal, structure_proposal

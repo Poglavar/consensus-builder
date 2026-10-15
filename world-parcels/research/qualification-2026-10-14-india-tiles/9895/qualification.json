@@ -1,0 +1,478 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "9895",
+  "cityName": "Coimbatore",
+  "sourceId": "in-tn-tngis-tiles",
+  "candidateSha256": "5d84629cf797f3ce6a676f4c373af37f0e9a2e7d26eaeab945d56ba5979f7a57",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 36,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 36,
+      "collectedUniqueCount": 36
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 166
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "pagingRequired": false,
+      "reason": "Fixed tile snapshot: every tile is read whole and each row cut at a tile edge is followed into the neighbouring tile until it closes; pagination is not part of the protocol."
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "4bb7e743bd2d6bf2ae37420ec30b184e51ee76a99f3cf4daca2bb3733f7a327c",
+      "featureCount": 36,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32643",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "4bb7e743bd2d6bf2ae37420ec30b184e51ee76a99f3cf4daca2bb3733f7a327c",
+  "featureCount": 36,
+  "sampleIds": [
+    "IN-TN-TNGIS-g1~769775051~109873526~16f245d068e44cb25643be75676d558c654b34f1d52ede8b5bb87b7138013e2a",
+    "IN-TN-TNGIS-g1~769789803~109871209~b2c2c165c3ca47e6f560c26db0ee3f912b2d7edcc2bfaa03105db6cd60cc1490",
+    "IN-TN-TNGIS-g1~769798279~109875738~2cc12a07333aa8734c8b5a868f491bb7d124ce579d29c4765bcf5abb09d9373f"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        76.978,
+        10.986,
+        76.979,
+        10.987
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "IN-TN-TNGIS-g1~769774944~109872631~61310ee0c191f583b7ae6edacda536aa6fe954f89b5d8c4c81514a9009049576",
+        "IN-TN-TNGIS-g1~769777840~109864100~71511a7d562af4d3ab1f977d8dcf5c8b1099674992232eb6b33270a98c7543cf",
+        "IN-TN-TNGIS-g1~769777840~109864100~90a0594a9fc099484332652362ef28e52e2ff2e2a3651d19de446a3f683ac233",
+        "IN-TN-TNGIS-g1~769778323~109860098~91e2269418aa34f34e13150026f42d87dd7b920b96264864f760028d6ac67faa",
+        "IN-TN-TNGIS-g1~769784546~109870419~6821a12721d9c816431d2f8a7c4af1fe2bb63c31c7e34de0f82ad469d3cec8f5",
+        "IN-TN-TNGIS-g1~769787067~109860624~558bfaf4d5e068dcec1a349b65509dc31f06fe0474fcba62194309febd9f9523"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        76.979,
+        10.986,
+        76.98,
+        10.987
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "IN-TN-TNGIS-g1~769777840~109864100~71511a7d562af4d3ab1f977d8dcf5c8b1099674992232eb6b33270a98c7543cf",
+        "IN-TN-TNGIS-g1~769777840~109864100~90a0594a9fc099484332652362ef28e52e2ff2e2a3651d19de446a3f683ac233",
+        "IN-TN-TNGIS-g1~769784546~109870419~6821a12721d9c816431d2f8a7c4af1fe2bb63c31c7e34de0f82ad469d3cec8f5",
+        "IN-TN-TNGIS-g1~769787067~109860624~558bfaf4d5e068dcec1a349b65509dc31f06fe0474fcba62194309febd9f9523",
+        "IN-TN-TNGIS-g1~769789803~109871209~b2c2c165c3ca47e6f560c26db0ee3f912b2d7edcc2bfaa03105db6cd60cc1490",
+        "IN-TN-TNGIS-g1~769789910~109871788~f6582c9772736cbd2d0dbd9757aa4c7b073d21c08c73271587b0a923bbd594bc",
+        "IN-TN-TNGIS-g1~769797367~109867049~966dcf39efd4d398aa527e7dd5e7ddd0a25441408934acd425549bf804983d01",
+        "IN-TN-TNGIS-g1~769797850~109868681~cf37bd3e1ba306febaff4b64a4abb242b3e962a12145fc7cb5faa2e2dd3528dc",
+        "IN-TN-TNGIS-g1~769799083~109865732~6a4eb1f60a2fd197915595b5c37c35fdbc106f36292708ea99f463f379d0f9f4"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        76.98,
+        10.986,
+        76.981,
+        10.987
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "IN-TN-TNGIS-g1~769777840~109864100~71511a7d562af4d3ab1f977d8dcf5c8b1099674992232eb6b33270a98c7543cf",
+        "IN-TN-TNGIS-g1~769787067~109860624~558bfaf4d5e068dcec1a349b65509dc31f06fe0474fcba62194309febd9f9523",
+        "IN-TN-TNGIS-g1~769788033~109859308~c1646b07dabdb658bdd4e7a1809894c08df1fe99960b685be6ad3e1872dffddd",
+        "IN-TN-TNGIS-g1~769789910~109871788~f6582c9772736cbd2d0dbd9757aa4c7b073d21c08c73271587b0a923bbd594bc",
+        "IN-TN-TNGIS-g1~769792378~109873000~c6e40ee41e6d167058b2ac62118e98b73b76220a7758db3850b018389c1a036d",
+        "IN-TN-TNGIS-g1~769797367~109867049~966dcf39efd4d398aa527e7dd5e7ddd0a25441408934acd425549bf804983d01",
+        "IN-TN-TNGIS-g1~769797850~109868681~cf37bd3e1ba306febaff4b64a4abb242b3e962a12145fc7cb5faa2e2dd3528dc",
+        "IN-TN-TNGIS-g1~769799083~109865732~6a4eb1f60a2fd197915595b5c37c35fdbc106f36292708ea99f463f379d0f9f4",
+        "IN-TN-TNGIS-g1~769809061~109868313~7be60a2e0ec5f7d846af2d4cbb97ea03ec5a3e75cb33a87221103dae4a831e08",
+        "IN-TN-TNGIS-g1~769809330~109869155~0b4ebc8289570469e8139acfe6b1329a162235155e900062377b5a8faccc07a1"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        76.978,
+        10.987,
+        76.979,
+        10.988
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "IN-TN-TNGIS-g1~769774944~109872631~61310ee0c191f583b7ae6edacda536aa6fe954f89b5d8c4c81514a9009049576",
+        "IN-TN-TNGIS-g1~769775051~109873526~16f245d068e44cb25643be75676d558c654b34f1d52ede8b5bb87b7138013e2a",
+        "IN-TN-TNGIS-g1~769775426~109874158~54a8a5ed86cc1e4e6f48c2f9fe750c310fea7643005de854c9fe14c68575a6df",
+        "IN-TN-TNGIS-g1~769775909~109875159~abc095188377e24dd1456be7cc5ebccbfac726456f7b85663548e8df15d590fe",
+        "IN-TN-TNGIS-g1~769777840~109864100~90a0594a9fc099484332652362ef28e52e2ff2e2a3651d19de446a3f683ac233",
+        "IN-TN-TNGIS-g1~769782239~109892063~c6711f25a7c435cdadbcb07bc456dcd69cbc81611b986bace2e312581482ab29",
+        "IN-TN-TNGIS-g1~769784331~109879951~00e1973873d967218dc33c24c0340478e1a4639557a7e31dc756ed1756f57aa9",
+        "IN-TN-TNGIS-g1~769784546~109870419~6821a12721d9c816431d2f8a7c4af1fe2bb63c31c7e34de0f82ad469d3cec8f5",
+        "IN-TN-TNGIS-g1~769789803~109871209~b2c2c165c3ca47e6f560c26db0ee3f912b2d7edcc2bfaa03105db6cd60cc1490",
+        "IN-TN-TNGIS-g1~769789910~109871788~f6582c9772736cbd2d0dbd9757aa4c7b073d21c08c73271587b0a923bbd594bc"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        76.979,
+        10.987,
+        76.98,
+        10.988
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "IN-TN-TNGIS-g1~769775426~109874158~54a8a5ed86cc1e4e6f48c2f9fe750c310fea7643005de854c9fe14c68575a6df",
+        "IN-TN-TNGIS-g1~769782239~109892063~c6711f25a7c435cdadbcb07bc456dcd69cbc81611b986bace2e312581482ab29",
+        "IN-TN-TNGIS-g1~769784331~109879951~00e1973873d967218dc33c24c0340478e1a4639557a7e31dc756ed1756f57aa9",
+        "IN-TN-TNGIS-g1~769784546~109870419~6821a12721d9c816431d2f8a7c4af1fe2bb63c31c7e34de0f82ad469d3cec8f5",
+        "IN-TN-TNGIS-g1~769789803~109871209~b2c2c165c3ca47e6f560c26db0ee3f912b2d7edcc2bfaa03105db6cd60cc1490",
+        "IN-TN-TNGIS-g1~769789910~109871788~f6582c9772736cbd2d0dbd9757aa4c7b073d21c08c73271587b0a923bbd594bc",
+        "IN-TN-TNGIS-g1~769792378~109873000~c6e40ee41e6d167058b2ac62118e98b73b76220a7758db3850b018389c1a036d",
+        "IN-TN-TNGIS-g1~769798279~109875738~2cc12a07333aa8734c8b5a868f491bb7d124ce579d29c4765bcf5abb09d9373f"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        76.98,
+        10.987,
+        76.981,
+        10.988
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "ids": [
+        "IN-TN-TNGIS-g1~769789910~109871788~f6582c9772736cbd2d0dbd9757aa4c7b073d21c08c73271587b0a923bbd594bc",
+        "IN-TN-TNGIS-g1~769792378~109873000~c6e40ee41e6d167058b2ac62118e98b73b76220a7758db3850b018389c1a036d",
+        "IN-TN-TNGIS-g1~769796938~109885480~413b5b94e29f5699e08aa1fe084fe2e50ef827e055616744aab4b0172c687e27",
+        "IN-TN-TNGIS-g1~769798279~109875738~2cc12a07333aa8734c8b5a868f491bb7d124ce579d29c4765bcf5abb09d9373f",
+        "IN-TN-TNGIS-g1~769809330~109869155~0b4ebc8289570469e8139acfe6b1329a162235155e900062377b5a8faccc07a1"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        76.978,
+        10.988,
+        76.979,
+        10.989
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "ids": [
+        "IN-TN-TNGIS-g1~769775909~109875159~abc095188377e24dd1456be7cc5ebccbfac726456f7b85663548e8df15d590fe",
+        "IN-TN-TNGIS-g1~769782239~109892063~c6711f25a7c435cdadbcb07bc456dcd69cbc81611b986bace2e312581482ab29",
+        "IN-TN-TNGIS-g1~769784331~109879951~00e1973873d967218dc33c24c0340478e1a4639557a7e31dc756ed1756f57aa9"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        76.979,
+        10.988,
+        76.98,
+        10.989
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "ids": [
+        "IN-TN-TNGIS-g1~769782239~109892063~c6711f25a7c435cdadbcb07bc456dcd69cbc81611b986bace2e312581482ab29",
+        "IN-TN-TNGIS-g1~769796938~109885480~413b5b94e29f5699e08aa1fe084fe2e50ef827e055616744aab4b0172c687e27",
+        "IN-TN-TNGIS-g1~769798279~109875738~2cc12a07333aa8734c8b5a868f491bb7d124ce579d29c4765bcf5abb09d9373f"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        76.98,
+        10.988,
+        76.981,
+        10.989
+      ],
+      "complete": true,
+      "featureCount": 4,
+      "ids": [
+        "IN-TN-TNGIS-g1~769792861~109893959~5eb8c34a88a94583de402bf30c25a4ff439eb4fa2dfaafb3b901be92d14ada7a",
+        "IN-TN-TNGIS-g1~769796938~109885480~413b5b94e29f5699e08aa1fe084fe2e50ef827e055616744aab4b0172c687e27",
+        "IN-TN-TNGIS-g1~769798279~109875738~2cc12a07333aa8734c8b5a868f491bb7d124ce579d29c4765bcf5abb09d9373f",
+        "IN-TN-TNGIS-g1~769809276~109890062~1332fb0812a58c079fc3120aaa70d4a01dbe3fe72eead45ada5e76a891ccead0"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        76.979,
+        10.985,
+        76.98,
+        10.986
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "ids": [
+        "IN-TN-TNGIS-g1~769787067~109860624~558bfaf4d5e068dcec1a349b65509dc31f06fe0474fcba62194309febd9f9523",
+        "IN-TN-TNGIS-g1~769788033~109859308~c1646b07dabdb658bdd4e7a1809894c08df1fe99960b685be6ad3e1872dffddd",
+        "IN-TN-TNGIS-g1~769788194~109846827~0b43cd7c193e5aaa4388fb6cd576ae3dc5d3cc68c33962730fc222be0100b024",
+        "IN-TN-TNGIS-g1~769788301~109856359~4fcbbefde646f125dc048f496c7e759d54cad89acb8a3a78af3916eba286769a",
+        "IN-TN-TNGIS-g1~769788355~109853884~77f17496615bdd447de8fdea57aa9a8e27a108841d3c6c9ef443748875f49155"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        76.979,
+        10.989,
+        76.98,
+        10.99
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "IN-TN-TNGIS-g1~769781864~109893748~5f32e2c5b50a89dd74c850b741bc416b73b8bccf3fa4a846f6b5dc2b4cc76e06",
+        "IN-TN-TNGIS-g1~769782239~109892063~c6711f25a7c435cdadbcb07bc456dcd69cbc81611b986bace2e312581482ab29",
+        "IN-TN-TNGIS-g1~769782454~109893116~8fe7dcd0190ba812e8e931a7b8dfbd814c7db22404b36a46f02caf738af04065",
+        "IN-TN-TNGIS-g1~769785833~109895064~3f663f2eac3a5e4e2d2f2fafdfe5137608769d313c5e84955a0d599ebca8a9ab",
+        "IN-TN-TNGIS-g1~769791251~109895960~00ef3cf3812dbb8bdd663d1a01da442fa17325530bacef9a963568f653f04249",
+        "IN-TN-TNGIS-g1~769792861~109893959~5eb8c34a88a94583de402bf30c25a4ff439eb4fa2dfaafb3b901be92d14ada7a",
+        "IN-TN-TNGIS-g1~769794631~109909019~4fc744ab3339b8ad441a826eb6cfdd33de8de9c469f58efee6dcdf4ef030d84d",
+        "IN-TN-TNGIS-g1~769796938~109885480~413b5b94e29f5699e08aa1fe084fe2e50ef827e055616744aab4b0172c687e27"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        76.977,
+        10.987,
+        76.978,
+        10.988
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "IN-TN-TNGIS-g1~769761693~109873368~6d82905a3c52ce6800df75d200a445300e9b077e422bc4ae8aeea9e4005be2cf",
+        "IN-TN-TNGIS-g1~769761747~109870999~b87bd1ed31d6ff7c2067063daccab087e065aecd738cab603942e6c20c53239a",
+        "IN-TN-TNGIS-g1~769774944~109872631~61310ee0c191f583b7ae6edacda536aa6fe954f89b5d8c4c81514a9009049576",
+        "IN-TN-TNGIS-g1~769775051~109873526~16f245d068e44cb25643be75676d558c654b34f1d52ede8b5bb87b7138013e2a",
+        "IN-TN-TNGIS-g1~769775426~109874158~54a8a5ed86cc1e4e6f48c2f9fe750c310fea7643005de854c9fe14c68575a6df",
+        "IN-TN-TNGIS-g1~769775909~109875159~abc095188377e24dd1456be7cc5ebccbfac726456f7b85663548e8df15d590fe"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        76.981,
+        10.987,
+        76.982,
+        10.988
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "IN-TN-TNGIS-g1~769792378~109873000~c6e40ee41e6d167058b2ac62118e98b73b76220a7758db3850b018389c1a036d",
+        "IN-TN-TNGIS-g1~769796938~109885480~413b5b94e29f5699e08aa1fe084fe2e50ef827e055616744aab4b0172c687e27",
+        "IN-TN-TNGIS-g1~769809276~109890062~1332fb0812a58c079fc3120aaa70d4a01dbe3fe72eead45ada5e76a891ccead0",
+        "IN-TN-TNGIS-g1~769809330~109869155~0b4ebc8289570469e8139acfe6b1329a162235155e900062377b5a8faccc07a1",
+        "IN-TN-TNGIS-g1~769812065~109895222~167a7f138679f306c3c9e8d095f3d2b7a04374eeeb0a08dcda6b89df927f0be8",
+        "IN-TN-TNGIS-g1~769815981~109874948~cd05e8d2f5f5646826effaf211aa7dceacd5fa65a6fc2bcb54102ca588c3c3cf"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 11,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:28:52.312Z",
+      "queryHash": "e4c155c29adab4e5167fce59fcc34c8eaaca2bee8aff13815f650a7d0798281d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 216
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:28:52.587Z",
+      "queryHash": "e4c155c29adab4e5167fce59fcc34c8eaaca2bee8aff13815f650a7d0798281d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 966
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:28:53.609Z",
+      "queryHash": "e4c155c29adab4e5167fce59fcc34c8eaaca2bee8aff13815f650a7d0798281d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1033
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:28:54.669Z",
+      "queryHash": "e4c155c29adab4e5167fce59fcc34c8eaaca2bee8aff13815f650a7d0798281d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1077
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:28:55.772Z",
+      "queryHash": "4d53caae3f61364c55e2eaa88f81abe778f9ab9bcc178c72c80de4e040da16a9",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1080
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:28:56.955Z",
+      "queryHash": "e4c155c29adab4e5167fce59fcc34c8eaaca2bee8aff13815f650a7d0798281d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 991
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:28:58.000Z",
+      "queryHash": "4d53caae3f61364c55e2eaa88f81abe778f9ab9bcc178c72c80de4e040da16a9",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1052
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:28:59.235Z",
+      "queryHash": "e4c155c29adab4e5167fce59fcc34c8eaaca2bee8aff13815f650a7d0798281d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 910
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:29:00.194Z",
+      "queryHash": "e4c155c29adab4e5167fce59fcc34c8eaaca2bee8aff13815f650a7d0798281d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1075
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:29:01.383Z",
+      "queryHash": "e4c155c29adab4e5167fce59fcc34c8eaaca2bee8aff13815f650a7d0798281d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 979
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:29:02.499Z",
+      "queryHash": "4d53caae3f61364c55e2eaa88f81abe778f9ab9bcc178c72c80de4e040da16a9",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1146
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

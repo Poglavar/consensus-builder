@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Audit eligible completed source compaction; --apply marks bytes discarded then prunes files.
-import pg from 'pg';
+import { createClient } from '../db/connection.cjs';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'node:url';
 import { compactSources } from '../floor-plans/compact-sources.js';
@@ -8,7 +8,7 @@ import { compactSources } from '../floor-plans/compact-sources.js';
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 
 export async function runRetentionCli(argv = process.argv.slice(2), {
-    clientFactory = options => new pg.Client(options), compact = compactSources,
+    clientFactory = () => createClient(), compact = compactSources,
     output = value => console.log(JSON.stringify(value, null, 2)),
     log = value => console.error(JSON.stringify({ at: new Date().toISOString(), ...value })),
 } = {}) {
@@ -24,8 +24,7 @@ export async function runRetentionCli(argv = process.argv.slice(2), {
     if (repeat && !has('--apply')) throw new Error('--until-complete requires --apply; an audit does not remove completed candidates.');
     const limit = has('--limit') ? Number(option('--limit')) : repeat ? 250 : 50000;
     if (!Number.isInteger(limit) || limit < 1 || limit > 100000) throw new Error('--limit must be an integer from 1 to 100000.');
-    const connectionString = process.env.DATABASE_URL;
-    const client = clientFactory(connectionString ? { connectionString, ...(process.env.PGHOST ? { host: process.env.PGHOST } : {}) } : undefined);
+    const client = clientFactory();
     await client.connect();
     try {
         // Each compact call verifies evidence, commits tombstones, then prunes. A restart selects

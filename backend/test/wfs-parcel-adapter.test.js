@@ -55,6 +55,34 @@ const VILNIUS_FEATURE = {
 };
 
 describe('WFS parcel adapter', () => {
+    it.each([
+        undefined,
+        null,
+        { type: 'name', properties: { name: 'CRS84' } },
+        { type: 'name', properties: { name: 'urn:ogc:def:crs:OGC::CRS84' } },
+        { type: 'name', properties: { name: 'http://www.opengis.net/def/crs/OGC/1.3/CRS84' } },
+        { type: 'name', properties: { name: 'EPSG:4326' } }
+    ])('accepts absent or recognized WGS84 GeoJSON CRS metadata (%s)', async crs => {
+        const payload = { type: 'FeatureCollection', features: [feature(1)], numberMatched: 1, numberReturned: 1 };
+        if (crs !== undefined) payload.crs = crs;
+        const { adapter } = source([{ ok: true, status: 200, json: async () => payload }]);
+        await expect(adapter.queryBounds(BOUNDS)).resolves.toMatchObject({ complete: true, features: [{
+            id: 'FR-PCI-75105000AD0011'
+        }] });
+    });
+
+    it.each([
+        { type: 'name', properties: { name: 'EPSG:3857' } },
+        { type: 'name', properties: { name: 'EPSG:25831' } },
+        { type: 'link', properties: { href: 'https://example.test/crs' } },
+        { type: 'name', properties: { name: 'unknown:crs' } }
+    ])('rejects a declared non-WGS84 GeoJSON CRS (%j)', async crs => {
+        const payload = { type: 'FeatureCollection', features: [feature(1)], numberMatched: 1,
+            numberReturned: 1, crs };
+        const { adapter } = source([{ ok: true, status: 200, json: async () => payload }]);
+        await expect(adapter.queryBounds(BOUNDS)).rejects.toThrow('declared an unsupported or mismatched response CRS');
+    });
+
     it('accepts the published punctuated INSPIRE QName and uses it for bounds and native-ID reads', async () => {
         const fetchImpl = vi.fn().mockResolvedValueOnce(page([VILNIUS_FEATURE])).mockResolvedValueOnce(page([VILNIUS_FEATURE]));
         const adapter = createWfsParcelSource(VILNIUS_INSPIRE_DESCRIPTOR, { fetchImpl });

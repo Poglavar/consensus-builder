@@ -2,7 +2,7 @@
 // Admits technically qualified parcel cities to the app. Qualification is the gate: it already
 // proved the source is reachable and the production adapter reads it correctly. For every city whose
 // latest exported outcome is `qualified` and that is not live yet, this checks that its evidence is
-// intact and describes the production descriptor (eight gates, metric and independent metric audit,
+// intact and describes the production descriptor (nine gates, metric and independent metric audit,
 // identity and query contract), then exports the evidence and writes the app city config, catalog
 // scope, registry, demographics, labels and an admission manifest in the schema
 // backend/test/qualified-city-release.test.js verifies. No provider is contacted.
@@ -13,7 +13,8 @@
 // The manifest records the source it switched from.
 //
 // Usage: node scripts/admit-qualified-cities.mjs --state <qualification state dir> [--state ...]
-//          --release <name> [--exclude <code=reason>]... [--codes <a,b>] [--switch] [--apply]
+//          --release <name> [--exclude <code=reason>]... [--codes <a,b>] [--outcomes <file>]
+//          [--country-config <json>] [--switch] [--apply]
 // Without --apply nothing is written; the plan and any refusal are printed.
 
 import fs from 'node:fs';
@@ -21,12 +22,13 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import { createHash } from 'node:crypto';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { alignmentContractHash } from './lib/parcel-alignment.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const WUP = 'tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz';
-const GATES = ['classification', 'exactIds', 'stableGeometry', 'explicitAbsence', 'sampling', 'completeness', 'binding', 'metric'];
+const GATES = ['classification', 'exactIds', 'stableGeometry', 'explicitAbsence', 'sampling', 'completeness', 'binding', 'metric', 'alignment'];
 const BLOCKERS = ['invalidCount', 'duplicateIdCount', 'conflictingSameIdGeometryCount', 'exactGeometryDuplicateCount', 'overlapPairCount', 'operationErrorCount'];
-const CONTRACT = ['identityKind', 'lookupCellSize', 'attributeFilters', 'attributeExclusions', 'attributeNotNull', 'attributeNull', 'featureType', 'boundsQueryMode', 'idsQueryMode', 'boundsSrid', 'boundsProjection', 'queryFormat', 'nativeGeometryMode', 'disjointParts', 'overlapResolution'];
+const CONTRACT = ['identityKind', 'lookupCellSize', 'attributeFilters', 'attributeExclusions', 'attributeNotNull', 'attributeNull', 'featureType', 'boundsQueryMode', 'idsQueryMode', 'boundsSrid', 'boundsProjection', 'queryFormat', 'nativeGeometryMode', 'disjointParts', 'overlapResolution', 'zoom', 'layer', 'groupFields', 'extent'];
 const POINT_ADAPTERS = new Set(['pl-uldk-point', 'tkgm-point', 'msda-point']);
 // Country display names for labels; the rest come from existing labels of the same country.
 const COUNTRY_NAMES = {
@@ -38,7 +40,7 @@ const COUNTRY_NAMES = {
     SI: { en: 'Slovenia', es: 'Eslovenia', hr: 'Slovenija', sr: 'Словенија' }
 };
 const CURRENCY = {
-    US: ['en-US', 'USD'], DE: ['de-DE', 'EUR'], NL: ['nl-NL', 'EUR'], PL: ['pl-PL', 'PLN'], BE: ['nl-BE', 'EUR'],
+    US: ['en-US', 'USD'], DE: ['de-DE', 'EUR'], NL: ['nl-NL', 'EUR'], PL: ['pl-PL', 'PLN'], BE: ['nl-BE', 'EUR'], ET: ['am-ET', 'ETB'],
     FR: ['fr-FR', 'EUR'], GR: ['el-GR', 'EUR'], IL: ['he-IL', 'ILS'], NZ: ['en-NZ', 'NZD'], LV: ['lv-LV', 'EUR'],
     LT: ['lt-LT', 'EUR'], EE: ['et-EE', 'EUR'], BR: ['pt-BR', 'BRL'], AU: ['en-AU', 'AUD'], ZM: ['en-ZM', 'ZMW'],
     ES: ['es-ES', 'EUR'], UA: ['uk-UA', 'UAH'], SI: ['sl-SI', 'EUR'], IT: ['it-IT', 'EUR'], GB: ['en-GB', 'GBP'], IN: ['en-IN', 'INR']
@@ -58,13 +60,16 @@ const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const writeJson = (rel, value, indent = 2) => fs.writeFileSync(path.join(REPO, rel), `${JSON.stringify(value, null, indent)}\n`);
 
 function parseArgs(argv) {
-    const args = { states: [], exclude: new Map(), apply: false, release: null, codes: null, switch: false };
+    const args = { states: [], exclude: new Map(), apply: false, release: null, codes: null, switch: false,
+        outcomes: null, countryConfig: null };
     for (let i = 0; i < argv.length; i++) {
         const flag = argv[i];
         if (flag === '--state') args.states.push(path.resolve(argv[++i]));
         else if (flag === '--release') args.release = argv[++i];
         else if (flag === '--exclude') { const [code, ...reason] = argv[++i].split('='); args.exclude.set(code, reason.join('=') || 'excluded at admission'); }
         else if (flag === '--codes') args.codes = new Set(argv[++i].split(','));
+        else if (flag === '--outcomes') args.outcomes = path.resolve(argv[++i]);
+        else if (flag === '--country-config') args.countryConfig = path.resolve(argv[++i]);
         else if (flag === '--apply') args.apply = true;
         else if (flag === '--switch') args.switch = true;
         else if (flag === '--help') args.help = true;
@@ -108,16 +113,65 @@ function wupIndex() {
     return byCode;
 }
 
-function latestOutcomes() {
-    const dir = path.join(REPO, 'world-parcels/research/qualification-outcomes');
+function latestOutcomes(outcomesPath = path.join(REPO, 'world-parcels/research/qualification-outcomes')) {
+    const files = fs.statSync(outcomesPath).isDirectory()
+        ? fs.readdirSync(outcomesPath).filter(n => n.endsWith('.json')).sort().map(n => path.join(outcomesPath, n))
+        : [outcomesPath];
     const latest = new Map();
-    for (const name of fs.readdirSync(dir).filter(n => n.endsWith('.json')).sort()) {
-        for (const city of readJson(path.join(dir, name)).cities) {
+    for (const file of files) {
+        for (const city of readJson(file).cities || []) {
             const key = String(city.cityCode), prev = latest.get(key);
             if (!prev || (city.finishedAt || '') >= (prev.finishedAt || '')) latest.set(key, city);
         }
     }
     return latest;
+}
+
+export function validateCountryConfig(config, expectedCountryCode = null) {
+    const countryCode = config?.countryCode;
+    const currency = config?.currency;
+    if (!/^[A-Z]{2}$/.test(countryCode || '') || (expectedCountryCode && countryCode !== expectedCountryCode)) {
+        throw new Error('country config countryCode must match the candidate ISO-3166 alpha-2 code');
+    }
+    const englishName = new Intl.DisplayNames(['en'], { type: 'region' }).of(countryCode);
+    if (!englishName || englishName === countryCode || englishName === 'Unknown Region') throw new Error(`unsupported ISO-3166 alpha-2 country code ${countryCode}`);
+    if (!currency || typeof currency.locale !== 'string' || !currency.locale.trim()
+        || !/^[A-Z]{3}$/.test(currency.code || '')) throw new Error('country config needs a valid locale and three-letter currency code');
+    let locale;
+    try { locale = Intl.getCanonicalLocales(currency.locale)[0]; new Intl.NumberFormat(locale); }
+    catch { throw new Error('country config currency locale is not a valid Intl locale'); }
+    const supportedCurrencies = typeof Intl.supportedValuesOf === 'function' ? Intl.supportedValuesOf('currency') : [];
+    if (!supportedCurrencies.includes(currency.code)) throw new Error(`unsupported ISO-4217 currency code ${currency.code}`);
+    return { countryCode, currency: { locale, code: currency.code } };
+}
+
+// Existing opt-in sources stay opt-in. A newly discovered source has no production
+// default policy yet; after city-specific qualification, admission makes that new
+// source the default for its first narrowly scoped production city binding.
+export function sourceActivationDecision(candidateDescriptor, existingDescriptor = null) {
+    if (existingDescriptor) {
+        if (existingDescriptor.defaultForCity === false) {
+            return { eligible: false, descriptor: existingDescriptor, activation: null };
+        }
+        return { eligible: true, descriptor: existingDescriptor,
+            activation: { policy: 'existing_catalog_default', defaultForCity: true } };
+    }
+    const descriptor = { ...candidateDescriptor, cityIds: [], defaultForCity: true };
+    return { eligible: true, descriptor, activation: {
+        policy: 'newly_qualified_city_default', candidateDefaultForCity: candidateDescriptor.defaultForCity ?? null,
+        defaultForCity: true, scope: 'admitted_city_ids',
+        reason: 'new source descriptor promoted after nine-gate qualification; catalog scope is limited to admitted cities'
+    } };
+}
+
+function countryName(code, locale) {
+    return new Intl.DisplayNames([locale], { type: 'region' }).of(code);
+}
+
+export function currencyFor(countryCode, explicit) {
+    if (explicit) return validateCountryConfig(explicit, countryCode).currency;
+    const known = CURRENCY[countryCode];
+    return known ? { locale: known[0], code: known[1] } : null;
 }
 
 // Final evidence of every technical-qualified city in the given runner state dirs (latest run wins).
@@ -136,6 +190,11 @@ function evidenceIndex(stateDirs) {
             const record = { code, finishedAt: entry.finishedAt || '', candidate: path.join(cityDir, candidate),
                 qualification: path.join(evidenceDir, 'qualification.json'), metric: path.join(evidenceDir, 'metric-report.json'),
                 independent: path.join(evidenceDir, 'independent-metric-report.json'), cache: path.join(evidenceDir, 'full-safe.geojson'), stateDir: dir };
+            Object.assign(record, { alignment: path.join(evidenceDir, 'alignment-report.json'),
+                independentAlignment: path.join(evidenceDir, 'independent-alignment-report.json'),
+                alignmentEvidence: path.join(evidenceDir, 'alignment-evidence.json'),
+                alignmentMetadata: path.join(evidenceDir, 'alignment-metadata.json'),
+                alignmentNative: path.join(evidenceDir, 'alignment-native.json') });
             const prev = index.get(code);
             if (!prev || record.finishedAt >= prev.finishedAt) index.set(code, record);
         }
@@ -146,8 +205,9 @@ function evidenceIndex(stateDirs) {
 const sameUrl = (a, b) => { try { return new URL(a).href === new URL(b).href; } catch { return false; } };
 
 // Every check the release test makes, applied before anything is written.
-function verify(evidence, catalogSource) {
-    for (const key of ['candidate', 'qualification', 'metric', 'independent', 'cache']) {
+export function verifyAdmissionEvidence(evidence, catalogSource) {
+    for (const key of ['candidate', 'qualification', 'metric', 'independent', 'cache', 'alignment',
+        'independentAlignment', 'alignmentEvidence', 'alignmentMetadata', 'alignmentNative']) {
         if (!fs.existsSync(evidence[key])) return `missing ${key} evidence`;
     }
     const candidateBytes = fs.readFileSync(evidence.candidate);
@@ -164,13 +224,31 @@ function verify(evidence, catalogSource) {
         || BLOCKERS.some(field => independent[field] !== 0)) return 'independent metric audit does not pass';
     if (!catalogSource) return `source ${candidate.descriptor?.id} is not in the catalog`;
     const d = candidate.descriptor;
+    const alignment = readJson(evidence.alignment), independentAlignment = readJson(evidence.independentAlignment);
+    const alignmentEvidence = readJson(evidence.alignmentEvidence);
+    const contractSha256 = alignmentContractHash(d);
+    if (alignmentContractHash(catalogSource) !== contractSha256) return 'candidate coordinate contract differs from the production catalog';
+    for (const report of [alignment, independentAlignment]) {
+        if (report.passed !== true || report.sourceId !== d.id || report.cityCode !== String(candidate.city.code)
+            || report.contractSha256 !== contractSha256 || report.cacheSha256 !== qualification.cacheSha256
+            || report.evidenceSha256 !== sha256(fs.readFileSync(evidence.alignmentEvidence))
+            || report.nativeSha256 !== sha256(fs.readFileSync(evidence.alignmentNative))
+            || report.metadataSha256 !== sha256(fs.readFileSync(evidence.alignmentMetadata))
+            || report.sourceGeometryChanged !== false || report.fittedOffsetApplied !== false
+            || report.bestOperationAvailable !== true || report.ballparkAllowed !== false
+            || typeof report.maxVertexDifferenceM !== 'number' || !Number.isFinite(report.maxVertexDifferenceM)
+            || typeof report.maxBoundaryDifferenceM !== 'number' || !Number.isFinite(report.maxBoundaryDifferenceM)
+            || report.maxBoundaryDifferenceM > 0.25 || report.toleranceM !== 0.25
+            || report.nativeCrs !== alignmentEvidence.nativeCrs
+            || report.nativeAxisOrder !== alignmentEvidence.nativeAxisOrder) return 'independent coordinate alignment audit does not pass or bind to actual source evidence';
+    }
     if (!sameUrl(d.endpoint ?? catalogSource.endpoint, catalogSource.endpoint) || d.idPrefix !== catalogSource.idPrefix
         || (d.idField ?? null) !== (catalogSource.idField ?? null) || JSON.stringify(d.idFields ?? null) !== JSON.stringify(catalogSource.idFields ?? null)) {
         return 'candidate identity differs from the production catalog';
     }
     const contract = CONTRACT.find(field => JSON.stringify(d[field] ?? null) !== JSON.stringify(catalogSource[field] ?? null));
     if (contract) return `candidate query contract differs from the catalog (${contract})`;
-    return { candidate, candidateBytes, qualification, metric, independent };
+    return { candidate, candidateBytes, qualification, metric, independent, alignment, independentAlignment };
 }
 
 function slug(name) {
@@ -207,7 +285,7 @@ function switchParcelsLine(configText, appCityId, descriptor) {
 
 function cityConfigEntry(item) {
     const { appCityId, code, label, center, descriptor, countryCode } = item;
-    const [locale, currency] = CURRENCY[countryCode];
+    const { locale, code: currency } = item.currency;
     const q = quote;
     return [
         `        ${appCityId}: {`,
@@ -253,9 +331,10 @@ async function main() {
     }
     for (const [cc, names] of Object.entries(COUNTRY_NAMES)) for (const l of LOCALES) countryNames[l][cc] ??= names[l];
 
-    const outcomes = latestOutcomes();
+    const outcomes = latestOutcomes(args.outcomes || undefined);
     const evidence = evidenceIndex(args.states);
     const wup = wupIndex();
+    const explicitCountry = args.countryConfig ? validateCountryConfig(readJson(args.countryConfig)) : null;
     const plan = [], refused = [];
     const taken = new Set(configIds);
     for (const [code, outcome] of [...outcomes].sort((a, b) => Number(a[0]) - Number(b[0]))) {
@@ -263,30 +342,54 @@ async function main() {
         if (args.exclude.has(code)) { refused.push({ code, name: outcome.cityName, reason: args.exclude.get(code) }); continue; }
         const ev = evidence.get(code);
         if (!ev) { refused.push({ code, name: outcome.cityName, reason: 'no evidence in the given state dirs' }); continue; }
-        const candidateSourceId = readJson(ev.candidate).descriptor?.id;
-        const catalogSource = catalogDoc.sources.find(s => s.id === candidateSourceId);
-        const checked = verify(ev, catalogSource);
+        const candidate = readJson(ev.candidate);
+        const candidateDescriptor = candidate.descriptor;
+        const candidateSourceId = candidateDescriptor?.id;
+        const existingCatalogSource = catalogDoc.sources.find(s => s.id === candidateSourceId) || null;
+        const catalogSource = existingCatalogSource || candidateDescriptor;
+        const checked = verifyAdmissionEvidence(ev, catalogSource);
         if (typeof checked === 'string') { refused.push({ code, name: outcome.cityName, reason: checked }); continue; }
-        // An opt-in alternative (Ljubljana's GURS service) is skipped by default resolution, so it cannot be a city's only source.
-        if (catalogSource.defaultForCity === false) { refused.push({ code, name: outcome.cityName, reason: `${catalogSource.id} is an opt-in alternative (defaultForCity false)` }); continue; }
+        const activation = sourceActivationDecision(candidateDescriptor, existingCatalogSource);
+        if (!activation.eligible) {
+            refused.push({ code, name: outcome.cityName,
+                reason: `${catalogSource.id} is an existing opt-in alternative (defaultForCity false)` });
+            continue;
+        }
+        const selectedSource = activation.descriptor;
         const w = wup.get(code)?.['2025'];
-        const countryCode = catalogSource.countryCode || outcome.countryCode;
-        if (!CURRENCY[countryCode] || !LOCALES.every(l => countryNames[l][countryCode])) { refused.push({ code, name: outcome.cityName, reason: `no currency/label for ${countryCode}` }); continue; }
+        const countryCode = selectedSource.countryCode || outcome.countryCode;
+        let currency;
+        const candidateCountry = candidate.city?.currency ? { countryCode, currency: candidate.city.currency } : null;
+        try { currency = currencyFor(countryCode, explicitCountry || candidateCountry); }
+        catch (error) { refused.push({ code, name: outcome.cityName, reason: error.message }); continue; }
+        if (!currency) { refused.push({ code, name: outcome.cityName, reason: `no verified currency configuration for ${countryCode}` }); continue; }
+        for (const l of LOCALES) countryNames[l][countryCode] ??= countryName(countryCode, l);
+        if (!LOCALES.every(l => countryNames[l][countryCode])) { refused.push({ code, name: outcome.cityName, reason: `no localized country label for ${countryCode}` }); continue; }
+        if (!existingCatalogSource) {
+            const endpoint = candidateDescriptor?.endpoint;
+            if (!candidateDescriptor || !candidateSourceId || !/^https?:\/\//i.test(endpoint || '')
+                || !candidateDescriptor.adapter || !candidateDescriptor.idPrefix || !candidateDescriptor.name) {
+                refused.push({ code, name: outcome.cityName, reason: 'new source descriptor lacks a public HTTP(S) endpoint, adapter, display name or ID prefix' }); continue;
+            }
+            // The production descriptor is a separate copy. The candidate and its hash stay unchanged.
+            selectedSource.countryCode ||= countryCode;
+        }
         // A live city configured without a WUP code is the same place when its centre is this close.
         const pointLatLon = [checked.candidate.city.point[1], checked.candidate.city.point[0]];
         const twin = configs.find(c => Number.isFinite(c.lat) && haversineKm(c.lat, c.lon, ...pointLatLon) < TWIN_KM
             && (catalogDoc.sources.find(s => s.id === c.sourceId)?.countryCode ?? countryCode) === countryCode);
         if (twin) { refused.push({ code, name: outcome.cityName, reason: `already live as ${twin.id} (${haversineKm(twin.lat, twin.lon, ...pointLatLon).toFixed(1)} km away)` }); continue; }
         let appCityId = slug(outcome.cityName);
-        if (taken.has(appCityId)) appCityId = `${appCityId}_${(catalogSource.stateCode || countryCode).toLowerCase()}`;
+        if (taken.has(appCityId)) appCityId = `${appCityId}_${(selectedSource.stateCode || countryCode).toLowerCase()}`;
         if (taken.has(appCityId)) appCityId = `${appCityId}_${code}`;
         taken.add(appCityId);
         const point = checked.candidate.city.point; // [longitude, latitude]
         const metricCrs = checked.metric.metricCrs || checked.qualification.checks.metric.metricCrs;
         // Same-named cities in one country are told apart by their state or region code.
         const takenLabels = new Set([...Object.values(i18n.en.city?.labels || {}), ...plan.map(item => item.label)]);
-        const qualifier = takenLabels.has(`${outcome.cityName}, ${countryNames.en[countryCode]}`) ? ` (${catalogSource.stateCode || code})` : '';
-        plan.push({ code, appCityId, outcome, evidence: ev, ...checked, catalogSource, countryCode, qualifier,
+        const qualifier = takenLabels.has(`${outcome.cityName}, ${countryNames.en[countryCode]}`) ? ` (${selectedSource.stateCode || code})` : '';
+        plan.push({ code, appCityId, outcome, evidence: ev, ...checked, catalogSource: selectedSource,
+            activationDecision: activation.activation, countryCode, currency, qualifier,
             name: outcome.cityName, label: `${outcome.cityName}${qualifier}, ${countryNames.en[countryCode]}`,
             center: [point[1], point[0]], metricSrid: Number(String(metricCrs).split(':')[1]),
             population2025: w?.pop ?? null, population2015: wup.get(code)?.['2015']?.pop ?? null, countryName: countryNames.en[countryCode] });
@@ -324,7 +427,12 @@ async function main() {
         if (previous.metricSridByCity) delete previous.metricSridByCity[item.appCityId];
     }
     for (const item of plan) {
-        const source = nextCatalog.sources.find(s => s.id === item.catalogSource.id);
+        let source = nextCatalog.sources.find(s => s.id === item.catalogSource.id);
+        if (!source) {
+            source = structuredClone(item.catalogSource);
+            source.cityIds = [];
+            nextCatalog.sources.push(source);
+        }
         source.cityIds = [...new Set([...(source.cityIds || []), item.appCityId])];
         if (source.metricSridByCity || source.metricSrid !== item.metricSrid) {
             source.metricSridByCity ??= Object.fromEntries((source.cityIds || []).filter(id => id !== item.appCityId).map(id => [id, source.metricSrid]));
@@ -341,6 +449,7 @@ async function main() {
     for (const r of refused) log(`refused ${r.code} ${r.name}: ${r.reason}`);
 
     if (!args.apply) { log('dry run: nothing written (pass --apply)'); return; }
+    if (!plan.length) { log('no eligible cities; nothing written'); return; }
 
     const evidenceRoot = `world-parcels/research/qualification-${args.release}`;
     const manifestCities = [];
@@ -357,6 +466,11 @@ async function main() {
         const q = exportOne('qualification.json', item.evidence.qualification, true);
         const m = exportOne('metric-report.json', item.evidence.metric, true);
         const a = exportOne('independent-metric-audit.json', item.evidence.independent, true);
+        const alignmentFiles = Object.fromEntries([
+            ['alignment', 'alignment-report.json'], ['independentAlignment', 'independent-alignment-report.json'],
+            ['alignmentEvidence', 'alignment-evidence.json'], ['alignmentMetadata', 'alignment-metadata.json'],
+            ['alignmentNative', 'alignment-native.json']
+        ].map(([key, name]) => [key, exportOne(name, item.evidence[key], false)]));
         const metricSummary = Object.fromEntries(['sourceCrs', 'metricCrs', 'inputSha256', 'featureCount', 'geometryChangedOrRepaired', 'geometryPass', ...BLOCKERS].map(k => [k, item.metric[k]]));
         manifestCities.push({
             cityCode: item.code, appCityId: item.appCityId, cityName: item.name, qualificationCityName: item.candidate.city.name,
@@ -369,14 +483,17 @@ async function main() {
                 gates: Object.fromEntries(GATES.map(g => [g, true])), featureCount: item.qualification.featureCount,
                 sampleIds: item.candidate.sampleIds, cellSizeDegrees: item.qualification.cellSizeDegrees, limitations: item.qualification.limitations },
             metric: { evidenceOriginalSha256: m.original, evidenceExportSha256: m.exported, ...metricSummary },
-            evidenceFiles: { candidate: c.rel, qualification: q.rel, metric: m.rel, independentMetricAudit: a.rel },
+            evidenceFiles: { candidate: c.rel, qualification: q.rel, metric: m.rel, independentMetricAudit: a.rel,
+                ...Object.fromEntries(Object.entries(alignmentFiles).map(([key, file]) => [key, file.rel])) },
+            alignment: { ...item.alignment, evidenceExportSha256: alignmentFiles.alignment.exported },
             independentMetricAudit: { sha256: a.exported, method: 'Independent GEOS recomputation by the qualification runner from the unchanged full-safe cache.',
                 ...Object.fromEntries(['inputSha256', 'metricCrs', 'featureCount', 'geometryChangedOrRepaired', 'geometryPass', ...BLOCKERS].map(k => [k, item.independent[k]])) },
             sourceProfile: { adapter: item.descriptor.adapter, endpoint: item.descriptor.endpoint, idField: item.descriptor.idField ?? null,
                 idFields: item.descriptor.idFields ?? null, idPrefix: item.descriptor.idPrefix, metricSrid: item.metricSrid,
-                evidence: [item.descriptor.discovery?.jurisdiction?.basis].filter(Boolean) },
+                evidence: [item.descriptor.discovery?.jurisdiction?.basis].filter(Boolean),
+                activationDecision: item.activationDecision },
             verifiedAt: args.release.slice(0, 10),
-            primaryReview: { status: 'admitted', method: 'Qualification evidence re-verified offline: eight gates, metric and independent metric audit, production descriptor identity and query contract.' }
+            primaryReview: { status: 'admitted', method: 'Qualification evidence re-verified offline: nine gates, independent geometry and native CRS alignment audits, production descriptor identity and query contract.' }
         });
     }
 
@@ -394,7 +511,7 @@ async function main() {
             qualificationEvidenceFile: qualificationFile, metricReportFile: metricFile,
             ...(item.population2025 ? { population2025: item.population2025 } : {}), ...(item.population2015 ? { population2015: item.population2015 } : {}),
             appCityId: item.appCityId,
-            note: 'Passed all eight parcel qualification gates at the recorded sample location for this settlement. Geometry evidence is bounded; wider coverage remains unverified.' });
+            note: 'Passed all nine parcel qualification gates, including independently verified native CRS handling, at the recorded sample location for this settlement. Survey and basemap accuracy and wider coverage remain unverified.' });
         let source = registry.sources.find(s => s.sourceId === item.descriptor.id);
         if (!source) {
             const d = item.descriptor;
@@ -477,4 +594,6 @@ async function main() {
     log(`applied: ${manifestCities.length} cities admitted; manifest world-parcels/research/qualification-admission-${args.release}.json`);
 }
 
-main().catch(error => { console.error(`[${ts()}] ${error.stack || error}`); process.exitCode = 1; });
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+    main().catch(error => { console.error(`[${ts()}] ${error.stack || error}`); process.exitCode = 1; });
+}

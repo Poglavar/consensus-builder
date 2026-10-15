@@ -1,7 +1,8 @@
 // Browser-capable deterministic HMLR ground resolution over a complete native-coordinate context.
 import initGeos from 'geos-wasm';
 import { geojsonToGeosGeom, geosGeomToGeojson } from 'geos-wasm/helpers';
-import proj4 from 'proj4';
+import { ensureOstn15 } from './osgb36-grid-loader.js';
+import { toWgs84, fromWgs84, OSTN15_OPERATION, OSTN15_GRID_SHA256 } from './osgb36-projection.js';
 import { sha256Hex } from './portable-hash.js';
 import { canonicalParcelFeature } from './source-contract.js';
 
@@ -13,9 +14,8 @@ export const HMLR_BROWSER_GROUND_GRID_METERS = 0.001;
 const descriptor = Object.freeze({ id: HMLR_BROWSER_GROUND_SOURCE, idPrefix: HMLR_BROWSER_GROUND_PREFIX,
     parcelNumberField: 'INSPIREID', outFields: ['INSPIREID'] });
 const GEOMETRY_COLLECTION = 7;
-proj4.defs('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.1502,0.2470,0.8421,-20.4894 +units=m +no_defs');
-const project = proj4('EPSG:27700', 'EPSG:4326');
-const unproject = proj4('EPSG:4326', 'EPSG:27700');
+const project = Object.freeze({ forward: toWgs84 });
+const unproject = Object.freeze({ forward: fromWgs84 });
 
 function nativeId(feature) {
     const value = feature?.properties?.INSPIREID ?? feature?.properties?.sourceProperties?.INSPIREID;
@@ -126,6 +126,7 @@ function searchIndex(root, box, result = []) {
 }
 
 export async function createHmlrBrowserGroundEngine() {
+    await ensureOstn15();
     const geos = await initGeos();
     return Object.freeze({ async intersectsBounds(featuresNative27700, wgsBounds) {
         // Derived ground is a subset of its normalized projected input, so an input that misses
@@ -146,7 +147,9 @@ export async function createHmlrBrowserGroundEngine() {
                     validateNativeGeometry(feature.geometry, id);
                     const raw = own(geojsonToGeosGeom(feature.geometry, geos));
                     const { normalizedGeo } = normalizeNativeInput(geos, own, raw, id);
-                    return geos.GEOSIntersects(own(geojsonToGeosGeom(projectGeometry(normalizedGeo), geos)), rectangle) === 1;
+                    const publicGeometry = { type: normalizedGeo.type,
+                        coordinates: mapCoordinates(normalizedGeo.coordinates, toWgs84) };
+                    return geos.GEOSIntersects(own(geojsonToGeosGeom(publicGeometry, geos)), rectangle) === 1;
                 } finally { for (const pointer of owned) geos.GEOSGeom_destroy(pointer); }
             });
         } finally { geos.GEOSGeom_destroy(rectangle); }
@@ -240,12 +243,17 @@ export async function createHmlrBrowserGroundEngine() {
                     const nativeOutputPtr = own(geojsonToGeosGeom(unprojectGeometry(normalizedOutput), geos));
                     let groundAreaM2;
                     try { groundAreaM2 = area(nativeOutputPtr); } finally { dispose(nativeOutputPtr); }
-                    const feature = canonicalParcelFeature(descriptor, { geometry: normalizedOutput, properties: { INSPIREID: item.id } }, item.id);
+                    // Project before overlay using the official grid; immutable release routing
+                    // scopes use their separately declared frame in hmlr-routing-projection.js.
+                    const publicOutput = normalizedOutput;
+                    const feature = canonicalParcelFeature(descriptor, { geometry: publicOutput, properties: { INSPIREID: item.id } }, item.id);
                     feature.properties.geometryKind = 'derived-ground';
+                    feature.properties.coordinateOperation = { nativeCrs: 'EPSG:27700', operation: OSTN15_OPERATION,
+                        gridSha256: OSTN15_GRID_SHA256, fittedOffsetApplied: false };
                     feature.properties.derivation = { policy: HMLR_BROWSER_GROUND_POLICY,
                         originalGeometrySha256: item.originalGeometrySha256,
                         groundGeometrySha256: sha256Hex(JSON.stringify(normalizedOutput)),
-                        publishedGeometrySha256: sha256Hex(JSON.stringify(normalizedOutput)),
+                        publishedGeometrySha256: sha256Hex(JSON.stringify(publicOutput)),
                         originalValidAreaM2: item.originalValidAreaM2, normalizedInputAreaM2: item.normalizedAreaM2,
                         groundAreaM2, inputRepaired: item.inputRepaired,
                         intersectingHigherPriorityCount: candidateItems.length };

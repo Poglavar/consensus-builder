@@ -6,14 +6,15 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs as parseNodeArgs } from 'node:util';
 import { performance } from 'node:perf_hooks';
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createClient } from '../db/connection.cjs';
 import { normalizeSiteHost } from '../floor-plans/crawl-queue.js';
-import { drainSourceRetention } from '../floor-plans/compact-sources.js';
+import { compactSources, drainSourceRetention } from '../floor-plans/compact-sources.js';
+import { acquireCrawlLock } from '../floor-plans/crawl-locks.js';
 import { runSiteCrawl } from './floor-plan-site-crawl.mjs';
 
-const DEFAULTS = Object.freeze({ maxTotalPages: 10000, maxTotalMinutes: 360, maxSitePages: 150, maxSiteMinutes: 3 });
+const DEFAULTS = Object.freeze({ maxTotalPages: 10000, maxTotalMinutes: 360, maxSitePages: 150, maxSiteMinutes: 15 });
 const RETENTION_LIMIT = 100;
-const RETENTION_MAX_MS = 15000;
+const RETENTION_MAX_MS = 120000;
 const HELP = [
   'Usage: node scripts/floor-plan-coverage-crawl.mjs --run --hosts FILE --run-dir DIR [options]',
   '',
@@ -29,7 +30,7 @@ const HELP = [
   '  --max-total-pages N           Across all hosts and resumes (default 10000)',
   '  --max-total-minutes N         Across all hosts and resumes (default 360)',
   '  --max-site-pages N            Per host across resumes (default 150)',
-  '  --max-site-minutes N          Per host active time across resumes (default 3)',
+  '  --max-site-minutes N          Per host active time across resumes (default 15 / 900 seconds)',
   '',
   'The collector uses asset-mode all, interleaved pages/assets, and known-target revisits.',
   'It loads backend/.env; FLOOR_PLAN_ENV_FILE may select another dotenv file.',
@@ -111,25 +112,26 @@ export function calculateHostLimits({
   };
 }
 
-async function boundedRetention({ deadline, limit, log }) {
+async function boundedRetention({ host, deadline, limit, log }) {
   const timeoutMs = Math.max(0, Math.floor(deadline - Date.now()));
   if (!timeoutMs) return { status: 'partial', partial: true, remaining: true, deferred: 0, stopReason: 'deadline' };
-  const connectionString = process.env.DATABASE_URL;
   const connection = {
-    ...(connectionString ? { connectionString } : {}),
-    ...(process.env.PGHOST ? { host: process.env.PGHOST } : {}),
     connectionTimeoutMillis: timeoutMs,
     statement_timeout: timeoutMs,
     query_timeout: timeoutMs,
   };
-  const client = new pg.Client(connection);
+  const client = createClient(connection);
   let connected = false;
+  let releaseLock;
   try {
     await client.connect();
     connected = true;
-    return await drainSourceRetention(client, { limit, deadline, log });
+    releaseLock = await acquireCrawlLock(client, host);
+    return await drainSourceRetention(client, { limit, deadline, log,
+      compact: (db, options) => compactSources(db, { ...options, crawlLockHeld: true }) });
   } finally {
-    if (connected) await client.end();
+    try { if (releaseLock) await releaseLock(); }
+    finally { if (connected) await client.end(); }
   }
 }
 

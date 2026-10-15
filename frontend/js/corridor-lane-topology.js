@@ -74,6 +74,9 @@
     function pairContinuationEndpoints(entries) {
         const byNode = new Map();
         entries.forEach(entry => {
+            // A FIXED entry's lines are already where they must be (a transition zone drew them
+            // from one profile's seams to the other's): it neither takes a target nor gives one.
+            if (entry.fixed) return;
             ['start', 'end'].forEach(side => {
                 const endpoint = endpointDescriptor(entry, side);
                 if (!endpoint) return;
@@ -310,6 +313,7 @@
             rawEntry,
             topologyIndex,
             corridorId: rawEntry.corridorId == null ? null : String(rawEntry.corridorId),
+            fixed: rawEntry.fixed === true,
             flowDirection: rawEntry.flowDirection || null,
             centerline,
             paths: preparePaths(rawEntry.paths),

@@ -88,7 +88,7 @@ describe('prepareProposal', () => {
         const land = artifact.corridor.polygon;
         expect(land.type).toBe('Polygon');
         expect(stableStringify(land)).not.toBe(stableStringify(bogus));
-        expect(artifact.corridor.constructionFrame).toMatchObject({ kind: 'local-tmerc', algorithm: 'corridor-footprint/2' });
+        expect(artifact.corridor.constructionFrame).toMatchObject({ kind: 'local-tmerc', algorithm: 'corridor-footprint/3' });
         // the anchor is the authored centre line's own (bbox midpoint), not a city's
         expect(artifact.corridor.constructionFrame.anchor).toEqual([15.97085, 45.8006]);
         expect(proposal.roadProposal.definition.polygon).toEqual(land);
@@ -135,6 +135,20 @@ describe('prepareProposal', () => {
         await expect(prepareProposal(db, road(), { city: 'zagreb', signingKey: 'abc' })).rejects.toMatchObject({ code: PREPARE_CODES.unavailable });
         expect(checkProposalBinding).not.toHaveBeenCalled();
         expect(db.statements).toEqual([]);
+    });
+
+    it('prepares a record whose OSM form agrees with its stretches, and refuses one edited behind it', async () => {
+        const osmForm = require('../../frontend/js/corridor-osm-form.js');
+        const withForm = road();
+        osmForm.withOsmForm(withForm.roadProposal.definition);
+        expect(withForm.roadProposal.definition.osm.elements.length).toBeGreaterThan(0);
+        const db = cadastreDb();
+        const prepared = await prepareProposal(db, clone(withForm), { city: 'zagreb', ...sign });
+        expect(prepared.proposal.roadProposal.definition.osm).toEqual(withForm.roadProposal.definition.osm);
+
+        const drifted = clone(withForm);
+        drifted.roadProposal.definition.width = 14; // the cached cross-section no longer matches the form
+        await expect(prepareProposal(cadastreDb(), drifted, { city: 'zagreb', ...sign })).rejects.toMatchObject({ code: 'invalid-site', status: 400 });
     });
 
     it('refuses a partial corridor: nothing is bound or stored', async () => {

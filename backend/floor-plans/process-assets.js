@@ -79,7 +79,11 @@ export async function processAssets(db,{maxAssets=100,maxMinutes=45,
    AND ${LOCATED_ASSET_SQL} AND ${listingCohortAssetSql('$1')}`,[listingUrls])).rows[0].n);
   result.awaitingImageClassification=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.extraction e
    JOIN floor_plan.blob b USING(sha256) WHERE e.status='pending' AND b.bytes_available
-   AND NOT ${IMAGE_EXTRACTION_READY_SQL} AND ${LOCATED_ASSET_SQL} AND ${listingCohortAssetSql('$1')}`,[listingUrls])).rows[0].n);
+   AND NOT ${IMAGE_EXTRACTION_READY_SQL}
+   AND NOT EXISTS(SELECT 1 FROM floor_plan.target classified_image WHERE classified_image.kind='asset'
+    AND classified_image.current_sha256=e.sha256 AND classified_image.image_classified_sha256=e.sha256
+    AND classified_image.image_kind IS NOT NULL)
+   AND ${LOCATED_ASSET_SQL} AND ${listingCohortAssetSql('$1')}`,[listingUrls])).rows[0].n);
   result.deferredUnmatched=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.extraction e
    JOIN floor_plan.blob b USING(sha256) WHERE e.status='pending' AND b.bytes_available
    AND NOT ${LOCATED_ASSET_SQL} AND ${listingCohortAssetSql('$1')}`,[listingUrls])).rows[0].n);

@@ -14,6 +14,7 @@ const {
     normalizeCorridorNetwork,
     normalizeCorridorDefinitionTopology,
     insertCorridorNode,
+    splitCorridorStretchAtNode,
     removeCorridorEdge,
     removeCorridorNodes,
     segmentsIntersect,
@@ -24,7 +25,8 @@ const {
     getMinCurvatureRadius,
     calculateCurvatureRadius,
     checkCurvatureConstraint,
-    pickSnapTarget
+    pickSnapTarget,
+    VERTEX_SNAP_PREFERENCE
 } = require('../../frontend/js/corridor-geometry.js');
 const {
     corridorStripRingPlanar,
@@ -357,6 +359,88 @@ describe('authored corridor edits', () => {
         ]);
         expect(result.segmentIds).toEqual(['loop', 'other']);
     });
+
+    // "Split the stretch here" (road-editor.md decision 3): one stretch becomes two at a vertex, so
+    // each half can take its own cross-section. Nothing may move, and identity follows the bulldoze
+    // rule — the leading half keeps the id, the trailing half takes a derived id and the profile copy.
+    it('splits a stretch at an interior vertex, the trailing half taking a derived id and a profile copy', () => {
+        const segments = [
+            [P(0, 0), { lat: 0, lng: 1, level: 0 }, P(0, 2), P(0, 3)],
+            [P(5, 0), P(5, 1)]
+        ];
+        const profiles = {
+            main: { strips: [{ type: 'driving', width: 6 }] },
+            east: { strips: [{ type: 'driving', width: 4 }] }
+        };
+        const source = structuredClone({ segments, profiles });
+        const result = splitCorridorStretchAtNode(segments, ['main', 'east'], profiles, 0, 2);
+
+        expect(result.changed).toBe(true);
+        expect(result.segments).toEqual([
+            [P(0, 0), { lat: 0, lng: 1, level: 0 }, P(0, 2)],
+            [P(0, 2), P(0, 3)],
+            [P(5, 0), P(5, 1)]
+        ]);
+        expect(result.segmentIds).toEqual(['main', 'main~2', 'east']);
+        expect(result.derivedId).toBe('main~2');
+        expect(result.segmentProfiles['main~2']).toEqual(profiles.main);
+        expect(result.segmentProfiles['main~2']).not.toBe(result.segmentProfiles.main);
+        expect(result.segmentProfiles.east).toEqual(profiles.east);
+        // The halves meet at one position, held as two objects.
+        expect(result.segments[1][0]).toEqual(result.segments[0][2]);
+        expect(result.segments[1][0]).not.toBe(result.segments[0][2]);
+        expect({ segments, profiles }).toEqual(source);
+    });
+
+    it('leaves both halves on the default profile when the stretch had no cross-section of its own', () => {
+        const result = splitCorridorStretchAtNode([[P(0, 0), P(0, 1), P(0, 2)]], ['main'], null, 0, 1);
+        expect(result.segmentIds).toEqual(['main', 'main~2']);
+        expect(result.segmentProfiles).toBe(null);
+    });
+
+    it('derives a free id when the obvious one is already taken', () => {
+        const result = splitCorridorStretchAtNode(
+            [[P(0, 0), P(0, 1), P(0, 2)], [P(3, 0), P(3, 1)]],
+            ['main', 'main~2'],
+            null,
+            0,
+            1
+        );
+        expect(result.segmentIds).toEqual(['main', 'main~2~2', 'main~2']);
+    });
+
+    it('refuses the ends of a stretch, a missing vertex and a protected one', () => {
+        const segments = [[P(0, 0), P(0, 1), P(0, 2)]];
+        expect(splitCorridorStretchAtNode(segments, ['main'], null, 0, 0))
+            .toMatchObject({ changed: false, reason: 'endpoint' });
+        expect(splitCorridorStretchAtNode(segments, ['main'], null, 0, 2))
+            .toMatchObject({ changed: false, reason: 'endpoint' });
+        expect(splitCorridorStretchAtNode(segments, ['main'], null, 0, 7))
+            .toMatchObject({ changed: false, reason: 'missing-node' });
+        expect(splitCorridorStretchAtNode(segments, ['main'], null, 3, 1))
+            .toMatchObject({ changed: false, reason: 'missing-node' });
+        expect(splitCorridorStretchAtNode(segments, ['main'], null, 0, 1, { protected: true }))
+            .toMatchObject({ changed: false, reason: 'protected' });
+        expect(splitCorridorStretchAtNode(segments, ['main'], null, 0, 1, { protected: true }).segments)
+            .toEqual(segments);
+    });
+
+    it('survives the graph normalisation every edit runs: the halves are not fused back', () => {
+        const result = splitCorridorStretchAtNode(
+            [[P(0, 0), P(0, 0.001), P(0, 0.002)]],
+            ['main'],
+            { main: { strips: [{ type: 'driving', width: 6 }] } },
+            0,
+            1
+        );
+        const segments = structuredClone(result.segments);
+        const ids = result.segmentIds.slice();
+        const profiles = structuredClone(result.segmentProfiles);
+        normalizeCorridorGraph(segments, ids, null, profiles);
+        expect(segments).toEqual(result.segments);
+        expect(ids).toEqual(['main', 'main~2']);
+        expect(profiles).toEqual(result.segmentProfiles);
+    });
 });
 
 describe('segmentsIntersect (planar {x,y})', () => {
@@ -527,7 +611,11 @@ describe('pickSnapTarget (pixel space)', () => {
         expect(snap.insertAfter).toBe(0);
     });
 
-    it('uses EXTERNAL corridors only when no local snap wins', () => {
+    // Was "uses EXTERNAL corridors only when no local snap wins": the ladder was tier-first, so any
+    // local candidate in range beat any placed corridor. Snapping is nearest-first now
+    // (road-editor.md decision 4); this keeps the part that still holds — an external corridor
+    // snaps when it is what the cursor is near.
+    it('snaps to an EXTERNAL corridor the cursor is near', () => {
         const external = [{ points: [px(200, 200), px(300, 200)] }];
         // Cursor near the external corridor, far from all local geometry → an external snap wins.
         const snap = pickSnapTarget(px(201, 201), local(), external, -1, 12);
@@ -536,6 +624,74 @@ describe('pickSnapTarget (pixel space)', () => {
         // Snapping BEFORE the edge start clamps to the endpoint (projection t < 0).
         const atEnd = pickSnapTarget(px(198, 200), local(), external, -1, 12);
         expect(atEnd.kind).toBe('external-endpoint');
+    });
+
+    it('lets a node within half the radius win over a street line passing through it', () => {
+        // The drawing's node (0,50) sits on a street running along x=0. A click 2 px along the
+        // street is 2 px from both; the node must win so the stretch resumes instead of a new
+        // one starting on the street's centre line.
+        const street = [{ points: [px(0, -100), px(0, 200)], name: 'Ilica', wayId: '1' }];
+        const snap = pickSnapTarget(px(0, 52), [[px(0, 0), px(0, 50)]], [], -1, 12, street);
+        expect(snap.source).toBe('local');
+        expect(snap.kind).toBe('endpoint');
+        // Beyond half the radius the ranking decides as usual: 9 px node (rank 6.3) vs 0 px street.
+        const far = pickSnapTarget(px(0, 59), [[px(0, 0), px(0, 50)]], [], -1, 12, street);
+        expect(far.source).toBe('street');
+    });
+
+    it('lets a near external node beat a farther local vertex (nearest-first, not tier-first)', () => {
+        // Local vertex (0,52) is 10 px from the cursor; the applied road's node (2,62) is 2 px away
+        // (and its centre line x = 2 is 2 px away too, which the node's preference beats). The old
+        // tier-first ladder took the local vertex because it was in range at all.
+        const external = [{ points: [px(2, 20), px(2, 62), px(2, 120)] }];
+        const snap = pickSnapTarget(px(0, 62), [[px(0, 0), px(0, 52)]], external, -1, 12);
+        expect(snap.source).toBe('external');
+        expect(snap.kind).toBe('external-node');
+        expect(snap.vertexIndex).toBe(1);
+        expect(snap.distance).toBe(2);
+    });
+
+    it('prefers a vertex within 0.7 of an edge distance, and the edge beyond it', () => {
+        expect(VERTEX_SNAP_PREFERENCE).toBe(0.7);
+        // Vertex (0,0) of segment A; segment B's edge runs along y = 7.5, so the edge is 7.5 px from
+        // a cursor at (0,10) while the vertex is 10 px away: 10 × 0.7 = 7 < 7.5 → the vertex wins.
+        const segments = [[px(0, 0), px(-50, 0)], [px(-60, 17.5), px(60, 17.5)]];
+        const near = pickSnapTarget(px(0, 10), segments, [], -1, 12);
+        expect(near.kind).toBe('endpoint');
+        expect(near.segmentIndex).toBe(0);
+        expect(near.distance).toBe(10);
+        // Move the edge to y = 16.5: now 6.5 px away, and 6.5 < 7 → the edge wins.
+        const closer = [[px(0, 0), px(-50, 0)], [px(-60, 16.5), px(60, 16.5)]];
+        const edge = pickSnapTarget(px(0, 10), closer, [], -1, 12);
+        expect(edge.kind).toBe('edge');
+        expect(edge.segmentIndex).toBe(1);
+    });
+
+    it('never ranks a vertex outside the radius in, whatever its preference', () => {
+        // 15 px × 0.7 = 10.5 would rank under 12, but the radius is a plain pixel distance.
+        expect(pickSnapTarget(px(0, 15), [[px(0, 0), px(-50, 0)]], [], -1, 12)).toBeNull();
+    });
+
+    it('keeps the earlier candidate on a tie: local before applied', () => {
+        // Two vertices exactly 5 px away: this drawing's own and an applied corridor's.
+        const snap = pickSnapTarget(px(5, 0), [[px(0, 0), px(0, -50)]], [{ points: [px(10, 0), px(10, 50)] }], -1, 12);
+        expect(snap.source).toBe('local');
+    });
+
+    it('snaps to an existing street node or its centre line, naming the street', () => {
+        const streets = [{ points: [px(100, 300), px(150, 300), px(200, 300)], name: 'Ulica X', wayId: '42' }];
+        const node = pickSnapTarget(px(151, 303), [], [], -1, 12, streets);
+        expect(node).toMatchObject({ source: 'street', kind: 'street-node', streetIndex: 0, vertexIndex: 1, name: 'Ulica X', wayId: '42' });
+        const edge = pickSnapTarget(px(125, 304), [], [], -1, 12, streets);
+        expect(edge).toMatchObject({ source: 'street', kind: 'street-edge', streetIndex: 0, insertAfter: 0, name: 'Ulica X' });
+        expect(edge.pixel).toEqual(px(125, 300));
+    });
+
+    it('lets a nearer street beat a farther applied road, and keeps old five-argument calls working', () => {
+        const external = [{ points: [px(0, 0), px(100, 0)] }];
+        const streets = [{ points: [px(0, 9), px(100, 9)], name: 'Ulica Y', wayId: '7' }];
+        expect(pickSnapTarget(px(50, 7), [], external, -1, 12, streets).source).toBe('street');
+        expect(pickSnapTarget(px(50, 7), [], external, -1, 12).source).toBe('external');
     });
 
     it('snaps to an existing external INTERNAL NODE before its centreline', () => {

@@ -21,7 +21,7 @@ The seven published above-ground footprints total 6,043.10 m², or 33.61% of the
 The local proposal row is `1090`, proposal id `paron-zagrebacka-avenija-rudes-location-permit-2025`, and remains unapplied. Rebuild it with:
 
 ```sh
-PGHOST=localhost node backend/scripts/seed-rudes-zagrebacka-avenija-proposal.mjs --apply --export
+node backend/scripts/seed-rudes-zagrebacka-avenija-proposal.mjs --apply --export
 ```
 
 [`existing-context.geojson`](existing-context.geojson) contains the current parcel and 21 DGU objects slated as demolition context. The source GeoJSON files can be refreshed with:

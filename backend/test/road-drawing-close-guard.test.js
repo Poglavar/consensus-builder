@@ -32,36 +32,41 @@ let answer;
 let drawable;
 
 // The close path with every collaborator recorded, so the ORDER of what it does is observable.
+// The stroke collaborator is the pen lift: the stroke cancel this guarded against is gone (Escape
+// lifts the pen and keeps what was placed, road-editor.md decision 5), but nothing on the way to
+// the question may touch the stroke either.
 function loadClosePath() {
     calls = [];
     // eslint-disable-next-line no-new-func
     return new Function(
-        'hasDrawableCorridor', 'promptCloseDrawnCorridor', 'cancelActiveRoadStroke',
+        'hasDrawableCorridor', 'promptCloseDrawnCorridor', 'liftRoadPen',
         'exitRoadDrawingMode', 'roadHasStarted',
         `${lift('cancelRoadDrawing')}; return cancelRoadDrawing;`
     )(
         () => { calls.push('asked-if-drawable'); return drawable; },
         async () => { calls.push('prompted'); return answer; },
-        () => { calls.push('cancelled-stroke'); },
+        () => { calls.push('lifted-pen'); },
         () => { calls.push('closed'); },
         true
     );
 }
 
-// The prompt itself, with the dialog stubbed.
-function loadPrompt(dialog) {
+// The prompt itself, with the dialog stubbed. `stillDrawing` is whether the tool is still open once
+// the build returns — it is when the Finish review sent the drawing back ("Choose another route").
+function loadPrompt(dialog, stillDrawing = false) {
     calls = [];
     // eslint-disable-next-line no-new-func
     return new Function(
         'corridorDrawingIsTrack', 'translateRoadText', 'showStyledChoice',
-        'finishRoadDrawing', 'discardRoadDrawing',
+        'finishRoadDrawing', 'discardRoadDrawing', 'roadDrawingMode',
         `${lift('promptCloseDrawnCorridor')}; return promptCloseDrawnCorridor;`
     )(
         () => false,
         (key, fallback) => fallback,
         dialog,
         async () => { calls.push('built'); },
-        () => { calls.push('discarded'); }
+        () => { calls.push('discarded'); },
+        stillDrawing
     );
 }
 
@@ -74,11 +79,11 @@ describe('a drawing that exists is never closed silently', () => {
         expect(calls[1]).toBe('prompted');
     });
 
-    it('never cancels the active stroke on the way to asking', async () => {
+    it('never touches the active stroke on the way to asking', async () => {
         // This is the bug: the stroke IS the road, so cancelling it first is what emptied the
         // drawing before anyone got to decide what to do with it.
         await loadClosePath()();
-        expect(calls).not.toContain('cancelled-stroke');
+        expect(calls).not.toContain('lifted-pen');
     });
 
     it('reports the tool still open when the user keeps drawing', async () => {
@@ -106,16 +111,26 @@ describe('an empty drawing still just closes', () => {
         expect(calls).toContain('closed');
     });
 
-    it('tidies the half-placed stroke on its way out', async () => {
+    // Was "tidies the half-placed stroke on its way out" (a stroke cancel before closing). The
+    // stroke cancel is retired with the pen lift (road-editor.md decision 5), and closing needs
+    // no separate tidy: exitRoadDrawingMode resets every piece of drawing state, a lone click too.
+    it('closes through the full reset alone', async () => {
         drawable = false;
         await loadClosePath()();
-        expect(calls).toContain('cancelled-stroke');
+        expect(calls).toEqual(['asked-if-drawable', 'closed']);
     });
 });
 
 describe('the three answers', () => {
     it('builds the road', async () => {
         expect(await loadPrompt(async () => 'build')()).toBe('build');
+        expect(calls).toEqual(['built']);
+    });
+
+    it('reports "keep drawing" when the build was sent back and the tool is still open', async () => {
+        // Finish reviews the obstacles first; "Choose another route" returns to the drawing. Saying
+        // "build" then would let a caller open another tool over it and reset the live drawing.
+        expect(await loadPrompt(async () => 'build', true)()).toBe('keep');
         expect(calls).toEqual(['built']);
     });
 

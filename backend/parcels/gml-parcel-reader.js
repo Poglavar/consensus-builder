@@ -1,6 +1,8 @@
 // Namespace-aware, bounded INSPIRE/HMLR geometry reader. XML/ownership fields never enter its output.
 import { SaxesParser } from 'saxes';
 import proj4 from 'proj4';
+import { ensureOstn15 } from './osgb36-grid-loader.js';
+import { toWgs84 } from './osgb36-projection.js';
 import { validateGeometry, upstreamError } from './source-contract.js';
 import { CATASTRO_ATOM_GML_SCHEMA } from './catastro-atom-profile.js';
 
@@ -131,7 +133,6 @@ export const FINLAND_CP_GML_SCHEMA = Object.freeze({
     axisOrder: 'easting-northing'
 });
 const CUSTOM_SCHEMAS = [MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, HESSEN_GML_SCHEMA, POZNAN_GML_SCHEMA, GDANSK_GML_SCHEMA, SOSNOWIEC_GML_SCHEMA, POLAND_EGIB_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA, CATASTRO_ATOM_GML_SCHEMA];
-proj4.defs('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.1502,0.2470,0.8421,-20.4894 +units=m +no_defs');
 proj4.defs('EPSG:2177', '+proj=tmerc +lat_0=0 +lon_0=18 +k=0.999923 +x_0=6500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
 proj4.defs('EPSG:2180', '+proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 +x_0=500000 +y_0=-5300000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
 for (const zone of [30,31,32,33]) proj4.defs(`EPSG:258${zone}`, `+proj=utm +zone=${zone} +ellps=GRS80 +towgs84=0,0,0 +units=m +no_defs`);
@@ -203,6 +204,7 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
     // document count checks, so callers must stage writes and roll them back on rejection.
     const streaming = onFeature !== undefined;
     const nativeCoordinates = coordinateMode === 'native';
+    if (!nativeCoordinates && !customSchema && idField === 'INSPIREID') await ensureOstn15();
     const activeIdField = customSchema ? customSchema.idField : idField;
     const activeFeatureNamespace = customSchema ? customSchema.featureNamespace : featureNamespace;
     const activeFeatureName = customSchema ? customSchema.featureName : featureName;
@@ -418,7 +420,8 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
             if (tag.local === 'posList') {
                 if (isCatastroAtom && !frame.crs) fail('Parcel GML coordinates have no inherited coordinate system.');
                 if(!sourceCrs) fail('Parcel GML coordinates have no coordinate system.');
-                if (!nativeCoordinates && !projections.has(sourceCrs)) projections.set(sourceCrs, proj4(sourceCrs, 'EPSG:4326'));
+                if (!nativeCoordinates && !projections.has(sourceCrs)) projections.set(sourceCrs,
+                    sourceCrs === 'EPSG:27700' ? { forward: toWgs84 } : proj4(sourceCrs, 'EPSG:4326'));
                 const projection = nativeCoordinates ? null : projections.get(sourceCrs), ring=[];
                 let x=null,firstX,lastX,firstY,lastY;
                 for(const match of frame.text.matchAll(/\S+/g)) {

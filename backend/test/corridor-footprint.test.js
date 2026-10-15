@@ -112,8 +112,17 @@ describe('corridor footprint construction', () => {
             segmentProfiles: { narrow: { strips: [{ type: 'driving', width: 5 }, { type: 'driving', width: 5 }] }, wide: { strips: [{ type: 'driving', width: 10 }, { type: 'driving', width: 10 }] } }
         });
         const result = footprint.materialize(definition);
-        expectWidthAlong(result, a, b, 10);
         expectWidthAlong(result, b, c, 20);
+        // The narrow stretch widens back to 20 m at the node over a transition zone
+        // (corridor-transition.js: 8 m per metre of width change, at most 45% of the 100 m
+        // stretch = 45 m), and is 10 m wide before that.
+        const frame = frameFromProvenance(result.constructionFrame);
+        const inside = (beforeM, eastM) => insideIn(frame, result.polygon, destination(destination(b, 180, beforeM), 90, eastM));
+        expect(inside(22.5, 7.0)).toBe(true);   // halfway through the zone: 15 m wide
+        expect(inside(22.5, 8.0)).toBe(false);
+        expect(inside(70, 4.8)).toBe(true);     // before the zone: 10 m
+        expect(inside(70, 5.2)).toBe(false);
+        expect(footprint.materialize(definition, { transitions: false }).polygon).not.toEqual(result.polygon);
     });
 
     it('leaves a gap where a stretch is fully underground', () => {
@@ -135,10 +144,12 @@ describe('corridor footprint construction', () => {
         const symmetric = turf.area(turf.difference(turf.polygon(splitResult.polygon.coordinates), turf.polygon(wholeResult.polygon.coordinates)) || turf.polygon([[[0, 0], [0, 0], [0, 0], [0, 0]]]))
             + turf.area(turf.difference(turf.polygon(wholeResult.polygon.coordinates), turf.polygon(splitResult.polygon.coordinates)) || turf.polygon([[[0, 0], [0, 0], [0, 0], [0, 0]]]));
         expect(symmetric).toBeLessThan(0.01);
-        // and two DIFFERENT stretches meeting at a node get no wedge (a T junction's corners are not paved)
+        // and two DIFFERENT stretches bending through a two-arm node are wedged exactly like one
+        // polyline (corridor-footprint/3): a road drawn in two strokes must not keep a notch at the
+        // bend. A junction's corners are a different matter — see 'junction corners' below.
         const twoRoads = definitionOf([[latLng(a), latLng(b)], [latLng(b), latLng(c)]], { segmentIds: ['s', 't'] });
         const twoResult = footprint.materialize(twoRoads);
-        expect(turf.area(turf.polygon(twoResult.polygon.coordinates))).toBeLessThan(turf.area(turf.polygon(wholeResult.polygon.coordinates)));
+        expect(turf.area(turf.polygon(twoResult.polygon.coordinates))).toBeCloseTo(turf.area(turf.polygon(wholeResult.polygon.coordinates)), 2);
     });
 
     it('is deterministic and anchors on the authored centre line regardless of segment order', () => {
@@ -174,6 +185,71 @@ describe('corridor footprint construction', () => {
     });
 });
 
+describe('junction corners', () => {
+    const { CORRIDOR_PROFILE_PRESETS } = require('../../frontend/js/corridor-profile.js');
+    const local = { strips: CORRIDOR_PROFILE_PRESETS[10] }; // 1.5 m footways, 7 m carriageway
+
+    it('takes the land each kerb-return corner needs at a T, and nothing on the far side', () => {
+        const [w, n, e] = lineFrom(PLACES.zagreb, [[90, 60], [90, 60]]);
+        const s = destination(n, 180, 60);
+        const tee = definitionOf([[latLng(w), latLng(n), latLng(e)], [latLng(n), latLng(s)]], {
+            segmentIds: ['t', 'b'], profile: local, width: 10
+        });
+        const withCorners = turf.feature(footprint.materialize(tee).polygon);
+        // The same arms with no footway information at all: a width-only build takes the whole
+        // fillet, so it is the upper bound; the straight-edge union is the lower bound.
+        const frame = footprint.frameForDefinition(tee);
+        const arms = [
+            { points: [latLng(w), latLng(n), latLng(e)], width: 10, stretchId: 't' },
+            { points: [latLng(n), latLng(s)], width: 10, stretchId: 'b' }
+        ];
+        const widthOnly = turf.feature(footprint.footprintOfArms(arms, frame));
+        const plain = turf.union(
+            turf.feature(footprint.footprintOfArms([arms[0]], frame)),
+            turf.feature(footprint.footprintOfArms([arms[1]], frame))
+        );
+        // Two corners, each (6 − 1.5)² · (1 − π/4) ≈ 4.3 m² with the preset's 1.5 m footways.
+        expect(turf.area(withCorners) - turf.area(plain)).toBeCloseTo(2 * 4.5 * 4.5 * (1 - Math.PI / 4), 0);
+        expect(turf.area(widthOnly) - turf.area(plain)).toBeCloseTo(2 * 36 * (1 - Math.PI / 4), 0);
+        // The far side of the through road (north of it, away from the branch) is untouched: a
+        // point one metre beyond its land edge stays outside.
+        const farSide = destination(n, 0, 6);
+        expect(turf.booleanPointInPolygon(turf.point([farSide[0], farSide[1]]), withCorners)).toBe(false);
+        // and a point inside the corner cut, 5.5 m along each road from the kerb corner, is inside.
+        const corner = destination(destination(n, 90, 3.5 + 2.5), 180, 3.5 + 2.5);
+        expect(turf.booleanPointInPolygon(turf.point([corner[0], corner[1]]), withCorners)).toBe(true);
+    });
+});
+
+describe('junctions with other records', () => {
+    const { CORRIDOR_PROFILE_PRESETS } = require('../../frontend/js/corridor-profile.js');
+    const local = { strips: CORRIDOR_PROFILE_PRESETS[10] };
+
+    it('takes the corner land of a junction written into the definition, and widens back to a wider arm', () => {
+        const [w, n, e] = lineFrom(PLACES.zagreb, [[90, 60], [90, 60]]);
+        const s = destination(n, 180, 60);
+        // The branch alone: a 10 m road ending at n, with the through road (west and east arms)
+        // recorded as the junction it joins.
+        const branch = definitionOf([[latLng(n), latLng(s)]], { segmentIds: ['b'], profile: local, width: 10 });
+        const plain = turf.area(turf.feature(footprint.materialize(branch).polygon));
+        branch.junctions = [{ lat: n[1], lng: n[0], arms: [
+            { toward: { lat: w[1], lng: w[0] }, profile: local },
+            { toward: { lat: e[1], lng: e[0] }, profile: local }
+        ] }];
+        const joined = footprint.materialize(branch);
+        // two corners of (6 − 1.5)² · (1 − π/4) each, nothing else
+        expect(turf.area(turf.feature(joined.polygon)) - plain).toBeCloseTo(2 * 4.5 * 4.5 * (1 - Math.PI / 4), 0);
+        // A narrow record continuing a wide one widens back over its first metres.
+        const wide = { strips: CORRIDOR_PROFILE_PRESETS[26] };
+        const continuation = definitionOf([[latLng(n), latLng(e)]], { segmentIds: ['c'], profile: local, width: 10 });
+        continuation.junctions = [{ lat: n[1], lng: n[0], arms: [{ toward: { lat: w[1], lng: w[0] }, profile: wide }] }];
+        const widened = footprint.materialize(continuation);
+        const frame = frameFromProvenance(widened.constructionFrame);
+        expect(insideIn(frame, widened.polygon, destination(destination(n, 90, 2), 0, 12))).toBe(true);   // 26 m at the node
+        expect(insideIn(frame, widened.polygon, destination(destination(n, 90, 58), 0, 6))).toBe(false);  // 10 m beyond the zone
+    });
+});
+
 describe('reproduces what the browser built', () => {
     // The Borovje v3 collector: the browser's own footprint of this definition was captured on
     // 2026-10-10 (rekonstrukcije/upu-borovje/data/street-footprints.json, built in HTRS96).
@@ -183,17 +259,28 @@ describe('reproduces what the browser built', () => {
     it('rebuilds the Borovje collector within millimetres of the browser\'s footprint', () => {
         const street = snap.members['upu-borovje-ulice'];
         const definition = { width: 19, kind: 'road', points: street.segments, segments: street.segments, segmentIds: street.segmentIds, segmentProfiles: street.segmentProfiles, tunnels: [] };
-        const result = footprint.materialize(definition);
-        const ours = turf.feature(result.polygon);
+        // The capture was built with corridor-footprint/2. Recipe /3 adds the land every junction
+        // corner needs (and the bend wedges between stretches) and tapers the land at every change
+        // of width (transition zones). Built WITHOUT the zones, the new land must CONTAIN what the
+        // browser built — losing a sliver would re-cut parcels under a standing plan — and may add
+        // only the corners: well under one per cent of a 19 m collector network.
+        const stepped = footprint.materialize(definition, { transitions: false });
+        const ours = turf.feature(stepped.polygon);
         const theirs = turf.feature(captured['upu-borovje-ulice-v2']);
         const area = turf.area(ours);
-        expect(Math.abs(area - turf.area(theirs)) / area).toBeLessThan(1e-4);
-        const left = turf.difference(ours, theirs);
-        const right = turf.difference(theirs, ours);
-        const symmetric = (left ? turf.area(left) : 0) + (right ? turf.area(right) : 0);
-        // ~2.6 km of boundary; HTRS96 differs from the local frame by ≈ 1.6 mm per 19 m, so the
-        // symmetric difference is a few square metres at most.
-        expect(symmetric).toBeLessThan(5);
+        const lost = turf.difference(theirs, ours);
+        const added = turf.difference(ours, theirs);
+        // ~2.6 km of boundary; HTRS96 differs from the local frame by ≈ 1.6 mm per 19 m, so a few
+        // square metres of the old polygon fall outside the new one by projection alone.
+        expect(lost ? turf.area(lost) : 0).toBeLessThan(5);
+        expect((added ? turf.area(added) : 0) / area).toBeLessThan(0.01);
+        expect(Math.abs(area - turf.area(theirs)) / area).toBeLessThan(0.01);
+        // With the zones the land CONTAINS the stepped land: every narrower stretch widens back
+        // to its wider neighbour at the node, and nothing is given up.
+        const tapered = turf.feature(footprint.materialize(definition).polygon);
+        const givenUp = turf.difference(ours, tapered);
+        expect(givenUp ? turf.area(givenUp) : 0).toBeLessThan(5);
+        expect((turf.area(tapered) - area) / area).toBeLessThan(0.03);
     });
 });
 
@@ -249,7 +336,11 @@ describe('in the browser (dependencies only as window globals, no require)', () 
             __metricFrame: require('../../frontend/js/metric-frame.js'),
             __corridorLevels: require('../../frontend/js/proposals/corridor-levels.js'),
             corridorSegmentEntries: profile.corridorSegmentEntries,
-            corridorProfileWidth: profile.corridorProfileWidth
+            corridorProfileWidth: profile.corridorProfileWidth,
+            corridorProfileEdges: profile.corridorProfileEdges,
+            corridorRenderPieces: profile.corridorRenderPieces,
+            __corridorJunction: require('../../frontend/js/corridor-junction.js'),
+            __corridorTransition: require('../../frontend/js/corridor-transition.js')
         };
         new Function('window', 'module', 'require', source)(window, undefined, undefined);
         return window.__corridorFootprint;

@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import * as cheerio from 'cheerio';
-import { BASE_PATH, PUBLIC_ORIGIN, publicProject, readPublicCatalogue, readPublicProject } from '../floor-plan-archive/public-catalogue.js';
+import { BASE_PATH, PUBLIC_ORIGIN, projectId, readPublicCatalogue, readPublicProject } from '../floor-plan-archive/public-catalogue.js';
 import { readBlobRow } from '../floor-plans/blob-store.js';
 
 const require = createRequire(import.meta.url);
@@ -25,8 +25,7 @@ export function projectMarkup(project) {
 
 function detailMarkup(project, apartment) {
     const chosen = apartment ? [apartment] : project.apartments;
-    const notice = project.availability === 'discovered' ? '<p class="confidence-note">Projekt je pronađen kod izvora. Još nemamo podatke o pojedinim stanovima ni tlocrte za pregled. Pogledajte projekt kod izvora ili pretražite dostupne stanove.</p>' : '';
-    return `<article class="detail-card"><h2>${escape(apartment?.label || project.name)}</h2><p>${escape(project.address)} · ${kindLabel(project.kind)} · ${yearLabel(project)}</p>${notice}<div class="apartment-list">${chosen.map(a => `<a class="apartment-row" href="${escape(a.url)}"><strong>${escape(a.label)}</strong><span>${escape(apartmentFacts(a)) || 'Podaci nisu navedeni'}</span><span>${a.hasPlan ? 'Tlocrt i 3D prikaz' : 'Tlocrt još nije obrađen'}</span></a>`).join('')}</div><p>Lokacija i geometrija prema dostupnim izvorima. Rekonstrukcije su označene prema stupnju provjere; dostupnost stana provjerite kod izvora.</p><ul>${project.sources.map(s => `<li><a href="${escape(s.url)}" rel="noopener noreferrer">${escape(s.label)}</a></li>`).join('')}</ul></article>`;
+    return `<article class="detail-card"><h2>${escape(apartment?.label || project.name)}</h2><p>${escape(project.address)} · ${kindLabel(project.kind)} · ${yearLabel(project)}</p><div class="apartment-list">${chosen.map(a => `<a class="apartment-row" href="${escape(a.url)}"><strong>${escape(a.label)}</strong><span>${escape(apartmentFacts(a)) || 'Podaci nisu navedeni'}</span><span>${a.hasGeometry ? 'Tlocrt i 3D prikaz' : 'Izvorni tlocrt'}</span></a>`).join('')}</div><p>Lokacija i geometrija prema dostupnim izvorima. Rekonstrukcije su označene prema stupnju provjere; dostupnost stana provjerite kod izvora.</p><ul>${project.sources.map(s => `<li><a href="${escape(s.url)}" rel="noopener noreferrer">${escape(s.label)}</a></li>`).join('')}</ul></article>`;
 }
 
 export function structuredData(catalogue, project = null, apartment = null) {
@@ -49,14 +48,14 @@ export async function renderPublicPage({ catalogue, project = null, apartment = 
     const $ = cheerio.load(await readFile(`${directory}/index.html`, 'utf8'));
     const selected = apartment || project;
     const title = selected ? `${apartment ? `${apartment.label} · ` : ''}${project.name} · Novogradnje · zagreb.lol` : 'Novogradnje u Zagrebu — stanovi, tlocrti i 3D · zagreb.lol';
-    const description = project?.availability === 'discovered' ? `${project.address}. Projekt je pronađen kod izvora; podaci o pojedinim stanovima i tlocrti još nisu dostupni u katalogu.` : project ? `${project.address}. ${kindLabel(project.kind)}. ${yearLabel(project)}. ${apartment ? apartmentFacts(apartment) : `${project.apartments.length} stanova u katalogu`}. Tlocrti, izvori i 3D prikaz kada su dostupni.`
+    const description = project ? `${project.address}. ${kindLabel(project.kind)}. ${yearLabel(project)}. ${apartment ? apartmentFacts(apartment) : `${project.apartments.length} stanova u katalogu`}. Izvorni tlocrti i 3D prikazi kada su dostupni.`
         : 'Pronađite novogradnje u Zagrebu na karti. Pretražite stanove po površini, sobama i orijentaciji; pogledajte dostupne tlocrte i 3D rekonstrukcije.';
     const canonical = `${PUBLIC_ORIGIN}${selected?.url || BASE_PATH}`;
     $('title').text(title); $('meta[name="description"]').attr('content', description);
     for (const name of ['og:title', 'twitter:title']) $(`meta[property="${name}"],meta[name="${name}"]`).attr('content', title);
     for (const name of ['og:description', 'twitter:description']) $(`meta[property="${name}"],meta[name="${name}"]`).attr('content', description);
     $('meta[property="og:url"]').attr('content', canonical); $('link[rel="canonical"]').attr('href', canonical);
-    $('head').append(`<meta name="robots" content="${search || project?.availability === 'discovered' ? 'noindex,follow' : 'index,follow'}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><script type="application/ld+json">${json(structuredData(catalogue, project, apartment))}</script>`);
+    $('head').append(`<meta name="robots" content="${search ? 'noindex,follow' : 'index,follow'}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><script type="application/ld+json">${json(structuredData(catalogue, project, apartment))}</script>`);
     const visible = filterProjects(catalogue.projects, decodeFilters(search));
     $('#results').html(visible.map(projectMarkup).join(''));
     if (project) {
@@ -79,12 +78,14 @@ export function setupNovogradnjeRoute(app, pool) {
     // Keep shared links from the former archive useful during the domain migration.
     get('/novogradnje/legacy', async (req, res) => {
         const rows=(await pool.query('SELECT site_key,model,built_at FROM floor_plan.site_model ORDER BY site_key')).rows;
+        const visibleProjects=new Map((await readPublicCatalogue(pool)).projects.map(project=>[project.id,project]));
         const site=typeof req.query.site==='string'?req.query.site:null, plan=typeof req.query.plan==='string'?req.query.plan:null;
         for(const row of rows) {
-            const project=publicProject(row);
+            const project=visibleProjects.get(projectId(row.site_key));
             if(!project)continue;
             const apartment=plan ? (row.model.inventory?.apartments||[]).find(a=>a.planId===plan||a.source?.sha256===plan||a.unitId===plan) : null;
-            if(apartment)return res.redirect(301,project.apartments.find(a=>a.id===apartment.id).url);
+            const visible=apartment&&project.apartments.find(a=>a.id===apartment.id);
+            if(visible)return res.redirect(301,visible.url);
             if(site===row.site_key)return res.redirect(301,project.url);
         }
         res.redirect(301,BASE_PATH);

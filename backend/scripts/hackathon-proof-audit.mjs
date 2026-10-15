@@ -12,7 +12,7 @@ function usage(code = 0) {
         '  --max-age-hours <n>    Freshness window for the daily proposer (default: 48)',
         '  --json                 Print the complete machine-readable result',
         '  --open-ground          Also run the advisory open-ground audit: v3 proposal accounts against',
-        '                         their published records (needs PG* env and SOLANA_RPC_URL; read-only)',
+        '                         their published records (needs DATABASE_URL and SOLANA_RPC_URL; read-only)',
         '  --help'
     ].join('\n'));
     process.exit(code);
@@ -38,16 +38,10 @@ function argsOf(argv) {
 async function openGroundRunner() {
     const dotenv = await import('dotenv');
     dotenv.config({ quiet: true });
-    const { default: pg } = await import('pg');
+    const { createPool } = await import('../db/connection.cjs');
     const { Connection } = await import('@solana/web3.js');
     const { runOpenGroundAudit } = await import('../oracle/open-ground-audit.js');
-    const pool = new pg.Pool({
-        host: process.env.PGHOST,
-        port: Number(process.env.PGPORT),
-        user: process.env.PGUSER,
-        password: process.env.PGPASSWORD,
-        database: process.env.PGDATABASE
-    });
+    const pool = createPool();
     const connection = new Connection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
     return {
         run: () => runOpenGroundAudit({ pool, connection }),

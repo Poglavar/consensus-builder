@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { marked } from 'marked';
 import { readX402Config, readX402OracleConfig } from '../utils/x402-payment.js';
+import { describeDatabase } from '../db/connection.cjs';
 import { EVENT_TYPE as LAND_EVENT_TYPE, RECIPE_ID as LAND_RECIPE_ID, RECIPE_V2_ID as LAND_RECIPE_V2_ID } from '../oracle/proposal-lifecycle.js';
 import { COURT_RECIPE_ID, COURT_RECIPE_V2_ID, COURT_SCHEMA_V2 } from '../oracle/court-parcel-operation.js';
 import { classifyExternalMarketChronology } from '../oracle/external-market-chronology.js';
@@ -575,7 +576,7 @@ async function generateDatabaseSchema(pool) {
             title: "Consensus Builder Database Schema",
             description: "Live database schema generated from information_schema (public schema only, excluding backup and temporary tables)",
             generated_at: new Date().toISOString(),
-            database: process.env.PGDATABASE,
+            database: describeDatabase().database,
             schema: 'public',
             excluded_patterns: ['_bkp', '_tmp'],
             tables: {}

@@ -84,7 +84,7 @@ describe('draft keyboard handlers in 3D', () => {
         const undo = vi.fn();
         const finish = vi.fn();
         const handleRoadKeydown = new Function(
-            'document', 'undoLastRoadSegment', 'finishRoadDrawing', 'exitRoadDrawingMode', 'cancelActiveRoadStroke',
+            'document', 'undoLastRoadSegment', 'finishRoadDrawing', 'exitRoadDrawingMode', 'handleRoadEscape',
             'updateStatus', 'translateRoadText', 'hasDrawableCorridor', 'roadFinalizationGate',
             'roadSegmentPlacementInProgress', 'roadHasStarted',
             `${between(sources.road, 'function handleRoadKeydown(e)', '\nfunction handleRoadDrawHotkey')}; return handleRoadKeydown;`

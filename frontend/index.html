@@ -1489,6 +1489,10 @@
                     onclick="openRoadDrawingCrossSectionEditor()"><i class="fas fa-road" aria-hidden="true"></i><span
                         data-i18n-key="panel.road.crossSectionButton">Cross-section</span><span
                         class="road-cross-section-width"></span></button>
+                <button type="button" id="importRoadsButton" class="btn btn-sm"
+                    onclick="openCorridorImportPicker()"><i class="fas fa-file-import" aria-hidden="true"></i><span
+                        data-i18n-key="panel.road.importButton">Import…</span></button>
+                <input type="file" id="corridorImportInput" accept=".xodr" hidden>
                 <!-- In the header's flex row, not absolutely positioned over it: out of flow, the header
                      could not reserve their width and the Cross-section button slid underneath them. -->
                 <div class="road-panel-actions">
@@ -1797,7 +1801,7 @@
             'js/bets/sha256.js',
             'js/bets/market-question.js',
             'js/bets/bets-model.js',
-            'js/bets/bets-dialog.js',
+            'js/bets/bets-dialog.js?v=20261014-proposal-entry',
             'js/bets/bets-sheet.js',
             'js/mobile-dock-sheet.js',
             'js/ui/simulation-indicator.js',
@@ -1948,7 +1952,8 @@
             'js/proposals/approval-panel.js',
             'js/proposals/parcel-history-card.js',
             'js/proposals/bids-card.js',
-            'js/proposals/details-panel.js',
+            'js/proposals/bet-entry.js?v=20261014',
+            'js/proposals/details-panel.js?v=20261014-bet-outcome',
             'js/proposals/parcel-compare.js',
             'js/proposals/parcel-compare-ui.js',
             'js/proposals/binding-drift-panel.js',
@@ -2083,7 +2088,13 @@
         window.writeVersionedLocalScripts([
             'js/legacy-road-centerlines.js',
             'js/corridor-lane-topology.js',
+            'js/corridor-junction.js',
+            'js/corridor-junction-paint.js',
+            'js/corridor-transition.js',
             'js/corridor-profile.js',
+            'js/corridor-osm-form.js',
+            'js/corridor-import-opendrive.js',
+            'js/corridor-import.js',
             'js/corridor-footprint.js',
             'js/corridor-terrain-formation.js',
             'js/corridor-clearance.js',

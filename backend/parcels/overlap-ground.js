@@ -127,13 +127,17 @@ export function withOverlapGround(adapter, { maxBboxKm2 }) {
         // Every neighbour that can overlap a returned outline intersects that outline's envelope.
         const missing = subtractBox(extent(features), padded);
         const around = [...wide.features];
+        // Adapter counters (e.g. accepted tile-seam slivers) cover every read behind this answer.
+        let slivers = wide.droppedSliverCuts;
         for (const box of missing) for (const tile of tileBounds(box, maxBboxKm2)) {
             const result = await adapter.queryBounds(tile);
             if (result.complete === false) throw upstreamError('Parcel provider returned incomplete overlap context.');
             around.push(...result.features);
+            if (typeof slivers === 'number' && typeof result.droppedSliverCuts === 'number') slivers += result.droppedSliverCuts;
         }
         const resolved = resolveOverlapGround(features, around);
-        return { ...wide, features: resolved.features, suppressedIds: resolved.suppressedIds, overlapPolicy: OVERLAP_GROUND_POLICY };
+        return { ...wide, features: resolved.features, suppressedIds: resolved.suppressedIds, overlapPolicy: OVERLAP_GROUND_POLICY,
+            ...(typeof slivers === 'number' ? { droppedSliverCuts: slivers } : {}) };
     }
     async function queryIds(ids) {
         const result = await adapter.queryIds(ids);

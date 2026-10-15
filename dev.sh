@@ -60,11 +60,9 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 # Backend: run with cwd=backend so dotenv loads THIS worktree's backend/.env; API_PORT sets the
-# port. A shell env var wins over .env (dotenv does not override), so we also remap the DB host:
-# the committed .env uses PGHOST=db (the docker-compose service name, resolvable only inside the
-# docker network). Run natively, the docker postgres is reachable on the host at localhost:5432,
-# so default PGHOST=localhost here. Override by exporting PGHOST=... before running.
-( cd "$ROOT/backend" && API_PORT="$BACKEND_PORT" PGHOST="${PGHOST:-localhost}" npm start ) &
+# port. A shell env var wins over .env (dotenv does not override), so an exported DATABASE_URL
+# overrides the one in backend/.env.
+( cd "$ROOT/backend" && API_PORT="$BACKEND_PORT" npm start ) &
 pids+=("$!")
 
 # Frontend: plain static server of the frontend dir.

@@ -1,398 +1,624 @@
 <!DOCTYPE html>
-<!-- Main guide in English: explains the current draw-first workflow, the Build
-     palette, object lifecycle, views and sharing. The other how-to-use-*.html guides go deeper on
-     individual tools. Croatian counterpart: kako-koristiti.html. -->
+<!-- How to use: current map workflows, video walkthroughs and proposal review.
+     Static English/Croatian guide pair: kako-koristiti.html. -->
 <html lang="en">
-
-<head>
-    <title>How to use · Consensus Builder</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
-    <link rel="stylesheet" href="css/tokens.css?v=2" />
-    <link rel="stylesheet" href="css/primitives.css?v=2" />
-    <link rel="stylesheet" href="css/page-chrome.css?v=1" />
-    <link rel="stylesheet" href="vendor/fontawesome-6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/howto.css?v=2" />
-</head>
-
-<body class="cb-page">
-    <header class="cb-page-header">
-        <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo.png" alt="" width="28" height="28"><span>Consensus Builder</span></span>
-        <div class="cb-page-header__title"><h1>How to use</h1></div>
-        <a class="cb-link cb-back-link" href="/?lang=en"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>Back to the map</a>
-        <nav class="cb-page-header__lang cb-segmented" aria-label="Language">
-            <a class="cb-segmented__option" href="kako-koristiti.html" hreflang="hr" lang="hr">HR</a>
-            <a class="cb-segmented__option" href="how-to-use.html" hreflang="en" lang="en" aria-current="page">EN</a>
-        </nav>
-    </header>
-    <nav class="sidebar" aria-label="Guide navigation">
-        <div class="sidebar-links">
-            <a class="btn btn-quiet" href="#workflow"><i class="fa-solid fa-route" aria-hidden="true"></i>The workflow</a>
-            <a class="btn btn-quiet" href="#palette"><i class="fa-solid fa-shapes" aria-hidden="true"></i>The “Build” palette</a>
-            <a class="btn btn-quiet" href="#objects"><i class="fa-solid fa-layer-group" aria-hidden="true"></i>Proposals &amp; forks</a>
-            <a class="btn btn-quiet" href="#views"><i class="fa-solid fa-cube" aria-hidden="true"></i>Views</a>
-            <a class="btn btn-quiet" href="#sharing"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i>Sharing</a>
-            <a class="btn btn-quiet" href="roadmap.html"><i class="fa-solid fa-compass" aria-hidden="true"></i>Roadmap</a>
-        </div>
-    </nav>
-
-    <main class="main-content">
-        <div class="container">
-            <div class="intro intro-with-visual">
-                <div class="intro-copy">
-                    <span class="eyebrow">The idea in one minute</span>
-                    <h2>Draw the change, then build consent</h2>
-                    <p>
-                        Consensus Builder works like a city-building game. Pick real parcels and place a possible
-                        change on the map — for example, a block, park, road or ownership offer. Finishing the design
-                        creates an applied local proposal that you can inspect, fork, compare and share.
-                    </p>
-                    <a class="btn btn-primary" href="index.html?lang=en"><i class="fa-solid fa-map" aria-hidden="true"></i>Open the map</a>
-                </div>
-                <img src="images/site-intro-parcels.webp"
-                    alt="The same parcels before and after a proposed city block">
-            </div>
-
-            <section id="workflow">
-                <h2>1. The workflow</h2>
-
-                <div class="flow-strip">
-                    <div class="flow-step">
-                        <i class="fas fa-hand-pointer"></i>
-                        <strong>Select</strong>
-                        <span>One parcel, several, or a whole block</span>
-                    </div>
-                    <i class="fas fa-chevron-right flow-arrow"></i>
-                    <div class="flow-step">
-                        <i class="fas fa-shapes"></i>
-                        <strong>Build</strong>
-                        <span>Click a tool in the palette</span>
-                    </div>
-                    <i class="fas fa-chevron-right flow-arrow"></i>
-                    <div class="flow-step">
-                        <i class="fas fa-pen-ruler"></i>
-                        <strong>Inspect</strong>
-                        <span>See the proposal in context</span>
-                    </div>
-                    <i class="fas fa-chevron-right flow-arrow"></i>
-                    <div class="flow-step">
-                        <i class="fas fa-file-signature"></i>
-                        <strong>Fork</strong>
-                        <span>Change the design or its terms</span>
-                    </div>
-                    <i class="fas fa-chevron-right flow-arrow"></i>
-                    <div class="flow-step">
-                        <i class="fas fa-share-nodes"></i>
-                        <strong>Share</strong>
-                        <span>Send one proposal or a whole plan</span>
-                    </div>
-                </div>
-
-                <ol class="steps">
-                    <li class="step">
-                        <h3>Select land on the map</h3>
-                        <p>
-                            Click a parcel: a small menu opens at the click point. Choose
-                            <span class="ui-label">Propose here</span> and the parcel panel opens on its
-                            <span class="ui-label">Proposals</span> tab. For anything spanning several parcels, choose
-                            <span class="ui-label">Select more</span> and click the others one by one; the selection
-                            tray at the bottom of the map shows the count, and its
-                            <span class="ui-label">Propose</span> button opens the same tab for the whole selection.
-                        </p>
-                        <div class="callout note">
-                            <i class="fas fa-circle-info"></i>
-                            If you select a single parcel that sits inside a block, the app will ask:
-                            <em>“Only one parcel is selected. Did you mean the whole block (N parcels)?”</em>
-                            Choose <span class="ui-label">Yes, select the block</span> and it selects the whole block
-                            for you.
-                        </div>
-                        <figure class="howto-shot">
-                            <div class="shot-frame">
-                                <img src="images/howto/hub-01-odabir.png?v=20261005"
-                                    alt="A selected parcel with the Proposals tab and the Build palette open"
-                                    onerror="this.style.display='none'">
-                                <span class="shot-pending"><i class="fas fa-camera"></i> Screenshot coming soon</span>
-                            </div>
-                            <figcaption>A selected parcel and the “Proposals” tab with the tool palette.</figcaption>
-                        </figure>
-                    </li>
-
-                    <li class="step">
-                        <h3>Build — it appears on the map immediately</h3>
-                        <p>
-                            Choose a tool from the <span class="ui-label">Build</span> palette. Buildings and land
-                            readjustment open a designer; <span class="ui-label">Park</span>,
-                            <span class="ui-label">Square</span> and <span class="ui-label">Lake</span> are one-click
-                            actions. Roads and tracks start from their drawing controls. When you finish, a local
-                            proposal is created and applied to the map — there is no separate “apply” step.
-                        </p>
-                    </li>
-
-                    <li class="step">
-                        <h3>Inspect the proposal in context</h3>
-                        <p>
-                            The finished proposal is read-only: open it to review the result, switch views, share it, or
-                            <span class="ui-label">Unapply</span> it without deleting it. The design editor shown below
-                            is where you shape geometry before confirming it, or after opening a fork for revision.
-                        </p>
-                        <figure class="howto-shot">
-                            <div class="shot-frame">
-                                <img src="images/howto/hub-02-dizajn.png?v=20261005"
-                                    alt="A design editor open over the selected parcels"
-                                    onerror="this.style.display='none'">
-                                <span class="shot-pending"><i class="fas fa-camera"></i> Screenshot coming soon</span>
-                            </div>
-                            <figcaption>The design editor works directly on the map.</figcaption>
-                        </figure>
-                    </li>
-
-                    <li class="step">
-                        <h3>Fork it to change the design or terms</h3>
-                        <p>
-                            Choose <span class="ui-label">Fork proposal</span> to make an editable copy. Change the
-                            geometry, name, description, offer, ownership, conditions, expiry or deposit, then create a
-                            replacement proposal. The source stays unchanged, so alternatives remain comparable.
-                        </p>
-                        <figure class="howto-shot">
-                            <div class="shot-frame">
-                                <img src="images/howto/hub-03-uvjeti.png?v=20261005"
-                                    alt="The Proposal window for an editable fork, with ownership and term fields"
-                                    onerror="this.style.display='none'">
-                                <span class="shot-pending"><i class="fas fa-camera"></i> Screenshot coming soon</span>
-                            </div>
-                            <figcaption>A fork carries the design forward while letting you revise its terms.</figcaption>
-                        </figure>
-                    </li>
-
-                    <li class="step">
-                        <h3>Inspect and share the result</h3>
-                        <p>
-                            Switch between 2D and <a class="cb-link" href="how-to-use-views.html">3D</a>, or use realistic and walk
-                            views where the city supports them. Share one proposal from its details, or apply the set
-                            you want and use <span class="ui-label">Share entire plan</span> to send the composition.
-                        </p>
-                    </li>
-                </ol>
-            </section>
-
-            <section id="palette" class="guide-section">
-                <h2>2. The proposal palette</h2>
-                <p>
-                    The palette lives in the <span class="ui-label">Proposals</span> tab of the parcel panel and shows
-                    the spatial and ownership proposals available for the current selection.
-                </p>
-
-                <div class="table-scroll">
-                    <table class="tool-table">
-                        <thead>
-                            <tr>
-                                <th>Tool</th>
-                                <th>What it does</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="is-grouped">
-                                <td><i class="fas fa-city"></i>Block</td>
-                                <td>Fills the block with buildings from an urban rule (buildable envelope, height,
-                                    setbacks). <a class="cb-link" href="how-to-use-buildings.html">Buildings guide →</a></td>
-                            </tr>
-                            <tr class="is-grouped">
-                                <td><i class="fas fa-grip-horizontal"></i>Row houses</td>
-                                <td>A terrace of attached houses across the selected parcels. Needs
-                                    <strong>at least two</strong> parcels.</td>
-                            </tr>
-                            <tr class="is-grouped">
-                                <td><i class="fas fa-home"></i>Detached</td>
-                                <td>One standalone house on each selected parcel.</td>
-                            </tr>
-                            <tr>
-                                <td><i class="fas fa-ruler-combined"></i>Freeform</td>
-                                <td>A building you draw yourself, no rules — for when the typologies don't fit.</td>
-                            </tr>
-                            <tr>
-                                <td><i class="fas fa-vector-square"></i>Land readjustment</td>
-                                <td>Pools the selected parcels and re-divides them into a tidier layout.
-                                    <a class="cb-link" href="how-to-use-reparcellization.html">Guide →</a></td>
-                            </tr>
-                            <tr>
-                                <td><i class="fas fa-tree"></i>Park</td>
-                                <td>A park across the selected parcels, in one click. You add the furniture (trees,
-                                    benches, paths) afterwards. <a class="cb-link" href="how-to-use-park-square.html">Guide →</a></td>
-                            </tr>
-                            <tr>
-                                <td><i class="fas fa-chess-board"></i>Square</td>
-                                <td>A public square, in one click. It comes with a statue; fountains, tables and
-                                    benches you add afterwards.</td>
-                            </tr>
-                            <tr>
-                                <td><i class="fas fa-water"></i>Lake</td>
-                                <td>A body of water across the selected parcels. The parcels must be contiguous.</td>
-                            </tr>
-                            <tr>
-                                <td><i class="fas fa-handshake"></i>Offer</td>
-                                <td>Purchase or ownership terms without a new physical object on the map.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="callout note">
-                    <i class="fas fa-road"></i>
-                    <strong>Roads, tracks and stations share the Transport group.</strong> They sit outside the parcel
-                    tools because they are drawn across the map and can cut through parcels.
-                    <a class="cb-link" href="how-to-use-road.html">Roads and tracks guide →</a>
-                </div>
-
-                <div class="callout note">
-                    <i class="fas fa-handshake"></i>
-                    <strong>Ownership comes last.</strong> The Offer tool has its own category because it changes
-                    purchase or ownership terms without changing the map.
-                </div>
-
-                <div class="callout tip">
-                    <i class="fas fa-lightbulb"></i>
-                    <strong>Block, Row houses and Detached</strong> are <em>rules</em> — the shape falls out of the
-                    parameters you set. <strong>Freeform</strong> is the opposite: you draw exactly what you want. If a
-                    rule is boxing you in, switch to freeform.
-                </div>
-            </section>
-
-            <section id="objects" class="guide-section">
-                <h2>3. Proposals, forks and plans</h2>
-                <p>These are the three pieces to keep straight while you explore alternatives.</p>
-                <div class="guide-cards basics-grid lifecycle-grid">
-                    <article class="guide-card">
-                        <div class="card-icon"><i class="fas fa-pen-ruler"></i></div>
-                        <h3>Proposal</h3>
-                        <p>Finishing a building, road or public-space design creates a local proposal and applies it to
-                            the map. Its saved record is read-only.</p>
-                    </article>
-                    <article class="guide-card">
-                        <div class="card-icon"><i class="fas fa-file-signature"></i></div>
-                        <h3>Fork</h3>
-                        <p>An editable copy used to revise the design or its terms. Saving it creates a new replacement;
-                            the source proposal stays unchanged.</p>
-                    </article>
-                    <article class="guide-card">
-                        <div class="card-icon"><i class="fas fa-layer-group"></i></div>
-                        <h3>Plan</h3>
-                        <p>The ordered set of applied proposals on your map. Sharing the plan preserves that composition
-                            and its dependencies.</p>
-                    </article>
-                </div>
-                <div class="callout note">
-                    <i class="fas fa-cloud-arrow-up"></i>
-                    Local work lives in this browser. Sharing uploads the proposal records needed by the link; optional
-                    chain publication creates an immutable public record.
-                </div>
-            </section>
-
-            <section id="views" class="guide-section">
-                <h2>4. Views</h2>
-                <p>
-                    You can look at the same proposal in four ways. The buttons are in the mode strip on the left edge of the map, under the search box.
-                </p>
-                <div class="view-list">
-                    <article>
-                        <span class="view-number">2D</span>
-                        <div>
-                            <h3>The map</h3>
-                            <p>For selecting parcels, drawing, and checking boundaries. This is where the work happens.</p>
-                        </div>
-                    </article>
-                    <article>
-                        <span class="view-number">3D</span>
-                        <div>
-                            <h3>The spatial model</h3>
-                            <p>Buildings, roads and public space as 3D objects — plus a panel that works out what the
-                                proposal is worth to you.</p>
-                        </div>
-                    </article>
-                    <article>
-                        <span class="view-number"><i class="fas fa-globe"></i></span>
-                        <div>
-                            <h3>Realistic context</h3>
-                            <p>Your proposal standing inside Google's photorealistic model of the city.</p>
-                        </div>
-                    </article>
-                    <article>
-                        <span class="view-number"><i class="fas fa-person-walking"></i></span>
-                        <div>
-                            <h3>Walk</h3>
-                            <p>Eye level, from a pedestrian's point of view. Only in cities that support it.</p>
-                        </div>
-                    </article>
-                </div>
-                <p style="margin-top:16px">
-                    <a class="cb-link" href="how-to-use-views.html">The full guide to views and 3D →</a>
-                </p>
-            </section>
-
-            <section id="sharing" class="guide-section">
-                <h2>5. Sharing</h2>
-                <div class="guide-cards basics-grid">
-                    <article class="guide-card">
-                        <div class="card-icon"><i class="fas fa-share-nodes"></i></div>
-                        <h3>One proposal</h3>
-                        <p>Open the proposal and click <span class="ui-label">Share</span>. You get a link that opens
-                            exactly that intervention.</p>
-                    </article>
-                    <article class="guide-card">
-                        <div class="card-icon"><i class="fas fa-diagram-project"></i></div>
-                        <h3>The whole plan</h3>
-                        <p>Apply every proposal you want to send, then open the <span class="ui-label">Proposals</span> button
-                            (bottom right) and click <span class="ui-label">Share entire plan (all proposals)</span>. The link preserves their
-                            order and their dependencies.</p>
-                    </article>
-                    <article class="guide-card">
-                        <div class="card-icon"><i class="fas fa-clone"></i></div>
-                        <h3>A second variant</h3>
-                        <p>Want to try an alternative? Fork the proposal or create a replacement. The published original
-                            stays intact while the new version can evolve.</p>
-                    </article>
-                </div>
-            </section>
-
-            <section class="guide-section">
-                <h2>The detailed guides</h2>
-                <div class="guide-cards">
-                    <a href="how-to-use-buildings.html" class="guide-card">
-                        <div class="card-icon"><i class="fas fa-city"></i></div>
-                        <h3>Buildings</h3>
-                        <p>Block, row houses, detached and freeform — and how an urban rule shapes the result.</p>
-                    </a>
-                    <a href="how-to-use-road.html" class="guide-card">
-                        <div class="card-icon"><i class="fas fa-road"></i></div>
-                        <h3>Roads and tracks</h3>
-                        <p>Drawing the alignment, the cross-section with its lanes and sidewalks, and the new blocks a
-                            road creates.</p>
-                    </a>
-                    <a href="how-to-use-park-square.html" class="guide-card">
-                        <div class="card-icon"><i class="fas fa-tree"></i></div>
-                        <h3>Park, square and lake</h3>
-                        <p>Public space in one click, then the furniture editor: trees, benches, paths, fountains.</p>
-                    </a>
-                    <a href="how-to-use-reparcellization.html" class="guide-card">
-                        <div class="card-icon"><i class="fas fa-vector-square"></i></div>
-                        <h3>Land readjustment</h3>
-                        <p>Redividing a messy block into usable parcels while keeping everyone's ownership share.</p>
-                    </a>
-                    <a href="how-to-use-views.html" class="guide-card">
-                        <div class="card-icon"><i class="fas fa-cube"></i></div>
-                        <h3>Views and 3D</h3>
-                        <p>2D, 3D, realistic context and walk — and how to read a proposal's gain.</p>
-                    </a>
-                </div>
-            </section>
-
-            <div class="callout tip final-tip">
-                <i class="fas fa-lightbulb"></i>
-                Remember the order: <strong>select → build → inspect → fork if needed → share</strong>. Finishing a
-                design creates an applied proposal; revisions always become a new proposal.
-            </div>
-        </div>
-    </main>
-</body>
-
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   How to use · Consensus Builder
+  </title>
+  <meta content="Design on real land, inspect the result in 2D and 3D, compare alternatives and share a proposal or a whole plan. Start with a short video or follow the written steps." name="description"/>
+  <link href="kako-koristiti.html" hreflang="hr" rel="alternate"/>
+  <link href="images/consensus-builder-logo-2.png" rel="icon" type="image/png"/>
+  <link href="css/tokens.css?v=2" rel="stylesheet"/>
+  <link href="css/primitives.css?v=2" rel="stylesheet"/>
+  <link href="css/page-chrome.css?v=1" rel="stylesheet"/>
+  <link href="vendor/fontawesome-6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="css/howto.css?v=20261014" rel="stylesheet"/>
+ </head>
+ <body class="cb-page">
+  <header class="cb-page-header">
+   <span class="cb-page-header__brand">
+    <img alt="" class="cb-page-header__logo" height="28" src="images/consensus-builder-logo.png" width="28"/>
+    <span>
+     Consensus Builder
+    </span>
+   </span>
+   <div class="cb-page-header__title">
+    <h1>
+     How to use
+    </h1>
+   </div>
+   <a class="cb-link cb-back-link" href="/?lang=en">
+    <i aria-hidden="true" class="fa-solid fa-arrow-left">
+    </i>
+    Back to the map
+   </a>
+   <nav aria-label="Language" class="cb-page-header__lang cb-segmented">
+    <a class="cb-segmented__option" href="kako-koristiti.html" hreflang="hr" lang="hr">
+     HR
+    </a>
+    <a aria-current="page" class="cb-segmented__option" href="how-to-use.html" hreflang="en" lang="en">
+     EN
+    </a>
+   </nav>
+  </header>
+  <nav aria-label="Guide navigation" class="sidebar">
+   <div class="sidebar-links">
+    <a aria-current="page" class="btn btn-quiet" href="how-to-use.html">
+     <i aria-hidden="true" class="fa-solid fa-book-open">
+     </i>
+     How to use
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-buildings.html">
+     <i aria-hidden="true" class="fa-solid fa-building">
+     </i>
+     Buildings
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-park-square.html">
+     <i aria-hidden="true" class="fa-solid fa-tree">
+     </i>
+     Parks, squares and lakes
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-reparcellization.html">
+     <i aria-hidden="true" class="fa-solid fa-vector-square">
+     </i>
+     Land readjustment
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-road.html">
+     <i aria-hidden="true" class="fa-solid fa-road">
+     </i>
+     Roads and tracks
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-views.html">
+     <i aria-hidden="true" class="fa-solid fa-cube">
+     </i>
+     Views and comparisons
+    </a>
+   </div>
+   <div class="sidebar-section">
+    <span class="eyebrow">
+     On this page
+    </span>
+    <div class="sidebar-links">
+     <a class="btn btn-quiet" href="#videos">
+      Video walkthroughs
+     </a>
+     <a class="btn btn-quiet" href="#workflow">
+      Start a proposal
+     </a>
+     <a class="btn btn-quiet" href="#palette">
+      Choose a tool
+     </a>
+     <a class="btn btn-quiet" href="#objects">
+      Review and revise
+     </a>
+     <a class="btn btn-quiet" href="#views">
+      Compare alternatives
+     </a>
+     <a class="btn btn-quiet" href="#sharing">
+      Share a plan
+     </a>
+    </div>
+   </div>
+  </nav>
+  <main class="main-content">
+   <div class="container">
+    <div class="intro intro-with-visual">
+     <div class="intro-copy">
+      <span class="eyebrow">
+       Start here
+      </span>
+      <h2>
+       Draw the change. Explore it together.
+      </h2>
+      <p>
+       Design on real land, inspect the result in 2D and 3D, compare alternatives and share a proposal or a whole plan. Start with a short video or follow the written steps.
+      </p>
+      <a class="btn btn-primary" href="index.html?lang=en">
+       <i aria-hidden="true" class="fa-solid fa-map">
+       </i>
+       Open the map
+      </a>
+     </div>
+     <img alt="Parcels before and after a proposed city block" src="images/site-intro-parcels.webp"/>
+    </div>
+    <section class="guide-section" id="videos">
+     <h2>
+      Watch, then try it
+     </h2>
+     <p>
+      Nine short demonstrations of the current app. Each opens the matching walkthrough; use the player’s fullscreen button to read the controls.
+     </p>
+     <div class="callout note">
+      <i aria-hidden="true" class="fa-solid fa-circle-info">
+      </i>
+      The recordings use the English interface and include on-screen instructions. The written steps are available in English and Croatian.
+     </div>
+     <div class="video-library">
+      <a class="video-card" href="how-to-use-buildings.html#watch-house">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-01-house-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:34
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         01 · Buildings
+        </span>
+        <h3>
+         Design a house
+        </h3>
+        <p>
+         Reshape the footprint, set its height and choose the surroundings.
+        </p>
+       </div>
+      </a>
+      <a class="video-card" href="how-to-use-park-square.html#watch-park">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-02-park-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:37
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         02 · Parks, squares and lakes
+        </span>
+        <h3>
+         Create a park
+        </h3>
+        <p>
+         Place trees, paths and ponds, then inspect the result in 3D.
+        </p>
+       </div>
+      </a>
+      <a class="video-card" href="how-to-use-park-square.html#watch-square">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-03-square-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:33
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         03 · Parks, squares and lakes
+        </span>
+        <h3>
+         Create a square
+        </h3>
+        <p>
+         Add a fountain and arrange the furniture on the map.
+        </p>
+       </div>
+      </a>
+      <a class="video-card" href="how-to-use-reparcellization.html#watch-automatic">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-04-auto-readjustment-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:31
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         04 · Land readjustment
+        </span>
+        <h3>
+         Automatic readjustment
+        </h3>
+        <p>
+         Rotate the division lines and review the new plots and owners.
+        </p>
+       </div>
+      </a>
+      <a class="video-card" href="how-to-use-reparcellization.html#watch-manual">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-05-manual-readjustment-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:31
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         05 · Land readjustment
+        </span>
+        <h3>
+         Draw plots freely
+        </h3>
+        <p>
+         Draw and split plots, assign owners and compare before and after.
+        </p>
+       </div>
+      </a>
+      <a class="video-card" href="how-to-use-reparcellization.html#watch-keep">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-06-keep-parcels-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:31
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         06 · Land readjustment
+        </span>
+        <h3>
+         Keep existing parcels
+        </h3>
+        <p>
+         Start with the original boundaries and edit them with nodes.
+        </p>
+       </div>
+      </a>
+      <a class="video-card" href="how-to-use-road.html#watch-road">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-07-road-section-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:42
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         07 · Roads and tracks
+        </span>
+        <h3>
+         Design a road section
+        </h3>
+        <p>
+         Draw an alignment, assemble the lanes and review the road in 3D.
+        </p>
+       </div>
+      </a>
+      <a class="video-card" href="how-to-use-buildings.html#watch-row">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-08-row-houses-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:32
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         08 · Buildings
+        </span>
+        <h3>
+         Design row houses
+        </h3>
+        <p>
+         Adjust the row, reshape its footprint and check it in context.
+        </p>
+       </div>
+      </a>
+      <a class="video-card" href="how-to-use-buildings.html#watch-parcel-rules">
+       <div class="video-card-preview">
+        <img alt="" height="640" loading="lazy" src="videos/howto/consensus-builder-09-parcel-rules-review.jpg" width="960"/>
+        <span class="video-card-play">
+         <i aria-hidden="true" class="fa-solid fa-play">
+         </i>
+        </span>
+        <span class="video-card-duration">
+         0:39
+        </span>
+       </div>
+       <div class="video-card-copy">
+        <span class="eyebrow">
+         09 · Buildings
+        </span>
+        <h3>
+         Set parcel building rules
+        </h3>
+        <p>
+         Choose what the rule compels and distinguish the envelope from an example.
+        </p>
+       </div>
+      </a>
+     </div>
+    </section>
+    <section class="guide-section" id="workflow">
+     <h2>
+      Start with a parcel or a site
+     </h2>
+     <ol class="steps">
+      <li class="step">
+       <h3>
+        Choose the land
+       </h3>
+       <p>
+        Click a parcel and choose
+        <span class="ui-label">
+         Propose here
+        </span>
+        . For several parcels, choose
+        <span class="ui-label">
+         Select more
+        </span>
+        , click the others, then
+        <span class="ui-label">
+         Propose
+        </span>
+        in the selection tray.
+        <span class="ui-label">
+         Detect block
+        </span>
+        grows the selection to the surrounding block.
+       </p>
+      </li>
+      <li class="step">
+       <h3>
+        Or draw a site
+       </h3>
+       <p>
+        Use
+        <span class="ui-label">
+         Use as site
+        </span>
+        to start from a parcel outline, or
+        <span class="ui-label">
+         Draw a site here
+        </span>
+        on open ground. A site is an editable boundary for a design. Where parcel data is unavailable you can still explore a proposal; missing data does not establish ownership.
+       </p>
+      </li>
+      <li class="step">
+       <h3>
+        Build and finish
+       </h3>
+       <p>
+        Choose a tool in
+        <span class="ui-label">
+         Build
+        </span>
+        . Buildings and readjustment open a designer; parks, squares and lakes start in one click. Finish the designer with
+        <span class="ui-label">
+         Done
+        </span>
+        . In the direct build flow, a local proposal is created and applied to the map. If you opened the proposal form, finish its design and submit that form.
+       </p>
+       <div class="callout note">
+        <i aria-hidden="true" class="fa-solid fa-circle-info">
+        </i>
+        If a conflict prevents application, the app explains why and keeps the object parked in your proposals list. Open it there to review the reason and apply it when the conflict is resolved.
+       </div>
+      </li>
+     </ol>
+    </section>
+    <section class="guide-section" id="palette">
+     <h2>
+      Choose the tool for the change
+     </h2>
+     <div class="table-scroll">
+      <table class="tool-table">
+       <thead>
+        <tr>
+         <th scope="col">
+          Tool
+         </th>
+         <th scope="col">
+          Use it for
+         </th>
+         <th scope="col">
+          Walkthrough
+         </th>
+        </tr>
+       </thead>
+       <tbody>
+        <tr>
+         <td>
+          Freeform building
+         </td>
+         <td>
+          Draw and reshape individual footprints. Set height and green or paved surroundings.
+         </td>
+         <td>
+          <a class="cb-link" href="how-to-use-buildings.html#freeform">
+           House walkthrough
+          </a>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Block / Row houses / Detached
+         </td>
+         <td>
+          Set a building rule, its limits and minimum plot size. Inspect an example build-out.
+         </td>
+         <td>
+          <a class="cb-link" href="how-to-use-buildings.html">
+           Buildings
+          </a>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Park / Square / Lake
+         </td>
+         <td>
+          Create public space, then place its furniture on the map.
+         </td>
+         <td>
+          <a class="cb-link" href="how-to-use-park-square.html">
+           Parks, squares and lakes
+          </a>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Land readjustment
+         </td>
+         <td>
+          Divide automatically, draw freely or keep the existing parcels. Review owners and cash.
+         </td>
+         <td>
+          <a class="cb-link" href="how-to-use-reparcellization.html">
+           Land readjustment
+          </a>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Road / Track
+         </td>
+         <td>
+          Draw a corridor and compose its cross-section from lanes.
+         </td>
+         <td>
+          <a class="cb-link" href="how-to-use-road.html">
+           Roads and tracks
+          </a>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Offer
+         </td>
+         <td>
+          Propose purchase or ownership terms without adding a physical object.
+         </td>
+         <td>
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div>
+    </section>
+    <section class="guide-section" id="objects">
+     <h2>
+      Review, revise and build consent
+     </h2>
+     <p>
+      Click an object to open its action panel.
+      <span class="ui-label">
+       Proposal details
+      </span>
+      holds the design, land, ownership and approval information.
+      <span class="ui-label">
+       Unapply
+      </span>
+      removes the proposal from the current map composition while keeping its record.
+     </p>
+     <p>
+      Use
+      <span class="ui-label">
+       Fork proposal
+      </span>
+      to revise the design or terms in an editable copy: the source stays unchanged.
+      <span class="ui-label">
+       Edit geometry
+      </span>
+      takes you straight to the relevant designer. Review the resulting version and its approval requirements before sharing it.
+     </p>
+     <div class="callout note">
+      <i aria-hidden="true" class="fa-solid fa-circle-info">
+      </i>
+      Applied on your map means visible in your local scenario. It is separate from publication, owner acceptance and execution. Proposals built on a road or a readjusted plot can depend on that earlier proposal.
+     </div>
+     <h3>
+      Ownership, approval and terms
+     </h3>
+     <p>
+      In the fork’s proposal editor, use
+      <span class="ui-label">
+       Approval
+      </span>
+      to review the ownership data, approval source and policy for the selected land. Use
+      <span class="ui-label">
+       Terms
+      </span>
+      for the offer, conditions, expiry and deposit. The app reports incomplete ownership data instead of treating it as consent.
+     </p>
+     <p>
+      Changing ownership or approval creates a replacement proposal. Acceptances of the source do not carry over: review the new version and its required approvals.
+     </p>
+    </section>
+    <section class="guide-section" id="views">
+     <h2>
+      Compare alternatives
+     </h2>
+     <p>
+      Use
+      <span class="ui-label">
+       Before / after
+      </span>
+      in proposal details or a designer and drag the divider across the same map. For two alternatives on one parcel, open
+      <span class="ui-label">
+       Proposals
+      </span>
+      , tick two proposals and click
+      <span class="ui-label">
+       Compare
+      </span>
+      . The comparison shows the land take, buildings, plots, ownership, consent and support for that parcel.
+     </p>
+     <p>
+      <a class="cb-link" href="how-to-use-views.html">
+       Explore 2D, 3D, facades and X-ray →
+      </a>
+     </p>
+    </section>
+    <section class="guide-section" id="sharing">
+     <h2>
+      Share a proposal or a plan
+     </h2>
+     <p>
+      <span class="ui-label">
+       Share
+      </span>
+      in the object panel creates a link to one proposal. To share a composition, apply the proposals you want, then choose
+      <span class="ui-label">
+       Share entire plan
+      </span>
+      . The plan preserves the applied set and its dependencies.
+     </p>
+     <p>
+      Local work is stored in this browser. Sharing uploads the records needed by the link; on-chain publication is a separate action. The app may ask for a public profile name when you share or publish.
+     </p>
+    </section>
+    <footer class="guide-footer">
+     <a class="cb-link" href="how-to-use.html">
+      All instructions
+     </a>
+     ·
+     <a class="cb-link" href="index.html?lang=en">
+      Try it on the map
+     </a>
+     ·
+     <a class="cb-link" href="roadmap.html">
+      Roadmap
+     </a>
+    </footer>
+   </div>
+  </main>
+ </body>
 </html>

@@ -3,6 +3,7 @@
 import { createHash } from 'node:crypto';
 import { listingIdentity } from './explicit-location.js';
 import { extractPropertyFacts } from './property-facts.js';
+import { hasUsableGeometry, listingUnitId, normalizeUnitId } from './original-plan-sources.js';
 
 const hash = value => createHash('sha256').update(value).digest('hex').slice(0, 16);
 const finite = value => typeof value === 'number' && Number.isFinite(value) ? value : null;
@@ -67,14 +68,31 @@ export function projectInventory(postings, plans, options = {}) {
     for (const [key, aliases] of groups) {
         aliases.sort(sourceOrder);
         const facts = aliases.map(p => ({ ...p.facts, propertyDetails: details(p.facts || {}) }));
-        const ownedPlans = planGroups.get(key) || [];
+        const ownedPlans = [...(planGroups.get(key) || [])].sort((a, b) => {
+            const rank = plan => hasUsableGeometry(plan.model) ? (plan.kind === 'reviewed' ? 0 : 1) : plan.kind === 'original' ? 2 : 3;
+            return rank(a) - rank(b) || Number(Boolean(b.model?.unitId)) - Number(Boolean(a.model?.unitId))
+                || (b.byte_count || 0) - (a.byte_count || 0) || a.id.localeCompare(b.id);
+        });
         // Commercial premises, houses and portfolio building pages are not apartment offers.
         if (!ownedPlans.length && !facts.some(f => f.propertyDetails.propertyType === 'apartment')) continue;
         const choices = ownedPlans.length ? ownedPlans : [null];
         for (const plan of choices) {
             const model = plan?.model || {};
-            const unit = model.unitId || one(facts.map(f => f.unitId));
+            const sameSourceUnits = ownedPlans.filter(p => p.sha256 === plan?.sha256
+                && (p.model?.source?.page || 1) === (model.source?.page || 1)).map(p => p.model?.unitId);
+            const listingUnit = one(aliases.map(p => listingUnitId(p.facts, p.url)));
+            // Unreviewed region names are not public apartment identities when the offer names it.
+            const generatedUnit = plan?.kind !== 'reviewed' && /^(?:plan|unit|apartment|region)[\s_-]/i.test(model.unitId || '');
+            const establishedUnit = listingUnit || one(ownedPlans.filter(p => ['original', 'reviewed'].includes(p.kind)).map(p => p.model?.unitId));
+            const candidateUnit = (generatedUnit && establishedUnit ? establishedUnit : model.unitId) || listingUnit || one(sameSourceUnits)
+                || one(ownedPlans.map(p => p.model?.unitId));
+            const equivalent = kind => ownedPlans.find(p => p.kind === kind && p.model?.unitId
+                && normalizeUnitId(p.model.unitId) === normalizeUnitId(candidateUnit))?.model.unitId;
+            // Reviewed spelling wins; otherwise preserve an original's published ID across machine
+            // casing/punctuation variants. Geometry-only records keep their historical raw IDs.
+            const unit = equivalent('reviewed') || (plan?.kind !== 'reviewed' && equivalent('original')) || candidateUnit;
             const id = hash(`${key}|${unit || 'apartment'}`);
+            const hasGeometry = hasUsableGeometry(model);
             const property = facts.map(f => f.propertyDetails);
             const marketedArea = one(facts.map(f => positive(f.areaM2)));
             const physicalNetAreaM2 = positive(model.physicalNetAreaM2);
@@ -86,17 +104,23 @@ export function projectInventory(postings, plans, options = {}) {
                 rooms: one(property.map(p => positive(p.roomCount))),
                 orientation: [...new Set(property.flatMap(p => p.orientation || []))].sort(),
                 floor: floorNumber(model.floor) ?? one(facts.map(f => floorNumber(f.floor))),
-                hasPlan: Boolean(model.architecture), planId: plan?.id || null,
-                architecture: model.architecture || null, roomSchedule: model.rooms || [],
+                hasPlan: hasGeometry || plan?.kind === 'original', hasGeometry, planId: plan?.id || null,
+                architecture: hasGeometry ? model.architecture : null, roomSchedule: model.rooms || [],
                 source: plan ? { url: model.source?.url || null, sha256: plan.sha256,
                     page: model.source?.page || 1, assetUrl: null } : null,
+                originalSources: plan?.kind === 'original' ? [{ url: model.source?.url, sha256: plan.sha256,
+                    page: model.source?.page || 1, mediaType: plan.media_type || null }] : [],
                 sourceUrls: sources, postingUrl: sources[0] || null, sourceTitle: facts.find(f => f.title)?.title || null,
-                reviewStatus: plan?.kind === 'reviewed' ? 'reviewed' : plan ? 'needs_review' : null,
+                reviewStatus: plan?.reviewStatus || (plan?.kind === 'reviewed' ? 'reviewed' : plan ? 'needs_review' : null),
                 issues: model.quality?.issues || [], scaleEstimated: model.source?.scaleEstimated === true,
                 scaleBasis: model.source?.scaleBasis || null };
             const previous = apartments.find(a => a.id === id);
             if (!previous) apartments.push(apartment);
-            else previous.sourceUrls = [...new Set([...previous.sourceUrls, ...sources])];
+            else {
+                previous.sourceUrls = [...new Set([...previous.sourceUrls, ...sources])];
+                previous.originalSources.push(...apartment.originalSources.filter(source => !previous.originalSources.some(existing =>
+                    existing.url === source.url && existing.sha256 === source.sha256 && existing.page === source.page)));
+            }
         }
     }
     const propertyTypes = postings.map(p => details(p.facts || {}).propertyType);

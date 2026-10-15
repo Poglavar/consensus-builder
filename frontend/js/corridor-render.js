@@ -17,6 +17,13 @@
 // at 660/670.
 const CORRIDOR_STRIPS_PANE = 'corridorStripsPane';
 const CORRIDOR_JUNCTIONS_PANE = 'corridorJunctionsPane';
+// Every painted road surface — lane strips, the footway's edge fill, a junction's carriageway and
+// its footway corners — at ONE opacity, so a junction is the same asphalt as the lanes beside it
+// (the basemap ghosts through all of them alike). The junction can share the strips' opacity
+// because it no longer lies over them: corridor-junction-paint.js clips each arm's strips to what
+// the junction paints, and unites the junction's own pieces so nothing is painted twice.
+const CORRIDOR_SURFACE_OPACITY = 0.85;
+const corridorJunctionPaint = () => (typeof window !== 'undefined' && window.__corridorJunctionPaint) || null;
 const CORRIDOR_MARKINGS_PANE = 'corridorMarkingsPane';
 const CORRIDOR_HIT_PANE = 'corridorHitPane';
 const CORRIDOR_RAIL_PANE = 'corridorRailPane';
@@ -124,22 +131,53 @@ function renderCorridorLaneMarkings(markings, group, pane) {
     });
 }
 
+// One junction's drawing (corridor-profile.js junctionTreatmentFor): the carriageway surface where
+// the arms' strips stop (they are clipped to it, corridor-junction-paint.js), the footway band
+// around each corner in that footway's own surface, then the paint — stop lines and zebras — on
+// the markings pane, above every surface own or shared.
 function renderCorridorJunctions(junctions, group, pane) {
     if (!Array.isArray(junctions)) return;
+    const paintPane = (pane === CORRIDOR_JUNCTIONS_PANE && typeof CORRIDOR_MARKINGS_PANE !== 'undefined') ? CORRIDOR_MARKINGS_PANE : pane;
+    const paint = corridorJunctionPaint();
+    // The junction's asphalt IS the driving lane's surface (3D paints it with the driving lane's
+    // material for the same reason), never a shade of its own.
+    const asphalt = (typeof corridorStripSurface === 'function') ? corridorStripSurface({ type: 'driving' }) : '#2b2b2b';
     junctions.forEach(junction => {
-        (junction.surfacePolygons || []).forEach(polygon => {
+        // United, so the arm boxes that overlap one another in the box paint once at this opacity.
+        const surfacePolygons = paint ? paint.junctionSurfacePolygons(junction) : (junction.surfacePolygons || []);
+        surfacePolygons.forEach(polygon => {
             L.polygon(polygon, {
-                color: '#2b2b2b', weight: 0, fillColor: '#2b2b2b', fillOpacity: 1,
+                color: asphalt, weight: 0.5, fillColor: asphalt, fillOpacity: CORRIDOR_SURFACE_OPACITY,
                 interactive: false, pane: pane || undefined,
                 renderer: corridorCanvasFor(pane),
                 className: 'corridor-junction-surface'
             }).addTo(group);
         });
+        (junction.cornerPolygons || []).forEach(corner => {
+            const strip = corner.strip || { type: 'sidewalk' };
+            const surface = (typeof corridorStripSurface === 'function')
+                ? corridorStripSurface(strip)
+                : (((typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {}).surface || '#d8d2c4');
+            L.polygon(corner.polygon, {
+                color: surface, weight: 0.5, fillColor: surface, fillOpacity: CORRIDOR_SURFACE_OPACITY,
+                interactive: false, pane: pane || undefined,
+                renderer: corridorCanvasFor(pane),
+                className: 'corridor-junction-corner'
+            }).addTo(group);
+        });
+        (junction.stopLinePolygons || []).forEach(polygon => {
+            L.polygon(polygon, {
+                color: '#ffffff', weight: 0, fillColor: '#ffffff', fillOpacity: 0.95,
+                interactive: false, pane: paintPane || undefined,
+                renderer: corridorCanvasFor(paintPane),
+                className: 'corridor-stop-line'
+            }).addTo(group);
+        });
         (junction.crosswalkPolygons || []).forEach(polygon => {
             L.polygon(polygon, {
                 color: '#ffffff', weight: 0, fillColor: '#ffffff', fillOpacity: 0.92,
-                interactive: false, pane: pane || undefined,
-                renderer: corridorCanvasFor(pane),
+                interactive: false, pane: paintPane || undefined,
+                renderer: corridorCanvasFor(paintPane),
                 className: 'corridor-crosswalk-stripe'
             }).addTo(group);
         });
@@ -453,7 +491,7 @@ function corridorOwnerClass(id) {
 function renderCorridorStrips(strips, options = {}) {
     if (!Array.isArray(strips) || !strips.length) return null;
     const group = L.layerGroup();
-    const fillOpacity = Number.isFinite(options.fillOpacity) ? options.fillOpacity : 0.85;
+    const fillOpacity = Number.isFinite(options.fillOpacity) ? options.fillOpacity : CORRIDOR_SURFACE_OPACITY;
     const ownerClass = options.ownerClass ? ` ${options.ownerClass}` : '';
 
     strips.forEach(strip => {
@@ -497,11 +535,13 @@ function renderCorridorStrips(strips, options = {}) {
         });
         // Parking bays come with the cross-section, like rails: a parking lane in the profile paints its
         // bays right here, so drawn roads, applied roads and imported OSM streets all get them at once.
+        // Bays and arrows keep out of the junctions the piece takes part in (options.junctionTrims).
+        const furniture = { trims: options.junctionTrims || null };
         if (typeof buildCorridorParkingBays === 'function') {
-            renderCorridorParkingBays(buildCorridorParkingBays(options.centerlines, options.profile, options.frame), group, options.pane);
+            renderCorridorParkingBays(buildCorridorParkingBays(options.centerlines, options.profile, options.frame, furniture), group, options.pane);
         }
         if (typeof buildCorridorDirectionArrows === 'function') {
-            renderCorridorDirectionArrows(buildCorridorDirectionArrows(options.centerlines, options.profile, options.frame), group, options.pane);
+            renderCorridorDirectionArrows(buildCorridorDirectionArrows(options.centerlines, options.profile, options.frame, furniture), group, options.pane);
         }
     }
     renderCorridorLaneMarkings(options.markings, group, options.pane);
@@ -520,13 +560,14 @@ function renderCorridorStrips(strips, options = {}) {
 // ---------------------------------------------------------------------------
 
 // Applied-corridor render state, keyed by corridor. `byId` holds one entry per applied corridor:
-// its Leaflet group (strips, edge fill, own junction patches, lane markings, tunnels, hit targets),
-// the hash of the inputs it was drawn from, its bbox and the centerline runs the cross-corridor
-// junction finder needs. `crossJunctions` holds one group per treatment between corridors, keyed
-// by the sorted ids it joins plus its position. A refresh rebuilds only what the hashes say
-// changed: one road edit is one corridor's strips plus the junctions it takes part in, not the
-// whole town (~640 ms on the Šibenik plan when every refresh rebuilt all 127 corridors).
-const corridorRenderState = { root: null, byId: new Map(), crossJunctions: new Map() };
+// its Leaflet group (strips, edge fill, lane markings, tunnels, hit targets), the hash of the
+// inputs it was drawn from, its bbox and the signature of the junctions it takes part in.
+// `junctions` holds one group per junction — a road's own T as much as a crossing between two
+// roads: all come from ONE set (corridor-profile.js buildCorridorJunctionSet) — keyed by the sorted
+// ids it joins plus its position. A refresh rebuilds only what the hashes say changed: one road
+// edit is one corridor's strips plus the junctions it takes part in, not the whole town (~640 ms on
+// the Šibenik plan when every refresh rebuilt all 127 corridors).
+const corridorRenderState = { root: null, byId: new Map(), junctions: new Map() };
 let corridorRefreshHandle = null;
 
 // While the cross-section editor is open it overrides one proposal's profile, so the map shows the edit
@@ -534,15 +575,24 @@ let corridorRefreshHandle = null;
 // was proposed until the edit is saved as a new proposal of its own.
 let corridorProfilePreview = null;
 
-function setCorridorProfilePreview(proposalKey, profile, segmentId = null) {
+// `options.keepOverrides`: a road-scope preview that leaves the stretches with their own
+// cross-section as they are — what the editor's save does unless "Also replace…" is ticked — so
+// the preview shows exactly the change that will be stored.
+function setCorridorProfilePreview(proposalKey, profile, segmentId = null, options = {}) {
     corridorProfilePreview = (proposalKey && profile)
-        ? { proposalKey: String(proposalKey), profile, segmentId: segmentId !== null && segmentId !== undefined ? String(segmentId) : null }
+        ? {
+            proposalKey: String(proposalKey),
+            profile,
+            segmentId: segmentId !== null && segmentId !== undefined ? String(segmentId) : null,
+            keepOverrides: options.keepOverrides === true
+        }
         : null;
     refreshAppliedCorridorStrips();
 }
 
 // The proposal's per-segment entries with the editor's live preview applied: a preview with a
-// segmentId restyles just that segment, one without restyles the whole road.
+// segmentId restyles just that segment, one without restyles the whole road — or, with
+// keepOverrides, every stretch that has no cross-section of its own.
 function corridorRenderEntries(proposal, definition) {
     const entries = (typeof corridorSegmentEntries === 'function') ? corridorSegmentEntries(definition) : [];
     if (!corridorProfilePreview) return entries;
@@ -550,7 +600,12 @@ function corridorRenderEntries(proposal, definition) {
     if (String(key) !== corridorProfilePreview.proposalKey) return entries;
     const previewProfile = corridorProfilePreview.profile;
     const previewSegmentId = corridorProfilePreview.segmentId;
-    return entries.map(entry => (previewSegmentId === null || entry.segmentId === previewSegmentId)
+    const overrides = (definition && definition.segmentProfiles) || {};
+    const hasOwn = entry => entry.segmentId !== null && entry.segmentId !== undefined && !!overrides[String(entry.segmentId)];
+    const takesPreview = entry => (previewSegmentId !== null
+        ? entry.segmentId === previewSegmentId
+        : !(corridorProfilePreview.keepOverrides && hasOwn(entry)));
+    return entries.map(entry => takesPreview(entry)
         ? { ...entry, profile: previewProfile, width: (typeof corridorProfileWidth === 'function' && corridorProfileWidth(previewProfile)) || entry.width }
         : entry);
 }
@@ -798,33 +853,40 @@ function clearAppliedCorridorStrips() {
     }
     state.root = null;
     state.byId.clear();
-    state.crossJunctions.clear();
+    state.junctions.clear();
     _appliedCorridorHoverKey = null;
 }
 
 // The filled footway of one corridor, as Leaflet polygons. Derived by the one shared builder
 // (corridor-edge-fill-scene.js), so the map cannot disagree with the editor's preview or with 3D.
-function renderCorridorEdgeFill(definition, group, ownerClass) {
+function renderCorridorEdgeFill(definition, group, ownerClass, junctions = []) {
     if (!definition || !group || !window.CorridorEdgeFill || typeof L === 'undefined') return;
     let regions = [];
     try { regions = window.CorridorEdgeFill.regionsFor(definition) || []; } catch (error) {
         console.warn('[corridor-render] edge fill could not be derived', error);
         return;
     }
+    const paint = corridorJunctionPaint();
     regions.forEach(region => {
+        // The fill stops where a junction paints, like the strips it extends: a footway's fill
+        // across a side street's mouth would otherwise ghost through the junction's asphalt.
+        const geojson = (paint && region.geojson && region.geojson.geometry && junctions.length)
+            ? (() => { const geometry = paint.clipGeometry(region.geojson.geometry, junctions); return geometry ? { ...region.geojson, geometry } : null; })()
+            : region.geojson;
+        if (!geojson) return;
         const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[region.type]) || {};
         const surface = (typeof corridorStripSurface === 'function')
             ? corridorStripSurface({ type: region.type, paving: region.paving })
             : (lane.surface || '#c2beb4');
         const pavingClass = region.paving === 'paved' ? ' corridor-strip--paved' : '';
-        L.geoJSON(region.geojson, {
+        L.geoJSON(geojson, {
             pane: CORRIDOR_STRIPS_PANE,
             interactive: false,
             style: {
                 color: surface,
                 weight: 0.5,
                 fillColor: surface,
-                fillOpacity: 0.85,
+                fillOpacity: CORRIDOR_SURFACE_OPACITY,
                 className: `corridor-strip corridor-strip--${region.type}${pavingClass}${ownerClass ? ' ' + ownerClass : ''}`
             }
         }).addTo(group);
@@ -862,8 +924,26 @@ function corridorKeyOf(proposal) {
 // previews, so a keystroke rebuilds that one corridor and clearing the preview rebuilds it once.
 function corridorRenderHash(proposal, definition, preview) {
     const key = corridorKeyOf(proposal);
-    const previewPart = preview && String(preview.proposalKey) === key ? [preview.profile, preview.segmentId] : null;
+    const previewPart = preview && String(preview.proposalKey) === key ? [preview.profile, preview.segmentId, preview.keepOverrides === true] : null;
     return JSON.stringify([definition, corridorOwnerClass(key), previewPart]);
+}
+
+// What a corridor's own drawing takes from the junctions it meets: where each of its arms is cut,
+// where its lane lines stop, and the shape the junction paints (its strips are clipped to it). A
+// neighbour's edit that moves any of those rebuilds this corridor too.
+function corridorJunctionSignature(corridorId, junctions) {
+    const id = String(corridorId);
+    const ringKey = ring => (ring || []).map(point => `${Number(point.lat).toFixed(7)},${Number(point.lng).toFixed(7)}`).join(' ');
+    return JSON.stringify((junctions || [])
+        .map(treatment => [
+            Number(treatment.lat).toFixed(7), Number(treatment.lng).toFixed(7),
+            (treatment.arms || []).filter(arm => String(arm.corridorId) === id).map(arm => [arm.cut, arm.markingTrim, arm.toward]),
+            (treatment.surfacePolygons || []).map(ringKey),
+            (treatment.cornerPolygons || []).map(corner => ringKey(corner && corner.polygon))
+        ])
+        // A junction none of whose arms is this corridor's asks nothing of its drawing.
+        .filter(([, , arms]) => arms.length)
+        .sort());
 }
 
 // Pure: which keyed entries to drop and which corridors to (re)build, from the hashes drawn last
@@ -903,11 +983,11 @@ function corridorRenderBbox(definition, entries) {
 // can leave and return as a unit. Never throws: one corrupt road must not strip the asphalt off
 // every road on the map, so a failure is logged and the corridor keeps an (empty) entry until its
 // definition changes.
-function buildCorridorRender(proposal) {
+function buildCorridorRender(proposal, junctions = []) {
     const definition = corridorProposalDefinition(proposal);
     const corridorId = corridorKeyOf(proposal);
     const group = L.layerGroup();
-    const entry = { id: corridorId, group, renderedCorridors: [], bbox: null, strips: 0, drawn: false };
+    const entry = { id: corridorId, group, bbox: null, strips: 0, drawn: false, junctionSignature: corridorJunctionSignature(corridorId, junctions) };
     try {
         const fallbackProfile = corridorProfileForRender(proposal, definition);
         const centerline = corridorCenterlineOf(definition);
@@ -925,60 +1005,62 @@ function buildCorridorRender(proposal) {
             : [];
         entry.bbox = corridorRenderBbox(definition, entries);
         if (entries.length) {
-            const markingsByEntry = (typeof buildCorridorLaneMarkingsForEntries === 'function')
-                ? buildCorridorLaneMarkingsForEntries(entries, frame)
-                : entries.map(candidate => buildCorridorLaneMarkings([candidate.points], candidate.profile, frame));
+            // The drawing iterates PIECES: each stretch's body plus the transition zones where
+            // its cross-section tapers to a neighbour's (corridorRenderPieces), so strips, lane
+            // lines and the land agree on where a road narrows.
+            const pieces = (typeof corridorRenderPieces === 'function')
+                ? corridorRenderPieces(entries, frame, { junctions: definition.junctions })
+                : entries.map(candidate => ({ ...candidate, taper: null }));
+            // Lane lines stop at the stop lines of every junction this corridor meets, its own and
+            // the ones it shares; the same treatments keep bays and arrows out of the junctions.
+            const markingsByPiece = (typeof buildCorridorLaneMarkingsForEntries === 'function')
+                ? buildCorridorLaneMarkingsForEntries(pieces, frame, { junctions })
+                : pieces.map(candidate => buildCorridorLaneMarkings([candidate.points], candidate.profile, frame));
             const allStrips = [];
             const markings = [];
             const ownerClass = corridorOwnerClass(corridorId);
-            entries.forEach((candidate, entryIndex) => {
-                const strips = buildCorridorStrips([candidate.points], candidate.profile, frame);
+            pieces.forEach((candidate, pieceIndex) => {
+                const strips = (candidate.taper && typeof buildCorridorPieceStrips === 'function')
+                    ? buildCorridorPieceStrips(candidate, frame)
+                    : buildCorridorStrips([candidate.points], candidate.profile, frame);
                 // Trees are physical objects and stay; bike/pedestrian lane explainers are clutter
-                // on the map — lane meaning lives in the cross-section editor.
-                const decorations = ((typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations([candidate.points], candidate.profile, frame) : [])
-                    .filter(decoration => decoration.kind === 'tree');
-                const segmentGroup = renderCorridorStrips(strips, {
-                    pane: CORRIDOR_STRIPS_PANE, markings: [], decorations, junctions: [], ownerClass,
+                // on the map — lane meaning lives in the cross-section editor. A zone plants none:
+                // its verges are on their way out.
+                const decorations = (!candidate.taper && typeof buildCorridorDecorations === 'function')
+                    ? buildCorridorDecorations([candidate.points], candidate.profile, frame).filter(decoration => decoration.kind === 'tree')
+                    : [];
+                const junctionTrims = (typeof corridorEntryJunctionTrims === 'function' && junctions.length)
+                    ? corridorEntryJunctionTrims(candidate.points.map(point => frame.latLngToMetric(point.lat, point.lng)), junctions, frame)
+                    : null;
+                // Painted strips stop where the junctions this corridor meets paint their own
+                // asphalt and corners (corridor-junction-paint.js); the whole strips stay the
+                // hit targets, so a click in the junction still lands on the road.
+                const paint = corridorJunctionPaint();
+                const painted = (paint && junctions.length) ? paint.clipStrips(strips, junctions) : strips;
+                const segmentGroup = renderCorridorStrips(painted, {
+                    pane: CORRIDOR_STRIPS_PANE, markings: [], decorations, junctions: [], ownerClass, junctionTrims,
                     // A placed corridor's rails and sleepers are both black, read against the
-                    // ballast texture under them rather than against each other's colour.
-                    centerlines: [candidate.points], profile: candidate.profile,
+                    // ballast texture under them rather than against each other's colour. Rails,
+                    // bays and arrows follow a constant profile, so a zone draws none of them.
+                    centerlines: candidate.taper ? null : [candidate.points], profile: candidate.profile,
                     railColor: '#000000', sleeperColor: '#000000', frame
                 });
                 if (segmentGroup) {
                     segmentGroup.addTo(group);
                     allStrips.push(...strips);
-                    markings.push(...(markingsByEntry[entryIndex] || []));
+                    markings.push(...(markingsByPiece[pieceIndex] || []));
                 }
             });
             if (allStrips.length) {
                 // The pavement where the footway fills out to the frontage, in the lane's own
                 // surface — so the 2D map shows the same road width the 3D model and photo view do,
-                // rather than the drawn minimum. Over the strips, under the junction patches' pane.
-                renderCorridorEdgeFill(definition, group, ownerClass);
-                const junctions = (typeof buildCorridorJunctionTreatmentsForEntries === 'function')
-                    ? buildCorridorJunctionTreatmentsForEntries(entries, frame)
-                    : [];
-                if (junctions.length) renderCorridorJunctions(junctions, group, CORRIDOR_JUNCTIONS_PANE);
-                // Through lanes are most important in the conflict area: their pane sits above
-                // every junction patch, own or shared, so the crossroads never erase them.
+                // rather than the drawn minimum. Over the strips, under the junctions' pane.
+                renderCorridorEdgeFill(definition, group, ownerClass, junctions);
+                // Junctions are not drawn here: every junction, this road's own included, is one
+                // keyed layer of its own (refreshCorridorJunctionLayers), so the same object is
+                // drawn once whichever corridors meet there.
                 renderCorridorLaneMarkings(markings, group, CORRIDOR_MARKINGS_PANE);
                 renderAppliedCorridorHitTargets(allStrips, proposal, group, definition, entries, frame);
-                const gradeSpans = (typeof gradeSeparationSpanRecords === 'function')
-                    ? gradeSeparationSpanRecords(definition.gradeSeparations || [])
-                    : [];
-                entries.forEach(candidate => {
-                    // A grade-separated span crosses in plan but is deliberately not a network
-                    // junction. Remove only those edges from the render-only centerlines fed to
-                    // the cross-road junction detector; the complete road stays visible above.
-                    const junctionRuns = gradeSpans.length && typeof corridorSurfaceRuns === 'function'
-                        ? corridorSurfaceRuns([candidate.points], gradeSpans)
-                        : [candidate.points];
-                    if (junctionRuns.length) entry.renderedCorridors.push({
-                        centerline: junctionRuns,
-                        profile: candidate.profile,
-                        corridorId
-                    });
-                });
                 entry.strips = allStrips.length;
             }
         }
@@ -1005,39 +1087,59 @@ function dropCorridorRender(id) {
     if (_appliedCorridorHoverKey === id) clearAppliedCorridorHover(id);
 }
 
-// Where two applied roads meet (a drawing snapped onto an existing road shares its exact
-// coordinates), form a real intersection: the same asphalt + zebra treatment as a road's own
-// junctions. Only treatments a changed or removed corridor takes part in are dropped and found
-// again, over the corridors whose bboxes touch the changed ones; treatments between untouched
-// neighbours stay as they are.
-function refreshCrossCorridorJunctions(scopeIds) {
+// The road pieces a corridor brings to the junction set: its render entries (the editor's
+// preview counts) with grade-separated spans removed — a span that crosses in plan is deliberately
+// not a network junction; the complete road stays visible above.
+function corridorJunctionEntriesFor(proposal, definition) {
+    const fallbackProfile = corridorProfileForRender(proposal, definition);
+    if (!fallbackProfile) return [];
+    const gradeSpans = (typeof gradeSeparationSpanRecords === 'function')
+        ? gradeSeparationSpanRecords(definition.gradeSeparations || [])
+        : [];
+    const out = [];
+    const entries = corridorRenderEntries(proposal, definition)
+        .filter(candidate => Array.isArray(candidate.points) && candidate.points.length >= 2)
+        .map(candidate => ({ ...candidate, profile: candidate.profile || fallbackProfile }));
+    // Pieces, not stretches: a zone that widens back to a junction arm carries that arm's
+    // profile at the node, so the junction is built at the width the road actually meets it.
+    let pieces = entries;
+    if (typeof corridorRenderPieces === 'function' && entries.length) {
+        try { pieces = corridorRenderPieces(entries, window.__corridorFootprint.frameForDefinition(definition), { junctions: definition.junctions }); } catch (error) { console.error('[corridor-render] pieces failed; junctions use the stretches', error); }
+    }
+    pieces.forEach(candidate => {
+        const runs = gradeSpans.length && typeof corridorSurfaceRuns === 'function'
+            ? corridorSurfaceRuns([candidate.points], gradeSpans)
+            : [candidate.points];
+        runs.forEach(points => {
+            if (Array.isArray(points) && points.length >= 2) out.push({ segmentId: candidate.segmentId, points, profile: candidate.profile });
+        });
+    });
+    return out;
+}
+
+// One keyed layer per junction in `junctionSet`, the set found over the corridors in `scope` and
+// their neighbours. Layers of junctions a scoped corridor takes part in are dropped and found
+// again; layers of junctions between untouched neighbours stay as they are. A key that the set no
+// longer contains but that still names a scoped corridor is a junction that no longer exists.
+function refreshCorridorJunctionLayers(junctionSet, scopeIds) {
     const state = corridorRenderState;
-    const scope = new Set(scopeIds.map(String));
+    const scope = new Set((scopeIds || []).map(String));
     if (!scope.size) return;
-    state.crossJunctions.forEach((group, key) => {
+    state.junctions.forEach((group, key) => {
         const ids = key.slice(0, key.indexOf('@')).split('|');
         if (!ids.some(id => scope.has(id))) return;
         if (state.root && state.root.hasLayer(group)) state.root.removeLayer(group);
-        state.crossJunctions.delete(key);
+        state.junctions.delete(key);
     });
-    if (typeof buildCrossCorridorJunctionTreatments !== 'function') return;
-    const scopedBoxes = Array.from(scope, id => state.byId.get(id)).filter(Boolean).map(entry => entry.bbox).filter(Boolean);
-    if (!scopedBoxes.length) return;
-    const PAD = 2e-5; // ~2 m in degrees, comfortably above the 0.75 m snap tolerance
-    const candidates = Array.from(state.byId.values())
-        .filter(entry => entry.renderedCorridors.length && entry.bbox && scopedBoxes.some(box => corridorBboxIntersects(box, entry.bbox, PAD)))
-        .sort((left, right) => left.id.localeCompare(right.id));
-    if (candidates.length < 2) return;
-    const treatments = buildCrossCorridorJunctionTreatments(candidates.flatMap(entry => entry.renderedCorridors));
-    treatments.forEach(treatment => {
+    (junctionSet || []).forEach(treatment => {
         const ids = Array.isArray(treatment.corridorIds) ? treatment.corridorIds.map(String) : [];
         if (!ids.some(id => scope.has(id))) return;
         const key = `${ids.join('|')}@${Number(treatment.lat).toFixed(6)},${Number(treatment.lng).toFixed(6)}`;
-        if (state.crossJunctions.has(key)) return;
+        if (state.junctions.has(key)) return;
         const group = L.layerGroup();
         renderCorridorJunctions([treatment], group, CORRIDOR_JUNCTIONS_PANE);
         state.root.addLayer(group);
-        state.crossJunctions.set(key, group);
+        state.junctions.set(key, group);
     });
 }
 
@@ -1059,23 +1161,51 @@ function refreshAppliedCorridorStrips() {
 
     const applied = proposalStorage.getAllProposals()
         .filter(isAppliedCorridorProposal)
-        .map(proposal => ({
-            proposal,
-            id: corridorKeyOf(proposal),
-            hash: corridorRenderHash(proposal, corridorProposalDefinition(proposal), corridorProfilePreview)
-        }));
+        .map(proposal => {
+            const definition = corridorProposalDefinition(proposal);
+            return { proposal, definition, id: corridorKeyOf(proposal), hash: corridorRenderHash(proposal, definition, corridorProfilePreview) };
+        });
     const previousHashes = new Map(Array.from(state.byId.values(), entry => [entry.id, entry.hash]));
-    const { removed, changed } = corridorRenderDiff(previousHashes, applied);
+    const { removed, changed: changedByDefinition } = corridorRenderDiff(previousHashes, applied);
     const appliedById = new Map(applied.map(item => [item.id, item]));
+
+    // Junctions before corridors: a corridor's lane lines stop at the stop lines of the junctions
+    // it meets, so the junction set is found first — over the corridors that changed and every
+    // corridor whose bbox touches one of them (a junction can only be where roads touch). A
+    // corridor whose junction signature moved because of a neighbour's edit rebuilds too.
+    const scopedBoxes = [...removed, ...changedByDefinition]
+        .map(id => (appliedById.get(id) ? corridorRenderBbox(appliedById.get(id).definition, corridorRenderEntries(appliedById.get(id).proposal, appliedById.get(id).definition)) : (state.byId.get(id) || {}).bbox))
+        .filter(Boolean);
+    const PAD = 2e-5; // ~2 m in degrees, comfortably above the 0.75 m snap tolerance
+    const candidates = scopedBoxes.length
+        ? applied.filter(item => {
+            if (changedByDefinition.includes(item.id)) return true;
+            const box = corridorRenderBbox(item.definition, corridorRenderEntries(item.proposal, item.definition));
+            return !!box && scopedBoxes.some(scoped => corridorBboxIntersects(scoped, box, PAD));
+        })
+        : [];
+    const junctionSet = (candidates.length && typeof buildCorridorJunctionSet === 'function')
+        ? buildCorridorJunctionSet(candidates.map(item => ({ corridorId: item.id, entries: corridorJunctionEntriesFor(item.proposal, item.definition) })))
+        : [];
+    const junctionsByCorridor = new Map();
+    junctionSet.forEach(treatment => (treatment.corridorIds || []).forEach(id => {
+        if (!junctionsByCorridor.has(String(id))) junctionsByCorridor.set(String(id), []);
+        junctionsByCorridor.get(String(id)).push(treatment);
+    }));
+    const changed = applied.filter(item => changedByDefinition.includes(item.id)
+        || (candidates.includes(item) && state.byId.has(item.id)
+            && state.byId.get(item.id).junctionSignature !== corridorJunctionSignature(item.id, junctionsByCorridor.get(item.id) || [])))
+        .map(item => item.id);
+
     removed.forEach(id => dropCorridorRender(id));
     changed.forEach(id => {
         dropCorridorRender(id);
-        const entry = buildCorridorRender(appliedById.get(id).proposal);
+        const entry = buildCorridorRender(appliedById.get(id).proposal, junctionsByCorridor.get(id) || []);
         entry.hash = appliedById.get(id).hash;
         state.byId.set(id, entry);
         state.root.addLayer(entry.group);
     });
-    refreshCrossCorridorJunctions([...removed, ...changed]);
+    refreshCorridorJunctionLayers(junctionSet, [...removed, ...changed]);
 
     if (removed.length || changed.length) {
         // Applied roads cut through parks/squares/lakes at render time — any corridor change
@@ -1154,5 +1284,5 @@ if (typeof window !== 'undefined') {
 
 // The pure pieces of the keyed render, for node tests; the browser never sees this.
 if (typeof module === 'object' && module.exports) {
-    module.exports = { corridorRenderHash, corridorRenderDiff, corridorBboxIntersects, corridorRenderBbox, corridorOwnerClass };
+    module.exports = { corridorRenderHash, corridorRenderDiff, corridorBboxIntersects, corridorRenderBbox, corridorOwnerClass, corridorJunctionSignature };
 }

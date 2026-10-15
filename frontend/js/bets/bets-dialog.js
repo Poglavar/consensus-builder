@@ -122,7 +122,7 @@
         if (found) return found;
         const fallback = { contest: null, row: {
             proposalAccount, proposalId: options.proposalId || null, id: options.id || null, title: options.title || '', author: null, agent: false,
-            createdAt: null, screenshotUrl: null, parcelIds: [], lifecycleStatus: options.lifecycleStatus || 'Active', state: 'open',
+            createdAt: null, screenshotUrl: null, parcelIds: [], lifecycleStatus: options.lifecycleStatus || 'Active', state: 'closed',
             chanceYes: null, chanceNo: null, oneSided: null, pool: null, poolAtomic: 0n, yesPoolAtomic: 0n, noPoolAtomic: 0n, outcome: null,
             paysYes: null, paysNo: null, closesAt: null, marketAddress: null, fromChain: true
         } };
@@ -131,11 +131,14 @@
         try {
             const summary = await chain.readSummary(proposalAccount);
             const market = summary && summary.market ? summary.market : null;
-            if (market) {
+            if (summary) {
+                const lifecycleStatus = summary.chainStatus || fallback.row.lifecycleStatus;
+                const active = lifecycleStatus === 'Active';
                 const entry = {
-                    proposalAccount, bettable: !market.resolved, lifecycleStatus: summary.chainStatus || fallback.row.lifecycleStatus,
-                    market: { address: summary.marketAddress, yesPool: market.yesPool, noPool: market.noPool, poolAtomic: BigInt(market.yesPool || 0) + BigInt(market.noPool || 0),
-                        resolved: Boolean(market.resolved), outcome: market.resolved ? (Number(market.outcome) === 1 ? 'yes' : 'no') : null }
+                    proposalAccount, lifecycleStatus, bettable: Boolean(market && !market.resolved && active),
+                    canOpenMarket: !market && active,
+                    market: market ? { address: summary.marketAddress, yesPool: market.yesPool, noPool: market.noPool, poolAtomic: BigInt(market.yesPool || 0) + BigInt(market.noPool || 0),
+                        resolved: Boolean(market.resolved), outcome: market.resolved ? (Number(market.outcome) === 1 ? 'yes' : 'no') : null } : null
                 };
                 fallback.row = { ...fallback.row, ...model().row(entry), title: fallback.row.title, proposalId: fallback.row.proposalId, id: fallback.row.id, fromChain: true };
             }

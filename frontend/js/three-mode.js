@@ -3332,14 +3332,38 @@
     // Terrain roads are explicit station-to-station quads. ShapeGeometry/Earcut is intentionally
     // not used here: it may discard collinear densification vertices and span a whole 200 m road
     // with one tilted triangle, which is exactly the floating-at-one-end failure this path fixes.
+    // The strips a terrain run draws: a stretch's spans as they are, a transition zone's spans
+    // as FUNCTIONS of the fraction along the run (buildRuledStripPositions takes either), sliding
+    // from the wide profile's offsets to the narrow one's — the 3D counterpart of the 2D taper.
+    function corridorTerrainStripsFor(entry) {
+        const taper = entry && entry.taper;
+        if (!taper || typeof window.__corridorTransition === 'undefined') return corridorStripSpans(entry.profile);
+        const startIsWide = taper.widthStart >= taper.widthEnd;
+        const wide = startIsWide ? taper.profileStart : taper.profileEnd;
+        const narrow = startIsWide ? taper.profileEnd : taper.profileStart;
+        const wideSpans = corridorStripSpans(wide);
+        const mapped = window.__corridorTransition.mapSpans(wideSpans, corridorStripSpans(narrow));
+        return wideSpans.map((span, index) => {
+            const other = mapped[index];
+            const from = startIsWide ? span : other;
+            const to = startIsWide ? other : span;
+            if (Math.abs(from.left - from.right) < 1e-6 && Math.abs(to.left - to.right) < 1e-6) return null;
+            return {
+                ...span,
+                left: s => from.left + (to.left - from.left) * s,
+                right: s => from.right + (to.right - from.right) * s
+            };
+        }).filter(Boolean);
+    }
+
     function addTerrainStrip3D(targetGroup, formationProfile, strip, lane, laneType) {
         const helper = window.__corridorTerrainFormation;
         if (!helper || !formationProfile) return false;
         const kerb = Math.max(0, Number(lane && lane.height) || 0);
         const ruled = helper.buildRuledStripPositions(
             formationProfile,
-            Number(strip.left),
-            Number(strip.right),
+            typeof strip.left === 'function' ? strip.left : Number(strip.left),
+            typeof strip.right === 'function' ? strip.right : Number(strip.right),
             CORRIDOR_STRIP_Z,
             kerb
         );
@@ -3754,6 +3778,9 @@
         targetGroup.add(trunks, crowns);
     }
 
+    // A junction in 3D (corridor-profile.js junctionTreatmentFor): the carriageway surface as a
+    // sheet just above the strips it covers, the footway corners as kerb-high slabs in their own
+    // footway's material, then the paint — stop lines and zebras.
     function addCorridorJunctions3D(targetGroup, junctions, terrainHeightAt) {
         const asphalt = corridorLaneMaterial('driving');
         const white = new THREE.MeshBasicMaterial({ color: 0xffffff });
@@ -3765,6 +3792,27 @@
                     terrainZ + CORRIDOR_STRIP_Z + 0.16, 0)
                     .forEach(mesh => {
                         mesh.userData.isCorridorJunction = true;
+                        targetGroup.add(mesh);
+                    });
+            });
+            (junction.cornerPolygons || []).forEach(corner => {
+                const strip = corner.strip || { type: 'sidewalk' };
+                const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
+                const kerb = Number(lane.height) || 0;
+                corridorStripMeshes3D(corridorStripToFeature(corner.polygon), corridorLaneMaterial(strip.type, strip.paving),
+                    terrainZ + CORRIDOR_STRIP_Z + 0.161, kerb)
+                    .forEach(mesh => {
+                        mesh.userData.isCorridorJunction = true;
+                        mesh.userData.laneType = strip.type;
+                        targetGroup.add(mesh);
+                    });
+            });
+            (junction.stopLinePolygons || []).forEach(polygon => {
+                polygonFeatureToMeshes(corridorStripToFeature(polygon), white,
+                    terrainZ + CORRIDOR_STRIP_Z + 0.17, 0)
+                    .forEach(mesh => {
+                        markOwnedMaterial(mesh, white);
+                        mesh.userData.isCorridorCrosswalk = true;
                         targetGroup.add(mesh);
                     });
             });
@@ -3863,15 +3911,17 @@
             (marking.lines || []).forEach(line => addCorridorMarkingPolyline(
                 positions, line, half, dash, terrainHeightAt));
         });
-        const bays = (typeof buildCorridorParkingBays === 'function')
-            ? buildCorridorParkingBays([entry.points], entry.profile, entry.frame) : [];
+        const furniture = { trims: entry.junctionTrims || null };
+        // A transition zone paints its lines only (above); bays and arrows follow a constant profile.
+        const bays = (!entry.taper && typeof buildCorridorParkingBays === 'function')
+            ? buildCorridorParkingBays([entry.points], entry.profile, entry.frame, furniture) : [];
         bays.forEach(bay => addCorridorMarkingPolyline(
             positions, bay.line, bay.kind === 'edge' ? 0.075 : 0.06, null, terrainHeightAt));
 
         // Direction arrows arrive as convex rings; a fan from vertex 0 triangulates each into the same
         // flat white mesh as the lines.
-        const arrows = (typeof buildCorridorDirectionArrows === 'function')
-            ? buildCorridorDirectionArrows([entry.points], entry.profile, entry.frame) : [];
+        const arrows = (!entry.taper && typeof buildCorridorDirectionArrows === 'function')
+            ? buildCorridorDirectionArrows([entry.points], entry.profile, entry.frame, furniture) : [];
         arrows.forEach(ring => {
             const pts = ring.map(point => latLngToXY(point.lat, point.lng));
             for (let i = 1; i < pts.length - 1; i++) {
@@ -4237,7 +4287,10 @@
             ? options.terrainReferences : new Map();
 
         const renderFlatSurface = function (points, entry) {
-            buildCorridorStrips([points], entry.profile, entry.frame).forEach(strip => {
+            const flatStrips = (entry.taper && typeof buildCorridorPieceStrips === 'function')
+                ? buildCorridorPieceStrips({ ...entry, points }, entry.frame)
+                : buildCorridorStrips([points], entry.profile, entry.frame);
+            flatStrips.forEach(strip => {
                 // Rail lanes render as real track in the existing-tram style, not a flat strip.
                 if (strip.type === 'rail') { addProposalTrack3D(targetGroup, points, strip); return; }
                 const lane = (typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES[strip.type]) || {};
@@ -4265,20 +4318,61 @@
             });
         };
 
+        // Every junction once, own and shared alike, from ONE set over every applied corridor —
+        // exactly what the 2D map draws (corridor-render.js): the junction's corner geometry, and
+        // for each road where its lane lines stop. Grade-separated spans cross in plan but are not
+        // junctions, so they are left out of the arms, as in 2D.
+        const corridorKeyOf3D = proposal => (proposal && proposal.proposalId != null ? String(proposal.proposalId) : 'proposal');
+        const junctionsByCorridor = new Map();
+        let junctionSet = [];
+        if (typeof buildCorridorJunctionSet === 'function') {
+            try {
+                junctionSet = buildCorridorJunctionSet(proposalStorage.getAllProposals().filter(isAppliedCorridorProposal).map(proposal => {
+                    const definition = corridorProposalDefinition(proposal);
+                    const gradeSpans = (typeof gradeSeparationSpanRecords === 'function')
+                        ? gradeSeparationSpanRecords(definition.gradeSeparations || []) : [];
+                    const entries = [];
+                    const frameFor = window.__corridorFootprint.frameForDefinition(definition);
+                    const piecesFor = (typeof corridorRenderPieces === 'function')
+                        ? corridorRenderPieces(corridorRenderEntriesForDefinition(definition), frameFor, { junctions: definition.junctions })
+                        : corridorRenderEntriesForDefinition(definition);
+                    piecesFor.forEach(entry => {
+                        const runs = gradeSpans.length && typeof corridorSurfaceRuns === 'function'
+                            ? corridorSurfaceRuns([entry.points], gradeSpans) : [entry.points];
+                        runs.forEach(points => {
+                            if (Array.isArray(points) && points.length >= 2) entries.push({ segmentId: entry.segmentId, points, profile: entry.profile });
+                        });
+                    });
+                    return { corridorId: corridorKeyOf3D(proposal), entries };
+                }));
+            } catch (error) {
+                console.error('[three-mode] junction set failed; roads draw without junctions', error);
+                junctionSet = [];
+            }
+            junctionSet.forEach(treatment => (treatment.corridorIds || []).forEach(id => {
+                if (!junctionsByCorridor.has(String(id))) junctionsByCorridor.set(String(id), []);
+                junctionsByCorridor.get(String(id)).push(treatment);
+            }));
+        }
+
         proposalStorage.getAllProposals().filter(isAppliedCorridorProposal).forEach(proposal => {
             try {
             const definition = corridorProposalDefinition(proposal);
             const fallbackProfile = corridorProfileOf(definition);
             const centerline = corridorCenterlineOf(definition);
             if (!fallbackProfile || !centerline.length) return;
+            const corridorJunctions = junctionsByCorridor.get(corridorKeyOf3D(proposal)) || [];
 
             // Per-segment cross-sections, same as the 2D renderer: each segment draws with ITS
             // profile (width, lanes, tree groves). Rendering the whole centerline with the
             // default profile flattened every network to one width and dropped override-only
             // lanes (a segment's tree grove never made it into 3D).
-            const renderEntries = corridorRenderEntriesForDefinition(definition);
             // Everything this corridor draws is measured in its own frame (projections.md §2).
             const frame = window.__corridorFootprint.frameForDefinition(definition);
+            // Pieces, as in 2D: a stretch's body plus its transition zones (corridorRenderPieces).
+            const renderEntries = (typeof corridorRenderPieces === 'function')
+                ? corridorRenderPieces(corridorRenderEntriesForDefinition(definition), frame, { junctions: definition.junctions })
+                : corridorRenderEntriesForDefinition(definition);
             renderEntries.forEach(entry => { entry.frame = frame; });
             if (terrainMode && terrainExpectedKeysOut) {
                 renderEntries.forEach(function (entry) {
@@ -4394,7 +4488,7 @@
                 ? function (x, y) { return terrainHeightFromProfiles(proposalTerrainProfiles, x, y); }
                 : null;
             const surfaceMarkingsByEntry = (typeof buildCorridorLaneMarkingsForEntries === 'function')
-                ? buildCorridorLaneMarkingsForEntries(surfaceRenderEntries, frame)
+                ? buildCorridorLaneMarkingsForEntries(surfaceRenderEntries, frame, { junctions: corridorJunctions })
                 : surfaceRenderEntries.map(surfaceEntry => (
                     buildCorridorLaneMarkings([surfaceEntry.points], surfaceEntry.profile, frame)
                 ));
@@ -4407,7 +4501,7 @@
                         ? function (x, y) { return window.__corridorTerrainFormation.heightAt(runFormation, x, y); }
                         : null;
                     if (runFormation && typeof corridorStripSpans === 'function') {
-                        corridorStripSpans(entry.profile).forEach(strip => {
+                        corridorTerrainStripsFor(entry).forEach(strip => {
                             // A rail lane is drawn as real track, in the existing-tram style, riding
                             // the corridor terrain (runFormation) so it sits on the road in photo mode.
                             if (strip.type === 'rail') { addProposalTrack3D(targetGroup, points, strip, runFormation); return; }
@@ -4422,13 +4516,16 @@
                         // one run retains the established flat rendering instead of diving to datum.
                         renderFlatSurface(points, entry);
                     }
-                    const decorations = (typeof buildCorridorDecorations === 'function')
+                    const decorations = (!entry.taper && typeof buildCorridorDecorations === 'function')
                         ? buildCorridorDecorations([points], entry.profile, frame) : [];
                     addCorridorDecorations3D(targetGroup, decorations, runTerrainHeightAt);
                     addCorridorMarkings3D(targetGroup, {
                         ...entry,
                         points,
-                        markings: surfaceMarkingsByEntry[recordIndex] || []
+                        markings: surfaceMarkingsByEntry[recordIndex] || [],
+                        junctionTrims: (typeof corridorEntryJunctionTrims === 'function' && corridorJunctions.length)
+                            ? corridorEntryJunctionTrims(points.map(point => frame.latLngToMetric(point.lat, point.lng)), corridorJunctions, frame)
+                            : null
                     }, runTerrainHeightAt);
 
                     // The shader cut uses the exact successful run formation that produced the
@@ -4450,18 +4547,25 @@
             });
             addGradeSeparatedCorridors3D(
                 targetGroup, definition, renderEntries, fallbackProfile, proposalTerrainHeightAt);
-            // Junction patches sized per arm cover the seams where different widths meet.
-            const junctions = (typeof buildCorridorJunctionTreatmentsForEntries === 'function')
-                ? buildCorridorJunctionTreatmentsForEntries(surfaceRenderEntries, frame)
-                : ((typeof buildCorridorJunctionTreatments === 'function')
-                    ? buildCorridorJunctionTreatments(centerline, fallbackProfile, frame) : []);
-            addCorridorJunctions3D(targetGroup, junctions, proposalTerrainHeightAt);
             } catch (error) {
                 // One corrupt road must not strip the asphalt off EVERY road in 3D (the 2D renderer
                 // already isolates per-proposal failures the same way).
                 console.error('[three-mode] corridor strips failed for proposal', proposal?.proposalId, error);
             }
         });
+
+        // Junctions once each, over the roads that meet there — the corner geometry covers the
+        // seams where different widths meet and where the strips of two roads overlap.
+        if (junctionSet.length) {
+            const junctionTerrainHeightAt = terrainProfilesOut.length
+                ? function (x, y) { return terrainHeightFromProfiles(terrainProfilesOut, x, y); }
+                : null;
+            try {
+                addCorridorJunctions3D(targetGroup, junctionSet, junctionTerrainHeightAt);
+            } catch (error) {
+                console.error('[three-mode] junctions failed', error);
+            }
+        }
 
         // Track surfaces use a different renderer, but building-tunnel metadata is common to both
         // corridor kinds, so liners are added in a second pass over every applied corridor proposal.

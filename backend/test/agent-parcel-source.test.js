@@ -166,14 +166,8 @@ const live = process.env.RUN_DB_TESTS === '1' ? describe : describe.skip;
 
 live('fetchCandidateParcels against the real database', () => {
     it('returns Zagreb parcels in the persona bbox with rules resolved', async () => {
-        const { default: pg } = await import('pg');
-        const pool = new pg.Pool({
-            host: process.env.PGHOST || 'localhost',
-            port: Number(process.env.PGPORT) || 5432,
-            user: process.env.PGUSER,
-            password: process.env.PGPASSWORD,
-            database: process.env.PGDATABASE || 'geodata'
-        });
+        const { createPool } = await import('../db/connection.cjs');
+        const pool = createPool();
         try {
             const parcels = await fetchCandidateParcels(pool, {
                 city: 'zagreb',

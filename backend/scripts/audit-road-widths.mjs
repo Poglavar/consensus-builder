@@ -11,7 +11,7 @@
 // Nothing is written anywhere except the report files.
 //
 //   node scripts/audit-road-widths.mjs --help
-//   PGHOST=127.0.0.1 node scripts/audit-road-widths.mjs --db --out /tmp/road-widths-local.md
+//   node scripts/audit-road-widths.mjs --db --out /tmp/road-widths-local.md
 //   node scripts/audit-road-widths.mjs --input rows.json --label production --out /tmp/road-widths-prod.md
 
 import { createRequire } from 'node:module';
@@ -19,7 +19,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import vm from 'node:vm';
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createClient } from '../db/connection.cjs';
 import proj4 from 'proj4';
 
 const require = createRequire(import.meta.url);
@@ -34,10 +34,9 @@ const USAGE = `Usage: node scripts/audit-road-widths.mjs (--db | --input <rows.j
 Measures the land polygon of every stored road proposal against its declared width. Read-only.
 
 Source (exactly one):
-  --db                   read the road rows of --table from the database named by the PG* environment;
-                         backend/.env fills in what the environment leaves unset (its PGHOST=db is the
-                         docker service name, so from the host run with PGHOST=127.0.0.1). The session
-                         is opened with default_transaction_read_only=on.
+  --db                   read the road rows of --table from the database named by DATABASE_URL
+                         (backend/.env unless already exported). The session is opened with
+                         default_transaction_read_only=on.
   --input <rows.json>    a JSON array of rows {id, proposal_id, city, created_at, lifecycle_status,
                          road_proposal}, e.g. the output of
                            SELECT json_agg(json_build_object('id', id, ..., 'road_proposal', road_proposal))
@@ -580,7 +579,7 @@ function parseArgs(argv) {
 async function readRowsFromDb(table) {
     if (!/^[a-z_][a-z0-9_]*\.[a-z_][a-z0-9_]*$/.test(table)) throw new Error(`--table must be schema.table, got ${table}`);
     dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
-    const client = new pg.Client({ options: '-c default_transaction_read_only=on' });
+    const client = createClient({ options: '-c default_transaction_read_only=on' });
     await client.connect();
     try {
         const { rows } = await client.query(`SELECT id, proposal_id, city, created_at, lifecycle_status, road_proposal

@@ -1,7 +1,7 @@
 // Source exclusion and retention behavior against isolated PostgreSQL temporary tables.
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createClient } from '../db/connection.cjs';
 import { fileURLToPath } from 'node:url';
 import { enqueue, saveObservation } from '../floor-plans/archive.js';
 import { discoverTargets } from '../floor-plans/crawler.js';
@@ -57,10 +57,7 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST === '1')('floor-plan sour
 
     beforeAll(async () => {
         dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
-        const connectionUrl = process.env.DATABASE_URL ? new URL(process.env.DATABASE_URL) : null;
-        if (connectionUrl) { connectionUrl.hostname = '127.0.0.1'; connectionUrl.port = '5432'; }
-        client = new pg.Client({
-            connectionString: connectionUrl?.href, host: '127.0.0.1', port: 5432,
+        client = createClient({
             connectionTimeoutMillis: 5000, statement_timeout: 5000,
             application_name: 'floor-plan-source-policy-tests'
         });

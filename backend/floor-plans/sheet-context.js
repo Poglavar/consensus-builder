@@ -6,6 +6,7 @@ import { fingerprint } from '../buildings/floor-models.js';
 import { runBatchStage } from './batch-worker.js';
 import { renderImageForClassification } from './image-reading.js';
 import { sitePlans } from './site-model.js';
+import { projectInventory } from './project-inventory.js';
 
 export const SHEET_PROCESSOR = 'sheet-context-v1';
 const object = properties => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
@@ -71,7 +72,16 @@ export function parseSheetContext(raw) {
     };
 }
 
-// Queue every plan sheet and envelope image of a listing's site that has no current reading.
+// Originals follow the same primary-source choice as the apartment catalogue. Geometry and
+// explicit whole-floor sheets retain their own placement context even when another source wins.
+export function selectSheetPlans(postings, plans) {
+    const selected = new Set(projectInventory(postings, plans).apartments.filter(apartment => apartment.hasPlan)
+        .map(apartment => apartment.planId));
+    return plans.filter(plan => selected.has(plan.id) || plan.model?.scope === 'floor'
+        || (plan.kind !== 'original' && Boolean(plan.model?.architecture)));
+}
+
+// Queue selected apartment plans, whole-floor sheets and envelope images without a current reading.
 export async function enqueueSheetTasks(db, { listingUrls = null, limit = 100, deadline = Infinity } = {}) {
     if (listingUrls === null) listingUrls = (await db.query(`SELECT DISTINCT l.url FROM floor_plan.listing l
         CROSS JOIN LATERAL jsonb_array_elements(l.asset_urls) a
@@ -85,6 +95,8 @@ export async function enqueueSheetTasks(db, { listingUrls = null, limit = 100, d
     if (!Array.isArray(listingUrls)) throw new Error('Sheet context needs listing URLs.');
     if (!listingUrls.length) return { sources: 0, enqueued: 0, reused: 0, deferred: 0 };
     const plans = await sitePlans(db, listingUrls);
+    const postings = (await db.query(`SELECT url, facts FROM floor_plan.listing WHERE url = ANY($1::text[])`, [listingUrls])).rows;
+    const selectedPlans = selectSheetPlans(postings, plans);
     const envelope = (await db.query(`SELECT DISTINCT ON (t.current_sha256) t.current_sha256 AS sha256, t.url AS source_url, l.url AS listing_url
         FROM floor_plan.listing l, jsonb_array_elements(l.asset_urls) a
         JOIN floor_plan.target t ON t.url = a->>'url' AND t.kind = 'asset'
@@ -92,7 +104,7 @@ export async function enqueueSheetTasks(db, { listingUrls = null, limit = 100, d
         WHERE l.url = ANY($1::text[]) AND (a->>'listingOwned')::boolean AND t.image_kind = 'envelope'
         ORDER BY t.current_sha256, l.url`, [listingUrls])).rows;
     const sources = new Map();
-    for (const row of plans) if (row.sha256 && !sources.has(row.sha256)) sources.set(row.sha256, { listing: row.listing_url, url: row.model?.source?.url || null });
+    for (const row of selectedPlans) if (row.sha256 && !sources.has(row.sha256)) sources.set(row.sha256, { listing: row.listing_url, url: row.model?.source?.url || null });
     for (const row of envelope) if (!sources.has(row.sha256)) sources.set(row.sha256, { listing: row.listing_url, url: row.source_url });
     let enqueued = 0, reused = 0, deferred = 0;
     for (const [sha256, source] of sources) {

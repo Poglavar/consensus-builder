@@ -45,6 +45,8 @@ OUTPUT_SCHEMA = {
     "required": ["taskId", "status", "changedFiles", "testEvidence", "qualificationEvidence", "summary"],
 }
 ALLOWED_CHANGE_ROOTS = ("backend/parcels/", "backend/test/")
+REQUIRED_QUALIFICATION_CHECKS = ("classification", "exactIds", "stableGeometry", "explicitAbsence",
+                                "sampling", "completeness", "binding", "metric", "alignment")
 BLOCKED_ADAPTER_RE = re.compile(
     r"\b(?:(?:adapter|protocol|implementation)\s+(?:is\s+)?(?:missing|unsupported|not supported|unimplemented|not implemented)|"
     r"(?:missing|no|unsupported|not supported|unimplemented|not implemented)\s+(?:the\s+)?(?:production\s+)?(?:adapter|implementation))\b", re.I)
@@ -196,12 +198,13 @@ Ownership and safety:
 - Write production changes only under `backend/parcels/`; write tests only under `backend/test/` using node:test so the independent headless runner can execute them. Do not install into or mutate a shared node_modules symlink. Keep personal names and home paths out of committable code.
 - Never edit city configs, source catalog, research packets, app/runtime files, or anything under the qualification worktree.
 - Preserve existing adapter behavior. Use schema/metadata-first inspection and safe native ID plus geometry fields only; never request or save owner, address, tax/account, or other personal fields.
+- Treat native CRS alignment as a required qualification gate. Preserve unchanged native geometry; save first-party metadata, explicit native CRS and wire axis order, a hash-bound native sample, and a verifiable published datum/coordinate operation with required grids available. No OSM/basemap fit, estimated/applied offset or translation, ballpark transform, or guessed/missing grid; hold if evidence is incomplete.
 - Bound live queries and downloads. Do not bypass authentication, CAPTCHA, throttles, or access controls. Do not repair, simplify, clip, union, or silently drop source geometry.
 - Add unit tests for protocol parsing, safe identity, paging/limits, errors, and any source-specific edge case. Run focused tests and report exact commands/results.
 - Verify every source seed SHA-256 before and after use. Keep each seed candidate read-only. When the new adapter or verified source profile needs descriptor changes, derive a candidate under `{attempt_dir}/qualification/<cityCode>/candidate-derived.json`, changing only the adapter-specific descriptor fields needed by the new implementation. Preserve all frozen source/city/identity fields. Save a sibling `candidate-provenance.json` with seed path/hash, derived path/hash, sourceId and the exact descriptor changes. Never edit the seed.
 - For every seed candidate, run the repository qualifier below using the newly implemented adapter from this worktree, writing output only below `{attempt_dir}/qualification/<cityCode>/evidence/`. Use the derived candidate when descriptor changes are needed; otherwise use the frozen seed:
   `node {qualifier} --candidate <candidate path> --output {attempt_dir}/qualification/<cityCode>/evidence --metric-script {repo / "scripts/parcel-qualification-metric.py"}`
-- Save the command, exit code, and live result. Create `{attempt_dir}/qualification-manifest.json` with one entry per seed: `cityCode`, `seedPath`, `seedSha256`, `candidateUsedPath`, `candidateUsedSha256`, `qualificationPath`, `qualifierExitCode`, `qualificationStatus`. Include that manifest and each qualification JSON in `qualificationEvidence`. If a source is genuinely blocked, retain bounded request/response/error and failed qualification output. Do not label an adapter missing-code error as blocked-source.
+- Save the command, exit code, and live result. Create `{attempt_dir}/qualification-manifest.json` with `requiredChecks` exactly `classification`, `exactIds`, `stableGeometry`, `explicitAbsence`, `sampling`, `completeness`, `binding`, `metric`, `alignment`, and one entry per seed: `cityCode`, `seedPath`, `seedSha256`, `candidateUsedPath`, `candidateUsedSha256`, `qualificationPath`, `qualifierExitCode`, `qualificationStatus`. Include that manifest, each qualification JSON, and each available alignment evidence pack, metadata, native sample, and report in `qualificationEvidence`. A `built` result requires schemaVersion 2 and every listed gate, including independently recomputed alignment. If a source is genuinely blocked, retain bounded request/response/error and failed qualification output. Do not label an adapter missing-code error as blocked-source.
 - Do not commit, push, deploy, or alter unrelated existing edits. Report every file changed by this task, including any files changed by an earlier retry.
 
 Return exactly JSON matching the provided schema. `built` requires actual adapter implementation, passing tests, and saved live source qualification evidence. `blocked-source` requires source-grounded evidence of a genuine block and must explain why adapter implementation alone cannot resolve it.
@@ -214,6 +217,102 @@ def find_qualifier(repo: Path, qual_root: Path) -> Path:
                   repo / "scripts/qualify-source.mjs",
                   qual_root / "scripts/qualify-source.mjs"]
     return next((path.resolve() for path in candidates if path.is_file()), candidates[0].resolve())
+
+
+def verify_saved_alignment(qualification: dict[str, Any], candidate: dict[str, Any], candidate_path: Path,
+                          qualification_path: Path, task: dict[str, Any],
+                          seed: dict[str, Any]) -> tuple[bool, str]:
+    """Hash-check saved native evidence, then recompute its published CRS operation independently."""
+    try:
+        evidence_dir = qualification_path.parent
+        evidence_path = evidence_dir / "alignment-evidence.json"
+        evidence_bytes = evidence_path.read_bytes()
+        evidence = json.loads(evidence_bytes)
+        check = qualification.get("checks", {}).get("alignment", {})
+        contract_sha = check.get("contractSha256")
+        source_id = task["sourceId"]
+        city_code = str(seed["cityCode"])
+        if (evidence.get("sourceId") != source_id or str(evidence.get("cityCode")) != city_code
+                or not isinstance(contract_sha, str) or evidence.get("contractSha256") != contract_sha):
+            return False, "evidence source/city/coordinate contract mismatch"
+        if any(key in evidence for key in ("offset", "translation", "fit", "correction", "towgs84")):
+            return False, "empirical coordinate correction is present"
+
+        def verify_input(file_key: str, hash_key: str) -> tuple[Path, str]:
+            value = evidence.get(file_key)
+            if not isinstance(value, str) or Path(value).is_absolute():
+                raise ValueError(f"{file_key} must be a relative evidence path")
+            path = safe_under(evidence_dir, value)
+            digest = file_sha256(path)
+            if digest != evidence.get(hash_key):
+                raise ValueError(f"{file_key} SHA-256 mismatch")
+            return path, digest
+
+        _, metadata_sha = verify_input("metadataFile", "metadataSha256")
+        _, native_sha = verify_input("nativeFile", "nativeSha256")
+        if not evidence.get("metadataUrl", "").startswith("https://"):
+            return False, "first-party metadata URL is missing"
+        cache_value = qualification.get("cacheFile")
+        if not isinstance(cache_value, str):
+            return False, "qualification cache path is missing"
+        cache_path = safe_under(evidence_dir, cache_value)
+        cache_sha = file_sha256(cache_path)
+        if cache_sha != qualification.get("cacheSha256"):
+            return False, "full-safe cache SHA-256 mismatch"
+
+        reference = candidate.get("alignmentEvidence")
+        if reference is not None:
+            if not isinstance(reference, dict) or not isinstance(reference.get("file"), str):
+                return False, "candidate alignmentEvidence reference is malformed"
+            original_path = safe_under(candidate_path.parent, reference["file"])
+            original_bytes = original_path.read_bytes()
+            original = json.loads(original_bytes)
+            if (hashlib.sha256(original_bytes).hexdigest() != reference.get("sha256")
+                    or original.get("sourceId") != source_id or str(original.get("cityCode")) != city_code
+                    or original.get("contractSha256") != contract_sha
+                    or original.get("metadataSha256") != metadata_sha
+                    or original.get("nativeSha256") != native_sha):
+                return False, "candidate hash-bound native evidence differs from saved qualification pack"
+            for file_key, hash_key in (("metadataFile", "metadataSha256"), ("nativeFile", "nativeSha256")):
+                original_input = safe_under(original_path.parent, original.get(file_key, ""))
+                if file_sha256(original_input) != original.get(hash_key):
+                    return False, f"candidate {file_key} SHA-256 mismatch"
+
+        report_value = qualification.get("alignmentReport")
+        if not isinstance(report_value, str) or not report_value:
+            return False, "qualification alignmentReport path is missing"
+        saved_report = json.loads(safe_under(evidence_dir, report_value).read_text())
+        with tempfile.TemporaryDirectory(prefix="parcel-alignment-check-") as temp_dir:
+            independent_path = Path(temp_dir) / "independent-alignment-report.json"
+            command = [sys.executable, str(SCRIPT.with_name("parcel-alignment-check.py")), str(evidence_path),
+                       str(cache_path), str(independent_path), "--source-id", source_id,
+                       "--city-code", city_code, "--contract-sha256", contract_sha]
+            run = subprocess.run(command, capture_output=True, text=True, timeout=120)
+            independent = json.loads(independent_path.read_text()) if independent_path.is_file() else {}
+        if run.returncode != 0 or independent.get("passed") is not True:
+            return False, "independent coordinate-operation recomputation failed"
+        native_crs, axis_order = evidence.get("nativeCrs"), evidence.get("nativeAxisOrder")
+        for report in (saved_report, independent):
+            if (report.get("passed") is not True or report.get("sourceId") != source_id
+                    or str(report.get("cityCode")) != city_code or report.get("contractSha256") != contract_sha
+                    or report.get("evidenceSha256") != hashlib.sha256(evidence_bytes).hexdigest()
+                    or report.get("metadataSha256") != metadata_sha or report.get("nativeSha256") != native_sha
+                    or report.get("cacheSha256") != cache_sha or report.get("nativeCrs") != native_crs
+                    or report.get("nativeAxisOrder") != axis_order
+                    or not isinstance(report.get("coordinateOperation"), str)
+                    or not report["coordinateOperation"].strip()
+                    or not isinstance(report.get("operationPipeline"), str)
+                    or not report["operationPipeline"].strip()
+                    or report.get("bestOperationAvailable") is not True or report.get("ballparkAllowed") is not False
+                    or report.get("sourceGeometryChanged") is not False or report.get("fittedOffsetApplied") is not False):
+                return False, "alignment report is incomplete, unbound, or uses an inferred transform"
+        if not re.fullmatch(r"EPSG:\d+", native_crs or "") or axis_order not in {"east-north", "north-east"}:
+            return False, "explicit native CRS or wire axis order is missing"
+        if check.get("passed") is not True:
+            return False, "qualification alignment gate did not pass"
+        return True, "alignment evidence hashes and coordinate operation independently verified"
+    except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError, subprocess.TimeoutExpired) as exc:
+        return False, f"{type(exc).__name__}: {exc}"
 
 
 def output_is_valid(value: Any, task_id: str, attempt_dir: Path) -> tuple[bool, str]:
@@ -290,6 +389,8 @@ def verify_qualification_manifest(value: dict[str, Any], task: dict[str, Any], a
         rows = manifest.get("seeds") if isinstance(manifest, dict) else None
         if manifest.get("taskId") != task["taskId"] or manifest.get("sourceId") != task["sourceId"]:
             return False, "qualification manifest task/source identity mismatch", []
+        if manifest.get("requiredChecks") != list(REQUIRED_QUALIFICATION_CHECKS):
+            return False, "qualification manifest omits the required alignment gate", []
         if not isinstance(rows, list) or len(rows) != len(task["qualificationSeeds"]):
             return False, "qualification manifest does not cover every frozen seed", []
         qualification_statuses = []
@@ -346,12 +447,40 @@ def verify_qualification_manifest(value: dict[str, Any], task: dict[str, Any], a
                 or not isinstance(qualification.get("requestCount"), int)
                     or qualification.get("requestCount", 0) < 1):
                 return False, f"saved live qualification does not bind to candidate/source/requests for city {seed['cityCode']}", []
+            if qualification.get("schemaVersion") != 2:
+                return False, f"saved live qualification schemaVersion 2 is required for city {seed['cityCode']}", []
+            if row.get("qualificationStatus") != qualification.get("status"):
+                return False, f"qualification manifest status mismatch for city {seed['cityCode']}", []
+            checks = qualification["checks"]
+            if "alignment" not in checks:
+                return False, f"qualification is missing the required alignment gate for city {seed['cityCode']}", []
+            if value["status"] == "built" and any(
+                    not isinstance(checks.get(key), dict) or checks[key].get("passed") is not True
+                    for key in REQUIRED_QUALIFICATION_CHECKS):
+                return False, f"built result requires every qualification gate including alignment for city {seed['cityCode']}", []
+            if (qualification.get("status") == "technical-qualified"
+                    or checks["alignment"].get("passed") is True
+                    or qualification.get("alignmentReport")):
+                alignment_ok, alignment_reason = verify_saved_alignment(
+                    qualification, used_candidate, used_path, qpath, task, seed)
+                if not alignment_ok:
+                    return False, f"alignment artifacts invalid for city {seed['cityCode']}: {alignment_reason}", []
+                if value["status"] == "built":
+                    listed = {Path(path).as_posix() for path in value["qualificationEvidence"]}
+                    evidence_prefix = Path(qpath_value).parent
+                    required_artifacts = {
+                        Path(qpath_value).as_posix(),
+                        (evidence_prefix / "alignment-evidence.json").as_posix(),
+                        (evidence_prefix / "alignment-metadata.json").as_posix(),
+                        (evidence_prefix / "alignment-native.json").as_posix(),
+                        (evidence_prefix / qualification["alignmentReport"]).as_posix(),
+                        (evidence_prefix / qualification["cacheFile"]).as_posix(),
+                    }
+                    if not required_artifacts.issubset(listed):
+                        return False, f"built result omits alignment pack, metadata, native sample, report, or cache for city {seed['cityCode']}", []
             if row.get("qualifierExitCode") not in {0, 1, 2}:
                 return False, f"qualifier exit code missing for city {seed['cityCode']}", []
             qualification_statuses.append(str(qualification.get("status", "unknown")))
-            if value["status"] == "built" and any(qualification["checks"].get(k, {}).get("passed") is not True
-                    for k in ("classification", "exactIds", "stableGeometry", "explicitAbsence", "sampling", "completeness", "binding", "metric")):
-                return False, "built result has an unpassed technical gate", []
             if value["status"] == "built" and (row.get("qualifierExitCode") != 0
                     or qualification.get("status") != "technical-qualified"):
                 return False, f"built result requires a passing technical qualification for city {seed['cityCode']}", []

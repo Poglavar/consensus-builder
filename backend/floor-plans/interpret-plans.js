@@ -14,11 +14,36 @@ import { sourceGeometry } from './source-geometry.js';
 import {runBatchStage,reservationUsd,budgetUsed} from './batch-worker.js';
 import {locatedListingSql,LOCATED_PLAN_TASK_SQL} from './building-location.js';
 import { readBlob } from './blob-store.js';
+import { listingUnitId, selectListingUnitReading, sourceUnitMatches } from './original-plan-sources.js';
 
 const exec=promisify(execFile);
 export function taskContext(row) {
     const facts=row.facts||{};
-    return {listingUrl:row.listing_url||row.url,facts:{floor:facts.floor??null,unitId:facts.unitId??null,areaM2:facts.areaM2??null}};
+    const listingUrl=row.listing_url||row.url;
+    return {listingUrl,facts:{floor:facts.floor??null,unitId:listingUnitId(facts,listingUrl),areaM2:facts.areaM2??null}};
+}
+class PaidGeometryValidationError extends Error {
+    constructor(cause) {
+        super(`Paid model geometry failed validation: ${cause.message}`,{cause});
+        this.name='PaidGeometryValidationError';
+    }
+}
+function isPaidGeometryValidationError(error) {
+    return error instanceof Error&&(
+        error.message==='Geometry exceeds the measured source frame.'
+        ||error.message==='Slab boundary contains a point that is not a measured source anchor.'
+        ||error.message==='Selected geometry is outside the source image.'
+        ||/^architecture\.[a-z][a-zA-Z]*:/.test(error.message));
+}
+function parsePaidReading(item,task,image) {
+    try {
+        const raw=typeof item.data==='string'?JSON.parse(item.data):item.data??JSON.parse(item.text);
+        return parseReading(JSON.stringify(selectListingUnitReading(raw,task.context.facts?.unitId)),task,
+            {...image,model:item.model});
+    } catch(error) {
+        if(!isPaidGeometryValidationError(error))throw error;
+        throw new PaidGeometryValidationError(error);
+    }
 }
 // A drawing is read once per page and per stated facts. The same project published under several
 // URLs (hosts, languages) states the same facts and shares one reading; units that reuse one sheet
@@ -29,9 +54,11 @@ function contextIdentity(context) {
 }
 export function taskId(hash,page,context) { return fingerprint([PROCESSOR,hash,page,contextIdentity(context)]); }
 
-export async function enqueuePlanTasks(db,{limit=100,sourceHash=null,urls=null,deadline=Infinity}={}) {
+export async function enqueuePlanTasks(db,{limit=100,sourceHash=null,urls=null,pages=null,deadline=Infinity}={}) {
     if(sourceHash!==null&&!/^[a-f0-9]{64}$/i.test(sourceHash))throw new Error('Invalid source SHA-256.');
     if(urls!==null&&(!Array.isArray(urls)||urls.some(url=>typeof url!=='string'||!/^https?:\/\//.test(url))))throw new Error('Invalid source URL filter.');
+    if(pages!==null&&(!Array.isArray(pages)||!pages.length||new Set(pages).size!==pages.length
+        ||pages.some(page=>!Number.isInteger(page)||page<1||page>1000)))throw new Error('Pages must be a nonempty unique array of integers from 1 to 1000.');
     const rows=(await db.query(`SELECT e.sha256,e.model,t.url AS source_url,l.url AS listing_url,l.facts,
         ${locatedListingSql()} AS building_located,
         (l.asset_urls @> jsonb_build_array(jsonb_build_object('url',t.url,'listingOwned',true))) AS listing_owns_asset
@@ -47,8 +74,12 @@ export async function enqueuePlanTasks(db,{limit=100,sourceHash=null,urls=null,d
     for(const row of rows) {
         if(Date.now()>=deadline) {deferred++;break;}
         if(row.listing_owns_asset!==true||!row.listing_url||!row.source_url) {ambiguous++;continue;}
+        if(!sourceUnitMatches(row.facts,row.listing_url,row.source_url)) {ambiguous++;continue;}
         if(row.building_located!==true) {deferredLocation++;continue;}
-        const context=taskContext(row),pages=row.model?.totalPages||1;
+        const context=taskContext(row),totalPages=row.model?.totalPages??1;
+        if(!Number.isInteger(totalPages)||totalPages<1||totalPages>1000) throw new Error('Invalid or oversized source page count.');
+        if(pages?.some(page=>page>totalPages))throw new Error(`Requested page exceeds source page count (${totalPages}).`);
+        const selectedPages=pages?[...pages].sort((a,b)=>a-b):Array.from({length:totalPages},(_,index)=>index+1);
         const contextKey=fingerprint([row.sha256,contextIdentity(context)]);
         if(seenContexts.has(contextKey))continue;
         seenContexts.add(contextKey);
@@ -56,8 +87,7 @@ export async function enqueuePlanTasks(db,{limit=100,sourceHash=null,urls=null,d
             sources.add(row.sha256);
             await db.query('UPDATE floor_plan.extraction SET vision_checked_at=now() WHERE sha256=$1',[row.sha256]);
         }
-        if(!Number.isInteger(pages)||pages<1||pages>1000) throw new Error('Invalid or oversized source page count.');
-        for(let page=1;page<=pages;page++) {
+        for(const page of selectedPages) {
             if(Date.now()>=deadline) {deferred++;break;}
             const id=taskId(row.sha256,page,context);
             const saved=await db.query(`INSERT INTO floor_plan.plan_task(id,source_sha256,source_url,page,listing_url,context,processor)
@@ -105,6 +135,7 @@ export async function currentTaskListing(db,task,{lock=false,requireLocation=fal
         AND l.asset_urls @> jsonb_build_array(jsonb_build_object('url',t.url,'listingOwned',true)) ${lock?'FOR SHARE OF l,t':''}`,
     [task.listing_url,task.source_url,task.source_sha256])).rows[0];
     if(!row||row.facts?.sourceEvidenceStatus==='not-a-listing')return null;
+    if(!sourceUnitMatches(row.facts,row.url,task.source_url))return null;
     if(requireLocation&&row.building_located!==true)return null;
     if(task.context?.building) {
         if(row.match_status!=='verified')return null;
@@ -147,7 +178,7 @@ export async function interpretPlans(db,{render=renderTask,verifyRaster=verifyRa
     const result=await runBatchStage(db,{
         stage:'plans',processor:PROCESSOR,schema:READING_SCHEMA,
         taskFilterSql:LOCATED_PLAN_TASK_SQL,
-        counters:{ready:0,needsReview:0,notPlan:0,preflightNeedsReview:0,locationReview:0},
+        counters:{ready:0,needsReview:0,notPlan:0,preflightNeedsReview:0,locationReview:0,associationReview:0},
         async prepare(db,task,llm,{deadline,maxOutputTokens}) {
             if(task.processor!==PROCESSOR)throw new Error('Historical plan task needs its original reader.');
             if(!await currentTaskContext(db,task))throw new Error('Source or listing association changed before processing.');
@@ -169,12 +200,20 @@ export async function interpretPlans(db,{render=renderTask,verifyRaster=verifyRa
             if(task.processor!==PROCESSOR)throw new Error('Historical plan task needs its original reader.');
             if(!await currentTaskContext(db,task,{requireLocation:true})) {
                 // The worker already saved and accounted for this response; retain it without generating geometry.
-                await storeReading(db,task,{method:'location-gate',notPlan:false,plans:[],
-                    issues:['A current building location is required before processing this floor plan.']});
-                return {needsReview:1,locationReview:1};
+                const associationCurrent=await currentTaskContext(db,task);
+                await storeReading(db,task,{method:associationCurrent?'location-gate':'association-gate',notPlan:false,plans:[],
+                    issues:[associationCurrent?'A current building location is required before processing this floor plan.':'The source drawing does not match this listing unit, or its association changed after submission.']});
+                return {needsReview:1,...(associationCurrent?{locationReview:1}:{associationReview:1})};
             }
-            const reading=parseReading(typeof item.data==='string'?item.data:JSON.stringify(item.data??JSON.parse(item.text)),task,
-                {...task.result.image,model:item.model});
+            let reading;
+            try {
+                reading=parsePaidReading(item,task,task.result.image);
+            } catch(error) {
+                if(!(error instanceof PaidGeometryValidationError))throw error;
+                const saved=await storeReading(db,task,{method:'model-validation-review',notPlan:false,plans:[],
+                    issues:[error.message]},{associationCurrent:await currentTaskContext(db,task)});
+                return {...saved,needsReview:1,modelValidationReview:1};
+            }
             if(reading.plans.length) {
                 try {
                     const cleanImage=await render(db,task,{deadline,includeEvidence:false});
@@ -188,6 +227,6 @@ export async function interpretPlans(db,{render=renderTask,verifyRaster=verifyRa
     },options);
     result.deferredLocation=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.plan_task
         WHERE status='queued' AND processor=$1 AND NOT ${LOCATED_PLAN_TASK_SQL}`,[PROCESSOR])).rows[0].n);
-    if(result.deferredLocation||result.locationReview)result.status='partial';
+    if(result.deferredLocation||result.locationReview||result.associationReview)result.status='partial';
     return result;
 }

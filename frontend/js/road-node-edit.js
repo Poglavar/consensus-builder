@@ -127,11 +127,29 @@
         });
     }
 
-    // Every road geometry edit funnels through here — node drag, node delete, bulldoze — so this
-    // is the one place undo has to hook. The stack is the shared GeometryEditHistory, same as the
-    // plot and building editors.
+    // Several records' edits as one: strip redraws held to one at the end, and network noding held
+    // until the last record lands — mid-sequence a junction is half-moved, and noding THAT would
+    // record crossings that stop existing a moment later.
+    function withNetworkHeld(run) {
+        const held = () => (global.withCorridorStripRefreshHeld
+            ? global.withCorridorStripRefreshHeld(run)
+            : run());
+        return global.CorridorNetworkNodes?.deferred ? global.CorridorNetworkNodes.deferred(held) : held();
+    }
+
+    // Every road geometry edit records its undo step here before it runs — node drag (at dragstart),
+    // node delete, split, bulldoze — so this is the one place undo has to hook. The stack is the
+    // shared GeometryEditHistory, same as the plot and building editors.
+    //
+    // A step is every record the edit is about to change, in the order to put them back: the
+    // selected road first, then — for a junction drag — the other roads whose legs the drag carries,
+    // so one undo restores the whole junction rather than tearing it. Not restored: a road the drop
+    // merely landed ON. The noding pass gave it a node where the dragged one met it; after the undo
+    // that node stays, as an ordinary vertex on its unchanged centre line.
     let historyCtl = null;
     let historyKey = null;
+    // The other records the next record() captures; set only around that one call (recordHistory).
+    let captureAlsoKeys = [];
 
     function ensureHistory(proposalKey) {
         const factory = global.GeometryEditHistory;
@@ -143,23 +161,36 @@
         historyKey = String(proposalKey);
         historyCtl = factory.create({
             capture: () => {
-                const proposal = global.getProposalByIdOrHash?.(historyKey);
-                const definition = proposal?.roadProposal?.definition;
-                return definition ? JSON.parse(JSON.stringify(definition)) : undefined;
+                const records = [];
+                [historyKey, ...captureAlsoKeys].forEach(key => {
+                    if (records.some(entry => entry.key === key)) return;
+                    const definition = global.getProposalByIdOrHash?.(key)?.roadProposal?.definition;
+                    if (definition) records.push({ key, definition: JSON.parse(JSON.stringify(definition)) });
+                });
+                return records.length && records[0].key === historyKey ? records : undefined;
             },
-            restore: (snapshot) => {
-                if (!snapshot || typeof global.updateLocalCorridorGeometry !== 'function') return;
-                runExclusiveEdit(() => global.updateLocalCorridorGeometry(historyKey, definition => {
-                    // Put the whole captured centreline back; the update path re-cuts from it.
-                    const segments = (typeof global.corridorCenterlineOf === 'function')
-                        ? global.corridorCenterlineOf(snapshot)
-                        : null;
-                    if (segments) writeSegments(
-                        definition,
-                        segments,
-                        snapshot.segmentIds,
-                        snapshot.segmentProfiles
-                    );
+            restore: (records) => {
+                if (!Array.isArray(records) || typeof global.updateLocalCorridorGeometry !== 'function') return;
+                runExclusiveEdit(() => withNetworkHeld(async () => {
+                    for (const { key, definition: saved } of records) {
+                        try {
+                            await global.updateLocalCorridorGeometry(key, definition => {
+                                // Put the whole captured centreline back; the update path re-cuts from it.
+                                const segments = (typeof global.corridorCenterlineOf === 'function')
+                                    ? global.corridorCenterlineOf(saved)
+                                    : null;
+                                if (segments) writeSegments(
+                                    definition,
+                                    segments,
+                                    saved.segmentIds,
+                                    saved.segmentProfiles
+                                );
+                            });
+                        } catch (error) {
+                            // One record failing must not leave the others unrestored.
+                            console.error(`[${new Date().toISOString()}] [roadNodeEdit] undo could not restore`, key, error);
+                        }
+                    }
                 }));
             },
             onChange: () => { }
@@ -171,11 +202,29 @@
         return historyCtl;
     }
 
-    function mutateGeometry(proposalKey, mutator) {
-        if (typeof global.updateLocalCorridorGeometry !== 'function') return;
+    // Take one undo step before an edit of `proposalKey` (and of `alsoKeys`, for a junction drag).
+    // Returns the stack when a step was taken, so an edit that turns out to change nothing can take
+    // its step back (discardLast) rather than leave one that undoes nothing.
+    function recordHistory(proposalKey, alsoKeys = []) {
         const history = ensureHistory(proposalKey);
-        if (history) history.record();
-        runExclusiveEdit(() => global.updateLocalCorridorGeometry(proposalKey, mutator));
+        if (!history) return null;
+        captureAlsoKeys = alsoKeys.map(String).filter(key => key !== String(proposalKey));
+        try {
+            return history.record() ? history : null;
+        } finally {
+            captureAlsoKeys = [];
+        }
+    }
+
+    function mutateGeometry(proposalKey, mutator, afterCommit = null) {
+        if (typeof global.updateLocalCorridorGeometry !== 'function') return;
+        const recorded = recordHistory(proposalKey);
+        runExclusiveEdit(async () => {
+            const updated = await global.updateLocalCorridorGeometry(proposalKey, mutator);
+            // A failed edit was reverted, so its step would undo nothing.
+            if (!updated && recorded) recorded.discardLast();
+            if (typeof afterCommit === 'function') afterCommit(updated);
+        });
     }
 
     function edgeInsertionBlocked(definition, from, to) {
@@ -256,10 +305,102 @@
         });
     }
 
-    // Every applied corridor of the same kind (road or track — the two are separate networks, as
-    // they are for snapping). A junction is a property of the NETWORK, so the handles have to know
-    // about the roads meeting this one, not only about the road that happens to be selected.
-    function appliedCorridorsOfKind(isTrack) {
+    // Would removing these vertices leave one of the road's stretches with fewer than two points?
+    // removeCorridorNodes drops such a stretch whole, so ⌥-clicking an end of a two-point stretch
+    // deleted the stretch — and on a one-stretch road parked the road. Deleting a stretch is the
+    // bulldoze's job, with its own control; a node removal never does it.
+    function removalEmptiesStretch(segments, targets) {
+        const removed = new Map();
+        (targets || []).forEach(({ segIndex, pointIndex }) => {
+            if (!removed.has(segIndex)) removed.set(segIndex, new Set());
+            removed.get(segIndex).add(pointIndex);
+        });
+        return [...removed.entries()].some(([segIndex, points]) => (
+            Array.isArray(segments[segIndex]) && segments[segIndex].length - points.size < 2
+        ));
+    }
+
+    // Remove the selected road's vertex at a node, or say why not. A junction still disconnects as
+    // before: only the selected road's legs lose the vertex.
+    function removeNode(proposalKey, segments, targets) {
+        if (removalEmptiesStretch(segments, targets)) {
+            global.updateStatus?.(editHint(
+                'panel.road.removeNodeEmptiesStretch',
+                'Removing this node would delete its whole stretch. Bulldoze the stretch instead (× at its middle).'
+            ));
+            return;
+        }
+        deleteNode(proposalKey, targets);
+    }
+
+    // A split is refused where either edge at the vertex is protected — a ramp, a building tunnel or
+    // a grade separation — the same edges a node cannot be added on.
+    function splitBlocked(definition, segment, pointIndex) {
+        return edgeInsertionBlocked(definition, segment[pointIndex - 1], segment[pointIndex])
+            || edgeInsertionBlocked(definition, segment[pointIndex], segment[pointIndex + 1]);
+    }
+
+    // Split one stretch of the road in two at an interior vertex (road-editor.md decision 3), so the
+    // halves can take different cross-sections: click one, then Edit cross-section → This segment.
+    // Undoable like every other node edit.
+    function splitStretch(proposalKey, segIndex, pointIndex) {
+        const definition = global.getProposalByIdOrHash?.(proposalKey)?.roadProposal?.definition;
+        const segment = definition ? normalizedSegmentsOf(definition)[segIndex] : null;
+        if (!segment || !segment[pointIndex - 1] || !segment[pointIndex + 1]) return;
+        if (splitBlocked(definition, segment, pointIndex)) {
+            global.updateStatus?.(editHint(
+                'panel.road.splitProtectedStatus',
+                'A stretch cannot be split beside a ramp, a tunnel or a grade-separated edge.'
+            ));
+            return;
+        }
+        mutateGeometry(proposalKey, working => {
+            const segments = normalizedSegmentsOf(working);
+            const target = segments[segIndex];
+            const result = global.CorridorGeometry.splitCorridorStretchAtNode(
+                segments,
+                working.segmentIds,
+                working.segmentProfiles,
+                segIndex,
+                pointIndex,
+                { protected: !target || splitBlocked(working, target, pointIndex) }
+            );
+            if (!result.changed) return;
+            writeSegments(working, result.segments, result.segmentIds, result.segmentProfiles);
+        }, updated => {
+            if (!updated) return;
+            global.updateStatus?.(editHint(
+                'panel.road.stretchSplitStatus',
+                'Stretch split. Click either half, then Edit cross-section → This segment to give it its own lanes.'
+            ));
+        });
+    }
+
+    // A plain click on a node in the middle of one stretch — not a junction, not a loose end — asks
+    // what to do there. On a touch screen, which has no ⌥, this is also the way to remove a node.
+    async function offerNodeChoice(proposalKey, segments, target) {
+        if (typeof global.showStyledChoice !== 'function') return;
+        const choice = await global.showStyledChoice(
+            editHint('panel.road.nodeChoicePrompt', 'What should happen at this node?'),
+            [
+                {
+                    value: 'split',
+                    label: editHint('panel.road.splitStretchHere', 'Split the stretch here — so the two halves can have different cross-sections'),
+                    primary: true
+                },
+                { value: 'remove', label: editHint('panel.road.removeThisNode', 'Remove this node') },
+                { value: 'cancel', label: editHint('common.cancel', 'Cancel') }
+            ]
+        );
+        if (choice === 'split') splitStretch(proposalKey, target.segIndex, target.pointIndex);
+        else if (choice === 'remove') removeNode(proposalKey, segments, [target]);
+    }
+
+    // Every applied corridor, roads and tracks alike: the two form junctions with each other (a
+    // tram line crossing a street shares its node with it), so a handle carries every leg that meets
+    // there, whatever its kind. A junction is a property of the NETWORK, so the handles have to know
+    // about the corridors meeting this one, not only about the road that happens to be selected.
+    function appliedCorridors() {
         const store = global.proposalStorage;
         if (!store || typeof store.getAllProposals !== 'function') return [];
         return (store.getAllProposals() || [])
@@ -267,7 +408,6 @@
                 const definition = proposal && proposal.roadProposal && proposal.roadProposal.definition;
                 if (!definition) return null;
                 if (!isApplied(proposal, proposal.roadProposal)) return null;
-                if (global.corridorIsTrack?.(definition) !== isTrack) return null;
                 const segments = global.corridorCenterlineOf?.(definition) || [];
                 if (!segments.length) return null;
                 const key = (global.getProposalKey?.(proposal)) || proposal.proposalId;
@@ -319,6 +459,11 @@
     // edge when you were plainly aiming at their corner is the near-miss this exists to prevent —
     // and it is worse here than while drawing, because the result looks connected on the map and
     // simply is not. Same radius as drawing, too, so the two gestures feel like one gesture.
+    //
+    // Nodes of either kind are targets: a road and a track sharing a vertex are joined. A point
+    // ALONG the other kind's centre line is not offered yet — the network noding pass
+    // (corridor-network-nodes.js) still nodes roads and tracks as two networks, so that drop would
+    // sit on the line with no node back in it: joined on screen only.
     const SNAP_PX = coarsePointer ? 26 : 12;
 
     function findNodeSnap(latlng, origin, isTrack) {
@@ -338,13 +483,14 @@
         global.proposalStorage.getAllProposals().forEach(proposal => {
             const definition = proposal?.roadProposal?.definition;
             if (!definition) return;
-            if (global.corridorIsTrack(definition) !== isTrack) return;
             if (!isApplied(proposal, proposal.roadProposal)) return;
+            const sameKind = global.corridorIsTrack(definition) === isTrack;
             (global.corridorCenterlineOf?.(definition) || []).forEach(segment => {
                 segment.forEach(vertex => {
                     if (nearOrigin(vertex)) return;
                     bestNode = consider(bestNode, global.L.latLng(vertex.lat, vertex.lng)) || bestNode;
                 });
+                if (!sameKind) return;
                 for (let i = 0; i < segment.length - 1; i += 1) {
                     // Edges touching the dragged node follow the drag — never snap back onto them.
                     if (nearOrigin(segment[i]) || nearOrigin(segment[i + 1])) continue;
@@ -455,8 +601,9 @@
     // proximity. So a drop that failed to connect looks identical to one that worked, and the only
     // way to find out was to notice the handle had not turned amber. The drop now states the
     // outcome, and when it did not join, why not — distance to the nearest centreline, or the fact
-    // that the road it landed on is published and can never take a node.
-    function reportJunctionOutcome(position, isTrack) {
+    // that the road it landed on is published and can never take a node. Tracks count like roads:
+    // the two join at shared nodes.
+    function reportJunctionOutcome(position) {
         const map = global.map;
         if (!map || typeof global.updateStatus !== 'function') return;
         if (typeof global.proposalStorage?.getAllProposals !== 'function') return;
@@ -467,7 +614,6 @@
         (global.proposalStorage.getAllProposals() || []).forEach(proposal => {
             const definition = proposal?.roadProposal?.definition;
             if (!definition) return;
-            if (global.corridorIsTrack?.(definition) !== isTrack) return;
             if (!isApplied(proposal, proposal.roadProposal)) return;
             const key = String((global.getProposalKey?.(proposal)) || proposal.proposalId);
             (global.corridorCenterlineOf?.(definition) || []).forEach(segment => {
@@ -514,7 +660,10 @@
     // They run in sequence (the fabric queue serialises them anyway) with network noding held back
     // until the last one lands — mid-sequence the junction is half-moved, and noding THAT would
     // record crossings that stop existing a moment later.
-    function commitNodeMove(targets, latlng, origin, isTrack, preEditSnapshots) {
+    //
+    // `recorded` is the undo stack holding the step taken at dragstart; a drop that moves nothing
+    // takes that step back, so Cmd/Ctrl+Z never spends a press on a drag that changed nothing.
+    function commitNodeMove(targets, latlng, origin, isTrack, preEditSnapshots, recorded) {
         if (typeof global.updateLocalCorridorGeometry !== 'function') return;
         // Snap at drop time (the snap targets are read from the map as it is now), then serialize the
         // re-apply. Hand over the geometry captured at dragstart: liveMoveNode has already streamed the
@@ -525,17 +674,23 @@
         clearSnapRing();
         const snap = findNodeSnap(latlng, origin, isTrack);
         const snapped = snap ? snap.latlng : latlng;
+        if (snapped.lat === origin.lat && snapped.lng === origin.lng) {
+            if (recorded) recorded.discardLast();
+            return;
+        }
         const grouped = targetsByProposal(targets);
         // The selected road first, so its replacement is the one the editor re-selects; the roads it
         // meets follow.
         const order = [...grouped.keys()].sort((a, b) => (a === activeKey ? -1 : b === activeKey ? 1 : 0));
+        let anyMoved = false;
         const run = async () => {
             for (const proposalKey of order) {
                 const legs = grouped.get(proposalKey);
                 try {
-                    await global.updateLocalCorridorGeometry(proposalKey, definition => {
+                    const updated = await global.updateLocalCorridorGeometry(proposalKey, definition => {
                         moveNodeTargets(definition, legs, snapped);
                     }, { preEditSnapshot: (preEditSnapshots && preEditSnapshots.get(proposalKey)) || null });
+                    if (updated) anyMoved = true;
                 } catch (error) {
                     // One leg failing must not abandon the rest at the old position — report it and
                     // keep going, so the junction ends up as whole as it can be.
@@ -543,15 +698,14 @@
                 }
             }
         };
-        // Two holds around the whole junction move: strip redraws (one at the end instead of one per
-        // record) and network noding (nothing is noded while the junction is half-moved).
-        const held = () => (global.withCorridorStripRefreshHeld
-            ? global.withCorridorStripRefreshHeld(run)
-            : run());
         runExclusiveEdit(async () => {
-            await (global.CorridorNetworkNodes?.deferred ? global.CorridorNetworkNodes.deferred(held) : held());
+            // Two holds around the whole junction move: strip redraws (one at the end instead of one
+            // per record) and network noding (nothing is noded while the junction is half-moved).
+            await withNetworkHeld(run);
+            // Every leg was reverted: the step taken at dragstart would undo nothing.
+            if (!anyMoved && recorded) recorded.discardLast();
             // After the noding pass has had its turn, so the answer is the settled one.
-            try { reportJunctionOutcome(snapped, isTrack); } catch (_) { }
+            try { reportJunctionOutcome(snapped); } catch (_) { }
         });
     }
 
@@ -593,7 +747,7 @@
         // the junction apart. Handles are still only drawn where the SELECTED road has a vertex —
         // this widens what a handle carries, not how many handles there are.
         const nodesByPosition = new Map();
-        appliedCorridorsOfKind(isTrack).forEach(corridor => {
+        appliedCorridors().forEach(corridor => {
             corridor.segments.forEach((segment, segIndex) => {
                 segment.forEach((point, pointIndex) => {
                     // Node identity comes from the shared topology engine, so "the same corner"
@@ -627,28 +781,38 @@
             const otherRoads = new Set(
                 node.targets.filter(target => target.proposalKey !== activeKey).map(target => target.proposalKey)
             ).size;
+            // A STRETCH BOUNDARY — two stretches of this road meeting end to end and nothing else,
+            // which is what "Split the stretch here" leaves behind. Two legs make it a junction by
+            // count, but it is a bend where the cross-section may change (road-editor.md decision 1),
+            // so it gets the plain handle and says what it is.
+            const isBoundary = isJunction && !otherRoads && node.targets.length === 2
+                && node.targets.every(target => target.isEnd);
+            const emphasised = isJunction && !isBoundary;
             // What the bulldoze squares have to stay clear of. Junction circles are the big ones,
             // and the ones it matters most not to bury.
             handleRadiusByPosition.set(
                 nodeKeyFor(node.lng, node.lat),
-                (isJunction ? (coarsePointer ? 32 : 18) : (coarsePointer ? 26 : 14)) / 2
+                (emphasised ? (coarsePointer ? 32 : 18) : (coarsePointer ? 26 : 14)) / 2
             );
             const marker = global.L.marker([node.lat, node.lng], {
                 draggable: true,
-                icon: isJunction ? junctionIcon() : handleIcon(),
+                icon: emphasised ? junctionIcon() : handleIcon(),
                 pane: 'road-node-handles'
             });
             // A LOOSE END — one leg, and this is that leg's last vertex. It connects to nothing, so
             // the useful thing to say about it is that dragging it onto a road joins the two.
             const isLooseEnd = !isJunction && node.targets.length === 1 && node.targets[0].isEnd;
-            marker.bindTooltip(editHint(
-                isJunction ? 'panel.road.junctionHint' : (isLooseEnd ? 'panel.road.looseEndHint' : 'panel.road.nodeHint'),
-                isJunction
-                    ? 'Junction — drag to move all legs · ⌥-click to disconnect'
-                    : (isLooseEnd
-                        ? 'Loose end — drag onto a road or node to join it · ⌥-click to remove'
-                        : 'Drag to move · ⌥-click to remove this node')
-            ) + (otherRoads ? ` (${otherRoads} other ${otherRoads > 1 ? 'roads meet' : 'road meets'} here)` : ''),
+            // A node in the MIDDLE of one stretch: a plain click offers to split the stretch there.
+            const isInterior = !isJunction && mine.length === 1 && !mine[0].isEnd;
+            const [hintKey, hintFallback] = [
+                [isBoundary, 'panel.road.boundaryHint', 'Stretch boundary — the cross-section can change here · drag to move · ⌥-click to disconnect'],
+                [isJunction, 'panel.road.junctionHint', 'Junction — drag to move all legs · ⌥-click to disconnect'],
+                [isLooseEnd, 'panel.road.looseEndHint', 'Loose end — drag onto a road or node to join it · ⌥-click to remove'],
+                [isInterior, 'panel.road.interiorNodeHint', 'Drag to move · click to split the stretch here or remove the node · ⌥-click to remove it'],
+                [true, 'panel.road.nodeHint', 'Drag to move · ⌥-click to remove this node']
+            ].find(([applies]) => applies).slice(1);
+            marker.bindTooltip(editHint(hintKey, hintFallback)
+                + (otherRoads ? ` (${otherRoads} other ${otherRoads > 1 ? 'roads meet' : 'road meets'} here)` : ''),
             { sticky: true, pane: 'road-node-handles' });
             const origin = { lat: node.lat, lng: node.lng };
             let lastLiveUpdate = 0;
@@ -656,6 +820,10 @@
             // liveMoveNode starts mutating them — handed to commitNodeMove so each re-apply reasons
             // from its own original shape.
             let dragStartSnapshots = null;
+            // The drag's undo step, taken at dragstart for the same reason: by the drop the live
+            // geometry is no longer the pre-drag one. It holds every record the drag carries, so one
+            // Cmd/Ctrl+Z puts the whole junction back.
+            let dragHistory = null;
             marker.on('dragstart', () => {
                 dragStartSnapshots = new Map();
                 targetsByProposal(node.targets).forEach((_legs, proposalKey) => {
@@ -663,6 +831,7 @@
                     const definition = proposal?.roadProposal?.definition;
                     if (definition) dragStartSnapshots.set(proposalKey, JSON.parse(JSON.stringify(definition)));
                 });
+                dragHistory = recordHistory(activeKey, [...dragStartSnapshots.keys()]);
             });
             marker.on('drag', () => {
                 const now = Date.now();
@@ -676,16 +845,24 @@
                 liveMoveNode(node.targets, snap ? snap.latlng : cursor);
             });
             marker.on('dragend', () => {
-                commitNodeMove(node.targets, marker.getLatLng(), origin, isTrack, dragStartSnapshots);
+                commitNodeMove(node.targets, marker.getLatLng(), origin, isTrack, dragStartSnapshots, dragHistory);
                 dragStartSnapshots = null;
+                dragHistory = null;
             });
             marker.on('click', (event) => {
-                if (event.originalEvent && (event.originalEvent.altKey || event.originalEvent.metaKey)) {
-                    try { global.L.DomEvent.stop(event.originalEvent); } catch (_) { }
+                const original = event.originalEvent;
+                if (original && (original.altKey || original.metaKey)) {
+                    try { global.L.DomEvent.stop(original); } catch (_) { }
                     // ⌥-click DISCONNECTS this road from the junction — it drops the vertex from the
                     // selected road only. The other roads keep their node and stay where they are,
-                    // which is exactly what leaving a junction means.
-                    deleteNode(activeKey, mine);
+                    // which is exactly what leaving a junction means. It never empties a stretch: an
+                    // end of a two-point stretch is refused there (that is a bulldoze).
+                    removeNode(activeKey, segments, mine);
+                    return;
+                }
+                if (isInterior) {
+                    try { global.L.DomEvent.stop(original || event); } catch (_) { }
+                    offerNodeChoice(activeKey, segments, mine[0]);
                 }
             });
             handleGroup.addLayer(marker);

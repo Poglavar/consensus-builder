@@ -312,8 +312,10 @@ describe('finishing an empty drawing does nothing at all', () => {
         // Finish button by way of finishRoadDrawing, which is where the check moved to.
         const keydown = lift('handleRoadKeydown');
         // The F/Enter branch and the Escape branch; the U branch asks a different question (undo).
+        // Escape's branches moved into handleRoadEscape, which runs once a click still being
+        // placed has settled (road-editor.md decision 5: Escape lifts the pen, then asks).
         expect(keydown).toMatch(/e\.key === 'Enter'\) && hasDrawableCorridor\(\)/);
-        expect(keydown).toMatch(/\} else if \(hasDrawableCorridor\(\)\) \{/);
+        expect(lift('handleRoadEscape')).toMatch(/\} else if \(hasDrawableCorridor\(\)\) \{/);
         expect(lift('cancelRoadDrawing')).not.toMatch(/getAllRoadSegments\(true\)\.some/);
         expect(lift('finishRoadOrTrackDrawing')).toMatch(/finishRoadDrawing\(\)/);
     });

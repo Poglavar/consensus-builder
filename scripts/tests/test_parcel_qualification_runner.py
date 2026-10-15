@@ -28,11 +28,12 @@ def queue_records(count=64):
 
 
 def write_valid_artifacts(root: Path, code="10000"):
-    (root / "evidence").mkdir(parents=True)
+    (root / "evidence").mkdir(parents=True, exist_ok=True)
     candidate = {"city": {"code": code}, "descriptor": {"id": "fixture"}}
     candidate_bytes = json.dumps(candidate, separators=(",", ":")).encode()
     (root / "candidate.json").write_bytes(candidate_bytes)
-    metric_input = {"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": None, "properties": {}}]}
+    geometry = {"type": "Polygon", "coordinates": [[[2.0, 1.0], [2.001, 1.0], [2.001, 1.001], [2.0, 1.0]]]}
+    metric_input = {"type": "FeatureCollection", "features": [{"type": "Feature", "id": "fixture:parcel-1", "geometry": geometry, "properties": {}}]}
     input_bytes = json.dumps(metric_input, separators=(",", ":")).encode()
     (root / "evidence" / "full-safe.geojson").write_bytes(input_bytes)
     input_hash = hashlib.sha256(input_bytes).hexdigest()
@@ -45,13 +46,61 @@ def write_valid_artifacts(root: Path, code="10000"):
     }
     metric_bytes = json.dumps(metric, separators=(",", ":")).encode()
     (root / "evidence" / "metric-report.json").write_bytes(metric_bytes)
+    metadata = {"nativeCrs": "EPSG:4326"}
+    metadata_bytes = json.dumps(metadata, separators=(",", ":")).encode()
+    (root / "evidence" / "alignment-metadata.json").write_bytes(metadata_bytes)
+    native = {"type": "NativeParcelSamples", "features": [{"id": "fixture:parcel-1", "geometry": geometry}]}
+    native_bytes = json.dumps(native, separators=(",", ":")).encode()
+    (root / "evidence" / "alignment-native.json").write_bytes(native_bytes)
+    contract_sha = "a" * 64
+    alignment_evidence = {
+        "schemaVersion": 1, "sourceId": "fixture", "cityCode": str(code),
+        "contractSha256": contract_sha, "nativeCrs": "EPSG:4326", "nativeAxisOrder": "east-north",
+        "metadataUrl": "https://example.test/metadata", "metadataFile": "alignment-metadata.json",
+        "metadataSha256": hashlib.sha256(metadata_bytes).hexdigest(), "nativeFile": "alignment-native.json",
+        "nativeSha256": hashlib.sha256(native_bytes).hexdigest(),
+    }
+    alignment_bytes = json.dumps(alignment_evidence, separators=(",", ":")).encode()
+    (root / "evidence" / "alignment-evidence.json").write_bytes(alignment_bytes)
+    report = {
+        "schemaVersion": 1, "passed": True, "sourceId": "fixture", "cityCode": str(code),
+        "contractSha256": contract_sha, "evidenceSha256": hashlib.sha256(alignment_bytes).hexdigest(),
+        "metadataSha256": hashlib.sha256(metadata_bytes).hexdigest(), "nativeSha256": hashlib.sha256(native_bytes).hexdigest(),
+        "cacheSha256": input_hash, "nativeCrs": "EPSG:4326", "nativeAxisOrder": "east-north",
+        "coordinateOperation": "axis order change (2D)", "operationPipeline": "+proj=noop", "bestOperationAvailable": True,
+        "ballparkAllowed": False, "sourceGeometryChanged": False, "fittedOffsetApplied": False,
+    }
+    (root / "evidence" / "alignment-report.json").write_text(json.dumps(report), encoding="utf-8")
     checks = {name: {"passed": True, "evidence": "fixture evidence"} for name in runner.REQUIRED_CHECKS}
+    checks["alignment"]["contractSha256"] = contract_sha
     qualification = {
+        "schemaVersion": 2, "sourceId": "fixture",
         "candidateSha256": hashlib.sha256(candidate_bytes).hexdigest(),
         "checks": checks, "cacheFile": "full-safe.geojson", "cacheSha256": input_hash,
-        "geometryReport": "metric-report.json", "status":"technical-qualified", "cityCode":code,"featureCount":1,
+        "geometryReport": "metric-report.json", "alignmentReport": "alignment-report.json",
+        "status":"technical-qualified", "cityCode":code,"featureCount":1,
     }
     (root / "evidence" / "qualification.json").write_text(json.dumps(qualification), encoding="utf-8")
+
+
+def mocked_alignment_recompute(command, **kwargs):
+    if not any(str(part).endswith("parcel-alignment-check.py") for part in command):
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+    evidence_path, cache_path, output_path = map(Path, command[2:5])
+    evidence_bytes = evidence_path.read_bytes()
+    evidence = json.loads(evidence_bytes)
+    report = {
+        "schemaVersion": 1, "passed": True, "sourceId": evidence["sourceId"], "cityCode": evidence["cityCode"],
+        "contractSha256": evidence["contractSha256"], "evidenceSha256": hashlib.sha256(evidence_bytes).hexdigest(),
+        "metadataSha256": hashlib.sha256((evidence_path.parent / evidence["metadataFile"]).read_bytes()).hexdigest(),
+        "nativeSha256": hashlib.sha256((evidence_path.parent / evidence["nativeFile"]).read_bytes()).hexdigest(),
+        "cacheSha256": hashlib.sha256(cache_path.read_bytes()).hexdigest(),
+        "nativeCrs": evidence["nativeCrs"], "nativeAxisOrder": evidence["nativeAxisOrder"],
+        "coordinateOperation": "axis order change (2D)", "operationPipeline": "+proj=noop", "bestOperationAvailable": True,
+        "ballparkAllowed": False, "sourceGeometryChanged": False, "fittedOffsetApplied": False,
+    }
+    output_path.write_text(json.dumps(report), encoding="utf-8")
+    return SimpleNamespace(returncode=0, stdout='{"passed":true}', stderr="")
 
 
 class QualificationRunnerTests(unittest.TestCase):
@@ -209,12 +258,34 @@ class QualificationRunnerTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             write_valid_artifacts(root)
-            self.assertTrue(runner.verify_technical_artifacts(root, "10000")[0])
+            with patch.object(runner.subprocess, "run", side_effect=mocked_alignment_recompute) as recompute:
+                self.assertTrue(runner.verify_technical_artifacts(root, "10000")[0])
+                self.assertTrue(any(str(part).endswith("parcel-alignment-check.py")
+                                    for part in recompute.call_args.args[0]))
             qpath = root / "evidence" / "qualification.json"
             q = json.loads(qpath.read_text())
             q["checks"]["classification"]["passed"] = False
             qpath.write_text(json.dumps(q))
             self.assertFalse(runner.verify_technical_artifacts(root, "10000")[0])
+
+    def test_alignment_is_required_and_artifact_hashes_are_recomputed(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            write_valid_artifacts(root)
+            qpath = root / "evidence" / "qualification.json"
+            q = json.loads(qpath.read_text())
+            q["checks"].pop("alignment")
+            qpath.write_text(json.dumps(q))
+            with patch.object(runner.subprocess, "run", side_effect=AssertionError("must fail before recompute")):
+                self.assertFalse(runner.verify_technical_artifacts(root, "10000")[0])
+
+            write_valid_artifacts(root)
+            metadata = root / "evidence" / "alignment-metadata.json"
+            metadata.write_text('{"nativeCrs":"EPSG:3857"}')
+            with patch.object(runner.subprocess, "run", side_effect=mocked_alignment_recompute):
+                ok, reason = runner.verify_technical_artifacts(root, "10000")
+            self.assertFalse(ok)
+            self.assertIn("metadataFile SHA-256 mismatch", reason)
 
     def test_missing_metric_blocker_count_fails_closed(self):
         with tempfile.TemporaryDirectory() as temp:

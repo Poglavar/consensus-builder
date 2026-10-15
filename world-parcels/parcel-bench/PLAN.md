@@ -4,7 +4,7 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-14 (expanded selection and 12-run resolution comparison complete; baseline retained). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-15 (bounded reconstruction, margin-0 and matched-donor comparisons complete; defaults unchanged; GPU closed). Status values: todo · running · done · dropped (with the reason).
 
 ## Where we stand (2026-10-14)
 
@@ -21,7 +21,9 @@ Round 2 now has three seeds and paired intervals. The v1 selection sets contain 
 blocks; tile-level intervals understate geographic uncertainty. Each v2 now has 12 blocks (48 tiles),
 with the original final sets preserved. All 12 fresh v2 runs are complete: resolution augmentation helps
 coarsened Zagreb imagery and Zagreb-to-Split transfer, but lowers clean Zagreb precision. The default
-recipe stays unchanged; no final split was scored in this round. Every v2 arm must be refit from ImageNet initialization: the added
+recipe stays unchanged. Three fresh 60-epoch Zagreb fits also failed the retention rule: clean F1 changes
+0.293 → 0.297 with an interval crossing zero, while additional 1 m resampling lowers mean F1. No final
+split was scored in either comparison. Every v2 arm must be refit from ImageNet initialization: the added
 selection tiles appeared in prior full-pool training. Those old checkpoints cannot validate v2. The visibility audit describes image
 support but does not measure a recoverability ceiling. More data, image quality, training and reconstruction
 remain hypotheses to compare; a nonsignificant gain does not identify which one limits performance.
@@ -36,9 +38,14 @@ claim about uncovered cities is read against satellite-like input (step 11). Sou
 2. Train on the rented GPU (never the laptop), three seeds whenever the expected effect is smaller
    than the seed spread (about 0.02 on Zagreb selection).
 3. Score on the selection split only; one ledger row per run with recipe hash and seed.
-4. Keep the change only if the mean gain exceeds the seed spread and the bootstrap interval, and no
-   guard metric (precision, area-weighted recall, boundary F1, per-stratum F1) regresses.
-5. After a few kept changes: freeze the recipe, score each final split once, record a milestone.
+4. Apply the prospectively frozen development gate: mean F1 gain ≥ 0.01, paired geographic-block
+   interval strictly above zero, positive median seed gain and positive mean after dropping the best
+   seed. Precision, interior recall and whole-tile area recall have explicit non-inferiority guards.
+   Report boundary and density diagnostics, including small denominators. A fixed-configuration
+   correctness change can meet its separate non-inferiority gate without claiming a quality gain.
+5. Freeze the complete supported policy before fresh confirmation (F1 gain ≥ 0.02 plus the interval
+   and guard checks). Repeated selection scores do not replace fresh evidence. A numbered stage
+   finishing does not automatically authorize consuming a final split.
 6. Destroy the GPU instance; update this file (status, what we learned, spend).
 
 Cost basis (measured 2026-10-12, RTX 4090 at about $0.40/h): fifteen curve runs took about 85 minutes
@@ -51,15 +58,136 @@ in three lanes, two Split runs about 40 minutes; a 1,600-tile 30-epoch run is ab
 | 1 | Bootstrap confidence intervals in the scorer | laptop | done 2026-10-13 (`bootstrap.py`) |
 | 2 | Transfer table with three seeds | GPU | done 2026-10-13 (round 2) |
 | 3 | Split learning curve and Zagreb-donor fine-tune curve | GPU | done 2026-10-13 (round 2) |
-| 4 | Per-city reconstruction settings | laptop | done 2026-10-13: no lever |
+| 4 | Per-city reconstruction settings and seed connectivity | laptop | bounded saved-map diagnostic complete; Split-specific candidate passes development guards |
 | 5 | Visibility audit (image support) | laptop + vision model | done 2026-10-13 (machine labels; interpretation corrected) |
-| 6 | Zagreb model levers, one at a time | GPU | todo |
+| 6 | Zagreb model levers, one at a time | GPU | 60-epoch and margin-0 trials done; neither adopted |
 | 7 | Milestone 4 on both final splits | GPU or laptop | todo |
 | 8 | Ljubljana and a Spanish Csa city | laptop + GPU | todo |
 | 9 | Serving check (CPU inference) | laptop | todo |
 | 10 | Product decision: show guesses where the score clears a bar | the user | todo |
 | 11 | Satellite domain: score and train for satellite-like input | laptop + GPU | (a) done; (b) resolution trial done, not adopted; other degradations and (c) real imagery pending |
-| 12 | Nearby same-climate donor: a Dalmatian (Csa) city's tiles scored zero-shot and few-shot on Split | laptop + GPU | todo |
+| 12 | Nearby Dalmatian donor: zero-shot development on Split and untouched-city confirmation | laptop + GPU | zero-shot comparison done; advancement failed; untouched confirmation and target fine-tuning deferred |
+
+### Agreed reconstruction and transfer sequence (2026-10-15)
+
+Four Claude CLI review rounds ratified the protocol in `plans/reconstruction-v3.json` and the archived
+review under `output/reviews/claude-consensus-20261015/`. The user authorized execution. The saved
+three-seed, 30-epoch ConvNeXt controls, 153.6 m tile contract, all clipped references and geographic
+separation remain fixed. The review changes the next experiments from colour/longer tuning to:
+
+1. A CPU-only saved-map diagnostic: a one-pixel seed-connectivity rim on the 256 grid, the original
+   six source-only configurations, native-threshold factorial controls, exact-map controls, a full
+   learned/truth-marker × learned/exact-surface comparison and one no-merge diagnostic. Freeze all
+   code/input hashes first; verify the original control scores and seeds-off negative controls.
+   Report 12-block paired intervals, every seed, clipped/interior recall, marker associations,
+   split/merge cases and density strata. Truth substitutions are probes, not accuracy ceilings.
+2. A fresh three-seed target-margin-zero arm is the presumptive first training treatment. A strong
+   marker/surface diagnosis may move one targeted treatment ahead of it. Change one factor, keep
+   target metadata and cache identities explicit, and verify the generated targets. RGB normalization
+   remains a separate fresh-training experiment, using the actual pretrained configuration.
+3. Compare a nearby donor with a nested Zagreb subset under matched recipe, label count and budget,
+   with configuration selection on source data only. Zadar is the provisional donor and Šibenik the
+   provisional untouched target. Freeze roles after imagery/density/exposure eligibility checks and
+   before model scoring. Split is development geography; donor holdouts are not new-city confirmation.
+   A city-specific win remains a specialization. Defer target fine-tuning and the conditional DINOv3
+   challenger until evidence supports them.
+
+`layered/reconstruction_study.py` owns freezing and resumable per-tile scoring;
+`layered/reconstruction_analysis.py` owns source-only choice, block intervals and the declared gates.
+The rim affects only free-interior connectivity, never OSM markers, barriers or the flood domain.
+No default changes automatically. The prepaid GPU balance was checked at 08:22 UTC: $5.1650,
+with no active rental; the diagnostic itself uses no GPU credit.
+
+The diagnostic finished all 816 tile units, verified every native saved-map control and retained all
+clipped references. Its source snapshot and 1,805 frozen input/code hashes are preserved under
+`output/reconstruction-study-20261015/`; later training changes do not rewrite that evidence.
+
+| Development track | Original F1 | Rim-1 source-chooser F1 | Change and 95% block interval | Decision |
+|---|---:|---:|---|---|
+| Zagreb → Split | 0.1561 | 0.1825 | +0.0264 [+0.0126, +0.0515] | fails precision guard (change −0.0478, interval −0.0921 to +0.0040) |
+| Zagreb own-city | 0.2927 | 0.3111 | +0.0184 [−0.0244, +0.0700] | fails F1 interval and precision guards |
+| Split own-city | 0.2268 | 0.2607 | +0.0340 [+0.0157, +0.0533] | all development checks pass; specialization only |
+
+Split's three F1 changes are +0.0364, +0.0352 and +0.0303. The original per-run settings with only
+rim 1 fail the Split area-recall guard; the bounded source chooser is part of the passing candidate.
+No general default is replaced. On exact target maps, seeds ON plus the rim raises F1 from 0.4355
+to 0.6002 in Zagreb and 0.3759 to 0.5155 in Split; seeds OFF is exactly unchanged. These are probes,
+not deployment scores. The marker/surface substitutions have large interactions: neither substitution
+alone explains the remaining errors. Removing the 120 m² merge does not improve the common learned
+configuration's mean F1 in any of the three main tracks. Under identical common reconstruction,
+resolution augmentation still improves Zagreb-to-Split F1 by +0.0417 [+0.0126, +0.0678], so the earlier
+gain was not solely caused by different selected reconstruction settings. All intervals remain conditional
+on these three fits and twelve reused geographic blocks.
+
+The three fresh 30-epoch fits in `gpu/plans/selection-v3-margin.json` are complete. Margin 0 was
+the only training treatment; original rim-0 reconstruction and the source-only checkpoint/configuration
+chooser stayed fixed, along with data, seeds, runtime and pretrained weights. Each journal contains
+8,130 updates and fifteen source-selection evaluations. The actual 512-pixel cache proof retained 182
+boundary pixels on the outer rim that margin 2 erased, with identical interior targets and input arrays.
+All 900 output files (2.28 GB), including best and last checkpoints, were copied and hash-verified.
+
+| Margin-0 comparison | Control F1 | Margin-0 F1 | Change and 95% block interval | Decision |
+|---|---:|---:|---|---|
+| Zagreb → Split, primary | 0.1561 | 0.1928 | +0.0367 [+0.0167, +0.0667] | fails precision guard: −0.0330 [−0.0842, +0.0304] |
+| Zagreb own-city, secondary | 0.2927 | 0.3140 | +0.0212 [−0.0196, +0.0772] | fails F1 interval and precision guards |
+
+All three primary F1 changes are positive (+0.0648, +0.0089, +0.0363); area-weighted and interior
+recall also improve. The complete predeclared gate still fails because precision non-inferiority is
+unresolved. Retain margin 2. This is a result for the whole source-selected policy: the margin-0 fits
+selected interior seeds ON, whereas the immutable controls selected them OFF. No final split was
+scored. The six new selection ledger rows and `output/runs/selection-v3-margin-comparison/report.json`
+retain every seed, density stratum, clipped/interior count, source choice and artifact hash.
+
+City roles are frozen in `plans/nearby-donor-v1.json`: Zadar donor (12 development blocks, four
+reserved blocks) and Šibenik conditional untouched confirmation (12 final blocks, no development or
+training). Both use strict density strata and 500 m/source-ID separation. Both exports passed actual
+imagery, file-hash, source-ID and geographic-separation audits against eleven historical manifests.
+Zadar has 681 eligible training tiles, 48 source-selection tiles and 16 reserved final tiles; Šibenik
+has only 48 final tiles and remains unscored.
+
+`gpu/plans/selection-v3-donors.json` freezes six fresh fits, all completed, using the failed primary margin gate
+to select common margin 2 and keeping rim 0. Exact parcel-count matching produces 632 tiles and
+27,344 parcel instances per donor, with identical low/medium/high/dense counts of 74/93/205/260.
+Unique cadastral IDs differ (22,987 distant, 19,845 nearby); the matched annotation budget counts
+tile-level parcel instances, not distinct parcels. Both arms train for 30 epochs and 3,180 updates
+per seed. Each source chooses its own checkpoint/configuration on its 48 source-selection tiles;
+the paired target comparison uses the same 48 reused Split selection tiles. Only a passing complete
+development gate permits separately frozen Šibenik confirmation, requiring at least +0.02 F1 and
+all remaining guards. Exporting confirmation imagery does not authorize using its model outcomes
+for development decisions.
+
+The matched-donor comparison fails advancement. The table averages three seed-pooled Split selection
+scores; intervals use 2,000 paired resamples of the same twelve whole geographic blocks.
+
+| Split transfer metric | Distant Zagreb donor | Nearby Zadar donor | Nearby minus distant, 95% block interval |
+|---|---:|---:|---|
+| Parcel F1 | 0.2064 | 0.1958 | −0.0106 [−0.0247, +0.0074] |
+| Precision | 0.3917 | 0.3400 | −0.0517 [−0.0684, −0.0304] |
+| Interior recall | 0.1533 | 0.1402 | −0.0131 [−0.0354, +0.0110] |
+| Area-weighted recall | 0.2821 | 0.3364 | +0.0543 [−0.0013, +0.1245] |
+| Boundary F1 | 0.4653 | 0.4562 | −0.0090 [−0.0195, +0.0047] |
+
+Seed F1 differences are −0.018870, +0.000907 and −0.013917. The mean-gain, positive-interval,
+median-seed and drop-best-seed checks fail, as do the precision and interior-recall guards;
+only the area-recall guard passes. The F1 difference remains unresolved, while the precision interval
+is entirely negative. This comparison does not support switching to the nearby donor. Its source
+regions bundle geography, cadastral fabric and imagery, so it does not isolate a climate effect or
+establish a general limit on nearby donors.
+
+Mean F1 falls by 0.0067 in the high-density stratum and 0.0188 in the dense stratum. The low-density
+increase of 0.1622 comes from one block with only 21 references, all clipped and none interior;
+its interior recall remains null. Across the full selection set, the 1,033 clipped and 763 interior
+references remain included. Source-selected epochs are 16/18/16 for Zagreb and 8/14/12 for Zadar;
+their own-city scores describe different geographies and are not a paired comparison.
+
+All six journals satisfy 30 epochs, 3,180 updates and fifteen source-selection evaluations. All 576
+saved tile-score records were repooled, every selected own-city metric matched its training record,
+and all 1,795 donor artifacts (4.60 GB), including best/last checkpoints and actual cache proofs,
+passed SHA-256 verification. The twelve selection ledger rows and
+`output/runs/selection-v3-donors-comparison/report.json` retain every seed, guard, source choice,
+density stratum, clipped/interior count and artifact hash. Šibenik confirmation was not frozen or
+run because development failed; all final splits remain unscored in this study. Keep the existing
+default and donor policy. These intervals condition on three fitted seeds and reused Split blocks.
 
 **1. Bootstrap confidence intervals.** Resample tiles to give every pooled score a 95% interval and the
 minimum detectable effect per benchmark. Success: every comparison in the ledger reads as a difference
@@ -90,13 +218,24 @@ machine judgments and aggregate edge signal do not establish an accuracy ceiling
 labels. Weak support also does not mean zero recoverability at IoU 0.5: context and shape priors can help.
 No user labelling or spot-check is required. Actual spend: $0 billed, $7.05 estimated plan-use equivalent.
 
-**6. Zagreb levers, one at a time, three seeds each.** In order: the eligible v2 pool (1,623 tiles) with a longer
-schedule; colour augmentation; flip/rotate test-time
-averaging (no training); convnext_small. Success: each kept only by the loop's rule. Failure signal:
-three rejections in a row triggers reassessment of data, targets and optimization; it does not prove a data limit. ETA
-about 3 GPU-h, about $1.50. The first resolution-augmentation trial is recorded under step 11; it did not
-pass the clean-precision guard. Freeze the longer schedule before renting again and compare with the
-saved three-seed v2 baselines on the same manifests.
+**6. Zagreb levers, one at a time, three seeds each.** The eligible v2 pool has 1,623 training tiles.
+The longer schedule and first resolution trial are complete and were not adopted. Keep the saved
+three-seed 30-epoch controls. The 2026-10-15 sequence above replaces the queued colour augmentation,
+test-time averaging and larger-encoder trials with bounded reconstruction/target work and nearby-donor
+transfer. A failed treatment closes that recipe; it does not establish a universal data or model limit.
+
+The first schedule comparison completed on 2026-10-14, frozen in `gpu/plans/selection-v2-longer.json`: three fresh Zagreb
+fits at 60 epochs versus the saved 30-epoch baselines, seeds 1–3, 1,623 training tiles and the same
+48 selection tiles. Epoch count is the only changed training argument. The cosine learning-rate
+schedule spans 60 epochs; evaluation remains every two epochs, so the longer recipe has more
+checkpoint-selection opportunities. This is a comparison of complete schedules, not an extension
+of converged weights. The saved baselines peaked at epochs 22, 12 and 22, so the existing curves
+show no consistent late improvement. Clean Zagreb F1 and its precision/area-recall/boundary/density
+guards decide retention; clean Split transfer and resampled Zagreb imagery are secondary. Runtime
+packages and ImageNet weights were pinned to the baseline records. The 60-epoch fits selected epochs
+18, 24 and 30; none found a new best after epoch 30. The gain is unresolved and smaller than the seed
+spread, so retain 30 epochs. All artifacts are verified locally and the rental is destroyed. Final splits
+remain unscored; results, guard metrics and actual spend are below.
 
 **7. Milestone 4.** Freeze the recipe, score both final splits once. Proposed targets: Zagreb final
 ≥ 0.38, Split final ≥ 0.20.
@@ -147,16 +286,13 @@ The resolution-only trial is complete, not the broader satellite work. Keep the 
 the augmentation loses clean precision; retain its checkpoints for a separately defined donor-transfer
 comparison. Detailed results and the uncertainty limits are below.
 
-**12. Nearby same-climate donor.** The direct test of the practice-region thesis that round 2 could not
-make (Zagreb and Split differ in climate as well as distance): export a Dalmatian Csa city 60–120 km from Split
-(Šibenik or Zadar; same national parcel table and DGU imagery, so `export_city.py` covers it), train on it, and
-score on Split's selection split zero-shot and as a fine-tune donor at 50 tiles. Success: a paired difference
-against the fresh v2 Zagreb donor (baseline zero-shot F1 0.156 over three seeds) whose interval excludes zero supports a benefit from this nearby
-same-climate donor on these blocks. Quantify label savings against the target-only learning curve; an
-unresolved difference leaves the donor effect uncertain. The old 0.122 donor score and target-only curve
-use v1 and cannot be compared directly with v2; refit any target-label curve under v2. Hold the training
-recipe fixed across donors, including whether resolution augmentation is used. ETA about
-half a day (export) plus 1 GPU-h, about $0.50.
+**12. Nearby same-climate donor.** The zero-shot phase is complete under the matched six-fit protocol
+above. Zadar did not clear the development gate against the equally sized Zagreb donor; Šibenik remains
+untouched. The matched Zagreb control's F1 is 0.2064; the earlier full-pool value of 0.156 uses a different
+training budget and source-selected policy and is not this comparison's control. Target fine-tuning and
+label-savings curves remain deferred and would need a new frozen comparison using v2 holdouts. The old
+v1 donor score and target-only curve cannot be compared directly with v2. This completed experiment
+does not establish a general effect of climate, distance or target-label savings.
 
 ## ETA and spend
 
@@ -175,8 +311,67 @@ an itemized invoice. All three rentals were destroyed, and the provider inventor
 2026-10-13 22:25 UTC. Verification and the balance receipt are in `output/runs/selection-v2-rental.json`.
 2026-10-13 imagery sensitivity: 72 fixed-checkpoint evaluations, about 10 minutes of local analysis,
 $0 billed; no new training or GPU rental.
+2026-10-14 longer schedule: three 60-epoch fits plus nine fixed-checkpoint imagery evaluations,
+about 65 minutes of training and evaluation and 104 minutes of rental at $0.45/hour including storage.
+The slow backup accounts for much of the extra rental time. Credit decreased from $6.1640 to $5.1650,
+about $1.00 including setup, compute and transfers (account-balance change, not an itemized invoice).
+The GPU was destroyed and inventory was empty at 10:18 UTC; the balance was checked again at 10:22 UTC.
+Receipt: `output/runs/selection-v2-longer-rental.json`.
+
+2026-10-15 reconstruction and transfer sequence: the saved-map diagnostic used no GPU credit.
+Three margin-0 fits took 41 minutes of queue time, followed by six matched-donor fits in 28 minutes,
+both with two lanes. The corrected rental cost $0.4622/hour including storage. The account balance
+fell from $5.1650 to $3.7294, about $1.44 including two failed startups, setup, compute and recovery;
+this is an account-balance change, not an itemized invoice. All 2,695 trial output files (6.87 GB)
+were hash-verified locally before the approved rental deletion at 13:03 UTC; the 13:20 UTC balance
+check confirmed no active rentals. Receipts: `output/reconstruction-study-20261015/gpu-support/`.
+
+Operational deviation: all training finished at 11:34 UTC, but repeated SSH failures, slow artifact
+recovery and deletion approval delayed closure beyond the frozen 11:44 UTC study deadline. The
+corrected rental lasted about 2 hours 52 minutes. The time bound was missed; the $1.50 spending cap
+was met. The delay added no training, selection opportunities or final scoring. Future transfers must
+retain partial files, retry failed connections and use a separate recovery reserve.
 
 ## Learned (newest first)
+
+- 2026-10-14, step 6, longer schedule: three fresh 60-epoch Zagreb fits versus the saved 30-epoch
+  baselines, seeds 1–3, 1,623 training tiles, the same 48 selection tiles and recipe `48de5c48dab295de`.
+  Epoch count is the only changed training argument; the longer cosine schedule and twice as many
+  checkpoint evaluations are part of the treatment. Means below average the three seed-pooled scores;
+  parentheses show seed min–max. Differences are 60 minus 30 epochs, with 2,000 paired 12-block
+  bootstrap replicates. Intervals condition on the fitted seeds and are unadjusted for multiple comparisons.
+
+  | Selection condition | 30-epoch F1 (seed range) | 60-epoch F1 (seed range) | Difference (95% block interval) |
+  |---|---|---|---|
+  | Zagreb, clean | 0.293 (0.290–0.297) | 0.297 (0.288–0.305) | +0.004 (−0.006 to +0.012) |
+  | Zagreb, resampled 0.5 m | 0.272 (0.265–0.280) | 0.273 (0.262–0.282) | +0.001 (−0.005 to +0.008) |
+  | Zagreb, resampled 1 m | 0.237 (0.236–0.238) | 0.221 (0.182–0.243) | −0.016 (−0.025 to −0.003) |
+  | Split, clean zero-shot | 0.156 (0.143–0.169) | 0.159 (0.148–0.165) | +0.003 (−0.008 to +0.017) |
+
+  Decision: retain the 30-epoch default. The primary clean F1 gain is unresolved and below both seed
+  ranges' widths (0.007 for 30 epochs, 0.017 for 60). Clean precision rises 0.513 → 0.528, difference
+  +0.015 (−0.004 to +0.026); area-weighted recall changes by +0.001 (−0.016 to +0.013), and boundary
+  F1 by +0.004 (−0.0003 to +0.0073). Clean Zagreb density-bin means do not fall, but directions differ
+  across seeds. These checks do not establish equivalence or a recoverability ceiling.
+
+  The secondary 1 m F1 loss is largely seed 2 (0.236 → 0.182); the other two seeds improve slightly.
+  Mean precision falls 0.426 → 0.401, difference −0.025 (−0.044 to −0.004), and boundary F1 falls
+  0.457 → 0.444, difference −0.013 (−0.023 to −0.004). Its high/dense-bin mean F1 drops by
+  0.012/0.028. Split clean dense-bin F1 falls 0.005 despite the small positive overall mean.
+  Density differences are descriptive, and synthetic resampling does not measure real sensor transfer.
+
+  All three fits completed 60 epochs and 16,260 optimizer steps, with 30 selection evaluations each;
+  selected epochs were 18/24/30 versus 22/12/22 for the baselines. All six best/last checkpoints were
+  loaded and checked, all 720 tile-score outputs were repooled, and 15 saved polygon outputs were
+  independently re-scored with the canonical scorer. The 2,230-file backup (3.34 GB) passed SHA-256
+  verification before rental destruction. Twelve distinct selection rows were added, covering clean
+  own-city, clean transfer, 0.5 m and 1 m for each seed; duplicate clean imagery-study evaluations were
+  not added again. No final split was scored.
+
+  Artifacts: `output/runs/selection-v2-longer/`, `output/runs/selection-v2-longer-imagery/`, and
+  `output/runs/selection-v2-longer-{comparison,audit,rescore,transfer-verification}.json`.
+  Learning curves: `output/runs/selection-v2-longer-learning-curves.png`; analysis scripts and receipt
+  hashes: `output/runs/selection-v2-longer-analysis/`. Colour augmentation is next.
 
 - 2026-10-14, step 11(b), resolution augmentation: 12 fresh ConvNeXt-Tiny runs, 30 epochs each,
   three seeds per city and arm, recipe `48de5c48dab295de`. Means below are over three seed-pooled

@@ -23,7 +23,7 @@
 //
 // Needs proposal.site / proposal.binding (routes/proposal-site-ddl.sql) before --apply.
 
-import pkg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import dotenv from 'dotenv';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
@@ -32,8 +32,6 @@ import { footprintParts, hasFootprint, proposalGeometryView } from '../proposals
 import { compareDeclaration, computeBinding, parcelActBinding } from '../proposals/binding.js';
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
-
-const { Pool } = pkg;
 
 export const MIGRATION_ID = 'proposal-sites-v1';
 export const BACKUP_TABLE = 'proposal_site_backup_v1';
@@ -166,7 +164,7 @@ function usage() {
         '  --help      Show this message.',
         '',
         'Idempotent: rows that already have a site and a binding are skipped.',
-        'Connection: PG* variables (backend/.env, or exported to point at another database).'
+        'Connection: DATABASE_URL (backend/.env, or exported to point at another database).'
     ].join('\n'));
 }
 
@@ -254,11 +252,11 @@ async function restore(pool, args) {
 export async function run(argv = process.argv.slice(2)) {
     const args = parseArgs(argv);
     if (args.help) { usage(); return 0; }
-    if (!process.env.PGDATABASE) {
-        console.error('PGDATABASE is not set — refusing to guess a database.');
+    if (!process.env.DATABASE_URL) {
+        console.error('DATABASE_URL is not set — refusing to guess a database.');
         return 1;
     }
-    const pool = new Pool();
+    const pool = createPool();
     try {
         if (args.restore) return await restore(pool, args);
         const reader = await pool.connect();

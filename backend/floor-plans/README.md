@@ -18,9 +18,14 @@ A completion forecast is labeled separately; absent or conflicting years remain
 unknown. Advertised apartment area and physical net plan area remain separate.
 Translated aliases of one posting contribute evidence without multiplying its
 apartments or source links. Commercial-only projects are omitted from this catalogue.
-Search, map and sitemap include only projects with at least one apartment record.
-Located leads without apartments stay in the collection backlog; existing deep links
-explain the missing inventory, link to the source and remain `noindex,follow`.
+Search, map, sitemap and public detail routes include only apartments with a floor plan
+and projects containing at least one such apartment. Facts-only listings stay in the
+collection database; their former public detail URLs return 404.
+`hasPlan` covers a confirmed retained original drawing as well as reconstructed
+geometry; `hasGeometry` separately controls the 3D viewer. Original drawings require
+current listing ownership, matching source hashes, a positive current classification,
+and no conflicting unit identifier. Generic documents and related-unit gallery images
+do not create apartment entries. Reviewed PDF sources also need a unit and page.
 The building viewer requires a supported footprint and storey height/elevation.
 
 The source roster reconciles every known agency domain, the 20 evidenced studio
@@ -156,16 +161,16 @@ Back up this ignored directory alongside PostgreSQL. A database backup alone pre
 
 ## Run locally
 
-Commands below run from the repository root. The CLI loads `backend/.env`; `PGHOST=localhost` selects the existing laptop PostgreSQL instance. It does not create another database.
+Commands below run from the repository root. The CLI loads `backend/.env`; its `DATABASE_URL` selects the existing laptop PostgreSQL instance. It does not create another database.
 
 ```sh
 npm install --prefix backend
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs init
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs import --registry data/floor-plan-agencies/registry.json --websites data/floor-plan-agencies/verified-websites.json
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs sites --file data/floor-plan-agencies/candidate-websites.json
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs websites --file data/floor-plan-agencies/website-discovery.json
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs daily --max-pages 10000 --max-minutes 180 --max-assets 100 --ai-budget-usd 5 --ai-chunk-size 1
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs status
+node backend/scripts/floor-plan-archive.mjs init
+node backend/scripts/floor-plan-archive.mjs import --registry data/floor-plan-agencies/registry.json --websites data/floor-plan-agencies/verified-websites.json
+node backend/scripts/floor-plan-archive.mjs sites --file data/floor-plan-agencies/candidate-websites.json
+node backend/scripts/floor-plan-archive.mjs websites --file data/floor-plan-agencies/website-discovery.json
+node backend/scripts/floor-plan-archive.mjs daily --max-pages 10000 --max-minutes 180 --max-assets 100 --ai-budget-usd 5 --ai-chunk-size 1
+node backend/scripts/floor-plan-archive.mjs status
 ```
 
 Long runs should use the installed `run-job` helper or an equivalent persistent process runner. A posting is kept when it carries any location signal for the advertised object: an explicit street and house number, a street named in its title, address field or prose (not a "near X" mention), a map pin, a cited permit KLASA or a parcel number. Pages with none receive a minimal permanent exclusion record across known URL aliases; they do not enter image screening or plan extraction. Site location (below) then decides where the object is before floor geometry is processed. By default, `daily` submits one site-adjudication chunk; `--ai-stage images`, `--ai-stage plans`, `--ai-stage sheets` and the explicit `--ai-stage buildings` reader are alternatives, while `--ai-stage none` collects without submitting. Explicit source hashes and old queued tasks pass the same gates. If evidence is lost before a paid response is applied, retain its response and cost for review without producing geometry. The run then attempts registration of eligible complete floors. Every source and task is checkpointed, and advisory locks prevent duplicate runs. Limits, blocked requests and item failures remain explicit; failed fetches never prove a listing was removed.
@@ -191,7 +196,7 @@ Daily download totals include registry, discovery and asset requests. Host count
 To finish fetching one agency site before moving to the next, use the separate site runner:
 
 ```sh
-PGHOST=localhost node backend/scripts/floor-plan-site-crawl.mjs --site opereta.hr --run-dir backend/logs/opereta-2026-10-11
+node backend/scripts/floor-plan-site-crawl.mjs --site opereta.hr --run-dir backend/logs/opereta-2026-10-11
 ```
 
 Run it under a persistent process runner. It drains that site's due discovery queue, then address-qualified listing-owned images and documents, in chunks of at most 500 requests. External CDN assets need both current listing ownership and the exact-address gate. `--asset-mode plans` limits downloads to labelled plans and documents. This command only fetches sources and does not submit AI work. The lower-level `crawl` command supports `--site HOST`, `--discovery-only`, `--assets-only`, and `--plan-assets-only` for bounded diagnostics.
@@ -239,7 +244,7 @@ User decision 2026-10-12: match postings to places the way a person would, with 
 
 - **Footprint:** the polygons of ONE permit case — the latest building permit or amendment, then start of works, use permit, location permit — never a union across cases (a location permit's separate annex once fused into Avenue V's slab). Else the surveyed building, else the parcels.
 - **Storeys (`envelope.js`):** storey formulas from sheets, permits and ads ("Po+Pr+3+Uk", "prizemlje, dva kata i uvučeni kat"); the highest posted floor is a lower bound; an existing building's surveyed height fills in. Heights come from printed elevations (a line through floor/elevation pairs: Avenue V reads 3.3 m storeys over a 5.2 m commercial ground floor), else 3.0/3.2 m estimates; implausible values are kept as conflicts.
-- **Plan reading without a scale bar:** `floor-plan-vision-v12` / `floor-plan-reading.v4` take `scale=null` plus printed `dimensionHints`. Metres per pixel come from, in order: printed scale bar, printed dimensions on measured strokes, typical 0.90 m doors, listing area against the slab; with none, the plan is kept at a provisional 0.02 m/px marked `scaleBasis: unknown`. Only the first two are measurements. A drawing is read once per page and stated facts, not once per URL variant.
+- **Plan reading without a scale bar:** `floor-plan-vision-v14` / `floor-plan-reading.v4` take `scale=null` plus printed `dimensionHints`. Metres per pixel come from, in order: printed scale bar, printed dimensions on measured strokes, typical 0.90 m doors, listing area against the slab; with none, the plan is kept at a provisional 0.02 m/px marked `scaleBasis: unknown`. Only the first two are measurements. A drawing is read once per page and stated facts, not once per URL variant. Evidence v3 retains contiguous solid-stroke bands and adds cross-hatched wall strips, checking both diagonal directions and measuring thickness against source pixels. Corners and door gaps remain separate; furniture and dimension grids do not qualify as hatch strips. The reader version keeps these candidates separate from earlier paid responses.
 - **Sheet context (`sheet-context-v1`, `enqueue-sheets` / `read-sheets`):** one vision reading per posted sheet or envelope image: orientation (north arrow, or street names along the page edges), the key-plan inset (unit centre within the floor, block count), storeys visible in elevations/renders, printed elevation marks. First run 2026-10-12: 4 Avenue V sheets, $0.073236.
 - **Fit (`plan-placement.js`):** rotation candidates from dominant wall directions; measured scales may move ±3% (penalised), estimated ones ±24%, unknown ones are fitted as a full floor when the outline broadly matches (overlap ≥0.6). Units may project 1.8 m (balconies). Priors are soft: a north arrow or street-derived bearing adds weight; the key plan's unit position both scores candidates and proposes mid-facade positions. Result: `placed`, `ambiguous` (alternatives kept) or `unplaced`.
 - **Site models (`site-models`, table `floor_plan.site_model`):** one stored, idempotently rebuilt `site-model.v1` per located site. Read-only API: `/floor-plan-archive/sites` and `/floor-plan-archive/site?key=…`; the review page's **Sites** tab (`?tab=sites&site=…`) shows the envelope in 3D, footprint and fits on the map, the evidence and each fit's clues. Nothing here publishes to the map registry.
@@ -293,22 +298,22 @@ The one-off production daily run (`5227b510-50dc-470d-84da-9a3f317ba220`) ran fr
 `extract-floor-plan-draft.py` requires Python 3 with OpenCV, NumPy and Pillow, plus `tesseract`, `pdfinfo`, `pdftotext` and `pdftoppm` on PATH. `FLOOR_PLAN_PYTHON` selects the runtime; production uses an isolated pinned virtual environment. Screening and candidate extraction are local. All three LLM stages use batch requests through `floor-plans/batch-worker.js` and the shared `agents/lib/llm-cost/llm.mjs`, which chooses the model and effort from `defaults.json`, sends strict structured-output schemas, and prices and ledgers results at the model that answered. There is no per-repo model setting. The structured responses are validated locally before storage. PDF screening examines up to 30 pages; vision tasks cover the source's declared total pages, capped at 1,000, one separately rendered page per task. The daily chunk and spend limits bound actual processing. The stages and their LLM inventory are listed in [`docs/llm-tasks.md`](../../docs/llm-tasks.md).
 
 ```sh
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs match
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs verify-sites
+node backend/scripts/floor-plan-archive.mjs match
+node backend/scripts/floor-plan-archive.mjs verify-sites
 # Stop the active crawl before rebuilding current associations after a parser correction.
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs reparse
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs resolve-bindings
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs enqueue-buildings --limit 100
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs recognition-status --limit 20
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs recognize-buildings --budget-usd 5 --chunk-size 1
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs enqueue-images --limit 1000
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs classify-images --budget-usd 5 --chunk-size 1
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs image-status --limit 20
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs extract --max-assets 500
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs enqueue-plans --limit 1000
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs interpret --budget-usd 5 --chunk-size 1
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs interpret --collect-only
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs publish
+node backend/scripts/floor-plan-archive.mjs reparse
+node backend/scripts/floor-plan-archive.mjs resolve-bindings
+node backend/scripts/floor-plan-archive.mjs enqueue-buildings --limit 100
+node backend/scripts/floor-plan-archive.mjs recognition-status --limit 20
+node backend/scripts/floor-plan-archive.mjs recognize-buildings --budget-usd 5 --chunk-size 1
+node backend/scripts/floor-plan-archive.mjs enqueue-images --limit 1000
+node backend/scripts/floor-plan-archive.mjs classify-images --budget-usd 5 --chunk-size 1
+node backend/scripts/floor-plan-archive.mjs image-status --limit 20
+node backend/scripts/floor-plan-archive.mjs extract --max-assets 500
+node backend/scripts/floor-plan-archive.mjs enqueue-plans --limit 1000
+node backend/scripts/floor-plan-archive.mjs interpret --budget-usd 5 --chunk-size 1
+node backend/scripts/floor-plan-archive.mjs interpret --collect-only
+node backend/scripts/floor-plan-archive.mjs publish
 ```
 
 ## Review and verification

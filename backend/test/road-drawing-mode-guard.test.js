@@ -89,7 +89,7 @@ function loadMapModeLoader({ roadDrawingMode }) {
     return { root, controller, buttons };
 }
 
-function sharedEditorForButtons(buttons) {
+function sharedEditorForButtons(buttons, extras = {}) {
     const listeners = new Map();
     function element() {
         return {
@@ -133,7 +133,32 @@ function sharedEditorForButtons(buttons) {
         requestMapMode: vi.fn(), isThreeModeActive: () => false,
         L: { geoJSON: () => ({ getBounds: () => ({ isValid: () => true }) }) }
     };
-    return createOnMapEditorRuntime(env);
+    Object.assign(env, extras);
+    return { editor: createOnMapEditorRuntime(env), env, document, listeners, map };
+}
+
+function roadKeydownHarness(editor) {
+    const handleRoadEscape = vi.fn();
+    const code = `
+        let roadDrawingMode = true;
+        let roadHasStarted = false;
+        let roadSegmentPlacementInProgress = false;
+        const roadFinalizationGate = { isRunning: () => false };
+        const document = deps.document;
+        const window = deps.window;
+        function afterRoadPlacement(callback) { callback(); }
+        function undoLastRoadSegment() {}
+        function hasDrawableCorridor() { return false; }
+        function finishRoadDrawing() {}
+        function handleRoadEscape() { deps.handleRoadEscape(); }
+        ${lift(roadSource, 'handleRoadKeydown')}
+        return handleRoadKeydown;
+    `;
+    const handler = new Function('deps', code)({
+        document: { body: { classList: { contains: () => false } } },
+        window: { OnMapEditor: editor }, handleRoadEscape
+    });
+    return { handler, handleRoadEscape };
 }
 
 function seededStartThatChangesModeDuringLoad() {
@@ -210,13 +235,58 @@ describe('road and track drawing mode guard', () => {
     it('keeps mode buttons disabled across the nested cross-section editor, then restores them on road exit', () => {
         const h = roadLifecycle();
         h.api.updateGlobalRoadDrawingMode(true);
-        const editor = sharedEditorForButtons(h.buttons);
+        const { editor } = sharedEditorForButtons(h.buttons, { roadDrawingMode: true });
         const child = editor.open({ owner: 'corridor-editor', modes: ['2d'] });
         expect(child).not.toBeNull();
         child.close();
         expect([...h.buttons.values()].map(button => button.disabled)).toEqual([true, true, true]);
         h.api.updateGlobalRoadDrawingMode(false);
         expect([...h.buttons.values()].map(button => button.disabled)).toEqual([false, true, false]);
+    });
+
+    it('prevents other map editors from opening during road drawing while allowing its cross-section editor', () => {
+        const buttons = new Map();
+        const rejected = sharedEditorForButtons(buttons, {
+            roadDrawingMode: true,
+            __mapEditLock: { claim: vi.fn(() => true), release: vi.fn() }
+        });
+        expect(rejected.editor.open({ owner: 'structure-editor' })).toBeNull();
+        expect(rejected.env.__mapEditLock.claim).not.toHaveBeenCalled();
+        const allowed = rejected.editor.open({ owner: 'corridor-editor', modes: ['2d'] });
+        expect(allowed).not.toBeNull();
+        allowed.close();
+    });
+
+    it('blocks road drawing while a shared map editor or edit lock is active', () => {
+        const start = lift(roadSource, 'canStartRoadDrawingInCurrentMode');
+        const canStart = new Function('window', 'document', `${start}; return canStartRoadDrawingInCurrentMode;`);
+        const document = { body: { classList: { contains: () => false } } };
+        expect(canStart({ OnMapEditor: { isActive: () => true } }, document)()).toBe(false);
+        expect(canStart({ __mapEditLock: { isHeld: () => true } }, document)()).toBe(false);
+        expect(canStart({}, document)()).toBe(true);
+    });
+
+    it('lets the shared editor own Escape when its listener follows the road listener', () => {
+        const { editor, listeners } = sharedEditorForButtons(new Map(), { roadDrawingMode: true });
+        const road = roadKeydownHarness(editor);
+        const cancelled = vi.fn();
+        const session = editor.open({ owner: 'corridor-editor', modes: ['2d'], onCancel: cancelled });
+        const event = { key: 'Escape', target: {}, defaultPrevented: false,
+            preventDefault() { this.defaultPrevented = true; }, stopPropagation: vi.fn() };
+        road.handler(event);
+        listeners.get('keydown')(event);
+        expect(road.handleRoadEscape).not.toHaveBeenCalled();
+        expect(cancelled).toHaveBeenCalledOnce();
+        session.close();
+    });
+
+    it('keeps road Escape behavior when no shared editor is active', () => {
+        const { handler, handleRoadEscape } = roadKeydownHarness({ isActive: () => false });
+        const event = { key: 'Escape', target: {}, defaultPrevented: false,
+            preventDefault() { this.defaultPrevented = true; } };
+        handler(event);
+        expect(event.defaultPrevented).toBe(true);
+        expect(handleRoadEscape).toHaveBeenCalledOnce();
     });
 
     it('refuses to start from a requested/current non-2D view', () => {

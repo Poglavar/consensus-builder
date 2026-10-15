@@ -125,6 +125,14 @@
         });
     }
 
+    // The record IS its OSM form (roads.md §11): every definition authoring writes carries one,
+    // and publication refuses a record whose stretches and form disagree.
+    function osmFormApi() {
+        if (global && global.__corridorOsmForm) return global.__corridorOsmForm;
+        if (typeof require === 'function') return require('../corridor-osm-form.js');
+        throw new Error('corridor-osm-form is not available');
+    }
+
     function definitionFromEntry(entry) {
         const definition = cloneValue(entry.definition);
         const segments = cloneValue(entry.segments);
@@ -143,7 +151,7 @@
         } else {
             delete definition.segmentProfiles;
         }
-        return definition;
+        return osmFormApi().withOsmForm(definition);
     }
 
     function writeDefinition(record, definition) {
@@ -166,6 +174,102 @@
         return removed;
     }
 
+
+    // ---- junctions between records -------------------------------------------------------------
+    //
+    // A junction belongs to every road that meets there, and each record's LAND must be buildable
+    // from its own definition. So when two records are joined, each definition records the node and
+    // the OTHER road's arms there (direction and cross-section): the footprint takes the corner land
+    // the kerb returns need (corridor-footprint.js), and a narrower record widens back to the wider
+    // road it continues (corridor-transition.js) — from what it knows, without reading its neighbour.
+    const JUNCTION_NODE_EPS = 1e-7;
+
+    function samePoint(a, b) {
+        return !!a && !!b && Math.abs(a.lat - b.lat) < JUNCTION_NODE_EPS && Math.abs(a.lng - b.lng) < JUNCTION_NODE_EPS;
+    }
+
+    // The stretch's cross-section: its own override, the road's profile, or what the app derives
+    // for a record that only knows its width (corridorProfileOf); null when nothing says.
+    function segmentProfileOf(entry, index) {
+        const id = entry.segmentIds[index];
+        const override = entry.segmentProfiles && id !== null && id !== undefined ? entry.segmentProfiles[String(id)] : null;
+        if (override) return cloneValue(override);
+        if (entry.definition.profile) return cloneValue(entry.definition.profile);
+        const derive = global && typeof global.corridorProfileOf === 'function' ? global.corridorProfileOf : null;
+        if (derive) {
+            try { return cloneValue(derive(entry.definition) || null); } catch (_) { return null; }
+        }
+        return null;
+    }
+
+    // The arms of `entry` at `node`: one per neighbouring vertex, with the stretch's cross-section
+    // (or only its width, when that is all the record has).
+    function armsAt(entry, node) {
+        const arms = [];
+        entry.segments.forEach((segment, index) => {
+            segment.forEach((point, vertex) => {
+                if (!samePoint(point, node)) return;
+                [segment[vertex - 1], segment[vertex + 1]].forEach(neighbour => {
+                    if (!neighbour || samePoint(neighbour, node)) return;
+                    if (arms.some(arm => samePoint(arm.toward, neighbour))) return;
+                    const profile = segmentProfileOf(entry, index);
+                    const width = Number(entry.definition.width);
+                    arms.push({
+                        toward: { lat: neighbour.lat, lng: neighbour.lng },
+                        ...(profile ? { profile } : {}),
+                        ...(!profile && Number.isFinite(width) && width > 0 ? { width } : {})
+                    });
+                });
+            });
+        });
+        return arms;
+    }
+
+    function sharedNodes(a, b) {
+        const nodes = [];
+        a.segments.forEach(segment => segment.forEach(point => {
+            if (nodes.some(node => samePoint(node, point))) return;
+            if (b.segments.some(other => other.some(candidate => samePoint(candidate, point)))) nodes.push({ lat: point.lat, lng: point.lng });
+        }));
+        return nodes;
+    }
+
+    // Write `arms` (another road's) into `entry.definition.junctions` at `node`; true when it changed.
+    function recordJunction(entry, node, arms) {
+        if (!arms.length) return false;
+        const junctions = Array.isArray(entry.definition.junctions) ? entry.definition.junctions : [];
+        let junction = junctions.find(candidate => samePoint(candidate, node));
+        let changed = false;
+        if (!junction) {
+            junction = { lat: node.lat, lng: node.lng, arms: [] };
+            junctions.push(junction);
+            changed = true;
+        }
+        if (!Array.isArray(junction.arms)) { junction.arms = []; changed = true; }
+        arms.forEach(arm => {
+            const existing = junction.arms.find(candidate => samePoint(candidate.toward, arm.toward));
+            if (existing) {
+                if (JSON.stringify(existing.profile) !== JSON.stringify(arm.profile)) { existing.profile = arm.profile; changed = true; }
+                return;
+            }
+            junction.arms.push(arm);
+            changed = true;
+        });
+        entry.definition.junctions = junctions;
+        return changed;
+    }
+
+    // Both records learn of every node they share and of each other's arms there.
+    function recordSharedJunctions(a, b) {
+        let changedA = false;
+        let changedB = false;
+        sharedNodes(a, b).forEach(node => {
+            if (recordJunction(a, node, armsAt(b, node))) changedA = true;
+            if (recordJunction(b, node, armsAt(a, node))) changedB = true;
+        });
+        return { changedA, changedB };
+    }
+
     // Plan only junctions caused by THIS new corridor. Existing roads are visited one at a time,
     // in stable id order, against the evolving new road. Thus finishing one street cannot quietly
     // heal or rewrite an unrelated intersection elsewhere in the city.
@@ -185,13 +289,15 @@
         const excluded = new Set((Array.isArray(options.excludeProposalIds) ? options.excludeProposalIds : [])
             .map(String));
         const newIsTrack = isTrackDefinition(newEntry.definition, options);
+        // Applied corridors of EITHER kind: a road and a tram line that cross meet at a level
+        // crossing, one node shared by both, exactly as OSM models it. Roads used to node only with
+        // roads and tracks only with tracks, so a street drawn over a track stayed two strangers.
         const candidates = (Array.isArray(existingRecords) ? existingRecords : [])
             .filter(record => {
                 const id = recordId(record);
                 const definition = definitionOf(record);
                 return !!id && !excluded.has(id) && !!definition
-                    && isAppliedRecord(record, options)
-                    && isTrackDefinition(definition, options) === newIsTrack;
+                    && isAppliedRecord(record, options);
             })
             .sort((a, b) => recordId(a).localeCompare(recordId(b)));
 
@@ -208,8 +314,13 @@
             const beforeExisting = entrySignature(existingEntry);
             geometry.normalizeCorridorNetwork([newEntry, existingEntry], { toleranceMeters: 0 });
             const newChanged = entrySignature(newEntry) !== beforeNew;
-            const existingChanged = entrySignature(existingEntry) !== beforeExisting;
-            if (!newChanged && !existingChanged) return;
+            let existingChanged = entrySignature(existingEntry) !== beforeExisting;
+            // A node the two now share is a junction both must know about (recordSharedJunctions);
+            // an end-to-end join changes no geometry but is a junction all the same, and the
+            // existing record is re-snapshotted to carry it.
+            const shared = recordSharedJunctions(newEntry, existingEntry);
+            if (shared.changedB) existingChanged = true;
+            if (!newChanged && !existingChanged && !shared.changedA) return;
 
             junctionRecords += 1;
             if (existingChanged) {

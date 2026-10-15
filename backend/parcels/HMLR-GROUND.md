@@ -19,6 +19,23 @@ GML is parsed incrementally into IndexedDB. A complete validated partition is
 required before any query uses it. The UI remains responsive because parsing,
 projection and GEOS WebAssembly overlays run in the worker.
 
+Public EPSG:27700-to-geographic conversion uses the official Ordnance Survey
+OSTN15 NTv2 grid, verified by SHA-256 before loading. The grid is fetched lazily
+as a separate static asset; it is not embedded in the worker bundle. Missing,
+corrupt or out-of-grid resources fail the read. No approximate Helmert output
+or fitted map offset is used. The OS's 40 published control points are tested
+in both directions, and `coordinateOperation` identifies the grid on derived
+ground features. ETRS89 coordinates are used as WGS84 ensemble coordinates;
+an observation epoch and absolute survey accuracy are not inferred.
+
+The immutable routing release's scope cells and feature-store index boxes retain
+their published Helmert-based coordinate frame. `hmlr-routing-projection.js`
+converts public queries into that frame through OSGB36 using the known transforms.
+It serves only archive routing and index lookup. Candidate predicates and output
+geometry use OSTN15, so a routing box is never treated as proof of containment
+in the public viewport. Native ZIP bytes, IDs, release hashes and routing metadata
+remain usable without fitting a translation or rewriting archived parcel input.
+
 The static release manifest pins archive revisions, land-to-ZIP coverage scopes,
 and small native-ID directory shards. Each scope is built from **every polygon
 actually contained in that ZIP**, including parcels crossing council borders.

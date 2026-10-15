@@ -11,8 +11,8 @@ After a tested, committed and pushed release:
 
 ```sh
 # Optional metadata backfill from retained local HTML; no fetching or model calls.
-PGHOST=localhost node backend/scripts/floor-plan-property-backfill.mjs --apply
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs site-models --limit 500
+node backend/scripts/floor-plan-property-backfill.mjs --apply
+node backend/scripts/floor-plan-archive.mjs site-models --limit 500
 backend/scripts/push-site-models-to-prod.sh --run
 bash backend/scripts/deploy-novogradnje.sh --run
 ```
@@ -37,7 +37,7 @@ assets return 404. Inspect the running PM2 cwd/release, not just the deploy log.
 This deployment does not enable `consensus-builder-floor-plan-daily`.
 
 For completed-source cleanup, stop the one-off crawler, run
-`PGHOST=localhost node backend/scripts/floor-plan-retention.mjs`, inspect its report,
+`node backend/scripts/floor-plan-retention.mjs`, inspect its report,
 then add `--apply`. Compare model/result/cost fingerprints and inspect evidence
 readback before resuming. For a large archive, audit a bounded sample with
 `--limit 250`, then use `--apply --until-complete --limit 250` to checkpoint every
@@ -302,7 +302,7 @@ when reconciling subsequent results, and never replace a newer source snapshot b
 Run artifacts are ignored under `backend/logs/novogradnje-valhalla-20261014/`:
 `launch.json`, `collector.log`, `hosts.json`, table fingerprint manifests, and
 `run/summary.json` plus per-host progress/results/traces. The process uses the existing
-server credentials with `PGDATABASE=consensus`, a 2 GiB physical archive cap and a
+server credentials with the `consensus` database, a 2 GiB physical archive cap and a
 5 GiB free-space reserve on both the archive and Docker database filesystem. Capacity
 stops are partial and preserve pending sources. Check the live unit and these artifacts
 before resuming; recurring scheduling remains disabled.

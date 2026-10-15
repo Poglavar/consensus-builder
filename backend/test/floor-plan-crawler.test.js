@@ -12,6 +12,53 @@ import { useTestArchive } from './helpers/floor-plan-file-store.js';
 
 useTestArchive();
 
+describe('concurrent site crawl bookkeeping',()=>{
+    function scopedDb(target) {
+        return {query:vi.fn(async sql=>{
+            if(sql.includes('pg_try_advisory_lock'))return {rows:[{locked:true}]};
+            if(sql.includes('WHERE t.url=$1 AND t.next_check_at<=now()'))return {rows:target?[target]:[]};
+            if(sql.includes('AS allowed FROM floor_plan.target'))return {rows:[{allowed:true}]};
+            if(sql.includes('AS total,count(website)'))return {rows:[{total:0,websites:0}]};
+            if(sql.includes('SELECT count(*) AS n'))return {rows:[{n:0}]};
+            return {rows:[],rowCount:1};
+        })};
+    }
+
+    it('recovers only its own domain runs and preserves domain metadata through all checkpoints',async()=>{
+        const target={url:'https://agency.test/one',kind:'page',current_sha256:null};
+        const db=scopedDb(target);let selected=false;
+        const compact=vi.fn(async()=>({deferred:0}));
+        await crawl(db,{site:'WWW.AGENCY.TEST',maxPages:1,maxMinutes:1,log:()=>{},
+            selectTarget:async()=>selected?null:(selected=true,target),storageCheck:async()=>{},
+            fetcher:async url=>({status:200,body:Buffer.from('<html><body>Project</body></html>'),headers:{contentType:'text/html'},finalUrl:url}),
+            saveObservationFn:async()=>({changed:true}),compactSourcesFn:compact});
+        const calls=db.query.mock.calls;
+        const recovery=calls.find(([sql])=>sql.includes("SET status='interrupted'"));
+        expect(recovery[0]).toContain("counters->>'site'=$1");
+        expect(recovery[1]).toEqual(['agency.test']);
+        const start=calls.find(([sql])=>sql.includes('INSERT INTO floor_plan.run'));
+        const checkpoint=calls.find(([sql])=>sql.includes('UPDATE floor_plan.run SET counters='));
+        const end=calls.find(([sql])=>sql.includes('SET status=$2,counters=$3'));
+        for(const serialized of [start[1][1],checkpoint[1][1],end[1][2]])expect(JSON.parse(serialized).site).toBe('agency.test');
+        expect(compact.mock.calls[0][1]).toMatchObject({apply:true,crawlLockHeld:true});
+        const commit=calls.findIndex(([sql])=>sql==='COMMIT');
+        expect(calls.slice(0,commit).some(([sql])=>sql.includes("pg_advisory_lock(hashtext('floor-plan-crawl-write'))"))).toBe(true);
+        expect(calls.slice(commit+1).some(([sql])=>sql.includes("pg_advisory_unlock(hashtext('floor-plan-crawl-write'))"))).toBe(true);
+    });
+
+    it('does not refetch a shared CDN target that another domain already completed',async()=>{
+        const target={url:'https://cdn.example/shared-plan.pdf',kind:'asset'};
+        const db=scopedDb(null),fetcher=vi.fn();let selected=false;
+        const result=await crawl(db,{site:'agency.test',maxPages:1,maxMinutes:1,log:()=>{},
+            selectTarget:async()=>selected?null:(selected=true,target),fetcher,compactSourcesFn:async()=>({deferred:0})});
+        expect(fetcher).not.toHaveBeenCalled();
+        expect(result.counters.requestsAttempted).toBe(0);
+        const calls=db.query.mock.calls;
+        expect(calls.some(([sql,params])=>sql.includes("pg_advisory_lock(hashtext('floor-plan-crawl-target')")&&params[0]===target.url)).toBe(true);
+        expect(calls.some(([sql])=>sql.includes("pg_advisory_unlock(hashtext('floor-plan-crawl-target')"))).toBe(true);
+    });
+});
+
 const response = (body, contentType = 'text/html') => ({ body: Buffer.from(body), headers: { contentType }, finalUrl: 'https://agency.test/home', status: 200 });
 const explicitLocation = { schema: 'explicit-listing-location.v1', street: 'Ilica', houseNumber: '12', address: 'Ilica 12', quote: 'Ilica 12', basis: 'structured-property-address', sourceUrl: 'https://agency.test/listing' };
 

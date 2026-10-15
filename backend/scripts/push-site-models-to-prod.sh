@@ -9,8 +9,8 @@
 #   backend/scripts/push-site-models-to-prod.sh          # compare local and prod, change nothing
 #   backend/scripts/push-site-models-to-prod.sh --run    # replace prod's site models, then read back
 #
-# Local connection: backend/.env with PGHOST overridden by LOCAL_PGHOST (default localhost, the
-# Docker database). Prod: `ssh $SSH_HOST` (default do), psql as postgres with SET ROLE geo_user.
+# Local connection: DATABASE_URL from backend/.env (the laptop database).
+# Prod: `ssh $SSH_HOST` (default do), psql as postgres with SET ROLE geo_user.
 
 set -euo pipefail
 
@@ -20,7 +20,7 @@ RUN=0
 case "${1:-}" in
     --run) RUN=1 ;;
     "") ;;
-    -h|--help) sed -n '2,12p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,13p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
 esac
 
@@ -28,7 +28,7 @@ ts() { date -u +%Y-%m-%dT%H:%M:%SZ; }
 
 # shellcheck disable=SC1091
 set -a; . "$BACKEND_DIR/.env"; set +a
-export PGHOST="${LOCAL_PGHOST:-localhost}"
+: "${DATABASE_URL:?DATABASE_URL is not set in backend/.env}"
 PROD_PSQL="sudo -u postgres psql -X -q -v ON_ERROR_STOP=1 geodata"
 LIST_SQL="SELECT site_key || ' ' || model_hash FROM floor_plan.site_model"
 # comm needs both lists in one byte order, whatever collation either database uses.
@@ -36,7 +36,7 @@ export LC_ALL=C
 
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
-psql -X -At -v ON_ERROR_STOP=1 -c "$LIST_SQL" | sort > "$work/local"
+psql "$DATABASE_URL" -X -At -v ON_ERROR_STOP=1 -c "$LIST_SQL" | sort > "$work/local"
 ssh "$SSH_HOST" "$PROD_PSQL -At -c \"$LIST_SQL\"" | sort > "$work/prod"
 
 report() {
@@ -57,10 +57,10 @@ report "site models"
 (
 cd "$BACKEND_DIR"
 node --input-type=module - "$work" <<'JS'
-import pg from 'pg';
+import { createClient } from './db/connection.cjs';
 import { writeFile } from 'node:fs/promises';
 import { archiveRoot, readBlobRow } from './floor-plans/blob-store.js';
-const dir=process.argv[2], db=new pg.Client(process.env.DATABASE_URL?{connectionString:process.env.DATABASE_URL,host:process.env.PGHOST}:undefined);
+const dir=process.argv[2], db=createClient();
 await db.connect();
 try {
  const rows=(await db.query(`SELECT b.* FROM floor_plan.blob b WHERE b.bytes_available AND EXISTS(
@@ -79,7 +79,7 @@ if [[ -s "$work/source-paths" ]]; then
     COPYFILE_DISABLE=1 tar -C "$source_root" -czf - -T "$work/source-paths" | ssh "$SSH_HOST" \
         'mkdir -p "$HOME/code/consensus-builder/data/floor-plan-downloads" && tar -xzf - -C "$HOME/code/consensus-builder/data/floor-plan-downloads"'
     ssh "$SSH_HOST" 'cd "$HOME/code/consensus-builder/data/floor-plan-downloads" && sha256sum -c -' < "$work/source-checks"
-    psql -X -v ON_ERROR_STOP=1 -c "\\copy (SELECT b.sha256,b.media_type,b.byte_count,b.storage_path FROM floor_plan.blob b WHERE b.bytes_available AND EXISTS(SELECT 1 FROM floor_plan.site_model m,jsonb_array_elements(COALESCE(m.model#>'{inventory,apartments}','[]')) a WHERE a#>>'{source,sha256}'=b.sha256)) TO STDOUT" \
+    psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -c "\\copy (SELECT b.sha256,b.media_type,b.byte_count,b.storage_path FROM floor_plan.blob b WHERE b.bytes_available AND EXISTS(SELECT 1 FROM floor_plan.site_model m,jsonb_array_elements(COALESCE(m.model#>'{inventory,apartments}','[]')) a WHERE a#>>'{source,sha256}'=b.sha256)) TO STDOUT" \
       | ssh "$SSH_HOST" "$PROD_PSQL -c 'SET ROLE geo_user' \
           -c 'CREATE TEMP TABLE public_source_push (sha256 text,media_type text,byte_count bigint,storage_path text)' \
           -c '\\copy public_source_push FROM STDIN' \
@@ -92,7 +92,7 @@ fi
 # One psql session on prod: stage into a temp table, then delete-and-upsert in ONE implicit
 # transaction (a multi-statement -c string), so a failure leaves prod's previous set intact.
 # built_at is the local build time (when the model was derived); created_at/updated_at are prod's own.
-psql -X -v ON_ERROR_STOP=1 \
+psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 \
     -c "\\copy (SELECT site_key, listing_urls, model, model_hash, built_at FROM floor_plan.site_model) TO STDOUT" \
   | gzip -1 \
   | ssh "$SSH_HOST" "gunzip | $PROD_PSQL \

@@ -158,8 +158,8 @@ describe('canonical case v3 (attested) plan', () => {
         expect(plan.live).toMatchObject({ gate: 'LENS_V2_DEPLOYED=1', allowed: false });
         let failed = null;
         try {
-            // PGPORT 9: were the gate to let it through, the run would fail on the database instead.
-            execFileSync(process.execPath, [CASE_RUN, '--live', '--outcome', 'attested', '--lens', NOTARY], { encoding: 'utf8', stdio: 'pipe', env: { ...process.env, LENS_V2_DEPLOYED: '', PGHOST: '127.0.0.1', PGPORT: '9' } });
+            // Port 9: were the gate to let it through, the run would fail on the database instead.
+            execFileSync(process.execPath, [CASE_RUN, '--live', '--outcome', 'attested', '--lens', NOTARY], { encoding: 'utf8', stdio: 'pipe', env: { ...process.env, LENS_V2_DEPLOYED: '', DATABASE_URL: 'postgres://x:x@127.0.0.1:9/x' } });
         } catch (error) {
             failed = error;
         }

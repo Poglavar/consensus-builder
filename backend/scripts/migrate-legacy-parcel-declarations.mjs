@@ -36,7 +36,7 @@
 //   node scripts/migrate-legacy-parcel-declarations.mjs --dry-run --ids 8,20
 //   node scripts/migrate-legacy-parcel-declarations.mjs --apply              # writes migratable rows
 
-import pkg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import dotenv from 'dotenv';
 import { createHash } from 'node:crypto';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -51,8 +51,6 @@ import {
 } from '../proposals/footprint.js';
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
-
-const { Pool } = pkg;
 
 export const MIGRATION_ID = 'legacy-parcel-declarations-v1';
 export const MIGRATION_RULE = 'geometry-supported-declaration';
@@ -383,7 +381,7 @@ function usage() {
         '  --help      Show this message.',
         '',
         'Idempotent: a migrated row passes the serializer and is reported as canonical next time.',
-        'Connection: PG* variables (backend/.env, or exported to point at another database).'
+        'Connection: DATABASE_URL (backend/.env, or exported to point at another database).'
     ].join('\n'));
 }
 
@@ -443,11 +441,11 @@ async function applyRow(pool, id) {
 export async function run(argv = process.argv.slice(2)) {
     const args = parseArgs(argv);
     if (args.help) { usage(); return 0; }
-    if (!process.env.PGDATABASE) {
-        console.error('PGDATABASE is not set — refusing to guess a database.');
+    if (!process.env.DATABASE_URL) {
+        console.error('DATABASE_URL is not set — refusing to guess a database.');
         return 1;
     }
-    const pool = new Pool();
+    const pool = createPool();
     const reader = await pool.connect();
     try {
         // A dry run cannot write even by mistake: the session itself is read-only.

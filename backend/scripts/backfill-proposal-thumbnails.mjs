@@ -15,7 +15,7 @@
 import dotenv from 'dotenv';
 dotenv.config({ quiet: true });
 
-import pkg from 'pg';
+import { createPool, describeDatabase, isLocalDatabase } from '../db/connection.cjs';
 import fs from 'fs';
 import path from 'path';
 import {
@@ -25,7 +25,6 @@ import {
 } from '../thumbnails/proposal-thumbnail.js';
 import { saveImageBuffer, decodeImageDataUrl, imageFileExists } from '../utils/image-store.js';
 
-const { Pool } = pkg;
 
 const USAGE = `
 Backfill thumbnails for proposals that have none.
@@ -52,7 +51,7 @@ Options:
                           Only touches rows where screenshot_before_url IS NULL; honours --apply.
   --help                  Print this help and exit without doing anything.
 
-Environment: PGHOST PGPORT PGUSER PGPASSWORD PGDATABASE (read from backend/.env unless already set).
+Environment: DATABASE_URL (read from backend/.env unless already set).
 `;
 
 function parseArgs(argv) {
@@ -303,12 +302,12 @@ async function main() {
     // Even when stated, a loopback origin is only ever right for a local database. Writing one
     // against a remote DB is always a mistake.
     const isLoopback = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:|\/|$)/i.test(args.baseUrl);
-    const dbIsLocal = !process.env.PGHOST
-        || /^(localhost|127\.0\.0\.1|::1|db)$/i.test(String(process.env.PGHOST));
+    const db = describeDatabase();
+    const dbIsLocal = isLocalDatabase();
     if (args.apply && isLoopback && !dbIsLocal) {
         console.error(
             `\nRefusing to --apply: base URL ${args.baseUrl} is loopback, but the database is remote `
-            + `(PGHOST=${process.env.PGHOST}).\nThose rows would be unreachable to every browser but yours.\n`
+            + `(host ${db.host}).\nThose rows would be unreachable to every browser but yours.\n`
         );
         process.exit(1);
     }
@@ -317,16 +316,10 @@ async function main() {
         fs.mkdirSync(args.outDir, { recursive: true });
     }
 
-    const pool = new Pool({
-        host: process.env.PGHOST,
-        port: Number(process.env.PGPORT),
-        user: process.env.PGUSER,
-        password: process.env.PGPASSWORD,
-        database: process.env.PGDATABASE
-    });
+    const pool = createPool();
 
     log(`Mode: ${args.apply ? 'APPLY (writes DB + files)' : 'DRY RUN (no writes)'}${args.stripDataUrls ? ' · strip-data-urls pass' : ''}`);
-    log(`Database: ${process.env.PGUSER}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}`);
+    log(`Database: ${db.user}@${db.host}:${db.port}/${db.database}`);
     log(`Image base URL: ${args.baseUrl}`);
     if (args.city) log(`City filter: ${args.city}`);
     if (args.ids) log(`Id filter: ${args.ids.join(', ')}`);

@@ -14,7 +14,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
-import pg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import { Keypair, PublicKey } from '@solana/web3.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
 import { proposalAccount, proposalKey, isOthersActiveMinted, isSolanaMinted, fitsBudget } from './policies/common.js';
@@ -351,10 +351,7 @@ async function main() {
     if (typeof policy.decide !== 'function' || !policy.NEEDS) throw new Error(`agents/policies/${persona.role}.js must export decide() and NEEDS`);
     const turns = societyTurns({ day, personaName: persona.name, turns: args.turns ?? null, slot: args.slot });
     const caps = societyPolicy(process.env);
-    const pool = live ? new pg.Pool({
-        host: process.env.PGHOST, port: process.env.PGPORT, user: process.env.PGUSER,
-        password: process.env.PGPASSWORD, database: process.env.PGDATABASE
-    }) : null;
+    const pool = live ? createPool() : null;
     let keypair = null;
     let wallet = persona.wallet || null;
     log(`${live ? 'LIVE' : 'dry run'} · ${persona.name} (${persona.role}) · day ${day}${args.slot ? ` · slot ${args.slot}` : ''} · ${turns.length} turn(s) · controller ${args.controller} · caps ${caps.maxActions} signed action(s), ${caps.maxUsdc} USDC per invocation · api ${apiBase}`);

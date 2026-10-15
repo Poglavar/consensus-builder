@@ -2,6 +2,7 @@
 import * as cheerio from 'cheerio';
 import { buildingEvidenceFacts, prepareBuildingEvidence, unicodeSafeSlice } from './building-reading.js';
 import { pruneDiscardedFiles,readBlob,readBlobRow } from './blob-store.js';
+import { withCrawlMutation } from './crawl-locks.js';
 
 export const PROCESSED_SOURCE_REASON = 'processed-source.v1';
 export const SOURCE_EVIDENCE_SCHEMA = 'processed-source-evidence.v1';
@@ -139,13 +140,19 @@ function emptyRetentionResult(apply) {
 
 // Compact complete content-hash groups only. Shared bytes stay available if any current reference
 // is unsupported or cannot be given its own exact-URL evidence packet.
-export async function compactSources(db, { apply = false, limit = 50000, deadline = Infinity, signal, prune = pruneDiscardedFiles, log = () => {} } = {}) {
+export async function compactSources(db, options = {}) {
+    if (options.apply && options.crawlLockHeld)
+        return withCrawlMutation(db, () => compactSourcesLocked(db, options));
+    return compactSourcesLocked(db, options);
+}
+
+async function compactSourcesLocked(db, { apply = false, crawlLockHeld = false, limit = 50000, deadline = Infinity, signal, prune = pruneDiscardedFiles, log = () => {} } = {}) {
     if (!Number.isInteger(limit) || limit < 1 || limit > 100000) throw new Error('Retention limit must be 1..100000.');
     const expired = () => Boolean(signal?.aborted) || (Number.isFinite(deadline) && Date.now() >= deadline);
     let locked = false, inTransaction = false;
     const result = emptyRetentionResult(apply), htmlHashes = new Map(), sourcePackets = [];
     try {
-        if (apply) {
+        if (apply && !crawlLockHeld) {
             locked = Boolean((await db.query(`SELECT pg_try_advisory_lock(hashtext('floor-plan-crawl')) AS locked`)).rows[0]?.locked);
             if (!locked) throw new Error('Stop the active crawl before applying source retention.');
         }
@@ -237,16 +244,25 @@ export async function compactSources(db, { apply = false, limit = 50000, deadlin
         result.htmlBytes = [...eligibleHashes].reduce((sum, hash) => sum + (htmlHashes.get(hash) || 0), 0);
 
         const envelopeEligibility = alias => RETAINED_ENVELOPE_SQL.replace(/\bt\./g, `${alias}.`);
-        const envelopes = (await db.query(`SELECT DISTINCT t.url,t.current_sha256 AS sha256,b.media_type,b.byte_count,b.storage_path,b.bytes_available
-            FROM floor_plan.target t JOIN floor_plan.blob b ON b.sha256=t.current_sha256
-            WHERE t.kind='asset' AND t.image_kind='envelope' AND t.image_classified_sha256=t.current_sha256
-              AND b.bytes_available AND lower(split_part(b.media_type,';',1)) IN ('image/jpeg','image/png','image/webp','image/avif')
-              AND ${RETAINED_ENVELOPE_SQL}
-              AND NOT EXISTS(SELECT 1 FROM floor_plan.target alias WHERE alias.current_sha256=t.current_sha256
-                AND (alias.kind<>'asset' OR alias.image_kind IS DISTINCT FROM 'envelope'
-                  OR alias.image_classified_sha256 IS DISTINCT FROM alias.current_sha256
-                  OR NOT (${envelopeEligibility('alias')})))
-            ORDER BY t.url LIMIT $1`, [limit])).rows;
+        const envelopes = (await db.query(`WITH candidate_rows AS MATERIALIZED (
+                SELECT t.url,t.current_sha256 AS sha256,b.media_type,b.byte_count,b.storage_path,b.bytes_available
+                FROM floor_plan.target t JOIN floor_plan.blob b ON b.sha256=t.current_sha256
+                WHERE t.kind='asset' AND t.image_kind='envelope' AND t.image_classified_sha256=t.current_sha256
+                  AND b.bytes_available AND lower(split_part(b.media_type,';',1)) IN ('image/jpeg','image/png','image/webp','image/avif')
+            ), candidate_hashes AS MATERIALIZED (
+                SELECT DISTINCT sha256 FROM candidate_rows
+            ), alias_checks AS MATERIALIZED (
+                SELECT c.sha256,BOOL_OR(alias.kind<>'asset' OR alias.image_kind IS DISTINCT FROM 'envelope'
+                    OR alias.image_classified_sha256 IS DISTINCT FROM alias.current_sha256
+                    OR NOT (${envelopeEligibility('alias')})) AS has_unsafe_alias
+                FROM candidate_hashes c JOIN floor_plan.target alias ON alias.current_sha256=c.sha256
+                GROUP BY c.sha256
+            )
+            SELECT DISTINCT c.url,c.sha256,c.media_type,c.byte_count,c.storage_path,c.bytes_available
+            FROM candidate_rows c JOIN alias_checks a ON a.sha256=c.sha256 AND a.has_unsafe_alias IS FALSE
+            JOIN floor_plan.target t ON t.url=c.url
+            WHERE ${RETAINED_ENVELOPE_SQL}
+            ORDER BY c.url LIMIT $1`, [limit])).rows;
         const envelopeHashes = new Map();
         let processedEnvelopes = 0, processedEnvelopeBytes = 0;
         for (let envelopeIndex = 0; envelopeIndex < envelopes.length; envelopeIndex++) {

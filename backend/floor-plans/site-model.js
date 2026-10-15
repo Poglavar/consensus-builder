@@ -8,6 +8,7 @@ import { sameStreet } from './site-scoring.js';
 import { sheetContexts } from './sheet-context.js';
 import { projectInventory, projectSources } from './project-inventory.js';
 import { currentProcessedPlans } from '../floor-plan-archive/processed-catalogue.js';
+import { currentOriginalPlans, hasUsableGeometry, normalizeUnitId } from './original-plan-sources.js';
 
 const closeRing = ring => (ring.length && (ring[0][0] !== ring.at(-1)[0] || ring[0][1] !== ring.at(-1)[1]) ? [...ring, ring[0]] : ring);
 
@@ -124,7 +125,18 @@ export async function sitePlans(db, listingUrls) {
     const machine = (await currentProcessedPlans(db)).filter(row => listingUrls.includes(row.listing_url)
         && !reviewed.some(r => r.sha256 === row.source_sha256))
         .map(row => ({ ...row, sha256: row.source_sha256, kind: 'machine' }));
-    return [...reviewed, ...machine];
+    const geometry = [...reviewed, ...machine];
+    const originals = await currentOriginalPlans(db, listingUrls, { processedPlans: machine });
+    for (const original of originals) {
+        const existing = geometry.find(plan => plan.sha256 === original.sha256
+            && (plan.model.source?.page || 1) === original.model.source.page
+            && (!original.model.unitId || normalizeUnitId(plan.model.unitId) === normalizeUnitId(original.model.unitId)));
+        if (existing) {
+            original.model.quality = existing.model.quality || original.model.quality;
+            original.reviewStatus = existing.reviewStatus || existing.status || (existing.kind === 'reviewed' ? 'reviewed' : 'needs_review');
+        }
+    }
+    return [...geometry, ...originals];
 }
 
 export async function siteModel(db, listingUrl, { referencesDb = db } = {}) {
@@ -159,6 +171,7 @@ export async function siteModel(db, listingUrl, { referencesDb = db } = {}) {
         const outer = largestRing(footprint.geometry), origin = outer[0];
         const target = toLocalMetres(outer.slice(0, -1), origin);
         for (const row of plans) {
+            if (!hasUsableGeometry(row.model)) continue;
             const outline = planOutline(row.model);
             const sheet = sheets.get(row.sha256);
             const sheetNorth = typeof sheet?.orientation?.northDeg === 'number' ? sheet.orientation.northDeg : null;

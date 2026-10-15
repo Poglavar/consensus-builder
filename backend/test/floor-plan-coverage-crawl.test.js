@@ -6,7 +6,7 @@ import { calculateHostLimits,normalizeHosts,parseArgs,runCoverageCrawl,runCli } 
 
 const dirs=[];
 async function tempDir(){const path=await mkdtemp(join(tmpdir(),'floor-plan-coverage-'));dirs.push(path);return path;}
-afterEach(async()=>{await Promise.all(dirs.splice(0).map(path=>rm(path,{recursive:true,force:true})));});
+afterEach(async()=>{vi.useRealTimers();await Promise.all(dirs.splice(0).map(path=>rm(path,{recursive:true,force:true})));});
 
 const limits={maxTotalPages:10,maxTotalMinutes:1,maxSitePages:150,maxSiteMinutes:3};
 const options=runDir=>({runDir,...limits});
@@ -71,9 +71,10 @@ describe('portable bounded multi-host crawl',()=>{
  });
 
  it('runs bounded retention after the host crawl and accounts its elapsed time in both budgets',async()=>{
+  vi.useFakeTimers({now:100000});
   const runDir=await tempDir(), calls=[];
   let clock=100;
-  const summary=await runCrawl(options(runDir),{
+  const summary=await runCrawl({...options(runDir),maxTotalMinutes:10},{
    hosts:['first.test','second.test'],
    monotonic:()=>clock,
    retentionFn:async args=>{
@@ -85,7 +86,8 @@ describe('portable bounded multi-host crawl',()=>{
    runSiteCrawlFn:async opts=>saveArtifacts(opts.runDir,{requests:1,elapsedMs:1000,status:'complete',stopReason:'queue-exhausted'}),
   });
   expect(calls).toHaveLength(2);
-  expect(calls.every(args=>args.limit===100 && args.deadline-Date.now()<=15000)).toBe(true);
+  expect(calls.map(args=>args.deadline-Date.now())).toEqual([120000,120000]);
+  expect(calls.every(args=>args.limit===100)).toBe(true);
   expect(summary.hostResults.map(row=>row.status)).toEqual(['completed','completed']);
   expect(summary.hostResults.map(row=>row.retention.status)).toEqual(['complete','complete']);
   expect(summary.hostResults.map(row=>row.retentionElapsedMs)).toEqual([2000,2000]);
@@ -320,4 +322,4 @@ describe('portable bounded multi-host crawl',()=>{
  });
 });
 
-const DEFAULTS_FOR_TEST={maxTotalPages:10000,maxTotalMinutes:360,maxSitePages:150,maxSiteMinutes:3};
+const DEFAULTS_FOR_TEST={maxTotalPages:10000,maxTotalMinutes:360,maxSitePages:150,maxSiteMinutes:15};

@@ -28,11 +28,12 @@ let calls;
 let handle;
 
 beforeEach(() => {
-    calls = { undo: 0, finish: 0, exit: 0, cancelStroke: 0, status: [] };
+    calls = { undo: 0, finish: 0, exit: 0, escape: 0, status: [] };
     // eslint-disable-next-line no-new-func
     handle = new Function(
         'document',
-        'undoLastRoadSegment', 'finishRoadDrawing', 'exitRoadDrawingMode', 'cancelActiveRoadStroke',
+        'undoLastRoadSegment', 'finishRoadDrawing', 'exitRoadDrawingMode', 'handleRoadEscape',
+        'afterRoadPlacement',
         'updateStatus', 'translateRoadText', 'hasDrawableCorridor', 'roadFinalizationGate',
         'roadSegmentPlacementInProgress', 'roadHasStarted',
         `${lift('handleRoadKeydown')}; return handleRoadKeydown;`
@@ -41,7 +42,9 @@ beforeEach(() => {
         () => { calls.undo += 1; },
         () => { calls.finish += 1; },
         () => { calls.exit += 1; },
-        () => { calls.cancelStroke += 1; },
+        () => { calls.escape += 1; },
+        // No click is being placed: the deferred action runs at once.
+        action => action(),
         message => calls.status.push(message),
         (key, fallback) => fallback,
         () => true,
@@ -125,6 +128,23 @@ describe('what it deliberately does not do', () => {
         key({ ctrlKey: true });
         expect(calls.finish).toBe(0);
         expect(calls.exit).toBe(0);
+        expect(calls.escape).toBe(0);
+    });
+});
+
+describe('Escape', () => {
+    it('hands over to handleRoadEscape, which decides lift / ask / close when it runs', () => {
+        const event = key({ key: 'Escape' });
+        expect(event.defaultPrevented).toBe(true);
+        expect(calls.escape).toBe(1);
+        // Never a silent build, never a silent close from the key handler itself.
+        expect(calls.finish).toBe(0);
+        expect(calls.exit).toBe(0);
+    });
+
+    it('acts once for a held key: a repeat neither lifts again nor opens the close prompt', () => {
+        key({ key: 'Escape', repeat: true });
+        expect(calls.escape).toBe(0);
     });
 });
 

@@ -7,7 +7,8 @@ import { isHtmlPageResponse } from './html-response.js';
 import { fetchPublic } from './fetch-public.js';
 import { enqueue,saveObservation,coverage,sha256 } from './archive.js';
 import { verifySiteFromPage } from './agency-sites.js';
-import { countPendingTargets, createTargetSelector, normalizeSiteHost } from './crawl-queue.js';
+import { countPendingTargets, createTargetSelector, normalizeSiteHost, readDueTarget } from './crawl-queue.js';
+import { acquireCrawlLock, acquireTargetLock, withCrawlMutation } from './crawl-locks.js';
 import { isGeneratedSearchTarget } from './discovery-policy.js';
 import { ALLOWED_TARGET_SQL,canFetchTarget,qualifyPageEvidence,listingQualifies } from './source-policy.js';
 import { purgeExcludedContent } from './source-retention.js';
@@ -54,20 +55,26 @@ export function discoverTargets(target,response,evidence) {
 export async function crawl(db,{maxPages=1000,maxMinutes=45,agencyId=null,site=null,fetcher=fetchPublic,saveObservationFn=saveObservation,log=console.log,now=Date.now,selectTarget=null,discoveryOnly=false,assetOnly=false,matchedAssetsOnly=false,ownedAssetsOnly=false,planAssetsOnly=false,knownFirst=false,signal,storageCheck=assertArchiveCapacity,storageRoot=archiveRoot(),compactSourcesFn=compactSources}={}) {
  site=normalizeSiteHost(site);
  if(discoveryOnly&&assetOnly) throw new Error('Choose discovery-only or assets-only, not both.');
- const locked=(await db.query(`SELECT pg_try_advisory_lock(hashtext('floor-plan-crawl')) AS locked`)).rows[0].locked;
- if(!locked) throw new Error('Another floor-plan crawl is already running.');
+ const releaseLock=await acquireCrawlLock(db,site);
  const pageBudget=Number.isFinite(maxPages)?Math.max(0,Math.floor(maxPages)):1000;
  const timeBudgetMinutes=Number.isFinite(maxMinutes)?Math.max(0,maxMinutes):45;
  const id=randomUUID(),started=now(),deadline=started+timeBudgetMinutes*60000,metrics=emptyCrawlMetrics(),counters={...crawlMetricCounters(metrics),unchanged:0,notModified:0,identicalBodies:0,changed:0,discovered:0,excluded:0,filteredGeneratedSearchTargets:0,failed:0,blocked:0},errors=[];
  const cleanup={compactions:0,deferred:0,errors:[]};let stopReason=null,capacityStop=false,lastCompactedChanges=0,exitCompacted=false;
- const compact=async({final=false}={})=>{try{const result=await compactSourcesFn(db,{apply:true,limit:100,deadline,...(final?{}:{signal}),log});cleanup.compactions++;cleanup.deferred+=Number(result?.deferred||0);if(Number(result?.sourceReadErrors||0))cleanup.errors.push({reason:'source-read-errors',count:Number(result.sourceReadErrors)});if(Number(result?.deferred||0))cleanup.errors.push({reason:'deferred-sources',count:Number(result.deferred)});}catch(error){cleanup.errors.push({reason:'compaction-error',error:error.message});}lastCompactedChanges=counters.changed;};
+ const compact=async({final=false}={})=>{try{const result=await compactSourcesFn(db,{apply:true,crawlLockHeld:true,limit:100,deadline,...(final?{}:{signal}),log});cleanup.compactions++;cleanup.deferred+=Number(result?.deferred||0);if(Number(result?.sourceReadErrors||0))cleanup.errors.push({reason:'source-read-errors',count:Number(result.sourceReadErrors)});if(Number(result?.deferred||0))cleanup.errors.push({reason:'deferred-sources',count:Number(result.deferred)});}catch(error){cleanup.errors.push({reason:'compaction-error',error:error.message});}lastCompactedChanges=counters.changed;};
+ const storedCounters=extra=>JSON.stringify({...counters,...extra,...(site?{site}:{})});
  const nextTarget=selectTarget || createTargetSelector({agencyId,site,discoveryOnly,assetOnly,matchedAssetsOnly,ownedAssetsOnly,planAssetsOnly,knownFirst});
  try {
-  await db.query(`UPDATE floor_plan.run SET status='interrupted',finished_at=now(),updated_at=now() WHERE status='running'`);
-  await db.query(`INSERT INTO floor_plan.run(id,status) VALUES($1,'running')`,[id]);
+  await db.query(`UPDATE floor_plan.run SET status='interrupted',finished_at=now(),updated_at=now() WHERE status='running'${site?" AND counters->>'site'=$1":''}`,site?[site]:[]);
+  await db.query(`INSERT INTO floor_plan.run(id,status,counters) VALUES($1,'running',$2)`,[id,storedCounters()]);
   while(!capacityStop && !signal?.aborted && counters.requestsAttempted<pageBudget && now()-started<timeBudgetMinutes*60000) {
-   const target=await nextTarget(db);
+   let target=await nextTarget(db);
    if(!target) break;
+   const releaseTarget=site?await acquireTargetLock(db,target.url):null;
+   try {
+   if(site) {
+    target=await readDueTarget(db,target.url);
+    if(!target) continue; // A different domain may already have fetched this shared asset.
+   }
    if(!await canFetchTarget(db,target)) {counters.excluded++;continue;}
    try {
     await storageCheck({additionalBytes:12*1024*1024,root:storageRoot,checkArchiveBytes:false});
@@ -104,6 +111,7 @@ export async function crawl(db,{maxPages=1000,maxMinutes=45,agencyId=null,site=n
      if(target.kind==='asset' && html) throw new Error('Expected asset but received HTML.');
      Object.assign(metrics,recordCrawlSuccess(metrics,target.url));
      Object.assign(counters,crawlMetricCounters(metrics));
+     await withCrawlMutation(db,async()=>{
      await db.query('BEGIN');
      try {
       const saved=await saveObservationFn(db,target,response,evidence,id);
@@ -125,6 +133,7 @@ export async function crawl(db,{maxPages=1000,maxMinutes=45,agencyId=null,site=n
       }
       await db.query('COMMIT');
      } catch(error) {await db.query('ROLLBACK');throw error;}
+     });
      if(counters.changed-lastCompactedChanges>=50) await compact();
     }
    } catch(error) {
@@ -133,14 +142,17 @@ export async function crawl(db,{maxPages=1000,maxMinutes=45,agencyId=null,site=n
     if(errors.length<100) errors.push({url:target.url,error:error.message});
     await db.query(`UPDATE floor_plan.target SET state=$2,failure=$3,http_status=$4,last_fetched_at=now(),next_check_at=now()+interval '1 day',updated_at=now() WHERE url=$1`,[target.url,error.blocked?'blocked':([404,410].includes(error.httpStatus)?'gone':'error'),error.message,error.httpStatus || null]);
    }
-   await db.query(`UPDATE floor_plan.run SET counters=$2,errors=$3,updated_at=now() WHERE id=$1`,[id,JSON.stringify(counters),JSON.stringify(errors)]);
+   await db.query(`UPDATE floor_plan.run SET counters=$2,errors=$3,updated_at=now() WHERE id=$1`,[id,storedCounters(),JSON.stringify(errors)]);
    log(JSON.stringify({at:new Date().toISOString(),run:id,...counters,elapsedSeconds:Math.round((now()-started)/1000),current:target.url}));
+   } finally {if(releaseTarget)await releaseTarget();}
   }
   if(counters.excluded) {
+   await withCrawlMutation(db,async()=>{
    await db.query('BEGIN');
    try {counters.cleanup=await purgeExcludedContent(db);await db.query('COMMIT');}
    catch(error) {await db.query('ROLLBACK');throw error;}
    await pruneDiscardedFiles(db);
+   });
   }
   await compact({final:true});
   exitCompacted=true;
@@ -148,11 +160,11 @@ export async function crawl(db,{maxPages=1000,maxMinutes=45,agencyId=null,site=n
   const status=capacityStop||cleanup.errors.length?'partial':signal?.aborted?'interrupted':counters.failed||counters.blocked||pending?'partial':'complete';
   if(!stopReason&&cleanup.errors.length)stopReason='cleanup-incomplete';
   const result={id,status,...(stopReason?{stopReason}:{}),counters,cleanup,telemetry:crawlMetricTelemetry(metrics),pending,deferredUnmatchedAssets,deferredUnownedAssets,deferredGeneratedSearchTargets,errors,coverage:await coverage(db)};
-  await db.query(`UPDATE floor_plan.run SET status=$2,counters=$3,errors=$4,finished_at=now(),updated_at=now() WHERE id=$1`,[id,status,JSON.stringify({...counters,cleanup,pending,deferredUnmatchedAssets,deferredUnownedAssets,deferredGeneratedSearchTargets}),JSON.stringify(errors)]);
+  await db.query(`UPDATE floor_plan.run SET status=$2,counters=$3,errors=$4,finished_at=now(),updated_at=now() WHERE id=$1`,[id,status,storedCounters({cleanup,pending,deferredUnmatchedAssets,deferredUnownedAssets,deferredGeneratedSearchTargets}),JSON.stringify(errors)]);
   return result;
  } catch(error) {
   if(!exitCompacted) await compact({final:true});
-  await db.query(`UPDATE floor_plan.run SET status='failed',counters=$3,errors=$2,finished_at=now(),updated_at=now() WHERE id=$1`,[id,JSON.stringify([...errors,{error:error.message},...(cleanup.errors.length?[{cleanup}]:[])]),JSON.stringify({...counters,cleanup})]);
+  await db.query(`UPDATE floor_plan.run SET status='failed',counters=$3,errors=$2,finished_at=now(),updated_at=now() WHERE id=$1`,[id,JSON.stringify([...errors,{error:error.message},...(cleanup.errors.length?[{cleanup}]:[])]),storedCounters({cleanup})]);
   throw error;
- } finally {await db.query(`SELECT pg_advisory_unlock(hashtext('floor-plan-crawl'))`);}
+ } finally {await releaseLock();}
 }
