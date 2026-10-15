@@ -18,7 +18,11 @@ Nestrpljivi vozač traži drugi dopušteni izlaz ili okretanje prema postojećoj
 ceste. Pretraživanje je ograničeno i raspoređeno kroz korake simulacije. Okretanje može sadržavati
 više vožnji naprijed i natrag, uz provjeru cijele karoserije na kolniku, ostalih vozila, zatvorenih
 dionica i stvarnih lokalnih crta zaustavljanja. Ako nema sigurnog puta, vozilo ostaje u redu.
-Zadovoljstvo vozača, trenutačno trajanje zastoja i manevar prikazani su pri odabiru vozila.
+Zaglavljeni započeti manevar može se ponovno planirati iz stvarnog položaja vozila. Ostala vozila
+propuštaju njegovu kratku putanju, uključujući promjenu smjera vožnje, umjesto da popune prostor
+za uzmicanje. Pretraživanje izmjenjuje vozače redom, a ne uvijek od najmanjeg broja vozila.
+Zadovoljstvo vozača, trenutačno trajanje zastoja i manevar prikazani su pri odabiru vozila;
+zaustavljeno vozilo prikazuje čekanje na prostor, a ne manevar koji se ne izvodi.
 Plavi gradski autobusi, policijska vozila i vozila hitne pomoći imaju vlastite dimenzije i polumjere
 okretanja; slijede iste prometne signale i pravila propuštanja.
 

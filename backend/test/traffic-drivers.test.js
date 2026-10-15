@@ -18,6 +18,21 @@ function car(vehicleType = 'car', speed = 0, random = () => 0) {
 }
 
 describe('traffic driver profiles and behavior', () => {
+    it('describes a stopped manoeuvre as waiting and a running search as planning', () => {
+        const vehicle = car();
+        vehicle.maneuver = { kind: 'yield' };
+        expect(Drivers.view(vehicle).maneuver).toBe('waiting');
+        vehicle.speed = .5;
+        expect(Drivers.view(vehicle).maneuver).toBe('yield');
+        vehicle.planning = true;
+        expect(Drivers.view(vehicle).maneuver).toBe('planning');
+        vehicle.planning = false; vehicle.maneuver = null;
+        vehicle.change = { recovery: true }; vehicle.speed = 0;
+        expect(Drivers.view(vehicle).maneuver).toBe('waiting');
+        vehicle.speed = .5;
+        expect(Drivers.view(vehicle).maneuver).toBe('bypass');
+    });
+
     it('creates stable seeded profiles with individual patience and spacing', () => {
         const first = Drivers.create(seeded(523), 17);
         const repeat = Drivers.create(seeded(523), 17);
@@ -82,5 +97,58 @@ describe('traffic driver profiles and behavior', () => {
         expect(Drivers.view(vehicle).honkCount).toBe(1);
         Drivers.update(vehicle, 1, 0, false, always, 101);
         expect(Drivers.view(vehicle).honkCount).toBe(1);
+    });
+});
+
+function fits(car, speed, clearance, dt, ratio = 1) {
+    const headway = car.driver.headway / ratio;
+    const cap = 10 / ratio;
+    return speed * dt + Math.min(cap, speed * headway)
+        <= clearance + Math.min(cap, Math.max(0, car.speed) * headway) + 1e-10;
+}
+
+describe('following speed limit', () => {
+    it('allows a stopped follower to move into a small positive clearance', () => {
+        const car = { speed: 0, driver: { headway: 1.07 } };
+        const clearance = .214, dt = .1;
+        const speed = Drivers.followingSpeedLimit(car, clearance, dt);
+
+        expect(speed).toBeCloseTo(.214 / 1.17, 10);
+        expect(speed).toBeGreaterThan(0);
+        expect(fits(car, speed, clearance, dt)).toBe(true);
+    });
+
+    it('accounts for the follower current speed contribution', () => {
+        const car = { speed: 4, driver: { headway: 1.07 } };
+        const clearance = .5, dt = .1;
+        const speed = Drivers.followingSpeedLimit(car, clearance, dt);
+
+        expect(speed).toBeCloseTo((clearance + 4 * 1.07) / (dt + 1.07), 10);
+        expect(speed).toBeGreaterThan(car.speed);
+        expect(fits(car, speed, clearance, dt)).toBe(true);
+    });
+
+    it('uses the capped headway branch when the solved speed exceeds its threshold', () => {
+        const car = { speed: 20, driver: { headway: 1.07 } };
+        const clearance = 3, dt = .1;
+        const speed = Drivers.followingSpeedLimit(car, clearance, dt);
+
+        expect(speed).toBeCloseTo(30, 10);
+        expect(speed).toBeGreaterThan(10 / car.driver.headway);
+        expect(fits(car, speed, clearance, dt)).toBe(true);
+    });
+
+    it('scales headway clearance by the route station ratio', () => {
+        const car = { speed: 0, driver: { headway: 1.2 } };
+        const clearance = .6, dt = .1, ratio = 2;
+        const speed = Drivers.followingSpeedLimit(car, clearance, dt, ratio);
+
+        expect(speed).toBeCloseTo(clearance / (dt + car.driver.headway / ratio), 10);
+        expect(fits(car, speed, clearance, dt, ratio)).toBe(true);
+    });
+
+    it('preserves unlimited defaults when there is no driver or finite clearance', () => {
+        expect(Drivers.followingSpeedLimit({ speed: 0 }, .2, .1)).toBe(Infinity);
+        expect(Drivers.followingSpeedLimit({ speed: 0, driver: { headway: 1 } }, Infinity, .1)).toBe(Infinity);
     });
 });

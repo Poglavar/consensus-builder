@@ -299,6 +299,7 @@
             this.physicalNetwork = physicalNetwork;
             this.space = null;
             this.planningTask = null;
+            this.planningQueue = [];
             this.nextPlanAt = 0;
             this.setCount(count);
         }
@@ -354,14 +355,42 @@
             const body = { ...pose, length: vehicle.length, width: vehicle.width };
             const previous = { ...before, length: vehicle.length, width: vehicle.width };
             return !this.maneuverBlocked(car, pose, before, onPavement, stops)
-                && this.bodyIndex.blocker(car.id, body, previous) == null;
+                && this.bodyIndex.blocker(car.id, body, previous) == null
+                && this.maneuverSpaceBlocker(car, body, previous) == null;
+        }
+
+        updateManeuverSpace() {
+            const index = this.maneuverSpace = new Collision.Index();
+            for (const car of this.cars) {
+                const maneuver = car.maneuver;
+                if (!maneuver) continue;
+                const vehicle = Vehicles.get(car.vehicleType);
+                let previous = this.pose(car);
+                // Let a vehicle finish its bounded parking-speed manoeuvre.
+                // Following into its next gear change can otherwise wedge it again.
+                segments: for (let part = maneuver.index; part < maneuver.segments.length; part++) {
+                    const segment = maneuver.segments[part];
+                    for (let s = part === maneuver.index ? maneuver.s : 0; s < segment.path.length + .4; s += .4) {
+                        const pose = sample(segment.path, Math.min(s, segment.path.length));
+                        const body = { ...pose, angle: pose.angle + (segment.gear < 0 ? Math.PI : 0),
+                            length: vehicle.length, width: vehicle.width };
+                        if (this.bodyIndex.blocker(car.id, body, previous) != null) break segments;
+                        index.set({ carId: car.id }, body);
+                        previous = body;
+                    }
+                }
+            }
+        }
+
+        maneuverSpaceBlocker(car, pose, before) {
+            return this.maneuverSpace?.blocker(null, pose, before, owner => owner.carId === car.id)?.carId ?? null;
         }
 
         advanceSearch() {
             const task = this.planningTask;
             if (!task) return;
             const current = this.pose(task.car);
-            if (task.car.retired || task.car.change || task.car.maneuver || task.network !== this.network
+            if (task.car.retired || task.car.change !== task.change || task.car.maneuver !== task.maneuver || task.network !== this.network
                 || Math.hypot(current.x - task.start.x, current.y - task.start.y) > .2
                 || Math.abs(Math.atan2(Math.sin(current.angle - task.start.angle), Math.cos(current.angle - task.start.angle))) > .08) {
                 task.car.planning = false; this.planningTask = null; return;
@@ -370,7 +399,7 @@
             if (!task.search.done) return;
             const plan = task.search.result;
             if (plan && Maneuvers.validate(plan, (pose, before) => this.maneuverClear(task.car, pose, before, true, task.stops), current)) {
-                plan.stops = task.stops; task.car.maneuver = plan; task.car.speed = 0;
+                plan.stops = task.stops; task.car.change = null; task.car.maneuver = plan; task.car.speed = 0;
             }
             task.car.planning = false; this.planningTask = null;
             this.nextPlanAt = this.time + .7;
@@ -412,17 +441,23 @@
 
         tryDriverAction(car, occupied, previousBlocker) {
             const d = car.driver;
-            if (!d || car.change || car.maneuver || car.speed > .4 || (car.blockedFor || 0) < d.reaction) return;
+            const activePath = car.maneuver || car.change?.recovery;
+            if (!d || car.planning || car.change && !car.change.recovery || car.speed > .4
+                || (activePath ? d.stuckFor : car.blockedFor || 0) < d.reaction) return;
             const partner = this.carsById.get(previousBlocker);
             const mutual = partner && this.previousWait.get(partner.id) === car.id;
-            if (mutual && this.yieldWinner(car, partner) !== car && this.time >= (d.nextYieldAt || 0)) {
+            if (!activePath && mutual && this.yieldWinner(car, partner) !== car && this.time >= (d.nextYieldAt || 0)) {
                 d.nextYieldAt = this.time + 1.5 + this.random() * 2;
                 if (this.backToGiveWay(car)) return;
             }
-            if (d.stuckFor < d.patience || this.time < d.nextTryAt || this.planningTask || this.time < this.nextPlanAt) return;
-            const limits = this.limits(car, occupied);
-            if (limits.signal < .4) return;
+            if (d.stuckFor < d.patience || this.time < d.nextTryAt) return;
+            if (!this.planningQueue.includes(car)) this.planningQueue.push(car);
+            if (this.planningTask || this.time < this.nextPlanAt || this.planningQueue[0] !== car) return;
+            this.planningQueue.shift();
+            this.nextPlanAt = this.time + .7;
             d.nextTryAt = this.time + 5 + this.random() * 8;
+            const limits = this.limits(car, occupied);
+            if (!activePath && limits.signal < .4) return;
             if (!this.physicalNetwork.data?.surfaceLanes) return;
             if (!this.space) {
                 const surface = Surface.build(this.physicalNetwork, this.physicalNetwork.data.surfaceLanes);
@@ -433,13 +468,23 @@
                 if (!target || target.ghost || !target.routes.length || target.width < Vehicles.get(car.vehicleType).width + .2) return;
                 const near = Geometry.nearest(target.path, [start.x, start.y]);
                 if (near.distance > 15 || target.path.length - near.s < 4) return;
+                if (kind === 'bypass' && near.distance < .75 && Math.cos(near.angle - start.angle) > .85) return;
                 let maxS = target.path.length;
                 for (const signal of target.signals) {
                     if (signal.stopS >= near.s - .1 && signalAspect(n.signals.get(signal.signalId), signal.phase, this.time) !== 'green') maxS = Math.min(maxS, signal.stopS - .2);
                 }
-                goals.push({ route: target.path, kind, maxS, landing: { mode: 'lane', laneId: target.id, connectionId: null } });
+                goals.push({ route: target.path, kind, maxS, minS: kind === 'escape' ? near.s + 4 : 0,
+                    landing: { mode: 'lane', laneId: target.id, connectionId: null } });
             };
             if (move) addLane(n.lanes.get(move.toLaneId), 'escape');
+            // A wedged forward-only lane change may need to reverse before it
+            // can reach either neighbouring lane. Keep its exact current pose.
+            const current = move ? n.lanes.get(move.toLaneId) : lane;
+            const changingTo = car.change?.recovery && n.lanes.get(car.change.to);
+            const landingAt = car.maneuver && n.lanes.get(car.maneuver.landing.laneId);
+            const neighbours = new Set([current, changingTo, landingAt].filter(Boolean)
+                .flatMap(source => source.neighbours || []));
+            for (const id of neighbours) addLane(n.lanes.get(id), 'bypass');
             for (const id of lane.routes) {
                 const connection = n.connections.get(id);
                 if (connection.id === move?.id || connection.id === car.next || !this.canEnter(car, connection, occupied, false)) continue;
@@ -455,7 +500,7 @@
             const stops = this.localStops(start);
             const search = new Maneuvers.Search({ start, vehicle: Vehicles.get(car.vehicleType), goals,
                 clear: (pose, before) => this.maneuverClear(car, pose, before, true, stops) });
-            this.planningTask = { search, car, start, network: n, stops }; car.planning = true;
+            this.planningTask = { search, car, start, network: n, stops, change: car.change, maneuver: car.maneuver }; car.planning = true;
             this.nextPlanAt = this.time + .7;
         }
 
@@ -479,13 +524,21 @@
         carOccupancies(car) {
             if (car.maneuver) {
                 const pose = this.pose(car), { lane, move, route } = this.routeInfo(car);
-                const station = this.projectStation(route, pose);
+                const segment = car.maneuver.segments[car.maneuver.index];
+                const reversingTo = segment.gear < 0 ? sample(segment.path, segment.path.length) : null;
+                // Drivers leave the already-started reversing run clear instead
+                // of following into the space the vehicle is backing towards.
+                const station = Math.min(this.projectStation(route, pose),
+                    reversingTo ? this.projectStation(route, reversingTo) : Infinity);
                 const entries = move ? [[move.id, station], [lane.id, lane.path.length + station],
                     [move.toLaneId, station - route.length]] : [[lane.id, station]];
                 const landing = car.maneuver.landing;
                 const target = landing.mode === 'connection' ? this.network.connections.get(landing.connectionId) : this.network.lanes.get(landing.laneId);
                 const near = Geometry.nearest(target.path, [pose.x, pose.y]);
-                if (near.distance < Vehicles.get(car.vehicleType).width / 2 + 2) entries.push([target.id, near.s]);
+                if (reversingTo || near.distance < Vehicles.get(car.vehicleType).width / 2 + 2) {
+                    entries.push([target.id, Math.min(near.s, reversingTo
+                        ? this.projectStation(target.path, reversingTo) : Infinity)]);
+                }
                 return entries;
             }
             if (car.change?.recovery) {
@@ -569,7 +622,7 @@
         canEnter(car, connection, occupied, checkSignal = true) { return this.entryBlocker(car, connection, occupied, checkSignal) == null; }
 
         tryRecovery(car, occupied) {
-            if (car.change || car.maneuver || (car.blockedFor || 0) < (car.driver?.reaction || 1)) return;
+            if (car.planning || car.change || car.maneuver || (car.blockedFor || 0) < (car.driver?.reaction || 1)) return;
             const n = this.network, { lane, move, route } = this.routeInfo(car), start = this.pose(car);
             const choices = [];
             const consider = (target, mode, station) => {
@@ -629,7 +682,7 @@
 
         tryLaneChange(car, occupied) {
             const from = this.network.lanes.get(car.laneId);
-            if (this.gates.length || from.fragment || car.change || car.maneuver || car.speed < 2 || car.s < 15 || from.path.length - car.s < Math.max(40, car.speed * 5)
+            if (this.gates.length || from.fragment || car.planning || car.change || car.maneuver || car.speed < 2 || car.s < 15 || from.path.length - car.s < Math.max(40, car.speed * 5)
                 || this.time < car.cooldown || this.random() >= this.laneChangeRate * STEP) return;
             const candidates = from.adjacent.filter(id => {
                 const to = this.network.lanes.get(id);
@@ -657,7 +710,7 @@
 
         limits(car, occupied) {
             const n = this.network, { lane, move, route, id } = this.routeInfo(car);
-            let clearance = Infinity, leader = null;
+            let clearance = Infinity, leader = null, gapRatio = 1;
             const ahead = (key, station, ratio = 1, receiving = false) => {
                 for (const entry of occupied.get(key) || []) {
                     if (receiving && entry.car.mode === 'connection') {
@@ -667,7 +720,7 @@
                     }
                     const distance = (entry.s - station - Drivers.gap(car, entry.car)) / ratio;
                     if (entry.car.id !== car.id && entry.s >= station - 1e-7 && distance < clearance) {
-                        clearance = distance; leader = entry.car.id;
+                        clearance = distance; leader = entry.car.id; gapRatio = ratio;
                     }
                 }
             };
@@ -700,7 +753,7 @@
                     const otherStation = this.projectStation(receiving, otherPose), delta = otherStation - station;
                     if (delta < -.2 || Math.abs(delta) <= .2 && this.yieldWinner(car, other) === car) continue;
                     const distance = Math.max(0, delta - Drivers.gap(car, other));
-                    if (distance < clearance) { clearance = distance; leader = other.id; }
+                    if (distance < clearance) { clearance = distance; leader = other.id; gapRatio = 1; }
                 }
             }
             const entry = move ? null : car.change ? { kind: 'changing' }
@@ -711,7 +764,7 @@
             const entering = !!move || available && signalState(n, lane, this.time, this.signals, car.s) === 'green';
             const gate = Math.min(Infinity, ...this.gates.map(item => item.distance?.(car, this) ?? Infinity));
             const entryDistance = available ? Infinity : Math.max(0, route.length - car.s);
-            return { clearance, signal, connection, entering, available, entry, entryDistance, leader,
+            return { clearance, gapRatio, signal, connection, entering, available, entry, entryDistance, leader,
                 stopping: Math.max(0, Math.min(clearance, signal, gate, entryDistance)), gate };
         }
 
@@ -876,7 +929,7 @@
 
         step() {
             this.time += STEP;
-            const occupied = this.occupants(), bodies = new Collision.Index();
+            const bodies = new Collision.Index();
             this.posesByCar = new Map();
             for (const car of this.cars) {
                 const pose = this.pose(car); bodies.set(car.id, pose); this.posesByCar.set(car, pose);
@@ -884,7 +937,14 @@
             this.bodyIndex = bodies;
             this.carsById = new Map(this.cars.map(car => [car.id, car]));
             this.previousWait = new Map(this.cars.map(car => [car.id, car.waitingFor ?? car.collisionBlocker]));
+            this.planningQueue = this.planningQueue.filter(car => !car.retired && car.driver
+                && car.speed <= .4 && car.driver.stuckFor >= car.driver.patience
+                && (!car.change || car.change.recovery));
+            this.updateManeuverSpace();
+            const searching = this.planningTask;
             this.advanceSearch();
+            if (searching && searching.car.maneuver !== searching.maneuver) this.updateManeuverSpace();
+            const occupied = this.occupants();
             for (const car of this.cars) {
                 this.processingCar = car;
                 const journal = () => ({ ...car, change: car.change && { ...car.change }, maneuver: car.maneuver && { ...car.maneuver }, traversed: [...car.traversed || []] });
@@ -900,6 +960,7 @@
                 const blockedFor = blocked ? (car.blockedFor || 0) + STEP : 0;
                 car.blockedFor = blockedFor;
                 this.tryDriverAction(car, occupied, snapshot.collisionBlocker ?? snapshot.waitingFor ?? beforeLimits.leader);
+                if (!snapshot.maneuver && car.maneuver) this.updateManeuverSpace();
                 this.tryRecovery(car, occupied);
                 if (!move) this.tryLaneChange(car, occupied);
                 const limits = this.limits(car, occupied);
@@ -911,12 +972,14 @@
                 const roadLimit = lane.maxSpeed > 0 ? lane.maxSpeed / 3.6 : 13.9;
                 const receivingLimit = move ? this.network.lanes.get(move.toLaneId).maxSpeed / 3.6 : Infinity;
                 const cruise = Math.min(car.cruise, roadLimit, receivingLimit > 0 ? receivingLimit : Infinity, move && !move.geometryKind ? 6 : Infinity);
-                const desired = car.maneuver ? (this.time < (car.maneuver.shiftUntil || 0) ? 0 : Math.min(1.2,
+                const desired = car.planning ? 0 : car.maneuver ? (this.time < (car.maneuver.shiftUntil || 0) ? 0 : Math.min(1.2,
                     Math.sqrt(3 * (car.maneuver.segments[car.maneuver.index].path.length - car.maneuver.s))))
                     : car.change?.recovery ? Math.min(cruise, 2.5, Math.sqrt(6 * Math.min(limits.signal, limits.gate)))
                     : Math.min(cruise, Math.sqrt(6 * limits.stopping));
                 const oldSpeed = car.speed;
+                const followingLimit = Drivers.followingSpeedLimit(car, limits.clearance, STEP, limits.gapRatio);
                 car.speed = clamp(desired, Math.max(0, car.speed - 3.5 * STEP), car.speed + 2 * STEP);
+                if (!car.maneuver && !car.change?.recovery) car.speed = Math.min(car.speed, followingLimit);
                 const requested = car.speed * STEP;
                 // Every collision trial starts from its own untouched path journal.
                 const motionStart = journal();
@@ -924,9 +987,9 @@
                     for (const key of Object.keys(car)) if (!(key in state)) delete car[key];
                     Object.assign(car, state, { change: state.change && { ...state.change }, maneuver: state.maneuver && { ...state.maneuver }, traversed: [...state.traversed || []] });
                 };
-                let travel = this.advanceCar(car, requested, occupied);
+                let travel = car.planning ? 0 : this.advanceCar(car, requested, occupied);
                 let after = this.pose(car);
-                const collisionBlocker = bodies.blocker(car.id, after, before);
+                const collisionBlocker = bodies.blocker(car.id, after, before) ?? this.maneuverSpaceBlocker(car, after, before);
                 if (collisionBlocker != null) {
                     // Keep the safe part of this tick. An occupied last metre
                     // must not discard the free space before it. Retry each tick.
@@ -936,7 +999,8 @@
                         const distance = (low + high) / 2;
                         restore(motionStart); [this.crossings, this.laneChanges] = counts;
                         const advanced = this.advanceCar(car, distance, occupied);
-                        if (bodies.blocker(car.id, this.pose(car), before) != null) high = distance;
+                        if (bodies.blocker(car.id, this.pose(car), before) != null
+                            || this.maneuverSpaceBlocker(car, this.pose(car), before) != null) high = distance;
                         else {
                             low = distance; travel = advanced;
                             best = journal();

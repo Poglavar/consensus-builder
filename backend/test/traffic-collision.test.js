@@ -132,6 +132,16 @@ describe('traffic vehicle collision geometry', () => {
         expect(index.blocked('moving', after, before)).toBe(true);
     });
 
+    it('can ignore a reserved recovery owner while still blocking on another car, including during a sweep', () => {
+        const index = new Index();
+        index.set('recovery-owner', pose(0, 0));
+        index.set('other-car', pose(5, 0));
+        const before = pose(-5, 0), after = pose(7, 0);
+        expect(index.blocker('moving', after, before)).toBe('recovery-owner');
+        expect(index.blocker('moving', after, before, id => id === 'recovery-owner')).toBe('other-car');
+        expect(index.blocker('moving', pose(0, 0), pose(0, 0), id => id === 'recovery-owner')).toBe(null);
+    });
+
     it('checks crossing paths with different headings at the shared conflict point', () => {
         const index = new Index();
         index.set('through', pose(0, 0, 0));

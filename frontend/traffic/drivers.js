@@ -23,6 +23,16 @@
         return body + (follower.driver ? follower.driver.gap
             + Math.min(10, Math.max(0, follower.speed) * follower.driver.headway) : .4);
     }
+    function followingSpeedLimit(car, clearance, dt, ratio = 1) {
+        if (!car?.driver || !Number.isFinite(clearance) || !Number.isFinite(dt) || dt <= 0
+            || !Number.isFinite(ratio) || ratio <= 0) return Infinity;
+        const headway = car.driver.headway;
+        if (!Number.isFinite(headway) || headway < 0) return Infinity;
+        const h = headway / ratio, cap = 10 / ratio;
+        const current = Math.min(cap, Math.max(0, car.speed || 0) * h);
+        const capped = (clearance + current - cap) / dt;
+        return Math.max(0, capped >= cap / h ? capped : (clearance + current) / (dt + h));
+    }
     function update(car, dt, distance, red, random, time) {
         const d = car.driver;
         if (!d) return;
@@ -43,9 +53,10 @@
             mood: frustration >= .75 ? 'angry' : frustration >= .4 ? 'unhappy' : frustration >= .12 ? 'neutral' : 'happy',
             stuckFor: d?.stuckFor || 0,
             impatient: !!d && d.stuckFor >= d.patience,
-            maneuver: car.maneuver?.kind || (car.planning ? 'planning' : car.change?.recovery ? 'bypass' : null),
+            maneuver: car.planning ? 'planning' : car.maneuver || car.change?.recovery
+                ? car.speed < .05 ? 'waiting' : car.maneuver?.kind || 'bypass' : null,
             honkCount: d?.honkCount || 0
         };
     }
-    return { create, gap, update, view };
+    return { create, gap, followingSpeedLimit, update, view };
 });

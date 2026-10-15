@@ -59,6 +59,17 @@ describe('traffic low-speed maneuvers', () => {
         expect(plan.landing).toMatchObject({ laneId: 'opposite', mode: 'lane' });
         expect(Maneuvers.validate(plan, clear, start)).toBe(true);
 
+        for (const segment of plan.segments) {
+            for (let i = 1; i < segment.path.points.length - 1; i++) {
+                const before = segment.path.points[i - 1], at = segment.path.points[i], after = segment.path.points[i + 1];
+                const incoming = Math.atan2(at[1] - before[1], at[0] - before[0]);
+                const outgoing = Math.atan2(after[1] - at[1], after[0] - at[0]);
+                const run = (Math.hypot(at[0] - before[0], at[1] - before[1])
+                    + Math.hypot(after[0] - at[0], after[1] - at[1])) / 2;
+                expect(Math.abs(difference(outgoing, incoming)) / run)
+                    .toBeLessThanOrEqual(1 / car.turnRadius + .002);
+            }
+        }
         sampleBody(plan, start, (current, previous) => {
             expect(clear(current)).toBe(true);
             expect(Math.hypot(current.x - previous.x, current.y - previous.y)).toBeLessThanOrEqual(.21);
