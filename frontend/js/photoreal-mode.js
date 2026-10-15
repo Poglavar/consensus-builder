@@ -10,8 +10,8 @@
 
     // Cesium ion access token (client-side by design) — ion only brokers the Google tileset;
     // no Cesium code runs. Same token + asset as the isochrone sim.
-    // TODO before public/commercial launch: rotate this token and scope it to asset 2275207.
-    const ION_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5MTBkNDc1Ny0zNzlkLTRiOTMtYTM2Zi1hZjYzNWY0MTJjMTIiLCJpZCI6NDI0MDY3LCJpYXQiOjE3NzcyNzM2ODF9.-GY-QQkFSEcYl8fkkm_u4AxVbmWY2aNefvzoHAiLuLE';
+    // Rotated 2026-10-15: this token is scoped to asset 2275207 and to the zagreb.lol / urbangametheory.xyz origins.
+    const ION_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjByd19iYkpMaW1yWU1aVWciLCJqdGkiOiJiNGU3YWZiMy02YjQ4LTQ3MjQtOWY2YS0yZmM2YTMyZjI5YjEiLCJpZCI6NDI0MDY3LCJzdWIiOiJwb2dsYXZhciIsImlzcyI6Imh0dHBzOi8vYXBpLmNlc2l1bS5jb20iLCJhdWQiOiJ6YWdyZWItbG9sIHBob3RvcmVhbCByZXN0cmljdGVkIDIwMjYtMTAiLCJpYXQiOjE3OTIwNjE2ODF9.ZTMHuX13FJ-HojChWk1Ip7V9gDBkRGHcACC8J_Hwopc';
     const GOOGLE_PHOTOREALISTIC_ION_ASSET = 2275207;
     const DRACO_DECODER = 'https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/libs/draco/gltf/';
 
