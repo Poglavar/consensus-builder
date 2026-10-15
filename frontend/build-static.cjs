@@ -1,236 +1,13 @@
 #!/usr/bin/env node
 'use strict';
 
-// Build production-only classic-script bundles from an explicit allowlist of isolated IIFEs/UMD
-// wrappers. Source files and the development index are never modified.
+// Build production-only classic-script bundles from the marked script runs in index.html.
+// Source files and the development index are never modified.
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const SAFE_GROUPS = [
-    {
-        "name": "foundation",
-        "paths": [
-            "js/ui/modal-escape.js",
-            "js/ui/dialogs.js",
-            "js/persistent-storage.js",
-            "js/i18n.js",
-            "js/format.js",
-            "js/multi-tab-guard.js"
-        ]
-    },
-    {
-        "name": "environment-before-city",
-        "paths": [
-            "js/i18n-loader.js",
-            "js/version-history.js",
-            "js/environment.js",
-            "js/wipe-local-data.js",
-            "js/world/world-entry-model.js",
-            "js/metric-frame.js",
-            "js/parcel-source-settings.js"
-        ]
-    },
-    {
-        "name": "environment-after-city",
-        "paths": [
-            "js/parcel-source-notice.js",
-            "js/ui/world-entry.js",
-            "js/city-switch-prompt.js",
-            "js/ens/ens-name.js"
-        ]
-    },
-    {
-        "name": "chain-clients",
-        "paths": [
-            "js/wallet-connection.js",
-            "js/solana/wallet-adapter.js",
-            "js/lens-core.js",
-            "js/lens-service-client.js",
-            "js/solana/chain-data-loader.js",
-            "js/solana/acceptance-client.js",
-            "js/solana/acceptance-bridge.js",
-            "js/proposals/site-hash.js",
-            "js/solana/proposal-bridge.js",
-            "js/solana/pledge-client.js",
-            "js/solana/pledge-bridge.js",
-            "js/solana/market-client.js",
-            "js/solana/market-bridge.js",
-            "js/solana/parcel-mint.js",
-            "js/solana/blockchain-sync.js",
-            "js/ipfs.js",
-            "js/contracts-loader.js",
-            "js/chain-data-loader.js",
-            "js/proposal-contracts.js",
-            "js/blockchain-sync.js",
-            "js/blockchain-proposals.js",
-            "js/canton/canton-mode.js",
-            "js/canton/canton-counts.js",
-            "js/canton/canton-parcel.js",
-            "js/canton/canton-explorer.js",
-            "js/minted-proposals.js",
-            "js/thumbnail-bbox.js",
-            "js/guest-policy.js",
-            "js/map-screenshot.js",
-            "js/og-metadata.js"
-        ]
-    },
-    {
-        "name": "parcel-data-clients",
-        "paths": [
-            "js/data-source.js",
-            "js/basemap.js",
-            "js/parcels/source-in-view.js",
-            "js/ui/map-credits.js",
-            "js/parcels/utils/fetch-config.js",
-            "js/parcels/controller.js",
-            "js/parcels/activity-listener.js"
-        ]
-    },
-    {
-        "name": "map-ui",
-        "paths": [
-            "js/urban-blocks-model.js",
-            "js/urban-blocks-controller.js",
-            "js/urban-blocks-layout.js",
-            "js/urban-blocks-links.js",
-            "js/urban-blocks-playground.js",
-            "js/urban-blocks-view.js",
-            "js/ui/commands.js",
-            "js/ui/map-shell.js",
-            "js/bets/bets-link.js",
-            "js/bets/lmsr.js",
-            "js/bets/sha256.js",
-            "js/bets/market-question.js",
-            "js/bets/bets-model.js",
-            "js/bets/bets-dialog.js",
-            "js/bets/bets-sheet.js",
-            "js/mobile-dock-sheet.js",
-            "js/ui/simulation-indicator.js",
-            "js/ui/parcel-menu-model.js",
-            "js/ui/parcel-menu.js",
-            "js/ui/ground-menu-model.js",
-            "js/ui/ground-menu.js",
-            "js/ui/selection-tray.js",
-            "js/ui/search-model.js",
-            "js/world/world-coverage.js",
-            "js/world/globe-math.js",
-            "js/world/globe-city-display.js",
-            "js/world/activity-model.js",
-            "js/world/activity.js",
-            "js/world/proposal-entry.js",
-            "js/world/arrival.js",
-            "js/world/globe.js",
-            "js/ui/map-search.js",
-            "js/ui/command-palette.js",
-            "js/parcels/parcel-id.js",
-            "js/parcels/state.js",
-            "js/parcels/styles.js",
-            "js/parcels/proposals.js",
-            "js/parcels/selection.js",
-            "js/parcels/ui/info-panel.js",
-            "js/parcels/ui/parcel-selection.js",
-            "js/parcels/ui/box-select.js",
-            "js/parcels/share-format.js",
-            "js/parcels/parcel-set-proposals.js",
-            "js/parcels/ui/parcel-panel.js",
-            "js/parcels/ui/locate.js",
-            "js/parcels/ui/road.js",
-            "js/parcels/ui/labels.js",
-            "js/parcels/ui/owner-counts.js",
-            "js/parcels/ui/proposal-counts.js",
-            "js/parcels/ui/minted-layer.js",
-            "js/parcels/ui/proposal-actions.js",
-            "js/parcels/ui/ad-parcels.js",
-            "js/parcels/ui/map-refresh.js",
-            "js/parcels/ownership.js",
-            "js/parcels/ownership-type.js",
-            "js/parcels/ownership-highlight.js",
-            "js/parcels/utils/geometry.js",
-            "js/parcels/parcel-adjacency.js",
-            "js/parcels/block-topology.js",
-            "js/parcels/corridor-identity.js",
-            "js/parcels/live-fabric.js",
-            "js/parcels/ingest.js",
-            "js/parcels/presenter.js",
-            "js/parcels/storage.js",
-            "js/parcels/source-health.js",
-            "js/parcels/schelling-grid.js",
-            "js/parcels/ground-fallback.js",
-            "js/parcels/source-progress.js",
-            "js/parcels/fetch.js",
-            "js/parcels/ground-service.js",
-            "js/parcels/point-map.js",
-            "js/parcels/blocks.js",
-            "js/parcels/blockchain.js",
-            "js/parcels/ownership-ui.js",
-            "js/parcels/ui/visibility.js",
-            "js/parcels/ui/claim.js",
-            "js/parcels/index.js",
-            "js/parcels/route.js",
-            "js/proposals/owner-acceptance.js",
-            "js/proposals/selection.js"
-        ]
-    },
-    {
-        "name": "proposal-geometry",
-        "paths": [
-            "js/proposals/footprint-parts.js",
-            "js/proposals/plan-order.js",
-            "js/proposals/site-binding.js",
-            "js/proposals/open-ground.js",
-            "js/proposals/site-clip.js",
-            "js/proposals/site-plots.js",
-            "js/proposals/subdivision.js",
-            "js/proposals/site-draft.js",
-            "js/proposals/publish-binding.js",
-            "js/proposals/chain-record.js",
-            "js/proposals/mint-binding.js",
-            "js/proposals/binding-drift.js",
-            "js/proposals/parcel-arrangement.js",
-            "js/proposals/readjustment-contributions.js",
-            "js/proposals/authored-record.js",
-            "js/proposals/formation-depth.js",
-            "js/proposals/parcel-contiguity.js",
-            "js/proposals/formation-edit.js",
-            "js/proposals/corridor-levels.js",
-            "js/map-edit-lock.js",
-            "js/single-building-geometry.js",
-            "js/on-map-placement.js",
-            "js/on-map-editor.js",
-            "js/geometry-edit/history.js",
-            "js/geometry-edit/handles.js",
-            "js/proposals/plot-topology.js",
-            "js/proposals/plot-heal.js",
-            "js/proposals/plot-cut.js",
-            "js/proposals/drill-stack.js",
-            "js/proposals/hover-ground.js",
-            "vendor/noble-hashes-1.8.0/sha256.js",
-            "vendor/noble-curves-1.2.0/ed25519.js",
-            "js/proposals/approval.js",
-            "js/proposals/approval-proof.js",
-            "js/proposals/approval-providers.js",
-            "js/proposals/approval-lens-authority.js",
-            "js/proposals/approval-runtime.js",
-            "js/proposals/approval-relay.js",
-            "js/proposals/approval-anchor.js",
-            "js/reparcellization-ownership.js",
-            "js/reparcellization-deal.js",
-            "js/reparcellization-validation.js",
-            "js/reparcellization-allocation.js",
-            "js/proposals/approval-review.js",
-            "js/proposals/ownership-flow.js",
-            "js/proposals/cadastre-ancestry.js",
-            "js/proposals/claims.js",
-            "js/proposals/dossier.js",
-            "js/proposals/claims-ui.js",
-            "js/footprint-geometry.js",
-            "js/building-ground.js",
-            "js/proposal-own-parcel.js"
-        ]
-    }
-];
 const EXCLUDED_PATHS = new Set(['js/build-info.js']);
 const STAGE_MARKER = '<!-- generated by frontend/build-static.cjs; static build stage v1 -->';
 
@@ -300,6 +77,54 @@ function findScriptArrays(index) {
     return arrays;
 }
 
+function findBundleGroups(index, arrays = findScriptArrays(index)) {
+    const markers = [];
+    const markerLine = /^[ \t]*\/\/[ \t]*bundle\b[^\r\n]*$/gm;
+    let match;
+    while ((match = markerLine.exec(index))) {
+        const syntax = /^[ \t]*\/\/ bundle:(start|end) ([a-z][a-z0-9-]*)[ \t]*$/;
+        const parsed = match[0].match(syntax);
+        if (!parsed) throw new Error(`Malformed bundle marker: ${match[0].trim()}`);
+        const array = arrays.find(candidate => match.index > candidate.start && markerLine.lastIndex <= candidate.end);
+        if (!array) throw new Error(`Bundle marker is outside a writeVersionedLocalScripts array: ${parsed[2]}`);
+        markers.push({ kind: parsed[1], name: parsed[2], start: match.index, end: markerLine.lastIndex, array });
+    }
+
+    const groups = [];
+    const names = new Set();
+    let open = null;
+    for (const marker of markers) {
+        if (marker.kind === 'start') {
+            if (names.has(marker.name)) throw new Error(`Duplicate bundle name: ${marker.name}`);
+            if (open) throw new Error(`Nested bundle markers: ${open.name} contains ${marker.name}`);
+            names.add(marker.name);
+            open = marker;
+            continue;
+        }
+        if (!open) throw new Error(`Bundle end marker without a start: ${marker.name}`);
+        if (open.name !== marker.name) throw new Error(`Mismatched bundle markers: ${open.name} ended by ${marker.name}`);
+        if (open.array !== marker.array) throw new Error(`Bundle ${marker.name} crosses script arrays`);
+        const first = open.array.items.findIndex(item => item.start > open.end);
+        let last = -1;
+        for (let i = 0; i < open.array.items.length; i += 1) {
+            if (open.array.items[i].end < marker.start) last = i;
+        }
+        if (first < 0 || last < first) throw new Error(`Bundle ${marker.name} contains no scripts`);
+        const items = open.array.items.slice(first, last + 1);
+        if (items.length < 2) throw new Error(`Bundle ${marker.name} must contain at least two scripts`);
+        groups.push({
+            name: marker.name,
+            // Query tokens are cache metadata, not source identities or part of the old hash input.
+            paths: items.map(item => item.value.split('?')[0]),
+            start: items[0].start,
+            end: items[items.length - 1].end
+        });
+        open = null;
+    }
+    if (open) throw new Error(`Bundle start marker has no matching end: ${open.name}`);
+    return groups;
+}
+
 function firstCodeIndex(source) {
     let i = source.charCodeAt(0) === 0xFEFF ? 1 : 0;
     while (i < source.length) {
@@ -356,22 +181,6 @@ function bundleSource(group, sourceRoot) {
     return content;
 }
 
-function findGroupOccurrence(arrays, group) {
-    const found = [];
-    for (const array of arrays) {
-        const items = array.items;
-        for (let i = 0; i <= items.length - group.paths.length; i += 1) {
-            if (group.paths.every((pathEntry, offset) => items[i + offset].value.split('?')[0] === pathEntry.split('?')[0])) {
-                found.push({ array, start: items[i].start, end: items[i + group.paths.length - 1].end });
-            }
-        }
-    }
-    if (found.length !== 1) {
-        throw new Error(`Expected ${group.name} to occur once as a consecutive script run; found ${found.length}`);
-    }
-    return found[0];
-}
-
 function keepHashedBundlesCacheable(index) {
     const signature = 'function appendBuildToken(path) {';
     const first = index.indexOf(signature);
@@ -411,7 +220,7 @@ function prepareOutputDirectory(outputDir) {
     fs.writeFileSync(path.join(outputDir, 'index.html'), `${STAGE_MARKER}\n`);
 }
 
-function buildStatic(sourceRoot, outputDir, groups = SAFE_GROUPS) {
+function buildStatic(sourceRoot, outputDir) {
     sourceRoot = path.resolve(sourceRoot);
     outputDir = path.resolve(outputDir);
     if (sourceRoot === outputDir || sourceRoot.startsWith(`${outputDir}${path.sep}`)
@@ -422,19 +231,19 @@ function buildStatic(sourceRoot, outputDir, groups = SAFE_GROUPS) {
     const originalIndex = fs.readFileSync(indexPath, 'utf8');
     const arrays = findScriptArrays(originalIndex);
     if (!arrays.length) throw new Error('No writeVersionedLocalScripts arrays found in index.html');
+    const groups = findBundleGroups(originalIndex, arrays);
+    if (!groups.length) throw new Error('No marked bundle groups found in index.html');
     const beforeCount = countPaths(arrays);
     const replacements = [];
     const outputBundles = [];
 
     for (const group of groups) {
-        if (!group.paths || group.paths.length < 2) throw new Error(`Bundle ${group.name} must contain at least two scripts`);
-        const occurrence = findGroupOccurrence(arrays, group);
         const content = bundleSource(group, sourceRoot);
         const hash = crypto.createHash('sha256')
             .update(group.name).update('\0').update(group.paths.join('\0')).update('\0').update(content)
             .digest('hex').slice(0, 16);
         const bundlePath = `js/bundles/${group.name}.${hash}.js`;
-        replacements.push({ ...occurrence, value: bundlePath });
+        replacements.push({ start: group.start, end: group.end, value: bundlePath });
         outputBundles.push({ path: bundlePath, content });
     }
 
@@ -476,4 +285,4 @@ if (require.main === module) {
     result.bundles.forEach(bundle => console.log(`  ${bundle}`));
 }
 
-module.exports = { SAFE_GROUPS, EXCLUDED_PATHS, findScriptArrays, assertScopeIsolated, buildStatic };
+module.exports = { EXCLUDED_PATHS, findScriptArrays, findBundleGroups, assertScopeIsolated, buildStatic };

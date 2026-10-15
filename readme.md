@@ -180,11 +180,15 @@ npm test
 
 The frontend uses plain HTML, CSS and JavaScript. Development serves those source files directly.
 Production deployment runs [`frontend/build-static.cjs`](frontend/build-static.cjs) to copy the
-frontend into a staging directory, combine explicitly approved script groups in their existing load
-order, and give the bundles content-hashed filenames. This reduces script requests and makes changed
-bundles receive new cache URLs; it does not transpile or minify the source. The deployed index points
-at those bundles, while the development index stays unchanged. A changed script order must also
-update the corresponding bundle group, or the build refuses to publish an inconsistent package.
+frontend into a staging directory, combine marked script runs from the existing
+`window.writeVersionedLocalScripts([...])` arrays, and give the bundles content-hashed filenames.
+Those arrays in `frontend/index.html` are the single inventory for both development loading and
+production bundling. Mark a run with `// bundle:start <name>` and `// bundle:end <name>` on separate
+lines inside its array. The builder reads the paths between each marker pair in order and rejects
+malformed or unsafe groups; adding a safe script inside a marked run automatically includes it.
+Bundling reduces script requests and gives changed bundles new cache URLs; it does not transpile or
+minify source. The deployed index points at the generated bundles, while the development index
+continues loading each script separately.
 
 Run the same packaging check locally with `node frontend/build-static.cjs <empty-output-directory>`.
 The output directory must be outside `frontend/`. See [`docs/hackathon-build.md`](docs/hackathon-build.md)

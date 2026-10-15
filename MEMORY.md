@@ -709,3 +709,4 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-15: Traffic recovery can replace an already-started maneuver from its actual pose; other drivers yield its short swept path across gear changes so they do not fill the space needed to finish backing around an obstacle.
 
 - 2026-10-15: The user approved extracting traffic simulation and observed junction recognition into private domain repositories, with public reads in the shared API and canonical tables in shared geodata; preserve existing behavior and defer new functionality.
+- 2026-10-15: Keep the small production packaging step and use the ordered script lists in `frontend/index.html` as the shared loader/build inventory; explicit bundle markers replace a second manually maintained list.
