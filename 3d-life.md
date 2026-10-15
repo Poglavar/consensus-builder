@@ -1,7 +1,8 @@
 # 3D life: schematic people and vehicles in model mode
 
 Living plan for branch `3d-life` (worktree `consensus-builder-3d-life`, off `colosseum-worlds-fair`
-344ee8fe, 2026-10-15). Update the status marks as steps land.
+344ee8fe, 2026-10-15). Merged back into `colosseum-worlds-fair` on 2026-10-15 (85892322, after
+merging that branch in first; no conflicts). Update the status marks as steps land.
 
 ## Goal
 
