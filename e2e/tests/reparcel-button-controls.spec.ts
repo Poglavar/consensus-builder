@@ -23,14 +23,14 @@ async function openReadjustment(page: Page) {
   await page.evaluate(() => (window as any).i18n.setLanguage('en'));
   await openParcel(page, 'proposals', PARCEL_ID);
   await page.locator('.parcel-build-btn--reparcellization').click();
-  const modal = page.locator('.reparcel-modal-overlay');
+  const modal = page.locator('.on-map-reparcellization');
   await expect(modal).toBeVisible();
   await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
   return modal;
 }
 
 async function manualLayout(page: Page) {
-  const modal = page.locator('.reparcel-modal-overlay');
+  const modal = page.locator('.on-map-reparcellization');
   await modal.locator('label.reparcel-alg-option:has(input[value="manual"])').click();
   await modal.locator('[data-reparcel-upload]').setInputFiles({
     name: 'two-plots.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(layout)),
@@ -39,17 +39,93 @@ async function manualLayout(page: Page) {
   return modal;
 }
 
-async function clickEditorMapPoint(page: Page, xRatio: number, yRatio: number) {
-  const box = await page.locator('#reparcel-map').boundingBox();
-  if (!box) throw new Error('The reparcellization map has no visible bounds');
-  await page.mouse.click(box.x + box.width * xRatio, box.y + box.height * yRatio);
+async function visiblePlotPoints(page: Page, count: number) {
+  const points = await page.evaluate((wanted) => {
+    const w = window as any;
+    const map = w.map;
+    let geometry: any = null;
+    map?.eachLayer((layer: any) => {
+      if (layer.options?.pane === 'reparcelTools' && layer.options.color === '#dc2626'
+        && layer._path?.isConnected && layer.feature?.geometry) geometry = layer.feature.geometry;
+    });
+    if (!geometry || !w.turf) throw new Error('The readjustment site has no rendered pool boundary');
+    const feature = { type: 'Feature', properties: {}, geometry };
+    const [minLng, minLat, maxLng, maxLat] = w.turf.bbox(feature);
+    const mapRect = map.getContainer().getBoundingClientRect();
+    const obstacles = [...document.querySelectorAll('.on-map-reparcellization .on-map-editor__panel, .reparcel-tools')]
+      .map((element: any) => element.getBoundingClientRect());
+    const candidates: Array<{ x: number; y: number }> = [];
+    for (const xRatio of [0.2, 0.35, 0.5, 0.65, 0.8]) {
+      for (const yRatio of [0.2, 0.35, 0.5, 0.65, 0.8]) {
+        const coordinate = [minLng + (maxLng - minLng) * xRatio, minLat + (maxLat - minLat) * yRatio];
+        if (!w.turf.booleanPointInPolygon(w.turf.point(coordinate), feature)) continue;
+        const point = map.latLngToContainerPoint([coordinate[1], coordinate[0]]);
+        const screen = { x: mapRect.left + point.x, y: mapRect.top + point.y };
+        const visible = screen.x >= mapRect.left && screen.x <= mapRect.right
+          && screen.y >= mapRect.top && screen.y <= mapRect.bottom
+          && screen.x >= 8 && screen.x <= w.innerWidth - 8 && screen.y >= 8 && screen.y <= w.innerHeight - 8
+          && map.getContainer().contains(document.elementFromPoint(screen.x, screen.y))
+      && !obstacles.some((rect: DOMRect) => screen.x >= rect.left && screen.x <= rect.right
+            && screen.y >= rect.top && screen.y <= rect.bottom);
+        if (visible && candidates.every(other => Math.hypot(other.x - screen.x, other.y - screen.y) > 24)) {
+          candidates.push(screen);
+          if (candidates.length === wanted) return candidates;
+        }
+      }
+    }
+    throw new Error(`Could not find ${wanted} unobstructed map points inside the readjustment site`);
+  }, count);
+  return points as Array<{ x: number; y: number }>;
+}
+
+async function visibleCutLineEndpoints(page: Page) {
+  const endpoints = await page.evaluate(() => {
+    const w = window as any;
+    const map = w.map;
+    let geometry: any = null;
+    map?.eachLayer((layer: any) => {
+      if (layer.options?.pane === 'reparcelTools' && layer.options.color === '#dc2626'
+        && layer._path?.isConnected && layer.feature?.geometry) geometry = layer.feature.geometry;
+    });
+    if (!geometry || !w.turf) throw new Error('The readjustment site has no rendered pool boundary');
+    const feature = { type: 'Feature', properties: {}, geometry };
+    const [minLng, minLat, maxLng, maxLat] = w.turf.bbox(feature);
+    const mapRect = map.getContainer().getBoundingClientRect();
+    const obstacles = [...document.querySelectorAll('.on-map-reparcellization .on-map-editor__panel, .reparcel-tools')]
+      .map((element: any) => element.getBoundingClientRect());
+    const visible = (screen: { x: number; y: number }) => screen.x >= mapRect.left && screen.x <= mapRect.right
+      && screen.y >= mapRect.top && screen.y <= mapRect.bottom
+      && screen.x >= 8 && screen.x <= w.innerWidth - 8 && screen.y >= 8 && screen.y <= w.innerHeight - 8
+      && map.getContainer().contains(document.elementFromPoint(screen.x, screen.y))
+      && !obstacles.some((rect: DOMRect) => screen.x >= rect.left && screen.x <= rect.right
+        && screen.y >= rect.top && screen.y <= rect.bottom);
+    const candidates = [0.5, 0.35, 0.65, 0.2, 0.8, 0.1, 0.9].flatMap(ratio => {
+      const lng = minLng + (maxLng - minLng) * ratio;
+      const lat = minLat + (maxLat - minLat) * ratio;
+      return [0.08, 0.04, 0.02].flatMap(extension => [
+        [[minLng - (maxLng - minLng) * extension, lat], [maxLng + (maxLng - minLng) * extension, lat]],
+        [[lng, minLat - (maxLat - minLat) * extension], [lng, maxLat + (maxLat - minLat) * extension]],
+      ]);
+    });
+    for (const coordinates of candidates) {
+      const line = w.turf.lineString(coordinates);
+      if (w.turf.lineIntersect(line, feature).features.length < 2) continue;
+      const screens = coordinates.map((coordinate: number[]) => {
+        const point = map.latLngToContainerPoint([coordinate[1], coordinate[0]]);
+        return { x: mapRect.left + point.x, y: mapRect.top + point.y };
+      });
+      if (screens.every(visible)) return screens;
+    }
+    throw new Error('No boundary-crossing line fits the unobstructed map area');
+  });
+  return endpoints as Array<{ x: number; y: number }>;
 }
 
 test.describe('reparcellization button controls @core', () => {
   test('Close and Cancel exit the editor, with Cancel confirming a draft discard', async ({ mockApi: page }) => {
     let modal = await openReadjustment(page);
     const initialPlan = await page.evaluate(() => JSON.stringify((window as any).pendingReparcellizationPlan ?? null));
-    await modal.locator('.reparcel-close-btn').click();
+    await modal.locator('.on-map-editor__header .close-circle-btn').click();
     await expect(modal).toBeHidden();
     expect(await page.evaluate(() => JSON.stringify((window as any).pendingReparcellizationPlan ?? null))).toBe(initialPlan);
 
@@ -70,9 +146,8 @@ test.describe('reparcellization button controls @core', () => {
     await draw.click();
     await expect(draw).toHaveAttribute('aria-pressed', 'true');
     await expect(modal.locator('[data-reparcel-draw-toolbar]')).toBeVisible();
-    await clickEditorMapPoint(page, 0.38, 0.40);
-    await clickEditorMapPoint(page, 0.44, 0.46);
-    const points = page.locator('#reparcel-map .reparcel-vertex-handle');
+    for (const point of await visiblePlotPoints(page, 2)) await page.mouse.click(point.x, point.y);
+    const points = page.locator('#map-container .reparcel-vertex-handle');
     await expect(points).toHaveCount(2);
     const undo = modal.locator('[data-reparcel-undo]');
     await expect(undo).toBeEnabled();
@@ -90,7 +165,7 @@ test.describe('reparcellization button controls @core', () => {
     await openReadjustment(page);
     const modal = await manualLayout(page);
     await modal.locator('[data-reparcel-erase]').click();
-    const eraseLines = modal.locator('#reparcel-map path.reparcel-erase-line');
+    const eraseLines = page.locator('#map-container path.reparcel-erase-line');
     await expect(modal.locator('[data-reparcel-erase]')).toHaveAttribute('aria-pressed', 'true');
     await expect(eraseLines).toHaveCount(2);
     const target = await eraseLines.first().evaluate((path: SVGPathElement) => {
@@ -116,25 +191,22 @@ test.describe('reparcellization button controls @core', () => {
 
   test('Node editing removes a cut endpoint and Undo restores the split draft geometry', async ({ mockApi: page }) => {
     await openReadjustment(page);
-    const modal = page.locator('.reparcel-modal-overlay');
+    const modal = page.locator('.on-map-reparcellization');
     await modal.locator('label.reparcel-alg-option:has(input[value="manual"])').click();
     const nodes = modal.locator('[data-reparcel-nodes]');
     await expect(nodes).toHaveAttribute('aria-pressed', 'true');
     await nodes.click();
     await expect(nodes).toHaveAttribute('aria-pressed', 'false');
-    await expect(page.locator('#reparcel-map .reparcel-node-handle')).toHaveCount(0);
+    await expect(page.locator('#map-container .reparcel-node-handle')).toHaveCount(0);
     await nodes.click();
     await expect(nodes).toHaveAttribute('aria-pressed', 'true');
 
     const rows = modal.locator('[data-reparcel-newplots-table] .reparcel-newplot-row');
     const beforeSplit = await rows.count();
     await modal.locator('[data-reparcel-line]').click();
-    const map = modal.locator('#reparcel-map');
+    const map = page.locator('#map-container');
     await expect(modal.locator('[data-reparcel-draw-toolbar]')).toBeVisible();
-    const box = await map.boundingBox();
-    if (!box) throw new Error('Readjustment map has no visible bounds');
-    await page.mouse.click(box.x + box.width * 0.15, box.y + box.height * 0.5);
-    await page.mouse.click(box.x + box.width * 0.85, box.y + box.height * 0.5);
+    for (const point of await visibleCutLineEndpoints(page)) await page.mouse.click(point.x, point.y);
     await expect(modal.locator('[data-reparcel-finish]')).toBeEnabled();
     await modal.locator('[data-reparcel-finish]').click();
     await expect.poll(() => rows.count()).toBeGreaterThan(beforeSplit);
@@ -142,10 +214,10 @@ test.describe('reparcellization button controls @core', () => {
 
     const nodeHandles = map.locator('.reparcel-node-handle');
     await expect(nodeHandles).toHaveCount(2);
-    const paths = modal.locator('#reparcel-map .leaflet-overlay-pane path.leaflet-interactive');
+    const paths = page.locator('#map-container .leaflet-reparcelPlots-pane path.leaflet-interactive');
     const initialGeometry = await paths.evaluateAll(elements => elements.map(element => element.getAttribute('d')));
     await nodeHandles.first().click();
-    const popup = modal.locator('.reparcel-node-popup');
+    const popup = page.locator('.reparcel-node-popup');
     await expect(popup).toBeVisible();
     await popup.getByRole('button', { name: 'Remove node' }).click();
     await expect(rows).toHaveCount(splitPlotCount - 1);
@@ -182,8 +254,8 @@ test.describe('reparcellization button controls @core', () => {
     await openReadjustment(page);
     const modal = await manualLayout(page);
     await modal.locator('[data-reparcel-assign]').click();
-    await modal.locator('#reparcel-map .leaflet-overlay-pane path.leaflet-interactive').first().click();
-    const popup = modal.locator('.reparcel-owner-popup');
+    await page.locator('#map-container .leaflet-reparcelPlots-pane path.leaflet-interactive').first().click();
+    const popup = page.locator('.reparcel-owner-popup');
     await expect(popup).toBeVisible();
     await popup.getByRole('checkbox', { name: 'Owner A', exact: true }).check();
     await popup.getByRole('checkbox', { name: 'Public land', exact: true }).last().check();
@@ -200,7 +272,7 @@ test.describe('reparcellization button controls @core', () => {
     const firstPlot = modal.locator('[data-reparcel-newplots-table] .reparcel-newplot-row').first();
     await expect(firstPlot).toContainText('50.0%');
     await firstPlot.getByRole('button', { name: 'Edit shares', exact: true }).click();
-    const editor = modal.locator('.reparcel-owner-popup');
+    const editor = page.locator('.reparcel-owner-popup');
     await expect(editor.getByRole('spinbutton', { name: 'Owner A share (%)' })).toHaveValue('50');
     await expect(editor.getByRole('spinbutton', { name: 'Public land share (%)' })).toHaveValue('50');
     await editor.getByRole('button', { name: 'Apply shares', exact: true }).click();
@@ -208,7 +280,7 @@ test.describe('reparcellization button controls @core', () => {
 
     const secondPlot = modal.locator('[data-reparcel-newplots-table] .reparcel-newplot-row').nth(1);
     await secondPlot.getByRole('button', { name: 'Edit shares', exact: true }).click();
-    const secondEditor = modal.locator('.reparcel-owner-popup');
+    const secondEditor = page.locator('.reparcel-owner-popup');
     const secondOwner = secondEditor.getByRole('checkbox', { name: 'Owner A', exact: true });
     if (!(await secondOwner.isChecked())) await secondOwner.check();
     await secondEditor.getByRole('button', { name: 'Apply shares', exact: true }).click();
@@ -225,9 +297,9 @@ test.describe('reparcellization button controls @core', () => {
     await openReadjustment(page);
     const modal = await manualLayout(page);
     await modal.locator('[data-reparcel-assign]').click();
-    const boundary = modal.locator('#reparcel-map .leaflet-overlay-pane path.leaflet-interactive').first();
+    const boundary = page.locator('#map-container .leaflet-reparcelPlots-pane path.leaflet-interactive').first();
     await boundary.click();
-    const popup = modal.locator('.reparcel-owner-popup');
+    const popup = page.locator('.reparcel-owner-popup');
     await expect(popup).toBeVisible();
     await popup.locator('.reparcel-owner-popup__close').click();
     await expect(popup).toHaveCount(0);
@@ -246,7 +318,7 @@ test.describe('reparcellization button controls @core', () => {
 
   test('the building courtyard chooser applies the selected authored block', async ({ mockApi: page }) => {
     await openReadjustment(page);
-    const modal = page.locator('.reparcel-modal-overlay');
+    const modal = page.locator('.on-map-reparcellization');
     await modal.locator('label.reparcel-alg-option:has(input[value="amend"])').click();
     await expect(modal.locator('.reparcel-newplot-row')).toHaveCount(1);
     await page.evaluate(() => {
@@ -261,7 +333,7 @@ test.describe('reparcellization button controls @core', () => {
       }
     });
     await modal.locator('[data-reparcel-courtyard-building]').click();
-    const chooser = modal.locator('.reparcel-owner-popup');
+    const chooser = page.locator('.reparcel-owner-popup');
     await expect(chooser.getByRole('button', { name: 'Courtyard candidate A' })).toBeVisible();
     await chooser.getByRole('button', { name: 'Courtyard candidate B' }).click();
     await expect(chooser).toHaveCount(0);

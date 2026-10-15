@@ -1020,8 +1020,12 @@
         if (!rowHouseFeatureValid(candidate)) return;
         rowHouseModal?.placement?.update?.(candidate);
 
-        const startMeters = latLngToMeters(dragStartLatLng);
-        const currentMeters = latLngToMeters(latlng);
+        // Snapping may place the accepted geometry away from the raw pointer. Persist the
+        // accepted displacement so later slider regeneration stays at the visible position.
+        const startCenter = turf.centroid(dragStartFeature).geometry.coordinates;
+        const movedCenter = turf.centroid(candidate).geometry.coordinates;
+        const startMeters = latLngToMeters({ lng: startCenter[0], lat: startCenter[1] });
+        const currentMeters = latLngToMeters({ lng: movedCenter[0], lat: movedCenter[1] });
         currentOffsetX = dragStartOffset[0] + currentMeters[0] - startMeters[0];
         currentOffsetY = dragStartOffset[1] + currentMeters[1] - startMeters[1];
         candidate.properties = { ...(candidate.properties || {}), offsetX: currentOffsetX, offsetY: currentOffsetY };
@@ -1404,7 +1408,7 @@
             parcelIds.push(id);
             parentDetails.push({ id, number: String(props?.BROJ_CESTICE || id) });
         });
-        const feature = JSON.parse(JSON.stringify(generatedRowHouseFeature));
+        const feature = window.UrbanRuleVariation.massingWithRule(generatedRowHouseFeature, currentRowRule(), rowVariationSeed, { turf });
         window.syncActiveProposalDraftFromEditor('building', {
             parcelIds,
             parentDetails,
@@ -2123,8 +2127,8 @@
             return;
         }
 
-        const clonedFeature = JSON.parse(JSON.stringify(generatedRowHouseFeature));
-        const clonedUnits = [cloneRowHouseFeature(generatedRowHouseFeature)];
+        const clonedFeature = window.UrbanRuleVariation.massingWithRule(generatedRowHouseFeature, currentRowRule(), rowVariationSeed, { turf });
+        const clonedUnits = [cloneRowHouseFeature(clonedFeature)];
         const context = {
             parcelIds: normalizedParcelIds.slice(),
             parentDetails: parentDetails.slice(),

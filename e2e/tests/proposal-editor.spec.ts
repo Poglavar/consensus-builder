@@ -51,7 +51,7 @@ test.describe('SimCity proposal lifecycle @core', () => {
     const source = await addEditableSquare(page, 'square-geometry');
 
     await page.evaluate((proposalId) => (window as any).editProposalGeometry(proposalId), source.proposalId);
-    const editor = page.locator('.structure-geometry-editor');
+    const editor = page.locator('#structure-geometry-editor');
     await expect(editor).toBeVisible();
 
     const place = async (tool: string, lng: number, lat: number) => {
@@ -99,7 +99,7 @@ test.describe('SimCity proposal lifecycle @core', () => {
     }, source.proposalId);
 
     await page.evaluate((proposalId) => (window as any).editProposalGeometry(proposalId), source.proposalId);
-    const editor = page.locator('.structure-geometry-editor');
+    const editor = page.locator('#structure-geometry-editor');
     await expect(editor).toBeVisible();
 
     const place = async (tool: string, lng: number, lat: number) => {
@@ -341,7 +341,7 @@ test('structure furniture can be dragged, erased and restored with Undo; cancell
   const source = await addEditableSquare(page, 'pointer-controls');
   const original = await page.evaluate(id => JSON.stringify((window as any).getProposalByIdOrHash(id)), source.proposalId);
   await page.evaluate(id => (window as any).editProposalGeometry(id), source.proposalId);
-  const editor = page.locator('.structure-geometry-editor');
+  const editor = page.locator('#structure-geometry-editor');
   await expect(editor).toBeVisible();
   await editor.locator('[data-tool="tree"]').click();
   await clickMapPoint(page, 15.98220, 45.80025);

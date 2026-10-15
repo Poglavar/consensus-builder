@@ -1,6 +1,7 @@
 import { Page } from '@playwright/test';
 import { sampleParcels } from './parcel-data';
 import { sampleProposalsList, makeRoadProposal } from './proposal-data';
+import { fixtureSiteBinding } from './site-binding';
 
 const isApiDataRequest = (pageUrl: string, resourceType: string, endpoint: string): boolean => {
   if (resourceType !== 'fetch' && resourceType !== 'xhr') {
@@ -172,7 +173,10 @@ export async function mockProposalsRoute(page: Page): Promise<void> {
       return;
     }
 
-    if (request.method() === 'GET') {
+    if (request.method() === 'POST' && new URL(request.url()).pathname.endsWith('/proposals/binding')) {
+      const body = request.postDataJSON();
+      route.fulfill({ status: 200, json: { binding: fixtureSiteBinding(body.site, body.toleranceM) } });
+    } else if (request.method() === 'GET') {
       route.fulfill({
         status: 200,
         contentType: 'application/json',

@@ -302,12 +302,14 @@ test.describe('shared dynamic button factories @features', () => {
       await startRoadFromAdjacentParcel(page);
       await draftRoadAcrossStructure(page);
       const choice = page.locator('.cb-dialog-overlay--confirm .cb-dialog');
+      const routeLengthBeforeChoice = await page.locator('#road-length').innerText();
       await choice.getByRole('button', { name: decision.choice, exact: true }).click();
       await expect(choice).toBeHidden();
       if (decision.accepted) {
         await expect.poll(() => page.locator('#road-length').innerText()).not.toBe('0 m');
       } else {
-        await expect(page.locator('#road-length')).toHaveText('0 m');
+        // Rejecting the crossing keeps the valid route prefix drawn before the obstacle.
+        await expect(page.locator('#road-length')).toHaveText(routeLengthBeforeChoice);
         await expect.poll(() => page.evaluate(() => (window as any).roadDrawingMode)).toBe(true);
       }
     });
@@ -387,10 +389,12 @@ test.describe('shared dynamic button factories @features', () => {
       const choice = page.locator('.cb-dialog-overlay--confirm .cb-dialog');
       await expect(choice).toBeVisible();
       await expect(choice).toContainText(/building/i);
+      const routeLengthBeforeChoice = await page.locator('#road-length').innerText();
       await choice.getByRole('button', { name: decision.choice, exact: true }).click();
       await expect(choice).toBeHidden();
       if (decision.action === 'cancel') {
-        await expect(page.locator('#road-length')).toHaveText('0 m');
+        // Reject only the segment through the building; retain the valid route prefix.
+        await expect(page.locator('#road-length')).toHaveText(routeLengthBeforeChoice);
         await expect.poll(() => page.evaluate(() => (window as any).roadDrawingMode)).toBe(true);
         return;
       }

@@ -2905,7 +2905,7 @@ function autosaveBlockifyDraft(featuresOverride = null) {
     const features = blockifyMode === 'existing'
         ? (Array.isArray(featuresOverride) ? featuresOverride.filter(Boolean)
             : (featuresOverride ? [featuresOverride] : (generatedBuildingFeatures?.length ? generatedBuildingFeatures : [])))
-        : [generatedBuildingFeature].filter(Boolean);
+        : [window.UrbanRuleVariation.massingWithRule(generatedBuildingFeature, currentBlockRule(), blockVariationSeed, { turf })].filter(Boolean);
     if (!activeDraft || !['buildings', 'row', 'parcelBased', 'single'].includes(activeDraft.adapterKey || activeDraft.goal)
         || !features.length || !block?.parcels?.length
         || typeof window.syncActiveProposalDraftFromEditor !== 'function') return;
@@ -2956,7 +2956,7 @@ function autosaveBlockifyDraft(featuresOverride = null) {
         parameters,
         buildingFeature: buildings[0] || null,
         buildings,
-        ...(blockifyMode !== 'existing' ? { placement: { site: blockifyClone(generatedBuildingFeature || buildings[0]), free: true } } : {})
+        ...(blockifyMode !== 'existing' ? { placement: { site: blockifyClone(generatedBuildingFeature || buildings[0]), free: true } } : { placement: { free: false, site: blockifyClone(blockifyDesignBoundary()) } })
     }, { coalesceKey: 'blockify-live' });
 }
 
@@ -3995,10 +3995,10 @@ async function saveBlockifyDesignForProposal() {
     // `buildings` (array) with `buildingFeature` as the single/primary fallback.
     const clonedBuildings = existingModeFeatures
         ? JSON.parse(JSON.stringify(existingModeFeatures))
-        : [JSON.parse(JSON.stringify(generatedBuildingFeature))];
+        : [window.UrbanRuleVariation.massingWithRule(generatedBuildingFeature, currentBlockRule(), blockVariationSeed, { turf })];
     const clonedFeature = clonedBuildings[0];
     const blockMassing = blockifyMode !== 'existing' && generatedBuildingFeature?.geometry
-        ? JSON.parse(JSON.stringify(generatedBuildingFeature))
+        ? blockifyClone(clonedFeature)
         : null;
 
     // Save enough to rebuild this exact design later (see applyBlockifySeedState). Width/height/
@@ -4057,7 +4057,7 @@ async function saveBlockifyDesignForProposal() {
         ineligibleParcels,
         buildingFeature: clonedFeature,
         ...(blockMassing ? { blockMassing } : {}),
-        ...(blockifyMode !== 'existing' ? { placement: { site: blockifyClone(generatedBuildingFeature || clonedFeature), free: true } } : {})
+        ...(blockifyMode !== 'existing' ? { placement: { site: blockifyClone(generatedBuildingFeature || clonedFeature), free: true } } : { placement: { free: false, site: blockifyClone(blockifyDesignBoundary()) } })
     };
     context.buildings = clonedBuildings;
 

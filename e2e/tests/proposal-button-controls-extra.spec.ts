@@ -378,7 +378,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await create.locator('#proposalGeometryButtons [data-geometry-action="edit"]').click();
     const modal = page.locator('.constrained-corridor-overlay');
     await expect(modal).toBeVisible();
-    await modal.locator('[data-corridor-close]').click();
+    await modal.getByRole('button', { name: 'Close', exact: true }).click();
     await expect(modal).toBeHidden();
     expect(await page.evaluate(() => (window as any).pendingConstrainedCorridor ?? null)).toBeNull();
 
@@ -462,7 +462,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await showProposal(page, sourceId);
     const expandedAgain = page.locator('#proposal-details-panel').getByRole('button', { name: 'Expand', exact: true });
     if (await expandedAgain.isVisible()) await expandedAgain.click();
-    const openRebound = page.locator('.proposal-binding-drift-link');
+    const openRebound = page.locator('.proposal-binding-drift [data-binding-drift-open]');
     await expect(openRebound).toBeVisible();
     await openRebound.click();
     await expect(page.locator('#proposal-details-title')).toHaveText('Already rebound');

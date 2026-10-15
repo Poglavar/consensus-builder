@@ -2229,7 +2229,8 @@
         const placementInput = options.placement || payload.placement || null;
         if (placementInput?.free === true) {
             try {
-                const placement = global.proposalDraftPlacement?.freePlacementPatch?.(draft, placementInput);
+                const nextDraft = { ...draft, editorPayload: { ...(draft.editorPayload || {}), ...(patch.editorPayload || {}) } };
+                const placement = global.proposalDraftPlacement?.freePlacementPatch?.(nextDraft, placementInput);
                 if (!placement) return null;
                 patch.editorPayload = { ...(patch.editorPayload || {}), placement: placement.placement };
                 fields.site = placement.fields.site;
@@ -2240,6 +2241,16 @@
                 console.warn('[ProposalEditor] Refused unsafe free placement', error);
                 if (typeof global.showStyledAlert === 'function') global.showStyledAlert(error?.message || String(error));
                 return null;
+            }
+        }
+        if (kind === 'building' && placementInput?.free === false) {
+            patch.editorPayload.placement = null;
+            if (draft.editorPayload?.placement?.free === true) {
+                // Existing-building mode returns to the source-aware site. A preceding generated
+                // preview must not leave its moved footprint or pending binding on this snapshot.
+                fields.site = global.__siteDraft.toMultiPolygon(placementInput.site);
+                fields.cadastreParcelIds = [];
+                fields.binding = null;
             }
         }
         if (Object.keys(fields).length) patch.fields = fields;

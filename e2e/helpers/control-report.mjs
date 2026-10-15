@@ -18,6 +18,8 @@ export function readControlResults(paths) {
           tests.set(key, {
             key, title: spec.title, file: spec.file, line: spec.line,
             status: result?.status || 'not-run', duration: result?.duration || 0, events,
+            projectName: test.projectName, expectedStatus: test.expectedStatus, outcome: test.status,
+            annotations: [...(test.annotations || []), ...(result?.annotations || [])],
           });
         }
       }
@@ -63,6 +65,7 @@ export function summarizeControlCoverage(sites, tests) {
     counts: {
       tests: tests.length,
       passed: tests.filter(test => test.status === 'passed').length,
+      skipped: tests.filter(test => test.status === 'skipped').length,
       controls: controls.length,
       clicked: controls.filter(control => control.clicks.length).length,
       observed: controls.filter(control => control.observed).length,
@@ -80,13 +83,24 @@ function matchesVariant(variant, expected) {
   return Object.entries(expected.attrs || {}).every(([key, value]) => variant.attrs[key] === value);
 }
 
+// Optional external transactions are listed individually; no skipped test earns click coverage.
+export function isAllowedSkip(test, contract) {
+  return test.status === 'skipped' && test.expectedStatus === 'skipped' && test.outcome === 'skipped'
+    && (contract.allowedSkips || []).some(rule => rule.file === test.file
+      && rule.title === test.title && rule.projectName === test.projectName
+      && rule.skipReason && test.annotations?.some(annotation => annotation.type === 'skip'
+        && annotation.description === rule.skipReason));
+}
+
 // The checked-in contract makes removals visible too. Scanning only today's source would turn a
 // deleted button into a smaller denominator and could wrongly report complete coverage.
 export function checkControlCoverage(summary, contract) {
   const errors = [];
   const expected = new Map(contract.controls.map(control => [control.id, control]));
   const current = new Map(summary.controls.map(control => [control.id, control]));
-  for (const test of summary.tests) if (test.status !== 'passed') errors.push(`Test ${test.status}: ${test.key}`);
+  for (const test of summary.tests) {
+    if (test.status !== 'passed' && !isAllowedSkip(test, contract)) errors.push(`Test ${test.status}: ${test.key}`);
+  }
   for (const control of summary.controls) {
     const rule = expected.get(control.id);
     if (!rule) errors.push(`New button needs a contract: ${control.source}:${control.line} ${control.id}`);

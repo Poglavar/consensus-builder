@@ -24,6 +24,62 @@ async function expectActiveDraftSite(page: import('@playwright/test').Page, site
   expect(draft.fields.binding.parcels.map((hit: any) => hit.parcelId)).toContain(PARCEL_ID);
 }
 
+async function expectFreeformDraftSite(page: import('@playwright/test').Page, authoredSite: any) {
+  await expect.poll(() => page.evaluate(() => document.getElementById('single-building-editor') !== null)).toBe(true);
+  const state = await page.evaluate(() => {
+    const w = window as any;
+    const draft = w.proposalDraftStore.getActiveDraft();
+    const guideGeometries: any[] = [];
+    const visitedLayers = new Set<any>();
+    const inspectLayer = (layer: any) => {
+      if (!layer || visitedLayers.has(layer)) return;
+      visitedLayers.add(layer);
+      const options = layer.options || {};
+      const isGuide = options.pane === 'onMapEditorPane'
+        && (options.color === '#e53935' || options.style?.color === '#e53935');
+      if (isGuide && layer.feature?.geometry) {
+        // Read the feature attached to the rendered Leaflet layer so serialization precision
+        // does not round the authored coordinates while checking the placement guide.
+        guideGeometries.push(layer.feature.geometry);
+      }
+      if (typeof layer.eachLayer === 'function') {
+        layer.eachLayer(inspectLayer);
+      }
+    };
+    w.map.eachLayer(inspectLayer);
+    const guideGeometry = guideGeometries.length === 1
+      ? w.__siteDraft.toMultiPolygon(guideGeometries[0]) : null;
+    const buildings = draft?.editorPayload?.context?.buildings || [];
+    let union = null;
+    for (const building of buildings) {
+      const feature = w.turf.feature(building.geometry, building.properties || {});
+      union = union ? w.turf.union(union, feature) : feature;
+    }
+    const buildingsSite = union?.geometry ? w.__siteDraft.toMultiPolygon(union.geometry) : null;
+    const insideGuide = !!guideGeometry && buildings.length > 0 && buildings.every((building: any) =>
+      w.SingleBuildingGeometry.footprintWithinBoundary(
+        building,
+        w.turf.feature(guideGeometry),
+        w.turf
+      ));
+    return {
+      guideGeometry,
+      draftSite: draft?.fields?.site || null,
+      buildingsSite,
+      placement: draft?.editorPayload?.placement || null,
+      insideGuide,
+      groundTreatment: draft?.editorPayload?.context?.groundSurface?.treatment || 'none',
+      takeWholeParcels: draft?.editorPayload?.context?.takeWholeParcels === true
+    };
+  });
+  expect(state.guideGeometry).toEqual(authoredSite);
+  expect(state.insideGuide).toBe(true);
+  expect(state.placement?.free).toBe(true);
+  expect(state.groundTreatment).toBe('none');
+  expect(state.takeWholeParcels).toBe(false);
+  expect(state.draftSite).toEqual(state.buildingsSite);
+}
+
 test.describe('Site proposals already on its parcels @core', () => {
   test('the card counts them, Show opens the Proposals tab, and the tabs switch', async ({ mockApi: page }) => {
     await publishOn(page, PARCEL_ID);
@@ -47,17 +103,18 @@ test.describe('Site proposals already on its parcels @core', () => {
 test.describe('Site build palette controls @core', () => {
   for (const item of [
     { key: 'buildings', adapter: 'buildings', surface: '#blockify-modal', label: 'Block' },
-    { key: 'single', adapter: 'single', surface: '#single-building-modal', label: 'Freeform' },
+    { key: 'single', adapter: 'single', surface: '#single-building-editor', label: 'Freeform' },
   ]) test(`${item.label} opens its editor draft on the authored site`, async ({ mockApi: page }) => {
     const { panel, site } = await beginParcelSite(page);
     await panel.locator(`.parcel-build-btn--${item.key}`).click();
     await expect(page.locator(item.surface)).toBeVisible();
-    await expectActiveDraftSite(page, site, item.adapter);
+    if (item.key === 'single') await expectFreeformDraftSite(page, site);
+    else await expectActiveDraftSite(page, site, item.adapter);
   });
 
   for (const item of [
-    { key: 'row', adapter: 'row', surface: '#rowhouse-modal', label: 'Row houses' },
-    { key: 'parcelBased', adapter: 'parcelBased', surface: '#parcelbased-modal', label: 'Detached' },
+    { key: 'row', adapter: 'row', surface: '#rowhouse', label: 'Row houses' },
+    { key: 'parcelBased', adapter: 'parcelBased', surface: '#parcelbased', label: 'Detached' },
   ]) test(`${item.label} plot flow opens its editor draft on the authored site`, async ({ mockApi: page }) => {
     const { panel, site } = await beginParcelSite(page);
     await panel.locator(`.parcel-build-btn--${item.key}`).click();
@@ -112,7 +169,7 @@ test.describe('Site build palette controls @core', () => {
     await expect(subdivide).toBeEnabled();
     await expect(subdivide).toHaveText(/Subdivide/i);
     await subdivide.click();
-    const modal = page.locator('.reparcel-modal-overlay');
+    const modal = page.locator('.on-map-reparcellization');
     await expect(modal).toBeVisible();
     const plan = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).pendingReparcellizationPlan)));
     expect(plan.poolSource).toBe('site');

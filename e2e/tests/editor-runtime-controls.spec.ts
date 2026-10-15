@@ -4,7 +4,7 @@ import { openCity, openParcel, clickMapPoint, createSpace, showProposal, drawCor
 import type { Page } from '@playwright/test';
 
 async function clickEditorMapPoint(page: Page, xRatio: number, yRatio: number) {
-  const box = await page.locator('#reparcel-map').boundingBox();
+  const box = await page.locator('#map-container').boundingBox();
   if (!box) throw new Error('The reparcellization map has no visible bounds');
   await page.mouse.click(box.x + box.width * xRatio, box.y + box.height * yRatio);
 }
@@ -15,8 +15,9 @@ test.describe('Leaflet runtime control effects @features', () => {
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--buildings').click();
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
+    if (!(await page.locator('#blockify-manual-toggle').isVisible())) await page.locator('#blockify-modal .on-map-editor__more-options > summary').click();
     await page.locator('#blockify-manual-toggle').click();
-    const vertices = page.locator('#blockify-container .polygon-geometry-editor__vertex');
+    const vertices = page.locator('#map-container .polygon-geometry-editor__vertex');
     await expect.poll(() => vertices.count()).toBeGreaterThan(2);
     const countBefore = await vertices.count();
     await vertices.first().click();
@@ -31,7 +32,7 @@ test.describe('Leaflet runtime control effects @features', () => {
     const proposalId = await createSpace(page, 'square');
     await showProposal(page, proposalId);
     await page.locator('#proposal-details-footer .btn-edit-geometry').click();
-    const editor = page.locator('.structure-geometry-editor');
+    const editor = page.locator('#structure-geometry-editor');
     await expect(editor).toBeVisible();
 
     const decorations = [
@@ -79,7 +80,7 @@ test.describe('Leaflet runtime control effects @features', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--reparcellization').click();
-    const modal = page.locator('.reparcel-modal-overlay');
+    const modal = page.locator('.on-map-reparcellization');
     await expect(modal).toBeVisible();
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
     await modal.locator('label.reparcel-alg-option:has(input[value="manual"])').click();
@@ -89,11 +90,11 @@ test.describe('Leaflet runtime control effects @features', () => {
     const beforeSplit = await rows.count();
     await modal.locator('[data-reparcel-line]').click();
     await expect(modal.locator('[data-reparcel-draw-toolbar]')).toBeVisible();
-    const map = modal.locator('#reparcel-map');
+    const map = page.locator('#map-container');
     const box = await map.boundingBox();
     if (!box) throw new Error('Readjustment map has no visible bounds');
-    await page.mouse.click(box.x + box.width * 0.15, box.y + box.height * 0.5);
-    await page.mouse.click(box.x + box.width * 0.85, box.y + box.height * 0.5);
+    await clickMapPoint(page, 15.98185, 45.80025);
+    await clickMapPoint(page, 15.98255, 45.80025);
     await expect(modal.locator('[data-reparcel-finish]')).toBeEnabled();
     await modal.locator('[data-reparcel-finish]').click();
     await expect.poll(() => rows.count()).toBeGreaterThan(beforeSplit);

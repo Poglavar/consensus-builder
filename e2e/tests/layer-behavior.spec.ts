@@ -98,7 +98,9 @@ test.describe('Layers sheet behavior @features', () => {
       const opened = page.context().waitForEvent('page');
       await adActions.getByRole('button', { name, exact: true }).click();
       const child = await opened;
-      await child.waitForURL(actual => actual.href.startsWith(url));
+      // The popup destination is a tiny mocked page; commit is enough to verify the
+      // external URL and avoids waiting for the full load event from a cross-origin tab.
+      await child.waitForURL(actual => actual.href.startsWith(url), { waitUntil: 'commit' });
       if (name === 'Parcel builder') expect(new URL(child.url()).searchParams.get('parcel_identifier')).toBe('1234-335754');
       await child.close();
     }
@@ -163,7 +165,7 @@ test.describe('Layers sheet behavior @features', () => {
     if (await prompt.isVisible().catch(() => false)) {
       await prompt.getByRole('button', { name: 'No, just this parcel' }).click();
     }
-    await expect(page.locator('#single-building-modal')).toBeVisible();
+    await expect(page.locator('#single-building-editor')).toBeVisible();
     await expect(page.locator('#single-building-confirm')).toBeEnabled();
     await page.locator('#single-building-confirm').click();
     await expect.poll(() => page.evaluate(() => (window as any).proposedBuildings.length)).toBeGreaterThan(0);

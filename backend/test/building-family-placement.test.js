@@ -38,6 +38,16 @@ function center(feature) {
     const [lng, lat] = turf.centroid(feature).geometry.coordinates;
     return { lng, lat };
 }
+function boundsCenter(feature) {
+    const coordinates = feature?.geometry?.coordinates?.[0] || [];
+    const open = coordinates.slice(0, -1);
+    const lngs = open.map(point => point[0]);
+    const lats = open.map(point => point[1]);
+    return {
+        lng: (Math.min(...lngs) + Math.max(...lngs)) / 2,
+        lat: (Math.min(...lats) + Math.max(...lats)) / 2
+    };
+}
 
 function rowHarness() {
     const functions = functionSources('../../frontend/js/row-house.js');
@@ -326,12 +336,28 @@ describe('building-family free placement', () => {
         const site = rect(15.999, 44.999, 16.001, 45.001);
         const feature = rect(16.0003, 45, 16.0004, 45.00005, { type: 'proposedRowHouse' });
         const sync = vi.fn();
+        const rule = { kind: 'exact' };
         const context = {
-            window: { getActiveProposalDesignDraft: () => ({ adapterKey: 'row' }), syncActiveProposalDraftFromEditor: sync },
+            window: {
+                getActiveProposalDesignDraft: () => ({ adapterKey: 'row' }),
+                syncActiveProposalDraftFromEditor: sync,
+                UrbanRuleVariation: {
+                    massingWithRule: (value, urbanRule, seed) => ({
+                        ...value,
+                        properties: {
+                            ...(value.properties || {}),
+                            massing: true,
+                            urbanRule,
+                            variationSeed: seed
+                        }
+                    })
+                }
+            },
+            turf,
             feature, block: { parcels: [{ feature: site }], syntheticSite: true, site, generatorSite: site }
         };
         const source = `
-            let window=this.window, generatedRowHouseFeature=this.feature, rowHouseBlock=this.block;
+            let window=this.window, turf=this.turf, generatedRowHouseFeature=this.feature, rowHouseBlock=this.block;
             let currentBuildingLength=16, currentBuildingWidth=13, currentBuildingHeight=12, currentChamfer=0;
             let currentOffsetX=31, currentOffsetY=4, currentRotation=0, rowVariationSeed=9, rowHouseManualMode=false;
             let cachedSuperparcel=this.block.generatorSite;
@@ -345,7 +371,13 @@ describe('building-family free placement', () => {
         context.save();
         expect(sync).toHaveBeenCalledOnce();
         const payload = sync.mock.calls[0][1];
-        expect(payload.placement).toEqual({ site: feature, free: true });
+        expect(payload.placement.free).toBe(true);
+        expect(payload.placement.site.geometry).toEqual(feature.geometry);
+        expect(payload.placement.site.properties.massing).toBe(true);
+        expect(payload.placement.site.properties.urbanRule).toEqual(rule);
+        expect(payload.placement.site.properties.variationSeed).toBe(9);
+        expect(payload.buildingFeature.geometry).toEqual(feature.geometry);
+        expect(payload.buildingFeature.properties.urbanRule).toEqual(rule);
         expect(payload.parameters.placementBaseSite).toEqual(site);
     });
 
@@ -377,6 +409,50 @@ describe('building-family free placement', () => {
 
         const source = readFileSync(new URL('../../frontend/js/row-house.js', import.meta.url), 'utf8');
         expect(source).toContain('placementBaseSite: cloneRowHouseFeature(block.generatorSite || block.site || cachedSuperparcel)');
+    });
+
+    it('stores accepted snapped row movement in offsets and preserves its center after width regeneration', () => {
+        const h = rowHarness();
+        const baseSite = rect(15.999, 44.999, 16.001, 45.001);
+        const original = h.generate({ site: baseSite, generatorSite: baseSite, parcels: [{ feature: baseSite }] }, 16, 13, 0, 0, 0, 0);
+        h.useFeature(original);
+        const originalCentroid = center(original);
+        const snap = { lng: 0.00011, lat: 0.00007 };
+        h.rowHouseModal.placement.moveGeometry.mockImplementation((geometryValue, from) => geometry.moveGeometry(
+            geometryValue,
+            from,
+            { lng: from.lng + snap.lng, lat: from.lat + snap.lat }
+        ));
+
+        // The raw gesture is deliberately farther than the accepted snapped placement.
+        h.move(
+            originalCentroid,
+            { lng: originalCentroid.lng + 0.00042, lat: originalCentroid.lat + 0.00031 }
+        );
+        const moved = h.state().feature;
+        const movedCentroid = center(moved);
+        const frame = localFrame.makeLocalFrame(
+            turf.centroid(baseSite).geometry.coordinates[0],
+            turf.centroid(baseSite).geometry.coordinates[1]
+        );
+        const acceptedOffsetX = (movedCentroid.lng - originalCentroid.lng) * frame.metersPerDegLng;
+        const acceptedOffsetY = (movedCentroid.lat - originalCentroid.lat) * frame.metersPerDegLat;
+        expect(h.state().offsetX).toBeCloseTo(acceptedOffsetX, 6);
+        expect(h.state().offsetY).toBeCloseTo(acceptedOffsetY, 6);
+
+        const saved = {
+            parameters: { length: 16, width: 13, offsetX: h.state().offsetX, offsetY: h.state().offsetY, rotation: h.state().rotation },
+            placement: { site: moved, free: true },
+            buildings: [moved]
+        };
+        const reopened = rowHarness();
+        const resized = reopened.generate({
+            site: saved.placement.site,
+            generatorSite: baseSite,
+            parcels: [{ feature: saved.placement.site }]
+        }, saved.parameters.length, 15, 0, saved.parameters.offsetX, saved.parameters.offsetY, saved.parameters.rotation);
+        expect(boundsCenter(resized).lng).toBeCloseTo(boundsCenter(moved).lng, 10);
+        expect(boundsCenter(resized).lat).toBeCloseTo(boundsCenter(moved).lat, 10);
     });
 
     it('moves and rotates a generated row without entering manual mode and regenerates at its moved frame', () => {

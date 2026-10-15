@@ -54,6 +54,11 @@ async function deviceIn(browser: Browser, server: SharedProposalServer, cityId: 
 // The "This proposal is in …" prompt a link from outside gets: answer "Open in <city>", then the
 // page reloads into that city on the proposal's address.
 async function followToCity(page: Page, cityId: string, cityLabel: string): Promise<void> {
+  const fallback = page.locator('.ground-fallback-overlay');
+  if (await fallback.isVisible()) {
+    await fallback.getByRole('button', { name: 'Not now' }).click();
+    await expect(fallback).toBeHidden();
+  }
   const dialog = page.locator('.city-switch-dialog');
   await expect(dialog).toBeVisible({ timeout: 30_000 });
   await expect(dialog).toContainText(cityLabel);

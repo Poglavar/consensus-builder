@@ -1,7 +1,10 @@
 // A failed spec or an observed-but-unclicked button must never count as browser click coverage.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { summarizeControlCoverage, checkControlCoverage, checkExemptionGuards } from '../helpers/control-report.mjs';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { readControlResults, summarizeControlCoverage, checkControlCoverage, checkExemptionGuards } from '../helpers/control-report.mjs';
 
 test('only clicks from passing tests cover a source site', () => {
   const sites = ['passed', 'failed', 'observed', 'never-rendered'].map(id => ({ id, source: 'example.js' }));
@@ -83,4 +86,54 @@ test('dead variants become required when an orphan action helper gains a caller'
   assert.deepEqual(checkExemptionGuards(contract, sources), []);
   sources.set('menu.js', 'button.onclick = showOldShare;');
   assert.match(checkExemptionGuards(contract, sources).join('\n'), /unused share actions/);
+});
+
+
+test('result parsing retains runtime skip evidence without inventing a passing outcome', t => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'control-report-'));
+  t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+  const filename = path.join(directory, 'results.json');
+  fs.writeFileSync(filename, JSON.stringify({ suites: [{ title: 'optional external work', specs: [{
+    file: 'tests/external.spec.ts', title: 'sends an external transaction', line: 10,
+    tests: [{ projectName: 'chromium', expectedStatus: 'skipped', status: 'skipped', annotations: [],
+      results: [{ status: 'skipped', duration: 2, annotations: [{ type: 'skip', description: 'set EXTERNAL_TEST=1' }] }]
+    }]
+  }] }] }));
+  const [record] = readControlResults([filename]);
+  assert.equal(record.status, 'skipped');
+  assert.equal(record.expectedStatus, 'skipped');
+  assert.equal(record.outcome, 'skipped');
+  assert.equal(record.projectName, 'chromium');
+  assert.deepEqual(record.annotations, [{ type: 'skip', description: 'set EXTERNAL_TEST=1' }]);
+});
+
+test('only a declared opt-in skip is accepted and it never covers a button', () => {
+  const rule = { file: 'tests/external.spec.ts', title: 'sends an external transaction',
+    projectName: 'chromium', skipReason: 'set EXTERNAL_TEST=1' };
+  const skipped = { ...rule, key: 'external transaction', status: 'skipped', expectedStatus: 'skipped',
+    outcome: 'skipped', annotations: [{ type: 'skip', description: rule.skipReason }], events: [] };
+  const contract = { controls: [], allowedSkips: [rule] };
+  const summary = summarizeControlCoverage([], [skipped]);
+  assert.equal(summary.counts.skipped, 1);
+  assert.equal(summary.counts.passed, 0);
+  assert.deepEqual(checkControlCoverage(summary, contract), []);
+  assert.deepEqual(checkControlCoverage(summary, { controls: [] }), ['Test skipped: external transaction']);
+
+  for (const change of [
+    { file: 'tests/another.spec.ts' }, { title: 'another transaction' }, { projectName: 'another-browser' },
+    { status: 'failed' }, { status: 'not-run' }, { expectedStatus: 'passed' }, { outcome: 'unexpected' },
+    { annotations: [] }, { annotations: [{ type: 'skip', description: 'some other reason' }] },
+  ]) {
+    const rejected = summarizeControlCoverage([], [{ ...skipped, ...change }]);
+    assert.equal(checkControlCoverage(rejected, contract).length, 1, JSON.stringify(change));
+  }
+
+  const sites = [{ id: 'send', source: 'external.js', line: 1 }];
+  const clickedBeforeSkip = summarizeControlCoverage(sites, [{ ...skipped, events: [
+    { sourceId: 'send', kind: 'clicked', label: 'Send', attrs: {} }
+  ] }]);
+  assert.equal(clickedBeforeSkip.counts.clicked, 0);
+  assert.deepEqual(checkControlCoverage(clickedBeforeSkip, { ...contract, controls: sites }), [
+    'No passing click: external.js:1 send',
+  ]);
 });

@@ -125,21 +125,46 @@ test.describe('Map context actions @features', () => {
     await showProposal(page, sourceId);
     const panel = page.locator('#proposal-details-panel');
     await panel.locator('#proposal-details-footer .btn-edit-geometry').click();
-    const editor = page.locator('.structure-geometry-editor');
+    const editor = page.locator('#structure-geometry-editor');
     await expect(editor).toBeVisible();
 
-    // The geometry editor starts from the source design. Changing it creates a local fork on the
-    // same authored footprint; land membership follows that geometry without a separate parcel picker.
-    const center = await page.evaluate(geometry => {
-      const polygon = geometry.type === 'Polygon' ? geometry.coordinates[0] : geometry.coordinates[0][0];
-      const vertices = polygon.slice(0, -1);
-      return {
-        lng: vertices.reduce((sum: number, point: number[]) => sum + point[0], 0) / vertices.length,
-        lat: vertices.reduce((sum: number, point: number[]) => sum + point[1], 0) / vertices.length,
-      };
+    // The geometry editor starts from the source design. Pick visible open land inside that
+    // footprint: its centroid may already contain a rendered tree, which consumes a map click
+    // before the editor can place another one.
+    const treeCountBefore = await page.locator('.structure-geometry-icon.is-tree').count();
+    const openLand = await page.evaluate(geometry => {
+      const w = window as any;
+      const feature = { type: 'Feature', properties: {}, geometry };
+      const [west, south, east, north] = w.turf.bbox(feature);
+      const map = w.map;
+      const mapBox = map.getContainer().getBoundingClientRect();
+      const panel = document.querySelector('#structure-geometry-editor .on-map-editor__panel');
+      const panelBox = panel?.getBoundingClientRect();
+      const steps = 20;
+      for (let row = 1; row < steps; row++) {
+        for (let column = 1; column < steps; column++) {
+          const lng = west + (east - west) * column / steps;
+          const lat = south + (north - south) * row / steps;
+          const point = w.turf.point([lng, lat]);
+          if (!w.turf.booleanPointInPolygon(point, feature)) continue;
+          const pixel = map.latLngToContainerPoint([lat, lng]);
+          const x = mapBox.left + pixel.x;
+          const y = mapBox.top + pixel.y;
+          if (x < mapBox.left + 12 || x > mapBox.right - 12 || y < mapBox.top + 12 || y > mapBox.bottom - 12) continue;
+          if (panelBox && x >= panelBox.left && x <= panelBox.right && y >= panelBox.top && y <= panelBox.bottom) continue;
+          const hit = document.elementFromPoint(x, y);
+          // Decorations are real Leaflet targets in this editor (markers and draggable
+          // geometry). Skip them so the click places a tree instead of selecting or dragging one.
+          if (hit?.closest('.leaflet-marker-icon, .structure-geometry-icon, .structure-geometry-draggable, #structure-geometry-editor .on-map-editor__panel')) continue;
+          return { lng, lat };
+        }
+      }
+      return null;
     }, sourceBefore.structureProposal.geometry);
+    expect(openLand, 'an unobstructed point inside the park footprint').toBeTruthy();
     await editor.locator('[data-tool="tree"]').click();
-    await clickMapPoint(page, center.lng, center.lat);
+    await clickMapPoint(page, openLand!.lng, openLand!.lat);
+    await expect.poll(() => page.locator('.structure-geometry-icon.is-tree').count()).toBe(treeCountBefore + 1);
     await editor.locator('[data-action="save"]').click();
     await expect(editor).toBeHidden();
 

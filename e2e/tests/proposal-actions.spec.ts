@@ -238,12 +238,15 @@ test.describe('Proposal actions @features', () => {
     await page.locator('.btn-donate-proposal').click();
     const dialog = page.locator('#proposalBoostOverlay');
     await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveAttribute('data-support-kind', 'donate');
     await dialog.locator('#proposalBoostAmount').fill('1.25');
     await dialog.locator('[data-support-submit]').click();
 
     await expect(dialog).toBeHidden();
     const confirmation = page.locator('.cb-dialog-overlay--confirm');
-    await expect(confirmation).toContainText('Success! Thank you for boosting this proposal with 1.25 of USDC.');
+    await expect(confirmation).toContainText('Success! Thank you for supporting this proposal with 1.25 USDC.');
+    await expect(confirmation.getByRole('link', { name: 'See transaction on Solana Explorer' }))
+      .toHaveAttribute('href', 'https://explorer.solana.com/tx/5N2o4X1mockSignature?cluster=devnet');
     const chainEvents = await page.evaluate(() => (window as any).__proposalActionChainEvents as string[]);
     expect(chainEvents).toContain('send');
     expect(chainEvents).toContain('confirm');

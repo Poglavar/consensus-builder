@@ -535,6 +535,27 @@
         return { permittedFloorAreaM2: permitted, guaranteedFloorAreaM2: guaranteed, kind: normalized.kind };
     }
 
+    // Keep the complete authored footprint and the renderer's rule inputs together. Parcel
+    // pieces are preview/economic derivatives; saving one of those would crop a free design.
+    function massingWithRule(feature, rule, seed, deps) {
+        if (!feature || !feature.geometry) return null;
+        const result = JSON.parse(JSON.stringify(feature));
+        const normalized = normalizeBlockRule(rule);
+        result.properties = {
+            ...(result.properties || {}),
+            height: normalized.maxHeightM,
+            massing: true,
+            urbanRule: normalized,
+            variationSeed: num(seed, 0) >>> 0
+        };
+        delete result.properties.minFootprint;
+        const compelled = normalized.kind === 'range' && normalized.minDepthM > 0
+            ? buildToMinimum(result, normalized.minDepthM, deps)
+            : null;
+        if (compelled && compelled.geometry) result.properties.minFootprint = compelled.geometry;
+        return result;
+    }
+
     // Realize a stored massing feature from the rule and seed stamped on it. `salt` re-rolls the
     // variation without touching the stored seed — that is how the 3D view's Randomize can shuffle
     // the whole city without writing to a single proposal.
@@ -600,6 +621,7 @@
         summariseBlockRule,
         realizeFromEnvelope,
         realizeBlockPiece,
+        massingWithRule,
         realizeFeature,
         plannedDrawPlan
     };

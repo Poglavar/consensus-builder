@@ -45,11 +45,11 @@ test.describe('Building generation error recovery @features', () => {
     await expect(page.locator('#btn-blockify-done')).toBeDisabled();
 
     // The visitor can leave the failed attempt and use the ordinary parcel editor successfully.
-    await page.locator('#blockify-close').click();
+    await page.locator('#blockify-modal .on-map-editor__header .close-circle-btn').click();
     await expect(editor).toHaveCount(0);
     await openParcel(page, 'proposals', PARCEL_ID);
     await page.locator('.parcel-build-btn--buildings').click();
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
-    await page.locator('#blockify-close').click();
+    await page.locator('#blockify-modal .on-map-editor__header .close-circle-btn').click();
   });
 });

@@ -85,7 +85,10 @@ function flattenObject(node, prefix = '', out = {}) {
 
 function showProposalAlertMessage(key, fallback, params = {}, alertOptions = {}) {
     const translate = getProposalI18nHelper();
-    const message = translate(`alerts.messages.${key}`, fallback, params);
+    // The dialog turns this slot into an anchor; translation must not replace it with URL text.
+    const values = alertOptions.linkUrl ? { ...params, txLink: '{{txLink}}' } : params;
+    let message = translate(`alerts.messages.${key}`, fallback, values);
+    if (alertOptions.linkUrl && !message.includes('{{txLink}}')) message += '\n{{txLink}}';
     // The shared dialog (js/ui/dialogs.js via showStyledAlert), never the browser's.
     window.showStyledAlert(message, alertOptions);
     return message;

@@ -610,6 +610,48 @@ describe('saved single-building geometry edits', () => {
         expect(savedPatch.editorPayload.typology).toBe('block');
     });
 
+    it('switches generated and existing-building snapshots without retaining the other placement mode', () => {
+        const siteApi = require('../../frontend/js/proposals/site-draft.js');
+        const site = turf.polygon([[[0, 0], [2, 0], [2, 2], [0, 2], [0, 0]]]);
+        const footprint = turf.polygon([[[0.5, 0.5], [1.5, 0.5], [1.5, 1.5], [0.5, 1.5], [0.5, 0.5]]]);
+        const draft = {
+            id: 'mode-switch', adapterKey: 'buildings', goal: 'buildings',
+            fields: { site: siteApi.toMultiPolygon(footprint), selectedParcelIds: [], cadastreParcelIds: ['old-binding'], binding: { coverage: 'complete' } },
+            editorPayload: { typology: 'block', context: { parameters: { mode: 'parametric' } }, placement: { free: true, site: footprint } }
+        };
+        const store = {
+            updateDraft: (_id, updater) => Object.assign(draft, updater(draft)),
+            validateDraft: () => draft
+        };
+        const sync = loadProposalEditorShellFunction('syncActiveProposalDraftFromEditor', {
+            global: { proposalDraftStore: store, __siteDraft: siteApi, proposalDraftPlacement: { freePlacementPatch } },
+            getActiveProposalDesignDraft: () => draft,
+            ensureShell: () => ({ classList: { contains: () => false } }),
+            editorState: {}, renderProposalDraftComparison() {}
+        });
+
+        sync('building', {
+            parcelIds: ['source-parcel'], parameters: { mode: 'existing', typology: 'block' },
+            buildings: [footprint], placement: { free: false, site }
+        });
+        expect(draft.editorPayload.context.parameters.mode).toBe('existing');
+        expect(draft.editorPayload.placement).toBeNull();
+        expect(draft.fields.site).toEqual(siteApi.toMultiPolygon(site));
+        expect(draft.fields.selectedParcelIds).toEqual(['source-parcel']);
+        expect(draft.fields.cadastreParcelIds).toEqual([]);
+        expect(draft.fields.binding).toBeNull();
+
+        // Validation must use the incoming generated snapshot, not the outgoing existing mode.
+        sync('building', {
+            parcelIds: ['source-parcel'], parameters: { mode: 'parametric', typology: 'block' },
+            buildings: [footprint], placement: { free: true, site: footprint }
+        });
+        expect(draft.editorPayload.context.parameters.mode).toBe('parametric');
+        expect(draft.editorPayload.placement).toMatchObject({ free: true, bindingStatus: 'pending' });
+        expect(draft.fields.site).toEqual(siteApi.toMultiPolygon(footprint));
+        expect(draft.fields.selectedParcelIds).toEqual([]);
+    });
+
     it('does not replace source selection anchors with transient live child parcels', () => {
         const draft = {
             id: 'saved-single-edit', sourceProposalId: 'proposal-1', adapterKey: 'single', goal: 'single',

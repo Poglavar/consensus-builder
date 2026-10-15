@@ -636,3 +636,117 @@ test('a minted proposal anchors its owner decisions on chain, and a browser with
     await second.context.close();
   }
 });
+
+// Offline counterpart of the explicitly opt-in devnet integration case.
+test('a mocked Solana anchor records signed owner decisions and recovers them without the relay', async ({ mockApi: page, browser, baseURL }, testInfo) => {
+  test.setTimeout(120_000);
+  const web3 = createRequire(`${BACKEND}/`)('@solana/web3.js');
+  const wallets = { a: wallet(), b: wallet(), c: wallet(), d: wallet() };
+  // Only the Solana transport is simulated. The wallet signs a real web3 Transaction, the
+  // relay pins its real verified bundle, and the second browser verifies chain + bundle content.
+  const chainRows: Array<{ signature: string; memo: string; err: null }> = [];
+  const transactions: Array<{ signature: string; memo: string; program: string; lookup: string }> = [];
+  const rpcEvents: string[] = [];
+  const { memberKey, serviceUrl } = await startMember(testInfo, (['a', 'b', 'c', 'd'] as const).map(id => ({ ownerId: `owner-${id}`, wallet: wallets[id].address })));
+  const relay = await startRelay(testInfo);
+  const program = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
+  const account = web3.Keypair.generate().publicKey.toBase58();
+  const published = {
+    proposalId: 'lr-anchor-e2e', serverProposalId: '42',
+    onchain: { chainId: 'solana-devnet', proposalId: account, contractAddress: program },
+    nft: { chain: 'solana-devnet', contract: program, tokenId: account }
+  };
+  const setup = (withRelay: boolean) => async (target: Page) => {
+    await target.exposeFunction('__anchorReadFixture', () => chainRows);
+    await target.exposeFunction('__anchorSendFixture', (bytes: number[]) => {
+      const transaction = web3.Transaction.from(Uint8Array.from(bytes));
+      expect(transaction.verifySignatures()).toBe(true);
+      expect(transaction.instructions).toHaveLength(1);
+      const instruction = transaction.instructions[0];
+      const memo = new TextDecoder().decode(instruction.data);
+      const signature = base58(transaction.signature);
+      transactions.push({ signature, memo, program: instruction.programId.toBase58(), lookup: instruction.keys[0].pubkey.toBase58() });
+      chainRows.push({ signature, memo: `[${Buffer.byteLength(memo)}] ${memo}`, err: null });
+      rpcEvents.push('send');
+      return signature;
+    });
+    await target.exposeFunction('__anchorConfirmFixture', () => { rpcEvents.push('confirm'); });
+    await target.route('**/lenses/members', route => route.fulfill({ json: { members: [
+      { key: memberKey, kind: 'owner-consent', name: 'Test notary', serviceUrl }
+    ] } }));
+    // Public IPFS gateways answer from the bundles the relay pinned.
+    await target.route(/^https:\/\/(gateway\.pinata\.cloud|ipfs\.io)\/ipfs\//, async route => route.fulfill({
+      response: await route.fetch({ url: `${relay.url}/ipfs/${route.request().url().split('/ipfs/')[1]}` })
+    }));
+    await target.route(/\/proposals\/42\/owner-decisions(\/bundle)?(\?.*)?$/, async route => (withRelay
+      ? route.fulfill({ response: await route.fetch({ url: `${relay.url}${new URL(route.request().url()).pathname}` }) })
+      : route.fulfill({ status: 503, json: { error: 'relay unavailable' } })));
+    await installSwitchableWallet(target, wallets);
+    await openCity(target);
+    await target.evaluate(async () => {
+      const w = window as any;
+      await w.ensureWalletVendors();
+      const connection = {
+        getSignaturesForAddress: async () => w.__anchorReadFixture(),
+        getLatestBlockhash: async () => ({ blockhash: 'EkSnNWid2cvwEVnVx9aBqpiCpY1QoUW63D2Hp31e4gwJ', lastValidBlockHeight: 99 }),
+        simulateTransaction: async () => ({ value: { err: null, logs: [] } }),
+        sendRawTransaction: async (bytes: Uint8Array) => w.__anchorSendFixture(Array.from(bytes)),
+        confirmTransaction: async () => { await w.__anchorConfirmFixture(); return { value: { err: null } }; },
+      };
+      w.SolanaChainDataLoader.getConnection = () => connection;
+    });
+    await target.evaluate(() => (window as any).i18n.setLanguage('en'));
+    await establishLocalProfile(target);
+    expect(await seedReadjustment(target, memberKey, published)).toBe(published.proposalId);
+  };
+  await setup(true)(page);
+  const record = await proposalState(page, published.proposalId);
+  writeFileSync(relay.file, JSON.stringify({ proposalId: published.proposalId, serverProposalId: '42', onchain: published.onchain,
+    lifecycleStatus: 'Active', cadastreParcelIds: record.cadastreParcelIds, approvalConfig: record.approvalConfig, lens: record.lens }));
+
+  await openLand(page, published.proposalId);
+  await expect(card(page).locator('[data-approval-chain-line]')).toHaveText('On chain: 0 of 0 decisions anchored.', { timeout: 30_000 });
+  // The contract never executes an approval setup, so nothing here settles on it.
+  await expect(page.locator('#proposal-details-panel [data-proposal-support-actions], #proposal-details-panel .proposal-pledge-summary, #proposal-details-panel .proposal-market-summary')).toHaveCount(0);
+  await useWallet(page, wallets.a.address);
+  await verifyAndAccept(page, 'a', undefined, 'yes');
+  await useWallet(page, wallets.c.address);
+  await verifyAndAccept(page, 'c', undefined, 'yes');
+  const decisions = await page.evaluate(() => (window as any).__e2eWallet.signed.filter((entry: any) => entry.text.startsWith('Urban Game Theory owner decision')));
+  expect(decisions[0].text).toContain(`Accept proposal solana:devnet:${account} as owner owner-a.`);
+  await expect(card(page).locator('[data-approval-chain-line]')).toHaveText('On chain: 0 of 2 decisions anchored.');
+
+  // Owner A signs the pointer; the mocked RPC confirms that exact signed memo.
+  await useWallet(page, wallets.a.address);
+  await card(page).locator('[data-approval-action="anchor"]').click();
+  await expect(card(page).locator('[data-approval-chain-line]')).toHaveText('On chain: 2 of 2 decisions anchored.', { timeout: 90_000 });
+  await expect(card(page).locator('[data-approval-chain-status]')).toHaveText('Anchored 2 decisions.');
+  await expect(card(page).locator('[data-approval-action="anchor"]')).toHaveCount(0);
+  expect(rpcEvents).toEqual(['send', 'confirm']);
+  expect(transactions).toHaveLength(1);
+  expect(transactions[0].program).toBe('Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo');
+  expect(transactions[0].memo).toContain(`ugt-owner-decisions/1 solana:devnet:${account} ipfs://`);
+  const expectedInbox = web3.PublicKey.findProgramAddressSync([
+    Buffer.from('ugt-owner-decisions'), new web3.PublicKey(account).toBytes(),
+  ], new web3.PublicKey('Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'))[0].toBase58();
+  expect(transactions[0].lookup).toBe(expectedInbox);
+  const explorer = await card(page).locator('[data-approval-chain-tx]').getAttribute('href');
+  expect(explorer).toBe(`https://explorer.solana.com/tx/${transactions[0].signature}?cluster=devnet`);
+  await card(page).scrollIntoViewIfNeeded();
+  await screenshot(page, testInfo, 'anchored-on-chain');
+
+  // A second browser whose relay is down recovers both acceptances from chain + IPFS and counts them.
+  const second = await secondBrowser(browser, baseURL, setup(false));
+  try {
+    const other = second.page;
+    await openLand(other, published.proposalId);
+    await expect(card(other).locator('[data-approval-chain-line]')).toHaveText('On chain: 2 of 2 decisions anchored.', { timeout: 60_000 });
+    await expect(card(other).locator('[data-approval-meter="owners"]')).toContainText('2 of 4 accepted');
+    await expect(card(other).locator('[data-approval-outstanding]')).toHaveText('Still to accept: Owner B, Owner D');
+    await card(other).scrollIntoViewIfNeeded();
+    await screenshot(other, testInfo, 'recovered-from-chain');
+    expect(second.errors).toEqual([]);
+  } finally {
+    await second.context.close();
+  }
+});

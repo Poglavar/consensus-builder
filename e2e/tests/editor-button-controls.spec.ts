@@ -15,7 +15,7 @@ async function openRowHouseEditor(page: any) {
   await page.locator('#parcel-info-panel .close-button').click();
   await page.locator('#selection-tray [data-command="selection.propose"]').click();
   await page.locator('.parcel-build-btn--row').click();
-  await expect(page.locator('#rowhouse-modal')).toBeVisible();
+  await expect(page.locator('#rowhouse')).toBeVisible();
   await expect(page.locator('#btn-rowhouse-done')).toBeEnabled({ timeout: 20_000 });
 }
 
@@ -26,14 +26,14 @@ test.describe('Editor button effects @features', () => {
     await page.locator('.parcel-transport-btn--road').click();
     await expect(page.locator('#road-info-panel')).toBeVisible();
     await page.locator('#road-acquire-difficulty-label .acquiring-difficulty-help-icon').click();
-    const explanation = page.locator('.share-modal-overlay');
+    const explanation = page.locator('.road-acquiring-difficulty-dialog');
     await expect(explanation).toBeVisible();
     await expect(explanation).toContainText(/Government|Institution|Company|Individual/i);
-    await explanation.locator('.share-modal .close-circle-btn').click();
+    await explanation.locator('.close-circle-btn').click();
     await expect(explanation).toBeHidden();
     await page.locator('#road-acquire-difficulty-label .acquiring-difficulty-help-icon').click();
     await expect(explanation).toBeVisible();
-    await explanation.locator('.share-modal .btn-primary').click();
+    await explanation.locator('.btn-primary').click();
     await expect(explanation).toBeHidden();
     await page.locator('#road-info-panel .close-button').click();
   });
@@ -44,9 +44,9 @@ test.describe('Editor button effects @features', () => {
     const before = await proposalState(page, id);
     await showProposal(page, id);
     await page.locator('#proposal-details-footer .btn-edit-geometry').click();
-    const editor = page.locator('.structure-geometry-editor');
+    const editor = page.locator('#structure-geometry-editor');
     await expect(editor).toBeVisible();
-    await editor.locator('header [data-action="cancel"]').click();
+    await editor.locator('.on-map-editor__header .close-circle-btn').click();
     await expect(editor).toBeHidden();
     expect((await proposalState(page, id)).structureProposal).toEqual(before.structureProposal);
   });
@@ -56,7 +56,7 @@ test.describe('Editor button effects @features', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
-    const placement = page.locator('#single-building-modal');
+    const placement = page.locator('#single-building-editor');
     await expect(placement).toBeVisible();
     await page.locator('#single-building-confirm').click();
     const savedId = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().slice(-1)[0]?.proposalId);
@@ -90,6 +90,9 @@ test.describe('Editor button effects @features', () => {
     await expect(dialog.locator('#building-upload-status')).toContainText('test-building.glb');
     await dialog.locator('#building-upload-confirm').click();
     await expect(dialog).toHaveCount(0);
+    await expect(page.locator('#single-building-editor')).toBeVisible();
+    await page.locator('#single-building-confirm').click();
+    await expect(page.locator('#single-building-editor')).toBeHidden();
     await expect.poll(() => page.evaluate(() => (window as any).pendingBuildingProposalContext?.buildingFeature?.properties?.source)).toBe('upload');
     expect(await page.evaluate(() => (window as any).pendingBuildingProposalContext.buildingFeature.properties.modelName)).toBe('test-building.glb');
   });
@@ -98,14 +101,15 @@ test.describe('Editor button effects @features', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
-    const modal = page.locator('#single-building-modal');
+    const modal = page.locator('#single-building-editor');
     await expect(modal).toBeVisible();
-    await page.locator('#single-building-close').click();
+    await page.locator('#single-building-editor .on-map-editor__header .close-circle-btn').click();
     await expect(modal).toHaveCount(0);
 
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
     await expect(modal).toBeVisible();
+    await modal.locator('details > summary').click();
     const selector = page.locator('#single-building-selector');
     const initial = await selector.locator('option').count();
     await page.locator('#single-building-add').click();
@@ -125,11 +129,12 @@ test.describe('Editor button effects @features', () => {
       // narrow, so a large generic city-centre rectangle is rejected as outside its boundary.
       geometry: { type: 'Polygon', coordinates: [[[15.98206,45.800205],[15.98214,45.800205],[15.98214,45.800245],[15.98206,45.800245],[15.98206,45.800205]]] },
     };
+    if (!(await page.locator('#single-building-geojson-upload').isVisible())) await page.locator('#single-building-editor details > summary').click();
     await page.locator('#single-building-geojson-upload').click();
     await page.locator('#single-building-geojson-input').setInputFiles({
       name: 'footprint.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(uploaded)),
     });
-    const footprint = page.locator('#single-building-map path.single-building-fill--active');
+    const footprint = page.locator('#map-container path.single-building-fill--active');
     await expect(footprint).toBeVisible();
     const initialPath = await footprint.getAttribute('d');
     const counterclockwise = page.locator('#single-rotate-counterclockwise');
@@ -148,8 +153,8 @@ test.describe('Editor button effects @features', () => {
 
   test('row-house Close dismisses the editor without saving', async ({ mockApi: page }) => {
     await openRowHouseEditor(page);
-    const modal = page.locator('#rowhouse-modal');
-    await page.locator('#rowhouse-close').click();
+    const modal = page.locator('#rowhouse');
+    await page.locator('#rowhouse .on-map-editor__header .close-circle-btn').click();
     const discard = page.getByRole('alertdialog');
     if (await discard.isVisible().catch(() => false)) {
       await discard.getByRole('button', { name: /discard|close|continue/i }).click();
@@ -185,6 +190,7 @@ test.describe('Editor button effects @features', () => {
       return { type: 'Feature', properties: { name: 'fixture row footprint' }, geometry: { type: 'Polygon', coordinates: [uploadRing] } };
     });
     const beforeUpload = await page.locator('#rowhouse-area-value').textContent();
+    if (!(await page.locator('#rowhouse-geojson-upload').isVisible())) await page.locator('#rowhouse .on-map-editor__more-options > summary').click();
     await page.locator('#rowhouse-geojson-upload').click();
     await page.locator('#rowhouse-geojson-input').setInputFiles({
       name: 'row-footprint.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(uploaded)),
@@ -206,7 +212,7 @@ test.describe('Editor button effects @features', () => {
     const blockify = page.locator('#blockify-modal');
     await expect(blockify).toBeVisible();
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
-    await page.locator('#blockify-close').click();
+    await page.locator('#blockify-modal .on-map-editor__header .close-circle-btn').click();
     await expect(blockify).toHaveCount(0);
     const parcelInfoClose = page.locator('#parcel-info-panel .close-button');
     if (await parcelInfoClose.isVisible().catch(() => false)) await parcelInfoClose.click();
@@ -226,17 +232,17 @@ test.describe('Editor button effects @features', () => {
     }
     await expect.poll(() => page.evaluate(() => Function('return blockVariationSeed')())).not.toBe(blockSeed);
     await expect(blockPreview).toHaveText(blockBefore || '');
-    await page.locator('#blockify-close').click();
+    await page.locator('#blockify-modal .on-map-editor__header .close-circle-btn').click();
     await expect(blockify).toHaveCount(0);
     const parcelInfoCloseAfterBlock = page.locator('#parcel-info-panel .close-button');
     if (await parcelInfoCloseAfterBlock.isVisible().catch(() => false)) await parcelInfoCloseAfterBlock.click();
 
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--parcelBased').click();
-    const parcelBased = page.locator('#parcelbased-modal');
+    const parcelBased = page.locator('#parcelbased');
     await expect(parcelBased).toBeVisible();
     await expect(page.locator('#btn-parcelbased-done')).toBeEnabled({ timeout: 20_000 });
-    await page.locator('#parcelbased-close').click();
+    await page.locator('#parcelbased .on-map-editor__header .close-circle-btn').click();
     const parcelDiscard = page.getByRole('alertdialog');
     if (await parcelDiscard.isVisible().catch(() => false)) {
       await parcelDiscard.getByRole('button', { name: 'Discard', exact: true }).click();
@@ -268,20 +274,22 @@ test.describe('Editor button effects @features', () => {
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--buildings').click();
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
+    if (!(await page.locator('#blockify-manual-toggle').isVisible())) await page.locator('#blockify-modal .on-map-editor__more-options > summary').click();
     await page.locator('#blockify-manual-toggle').click();
-    const vertices = page.locator('#blockify-container .polygon-geometry-editor__vertex');
+    const vertices = page.locator('#map-container .polygon-geometry-editor__vertex');
     await expect.poll(() => vertices.count()).toBeGreaterThan(2);
     const uploaded = {
       type: 'Feature', properties: { name: 'fixture manual footprint' },
       geometry: { type: 'Polygon', coordinates: [[[15.9820,45.80010],[15.98235,45.80010],[15.98235,45.80030],[15.9820,45.80030],[15.9820,45.80010]]] },
     };
+    if (!(await page.locator('#blockify-geojson-upload').isVisible())) await page.locator('#blockify-modal .on-map-editor__more-options > summary').click();
     await page.locator('#blockify-geojson-upload').click();
     await page.locator('#blockify-geojson-input').setInputFiles({
       name: 'block-footprint.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(uploaded)),
     });
     await expect.poll(() => vertices.count()).toBeGreaterThan(2);
     await expect(page.locator('#blockify-info')).not.toContainText(/No usable polygon/i);
-    await page.locator('#blockify-close').click();
+    await page.locator('#blockify-modal .on-map-editor__header .close-circle-btn').click();
     const discard = page.getByRole('alertdialog');
     if (await discard.isVisible().catch(() => false)) {
       await discard.getByRole('button', { name: /discard|close|continue/i }).click();
@@ -295,6 +303,7 @@ test.describe('Editor button effects @features', () => {
     await page.locator('.parcel-build-btn--buildings').click();
     const modal = page.locator('#blockify-modal');
     await expect(modal).toBeVisible();
+    if (!(await page.locator('#blockify-manual-toggle').isVisible())) await page.locator('#blockify-modal .on-map-editor__more-options > summary').click();
     await page.locator('#blockify-manual-toggle').click();
     const alert = page.getByRole('alertdialog');
     await expect(alert).toBeVisible();
@@ -302,7 +311,7 @@ test.describe('Editor button effects @features', () => {
     await alert.getByRole('button', { name: 'OK', exact: true }).click();
     await expect(alert).toHaveCount(0);
     await expect(modal).toBeVisible();
-    await page.locator('#blockify-close').click();
+    await page.locator('#blockify-modal .on-map-editor__header .close-circle-btn').click();
   });
 
   test('site plot Back returns to editing and Continue opens the parcel tool on those plots', async ({ mockApi: page }) => {
@@ -320,7 +329,7 @@ test.describe('Editor button effects @features', () => {
     await page.locator('#site-info-panel .parcel-build-btn--parcelBased').click();
     await page.locator('#site-panel [data-site-action="plots-continue"]').click();
     await expect(page.locator('#site-panel')).toBeHidden();
-    await expect(page.locator('#parcelbased-modal')).toBeVisible();
+    await expect(page.locator('#parcelbased')).toBeVisible();
   });
 
   test('site Include and Trim reshape the authored site at a small parcel intrusion', async ({ mockApi: page }) => {
@@ -432,15 +441,15 @@ test.describe('Editor button effects @features', () => {
     await showProposal(page, stationId);
     const openEditor = async () => {
       await page.locator('#proposal-details-footer .btn-edit-geometry').click();
-      await expect(page.locator('.station-geometry-editor')).toBeVisible();
-      return page.locator('.station-geometry-editor');
+      await expect(page.locator('#station-geometry-editor')).toBeVisible();
+      return page.locator('#station-geometry-editor');
     };
     const acceptDiscard = async () => {
       const discard = page.getByRole('button', { name: 'Discard', exact: true });
       if (await discard.isVisible().catch(() => false)) await discard.click();
     };
     let editor = await openEditor();
-    await editor.locator('header [data-station-editor-action="cancel"]').click();
+    await editor.locator('.on-map-editor__header .close-circle-btn').click();
     await acceptDiscard();
     await expect(editor).toBeHidden();
 
@@ -592,7 +601,7 @@ test.describe('Editor button effects @features', () => {
     await page.locator('#editRoadCrossSectionButton').click();
     const reopened = page.locator('#corridor-editor-overlay');
     await expect(reopened.locator('.corridor-lane-row')).toHaveCount(before);
-    await reopened.locator('.corridor-editor-close').click();
+    await reopened.locator('.on-map-editor__header .close-circle-btn').click();
     await expect(reopened).toBeHidden();
   });
 

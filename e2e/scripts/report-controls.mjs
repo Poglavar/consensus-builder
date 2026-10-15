@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { sourceInventory, sourceFiles, frontendRoot } from '../helpers/control-source.mjs';
-import { readControlResults, summarizeControlCoverage, checkControlCoverage, checkExemptionGuards } from '../helpers/control-report.mjs';
+import { readControlResults, summarizeControlCoverage, checkControlCoverage, checkExemptionGuards, isAllowedSkip } from '../helpers/control-report.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const check = process.argv.includes('--check');
@@ -21,12 +21,14 @@ const required = summary.controls.filter(control => control.required);
 summary.counts.required = required.length;
 summary.counts.requiredClicked = required.filter(control => control.clicks.length).length;
 summary.counts.excluded = summary.controls.length - required.length;
+summary.counts.allowedSkips = summary.tests.filter(test => isAllowedSkip(test, contract)).length;
 // Preserve the evidence trail when a complete run is followed by focused rechecks.
 summary.inputReports = inputReports.map(filename => path.relative(root, filename));
 const output = path.join(root, 'test-results/control-coverage.json');
 fs.mkdirSync(path.dirname(output), { recursive: true });
 fs.writeFileSync(output, JSON.stringify(summary, null, 2) + '\n');
-console.log(`${summary.counts.passed}/${summary.counts.tests} tests passed; ${summary.counts.requiredClicked}/${summary.counts.required} required button sites clicked in passing tests (${summary.counts.excluded} source exclusions).`);
+console.log(`${summary.counts.passed}/${summary.counts.tests} tests passed, ${summary.counts.allowedSkips} declared opt-in skips; ${summary.counts.requiredClicked}/${summary.counts.required} required button sites clicked in passing tests (${summary.counts.excluded} source exclusions).`);
+for (const test of summary.tests.filter(test => isAllowedSkip(test, contract))) console.log(`Opt-in test skipped: ${test.file} › ${test.title}`);
 console.log(`Coverage details: ${path.relative(process.cwd(), output)}`);
 const bySource = new Map();
 for (const control of summary.uncovered.filter(control => control.required)) bySource.set(control.source, (bySource.get(control.source) || 0) + 1);

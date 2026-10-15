@@ -1,5 +1,13 @@
 {
   "version": 1,
+  "allowedSkips": [
+    {
+      "file": "proposal-approval-lens.spec.ts",
+      "projectName": "chromium",
+      "title": "a minted proposal anchors its owner decisions on chain, and a browser without the relay recovers them",
+      "skipReason": "set E2E_DEVNET=1 to send devnet transactions"
+    }
+  ],
   "controls": [
     {
       "id": "control-514c5946de1753-1",
@@ -468,9 +476,9 @@
       ]
     },
     {
-      "id": "control-a24c6896bd1445-1",
+      "id": "control-a63b0586537cf0-1",
       "source": "index.html",
-      "markup": "<button id=\"planStatsButton\" class=\"btn btn-block plan-stats-button\">"
+      "markup": "<button id=\"planStatsButton\" class=\"btn btn-block plan-stats-button\" disabled aria-disabled=\"true\">"
     },
     {
       "id": "control-dc5ea01f530ec8-1",
@@ -985,13 +993,13 @@
         {
           "name": "Filter actor run",
           "classes": [
-            "ae-link"
+            "cb-link"
           ]
         },
         {
           "name": "Clear selection",
           "classes": [
-            "ae-button-quiet"
+            "btn"
           ],
           "label": "Clear selection"
         }
@@ -1031,7 +1039,20 @@
     {
       "id": "control-4a853482db54a9-4",
       "source": "js/agents.js",
-      "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">"
+      "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">",
+      "exempt": "The simulation fallback requires acceptProposal to be absent, but the application unconditionally loads its declaration before agents.js. Normal acceptance and its rejected result are tested through the real dispatcher.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/proposals/execution.js",
+          "includes": "async function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {"
+        },
+        {
+          "source": "index.html",
+          "pattern": "'js/proposals/execution.js'[\\s\\S]*?'js/agents.js'",
+          "occurrences": 1
+        }
+      ]
     },
     {
       "id": "control-4a853482db54a9-5",
@@ -1051,7 +1072,24 @@
     {
       "id": "control-4a853482db54a9-8",
       "source": "js/agents.js",
-      "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">"
+      "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">",
+      "exempt": "This obsolete duplicate-result branch requires addProposal to return null for the object created immediately above it. The current store permits duplicate seeds and returns an ID for object input; null is reserved for non-object input.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/agents.js",
+          "includes": "const proposalId = proposalStorage.addProposal(proposal, {"
+        },
+        {
+          "source": "js/proposals/data.js",
+          "includes": "console.debug('[proposalStorage] Duplicate seed detected; allowing insert', { seed, existingId: duplicate.proposalId });\n        }"
+        },
+        {
+          "source": "js/proposals/data.js",
+          "pattern": "addProposal\\(proposal, options = \\{\\}\\) \\{\\n        if \\(!proposal \\|\\| typeof proposal !== 'object'\\) return null;\\n(?:(?!\\breturn\\b)[\\s\\S])*?return normalized\\.proposalId;\\n    \\},",
+          "occurrences": 1
+        }
+      ]
     },
     {
       "id": "control-4a853482db54a9-9",
@@ -1061,7 +1099,20 @@
     {
       "id": "control-4a853482db54a9-10",
       "source": "js/agents.js",
-      "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">"
+      "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">",
+      "exempt": "The simulation missing-store fallback is unreachable in the loaded app: proposalStorage is unconditionally declared and loaded before agents.js.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/proposals/data.js",
+          "includes": "const proposalStorage = {"
+        },
+        {
+          "source": "index.html",
+          "pattern": "'js/proposals/data.js[^']*'[\\s\\S]*?'js/agents.js'",
+          "occurrences": 1
+        }
+      ]
     },
     {
       "id": "control-4a853482db54a9-11",
@@ -1146,7 +1197,16 @@
     {
       "id": "control-4280de1aa03bd9-1",
       "source": "js/ai-scene.js",
-      "markup": "<a class=\"btn\">"
+      "markup": "<a class=\"btn\">",
+      "exempt": "Illustrative anchor markup inside an HTML comment in the AI scene template; it never renders a control.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/ai-scene.js",
+          "pattern": "<!-- Sharing first,[\\s\\S]*?wear the button classes \\(an <a class=\"btn\">\\),[\\s\\S]*?set of buttons\\. -->",
+          "occurrences": 1
+        }
+      ]
     },
     {
       "id": "control-67393395053ef6-1",
@@ -1222,7 +1282,7 @@
           "name": "Choose 0.1 USDC stake",
           "label": "0.1",
           "classes": [
-            "btn",
+            "cb-segmented__option",
             "bets-dialog__chip"
           ]
         },
@@ -1230,7 +1290,7 @@
           "name": "Choose 1 USDC stake",
           "label": "1",
           "classes": [
-            "btn",
+            "cb-segmented__option",
             "bets-dialog__chip"
           ]
         },
@@ -1238,14 +1298,14 @@
           "name": "Choose 5 USDC stake",
           "label": "5",
           "classes": [
-            "btn",
+            "cb-segmented__option",
             "bets-dialog__chip"
           ]
         },
         {
           "name": "Choose the maximum available stake",
           "classes": [
-            "btn",
+            "cb-segmented__option",
             "bets-dialog__chip"
           ],
           "labelPattern": "^Max(?: .+ USDC)?$"
@@ -1301,7 +1361,7 @@
           "name": "Expand proposals contesting the same land",
           "labelPattern": ".+ on this land$",
           "classes": [
-            "btn",
+            "cb-link",
             "bets-dialog__contest"
           ]
         },
@@ -1401,8 +1461,7 @@
           "name": "Show all Bets rows",
           "label": "All",
           "classes": [
-            "btn",
-            "btn-quiet",
+            "cb-segmented__option",
             "bets-filter__btn"
           ],
           "attrs": {
@@ -1413,8 +1472,7 @@
           "name": "Filter to open pools",
           "label": "Open",
           "classes": [
-            "btn",
-            "btn-quiet",
+            "cb-segmented__option",
             "bets-filter__btn"
           ],
           "attrs": {
@@ -1425,8 +1483,7 @@
           "name": "Filter to settled pools",
           "label": "Settled",
           "classes": [
-            "btn",
-            "btn-quiet",
+            "cb-segmented__option",
             "bets-filter__btn"
           ],
           "attrs": {
@@ -1437,8 +1494,7 @@
           "name": "Filter to the connected wallet's positions",
           "label": "Mine",
           "classes": [
-            "btn",
-            "btn-quiet",
+            "cb-segmented__option",
             "bets-filter__btn"
           ],
           "attrs": {
@@ -1457,8 +1513,8 @@
           "name": "Copy a row's bet link",
           "label": "Copy link",
           "classes": [
-            "btn",
-            "btn-quiet",
+            "cb-link",
+            "cb-link--quiet",
             "bets-row__link"
           ]
         },
@@ -1520,9 +1576,9 @@
       "dispatchEvidence": "The shared element factory creates the four filters, row title/link, Yes/No stake controls, open/settle/collect row actions and retry button."
     },
     {
-      "id": "control-7046cc76fb5300-1",
+      "id": "control-b6522655f01dc6-1",
       "source": "js/building-blocks.js",
-      "markup": "<button id=\"blockify-close\" type=\"button\" class=\"close-circle-btn close-circle-btn--lg\" data-i18n-key=\"blockify.modal.closeAria\" data-i18n-attr=\"aria-label\" aria-label=\"Close blockify modal\">"
+      "markup": "document.createElement('button')"
     },
     {
       "id": "control-eb6552b8152e00-1",
@@ -1530,9 +1586,24 @@
       "markup": "<button type=\"button\" id=\"blockify-manual-toggle\" class=\"btn btn-block\" aria-pressed=\"false\" data-i18n-key=\"blockify.modal.manual.edit\" data-i18n-attr=\"text\">"
     },
     {
+      "id": "control-29aa611454ccdc-1",
+      "source": "js/building-blocks.js",
+      "markup": "<button type=\"button\" id=\"blockify-rotate-counterclockwise\" class=\"btn\" aria-label=\"Rotate counterclockwise 5 degrees\">"
+    },
+    {
+      "id": "control-24a61a7a43f0f6-1",
+      "source": "js/building-blocks.js",
+      "markup": "<button type=\"button\" id=\"blockify-rotate-clockwise\" class=\"btn\" aria-label=\"Rotate clockwise 5 degrees\">"
+    },
+    {
       "id": "control-7b2f9c91090779-1",
       "source": "js/building-blocks.js",
       "markup": "<button type=\"button\" id=\"blockify-geojson-upload\" class=\"btn btn-block\" data-i18n-key=\"blockify.modal.manual.uploadGeojson\" data-i18n-attr=\"text\">"
+    },
+    {
+      "id": "control-d209bdb0867854-1",
+      "source": "js/building-blocks.js",
+      "markup": "<button type=\"button\" class=\"btn\" id=\"btn-blockify-cancel\" data-i18n-key=\"onMapEditor.cancel\" data-i18n-attr=\"text\">"
     },
     {
       "id": "control-553d785a73a743-1",
@@ -1572,7 +1643,7 @@
         {
           "name": "select Canton explorer party tab",
           "classes": [
-            "canton-chip"
+            "cb-segmented__option"
           ],
           "labelPattern": ".+"
         }
@@ -1675,9 +1746,10 @@
         {
           "name": "forget Canton party",
           "attrs": {
-            "title": "Forget"
+            "title": "Forget",
+            "aria-label": "Forget"
           },
-          "label": "×"
+          "label": "Forget"
         }
       ]
     },
@@ -1717,7 +1789,8 @@
         {
           "name": "clear saved Canton identities",
           "classes": [
-            "canton-ghost"
+            "btn",
+            "btn-sm"
           ],
           "attrs": {
             "data-clear": ""
@@ -1734,7 +1807,8 @@
         {
           "name": "open Canton state explorer",
           "classes": [
-            "canton-ghost"
+            "btn",
+            "btn-sm"
           ],
           "attrs": {
             "data-explorer": ""
@@ -1751,7 +1825,8 @@
         {
           "name": "switch away from Canton",
           "classes": [
-            "canton-ghost"
+            "btn",
+            "btn-sm"
           ],
           "attrs": {
             "data-switch": ""
@@ -1768,7 +1843,8 @@
         {
           "name": "leave Canton mode",
           "classes": [
-            "canton-ghost"
+            "btn",
+            "btn-sm"
           ],
           "attrs": {
             "data-leave": ""
@@ -1800,7 +1876,8 @@
         {
           "name": "view Canton party",
           "classes": [
-            "canton-party-view"
+            "btn",
+            "btn-sm"
           ],
           "label": "View"
         }
@@ -1854,7 +1931,7 @@
     {
       "id": "control-498ef3a5b6277b-1",
       "source": "js/corridor-editor.js",
-      "markup": "<button type=\"button\" draggable=\"true\" class=\"corridor-section-lane${selected}\" style=\"width:${percent}%;background:${laneType.surface}\" data-lane-index=\"${index}\" title=\"${laneLabel} · ${CbFormat.formatLength(Number(lane.width), { maxFractionDigits: 2 })} — drag to reorder\" aria-label=\"${laneLabel}, ${lane.width} metres\">"
+      "markup": "<button type=\"button\" draggable=\"true\" class=\"corridor-section-lane${selected}\" style=\"width:${percent}%;background:${laneType.surface}\" data-lane-index=\"${index}\" title=\"${laneLabel} \u00b7 ${CbFormat.formatLength(Number(lane.width), { maxFractionDigits: 2 })} \u2014 drag to reorder\" aria-label=\"${laneLabel}, ${lane.width} metres\">"
     },
     {
       "id": "control-e52ce4284586dc-1",
@@ -2005,11 +2082,6 @@
       "markup": "<button type=\"button\" class=\"cb-tab corridor-editor-tab\" data-tab=\"corridor\" role=\"tab\" aria-selected=\"false\">"
     },
     {
-      "id": "control-7e70d48cb3f3f2-1",
-      "source": "js/corridor-editor.js",
-      "markup": "<button type=\"button\" class=\"close-circle-btn corridor-editor-close\" aria-label=\"Close\">"
-    },
-    {
       "id": "control-75939ceadb90d4-1",
       "source": "js/corridor-editor.js",
       "markup": "<button type=\"button\" class=\"btn corridor-editor-cancel\">"
@@ -2102,7 +2174,20 @@
     {
       "id": "control-252fa66042ffb4-1",
       "source": "js/floor-plan-sites.js",
-      "markup": "document.createElement(tag)"
+      "markup": "document.createElement(tag)",
+      "exempt": "The floor-plan site text factory only creates table cells, labels, paragraphs and select options. It has no button, anchor or button-role caller.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/floor-plan-sites.js",
+          "includes": "function textNode(tag, value, className) { const node = document.createElement(tag);"
+        },
+        {
+          "source": "js/floor-plan-sites.js",
+          "pattern": "textNode\\((?!tag\\b|'(?:td|dt|dd|p|span|option)')",
+          "occurrences": 0
+        }
+      ]
     },
     {
       "id": "control-31b64299080aeb-1",
@@ -2223,9 +2308,51 @@
       "markup": "document.createElement('button')"
     },
     {
-      "id": "control-8eb713e0369233-1",
+      "id": "control-b15fed2f1fa164-1",
+      "source": "js/on-map-editor.js",
+      "markup": "doc.createElement(tag)",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "hide controls",
+          "label": "Hide controls"
+        },
+        {
+          "name": "show controls",
+          "label": "Show controls"
+        },
+        {
+          "name": "cancel editor",
+          "classes": [
+            "close-circle-btn"
+          ]
+        }
+      ],
+      "dispatchEvidence": "The shared editor frame creates its collapse/expand toggle and header Cancel button."
+    },
+    {
+      "id": "control-c95b5798c30358-1",
+      "source": "js/on-map-placement.js",
+      "markup": "doc.createElement(tag)",
+      "exempt": "This factory creates placement labels, checkboxes and warning text. It never creates a button.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/on-map-placement.js",
+          "pattern": "element\\('(?:div|label|input|span|p)'",
+          "occurrences": 5
+        },
+        {
+          "source": "js/on-map-placement.js",
+          "pattern": "input\\.type = 'checkbox'",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "id": "control-a3b66acd4aead1-1",
       "source": "js/parcel-based.js",
-      "markup": "<button id=\"parcelbased-close\" type=\"button\" class=\"close-circle-btn close-circle-btn--lg\" data-i18n-key=\"parcelBased.modal.closeAria\" data-i18n-attr=\"aria-label\" aria-label=\"Close parcel-based modal\">"
+      "markup": "<button type=\"button\" class=\"btn btn-quiet\" id=\"btn-parcelbased-cancel\" data-i18n-key=\"cancel\" data-i18n-attr=\"text\">"
     },
     {
       "id": "control-be28836e667d47-1",
@@ -2273,100 +2400,100 @@
       "markup": "document.createElement(tag)",
       "variants": [
         {
-          "name": "Classified land area · National or parent registry identified category segment",
+          "name": "Classified land area \u00b7 National or parent registry identified category segment",
           "classes": [
             "bar-segment",
             "national"
           ],
-          "labelPattern": "^Classified land area · National or parent registry identified: [0-9.]+%$"
+          "labelPattern": "^Classified land area \u00b7 National or parent registry identified: [0-9.]+%$"
         },
         {
-          "name": "Classified land area · Local, regional or partial evidence category segment",
+          "name": "Classified land area \u00b7 Local, regional or partial evidence category segment",
           "classes": [
             "bar-segment",
             "local"
           ],
-          "labelPattern": "^Classified land area · Local, regional or partial evidence: [0-9.]+%$"
+          "labelPattern": "^Classified land area \u00b7 Local, regional or partial evidence: [0-9.]+%$"
         },
         {
-          "name": "Classified land area · Checked, no source established category segment",
+          "name": "Classified land area \u00b7 Checked, no source established category segment",
           "classes": [
             "bar-segment",
             "none"
           ],
-          "labelPattern": "^Classified land area · Checked, no source established: [0-9.]+%$"
+          "labelPattern": "^Classified land area \u00b7 Checked, no source established: [0-9.]+%$"
         },
         {
-          "name": "Classified land area · Unresolved or unchecked category segment",
+          "name": "Classified land area \u00b7 Unresolved or unchecked category segment",
           "classes": [
             "bar-segment",
             "unknown"
           ],
-          "labelPattern": "^Classified land area · Unresolved or unchecked: [0-9.]+%$"
+          "labelPattern": "^Classified land area \u00b7 Unresolved or unchecked: [0-9.]+%$"
         },
         {
-          "name": "Built-up surface · National or parent registry identified category segment",
+          "name": "Built-up surface \u00b7 National or parent registry identified category segment",
           "classes": [
             "bar-segment",
             "national"
           ],
-          "labelPattern": "^Built-up surface · National or parent registry identified: [0-9.]+%$"
+          "labelPattern": "^Built-up surface \u00b7 National or parent registry identified: [0-9.]+%$"
         },
         {
-          "name": "Built-up surface · Local, regional or partial evidence category segment",
+          "name": "Built-up surface \u00b7 Local, regional or partial evidence category segment",
           "classes": [
             "bar-segment",
             "local"
           ],
-          "labelPattern": "^Built-up surface · Local, regional or partial evidence: [0-9.]+%$"
+          "labelPattern": "^Built-up surface \u00b7 Local, regional or partial evidence: [0-9.]+%$"
         },
         {
-          "name": "Built-up surface · Checked, no source established category segment",
+          "name": "Built-up surface \u00b7 Checked, no source established category segment",
           "classes": [
             "bar-segment",
             "none"
           ],
-          "labelPattern": "^Built-up surface · Checked, no source established: [0-9.]+%$"
+          "labelPattern": "^Built-up surface \u00b7 Checked, no source established: [0-9.]+%$"
         },
         {
-          "name": "Built-up surface · Unresolved or unchecked category segment",
+          "name": "Built-up surface \u00b7 Unresolved or unchecked category segment",
           "classes": [
             "bar-segment",
             "unknown"
           ],
-          "labelPattern": "^Built-up surface · Unresolved or unchecked: [0-9.]+%$"
+          "labelPattern": "^Built-up surface \u00b7 Unresolved or unchecked: [0-9.]+%$"
         },
         {
-          "name": "Population · National or parent registry identified category segment",
+          "name": "Population \u00b7 National or parent registry identified category segment",
           "classes": [
             "bar-segment",
             "national"
           ],
-          "labelPattern": "^Population · National or parent registry identified: [0-9.]+%$"
+          "labelPattern": "^Population \u00b7 National or parent registry identified: [0-9.]+%$"
         },
         {
-          "name": "Population · Local, regional or partial evidence category segment",
+          "name": "Population \u00b7 Local, regional or partial evidence category segment",
           "classes": [
             "bar-segment",
             "local"
           ],
-          "labelPattern": "^Population · Local, regional or partial evidence: [0-9.]+%$"
+          "labelPattern": "^Population \u00b7 Local, regional or partial evidence: [0-9.]+%$"
         },
         {
-          "name": "Population · Checked, no source established category segment",
+          "name": "Population \u00b7 Checked, no source established category segment",
           "classes": [
             "bar-segment",
             "none"
           ],
-          "labelPattern": "^Population · Checked, no source established: [0-9.]+%$"
+          "labelPattern": "^Population \u00b7 Checked, no source established: [0-9.]+%$"
         },
         {
-          "name": "Population · Unresolved or unchecked category segment",
+          "name": "Population \u00b7 Unresolved or unchecked category segment",
           "classes": [
             "bar-segment",
             "unknown"
           ],
-          "labelPattern": "^Population · Unresolved or unchecked: [0-9.]+%$"
+          "labelPattern": "^Population \u00b7 Unresolved or unchecked: [0-9.]+%$"
         },
         {
           "name": "city-table sort by name",
@@ -2380,14 +2507,14 @@
           "attrs": {
             "data-sort-key": "population2025"
           },
-          "labelPattern": "^Population estimate · 2025: Sort (ascending|descending)$"
+          "labelPattern": "^Population estimate \u00b7 2025: Sort (ascending|descending)$"
         },
         {
           "name": "city-table sort by annualGrowthPct2015To2025",
           "attrs": {
             "data-sort-key": "annualGrowthPct2015To2025"
           },
-          "labelPattern": "^Annual growth · 2015–25: Sort (ascending|descending)$"
+          "labelPattern": "^Annual growth \u00b7 2015\u201325: Sort (ascending|descending)$"
         },
         {
           "name": "city-table sort by country",
@@ -2492,7 +2619,7 @@
           "attrs": {
             "data-sort-key": "landAreaKm2"
           },
-          "labelPattern": "^Land area, km²: Sort (ascending|descending)$"
+          "labelPattern": "^Land area, km\u00b2: Sort (ascending|descending)$"
         },
         {
           "name": "breakdown-table sort by landAreaKm2Pct",
@@ -2506,7 +2633,7 @@
           "attrs": {
             "data-sort-key": "builtUpAreaKm2"
           },
-          "labelPattern": "^Built-up, km²: Sort (ascending|descending)$"
+          "labelPattern": "^Built-up, km\u00b2: Sort (ascending|descending)$"
         },
         {
           "name": "breakdown-table sort by builtUpAreaKm2Pct",
@@ -2532,7 +2659,7 @@
         {
           "name": "Filter country inventory",
           "classes": [
-            "country-name"
+            "cb-link"
           ]
         }
       ],
@@ -2552,10 +2679,6 @@
           "label": "Use this source"
         },
         {
-          "name": "Use the city default",
-          "label": "Use the city default"
-        },
-        {
           "name": "Close",
           "label": "Close"
         }
@@ -2565,7 +2688,13 @@
     {
       "id": "control-1bcb1938779281-1",
       "source": "js/parcel-source-settings.js",
-      "markup": "global.document.createElement('button')"
+      "markup": "global.document.createElement('button')",
+      "variants": [
+        {
+          "name": "Use the city default",
+          "label": "Use the city default"
+        }
+      ]
     },
     {
       "id": "control-ffad9bb4f4e09c-1",
@@ -2596,12 +2725,6 @@
       "source": "js/parcels/ground-fallback.js",
       "markup": "document.createElement(tag)",
       "variants": [
-        {
-          "name": "Close register options",
-          "classes": [
-            "ground-fallback-close"
-          ]
-        },
         {
           "name": "Register option retry",
           "attrs": {
@@ -2634,7 +2757,7 @@
         },
         {
           "name": "Not now",
-          "label": "Not now"
+          "labelPattern": "^(Not now|Ahora no)$"
         },
         {
           "name": "Check and use this link",
@@ -3024,6 +3147,15 @@
           "attrs": {
             "aria-label": "Delete this corner"
           }
+        },
+        {
+          "name": "Delete this boundary point",
+          "classes": [
+            "polygon-geometry-editor__delete-marker"
+          ],
+          "attrs": {
+            "aria-label": "Delete this boundary point"
+          }
         }
       ],
       "exhaustiveVariants": true
@@ -3295,7 +3427,7 @@
           "name": "Unapply proposal from map",
           "label": "Unapply",
           "classes": [
-            "btn-warning"
+            "btn-danger"
           ]
         }
       ],
@@ -3526,7 +3658,15 @@
     {
       "id": "control-c2999785f46af8-1",
       "source": "js/proposals/dialog-create.js",
-      "markup": "<button type=\"button\" class=\"cb-segmented__option\" aria-pressed=\"false\" data-proposal-main-type=\"Joint Investment\" disabled>"
+      "markup": "<button type=\"button\" class=\"cb-segmented__option\" aria-pressed=\"false\" data-proposal-main-type=\"Joint Investment\" disabled>",
+      "exempt": "Joint Investment is an explicitly disabled proposal type; its authored disabled state prevents interaction.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/proposals/dialog-create.js",
+          "includes": "<button type=\"button\" class=\"cb-segmented__option\" aria-pressed=\"false\" data-proposal-main-type=\"Joint Investment\" disabled>"
+        }
+      ]
     },
     {
       "id": "control-6a7fc59ea42a19-1",
@@ -3654,10 +3794,34 @@
     {
       "id": "control-7cd07576118fe2-1",
       "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('button')"
+      "markup": "document.createElement('button')",
+      "variants": [
+        {
+          "name": "Return to 2D from the proposal list",
+          "label": "Open 2D map",
+          "classes": [
+            "cb-link"
+          ]
+        }
+      ]
     },
     {
       "id": "control-7cd07576118fe2-2",
+      "source": "js/proposals/dialog-share.js",
+      "markup": "document.createElement('button')",
+      "variants": [
+        {
+          "name": "Close shared plan panel",
+          "label": "Close",
+          "classes": [
+            "close-circle-btn"
+          ]
+        }
+      ],
+      "exhaustiveVariants": true
+    },
+    {
+      "id": "control-7cd07576118fe2-3",
       "source": "js/proposals/dialog-share.js",
       "markup": "document.createElement('button')",
       "variants": [
@@ -3675,11 +3839,6 @@
         }
       ],
       "exhaustiveVariants": true
-    },
-    {
-      "id": "control-7cd07576118fe2-3",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('button')"
     },
     {
       "id": "control-7cd07576118fe2-4",
@@ -3712,12 +3871,12 @@
       "markup": "document.createElement('button')",
       "variants": [
         {
-          "name": "Mint prerequisite parcels on EVM",
-          "label": "Mint the prerequisites"
+          "name": "Connect wallet before minting",
+          "label": "Connect wallet"
         },
         {
-          "name": "Create prerequisite parcel anchors on Solana",
-          "labelPattern": "^Create the parcel anchors?$"
+          "name": "Mint proposal on chain",
+          "label": "Mint"
         }
       ],
       "exhaustiveVariants": true
@@ -3738,12 +3897,11 @@
       "markup": "document.createElement('button')",
       "variants": [
         {
-          "name": "Connect wallet before minting",
-          "label": "Connect wallet"
-        },
-        {
-          "name": "Mint proposal on chain",
-          "label": "Mint"
+          "name": "Share the applied proposal plan",
+          "label": "Share the whole plan instead (all applied proposals)\u2026",
+          "classes": [
+            "share-modal-plan-btn"
+          ]
         }
       ],
       "exhaustiveVariants": true
@@ -3852,7 +4010,15 @@
     {
       "id": "control-3197f0070463a5-1",
       "source": "js/proposals/execution.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" disabled>"
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" disabled>",
+      "exempt": "An expired proposal renders this recipient Accept control disabled. The enabled recipient action is a separate required source site.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/proposals/execution.js",
+          "includes": ": (proposalExpired\n                ? `<button type=\"button\" class=\"btn btn-sm\" disabled>"
+        }
+      ]
     },
     {
       "id": "control-b1ee755e815785-1",
@@ -4036,11 +4202,6 @@
       "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" data-reparcel-plots-tab=\"old\" aria-selected=\"false\">"
     },
     {
-      "id": "control-5c7637d7d25c64-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"reparcel-close-btn close-circle-btn close-circle-btn--lg\" data-i18n-key=\"reparcellization.modal.closeAria\" data-i18n-attr=\"aria-label\" aria-label=\"${closeLabel}\">"
-    },
-    {
       "id": "control-3835a4e355fac1-1",
       "source": "js/reparcellization.js",
       "markup": "<button type=\"button\" class=\"btn btn-sm reparcel-compare-btn\" data-reparcel-compare aria-pressed=\"false\" hidden>"
@@ -4126,7 +4287,7 @@
           "classes": [
             "reparcel-owner-popup__close"
           ],
-          "label": "×"
+          "labelPattern": "^(Close|Zatvori)$"
         }
       ]
     },
@@ -4136,22 +4297,77 @@
       "markup": "document.createElement('button')",
       "variants": [
         {
-          "name": "Close explanation",
-          "label": "Close",
+          "name": "Select 50 km/h track design speed",
           "classes": [
-            "share-modal-close"
+            "track-speed-option"
           ],
           "attrs": {
-            "aria-label": "Close"
+            "data-speed": "50",
+            "data-min-radius": "300"
+          }
+        },
+        {
+          "name": "Select 80 km/h track design speed",
+          "classes": [
+            "track-speed-option"
+          ],
+          "attrs": {
+            "data-speed": "80",
+            "data-min-radius": "500"
+          }
+        },
+        {
+          "name": "Select 120 km/h track design speed",
+          "classes": [
+            "track-speed-option"
+          ],
+          "attrs": {
+            "data-speed": "120",
+            "data-min-radius": "1000"
+          }
+        },
+        {
+          "name": "Select 160 km/h track design speed",
+          "classes": [
+            "track-speed-option"
+          ],
+          "attrs": {
+            "data-speed": "160",
+            "data-min-radius": "2000"
+          }
+        },
+        {
+          "name": "Select 200 km/h track design speed",
+          "classes": [
+            "track-speed-option"
+          ],
+          "attrs": {
+            "data-speed": "200",
+            "data-min-radius": "3500"
+          }
+        },
+        {
+          "name": "Select 250 km/h track design speed",
+          "classes": [
+            "track-speed-option"
+          ],
+          "attrs": {
+            "data-speed": "250",
+            "data-min-radius": "5000"
           }
         }
       ],
       "exhaustiveVariants": true
     },
     {
-      "id": "control-9a134e4fc46e93-1",
+      "id": "control-37ebab6ebce812-1",
       "source": "js/row-house.js",
-      "markup": "<button id=\"rowhouse-close\" type=\"button\" class=\"close-circle-btn close-circle-btn--lg\" data-i18n-key=\"rowHouses.modal.closeAria\" data-i18n-attr=\"aria-label\" aria-label=\"Close row houses modal\">"
+      "markup": "document.createElement('button')"
+    },
+    {
+      "id": "control-9b1399b5752d41-1",
+      "source": "js/row-house.js",
+      "markup": "<button type=\"button\" id=\"rowhouse-manual-toggle\" class=\"btn btn-block\" aria-pressed=\"false\" data-i18n-key=\"rowHouses.modal.editShape\" data-i18n-attr=\"text\">"
     },
     {
       "id": "control-2f45e4d23b6e44-1",
@@ -4169,6 +4385,11 @@
       "markup": "<button id=\"rowhouse-geojson-upload\" class=\"btn btn-block\" type=\"button\" data-i18n-key=\"rowHouses.modal.uploadGeojson\" data-i18n-attr=\"text\">"
     },
     {
+      "id": "control-abbaa3c9d6914a-1",
+      "source": "js/row-house.js",
+      "markup": "<button type=\"button\" class=\"btn btn-quiet\" id=\"btn-rowhouse-cancel\" data-i18n-key=\"cancel\" data-i18n-attr=\"text\">"
+    },
+    {
       "id": "control-9cbb6e212d7622-1",
       "source": "js/row-house.js",
       "markup": "<button type=\"button\" class=\"btn\" id=\"btn-rowhouse-regenerate\" hidden data-i18n-key=\"rowHouses.modal.regenerate\" data-i18n-attr=\"text\">"
@@ -4177,26 +4398,6 @@
       "id": "control-50b4989ebf6fb4-1",
       "source": "js/row-house.js",
       "markup": "<button type=\"button\" class=\"btn btn-primary\" id=\"btn-rowhouse-done\" data-i18n-key=\"rowHouses.modal.done\" data-i18n-attr=\"text\">"
-    },
-    {
-      "id": "control-b7d965b14601c7-1",
-      "source": "js/single-building.js",
-      "markup": "<button id=\"single-building-close\" type=\"button\" class=\"close-circle-btn close-circle-btn--lg\" aria-label=\"${modalText.closeLabel}\">"
-    },
-    {
-      "id": "control-e5394fa64ace05-1",
-      "source": "js/single-building.js",
-      "markup": "<button id=\"single-building-rename\" class=\"btn btn-quiet btn-icon\" type=\"button\" title=\"${modalText.renameLabel}\" aria-label=\"${modalText.renameLabel}\">"
-    },
-    {
-      "id": "control-c97ad4401c8cc4-1",
-      "source": "js/single-building.js",
-      "markup": "<button id=\"single-building-delete\" class=\"btn btn-quiet btn-icon\" type=\"button\" title=\"${modalText.deleteLabel}\" aria-label=\"${modalText.deleteLabel}\">"
-    },
-    {
-      "id": "control-bd5b477e07f113-1",
-      "source": "js/single-building.js",
-      "markup": "<button id=\"single-building-add\" class=\"btn btn-quiet btn-icon\" type=\"button\" title=\"${modalText.addLabel}\" aria-label=\"${modalText.addLabel}\">"
     },
     {
       "id": "control-908265484b4b92-1",
@@ -4209,9 +4410,34 @@
       "markup": "<button id=\"single-rotate-clockwise\" class=\"btn\" type=\"button\" title=\"${modalText.rotateClockwiseLabel}\" aria-label=\"${modalText.rotateClockwiseLabel}\">"
     },
     {
+      "id": "control-4a7ba43af56081-1",
+      "source": "js/single-building.js",
+      "markup": "<button id=\"single-building-rename\" class=\"btn btn-quiet btn-icon\" type=\"button\" aria-label=\"${modalText.renameLabel}\">"
+    },
+    {
+      "id": "control-c39b7a35eaba15-1",
+      "source": "js/single-building.js",
+      "markup": "<button id=\"single-building-delete\" class=\"btn btn-quiet btn-icon\" type=\"button\" aria-label=\"${modalText.deleteLabel}\">"
+    },
+    {
+      "id": "control-575ebc1376771d-1",
+      "source": "js/single-building.js",
+      "markup": "<button id=\"single-building-add\" class=\"btn btn-quiet btn-icon\" type=\"button\" aria-label=\"${modalText.addLabel}\">"
+    },
+    {
       "id": "control-0bf291b03e526d-1",
       "source": "js/single-building.js",
       "markup": "<button id=\"single-building-geojson-upload\" class=\"btn btn-block\" type=\"button\">"
+    },
+    {
+      "id": "control-6331b4e0789208-1",
+      "source": "js/single-building.js",
+      "markup": "<button id=\"single-building-undo\" type=\"button\" class=\"btn btn-quiet\" disabled>"
+    },
+    {
+      "id": "control-e75e04d735588f-1",
+      "source": "js/single-building.js",
+      "markup": "<button id=\"single-building-cancel\" type=\"button\" class=\"btn btn-quiet\">"
     },
     {
       "id": "control-d4b4f3aea73c54-1",
@@ -4362,18 +4588,24 @@
           "attrs": {
             "data-tool": "erase"
           }
+        },
+        {
+          "name": "move",
+          "attrs": {
+            "data-tool": "move"
+          }
         }
       ]
     },
     {
-      "id": "control-e95b045d05b89e-1",
+      "id": "control-7226a538813eaf-1",
       "source": "js/structure-geometry-editor.js",
-      "markup": "<button type=\"button\" class=\"close-circle-btn\" data-action=\"cancel\" aria-label=\"${t('closeLabel', 'Close')}\">"
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-action=\"undo\" aria-label=\"${undoLabel}\">"
     },
     {
-      "id": "control-7b56071465aab6-1",
+      "id": "control-b986ed6b9c1d02-1",
       "source": "js/structure-geometry-editor.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-action=\"finish-path\">"
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-action=\"finish-path\" hidden>"
     },
     {
       "id": "control-62db972ab4c361-1",
@@ -4416,9 +4648,9 @@
       "markup": "document.createElement('button')"
     },
     {
-      "id": "control-9eda940ec62830-1",
+      "id": "control-9b6001cbb9f11b-1",
       "source": "js/transit-stations.js",
-      "markup": "<button type=\"button\" class=\"close-circle-btn\" data-station-editor-action=\"cancel\" aria-label=\"${stationEditorText('close', 'Close')}\">"
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-station-editor-action=\"undo\" disabled aria-disabled=\"true\">"
     },
     {
       "id": "control-1e5bf3c32366cf-1",
@@ -4444,7 +4676,7 @@
         {
           "name": "Filter programs",
           "classes": [
-            "tx-chip"
+            "cb-segmented__option"
           ],
           "attrs": {
             "data-facet": "programs"
@@ -4453,7 +4685,7 @@
         {
           "name": "Filter actions",
           "classes": [
-            "tx-chip"
+            "cb-segmented__option"
           ],
           "attrs": {
             "data-facet": "actions"
@@ -4535,12 +4767,36 @@
     {
       "id": "control-fb9dfd2cdf71ce-1",
       "source": "js/ui/dialogs.js",
-      "markup": "d.createElement('button')"
+      "markup": "d.createElement('button')",
+      "variants": [
+        {
+          "name": "Close register options",
+          "classes": [
+            "ground-fallback-close"
+          ]
+        }
+      ]
     },
     {
       "id": "control-fb9dfd2cdf71ce-2",
       "source": "js/ui/dialogs.js",
-      "markup": "d.createElement('button')"
+      "markup": "d.createElement('button')",
+      "variants": [
+        {
+          "name": "Mint prerequisite parcels on EVM",
+          "label": "Mint the prerequisites",
+          "attrs": {
+            "data-action-id": "mint"
+          }
+        },
+        {
+          "name": "Create prerequisite parcel anchors on Solana",
+          "labelPattern": "^Create the parcel anchors?$",
+          "attrs": {
+            "data-action-id": "mint"
+          }
+        }
+      ]
     },
     {
       "id": "control-85b60b5d92e9ef-1",
@@ -4677,12 +4933,6 @@
           }
         },
         {
-          "name": "view3d",
-          "attrs": {
-            "data-command": "parcel.view3d"
-          }
-        },
-        {
           "name": "detectBlock",
           "attrs": {
             "data-command": "parcel.detectBlock"
@@ -4811,11 +5061,11 @@
       "markup": "document.createElement('button')",
       "variants": [
         {
-          "name": "open City token modal",
+          "name": "Choose an available avatar",
           "classes": [
-            "wallet-city-token-button"
+            "avatar-option"
           ],
-          "labelPattern": "City token|Token de la ciudad|Gradski token"
+          "labelPattern": "^Avatar [0-9]+$"
         }
       ]
     },
@@ -4832,7 +5082,24 @@
     {
       "id": "control-7ba5cbac1568b4-1",
       "source": "js/user-management.js",
-      "markup": "document.createElement(url ? 'a' : 'span')"
+      "markup": "document.createElement(url ? 'a' : 'span')",
+      "exempt": "The city token explainer replaces plain text with an external text link when a URL is known; this factory only creates a span or an anchor without button styling.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/user-management.js",
+          "includes": "const next = document.createElement(url ? 'a' : 'span');"
+        },
+        {
+          "source": "js/user-management.js",
+          "includes": "next.className = 'cb-link cb-link--external';"
+        },
+        {
+          "source": "js/user-management.js",
+          "pattern": "function setCityTokenLink\\(url\\)",
+          "occurrences": 1
+        }
+      ]
     },
     {
       "id": "control-d66c3b33c9c151-2",
@@ -4842,7 +5109,16 @@
     {
       "id": "control-d66c3b33c9c151-3",
       "source": "js/user-management.js",
-      "markup": "document.createElement('button')"
+      "markup": "document.createElement('button')",
+      "variants": [
+        {
+          "name": "open City token modal",
+          "classes": [
+            "wallet-city-token-button"
+          ],
+          "labelPattern": "City token|Token de la ciudad|Gradski token"
+        }
+      ]
     },
     {
       "id": "control-1ece36ed4f2239-1",
@@ -4952,25 +5228,25 @@
         },
         {
           "name": "Open a live city",
-          "labelPattern": "^Open .+",
+          "labelPattern": "^Open (?!the map here$).+",
           "classes": [
-            "world-btn",
-            "world-btn--primary"
+            "btn",
+            "btn-primary"
           ]
         },
         {
           "name": "Explore the selected map location",
           "label": "Open the map here",
           "classes": [
-            "world-btn"
+            "btn"
           ]
         },
         {
           "name": "Request parcel data for the selected place",
           "labelPattern": "^Ask for this (?:city|area)$",
           "classes": [
-            "world-btn",
-            "world-btn--primary"
+            "btn",
+            "btn-primary"
           ]
         }
       ],

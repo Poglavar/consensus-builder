@@ -2,6 +2,30 @@ import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, zoomToParcelLevel } from '../helpers/app';
 import { selectors } from '../helpers/selectors';
 
+// The fixture defaults to New York. Keep its normal cadastral startup deterministic without
+// depending on the developer's local parcel API; the polygon sits around the configured map center.
+async function mockNewYorkParcels(page: import('@playwright/test').Page): Promise<void> {
+  await page.route('**/parcel-nyc**', route => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        properties: { parcelId: 'US-NY-100001', parcel_id: '100001', calculatedArea: 400 },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[
+            [-74.0062, 40.7126], [-74.0058, 40.7126],
+            [-74.0058, 40.7130], [-74.0062, 40.7130],
+            [-74.0062, 40.7126],
+          ]],
+        },
+      }],
+    }),
+  }));
+}
+
 /**
  * Basemap selector and layer toggling — tile source switching, building layer visibility, city and
  * data-source choice. Since the sidebar became the map shell (UI-REWORK.md) the data-source
@@ -12,6 +36,7 @@ import { selectors } from '../helpers/selectors';
 
 test.describe('Basemap and layer controls @features', () => {
   test('the Layers sheet base-map select switches the tile source', async ({ mockApi: page }) => {
+    await mockNewYorkParcels(page);
     await page.goto('/');
     await waitForMapReady(page);
 
@@ -129,6 +154,7 @@ test.describe('Basemap and layer controls @features', () => {
 
   // Was "city selector exists and is populated" (#city-select, removed with the search box).
   test('the search box lists configured cities and switches to the chosen one', async ({ mockApi: page }) => {
+    await mockNewYorkParcels(page);
     await page.goto('/');
     await waitForMapReady(page);
     expect(await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('new_york');

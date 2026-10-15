@@ -72,7 +72,7 @@ test.describe('Proposal creation and map lifecycle @features', () => {
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--reparcellization').click();
-    const modal = page.locator('.reparcel-modal-overlay');
+    const modal = page.locator('.on-map-reparcellization');
     await expect(modal).toBeVisible();
     await expect(modal.locator('[data-reparcel-newplots-table]')).not.toBeEmpty();
     await modal.locator('[data-reparcel-plots-tab="old"]').click();
