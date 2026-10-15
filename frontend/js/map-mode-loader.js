@@ -53,6 +53,7 @@
     root.__ensurePhotorealMode = () => loadGroup('photo');
     function paint(state) {
         root.__mapModeState = state;
+        root.dispatchEvent(new CustomEvent('mapmodechange', { detail: state }));
         root.__pending3DMode = state.pending ? state.desired : null;
         if (root.updateModeButtonStates) { root.updateModeButtonStates(); return; }
         for (const [mode, id] of [['2d', 'mode-2d-toggle'], ['model', 'mode-3d-toggle'], ['photo', 'mode-realistic-toggle']]) {
@@ -62,6 +63,10 @@
             button.setAttribute('aria-pressed', String(mode === state.desired));
             button.classList.toggle('mode-btn-loading', mode === state.desired && state.pending);
         }
+    }
+    function canRequestMapMode(mode) {
+        if (root.roadDrawingMode && mode !== '2d') return false;
+        return !root.OnMapEditor || root.OnMapEditor.allowsMode(mode);
     }
     const controller = root.__mapModeTransition.createController({
         loadModel: root.__ensure3DModeStack,
@@ -73,11 +78,14 @@
         onChange: paint,
         onError: error => console.error('[map-mode] Mode transition failed', error)
     });
-    root.requestMapMode = controller.request;
-    root.enterThreeMode = options => controller.request('model', options);
-    root.exitThreeMode = () => controller.request('2d');
+    root.requestMapMode = (mode, options) => {
+        if (!canRequestMapMode(mode)) return Promise.resolve(false);
+        return controller.request(mode, options);
+    };
+    root.enterThreeMode = options => root.requestMapMode('model', options);
+    root.exitThreeMode = () => root.requestMapMode('2d');
     for (const [mode, id] of [['2d', 'mode-2d-toggle'], ['model', 'mode-3d-toggle'], ['photo', 'mode-realistic-toggle']]) {
-        document.getElementById(id)?.addEventListener('click', () => controller.request(mode));
+        document.getElementById(id)?.addEventListener('click', () => root.requestMapMode(mode));
     }
     const aiButton = document.getElementById('mode-ai-toggle');
     aiButton?.addEventListener('click', function firstAiClick(event) {

@@ -1,0 +1,140 @@
+/* Geometry editors share the main view. Their positioned children own the editor layer. */
+.on-map-editor {
+    pointer-events: none;
+    color: var(--cb-text);
+    font-family: var(--cb-font-sans);
+}
+.on-map-editor__panel, .on-map-editor__tools {
+    z-index: var(--cb-z-editor);
+    pointer-events: auto;
+}
+.on-map-editor__panel {
+    position: absolute;
+    top: 76px;
+    right: var(--cb-space-4);
+    display: flex;
+    flex-direction: column;
+    width: min(320px, calc(100vw - 32px));
+    max-height: calc(100dvh - 176px);
+    min-height: 0;
+    box-sizing: border-box;
+    padding: var(--cb-space-3);
+    overflow: hidden;
+    border: 1px solid var(--cb-line-glass);
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-glass);
+    box-shadow: var(--cb-shadow-md);
+    backdrop-filter: blur(12px);
+}
+.on-map-editor__panel--wide { width: min(480px, calc(100vw - 32px)); }
+.on-map-editor__header, .on-map-editor__footer { flex: 0 0 auto; }
+.on-map-editor__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--cb-space-2);
+    min-height: 32px;
+}
+.on-map-editor__heading { flex: 1; min-width: 0; }
+.on-map-editor__state {
+    display: block;
+    color: var(--cb-primary-soft-ink);
+    font-size: var(--cb-text-xs);
+    font-weight: var(--cb-weight-semibold);
+    line-height: 1.3;
+}
+.on-map-editor__header h2 {
+    margin: 0;
+    color: var(--cb-text-strong);
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-semibold);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.on-map-editor__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--cb-space-1);
+    flex-shrink: 0;
+    padding-inline: var(--cb-space-2);
+}
+.on-map-editor__header .btn[aria-expanded="true"] { background: var(--cb-primary-soft); color: var(--cb-primary-soft-ink); }
+.on-map-editor__header .btn > i { font-size: 10px; }
+.on-map-editor__toggle[aria-expanded="false"] i { transform: rotate(180deg); }
+.on-map-editor__header > .close-circle-btn { flex-shrink: 0; }
+.on-map-editor__body[hidden] { display: none; }
+.on-map-editor__content { flex: 1 1 auto; min-height: 0; overflow: auto; overscroll-behavior: contain; }
+.on-map-editor__footer[hidden], .on-map-editor__tools[hidden], .on-map-editor__hint[hidden] { display: none; }
+.on-map-editor__hint { margin: var(--cb-space-2) 0; color: var(--cb-text-muted); font-size: var(--cb-text-sm); line-height: 1.35; }
+.on-map-editor__body { min-width: 0; }
+.on-map-editor__body .parameter-group { margin-bottom: var(--cb-space-3); }
+.on-map-editor__body .parameter-group > label { display: block; margin-bottom: var(--cb-space-1); color: var(--cb-text-strong); font-size: var(--cb-text-md); }
+.on-map-editor__body select, .on-map-editor__body input[type="range"] { max-width: 100%; width: 100%; box-sizing: border-box; }
+.on-map-editor__body .parameter-info-text { font-size: var(--cb-text-xs); line-height: 1.4; }
+.on-map-editor__body .building-density-card { margin: var(--cb-space-2) 0; padding: var(--cb-space-2); }
+.on-map-editor__body details summary { cursor: pointer; padding: var(--cb-space-2) 0; color: var(--cb-primary-soft-ink); font-weight: var(--cb-weight-semibold); }
+.on-map-editor__footer { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--cb-space-2); padding-top: var(--cb-space-2); border-top: 1px solid var(--cb-line); }
+.on-map-editor__footer > div { width: 100%; min-width: 0; }
+.on-map-editor__footer [role="status"]:empty { display: none; }
+.on-map-editor__footer [role="status"]:not(:empty) { margin-bottom: var(--cb-space-2); font-size: var(--cb-text-sm); }
+.on-map-editor__tools { position: fixed; display: flex; flex-wrap: wrap; gap: var(--cb-space-1); }
+.on-map-editor__tools .btn { min-height: 36px; padding-inline: var(--cb-space-2); box-shadow: var(--cb-shadow-sm); }
+body.on-map-editing .map-shell-slot--tray { display: none; }
+
+/* Keep the editor in the same right-hand dock when switching map modes. */
+
+@media (max-width: 639.98px) {
+    .on-map-editor__panel {
+        top: auto;
+        right: var(--cb-space-2);
+        bottom: calc(var(--map-shell-bottom-clearance) + var(--cb-space-2));
+        left: var(--map-mode-strip);
+        width: auto;
+        max-height: min(46dvh, 400px);
+        padding: var(--cb-space-2) var(--cb-space-3);
+    }
+    .on-map-editor__header { min-height: 40px; gap: var(--cb-space-1); }
+    .on-map-editor__header .on-map-editor__toggle,
+    .on-map-editor__header > .close-circle-btn { min-height: 40px; }
+    .on-map-editor__header .btn { font-size: var(--cb-text-sm); padding-inline: var(--cb-space-1); }
+    .on-map-editor__footer > .btn { flex: 1 1 0; min-width: 0; min-height: 40px; }
+    .on-map-editor__header h2 { font-size: var(--cb-text-base); }
+    .on-map-editor__hint { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+}
+
+/* The shared runtime lifts native popups out of the transformed map pane while editing. */
+.leaflet-pane.on-map-editor-popups { z-index: var(--cb-z-editor-popup); }
+
+/* A newly opened Settings/Layers sheet takes focus above the in-progress editor. */
+body.on-map-editing .map-sheet { z-index: var(--cb-z-open-menu); }
+
+/* Parcel guides are optional; their warning stays visible with the controls folded. */
+.on-map-editor__placement {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--cb-line);
+}
+.on-map-editor__placement-option {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 36px;
+    margin: 0;
+    font-size: 13px;
+    cursor: pointer;
+}
+.on-map-editor__placement-option input { margin: 0; }
+.on-map-editor__placement-warning {
+    margin: 0 0 8px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
+    font-size: 12px;
+    line-height: 1.4;
+}
+.on-map-editor__placement-warning[hidden] { display: none; }

@@ -183,7 +183,13 @@ test.describe('proposal button controls sixth pass @features', () => {
     await expect(edit).toBeVisible();
     await edit.click();
     await expect.poll(() => page.evaluate(() => (window as any).getSelectedProposalTool?.())).toBe('buildings');
-    await expect(create.locator('#proposalGeometryStatus')).toHaveAttribute('data-submitted', 'true');
+    const editor = page.locator('#blockify-modal');
+    await expect(editor).toBeVisible();
+    await expect(editor.locator('#btn-blockify-done')).toBeEnabled();
+    await expect.poll(() => page.evaluate(() => {
+      const features = (window as any).OnMapEditor?.getPreview?.()?.draftPreview?.features;
+      return Array.isArray(features) ? features.filter((feature: any) => feature?.geometry).length : 0;
+    })).toBeGreaterThan(0);
   });
 
   test('details Edit geometry opens the existing proposal geometry tool', async ({ mockApi: page }) => {
@@ -193,8 +199,8 @@ test.describe('proposal button controls sixth pass @features', () => {
     const edit = page.locator('#proposal-details-footer .btn-edit-geometry');
     await expect(edit).toBeVisible();
     await edit.click();
-    await expect(page.locator('.structure-geometry-editor')).toBeVisible();
-    await expect(page.locator('.structure-geometry-editor [data-action="save"]')).toBeVisible();
+    await expect(page.locator('#structure-geometry-editor')).toBeVisible();
+    await expect(page.locator('#structure-geometry-editor [data-action="save"]')).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).proposalDraftStore.getActiveDraft()?.sourceProposalId)).toBeTruthy();
   });
 
@@ -535,20 +541,35 @@ test.describe('proposal button controls sixth pass @features', () => {
     await expect(modal).toBeHidden();
   });
 
-  test('Upload share modal blocks wallet connection for an unsupported approval setup', async ({ mockApi: page }) => {
+  test('Upload share modal blocks minting an unsupported approval setup', async ({ mockApi: page }) => {
     const server = createSharedProposalServer();
     await attachSharedProposalServer(page, server);
+    await injectMockEvmWallet(page, { account: EVM_WALLET, chainIdHex: '0x14a34', walletKind: 'metamask' });
     await openCity(page);
+    await connectWalletByConnectorId(page, 'metamask');
     await establishLocalProfile(page);
     const proposalId = await createSpace(page, 'park');
+    await page.evaluate(id => {
+      const proposal = (window as any).proposalStorage.getProposal(id);
+      proposal.approvalConfig = { schema: 'proposal-approval/v1', rights: null, policy: { type: 'unanimous' } };
+      (window as any).proposalStorage.save();
+    }, proposalId);
     await showProposal(page, proposalId);
     await page.locator('#proposal-details-footer .btn-share-proposal').click();
     const share = page.locator('.share-modal-overlay');
-    const connect = share.getByRole('button', { name: /Connect wallet/i });
-    await expect(connect).toBeVisible();
-    await connect.click();
-    await expect(connect).toBeDisabled();
-    await expect(share).toContainText('This approval setup is not supported by the current chain adapter.');
+    await expect(share.getByRole('button', { name: 'Mint', exact: true })).toBeVisible();
+    await expect.poll(() => page.evaluate(id => {
+      const proposal = (window as any).proposalStorage.getProposal(id);
+      return (window as any).ProposalApprovalRuntime?.uses(proposal) === true
+        && (window as any).ProposalChainBridge?.supportsProposalApproval?.('proposal-approval/v1') === false;
+    }, proposalId)).toBe(true);
+    await share.getByRole('button', { name: 'Mint', exact: true }).click();
+    await expect(share.locator('.share-proposal-status')).toContainText('This approval setup is not supported by the current chain adapter.');
+    await expect(page.locator('.wallet-modal-overlay')).toHaveCount(0);
+    await expect.poll(() => page.evaluate(id => {
+      const proposal = (window as any).proposalStorage.getProposal(id);
+      return Boolean(proposal?.nft?.tokenId);
+    }, proposalId)).toBe(false);
   });
 
   test('Upload share modal Mint row Connect Wallet opens the picker for a legacy parcel proposal', async ({ mockApi: page }) => {

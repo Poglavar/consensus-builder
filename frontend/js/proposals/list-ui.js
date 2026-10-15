@@ -1337,6 +1337,9 @@ function updateShowProposalsButton() {
     if (typeof window !== 'undefined' && typeof window.updateGrainScoreButtonState === 'function') {
         window.updateGrainScoreButtonState();
     }
+    if (typeof window !== 'undefined' && typeof window.updatePlanStatsButtonState === 'function') {
+        window.updatePlanStatsButtonState();
+    }
 
     // no-op safety: the observer below is idempotent, and the button may only now exist
     watchProposalsSectionVisibility();

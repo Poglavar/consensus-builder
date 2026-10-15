@@ -102,26 +102,24 @@ describe('what the editor says about it', () => {
         // and indexOf from zero produces an empty slice that matches nothing.
         const start = buildingBlocks.indexOf('blockExcludedParcels.forEach(entry => {');
         expect(start, 'the excluded-parcel drawing loop not found').toBeGreaterThan(-1);
-        const draw = buildingBlocks.slice(start, buildingBlocks.indexOf('updateBlockify3DScene(', start));
+        const draw = buildingBlocks.slice(start, buildingBlocks.indexOf('publishBlockifyPreview(', start));
         expect(draw).toContain('if (!entry || !entry.feature) return;');
         expect(draw).not.toContain("entry.status === 'no-massing-here'");
     });
 
     it('continues the block outline across a left-out plot, dashed', () => {
         const start = buildingBlocks.indexOf('blockExcludedParcels.forEach(entry => {');
-        const draw = buildingBlocks.slice(start, buildingBlocks.indexOf('updateBlockify3DScene(', start));
+        const draw = buildingBlocks.slice(start, buildingBlocks.indexOf('publishBlockifyPreview(', start));
         expect(draw).toContain('if (!entry.wouldBe) return;');
         expect(draw).toContain("dashArray: '6, 4'");
     });
 
-    it('shows it in 3D as a see-through volume, never as a building', () => {
-        expect(buildingBlocks).toContain('function blockIneligibleGhosts()');
-        expect(buildingBlocks).toContain('ineligible: true');
-        expect(buildingBlocks).toContain('blockBuildOut.concat(blockIneligibleGhosts())');
-        // A ghost must not be shaded like an owned building.
-        expect(buildingBlocks).toContain('props.ineligible\n            ? [ineligibleMat, ineligibleMat]');
-        // ...and it is never saved: only pieces are.
+    it('publishes excluded plots separately from the example buildings and saves only authored geometry', () => {
+        expect(buildingBlocks).toContain('function publishBlockifyPreview(');
+        expect(buildingBlocks).toContain('exampleBuildings: blockBuildOut');
+        expect(buildingBlocks).toContain('excluded: blockExcludedParcels.map(entry => entry?.feature)');
         const save = buildingBlocks.slice(buildingBlocks.indexOf('async function saveBlockifyDesignForProposal()'));
+        expect(save).toContain('const ineligibleParcels = blockExcludedParcels.map(');
         expect(save).not.toContain('blockIneligibleGhosts');
     });
 
@@ -153,7 +151,8 @@ describe('carried into the applied plan', () => {
     });
 
     it('serializes them onto the proposal record', () => {
-        expect(adapters).toContain('ineligibleParcels: clone(context.ineligibleParcels || [])');
+        expect(adapters).toContain('ineligibleParcels: isFreePlacementDraft(draft) ? [] : clone(context.ineligibleParcels || [])');
+        expect(adapters).toContain('context.ineligibleParcels = [];');
         expect(adapters).not.toContain('blockParcelIds: clone(');
         expect(adapters).toContain('output.geometry.blockMassing = blockMassing');
     });

@@ -89,77 +89,43 @@ describe('optional tools loader', () => {
         for (const name of NO_LOAD_CLEANUPS) expect(h.window[name]()).toBe(name);
     });
 
-    it('coalesces concurrent first calls, loads shared geometry before the editor, and forwards receiver and arguments', async () => {
-        const h = harness();
-        const receiver = { id: 'caller' };
+    it('coalesces first calls and forwards their receiver and arguments to the editor', async () => {
+        const h = harness(); const receiver = { id: 'caller' };
         const first = h.window.openSingleBuildingForParcels.call(receiver, { parcelIds: ['a'] });
         const second = h.window.createSingleBuildingProposal.call(receiver, { parcelIds: ['b'] });
-
-        expect(h.scripts).toHaveLength(1);
-        expect(h.scripts[0].src).toBe('js/single-building-geometry.js?build=test-token');
-        h.succeed(h.scripts[0], win => { win.SingleBuildingGeometry = { ready: true }; });
-        await flushMicrotasks();
-        expect(h.scripts).toHaveLength(2);
-        expect(h.scripts[1].src).toBe('js/single-building.js?build=test-token');
-
+        expect(h.scripts.map(script => script.src)).toEqual(['js/single-building.js?build=test-token']);
         const calls = [];
-        h.succeed(h.scripts[1], win => {
+        h.succeed(h.scripts[0], win => {
             win.openSingleBuildingForParcels = function (value) { calls.push([this, 'open', value]); return 'opened'; };
             win.createSingleBuildingProposal = function (value) { calls.push([this, 'create', value]); return 'created'; };
         });
-        await expect(first).resolves.toBe('opened');
-        await expect(second).resolves.toBe('created');
-        expect(calls).toEqual([
-            [receiver, 'open', { parcelIds: ['a'] }],
-            [receiver, 'create', { parcelIds: ['b'] }]
-        ]);
+        await expect(first).resolves.toBe('opened'); await expect(second).resolves.toBe('created');
+        expect(calls).toEqual([[receiver, 'open', { parcelIds: ['a'] }], [receiver, 'create', { parcelIds: ['b'] }]]);
     });
 
-    it('shares the geometry request across row-house and single-building groups', async () => {
+    it('loads the common placement geometry eagerly and loads each editor only once', async () => {
+        expect(indexSource.indexOf("'js/single-building-geometry.js'")).toBeLessThan(indexSource.indexOf("'js/on-map-placement.js'"));
         const h = harness();
         const single = h.window.openSingleBuildingForParcels({ parcelIds: ['s'] });
         const row = h.window.openRowHouseForParcels({ parcelIds: ['r'] });
-        expect(h.scripts).toHaveLength(1);
-        expect(h.scripts[0].src).toBe('js/single-building-geometry.js?build=test-token');
-        h.succeed(h.scripts[0], win => { win.SingleBuildingGeometry = {}; });
-        await flushMicrotasks();
-        expect(h.scripts.map(script => script.src)).toEqual([
-            'js/single-building-geometry.js?build=test-token',
-            'js/single-building.js?build=test-token',
-            'js/row-house.js?build=test-token'
-        ]);
-        h.succeed(h.scripts[1], win => { win.openSingleBuildingForParcels = () => 'single'; });
-        h.succeed(h.scripts[2], win => { win.openRowHouseForParcels = () => 'row'; });
-        await expect(single).resolves.toBe('single');
-        await expect(row).resolves.toBe('row');
+        expect(h.scripts.map(script => script.src)).toEqual(['js/single-building.js?build=test-token', 'js/row-house.js?build=test-token']);
+        h.succeed(h.scripts[0], win => { win.openSingleBuildingForParcels = () => 'single'; });
+        h.succeed(h.scripts[1], win => { win.openRowHouseForParcels = () => 'row'; });
+        await expect(single).resolves.toBe('single'); await expect(row).resolves.toBe('row');
+        expect(h.scripts).toHaveLength(2);
     });
 
     it('loads the synchronous building creation pipeline before opening BuildingUpload', async () => {
-        const h = harness();
-        const created = { id: 'created' };
+        const h = harness(); const created = { id: 'created' };
         const open = h.window.BuildingUpload.open({ file: 'upload.geojson' });
-        expect(h.scripts[0].src).toBe('js/single-building-geometry.js?build=test-token');
+        expect(h.scripts[0].src).toBe('js/single-building.js?build=test-token');
         expect(h.window.BuildingUpload.close()).toBeUndefined();
-
-        h.succeed(h.scripts[0], win => { win.SingleBuildingGeometry = {}; });
+        h.succeed(h.scripts[0], win => { win.createSingleBuildingFromUpload = () => created; });
         await flushMicrotasks();
-        expect(h.scripts[1].src).toBe('js/single-building.js?build=test-token');
-        h.succeed(h.scripts[1], win => {
-            win.createSingleBuildingFromUpload = () => created;
-        });
-        await flushMicrotasks();
-        expect(h.scripts[2].src).toBe('js/building-upload.js?build=test-token');
-        h.succeed(h.scripts[2], win => {
-            win.BuildingUpload = {
-                open() {
-                    return typeof win.createSingleBuildingFromUpload === 'function'
-                        ? win.createSingleBuildingFromUpload()
-                        : null;
-                },
-                close: () => 'closed'
-            };
-        });
-
+        expect(h.scripts[1].src).toBe('js/building-upload.js?build=test-token');
+        h.succeed(h.scripts[1], win => { win.BuildingUpload = {
+            open: () => win.createSingleBuildingFromUpload(), close: () => 'closed'
+        }; });
         await expect(open).resolves.toBe(created);
         expect(h.window.BuildingUpload.close()).toBe('closed');
     });
@@ -169,24 +135,13 @@ describe('optional tools loader', () => {
         ['openRowHouseForParcels', 'js/row-house.js'],
         ['openParcelBasedForParcels', 'js/parcel-based.js']
     ])('does not open %s after the map mode changes during loading', async (name, editorScript) => {
-        const h = harness();
-        const calls = [];
+        const h = harness(); const calls = [];
         h.window.__mapModeState = { mode: '2d' };
-        const pending = h.window[name]();
-        h.window.__mapModeState = { mode: '3d' };
-
-        expect(h.scripts[0].src).toBe('js/single-building-geometry.js?build=test-token');
-        h.succeed(h.scripts[0], win => { win.SingleBuildingGeometry = {}; });
-        await flushMicrotasks();
-        expect(h.scripts[1].src).toBe(`${editorScript}?build=test-token`);
-        h.succeed(h.scripts[1], win => {
-            win[name] = () => { calls.push(name); return 'opened'; };
-        });
-
-        await expect(pending).resolves.toBe(false);
-        expect(calls).toEqual([]);
-        expect(h.window[name]()).toBe('opened');
-        expect(calls).toEqual([name]);
+        const pending = h.window[name](); h.window.__mapModeState = { mode: '3d' };
+        expect(h.scripts[0].src).toBe(`${editorScript}?build=test-token`);
+        h.succeed(h.scripts[0], win => { win[name] = () => { calls.push(name); return 'opened'; }; });
+        await expect(pending).resolves.toBe(false); expect(calls).toEqual([]);
+        expect(h.window[name]()).toBe('opened'); expect(calls).toEqual([name]);
     });
 
     it('does not load row-house or parcel-based tools just to close their modals', () => {
@@ -234,11 +189,9 @@ describe('optional tools loader', () => {
     it('reports BuildingUpload open failures without hiding their rejection', async () => {
         const h = harness();
         const open = h.window.BuildingUpload.open({ file: 'x' });
-        h.succeed(h.scripts[0], win => { win.SingleBuildingGeometry = {}; });
+        h.succeed(h.scripts[0], win => { win.createSingleBuildingFromUpload = () => ({ id: 'created' }); });
         await flushMicrotasks();
-        h.succeed(h.scripts[1], win => { win.createSingleBuildingFromUpload = () => ({ id: 'created' }); });
-        await flushMicrotasks();
-        h.fail(h.scripts[2]);
+        h.fail(h.scripts[1]);
         await flushMicrotasks();
         expect(h.errors).toHaveLength(1);
         expect(h.statuses).toEqual(['Localized load failure']);
@@ -252,11 +205,9 @@ describe('optional tools loader', () => {
         const pending = h.window.BuildingUpload.open({ file: 'upload.glb' });
         h.window.__mapModeState = { mode: '3d' };
 
-        h.succeed(h.scripts[0], win => { win.SingleBuildingGeometry = {}; });
+        h.succeed(h.scripts[0], win => { win.createSingleBuildingFromUpload = () => ({ id: 'created' }); });
         await flushMicrotasks();
-        h.succeed(h.scripts[1], win => { win.createSingleBuildingFromUpload = () => ({ id: 'created' }); });
-        await flushMicrotasks();
-        h.succeed(h.scripts[2], win => {
+        h.succeed(h.scripts[1], win => {
             win.BuildingUpload = {
                 open: () => { calls.push('open'); return 'opened'; },
                 close: () => 'closed'

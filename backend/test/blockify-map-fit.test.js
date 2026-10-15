@@ -144,40 +144,29 @@ describe('a block with one broken parcel', () => {
 });
 
 // The pure verdict is worthless if the editor still fits blindly, so the wiring is pinned too.
-describe('the editor asks before it fits', () => {
+describe('the editor delegates framing to the shared map session', () => {
     it('drops unusable parcels before drawing or framing the block', () => {
         const draw = buildingBlocks.slice(
             buildingBlocks.indexOf('function displayBlockOnMap('),
-            buildingBlocks.indexOf('function fitBlockifyMapToBlock()')
+            buildingBlocks.indexOf('function simplifyAndClipOutline(')
         );
         expect(draw).toContain('fitApi.usableBlockFeatures(rawFeatures)');
         expect(draw).toContain('features: split.usable');
         expect(draw).toContain('console.error');
+        expect(draw).toContain('blockifyModal?.fitFeature(initialBoundary');
+        expect(draw).toContain('const initialBoundary = blockifyAuthoredSite?.geometry ? blockifyAuthoredSite : featureCollection;');
     });
 
-    it('has exactly one fitBounds, and it is inside the guarded helper', () => {
-        expect(buildingBlocks.match(/\.fitBounds\(/g) || []).toHaveLength(1);
-        const helper = buildingBlocks.slice(
-            buildingBlocks.indexOf('function fitBlockifyMapToBlock()'),
-            buildingBlocks.indexOf('function watchBlockifyMapUntilFitted()')
-        );
-        expect(helper).toContain('fit.fitReadiness(');
-        expect(helper).toContain('blockifyMap.fitBounds(bounds');
-        expect(helper).toContain('invalidateSize');
+    it('fits once on open and leaves camera movement to the user after design regeneration', () => {
+        expect(buildingBlocks.match(/blockifyModal\?\.fitFeature\(/g) || []).toHaveLength(1);
+        expect(buildingBlocks).not.toContain('function fitBlockifyMapToBlock()');
+        expect(buildingBlocks).not.toContain('function watchBlockifyMapUntilFitted()');
     });
 
-    it('keeps trying until a fit lands, then stops', () => {
-        expect(buildingBlocks).toContain('watchBlockifyMapUntilFitted()');
-        expect(buildingBlocks).toContain('new ResizeObserver');
-        expect(buildingBlocks).toContain('if (blockifyMapFitted || !blockifyMap) return;');
-        // ...and a resize after the fit still refreshes the cached size, or clicks and dragged
-        // vertices land at the wrong latlng.
-        expect(buildingBlocks).toContain('blockifyMap.invalidateSize({ animate: false });');
-    });
-
-    it('tears the observer down with the modal', () => {
+    it('removes its own overlays and closes the session without destroying the app map', () => {
         const close = buildingBlocks.slice(buildingBlocks.indexOf('function closeBlockifyModal('));
-        expect(close).toContain('blockifyMapResizeObserver.disconnect()');
-        expect(close).toContain('blockifyMapFitted = false;');
+        expect(close).toContain('blockifyMap.removeLayer(layer)');
+        expect(close).toContain('blockifyModal?.close();');
+        expect(close).not.toContain('blockifyMap.remove()');
     });
 });

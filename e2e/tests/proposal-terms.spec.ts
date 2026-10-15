@@ -63,7 +63,7 @@ test.describe('Proposal terms @features', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--reparcellization').click();
-    const reparcel = page.locator('.reparcel-modal-overlay');
+    const reparcel = page.locator('.on-map-reparcellization');
     await expect(reparcel).toBeVisible();
     await expect(reparcel.locator('[data-reparcel-newplots-table]')).not.toBeEmpty();
     await reparcel.locator('[data-reparcel-commit]').click();

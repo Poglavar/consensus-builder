@@ -24,14 +24,14 @@ async function openReadjustment(page: Page) {
   await page.evaluate(() => (window as any).i18n.setLanguage('en'));
   await openParcel(page, 'proposals');
   await page.locator('.parcel-build-btn--reparcellization').click();
-  const modal = page.locator('.reparcel-modal-overlay');
+  const modal = page.locator('.on-map-reparcellization');
   await expect(modal).toBeVisible();
   await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
   return modal;
 }
 
 async function uploadGeoJson(page: Page, name: string, value: string | object) {
-  const modal = page.locator('.reparcel-modal-overlay');
+  const modal = page.locator('.on-map-reparcellization');
   await modal.locator('[data-reparcel-upload]').setInputFiles({
     name,
     mimeType: 'application/geo+json',
@@ -53,7 +53,7 @@ for (const size of [{ name: 'desktop', width: 1440, height: 1000 }, { name: '390
     await uploadGeoJson(page, 'comparison.geojson', fullUnequalLayout);
     await expect(modal.locator('[data-reparcel-compare]')).toBeVisible();
     await modal.locator('[data-reparcel-compare]').click();
-    const map = modal.locator('#reparcel-map');
+    const map = page.locator('#map-container');
     const handle = map.locator('.map-compare__handle');
     await expect(map.locator('.map-compare__before')).toBeVisible();
     const initial = await handle.evaluate(node => Number.parseFloat((node as HTMLElement).style.left));
@@ -82,7 +82,7 @@ for (const size of [{ name: 'desktop', width: 1440, height: 1000 }, { name: '390
     // Re-open through the parcel action so the cleanup assertion covers the editor lifecycle too.
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--reparcellization').click();
-    const reopened = page.locator('.reparcel-modal-overlay');
+    const reopened = page.locator('.on-map-reparcellization');
     await expect(reopened).toBeVisible();
     await expect(reopened.locator('.map-compare__before, .map-compare__handle, .map-compare__label')).toHaveCount(0);
     await attachScreenshot(page, testInfo, `${size.name}-reopened-clean.png`);
@@ -91,11 +91,11 @@ for (const size of [{ name: 'desktop', width: 1440, height: 1000 }, { name: '390
 
 test('before/after comparison handle is keyboard accessible and responds to arrow keys', async ({ mockApi: page }) => {
   await openReadjustment(page);
-  const modal = page.locator('.reparcel-modal-overlay');
+  const modal = page.locator('.on-map-reparcellization');
   await modal.locator('input[name="reparcel-algorithm"][value="manual"]').check({ force: true });
   await uploadGeoJson(page, 'keyboard.geojson', fullUnequalLayout);
   await modal.locator('[data-reparcel-compare]').click();
-  const slider = modal.locator('#reparcel-map [role="slider"]');
+  const slider = page.locator('#map-container [role="slider"]');
   await expect(slider).toBeVisible();
   await expect(slider).toHaveAttribute('tabindex', '0');
   await expect(slider).toHaveAttribute('aria-label', /before.*after|comparison/i);
@@ -161,8 +161,9 @@ test('joint imported ownership survives apply and reload, then unapply restores 
   await expect(rows).toHaveCount(2);
 
   await modal.locator('[data-reparcel-assign]').click();
-  await modal.locator('#reparcel-map .leaflet-overlay-pane path.leaflet-interactive').first().click();
-  const popup = modal.locator('.reparcel-owner-popup');
+  // Reparcellization output now renders in its dedicated Leaflet pane, outside the generic overlay pane.
+  await page.locator('#map .leaflet-reparcelPlots-pane path.leaflet-interactive').first().click();
+  const popup = page.locator('.reparcel-owner-popup');
   await expect(popup).toBeVisible();
   await popup.locator('.reparcel-owner-popup__row').filter({ hasText: 'Owner B' }).locator('input').check();
   await popup.locator('.reparcel-owner-popup__close').click();
@@ -214,8 +215,9 @@ test.describe('touch before/after comparison', () => {
   test('before/after divider follows a touch drag and ignores movement after cancellation', async ({ mockApi: page }, testInfo) => {
     const modal = await openReadjustment(page);
     await modal.locator('[data-reparcel-compare]').click();
-    const slider = modal.getByRole('slider', { name: 'Before and after comparison' });
-    const map = modal.locator('#reparcel-map');
+    // The comparison handle is attached to the shared map, not nested inside the editor dock.
+    const slider = page.locator('#map .map-compare__handle[role="slider"][aria-label="Before and after comparison"]');
+    const map = page.locator('#map-container');
     const box = await map.boundingBox();
     const grip = await slider.locator('.map-compare__grip').boundingBox();
     if (!box || !grip) throw new Error('Touch comparison has no visible bounds');

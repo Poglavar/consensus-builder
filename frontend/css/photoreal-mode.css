@@ -77,16 +77,12 @@ body.realistic-mode-active #mode-walk-toggle {
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 
-/* The one-off "how do I tilt this" hint, shown a little after arriving in model or photo view and
-   gone again on its own. Bottom centre, clear of .photoreal-status at the top (which carries real
-   loading state) and of the mode strip on the left edge. */
-#three-container .three-view-hint {
-    position: absolute;
-    left: 50%;
-    bottom: 24px;
-    transform: translateX(-50%);
-    z-index: var(--cb-z-local-6);
-    max-width: 80%;
+/* The one-off "how do I tilt this" hint shares the map feedback stack with the live status toast.
+   Constrain it to the stack width so long translations wrap and normal flow keeps both readable. */
+.map-feedback-stack .three-view-hint {
+    width: max-content;
+    max-width: 100%;
+    box-sizing: border-box;
     padding: 8px 14px;
     border-radius: 999px;
     background: rgba(20, 22, 28, 0.86);
@@ -97,15 +93,15 @@ body.realistic-mode-active #mode-walk-toggle {
     animation: three-view-hint-in 220ms ease-out;
 }
 
-/* In photo view the Google logo and credits sit at the bottom right and must stay visible (Map
-   Tiles policy); on a phone the centred hint reached over them. Lift it clear of the credit line. */
-#three-container:has(.photoreal-attribution.visible) .three-view-hint {
-    bottom: 64px;
+/* A URL-driven photoreal load covers the scene and places its own streaming message at the
+   centre. Keep the delayed camera hint out of that message while the cover is present. */
+#map-container:has(.photoreal-cover) .three-view-hint {
+    display: none;
 }
 
 @keyframes three-view-hint-in {
-    from { opacity: 0; transform: translate(-50%, 6px); }
-    to { opacity: 1; transform: translate(-50%, 0); }
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Google Photorealistic 3D Tiles attribution (Map Tiles API policy): the Google logo plus the

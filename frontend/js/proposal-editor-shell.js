@@ -22,6 +22,8 @@
         approvalError: null,
         approvalImportSequence: 0
     };
+    const failedDraftReopenInFlight = new Set();
+    const placementBindingInFlight = new Map();
 
     function tDraft(key, fallback, params = {}) {
         let value = null;
@@ -44,6 +46,55 @@
                 ? global.CityConfigManager.getCurrentCityId()
                 : null;
         } catch (_) { return null; }
+    }
+
+    async function rebindFreePlacementDraft(draftId) {
+        const store = global.proposalDraftStore;
+        let draft = store?.getDraft?.(draftId) || null;
+        const placementApi = global.proposalDraftPlacement;
+        if (!draft || !placementApi?.isFreePlacementDraft?.(draft)) return draft;
+        const currentPlacementSite = placementApi.freePlacementPatch(draft, draft.editorPayload?.placement || {})?.site;
+        if (draft.editorPayload?.placement?.bindingStatus === 'bound'
+            && JSON.stringify(draft.fields?.site) === JSON.stringify(currentPlacementSite)
+            && String(draft.fields?.binding?.source || '').startsWith('server:')
+            && ['complete', 'partial', 'none'].includes(draft.fields?.binding?.coverage)) return draft;
+        const currentFlight = placementBindingInFlight.get(String(draftId));
+        if (currentFlight) return currentFlight;
+
+        const operation = (async () => {
+            const placement = draft.editorPayload?.placement || {};
+            const site = placementApi.freePlacementPatch(draft, placement)?.site;
+            if (!site) throw new Error(tDraft('proposalDrafts.placement.invalidSite', 'A free placement needs a valid polygon site.'));
+            const bindingApi = global.__publishBinding;
+            const backendBase = typeof global.resolveBackendBaseUrl === 'function'
+                ? global.resolveBackendBaseUrl()
+                : (typeof global.getBackendBase === 'function' ? global.getBackendBase() : '');
+            if (!bindingApi?.createFetchBinding || !backendBase || typeof global.fetch !== 'function') {
+                throw new Error(tDraft('proposalDrafts.placement.bindingUnavailable', 'The authoritative site binding service is unavailable. Your moved draft is saved locally.'));
+            }
+            const fetchBinding = bindingApi.createFetchBinding(global.fetch.bind(global), backendBase);
+            const binding = await fetchBinding({
+                site,
+                toleranceM: Number(draft.fields?.toleranceM) || 0,
+                city: draft.cityId || draft.sourceSnapshot?.city || currentCityId() || null
+            });
+            const latest = store.getDraft?.(draftId) || null;
+            if (!latest || !placementApi.isFreePlacementDraft(latest)
+                || JSON.stringify(latest.editorPayload?.placement?.site) !== JSON.stringify(site)) {
+                throw new Error(tDraft('proposalDrafts.placement.geometryChanged', 'The moved geometry changed while its site was being bound. Retry the save.'));
+            }
+            const patch = placementApi.markFreePlacementBound(latest, binding);
+            const updated = store.updateDraft(draftId, patch, { recordHistory: false });
+            return store.validateDraft(draftId) || updated;
+        })();
+        placementBindingInFlight.set(String(draftId), operation);
+        try {
+            return await operation;
+        } finally {
+            if (placementBindingInFlight.get(String(draftId)) === operation) {
+                placementBindingInFlight.delete(String(draftId));
+            }
+        }
     }
 
     function cityLabel(cityId) {
@@ -1138,6 +1189,7 @@
     }
 
     async function editProposalGeometry(proposalIdOrHash) {
+        if (global.OnMapEditor?.isActive?.()) return false;
         const proposal = proposalById(proposalIdOrHash);
         if (!proposal) {
             return reportGeometryEditFailure(
@@ -1191,6 +1243,7 @@
     // design commits it as an applied object, exactly like a geometry edit does. Terms and minting
     // come later via "Create proposal" on the object.
     async function startInstantProposalDesign(adapterKey, parcelIds) {
+        if (global.OnMapEditor?.isActive?.()) return false;
         const ids = (parcelIds || []).map(String).filter(Boolean);
         if (!ids.length) return false;
         const draft = global.proposalDraftStore.createDraft({
@@ -1280,16 +1333,89 @@
             },
             previewGeometry: structureGeometry
         });
-        if (!draft) return null;
+        if (!draft) {
+            reportProposalDesignSaveFailure('proposalDrafts.design.draftCreateFailed');
+            return null;
+        }
         return instantCreateProposalFromDraft(draft.id);
+    }
+
+    function reportSiteDesignStartIssue(key, fallback, params = {}) {
+        let message;
+        switch (key) {
+            case 'editorBusy': message = tDraft('proposalDrafts.design.editorBusy', fallback, params); break;
+            case 'siteUnavailable': message = tDraft('proposalDrafts.design.siteUnavailable', fallback, params); break;
+            case 'parcelsUnavailable': message = tDraft('proposalDrafts.design.parcelsUnavailable', fallback, params); break;
+            case 'draftCreateFailed': message = tDraft('proposalDrafts.design.draftCreateFailed', fallback, params); break;
+            case 'handoffFailed': message = tDraft('proposalDrafts.design.handoffFailed', fallback, params); break;
+            case 'handoffFailedReason': message = tDraft('proposalDrafts.design.handoffFailedReason', fallback, params); break;
+            default: message = fallback;
+        }
+        try { global.showEphemeralMessage?.(message, 7000, 'error'); } catch (_) { }
+        try { global.updateStatus?.(message); } catch (_) { }
+        return false;
+    }
+
+    // Shared feedback for draft commits initiated by geometry editors. Include a localized reason
+    // when one is available without guessing whether the record was created or retained.
+    function reportProposalDesignSaveFailure(error = null) {
+        let reason = String(error?.message || error || '');
+        if (reason.startsWith('proposalDrafts.')) reason = tDraft(reason, '');
+        reason = reason.replace(/[\s.!?]+$/, '');
+        const message = reason
+            ? tDraft('proposalDrafts.errors.designSaveFailedReason', 'Your changes could not be saved ({{reason}}). Try again.', { reason })
+            : tDraft('proposalDrafts.errors.designSaveFailed', 'Your changes could not be saved. Try again.');
+        try { global.showEphemeralMessage?.(message, 7000, 'error'); } catch (_) { }
+        try { global.updateStatus?.(message); } catch (_) { }
+        return message;
+    }
+
+    function reopenFailedProposalDraftOnce(draftId, store = global.proposalDraftStore, options = {}) {
+        const id = String(draftId || '');
+        if (!id || failedDraftReopenInFlight.has(id)) return false;
+        let retained = null;
+        try { retained = store?.getDraft?.(draftId) || null; } catch (_) { }
+        if (!retained || typeof global.openProposalDraftDesign !== 'function') return false;
+        const commitOnFinish = options.commitOnFinish === true
+            || String(geometryEditCommitDraftId || '') === String(draftId);
+        // openProposalDraftDesign calls finish on a false result or rejection. Clear the old
+        // matching marker before the handoff so that path cannot recursively commit/reopen; put
+        // it back only after a successful editor open.
+        if (String(geometryEditCommitDraftId || '') === String(draftId)) geometryEditCommitDraftId = null;
+        failedDraftReopenInFlight.add(id);
+        const reportReopenFailure = () => {
+            if (typeof options.onReopenFailure === 'function') options.onReopenFailure();
+            else reportProposalDesignSaveFailure('proposalDrafts.errors.designEditorReopenFailed');
+        };
+        Promise.resolve().then(() => global.openProposalDraftDesign(draftId)).then(opened => {
+            if (!opened) {
+                reportReopenFailure();
+                return;
+            }
+            const adapterKey = retained.adapterKey || retained.goal;
+            if (commitOnFinish
+                && String(editorState.designDraftId || '') === String(draftId)
+                && GEOMETRY_EDITABLE_ADAPTERS.has(adapterKey)) {
+                geometryEditCommitDraftId = String(draftId);
+            }
+        }).catch(() => {
+            reportReopenFailure();
+        }).finally(() => failedDraftReopenInFlight.delete(id));
+        return true;
     }
 
     // A building typology on a site: the design tool opens on the site's design parcels (the live
     // selection it came from, the whole site as one synthetic superparcel, or synthetic plots cut
     // along a frontage), and Done commits the draft as for any Build-palette creation.
     async function startInstantSiteDesign(adapterKey, siteContext, designParcelIds) {
+        if (global.OnMapEditor?.isActive?.()) {
+            return reportSiteDesignStartIssue('editorBusy', 'Another geometry editor is already using the map. Close it before starting this site design.');
+        }
         const ids = (designParcelIds || []).map(String).filter(Boolean);
-        if (!ids.length || !siteContext || !siteContext.site) return false;
+        if (!ids.length) return reportSiteDesignStartIssue('parcelsUnavailable', 'No design parcels are available for this site. Select the site again and try once its parcels are loaded.');
+        if (!siteContext || !siteContext.site) {
+            return reportSiteDesignStartIssue('siteUnavailable', 'The selected site is unavailable. Select a valid site and try again.');
+        }
         const draft = global.proposalDraftStore.createDraft({
             cityId: currentCityId(),
             goal: adapterKey,
@@ -1299,7 +1425,7 @@
             editorPayload: {},
             previewGeometry: null
         });
-        if (!draft) return false;
+        if (!draft) return reportSiteDesignStartIssue('draftCreateFailed', 'Could not save a local draft for this site design. The site remains unchanged.');
         geometryEditCommitDraftId = draft.id;
         let opened = false;
         try {
@@ -1307,13 +1433,14 @@
         } catch (error) {
             opened = false;
             console.warn('[ProposalEditor] Site design tool failed to open', error);
-        }
-        if (opened === false) {
             geometryEditCommitDraftId = null;
-            global.proposalDraftStore.deleteDraft(draft.id);
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.'));
-            }
+            return reportSiteDesignStartIssue('handoffFailedReason', 'The design editor could not open: {{reason}}. Your site is unchanged, and the design draft was preserved locally.', {
+                reason: String(error?.message || error || 'unknown error')
+            });
+        }
+        if (!opened) {
+            geometryEditCommitDraftId = null;
+            return reportSiteDesignStartIssue('handoffFailed', 'The design editor could not open. Your site is unchanged, and the design draft was preserved locally.');
         }
         return opened;
     }
@@ -1322,7 +1449,12 @@
     // its pool — the bound parcels' part with their owners, the open ground with none. No live
     // selection: the declaration is the site's binding (replaced by the server's at publish).
     async function startSiteSubdivision(siteContext) {
-        if (!siteContext || !siteContext.site) return false;
+        if (global.OnMapEditor?.isActive?.()) {
+            return reportSiteDesignStartIssue('editorBusy', 'Another geometry editor is already using the map. Close it before starting this site design.');
+        }
+        if (!siteContext || !siteContext.site) {
+            return reportSiteDesignStartIssue('siteUnavailable', 'The selected site is unavailable. Select a valid site and try again.');
+        }
         const site = JSON.parse(JSON.stringify(siteContext.site));
         const draft = global.proposalDraftStore.createDraft({
             cityId: currentCityId(),
@@ -1333,7 +1465,7 @@
             editorPayload: { plan: { poolSource: 'site', poolGeometry: site, algorithm: 'sweep-line', polygons: [] } },
             previewGeometry: null
         });
-        if (!draft) return false;
+        if (!draft) return reportSiteDesignStartIssue('draftCreateFailed', 'Could not save a local draft for this site design. The site remains unchanged.');
         geometryEditCommitDraftId = draft.id;
         let opened = false;
         try {
@@ -1341,13 +1473,14 @@
         } catch (error) {
             opened = false;
             console.warn('[ProposalEditor] Subdivision editor failed to open', error);
-        }
-        if (opened === false) {
             geometryEditCommitDraftId = null;
-            global.proposalDraftStore.deleteDraft(draft.id);
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.'));
-            }
+            return reportSiteDesignStartIssue('handoffFailedReason', 'The design editor could not open: {{reason}}. Your site is unchanged, and the design draft was preserved locally.', {
+                reason: String(error?.message || error || 'unknown error')
+            });
+        }
+        if (!opened) {
+            geometryEditCommitDraftId = null;
+            return reportSiteDesignStartIssue('handoffFailed', 'The design editor could not open. Your site is unchanged, and the design draft was preserved locally.');
         }
         return opened;
     }
@@ -1416,7 +1549,7 @@
             ? global.buildGeometryFromParcels(liveIds)
             : null;
         if (!geometry || !geometry.type) {
-            console.warn('[ProposalEditor] Could not build structure geometry from the selection', ids);
+            reportProposalDesignSaveFailure('proposalDrafts.errors.structureGeometryFailed');
             return null;
         }
         if (!structureGeometryIsOneArea(geometry)) {
@@ -1455,7 +1588,10 @@
             },
             previewGeometry: structureGeometry
         });
-        if (!draft) return null;
+        if (!draft) {
+            reportProposalDesignSaveFailure('proposalDrafts.design.draftCreateFailed');
+            return null;
+        }
         try { global.document?.getElementById('parcel-info-panel')?.classList.remove('visible'); } catch (_) { }
         return instantCreateProposalFromDraft(draft.id);
     }
@@ -1477,10 +1613,22 @@
     function finishProposalDraftDesignSession(draftId = null) {
         const activeId = editorState.designDraftId || global.activeProposalDesignDraftId || null;
         if (!activeId || (draftId && String(activeId) !== String(draftId))) return null;
-        const draft = global.proposalDraftStore?.getDraft?.(activeId) || null;
-        if (draft) {
-            global.proposalDraftStore.validateDraft(activeId);
-            global.proposalDraftStore.flush();
+        let draft = null;
+        try {
+            draft = global.proposalDraftStore?.getDraft?.(activeId) || null;
+            if (draft) {
+                global.proposalDraftStore.validateDraft(activeId);
+                global.proposalDraftStore.flush();
+            }
+        } catch (error) {
+            reportProposalDesignSaveFailure(error);
+            // This is called after most geometry tools have torn down. Make one bounded attempt
+            // to restore the editor around the retained draft, while preserving the sync return
+            // contract used by callers to detect that finishing failed.
+            reopenFailedProposalDraftOnce(activeId, global.proposalDraftStore, {
+                commitOnFinish: String(geometryEditCommitDraftId || '') === String(activeId)
+            });
+            return null;
         }
         editorState.designDraftId = null;
         global.activeProposalDesignDraftId = null;
@@ -1496,8 +1644,10 @@
             geometryEditCommitDraftId = null;
             const current = global.proposalDraftStore.getDraft(commitId);
             if (current && current.dirty) {
-                Promise.resolve(instantCreateProposalFromDraft(commitId)).catch(error => {
+                Promise.resolve(instantCreateProposalFromDraft(commitId, { commitOnFinish: true })).catch(error => {
                     console.warn('[ProposalEditor] Geometry edit commit failed; draft kept', error);
+                    reportProposalDesignSaveFailure(error);
+                    reopenFailedProposalDraftOnce(commitId, global.proposalDraftStore, { commitOnFinish: true });
                 });
             } else if (current) {
                 global.proposalDraftStore.deleteDraft(commitId);
@@ -1633,7 +1783,19 @@
 
     async function stageProposalDraftForPublishing(draftId) {
         const store = global.proposalDraftStore;
-        let draft = store?.validateDraft(draftId);
+        let draft = store?.getDraft?.(draftId) || null;
+        if (draft && global.proposalDraftPlacement?.isFreePlacementDraft?.(draft)) {
+            try {
+                draft = await rebindFreePlacementDraft(draftId);
+            } catch (error) {
+                store.markPublishFailed(draftId, error);
+                const message = error?.message || String(error);
+                if (typeof global.showStyledAlert === 'function') global.showStyledAlert(message);
+                else if (typeof global.updateStatus === 'function') global.updateStatus(message);
+                return false;
+            }
+        }
+        draft = store?.validateDraft(draftId);
         if (!draft?.validation?.valid) {
             if (draft) renderShell();
             return false;
@@ -1788,7 +1950,13 @@
 
     async function instantCreateProposalFromDraft(draftId, options = {}) {
         const store = global.proposalDraftStore;
-        let draft = store?.getDraft(draftId);
+        let draft = null;
+        try { draft = store?.getDraft?.(draftId) || null; }
+        catch (error) {
+            reportProposalDesignSaveFailure(error);
+            reopenFailedProposalDraftOnce(draftId, store, { commitOnFinish: true });
+            return null;
+        }
         if (!draft) return null;
 
         // Clicking Done is not instant, and it used to look like nothing had happened. The spinner
@@ -1798,6 +1966,11 @@
         try { global.beginApplyIndicator?.(); } catch (_) { }
         try {
             return await instantCreateProposalFromDraftInner(draftId, store, draft, profile, options);
+        } catch (error) {
+            console.warn('[ProposalEditor] Unexpected instant-create failure; checking for a retained draft', error);
+            reportProposalDesignSaveFailure(error);
+            reopenFailedProposalDraftOnce(draftId, store, { commitOnFinish: true });
+            return null;
         } finally {
             try { global.endApplyIndicator?.(); } catch (_) { }
             profile.report();
@@ -1834,24 +2007,30 @@
             console.error('[ProposalEditor] instantCreate failed:', reason || '(no reason)');
             if (typeof global.showEphemeralMessage === 'function') global.showEphemeralMessage(message, 7000, 'error');
             if (typeof global.updateStatus === 'function') global.updateStatus(message);
-            Promise.resolve(global.openProposalDraftDesign?.(draftId)).then(opened => {
-                if (opened) return;
-                // The design tool refusing to open is not a reason to destroy the work it was
-                // holding. It used to delete the draft here, so a gate that declined the selection
-                // — a readjustment on ground another proposal holds, say — cost the user the
-                // drawing as well as the answer. The draft is kept and the failure is said out
-                // loud; a stranded draft can be reopened or discarded deliberately, which is the
-                // user's call and not this path's.
-                console.error('[ProposalEditor] Could not reopen the failed drawing; the draft is kept', draftId);
-                const stranded = tDraft('proposalDrafts.keptUnopened',
-                    'The design tool could not reopen this. Your work is kept as a draft — fix what it complained about and open it again.');
-                try { if (typeof global.showEphemeralMessage === 'function') global.showEphemeralMessage(stranded, 9000, 'error'); } catch (_) { }
-                try { if (typeof global.updateStatus === 'function') global.updateStatus(stranded); } catch (_) { }
+            reopenFailedProposalDraftOnce(draftId, store, {
+                commitOnFinish: true,
+                onReopenFailure: () => {
+                    // Refusing to reopen is not a reason to destroy the retained drawing. Say so
+                    // and leave the draft available from the proposal editor.
+                    console.error('[ProposalEditor] Could not reopen the failed drawing; the draft is kept', draftId);
+                    const stranded = tDraft('proposalDrafts.keptUnopened',
+                        'The design tool could not reopen this. Your work is kept as a draft — fix what it complained about and open it again.');
+                    try { if (typeof global.showEphemeralMessage === 'function') global.showEphemeralMessage(stranded, 9000, 'error'); } catch (_) { }
+                    try { if (typeof global.updateStatus === 'function') global.updateStatus(stranded); } catch (_) { }
+                }
             });
             return null;
         };
 
         draft = store.validateDraft(draftId);
+        if (global.proposalDraftPlacement?.isFreePlacementDraft?.(draft)) {
+            try {
+                draft = await rebindFreePlacementDraft(draftId);
+            } catch (error) {
+                return keepAsDraft(error?.message || String(error));
+            }
+            draft = store.validateDraft(draftId);
+        }
         if (!draft?.validation?.valid) {
             return keepAsDraft(draft?.validation?.errors?.[0]?.message || '');
         }
@@ -1872,6 +2051,7 @@
         // arrangement there (PARCEL-OPTIONAL.md phase 3).
         const atomicCorridorAuthoring = !!proposal.roadProposal?.definition;
         let proposalId = null;
+        let deriveFailure = null;
         if (atomicCorridorAuthoring) {
             // Finish owns the complete road mutation. The manager first plans every junction edit,
             // then commits the new record, touched existing records, parcel fabric, and persistence
@@ -1913,10 +2093,13 @@
                 // Changed-land forks are counterproposals: their source remains standing while
                 // only the new proposal's own ground is materialised. Ordinary replacements
                 // still release and replay their source's scope.
-                const supersededIds = stored.landFork ? [] : [stored.sourceProposalId, stored.replacementOfProposalId]
+                const sourceRecord = stored.sourceProposalId
+                    ? (global.proposalStorage?.getProposal?.(stored.sourceProposalId)
+                        || (String(draft.sourceProposalId || '') === String(stored.sourceProposalId)
+                            ? draft.sourceSnapshot : null))
+                    : null;
+                const supersededIds = (stored.landFork || global.isPublishedProposalRecord?.(sourceRecord) === true) ? [] : [stored.sourceProposalId, stored.replacementOfProposalId]
                     .filter(Boolean).map(String);
-                global.ProposalManager?._commitReplacementSupersession?.(proposalId, stored);
-                global.proposalStorage?.save?.();
                 profile.mark('record');
 
                 // NOTHING re-applies the whole plan. Only the ground whose take set actually changed is
@@ -1933,12 +2116,9 @@
                 try { global.ProposalManager?._refreshUIAfterProposalChange?.(global.proposalStorage?.getProposal?.(proposalId)); } catch (_) { }
                 profile.mark('ui');
             } catch (error) {
+                deriveFailure = error;
                 console.warn('[ProposalEditor] Replay after instant create failed; object stays parked', error);
             }
-        }
-        if ((proposal.sourceProposalId || proposal.replacementOfProposalId)
-            && typeof global.showEphemeralMessage === 'function') {
-            global.showEphemeralMessage(tDraft('proposalDrafts.geometryUpdated', 'Geometry updated.'), 4000, 'success');
         }
 
         // A parked object renders nothing — without a word it just looks like the road vanished.
@@ -1950,8 +2130,12 @@
         try {
             const persisted = global.proposalStorage?.getProposal?.(proposalId);
             landed = !!(persisted && typeof global.isProposalApplied === 'function' && global.isProposalApplied(persisted));
-            if (persisted && !landed && typeof global.showStyledAlert === 'function') {
-                const reason = global.ProposalManager?.getLastApplyFailure?.(proposalId) || '';
+            if (!landed && proposalId && typeof global.showStyledAlert === 'function') {
+                let failureInfo = null;
+                try { failureInfo = global.ProposalManager?.getLastApplyFailureInfo?.(proposalId) || null; } catch (_) { }
+                let lastFailure = '';
+                try { lastFailure = global.ProposalManager?.getLastApplyFailure?.(proposalId) || ''; } catch (_) { }
+                const reason = failureInfo?.message || lastFailure || deriveFailure?.message || '';
                 global.showStyledAlert(reason
                     ? tDraft('proposalDrafts.builtButParkedBecause',
                         'The object was created but could not be placed on the map: {{reason}} It is parked in your proposals list — select it there to see and apply it.',
@@ -1959,6 +2143,10 @@
                     : tDraft('proposalDrafts.builtButParked', 'The object was created but could not be placed on the map (a conflict blocked it). It is parked in your proposals list — select it there to see and apply it.'));
             }
         } catch (_) { }
+        if (landed && (proposal.sourceProposalId || proposal.replacementOfProposalId)
+            && typeof global.showEphemeralMessage === 'function') {
+            global.showEphemeralMessage(tDraft('proposalDrafts.geometryUpdated', 'Geometry updated.'), 4000, 'success');
+        }
         try { if (typeof global.updateShowProposalsButton === 'function') global.updateShowProposalsButton(); } catch (_) { }
         // The drawing seeded the multi-parcel selection, which pops the parcel info panel — hide
         // it; the object's own details panel opens collapsed instead.
@@ -2000,18 +2188,24 @@
             if (Array.isArray(options.parcelIds)) fields.selectedParcelIds = options.parcelIds.map(String);
         } else if (kind === 'building') {
             if (!['buildings', 'row', 'parcelBased', 'single'].includes(draft.adapterKey || draft.goal)) return null;
-            const typology = payload.parameters?.typology || draft.editorPayload?.typology || draft.adapterKey;
+            const rawTypology = payload.parameters?.typology || draft.editorPayload?.typology || draft.adapterKey;
+            // `buildings` is the editor adapter key; its persisted design typology is `block`.
+            // Keeping the domain value here prevents a save/reload from reopening as a generic
+            // building payload without the block-specific massing context.
+            const typology = rawTypology === 'buildings' ? 'block' : rawTypology;
+            const buildingContext = JSON.parse(JSON.stringify(payload));
             patch = {
-                editorPayload: { typology, context: JSON.parse(JSON.stringify(payload)) },
+                editorPayload: { typology, context: buildingContext },
                 previewGeometry: JSON.parse(JSON.stringify(payload.buildings?.length ? payload.buildings : [payload.buildingFeature].filter(Boolean)))
             };
-            if (Array.isArray(payload.parcelIds)) fields.selectedParcelIds = payload.parcelIds.map(String);
+            const savedBuildingGeometryEdit = Boolean(draft.sourceProposalId);
+            if (!savedBuildingGeometryEdit && Array.isArray(payload.parcelIds)) fields.selectedParcelIds = payload.parcelIds.map(String);
         } else if (kind === 'reparcellization') {
             if (draft.goal !== 'reparcellization') return null;
             patch = { editorPayload: { plan: JSON.parse(JSON.stringify(payload)) }, previewGeometry: JSON.parse(JSON.stringify(payload.polygons || [])) };
             if (Array.isArray(payload.parcelIds)) fields.selectedParcelIds = payload.parcelIds.map(String);
         } else if (kind === 'structure') {
-            if (!['park', 'square'].includes(draft.adapterKey || draft.goal)) return null;
+            if (!['park', 'square', 'lake'].includes(draft.adapterKey || draft.goal)) return null;
             const structureProposal = JSON.parse(JSON.stringify(payload.structureProposal || payload));
             const geometry = structureProposal.geometry || draft.editorPayload?.geometry || null;
             patch = {
@@ -2032,8 +2226,46 @@
         } else {
             return null;
         }
+        const placementInput = options.placement || payload.placement || null;
+        if (placementInput?.free === true) {
+            try {
+                const nextDraft = { ...draft, editorPayload: { ...(draft.editorPayload || {}), ...(patch.editorPayload || {}) } };
+                const placement = global.proposalDraftPlacement?.freePlacementPatch?.(nextDraft, placementInput);
+                if (!placement) return null;
+                patch.editorPayload = { ...(patch.editorPayload || {}), placement: placement.placement };
+                fields.site = placement.fields.site;
+                fields.selectedParcelIds = placement.fields.selectedParcelIds;
+                fields.cadastreParcelIds = placement.fields.cadastreParcelIds;
+                fields.binding = null;
+            } catch (error) {
+                console.warn('[ProposalEditor] Refused unsafe free placement', error);
+                if (typeof global.showStyledAlert === 'function') global.showStyledAlert(error?.message || String(error));
+                return null;
+            }
+        }
+        if (kind === 'building' && placementInput?.free === false) {
+            patch.editorPayload.placement = null;
+            if (draft.editorPayload?.placement?.free === true) {
+                // Existing-building mode returns to the source-aware site. A preceding generated
+                // preview must not leave its moved footprint or pending binding on this snapshot.
+                fields.site = global.__siteDraft.toMultiPolygon(placementInput.site);
+                fields.cadastreParcelIds = [];
+                fields.binding = null;
+            }
+        }
         if (Object.keys(fields).length) patch.fields = fields;
-        const updated = store.updateDraft(draft.id, patch, { coalesceKey: options.coalesceKey || `editor:${kind}` });
+        const updateOptions = { coalesceKey: options.coalesceKey || `editor:${kind}` };
+        const updated = kind === 'building'
+            // Editor payloads are complete snapshots. Replacing their context atomically prevents
+            // recursive draft merging from retaining removed feature flags (for example a stale
+            // `manual: true` on a block footprint after the user returns to parametric mode).
+            ? store.updateDraft(draft.id, current => ({
+                ...current,
+                ...patch,
+                fields: patch.fields ? { ...(current.fields || {}), ...patch.fields } : current.fields,
+                editorPayload: { ...(current.editorPayload || {}), ...(patch.editorPayload || {}) }
+            }), updateOptions)
+            : store.updateDraft(draft.id, patch, updateOptions);
         store.validateDraft(draft.id);
         // The source/draft comparison overlay belongs to the (retired) editor dialog. Rendering
         // it without the dialog open left ghost outlines on the map with nothing to clear them.
@@ -2123,6 +2355,7 @@
     global.beginProposalDraftDesignSession = beginProposalDraftDesignSession;
     global.getActiveProposalDesignDraft = getActiveProposalDesignDraft;
     global.finishProposalDraftDesignSession = finishProposalDraftDesignSession;
+    global.reportProposalDesignSaveFailure = reportProposalDesignSaveFailure;
     global.isProposalDesignCommitSession = isProposalDesignCommitSession;
     global.discardProposalDraftDesignSession = discardProposalDraftDesignSession;
     global.confirmDiscardProposalDesignSession = confirmDiscardProposalDesignSession;
@@ -2132,6 +2365,7 @@
     global.startInstantSiteDesign = startInstantSiteDesign;
     global.startSiteSubdivision = startSiteSubdivision;
     global.syncActiveProposalDraftFromEditor = syncActiveProposalDraftFromEditor;
+    global.rebindFreePlacementDraft = rebindFreePlacementDraft;
     global.renderProposalDraftComparison = renderProposalDraftComparison;
     global.clearProposalDraftComparison = clearProposalDraftComparison;
     global.focusDraftValidationIssue = focusDraftValidationIssue;

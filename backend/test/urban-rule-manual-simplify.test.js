@@ -103,7 +103,7 @@ describe('simplifyRingToVertexTarget', () => {
 });
 
 describe('manual footprint controls', () => {
-    it('keeps width enabled while locking shape-producing sliders', () => {
+    it('disables all footprint sliders while manual mode is active', () => {
         const originalGetElementById = global.document.getElementById;
         const controls = new Map();
         global.document.getElementById = id => {
@@ -112,9 +112,11 @@ describe('manual footprint controls', () => {
         };
 
         try {
+            controls.set('height-slider', { disabled: false });
             setBlockifyModeForTest('manual');
             setFootprintSlidersEnabled(false);
-            expect(controls.get('width-slider').disabled).toBe(false);
+            expect(controls.get('width-slider').disabled).toBe(true);
+            expect(controls.get('height-slider').disabled).toBe(false);
             expect(controls.get('setback-slider').disabled).toBe(true);
             expect(controls.get('chamfer-slider').disabled).toBe(true);
 

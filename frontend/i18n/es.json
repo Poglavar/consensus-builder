@@ -1,4 +1,21 @@
 {
+  "onMapEditor": {
+    "missingSite": "Este edificio guardado no tiene un límite de terreno válido, por lo que su geometría no se puede editar de forma segura.",
+    "cancel": "Cancelar",
+    "editing": "Editando",
+    "controls": "Controles",
+    "showControls": "Mostrar controles",
+    "hideControls": "Ocultar controles",
+    "moreOptions": "Más opciones",
+    "undo": "Deshacer (Cmd/Ctrl+Z)",
+    "lockReject": "La huella actual está fuera de la ubicación fijada. Muévela dentro para usar el bloqueo del sitio.",
+    "placement": {
+      "snap": "Ajustar a los bordes",
+      "lock": "Fijar a la ubicación inicial",
+      "outside": "Fuera de la ubicación inicial. Las parcelas afectadas se recalcularán al guardar.",
+      "lockOutside": "Mueve el diseño dentro de la ubicación inicial antes de fijarlo."
+    }
+  },
     "optionalTools": {
         "loadFailed": "No se pudo cargar esta herramienta. Inténtalo de nuevo."
     },
@@ -175,7 +192,7 @@
     },
     "multitab": {
         "warning": "Esta ciudad ya está abierta en otra pestaña. Para no perder las propuestas guardadas, los cambios en esta pestaña no se guardarán — cierra las demás pestañas de esta ciudad y recarga esta para editar. Otras ciudades pueden quedar abiertas.",
-        "notSaved": "La propuesta NO se ha guardado y se perderá al recargar el navegador."
+        "notSaved": "Esta ciudad está abierta en otra pestaña. Tus cambios se conservan en una copia de recuperación, pero no se guardan en el plan compartido. Usa la pestaña principal para guardar los cambios."
     },
     "proposalApproval": {
         "ownerLabel": "Propietario {{label}}",
@@ -287,6 +304,18 @@
             "sponsorReceives": "El patrocinador recibe {{amount}}.",
             "sponsorNothing": "Los pagos de los propietarios cubren todos los cobros; el patrocinador no paga nada."
         }
+    },
+    "proposalApplyFailures": {
+        "outsideCadastre": "La geometría de la propuesta se extiende más allá de las parcelas catastrales seleccionadas. Mantenla dentro del terreno seleccionado o crea una propuesta que incluya las parcelas adicionales.",
+        "outsideSite": "La geometría de la propuesta se extiende más allá de su emplazamiento. Mantenla dentro del emplazamiento o edítalo antes de aplicarla.",
+        "groundUnavailable": "No se pudieron cargar los datos de las parcelas catastrales. Comprueba tu conexión e inténtalo de nuevo.",
+        "groundMissing": "No hay datos catastrales disponibles para: {{parcels}}. No se puede aplicar esta propuesta hasta que se carguen esas parcelas.",
+        "undeclared": "Esta propuesta no tiene parcelas catastrales ni un emplazamiento de terreno libre. Define su emplazamiento antes de aplicarla.",
+        "invalidGeometry": "La geometría de la propuesta falta o no es válida. Edítala antes de aplicarla.",
+        "applyFailed": "No se pudo colocar la propuesta en el mapa porque no fue posible derivar su geometría del terreno seleccionado.",
+        "busy": "Hay otra actualización del mapa en curso. Espera a que termine e inténtalo de nuevo.",
+        "storeUnavailable": "Las propuestas aún no se han cargado. Espera a que termine la carga de la ciudad e inténtalo de nuevo.",
+        "notFound": "Esta propuesta ya no está disponible. Actualiza la lista de propuestas e inténtalo de nuevo."
     },
     "proposalDrafts": {
         "title": "Borradores",
@@ -419,7 +448,27 @@
             "road": "Calle",
             "track": "Vía",
             "parcelOnly": "Esta propuesta no tiene una geometría de diseño independiente. El resaltado de parcelas sigue activo mientras editas las demás facetas.",
-            "unavailable": "Este editor de diseño no está disponible."
+            "unavailable": "Este editor de diseño no está disponible.",
+            "editorBusy": "Otro editor de geometría ya está usando el mapa. Ciérralo antes de iniciar este diseño del emplazamiento.",
+            "siteUnavailable": "El emplazamiento seleccionado no está disponible. Selecciona un emplazamiento válido e inténtalo de nuevo.",
+            "parcelsUnavailable": "No hay parcelas de diseño disponibles para este emplazamiento. Vuelve a seleccionarlo e inténtalo cuando se carguen sus parcelas.",
+            "draftCreateFailed": "No se pudo guardar un borrador local para este diseño. El emplazamiento no ha cambiado.",
+            "handoffFailed": "No se pudo abrir el editor de diseño. El emplazamiento no ha cambiado y el borrador de diseño se conservó localmente.",
+            "handoffFailedReason": "No se pudo abrir el editor de diseño: {{reason}}. El emplazamiento no ha cambiado y el borrador de diseño se conservó localmente."
+        },
+        "placement": {
+            "fixedSite": "Este tipo de propuesta tiene un emplazamiento fijo y no se puede mover.",
+            "existingBuilding": "Las propuestas de edificios existentes conservan su huella vinculada al edificio y no admiten ubicación libre.",
+            "invalidSite": "La ubicación libre necesita un emplazamiento poligonal válido.",
+            "freshBinding": "La ubicación libre necesita una nueva vinculación del emplazamiento calculada por el servidor.",
+            "unknownCoverage": "El servidor no puede verificar este emplazamiento con un catastro compatible. Muévelo a una zona compatible o contacta con el equipo de datos municipales.",
+            "unverifiedCoverage": "La vinculación del emplazamiento no confirmó la cobertura catastral. Vuelve a intentarlo antes de aplicar o publicar.",
+            "pending": "Vuelve a vincular el emplazamiento movido antes de aplicar o publicar este borrador.",
+            "bindingUnavailable": "El servicio de vinculación autoritativa del emplazamiento no está disponible. El borrador movido se guardó localmente.",
+            "geometryChanged": "La geometría cambió mientras se vinculaba el emplazamiento. Vuelve a guardar.",
+            "buildingOutsideSite": "La geometría del edificio movido debe quedar completamente dentro del nuevo emplazamiento.",
+            "surroundingsOutsideSite": "El entorno movido debe quedar completamente dentro del nuevo emplazamiento. Mueve toda la propuesta o ajusta el límite del terreno antes de guardar.",
+            "massingOutsideSite": "La masa edificada movida debe quedar completamente dentro del nuevo emplazamiento."
         },
         "review": {
             "title": "Revisar cambios",
@@ -495,7 +544,11 @@
         "errors": {
             "draftFailed": "No se pudo abrir esta propuesta para editarla.",
             "instantCreateFailed": "No se pudo guardar el nuevo objeto.",
-            "designSaveFailed": "No se pudo guardar este diseño: {{reason}}. El borrador sigue disponible; resuelve el problema e inténtalo de nuevo.",
+            "designSaveFailed": "No se pudieron guardar tus cambios. Inténtalo de nuevo.",
+            "designSaveFailedReason": "No se pudo guardar este diseño: {{reason}}. El borrador sigue disponible; resuelve el problema e inténtalo de nuevo.",
+            "structureGeometryFailed": "No se pudo generar la geometría de las parcelas seleccionadas.",
+            "designEditorReopenFailed": "No se pudo volver a abrir el editor de diseño.",
+            "siteRestoreFailed": "No se pudo restaurar el sitio. Inténtalo de nuevo.",
             "noAdapter": "No hay un editor registrado para este tipo de propuesta.",
             "notReshapeable": "Este tipo de propuesta no se puede remodelar.",
             "parcelsNotContiguous": "Las parcelas seleccionadas deben formar una sola superficie continua.",
@@ -1380,6 +1433,14 @@
                 "editApproval": "Editar propiedad y aprobación",
                 "addApproval": "Añadir propiedad y aprobación",
                 "editApprovalHint": "Abre el editor en la pestaña Aprobación. Guardar crea una propuesta de reemplazo; las aceptaciones de esta no se trasladan.",
+                "applyFailed": "No se pudo aplicar esta propuesta: {{reason}}",
+                "applyFailedUnknown": "No se pudo aplicar esta propuesta. Inténtalo de nuevo.",
+                "applyUnavailable": "Esta propuesta no se puede aplicar al mapa.",
+                "applyUnsupported": "Este tipo de propuesta no admite su aplicación al mapa.",
+                "missingProposal": "No se seleccionó ninguna propuesta para aplicar.",
+                "unapplyFailed": "No se pudo quitar esta propuesta del mapa: {{reason}}",
+                "unapplyFailedUnknown": "No se pudo quitar esta propuesta del mapa. Inténtalo de nuevo.",
+                "unapplyUnavailable": "Esta propuesta no se puede quitar del mapa.",
                 "betOutcome": "Apostar al resultado"
             },
             "expiry": {
@@ -2076,6 +2137,10 @@
             "deleteLabel": "Eliminar edificio",
             "renameLabel": "Renombrar edificio",
             "closeLabel": "Cerrar modal de edificio único",
+            "cancel": "Cancelar",
+            "more": "Parcela y detalles",
+            "mapHint": "Arrastra el edificio o sus esquinas. Toca un borde para añadir una esquina.",
+            "modelHint": "Ajusta la altura y gira la vista para comprobar el encaje. Usa 2D para cambiar la huella.",
             "previewLabel": "Vista 3D",
             "confirm": "Listo",
             "parametersTitle": "Parámetros",
@@ -2094,12 +2159,14 @@
             "uploadNoPolygon": "No se encontró ningún polígono utilizable en ese archivo.",
             "uploadOutside": "El polígono subido no se superpone con este bloque de forma utilizable.",
             "uploadError": "No se pudo leer ese archivo.",
-            "infoText": "Arrastra la huella para moverla. Arrastra un vértice para cambiar la forma, haz clic en un borde para añadir un vértice o selecciona uno y usa la papelera o Supr/Retroceso para eliminarlo. El edificio debe permanecer completamente dentro del bloque.",
-            "infoTextTouch": "Arrastra la huella para moverla. Arrastra un vértice para cambiar la forma, toca un borde para añadir un vértice o selecciona uno y usa la papelera para eliminarlo. El edificio debe permanecer completamente dentro del bloque.",
+            "infoText": "Arrastra la huella para moverla. Arrastra un vértice para cambiar la forma, haz clic en un borde para añadir uno o selecciona un vértice y usa la papelera o Supr/Retroceso para eliminarlo. Usa «Fijar a la ubicación inicial» para mantenerla dentro; de lo contrario, puedes moverla libremente.",
+            "infoTextTouch": "Arrastra la huella para moverla. Arrastra un vértice para cambiar la forma, toca un borde para añadir uno o selecciona un vértice y usa la papelera para eliminarlo. Usa «Fijar a la ubicación inicial» para mantenerla dentro; de lo contrario, puedes moverla libremente.",
             "parcelLabel": "Parcela del edificio",
             "parcelFootprint": "Parcela según la huella",
             "parcelWhole": "Tomar las parcelas enteras",
-            "parcelInfo": "Por defecto el edificio forma su propia parcela según su huella y el resto del terreno queda con su propietario. Al tomar parcelas enteras, estas pasan a ser la parcela del edificio tal como están."
+            "parcelInfo": "Por defecto el edificio forma su propia parcela según su huella y el resto del terreno queda con su propietario. Al tomar parcelas enteras, estas pasan a ser la parcela del edificio tal como están.",
+            "moveTogether": "Mover toda la propuesta",
+            "uploadInvalid": "El polígono subido no es válido o está fuera de la ubicación fijada."
         },
         "buildingUpload": {
             "title": "Subir un modelo de edificio",
@@ -2186,6 +2253,7 @@
         },
         "corridor": {
             "title": "Sección transversal",
+            "openError": "No se pudo abrir el editor de sección transversal.",
             "subtitle": "El ancho total es la suma de los carriles: añade o quita un carril y la vía se ensancha o se estrecha",
             "drawingSubtitle": "Los cambios se muestran en el mapa antes de crear la propuesta",
             "proposalSubtitle": "Previsualiza los cambios aquí y aplícalos después a un trazado de carretera editable",
@@ -3254,6 +3322,7 @@
     },
     "blockify": {
         "modal": {
+            "mapHint": "Edita las parcelas y sus límites en el mapa; revisa la titularidad y las participaciones en el panel.",
             "title": "Regla urbana",
             "closeAria": "Cerrar modal de edificios",
             "generating": "Generando edificio…",
@@ -3358,9 +3427,9 @@
             },
             "manual": {
                 "edit": "Editar forma manualmente",
-                "back": "Volver a los controles",
-                "hint": "Modo manual: arrastra un vértice para remodelar, haz clic en un borde para añadir uno o selecciona un vértice y usa la papelera o Supr/Retroceso para eliminarlo. La anchura y la altura siguen siendo ajustables.",
-                "hintSimplified": "Modo manual: contorno simplificado a {{count}} puntos arrastrables. Arrastra un punto para remodelar, haz clic en un borde para añadir uno o selecciona un punto y usa la papelera o Supr/Retroceso para eliminarlo. La anchura y la altura siguen siendo ajustables.",
+                "back": "Descartar la forma manual y volver a la geometría generada",
+                "hint": "Modo manual: arrastra un vértice para cambiar la forma, haz clic en un borde para añadir uno o selecciona un vértice y usa la papelera o Supr/Retroceso para eliminarlo. La altura sigue siendo ajustable.",
+                "hintSimplified": "Modo manual: contorno simplificado con {{count}} puntos que puedes arrastrar. Arrastra un punto para cambiar la forma, haz clic en un borde para añadir uno o selecciona un punto y usa la papelera o Supr/Retroceso para eliminarlo. La altura sigue siendo ajustable.",
                 "needShape": "Primero genera una forma con los controles y luego edítala manualmente.",
                 "confirmReset": "¿Descartar las ediciones manuales y volver a los controles?",
                 "error": "No se pudo construir desde el contorno manual. Intenta devolver el vértice.",
@@ -3428,7 +3497,10 @@
                 "proceed": "Continuar de todos modos",
                 "cancel": "Volver"
             },
-            "regenerate": "Regenerar"
+            "regenerate": "Regenerar",
+            "editShape": "Editar la huella manualmente",
+            "returnGenerated": "Descartar los cambios manuales y volver a la forma generada",
+            "confirmReturnGenerated": "¿Volver a la forma generada y descartar los cambios manuales?"
         }
     },
     "parcelBased": {
@@ -3481,6 +3553,7 @@
     },
     "reparcellization": {
         "modal": {
+            "mapHint": "Ajusta los límites de las parcelas en el mapa; revisa aquí la titularidad y las participaciones.",
             "savedRecipientUnresolved": "El destinatario guardado de la parcela resultante no tiene una contribución coincidente en las entradas actuales.",
             "ownerReview": "Revisar a un propietario",
             "allOwners": "Todos los propietarios",
@@ -3515,6 +3588,7 @@
             },
             "algorithmTitle": "Tipo de reparcelación",
             "layoutTitle": "Distribución inicial",
+            "activeMode": "Activo: {{mode}}",
             "sharedCourtyard": "Patio compartido",
             "courtyardFromBuilding": "De un bloque de edificios",
             "courtyardDraw": "Dibujar en el mapa",
@@ -5117,6 +5191,14 @@
         }
     },
     "structureEditor": {
+    "titleLake": "Editor del límite del lago",
+    "instructionsLake": "Arrastra los puntos del límite para cambiar la forma del lago. Toca un borde para añadir un punto.",
+    "lakeBoundaryHint": "La orilla y el agua se actualizan con el contorno.",
+    "hintLake": "Selecciona un punto del límite para moverlo o eliminarlo.",
+    "lakeInvalid": "El límite del lago debe formar una sola zona conectada. Ajusta el contorno e inténtalo de nuevo.",
+    "lakeVertexTitle": "Arrastra para cambiar el límite del lago",
+    "lakeDeleteVertexTitle": "Eliminar este punto del límite",
+    "lakeUndoTitle": "Deshacer cambio del límite del lago",
         "ariaLabel": "Editor de geometría de la estructura",
         "titlePark": "Editor de parque",
         "titleSquare": "Editor de plaza",
@@ -5131,29 +5213,36 @@
             "fountain": "Fuente",
             "stall": "Mesa",
             "statue": "Estatua",
-            "erase": "Eliminar"
+            "erase": "Eliminar",
+            "move": "Mover"
         },
         "finishPath": "Terminar sendero",
+        "undo": "Deshacer",
         "cancel": "Cancelar",
         "save": "Guardar diseño",
         "hintErase": "Haz clic en un elemento para eliminarlo.",
         "hintPlace": "Haz clic en el mapa para colocar el elemento seleccionado.",
+        "hintPath": "Haz clic para añadir puntos al sendero y luego elige Terminar sendero.",
         "hintSelect": "Selecciona un elemento para empezar.",
         "statusOutside": "Coloca los elementos dentro del límite de la estructura.",
-        "statusSaved": "Diseño de la estructura guardado."
+        "statusSaved": "Diseño de la estructura guardado.",
+        "hintMove": "Arrastra dentro del límite para mover todo el diseño. El contorno y todo su contenido se mueven juntos.",
+        "moveUnavailable": "No se pudo mover este diseño. Inténtalo de nuevo."
     },
     "stationEditor": {
         "ariaLabel": "Editor de geometría de estación",
         "title": "Editar geometría de estación",
         "station": "Estación",
         "close": "Cerrar",
-        "fixedPosition": "El centro de la estación permanece fijo. Gira la estación a su alrededor.",
         "rotation": "Rotación",
         "platformHeight": "Altura del andén sobre el suelo",
         "hint": "La vista previa del mapa se actualiza mientras editas.",
         "cancel": "Cancelar",
         "save": "Listo",
-        "saved": "Geometría de estación guardada."
+        "saved": "Geometría de estación guardada.",
+        "moveHint": "Arrastra la huella de la estación o el marcador central para cambiarla de lugar. El tipo, tamaño, rotación y altura del andén se mantienen.",
+        "dragCenter": "Arrastra para mover la estación",
+        "undo": "Deshacer"
     },
     "claims": {
         "onParcels": "En las parcelas:",

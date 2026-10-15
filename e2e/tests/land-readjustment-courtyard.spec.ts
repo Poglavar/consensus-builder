@@ -69,7 +69,7 @@ async function openCourtyard(page: Page, enclosed = true) {
   await page.locator('#selection-tray [data-command="selection.propose"]').click();
   await expect(page.locator('.parcel-build-palette')).toBeVisible();
   await page.locator('.parcel-build-btn--reparcellization').click();
-  const modal = page.locator('.reparcel-modal-overlay');
+  const modal = page.locator('.on-map-reparcellization');
   await expect(modal).toBeVisible();
   await modal.locator('label.reparcel-alg-option:has(input[value="amend"])').click();
   await expect(modal.locator('input[value="amend"]')).toBeChecked();
@@ -78,7 +78,7 @@ async function openCourtyard(page: Page, enclosed = true) {
 }
 
 async function finishCourtyard(page: Page, mode: 'single' | 'individual') {
-  const modal = page.locator('.reparcel-modal-overlay');
+  const modal = page.locator('.on-map-reparcellization');
   if (mode === 'individual') {
     const rowFor = (name: string) => modal.locator('[data-reparcel-owners-table] tr').filter({ hasText: name });
     await rowFor('Owner A').locator('.cash-offer-input').fill('200');
@@ -99,6 +99,76 @@ async function finishCourtyard(page: Page, mode: 'single' | 'individual') {
   await dialog.locator('#proposalDescription').fill('Preserve private plots and share the enclosed courtyard.');
   await dialog.locator('#createProposalSubmitButton').click();
   await expect(dialog).toBeHidden({ timeout: 20_000 });
+}
+
+// Map features can extend behind the floating editor controls. Derive real interior screen
+// coordinates from the rendered SVG path, then exclude the actual panel and tool bounds before
+// sending trusted mouse clicks. This keeps drawing tests on the map as the dock layout changes.
+async function visiblePolygonInterior(page: Page, selector: string, options: { largest?: boolean; rectangle?: boolean } = {}) {
+  return page.locator(selector).evaluateAll((elements, { largest, rectangle, selector: diagnosticSelector }: {
+    largest?: boolean; rectangle?: boolean; selector: string;
+  }) => {
+    const paths = elements.filter((element: any) => typeof element.isPointInFill === 'function') as any[];
+    const path = largest
+      ? paths.sort((a, b) => b.getBoundingClientRect().width - a.getBoundingClientRect().width)[0]
+      : paths[0];
+    if (!path) throw new Error(`No filled map polygon found for ${diagnosticSelector}`);
+
+    const bounds = path.getBoundingClientRect();
+    const map = document.querySelector('#map-container') || document.querySelector('#map');
+    const mapBounds = map?.getBoundingClientRect();
+    const blocked = Array.from(document.querySelectorAll('.on-map-reparcellization .on-map-editor__panel, .reparcel-tools'))
+      .map((element: any) => element.getBoundingClientRect());
+    const ctm = path.getScreenCTM();
+    const svg = path.ownerSVGElement;
+    if (!map || !mapBounds || !ctm || !svg) throw new Error('Map geometry is not ready for a pointer gesture');
+    const localPoint = (x: number, y: number) => {
+      const point = svg.createSVGPoint();
+      point.x = x;
+      point.y = y;
+      return point.matrixTransform(ctm.inverse());
+    };
+    const clear = (x: number, y: number) => x >= mapBounds.left && x <= mapBounds.right
+      && y >= mapBounds.top && y <= mapBounds.bottom
+      && blocked.every(box => x < box.left || x > box.right || y < box.top || y > box.bottom)
+      && map.contains(document.elementFromPoint(x, y));
+    const inside = (x: number, y: number) => clear(x, y) && path.isPointInFill(localPoint(x, y));
+
+    if (rectangle) {
+      const samples = (x: number, y: number, width: number, height: number) => {
+        const points = [
+          [x, y], [x + width, y], [x + width, y + height], [x, y + height],
+          [x + width / 2, y + height / 2]
+        ];
+        for (const fraction of [0.25, 0.5, 0.75]) {
+          points.push([x + width * fraction, y], [x + width, y + height * fraction],
+            [x + width * fraction, y + height], [x, y + height * fraction]);
+        }
+        return points;
+      };
+      for (const heightFraction of [0.18, 0.14, 0.1]) {
+        for (const widthFraction of [0.5, 0.42, 0.34]) {
+          const width = Math.max(24, bounds.width * widthFraction);
+          const height = Math.max(20, bounds.height * heightFraction);
+          for (let y = bounds.top + 8; y + height < bounds.bottom - 8; y += 6) {
+            for (let x = bounds.left + 8; x + width < bounds.right - 8; x += 6) {
+              if (samples(x, y, width, height).every(([px, py]) => inside(px, py))) {
+                return [[x, y], [x + width, y], [x + width, y + height], [x, y + height]];
+              }
+            }
+          }
+        }
+      }
+      throw new Error('No unobstructed interior rectangle is visible in the map polygon');
+    }
+
+    for (let y = bounds.bottom - 12; y > bounds.top + 12; y -= 6) {
+      for (let x = bounds.left + 12; x < bounds.right - 12; x += 6) {
+        if (inside(x, y)) return [x, y];
+      }
+    }
+    throw new Error('No unobstructed interior point is visible in the map polygon');
+  }, { ...options, selector });
 }
 
 async function openCounterproposalDialog(page: Page, proposalId: string) {
@@ -249,14 +319,12 @@ test('courtyard derivation can be undone without changing original ownership', a
 
 test('manual courtyard drawing creates shared land and conserves the entire pool', async ({ mockApi: page }, testInfo) => {
   const modal = await openCourtyard(page);
-  const pool = await modal.locator('#reparcel-map .leaflet-overlay-pane svg path').evaluateAll(paths =>
-    paths.map(path => path.getBoundingClientRect()).sort((a, b) => b.width - a.width)
-      .map(box => ({ x: box.x, y: box.y, width: box.width, height: box.height }))[0]);
-  expect(pool.width).toBeGreaterThan(100);
   await modal.locator('[data-reparcel-courtyard-draw]').click();
-  for (const [x, y] of [[0.25, 0.3], [0.8, 0.3], [0.8, 0.7], [0.25, 0.7]]) {
-    await page.mouse.click(pool.x + pool.width * x, pool.y + pool.height * y);
-  }
+  const courtyardCorners = await visiblePolygonInterior(page, '#map .leaflet-reparcelTools-pane path', {
+    largest: true,
+    rectangle: true
+  });
+  for (const [x, y] of courtyardCorners) await page.mouse.click(x, y);
   await expect(modal.locator('[data-reparcel-finish]')).toBeEnabled();
   await modal.locator('[data-reparcel-finish]').click();
   await expect(modal.locator('.reparcel-newplot-row')).toHaveCount(3);
@@ -289,10 +357,11 @@ test('separate agreements reject a transfer of private land to another input own
   const modal = await openCourtyard(page);
   await modal.locator('[data-reparcel-courtyard-building]').click();
   await modal.locator('[data-reparcel-assign]').click();
-  const leftPlot = await modal.locator('#reparcel-map .leaflet-overlay-pane path.leaflet-interactive').first().boundingBox();
-  if (!leftPlot) throw new Error('Private plot has no visible bounds');
-  await page.mouse.click(leftPlot.x + leftPlot.width * 0.1, leftPlot.y + leftPlot.height * 0.1);
-  const popup = modal.locator('.reparcel-owner-popup');
+  await expect(modal.locator('[data-reparcel-assign]')).toHaveAttribute('aria-pressed', 'true');
+  const [x, y] = await visiblePolygonInterior(page, '#map .leaflet-reparcelPlots-pane path.leaflet-interactive');
+  await page.mouse.click(x, y);
+  const popup = page.locator('.reparcel-owner-popup');
+  await expect(popup).toBeVisible();
   const ownerA = popup.locator('.reparcel-owner-popup__row').filter({ hasText: 'Owner A' }).locator('input');
   const ownerB = popup.locator('.reparcel-owner-popup__row').filter({ hasText: 'Owner B' }).locator('input');
   await expect(ownerA).toBeChecked();
@@ -334,7 +403,7 @@ for (const size of [{ name: 'desktop', width: 1280, height: 900 }, { name: 'mobi
     const modal = await openCourtyard(page);
     await modal.locator('[data-reparcel-courtyard-building]').click();
     await modal.locator('.reparcel-newplot-row').last().getByRole('button', { name: 'Edit shares' }).click();
-    const popup = modal.locator('.reparcel-owner-popup');
+    const popup = page.locator('.reparcel-owner-popup');
     await expect(popup).toBeVisible();
     await expect(popup.locator('.reparcel-share-mode')).toContainText('private-land proportions');
     await popup.getByRole('spinbutton', { name: 'Owner A share (%)', exact: true }).fill('70');
@@ -353,8 +422,8 @@ for (const size of [{ name: 'desktop', width: 1280, height: 900 }, { name: 'mobi
     await expect(review.locator('li')).toHaveCount(2);
     await expect(review).toContainText('Input parcels: 1234');
     await expect(review).toContainText(/70(?:\.0)?%/);
-    await expect(modal.locator('#reparcel-map path.reparcel-owner-input')).toHaveCount(1);
-    await expect(modal.locator('#reparcel-map path.reparcel-owner-output')).toHaveCount(2);
+    await expect(page.locator('#map-container path.reparcel-owner-input')).toHaveCount(1);
+    await expect(page.locator('#map-container path.reparcel-owner-output')).toHaveCount(2);
     const cash = modal.locator('[data-reparcel-owners-table] tr').filter({ hasText: 'Owner A' }).locator('.cash-offer-input');
     // A negative amount is a payment by the owner, and the totals show who covers the rest.
     await cash.fill('-1');
@@ -375,16 +444,17 @@ for (const size of [{ name: 'desktop', width: 1280, height: 900 }, { name: 'mobi
 
     // The review isolates this owner's old parcels on one side and fractional outputs on the other.
     await modal.locator('[data-reparcel-compare]').click();
-    await expect(modal.locator('.map-compare__before path.reparcel-owner-input')).toHaveCount(1);
-    await expect(modal.locator('#reparcel-map > .leaflet-pane path.reparcel-owner-output')).toHaveCount(2);
-    await modal.locator('#reparcel-map').scrollIntoViewIfNeeded();
-    await expect.poll(() => modal.locator('#reparcel-map').evaluate(map => {
+    // The comparison map is attached to the shared map host, outside the editor dock.
+    await expect(page.locator('#map .map-compare__before path.reparcel-owner-input')).toHaveCount(1);
+    await expect(page.locator('#map .leaflet-overlay-pane path.reparcel-owner-output')).toHaveCount(2);
+    await page.locator('#map-container').scrollIntoViewIfNeeded();
+    await expect.poll(() => page.locator('#map-container').evaluate(map => {
       const before = map.querySelector('.map-compare__before path[stroke="#111"]')?.getBoundingClientRect();
-      const after = map.querySelector(':scope > .leaflet-pane path[stroke="#dc2626"]')?.getBoundingClientRect();
+      const after = map.querySelector('#map .leaflet-reparcelTools-pane path[stroke="#dc2626"]')?.getBoundingClientRect();
       return before && after ? Math.max(...['x', 'y', 'width', 'height'].map(key =>
         Math.abs((before as any)[key] - (after as any)[key]))) : Infinity;
     }), { message: 'Before and after must use the same projection, including half-step zoom above level 19' }).toBeLessThan(2);
-    const visibleOutputs = await modal.locator('#reparcel-map').evaluate(map => {
+    const visibleOutputs = await page.locator('#map-container').evaluate(map => {
       const box = map.getBoundingClientRect();
       return [...map.querySelectorAll('path.reparcel-owner-output')].every(path => {
         const plot = path.getBoundingClientRect();
@@ -400,9 +470,9 @@ for (const size of [{ name: 'desktop', width: 1280, height: 900 }, { name: 'mobi
       // Splitting a custom joint plot preserves its shares; undo restores the original plot.
       await review.getByRole('combobox').selectOption('');
       await modal.locator('[data-reparcel-assign]').click();
-      await modal.locator('#reparcel-map').scrollIntoViewIfNeeded();
+      await page.locator('#map-container').scrollIntoViewIfNeeded();
       await modal.locator('[data-reparcel-line]').click();
-      const pool = await modal.locator('#reparcel-map .leaflet-overlay-pane path').evaluateAll(paths =>
+      const pool = await page.locator('#map .leaflet-reparcelTools-pane path').evaluateAll(paths =>
         paths.map(path => path.getBoundingClientRect()).sort((a, b) => b.width - a.width)
           .map(box => ({ x: box.x, y: box.y, width: box.width, height: box.height }))[0]);
       await page.mouse.click(pool.x, pool.y + pool.height * 0.5);

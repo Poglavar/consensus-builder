@@ -51,8 +51,13 @@ test.describe('Parcel inspector @core', () => {
     const separatedHorizontally = credit!.x + credit!.width <= panel!.x || panel!.x + panel!.width <= credit!.x;
     const separatedVertically = credit!.y + credit!.height <= panel!.y || panel!.y + panel!.height <= credit!.y;
     expect(separatedHorizontally || separatedVertically).toBe(true);
-    expect(credit!.y + credit!.height).toBeGreaterThan(bottomRow!.y - credit!.height);
-    expect(credit!.y + credit!.height).toBeLessThanOrEqual(bottomRow!.y + 1);
+    // The map credit and floating action row now share the bottom band and remain separate
+    // horizontally; requiring one to sit above the other rejects the current dock layout.
+    const separatedFromBottomRowHorizontally = credit!.x + credit!.width <= bottomRow!.x
+      || bottomRow!.x + bottomRow!.width <= credit!.x;
+    const separatedFromBottomRowVertically = credit!.y + credit!.height <= bottomRow!.y
+      || bottomRow!.y + bottomRow!.height <= credit!.y;
+    expect(separatedFromBottomRowHorizontally || separatedFromBottomRowVertically).toBe(true);
   });
   test('government ownership follows the clicked parcel', async ({ mockApi: page }) => {
     await openCity(page);
@@ -63,10 +68,10 @@ test.describe('Parcel inspector @core', () => {
   test('tabs open the palette and tools; close dismisses the inspector', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page);
-    await page.locator('#parcel-info-panel').getByRole('button', { name: 'Propose', exact: true }).click();
+    await page.locator('#parcel-info-panel').getByRole('tab', { name: 'Propose', exact: true }).click();
     await expect(page.locator('#propose-content .parcel-build-palette')).toBeVisible();
     await expect(page.locator('.parcel-build-btn')).toHaveCount(15);
-    await page.locator('#parcel-info-panel').getByRole('button', { name: 'Tools', exact: true }).click();
+    await page.locator('#parcel-info-panel').getByRole('tab', { name: 'Tools', exact: true }).click();
     await expect(page.locator('#parcelBuilderButton')).toBeVisible();
     await page.locator('#parcel-info-panel .close-button').click();
     await expect(page.locator('#parcel-info-panel')).toBeHidden();

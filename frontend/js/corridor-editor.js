@@ -18,7 +18,9 @@
 // the width changes, Apply first names the parcels the new land adds and frees, and asks.
 
 let corridorEditorState = null;
+let corridorEditorSession = null;
 let corridorEditorObstacleTimer = null;
+let corridorEditorLaneMenuCleanup = null;
 // Red overlay of the buildings the CURRENT cross-section cuts into — the on-map counterpart of
 // the "hits buildings" chip, repainted by every obstacle check while the editor is open.
 let corridorEditorHitBuildingsLayer = null;
@@ -72,19 +74,18 @@ function corridorLaneTypeLabel(type) {
 }
 
 function corridorEditorClose() {
+    if (typeof corridorEditorLaneMenuCleanup === 'function') corridorEditorLaneMenuCleanup();
     if (typeof clearCorridorProfilePreview === 'function') clearCorridorProfilePreview();
     corridorEditorRenderBuildingHits([]);
     corridorEditorClearClearanceOverlays();
     corridorEditorClearEdgeFillPreview();
     if (window.RoadEditingZoom) window.RoadEditingZoom.exit('cross-section');
     corridorEditorLockMap(false);
-    try { window.__mapEditLock?.release('corridor-editor'); } catch (_) { }
-    const overlay = document.getElementById('corridor-editor-overlay');
-    if (overlay) overlay.remove();
+    corridorEditorSession?.close();
+    corridorEditorSession = null;
     if (corridorEditorState && corridorEditorState.startedCompare) {
         try { window.ProposalBeforeAfter?.dispose(); } catch (_) { /* the map is already gone */ }
     }
-    document.removeEventListener('keydown', corridorEditorKeydown);
     document.removeEventListener('building-layers-changed', corridorEditorOnBuildingLayersChanged);
     if (corridorEditorObstacleTimer) {
         clearTimeout(corridorEditorObstacleTimer);
@@ -101,13 +102,6 @@ function corridorEditorCancel() {
         setRoadDrawingProfile(corridorEditorState.originalProfile);
     }
     corridorEditorClose();
-}
-
-function corridorEditorKeydown(event) {
-    if (event.key === 'Escape') {
-        event.preventDefault();
-        corridorEditorCancel();
-    }
 }
 
 // Apply an edit, or refuse it — out loud. `edit` returns a new profile or null; null means the edit was
@@ -398,7 +392,7 @@ function corridorEditorRoadBounds() {
 function corridorEditorFitPadding(viewportWidth, panelRect, margin = 40) {
     const width = (panelRect && Number(panelRect.width)) || 0;
     const height = (panelRect && Number(panelRect.height)) || 0;
-    const bottomDocked = width >= viewportWidth - 1;
+    const bottomDocked = width >= viewportWidth - 32;
     return bottomDocked
         ? { topLeft: [margin, margin], bottomRight: [margin, height + margin] }
         : { topLeft: [margin, margin], bottomRight: [width + margin, margin] };
@@ -1786,6 +1780,9 @@ function corridorEditorSelect(index, scrollIntoView) {
 }
 
 function corridorEditorRender() {
+    // Replacing the picker also removes its toggle/menu nodes; release any document listeners
+    // attached while its custom menu was open before rebuilding them.
+    corridorEditorLaneMenuCleanup?.();
     const body = document.querySelector('.corridor-editor-body');
     if (!body || !corridorEditorState) return;
     corridorEditorSyncTabs();
@@ -2131,14 +2128,19 @@ function corridorEditorBindBody(body) {
         function closeMenu() {
             if (menu) menu.hidden = true;
             if (toggle) toggle.setAttribute('aria-expanded', 'false');
+            removeMenuListeners();
+        }
+        function removeMenuListeners() {
             document.removeEventListener('click', onDocClick, true);
             document.removeEventListener('keydown', onMenuKey, true);
+            if (corridorEditorLaneMenuCleanup === removeMenuListeners) corridorEditorLaneMenuCleanup = null;
         }
         function openMenu() {
             if (menu) menu.hidden = false;
             if (toggle) toggle.setAttribute('aria-expanded', 'true');
             document.addEventListener('click', onDocClick, true);
             document.addEventListener('keydown', onMenuKey, true);
+            corridorEditorLaneMenuCleanup = removeMenuListeners;
         }
         if (toggle) toggle.addEventListener('click', event => {
             event.stopPropagation();
@@ -2536,25 +2538,16 @@ async function corridorEditorSave() {
 
 function corridorEditorOpenOverlay() {
     if (!corridorEditorState) return;
-    // Editing a cross-section is close work: let the map zoom past the basemap's own ceiling.
-    if (window.RoadEditingZoom) window.RoadEditingZoom.enter('cross-section');
-    // The map is CLAIMED before anything renders, and everything below rolls back atomically on
-    // failure — a mid-render exception used to leave a blank half-mounted panel at deep zoom
-    // with no lock at all, so clicks kept selecting parcels under a broken editor.
-    try { window.__mapEditLock?.claim('corridor-editor', 'Cross-section editor'); } catch (_) { }
-    corridorEditorLockMap(true);
     try {
         corridorEditorOpenOverlayBody();
+        corridorEditorLockMap(true);
+        window.RoadEditingZoom?.enter('cross-section');
     } catch (error) {
-        console.error('[corridorEditor] overlay failed to open — rolling back', error);
-        try { corridorEditorLockMap(false); } catch (_) { }
-        try { window.__mapEditLock?.release('corridor-editor'); } catch (_) { }
-        try { if (window.RoadEditingZoom) window.RoadEditingZoom.exit('cross-section'); } catch (_) { }
-        try { document.getElementById('corridor-editor-overlay')?.remove(); } catch (_) { }
-        try { document.removeEventListener('keydown', corridorEditorKeydown); } catch (_) { }
-        try { document.removeEventListener('building-layers-changed', corridorEditorOnBuildingLayersChanged); } catch (_) { }
-        corridorEditorState = null;
-        try { if (typeof showEphemeralMessage === 'function') showEphemeralMessage('The cross-section editor could not open.', 5000, 'error'); } catch (_) { }
+        console.error('[corridorEditor] could not open', error);
+        corridorEditorClose();
+        if (typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage(corridorEditorI18n('modal.corridor.openError', 'The cross-section editor could not open.'), 5000, 'error');
+        }
     }
 }
 
@@ -2604,20 +2597,13 @@ function corridorEditorOpenOverlayBody() {
                 <button type="button" class="cb-tab corridor-editor-tab" data-tab="section" role="tab" aria-selected="true">${corridorEditorI18n('modal.corridor.tabSection', 'Cross-section')}</button>
                 <button type="button" class="cb-tab corridor-editor-tab" data-tab="corridor" role="tab" aria-selected="false">${corridorEditorI18n('modal.corridor.tabCorridor', 'Corridor')}</button>
             </div>`;
-    const overlay = document.createElement('div');
-    overlay.id = 'corridor-editor-overlay';
-    overlay.className = 'corridor-editor-overlay';
-    overlay.innerHTML = `
-        <div class="corridor-editor" role="dialog" aria-labelledby="corridor-editor-title">
-            <div class="corridor-editor-header">
-                <div>
-                    <h2 id="corridor-editor-title" class="corridor-editor-title">${corridorEditorI18n('modal.corridor.title', 'Cross-section')}</h2>
-                    <div class="corridor-editor-subtitle">${drawing
-                        ? corridorEditorI18n('modal.corridor.drawingSubtitle', 'Changes update the road on the map before you create the proposal')
-                        : corridorEditorI18n('modal.corridor.proposalSubtitle', 'Preview changes here, then apply them to an editable road drawing')}</div>
-                </div>
-                <button type="button" class="close-circle-btn corridor-editor-close" aria-label="Close">&times;</button>
-            </div>
+    corridorEditorSession = window.OnMapEditor.open({
+        owner: 'corridor-editor', id: 'corridor-editor-overlay',
+        title: corridorEditorI18n('modal.corridor.title', 'Cross-section'),
+        wide: true, modes: ['2d'], onCancel: corridorEditorCancel,
+        content: `<p class="corridor-editor-subtitle">${drawing
+            ? corridorEditorI18n('modal.corridor.drawingSubtitle', 'Changes update the road on the map before you create the proposal')
+            : corridorEditorI18n('modal.corridor.proposalSubtitle', 'Preview changes here, then apply them to an editable road drawing')}</p>
             ${scopeHtml}${drawing ? '' : '<div class="corridor-editor-stretches-host"></div>'}
             <div class="corridor-editor-meta">
                 <span>${corridorEditorI18n('modal.corridor.totalWidth', 'Total width')}</span>
@@ -2625,15 +2611,17 @@ function corridorEditorOpenOverlayBody() {
             </div>
             <div class="corridor-editor-limit-host"></div>${indicatorsHtml}${tabsHtml}
             <div class="corridor-editor-body"></div>
-            <div class="corridor-editor-footer">
+`,
+        footer: `
                 <button type="button" class="btn corridor-editor-cancel">${corridorEditorI18n('modal.corridor.cancel', 'Cancel')}</button>
                 <button type="button" class="btn btn-primary corridor-editor-save"${drawing ? '' : ' disabled'}>${drawing
                     ? corridorEditorI18n('modal.corridor.applyDrawing', 'Apply to drawing')
                     : corridorEditorI18n('modal.corridor.applyDrawing', 'Apply to drawing')}</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(overlay);
+            `
+    });
+    if (!corridorEditorSession) throw new Error('Another geometry editor owns the map.');
+    corridorEditorSession.panel.classList.add('corridor-editor');
+    const overlay = corridorEditorSession.root;
 
     overlay.querySelectorAll('input[name="corridor-editor-scope"]').forEach(radio => {
         radio.addEventListener('change', () => {
@@ -2678,7 +2666,6 @@ function corridorEditorOpenOverlayBody() {
         });
     }
 
-    overlay.querySelector('.corridor-editor-close').addEventListener('click', corridorEditorCancel);
     const compareToggle = overlay.querySelector('.corridor-editor-compare');
     if (compareToggle) {
         compareToggle.addEventListener('click', () => {
@@ -2696,7 +2683,6 @@ function corridorEditorOpenOverlayBody() {
     overlay.querySelector('.corridor-editor-save').addEventListener('click', corridorEditorSave);
     // No backdrop and no click-outside-to-cancel: the overlay is click-transparent, so a click
     // beside the panel pans the map instead. Escape and the two buttons close the editor.
-    document.addEventListener('keydown', corridorEditorKeydown);
     document.addEventListener('building-layers-changed', corridorEditorOnBuildingLayersChanged);
 
     corridorEditorRender();
@@ -2937,23 +2923,9 @@ function corridorEditorSwallowMapClick(event) {
     event.stopImmediatePropagation();
 }
 
-// Lock (or release) the map while the editor is docked. Three things, because each covers a hole
-// the others leave:
-//
-//   - the body class drives the CSS lock (objects stop taking clicks, and lose their pointer
-//     cursor and tooltips with it);
-//   - the click swallow is the guarantee: it catches clicks on the panes before they reach any
-//     layer, any canvas-rendered layer, or any map-level handler (road drawing, measuring,
-//     deselect). It sits on the map PANE, not the container, so the Leaflet controls beside it
-//     still work, and it takes only click/contextmenu — mousedown, wheel and dblclick pass, so
-//     panning and zooming stay live;
-//   - every map-mode button is barred. The map is a viewport while the editor is docked, and
-//     changing what it shows is not one of the two things you may do here (pan/zoom, and choose
-//     the building survey). Model and photo view would replace the map with a 3D scene that has no
-//     cross-section editor in it, leaving this panel docked over nothing.
-const CORRIDOR_EDITOR_LOCKED_BUTTONS = [
-    'mode-2d-toggle', 'mode-3d-toggle', 'mode-realistic-toggle', 'mode-walk-toggle', 'mode-ai-toggle'
-];
+// Keep the drawing underneath from adding nodes while the cross-section tools own map clicks.
+// The shared editor frame owns view-mode controls; walking remains unavailable during this edit.
+const CORRIDOR_EDITOR_LOCKED_BUTTONS = ['mode-walk-toggle'];
 
 function corridorEditorLockMap(locked) {
     document.body.classList.toggle('corridor-editor-open', locked);

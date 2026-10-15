@@ -88,8 +88,9 @@ test.describe('Map shell sheets @features', () => {
     await page.locator(selectors.activityButton).click();
     await expect(page.locator(selectors.activitySheet)).toBeVisible();
 
-    // Below parcel zoom (the city's default view), so the click cannot open a parcel menu instead.
-    await clickMapAt(page, -150, 0);
+    // The sheet covers the map center; click the exposed map to its right. Below parcel zoom (the
+    // city's default view), so the click cannot open a parcel menu instead.
+    await clickMapAt(page, 500, 0);
     await expect(page.locator(selectors.activitySheet)).toBeHidden();
   });
 

@@ -24,8 +24,8 @@ async function expectCenterHitTarget(page: any, selector: string): Promise<void>
   });
 }
 
-async function startRoadDraft(page: any): Promise<void> {
-  await openCity(page);
+async function startRoadDraft(page: any, cityReady = false): Promise<void> {
+  if (!cityReady) await openCity(page);
   await openParcel(page, 'proposals');
   await page.locator('.parcel-transport-btn--road').click();
   await expect(page.locator('#road-info-panel')).toBeVisible();
@@ -86,8 +86,8 @@ test('road header and cross-section actions stay reachable at 320px before the f
   await crossSection.click();
   await expect(editor).toBeVisible();
   await addSidewalk(page, editor);
-  await expectCenterHitTarget(page, '#corridor-editor-overlay .corridor-editor-close');
-  await editor.locator('.corridor-editor-close').click();
+  await expectCenterHitTarget(page, '#corridor-editor-overlay .on-map-editor__header .close-circle-btn');
+  await editor.locator('.on-map-editor__header .close-circle-btn').click();
   await expect(editor).toBeHidden();
   await expect.poll(() => page.evaluate(() => (window as any).getRoadDrawingProfile().strips.length)).toBe(initialStrips);
 
@@ -110,18 +110,16 @@ test('road header and cross-section actions stay reachable at 320px before the f
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(0);
 });
 
-test('2D, model, and aerial mode buttons receive real clicks during a 320px road draft, then drawing undo and discard work', async ({ mockApi: page }) => {
+test('mobile mode switching works before drawing; the road draft locks modes until undo and discard', async ({ mockApi: page }) => {
   await page.setViewportSize({ width: 320, height: 640 });
   await mockBuildingScene(page);
   const photoTiles = await mockPhotoTiles(page);
-  await startRoadDraft(page);
-
+  await openCity(page);
   const model = page.locator('#mode-3d-toggle');
   await expectCenterHitTarget(page, '#mode-3d-toggle');
   await model.click();
   await expect(model).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 15000 });
-  await expect.poll(() => page.evaluate(() => (window as any).roadDrawingMode)).toBe(true);
 
   const aerial = page.locator('#mode-realistic-toggle');
   await expectCenterHitTarget(page, '#mode-realistic-toggle');
@@ -129,7 +127,6 @@ test('2D, model, and aerial mode buttons receive real clicks during a 320px road
   await expect(aerial).toHaveAttribute('aria-pressed', 'true');
   await expect.poll(photoTiles.requests, { timeout: 20000 }).toBeGreaterThan(0);
   await expect(page.locator('body')).toHaveClass(/realistic-mode-active/);
-  await expect.poll(() => page.evaluate(() => (window as any).roadDrawingMode)).toBe(true);
 
   const mapMode = page.locator('#mode-2d-toggle');
   await expectCenterHitTarget(page, '#mode-2d-toggle');
@@ -137,6 +134,10 @@ test('2D, model, and aerial mode buttons receive real clicks during a 320px road
   await expect(mapMode).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('body')).not.toHaveClass(/realistic-mode-active/);
   await expect(page.locator('#map')).toBeVisible();
+
+  await startRoadDraft(page, true);
+  await expect(model).toBeDisabled();
+  await expect(aerial).toBeDisabled();
   await expect.poll(() => page.evaluate(() => (window as any).roadDrawingMode)).toBe(true);
 
   // Minimize the phone dock to expose the map, then draw, undo, and discard through visible controls.
@@ -158,5 +159,7 @@ test('2D, model, and aerial mode buttons receive real clicks during a 320px road
   await expect(choice).toBeHidden();
   await expect(page.locator('#road-drawing-controls')).toBeHidden();
   await expect.poll(() => page.evaluate(() => (window as any).roadDrawingMode)).toBe(false);
+  await expect(model).toBeEnabled();
+  await expect(aerial).toBeEnabled();
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(0);
 });

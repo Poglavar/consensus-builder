@@ -61,3 +61,16 @@ it('restores 2D after dependency failure and permits retry', async () => {
     expect(controller.getState()).toEqual({ desired: '2d', pending: false });
     expect(await controller.request('model')).toBe(true);
 });
+
+it('publishes 2D only after the previous view has restored the map', async () => {
+    const events = [];
+    const { controller } = fixture({
+        leavePhoto: () => events.push('photo-left'),
+        leaveModel: () => events.push('map-restored'),
+        onChange: state => { if (state.desired === '2d') events.push('frame-editor'); }
+    });
+    await controller.request('model');
+    events.length = 0;
+    await controller.request('2d');
+    expect(events).toEqual(['photo-left', 'map-restored', 'frame-editor']);
+});

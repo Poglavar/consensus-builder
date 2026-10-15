@@ -446,12 +446,6 @@
       ]
     },
     {
-      "id": "parcel.view3d",
-      "specs": [
-        "tests/3d-mode.spec.ts"
-      ]
-    },
-    {
       "id": "parcel.detectBlock",
       "specs": [
         "tests/dataset-tools.spec.ts"
@@ -629,6 +623,24 @@
       "id": "bets.open",
       "specs": [
         "tests/bets-sheet.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.theme.system",
+      "specs": [
+        "tests/theme-controls.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.theme.light",
+      "specs": [
+        "tests/theme-controls.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.theme.dark",
+      "specs": [
+        "tests/theme-controls.spec.ts"
       ]
     }
   ],
@@ -833,6 +845,37 @@
       "feature": "signed prepare-then-publish, site-in-other-city refusal, proposals opening in their own city (city-less records by their parcels), address bar following the map, read-only second tab per city",
       "specs": [
         "tests/world-city-publication.spec.ts"
+      ]
+    },
+    {
+      "feature": "free building placement, whole/individual movement, snap and lock, binding failure, exact reload and immutable published forks",
+      "specs": [
+        "tests/single-building-placement.spec.ts"
+      ]
+    },
+    {
+      "feature": "block and row generated placement, manual edits, undo, saved frame regeneration and zero-parcel sites",
+      "specs": [
+        "tests/building-family-placement.spec.ts"
+      ]
+    },
+    {
+      "feature": "whole park and square movement with decorations, lake shape editing and station drag release",
+      "specs": [
+        "tests/structure-placement.spec.ts"
+      ]
+    },
+    {
+      "feature": "on-map editor dock and collapse, nested road mode locks, mobile sheet stacking, parcel menu placement and empty-plan stats",
+      "specs": [
+        "tests/on-map-editor-shell.spec.ts",
+        "tests/structure-placement.spec.ts"
+      ]
+    },
+    {
+      "feature": "explicit and system appearance choices update rendering and persist across reload",
+      "specs": [
+        "tests/theme-controls.spec.ts"
       ]
     }
   ],

@@ -16,12 +16,91 @@ async function resolveParcelScopePrompt(page: any, target: any, chooseWholeBlock
   await expect(target).toBeVisible();
 }
 
+async function visiblePlanPlotPoint(page: any) {
+  const point = await page.evaluate(() => {
+    const w = window as any;
+    const map = w.map;
+    const plots: any[] = [];
+    map?.eachLayer((layer: any) => {
+      if (layer.options?.pane === 'reparcelPlots' && layer._path?.isConnected
+        && Number.isInteger(layer.feature?.properties?.sliceIndex)) plots.push(layer.feature);
+    });
+    if (!plots.length || !w.turf) throw new Error('Readjustment has no rendered plot geometry');
+    const mapRect = map.getContainer().getBoundingClientRect();
+    const obstacles = [...document.querySelectorAll('.on-map-reparcellization .on-map-editor__panel, .reparcel-tools')]
+      .map((element: any) => element.getBoundingClientRect());
+    const visible = (screen: { x: number; y: number }) => screen.x >= mapRect.left && screen.x <= mapRect.right
+      && screen.y >= mapRect.top && screen.y <= mapRect.bottom
+      && screen.x >= 8 && screen.x <= w.innerWidth - 8 && screen.y >= 8 && screen.y <= w.innerHeight - 8
+      && map.getContainer().contains(document.elementFromPoint(screen.x, screen.y))
+      && !obstacles.some(rect => screen.x >= rect.left && screen.x <= rect.right && screen.y >= rect.top && screen.y <= rect.bottom);
+    for (const plot of plots) {
+      if (!plot?.geometry) continue;
+      const feature = { type: 'Feature', properties: {}, geometry: plot.geometry };
+      const [minLng, minLat, maxLng, maxLat] = w.turf.bbox(feature);
+      for (const xRatio of [0.3, 0.5, 0.7]) {
+        for (const yRatio of [0.3, 0.5, 0.7]) {
+          const coordinate = [minLng + (maxLng - minLng) * xRatio, minLat + (maxLat - minLat) * yRatio];
+          if (!w.turf.booleanPointInPolygon(w.turf.point(coordinate), feature)) continue;
+          const projected = map.latLngToContainerPoint([coordinate[1], coordinate[0]]);
+          const screen = { x: mapRect.left + projected.x, y: mapRect.top + projected.y };
+          if (visible(screen)) return screen;
+        }
+      }
+    }
+    throw new Error('No live readjustment plot has an unobstructed map point');
+  });
+  return point;
+}
+
+async function visibleCutLineEndpoints(page: any) {
+  const endpoints = await page.evaluate(() => {
+    const w = window as any;
+    const map = w.map;
+    let geometry: any = null;
+    map?.eachLayer((layer: any) => {
+      if (layer.options?.pane === 'reparcelTools' && layer.options.color === '#dc2626'
+        && layer._path?.isConnected && layer.feature?.geometry) geometry = layer.feature.geometry;
+    });
+    if (!geometry || !w.turf) throw new Error('Readjustment has no rendered pool boundary');
+    const mapRect = map.getContainer().getBoundingClientRect();
+    const obstacles = [...document.querySelectorAll('.on-map-reparcellization .on-map-editor__panel, .reparcel-tools')]
+      .map((element: any) => element.getBoundingClientRect());
+    const visible = (screen: { x: number; y: number }) => screen.x >= mapRect.left && screen.x <= mapRect.right
+      && screen.y >= mapRect.top && screen.y <= mapRect.bottom
+      && screen.x >= 8 && screen.x <= w.innerWidth - 8 && screen.y >= 8 && screen.y <= w.innerHeight - 8
+      && map.getContainer().contains(document.elementFromPoint(screen.x, screen.y))
+      && !obstacles.some(rect => screen.x >= rect.left && screen.x <= rect.right && screen.y >= rect.top && screen.y <= rect.bottom);
+    const feature = { type: 'Feature', properties: {}, geometry };
+    const [minLng, minLat, maxLng, maxLat] = w.turf.bbox(feature);
+    const candidates = [0.5, 0.35, 0.65, 0.2, 0.8, 0.1, 0.9].flatMap(ratio => {
+      const lng = minLng + (maxLng - minLng) * ratio;
+      const lat = minLat + (maxLat - minLat) * ratio;
+      return [0.08, 0.04, 0.02].flatMap(extension => [
+        [[minLng - (maxLng - minLng) * extension, lat], [maxLng + (maxLng - minLng) * extension, lat]],
+        [[lng, minLat - (maxLat - minLat) * extension], [lng, maxLat + (maxLat - minLat) * extension]],
+      ]);
+    });
+    for (const coordinates of candidates) {
+      const line = w.turf.lineString(coordinates);
+      if (w.turf.lineIntersect(line, feature).features.length < 2) continue;
+      const screens = coordinates.map((coordinate: number[]) => {
+        const projected = map.latLngToContainerPoint([coordinate[1], coordinate[0]]);
+        return { x: mapRect.left + projected.x, y: mapRect.top + projected.y };
+      });
+      if (screens.every(visible)) return screens;
+    }
+    throw new Error('No boundary-crossing readjustment line fits the unobstructed map area');
+  });
+  return endpoints as Array<{ x: number; y: number }>;
+}
+
 test.describe('Designer controls persist their edits @features', () => {
   test('parcel-based rule type and ranges change the generated design and saved proposal context', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--parcelBased').click();
-    const modal = page.locator('#parcelbased-modal');
+    const modal = page.locator('#parcelbased');
     await expect(modal).toBeVisible();
     await expect(page.locator('#btn-parcelbased-done')).toBeEnabled({ timeout: 20_000 });
 
@@ -87,52 +166,125 @@ test.describe('Designer controls persist their edits @features', () => {
     const minPlot = page.locator('#blockify-minplot-slider');
     while (Number(await minPlot.inputValue()) < 100) await minPlot.press('ArrowRight');
     await expect(page.locator('#blockify-minplot-value')).toHaveText('100');
+
+    // The slider still decides which cadastral plots can host a building. The editor exposes
+    // those exclusions in its live preview, while the free authored proposal remains one whole
+    // massing geometry rather than being split into one saved building per eligible parcel.
+    const livePreview = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).OnMapEditor.getPreview())));
+    expect(livePreview.excluded).toHaveLength(3);
+    const excludedParcelIds = await page.evaluate(([excluded, ids]) => {
+      const turf = (window as any).turf;
+      const repository = (window as any).CadastralParcelRepository;
+      return (excluded as any[]).map(feature => {
+        const center = turf.centroid(feature);
+        return (ids as string[]).find(id => turf.booleanPointInPolygon(center, repository.get(id))) || null;
+      }).sort();
+    }, [livePreview.excluded, BLOCK_PARCEL_IDS]);
+    expect(excludedParcelIds).toEqual(BLOCK_PARCEL_IDS.slice(0, 3).sort());
+    await expect(page.locator('#blockify-info')).toContainText('3 parcels left out');
+    expect(livePreview.draftPreview.features).toHaveLength(2);
+    const visibleExcludedPlots = page.locator('#map-container .leaflet-onMapEditor-pane path[stroke="#b0453a"][stroke-dasharray="2, 5"]');
+    await expect(visibleExcludedPlots).toHaveCount(3);
+    await expect(visibleExcludedPlots.first()).toBeVisible();
+    await expect.poll(() => page.evaluate(() => !!(window as any).getActiveProposalDesignDraft?.()
+      ?.editorPayload?.context?.buildingFeature?.geometry)).toBe(true);
+    const authoredGeometry = await page.evaluate(() => JSON.parse(JSON.stringify(
+      (window as any).getActiveProposalDesignDraft().editorPayload.context.buildingFeature.geometry
+    )));
     await page.locator('#btn-blockify-done').click();
 
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((proposal: any) => proposal.applied && proposal.geometry?.buildings?.length))).toBe(true);
     const proposal = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((entry: any) => entry.applied && entry.geometry?.buildings?.length));
     expect(proposal.cadastreParcelIds).toEqual(expect.arrayContaining(BLOCK_PARCEL_IDS));
-    const buildingParcelIds = await page.evaluate(([buildings, ids]) => {
+    expect(proposal.geometry.buildings).toHaveLength(1);
+    expect(proposal.geometry.blockMassing.geometry).toEqual(authoredGeometry);
+    expect(proposal.geometry.buildings[0].geometry).toEqual(authoredGeometry);
+    expect(proposal.buildingProposal.ineligibleParcels).toEqual([]);
+    const relevantParcelIds = await page.evaluate(([site, ids]) => {
       const turf = (window as any).turf;
-      return (buildings as any[]).map(building => {
-        const center = turf.centroid(building);
-        return (ids as string[]).find(id => turf.booleanPointInPolygon(center, (window as any).CadastralParcelRepository.get(id))) || null;
-      });
-    }, [proposal.geometry.buildings, BLOCK_PARCEL_IDS]);
-    expect(buildingParcelIds).toHaveLength(2);
-    expect(buildingParcelIds).toContain(BLOCK_PARCEL_IDS[3]);
-    expect(buildingParcelIds).toContain(BLOCK_PARCEL_IDS[4]);
-    for (const id of BLOCK_PARCEL_IDS.slice(0, 3)) expect(buildingParcelIds).not.toContain(id);
-    expect(proposal.buildingProposal.ineligibleParcels).toHaveLength(3);
-    expect(proposal.buildingProposal.ineligibleParcels.every((entry: any) => entry.status === 'below-min-plot')).toBe(true);
+      const feature = { type: 'Feature', properties: {}, geometry: site };
+      return (ids as string[]).filter(id => turf.booleanIntersects(feature, (window as any).CadastralParcelRepository.get(id)));
+    }, [proposal.site, BLOCK_PARCEL_IDS]);
+    const boundParcelIds = proposal.binding.parcels.map((entry: any) => entry.parcelId);
+    expect(relevantParcelIds.length).toBeGreaterThan(0);
+    expect(boundParcelIds).toEqual(expect.arrayContaining(relevantParcelIds));
 
     await page.locator('#mode-3d-toggle').click();
     await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 15_000 });
-    // The model's display controls live in the Layers sheet (fbe3758d).
-    await page.locator('#layers-button').click();
+    await expect.poll(() => page.evaluate(id => (window as any).proposedBuildings
+      .some((feature: any) => feature.properties?.proposalId === id), proposal.proposalId)).toBe(true);
+  });
+
+  test('3D non-buildable plots toggle uses saved proposal exclusions', async ({ mockApi: page }) => {
+    await mockBuildingScene(page);
+    await openCity(page);
+    const proposalId = await page.evaluate(() => {
+      const w = window as any;
+      const massing = {
+        type: 'Feature',
+        properties: { height: 18, massing: true },
+        geometry: { type: 'Polygon', coordinates: [[[15.9821, 45.8001], [15.9823, 45.8001], [15.9823, 45.8003], [15.9821, 45.8003], [15.9821, 45.8001]]] }
+      };
+      const excluded = {
+        status: 'below-min-plot',
+        height: 18,
+        geometry: { type: 'Polygon', coordinates: [[[15.9824, 45.8001], [15.98255, 45.8001], [15.98255, 45.8003], [15.9824, 45.8003], [15.9824, 45.8001]]] },
+        wouldBe: {
+          type: 'Feature',
+          properties: { height: 18 },
+          geometry: { type: 'Polygon', coordinates: [[[15.9824, 45.8001], [15.98255, 45.8001], [15.98255, 45.8003], [15.9824, 45.8003], [15.9824, 45.8001]]] }
+        }
+      };
+      return w.proposalStorage.addProposal({
+        proposalId: 'e2e-ineligible-plot-toggle',
+        title: 'E2E excluded plot toggle',
+        description: 'Source-aware fixture for the saved non-buildable plot overlay.',
+        offer: 100,
+        offerCurrency: 'EUR',
+        city: 'zg',
+        goal: 'buildings',
+        lifecycleStatus: 'Active',
+        applied: true,
+        cadastreParcelIds: ['HR-335754-1234'],
+        geometry: { buildings: [massing], blockMassing: massing },
+        buildingProposal: {
+          typologyType: 'block',
+          parameters: { rule: { kind: 'max', maxHeightM: 18 } },
+          ineligibleParcels: [excluded]
+        }
+      });
+    });
+    await expect.poll(() => page.evaluate(id => (window as any).appliedIneligibleBlockParts(id).length, proposalId)).toBe(2);
+
+    await page.locator('#mode-3d-toggle').click();
+    await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 15_000 });
+    if (!(await page.locator('#model-layer-controls').isVisible())) await page.locator('#layers-button').click();
     await expect(page.locator('#model-layer-controls .three-mode-ui-panel')).toBeVisible();
     await page.locator('#three-mode-built-display').selectOption('off');
     await page.locator('#three-mode-planned-display').selectOption('off');
-    // Display changes hide retained groups rather than rebuilding them (51152a2e): count what is drawn.
-    const sceneMeshes = () => page.evaluate(() => {
-      const meshes: any[] = [];
-      (window as any).getThreeModeInternals().scene.traverseVisible((object: any) => {
+    const toggle = page.locator('#model-layer-controls .three-mode-wide-row .three-mode-wide-toggle input');
+    const ineligibleVisibleMeshes = () => page.evaluate(() => {
+      const scene = (window as any).getThreeModeInternals()?.scene;
+      const group = scene?.getObjectByName('IneligibleBuildings');
+      const meshes: Array<{ vertices: number; opacity: number }> = [];
+      group?.traverseVisible((object: any) => {
         if (!object.isMesh || !object.material) return;
         const materials = Array.isArray(object.material) ? object.material : [object.material];
-        const opacity = Math.min(...materials.map((material: any) => material.userData?.cbBuildingOpacity ?? material.opacity ?? 1));
-        meshes.push({ opacity, vertices: object.geometry?.attributes?.position?.count || 0 });
+        const opacity = Math.min(...materials.map((material: any) =>
+          material.userData?.cbBuildingOpacity ?? material.opacity ?? 1));
+        const vertices = object.geometry?.attributes?.position?.count || 0;
+        if (vertices > 0) meshes.push({ vertices, opacity });
       });
       return meshes;
     });
-    const toggle = page.locator('#model-layer-controls .three-mode-wide-row .three-mode-wide-toggle input');
     await expect(toggle).not.toBeChecked();
-    const meshesWithoutExcludedParts = await sceneMeshes();
+    await expect.poll(ineligibleVisibleMeshes).toHaveLength(0);
     await toggle.check();
-    await expect.poll(async () => (await sceneMeshes()).length).toBeGreaterThan(meshesWithoutExcludedParts.length);
-    const meshesWithExcludedParts = await sceneMeshes();
-    expect(meshesWithExcludedParts.some((mesh: any) => mesh.opacity < 1 && mesh.vertices > 0)).toBe(true);
+    await expect.poll(ineligibleVisibleMeshes).not.toHaveLength(0);
+    const visibleMeshes = await ineligibleVisibleMeshes();
+    expect(visibleMeshes.every(mesh => mesh.vertices > 0 && mesh.opacity < 1)).toBe(true);
     await toggle.uncheck();
-    await expect.poll(async () => (await sceneMeshes()).length).toBe(meshesWithoutExcludedParts.length);
+    await expect.poll(ineligibleVisibleMeshes).toHaveLength(0);
   });
 
   test('manual building outline accepts a real GeoJSON upload and saves the uploaded footprint', async ({ mockApi: page }) => {
@@ -144,8 +296,11 @@ test.describe('Designer controls persist their edits @features', () => {
       await wholeParcelPrompt.getByRole('button', { name: 'No, just this parcel' }).click();
     }
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
-    await page.locator('#blockify-manual-toggle').click();
-    await expect.poll(() => page.locator('#blockify-container .polygon-geometry-editor__vertex').count()).toBeGreaterThan(2);
+    const editor = page.getByRole('region', { name: 'Urban rule' });
+    const manualToggle = editor.locator('#blockify-manual-toggle');
+    if (!(await manualToggle.isVisible())) await editor.locator('details.on-map-editor__more-options > summary').click();
+    await manualToggle.click();
+    await expect.poll(() => page.locator('#map-container .polygon-geometry-editor__vertex').count()).toBeGreaterThan(2);
 
     // Upload is the actual manual-mode file control; the editor clips this polygon to the selected parcel.
     const uploaded = {
@@ -155,13 +310,26 @@ test.describe('Designer controls persist their edits @features', () => {
     await page.locator('#blockify-geojson-input').setInputFiles({
       name: 'building.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(uploaded)),
     });
-    await expect.poll(() => page.locator('#blockify-container .polygon-geometry-editor__vertex').count()).toBeGreaterThan(2);
+    // FileReader finishes asynchronously. The old outline already had vertices, so merely
+    // counting them could click Done before the uploaded footprint reached the live editor.
+    const uploadedVertices = uploaded.geometry.coordinates[0].slice(0, -1)
+      .sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    await expect.poll(() => page.evaluate(() => {
+      const vertices: number[][] = [];
+      (window as any).map.eachLayer((layer: any) => {
+        if (!layer.getElement?.()?.classList.contains('polygon-geometry-editor__vertex')) return;
+        const coordinate = layer.getLatLng();
+        vertices.push([coordinate.lng, coordinate.lat]);
+      });
+      return vertices.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    })).toEqual(uploadedVertices);
     await expect(page.locator('#blockify-manual-toggle')).toHaveAttribute('aria-pressed', 'true');
     await page.locator('#btn-blockify-done').click();
 
+    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+      .some((proposal: any) => proposal.applied && proposal.buildingProposal?.parameters?.mode === 'manual'))).toBe(true);
     const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((proposal: any) => proposal.applied && proposal.buildingProposal?.parameters?.mode === 'manual'));
-    expect(saved).toBeTruthy();
-    expect(saved.buildingProposal.parameters.manualOuterRing.length).toBeGreaterThan(2);
+    expect(saved.buildingProposal.parameters.manualOuterRing.slice().sort((a: number[], b: number[]) => a[0] - b[0] || a[1] - b[1])).toEqual(uploadedVertices);
     expect(saved.geometry.buildings).toHaveLength(1);
     expect(saved.geometry.buildings[0].geometry.type).toBe('Polygon');
   });
@@ -208,7 +376,7 @@ test.describe('Designer controls persist their edits @features', () => {
     if (await wholeBlockPrompt.isVisible().catch(() => false)) {
       await wholeBlockPrompt.getByRole('button', { name: 'No, just this parcel' }).click();
     }
-    await expect(page.locator('#single-building-modal')).toBeVisible();
+    await expect(page.locator('#single-building-editor')).toBeVisible();
     const selector = page.locator('#single-building-selector');
     const initialBuildings = await selector.locator('option').count();
     const height = page.locator('#single-height-slider');
@@ -218,12 +386,14 @@ test.describe('Designer controls persist their edits @features', () => {
     // A rotation is disabled when the footprint cannot rotate inside the selected parcel.
     // This fixture's initial placement is constrained, so exercise the supported height and
     // surface controls without bypassing that real geometry gate.
+    const siteDetails = page.locator('#single-building-editor details.on-map-building__details > summary');
+    await siteDetails.click();
     await page.locator('#single-ground-treatment').selectOption('green');
     await page.locator('#single-parcel-mode').selectOption('whole');
     await page.locator('#single-building-add').click();
     await expect(selector.locator('option')).toHaveCount(initialBuildings + 1);
     await page.locator('#single-building-confirm').click();
-    await expect(page.locator('#single-building-modal')).toHaveCount(0);
+    await expect(page.locator('#single-building-editor')).toHaveCount(0);
 
     const context = await page.evaluate(() => (window as any).pendingBuildingProposalContext);
     expect(context.parameters.height).toBe(oldHeight + 1);
@@ -243,7 +413,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await page.locator('#parcel-info-panel .close-button').click();
     await page.locator('#selection-tray [data-command="selection.propose"]').click();
     await page.locator('.parcel-build-btn--row').click();
-    await expect(page.locator('#rowhouse-modal')).toBeVisible();
+    await expect(page.locator('#rowhouse')).toBeVisible();
     await expect(page.locator('#btn-rowhouse-done')).toBeEnabled({ timeout: 20_000 });
 
     await page.locator('#rowhouse-ruletype-select').selectOption('range');
@@ -258,7 +428,7 @@ test.describe('Designer controls persist their edits @features', () => {
     const proceed = page.getByRole('button', { name: 'Proceed anyway' });
     if (await proceed.isVisible().catch(() => false)) await proceed.click();
 
-    await expect(page.locator('#rowhouse-modal')).toHaveCount(0);
+    await expect(page.locator('#rowhouse')).toHaveCount(0);
     const context = await page.evaluate(() => (window as any).pendingBuildingProposalContext);
     expect(context.parcelIds.length).toBeGreaterThan(1);
     expect(context.parameters.typology).toBe('row');
@@ -344,7 +514,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await page.evaluate(async ids => { await (window as any).CadastralParcelRepository.ensureIds(ids); }, BLOCK_PARCEL_IDS);
     await openParcel(page, 'proposals', BLOCK_PARCEL_IDS[0]);
     await page.locator('.parcel-build-btn--reparcellization').click();
-    const modal = page.locator('.reparcel-modal-overlay');
+    const modal = page.locator('.on-map-reparcellization');
     const scopePrompt = page.getByRole('alertdialog');
     await expect.poll(async () => (await modal.isVisible()) || (await scopePrompt.isVisible())).toBe(true);
     if (await scopePrompt.isVisible()) {
@@ -369,18 +539,18 @@ test.describe('Designer controls persist their edits @features', () => {
 
     await modal.locator('[data-reparcel-assign]').click();
     await expect(modal.locator('[data-reparcel-assign]')).toHaveAttribute('aria-pressed', 'true');
-    const plot = modal.locator('#reparcel-map .leaflet-overlay-pane path.leaflet-interactive').first();
-    await plot.click();
-    await expect(modal.locator('.reparcel-owner-popup')).toBeVisible();
-    const publicOwner = modal.locator('.reparcel-owner-popup__row').filter({ hasText: /^Public land$/ });
+    const target = await visiblePlanPlotPoint(page);
+    await page.mouse.click(target.x, target.y);
+    await expect(page.locator('.reparcel-owner-popup')).toBeVisible();
+    const publicOwner = page.locator('.reparcel-owner-popup__row').filter({ hasText: /^Public land$/ });
     await expect(publicOwner).toBeVisible();
     await publicOwner.locator('input[type="checkbox"]').check();
-    await modal.locator('.reparcel-owner-popup__close').click();
+    await page.locator('.reparcel-owner-popup__close').click();
     await page.evaluate(() => (window as any).i18n.setLanguage('hr'));
-    await plot.click();
-    await expect(modal.locator('.reparcel-owner-popup')).toContainText('Javno zemljište');
-    await expect(modal.locator('.reparcel-owner-popup')).not.toContainText('Public land');
-    await modal.locator('.reparcel-owner-popup__close').click();
+    await page.mouse.click(target.x, target.y);
+    await expect(page.locator('.reparcel-owner-popup')).toContainText('Javno zemljište');
+    await expect(page.locator('.reparcel-owner-popup')).not.toContainText('Public land');
+    await page.locator('.reparcel-owner-popup__close').click();
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
 
     await modal.locator('[data-reparcel-commit]').click();
@@ -395,7 +565,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--reparcellization').click();
-    const modal = page.locator('.reparcel-modal-overlay');
+    const modal = page.locator('.on-map-reparcellization');
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
     await modal.locator('label.reparcel-alg-option:has(input[value="manual"])').click();
     await expect(modal.locator('[data-reparcel-nodes]')).toHaveAttribute('aria-pressed', 'true');
@@ -403,17 +573,18 @@ test.describe('Designer controls persist their edits @features', () => {
     const rows = modal.locator('[data-reparcel-newplots-table] .reparcel-newplot-row');
     const beforeSplit = await rows.count();
     await modal.locator('[data-reparcel-line]').click();
-    const map = modal.locator('#reparcel-map');
+    const map = page.locator('#map-container');
     await expect(modal.locator('[data-reparcel-draw-toolbar]')).toBeVisible();
     const box = await map.boundingBox();
     if (!box) throw new Error('Readjustment map has no visible bounds');
-    await page.mouse.click(box.x + box.width * 0.15, box.y + box.height * 0.5);
-    await page.mouse.click(box.x + box.width * 0.85, box.y + box.height * 0.5);
+    const [start, end] = await visibleCutLineEndpoints(page);
+    await page.mouse.click(start.x, start.y);
+    await page.mouse.click(end.x, end.y);
     await expect(modal.locator('[data-reparcel-finish]')).toBeEnabled();
     await modal.locator('[data-reparcel-finish]').click();
     await expect.poll(() => rows.count()).toBeGreaterThan(beforeSplit);
 
-    const movableNode = modal.locator('.reparcel-node-handle:not(.geom-handle--locked)').first();
+    const movableNode = page.locator('.reparcel-node-handle:not(.geom-handle--locked)').first();
     await expect(movableNode).toBeVisible();
     const beforeEdit = await modal.locator('[data-reparcel-newplots-table]').innerText();
     const nodeBox = await movableNode.boundingBox();

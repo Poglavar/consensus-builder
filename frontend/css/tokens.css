@@ -43,8 +43,8 @@
     --cb-primary-soft: #eff6ff;
     --cb-primary-soft-ink: #1e40af;
 
-    --cb-success: #16a34a;
-    --cb-success-hover: #15803d;
+    --cb-success: #15803d;
+    --cb-success-hover: #166534;
     --cb-success-ink: #ffffff;
     --cb-success-soft: #ecfdf5;
     --cb-success-soft-ink: #166534;
@@ -143,6 +143,11 @@
     --cb-z-local-6: 6;
     --cb-z-local-10: 10;
     --cb-z-local-50: 50;
+    /* Polygon edit handles stay ordered inside Leaflet's marker pane. They outrank its
+       projected-y inline positions and the SVG edge hit targets without joining page stacking. */
+    --cb-z-geometry-handle: 300;
+    --cb-z-geometry-handle-selected: 350;
+    --cb-z-geometry-handle-delete: 400;
     --cb-z-world-overview: 3;      /* legend and activity inside the globe stacking context */
     --cb-z-world-top: 4;           /* the globe's top bar and popups, over the overview panels */
     --cb-z-world-scrim: -1;        /* a panel's own backdrop, behind its content */
@@ -157,6 +162,7 @@
     --cb-z-panel: 1500;             /* right-dock panels (parcel, proposal, road) */
     --cb-z-sheet: 1600;             /* sheets go over the docked panels: the person just asked for one */
     --cb-z-editor: 1650;            /* docked editors (proposal editor shell, cross-section, geometry): over sheets */
+    --cb-z-editor-popup: 1660;      /* map popups over editor tools and panels, below dialogs */
     --cb-z-notice: 1700;            /* source warnings: over map, panels and sheets, under dialogs */
     --cb-z-open-menu: 1700;         /* an open menu or result list (the parcel menu on a phone, search results): over the dock */
     --cb-z-floating-list: 2000;     /* the blocks list, floating over panels and sheets */

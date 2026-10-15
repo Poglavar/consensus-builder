@@ -120,7 +120,7 @@ test.describe('Supporting secondary controls @core', () => {
       });
     });
 
-    await profile.getByRole('button', { name: 'City token' }).click();
+    await profile.getByRole('button', { name: 'City token', exact: true }).click();
     const cityToken = page.locator('.city-token-overlay');
     await expect(cityToken).toBeVisible();
     await expect(cityToken.locator('[data-city-token-claim]')).toBeDisabled();
@@ -167,7 +167,7 @@ test.describe('Supporting secondary controls @core', () => {
     await expect(explainer).toHaveCount(0);
 
     await attest.click();
-    const popupPromise = page.waitForEvent('popup');
+    const popupPromise = page.context().waitForEvent('page');
     await Promise.all([
       explainer.locator('[data-attest-proceed]').click(),
       popupPromise.then(async popup => {
@@ -309,7 +309,7 @@ test.describe('Supporting secondary controls @core', () => {
     const countries = page.locator('#country-table tbody');
     const croatia = countries.locator('tr').filter({ hasText: 'Croatia' });
     await expect(croatia).toHaveCount(1);
-    await croatia.locator('.country-name').click();
+    await croatia.getByRole('button', { name: 'Croatia', exact: true }).click();
 
     await expect(page).toHaveURL(/#cities$/);
     await expect(page.locator('#city-country')).toHaveValue('HR');
@@ -345,11 +345,11 @@ test.describe('Supporting secondary controls @core', () => {
     await expect(copy).toHaveClass(/is-copied/);
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe('sig-copy-target');
 
-    const program = page.locator('.tx-chip[data-facet="programs"][data-value="proposal-market"]');
+    const program = page.locator('button[data-facet="programs"][data-value="proposal-market"]');
     await program.click();
     await expect(program).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('#tx-tbody .tx-row')).toHaveCount(1);
-    const transfer = page.locator('.tx-chip[data-facet="actions"][data-value="transfer"]');
+    const transfer = page.locator('button[data-facet="actions"][data-value="transfer"]');
     await transfer.click();
     await expect(page.locator('#tx-tbody .tx-row')).toHaveCount(0);
     await transfer.click();
@@ -440,6 +440,15 @@ test.describe('Supporting secondary controls @core', () => {
       await username.fill(target!.name);
       const takeover = page.locator('#takeover-section');
       await expect(takeover).toBeVisible();
+      await takeover.locator('[data-takeover-agent]').click();
+      const profile = page.locator('.agent-dialog-modal');
+      await expect(profile).toBeVisible();
+      await expect(profile.locator('#agent-dialog-title')).toHaveText(target!.name);
+      expect(await page.evaluate(() => (window as any).getCurrentUserAgent?.()?.id || null)).toBe(guestId);
+      await profile.locator('.agent-dialog-modal-close').click();
+      await expect(profile).toHaveCount(0);
+      await expect(welcome).toBeVisible();
+      await expect(username).toBeFocused();
       await page.locator('#takeover-no-btn').click();
       await expect(takeover).toBeHidden();
       await expect(username).toHaveValue('');

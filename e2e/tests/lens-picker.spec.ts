@@ -43,8 +43,9 @@ test.describe('Proposal Lens picker @features', () => {
     const etherscanUrl = `https://sepolia.etherscan.io/address/${address}`;
     const attestifyUrl = `http://localhost:3000/address/${address}`;
     const newEntry = lens.locator('.lens-row').nth(initialRows);
-    const etherscan = newEntry.locator('.lens-link-btn').nth(0);
-    const attestify = newEntry.locator('.lens-link-btn').nth(1);
+    const links = newEntry.locator('.lens-inline-actions a.cb-link--external[target="_blank"]');
+    const etherscan = links.nth(0);
+    const attestify = links.nth(1);
     await expect(etherscan).toHaveAttribute('href', etherscanUrl);
     await expect(attestify).toHaveAttribute('href', attestifyUrl);
     await page.context().route('https://sepolia.etherscan.io/address/**', route => route.fulfill({

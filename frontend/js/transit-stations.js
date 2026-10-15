@@ -692,7 +692,7 @@
         throw new Error('The cadastral coverage rule (proposal-manager.js) is not loaded.');
     }
 
-    const STATION_EDITOR_PANE = 'transitStationEditorPane';
+    const STATION_EDITOR_PANE = 'onMapEditorPane';
 
     function stationEditorText(key, fallback, params = {}) {
         const fullKey = `stationEditor.${key}`;
@@ -723,7 +723,7 @@
     function buildEditedStationStructure(structureValue, changes = {}, turfApi, parcelEntries) {
         const current = clone(structureValue || {});
         const type = normalizeType(current.stationType);
-        const center = coordinate(current.center);
+        const center = coordinate(changes.center ?? current.center);
         if (!type || !center) return null;
         const bearing = normalizeBearing(changes.bearing ?? current.bearing);
         const geometry = createStationFootprint(center, bearing, type, turfApi);
@@ -752,23 +752,6 @@
         return next;
     }
 
-    function ensureStationEditorPane() {
-        if (!global.map?.getPane) return;
-        let pane = global.map.getPane(STATION_EDITOR_PANE);
-        if (!pane && global.map.createPane) pane = global.map.createPane(STATION_EDITOR_PANE);
-        if (pane?.style) pane.style.zIndex = '656';
-    }
-
-    function ensureStationEditorPanel() {
-        if (stationEditor?.panel || !global.document?.body) return stationEditor?.panel || null;
-        const panel = global.document.createElement('section');
-        panel.className = 'station-geometry-editor';
-        panel.setAttribute('aria-label', stationEditorText('ariaLabel', 'Station geometry editor'));
-        global.document.body.appendChild(panel);
-        stationEditor.panel = panel;
-        return panel;
-    }
-
     function stationEditorMarkup() {
         const type = stationEditor?.type;
         const spec = specFor(type);
@@ -779,12 +762,8 @@
                 <span class="station-editor-input-with-unit"><input type="number" data-station-editor-height min="${bounds.min}" max="${bounds.max}" step="0.5" value="${stationEditor.platformHeightM}"><span>m</span></span>
             </label>` : '';
         return `
-            <header>
-                <div><strong>${stationEditorText('title', 'Edit station geometry')}</strong><small>${spec?.label || stationEditorText('station', 'Station')}</small></div>
-                <button type="button" class="close-circle-btn" data-station-editor-action="cancel" aria-label="${stationEditorText('close', 'Close')}">×</button>
-            </header>
+            <p class="on-map-editor__hint">${spec?.label || stationEditorText('station', 'Station')}</p>
             <div class="station-editor-body">
-                <p>${stationEditorText('fixedPosition', 'The station centre stays fixed. Rotate the station around it.')}</p>
                 <label class="station-editor-field station-editor-bearing">
                     <span>${stationEditorText('rotation', 'Rotation')}</span>
                     <input type="range" data-station-editor-bearing-range min="0" max="359" step="1" value="${stationEditor.bearing}">
@@ -792,10 +771,148 @@
                 </label>
                 ${heightControl}
             </div>
-            <footer>
-                <span>${stationEditorText('hint', 'The map preview updates while you edit.')}</span>
-                <div><button type="button" class="btn" data-station-editor-action="cancel">${stationEditorText('cancel', 'Cancel')}</button><button type="button" class="btn btn-primary" data-station-editor-action="save">${stationEditorText('save', 'Done')}</button></div>
-            </footer>`;
+            <p class="on-map-editor__hint">${stationEditorText('hint', 'The map preview updates while you edit.')}</p>`;
+    }
+
+    function stationEditorFooter() {
+        return `<button type="button" class="btn btn-sm" data-station-editor-action="undo" disabled aria-disabled="true">${stationEditorText('undo', 'Undo')}</button><button type="button" class="btn" data-station-editor-action="cancel">${stationEditorText('cancel', 'Cancel')}</button><button type="button" class="btn btn-primary" data-station-editor-action="save">${stationEditorText('save', 'Done')}</button>`;
+    }
+
+    function ensureStationEditorHistory() {
+        if (stationEditor?.history) return stationEditor.history;
+        const history = global.GeometryEditHistory?.create?.({
+            capture: () => ({
+                center: stationEditor.center.slice(),
+                bearing: stationEditor.bearing,
+                platformHeightM: stationEditor.platformHeightM
+            }),
+            restore: snapshot => {
+                stationEditor.center = snapshot.center.slice();
+                stationEditor.bearing = snapshot.bearing;
+                stationEditor.platformHeightM = snapshot.platformHeightM;
+                const bearingRange = stationEditor.panel?.querySelector('[data-station-editor-bearing-range]');
+                const bearingNumber = stationEditor.panel?.querySelector('[data-station-editor-bearing]');
+                const heightInput = stationEditor.panel?.querySelector('[data-station-editor-height]');
+                if (bearingRange) bearingRange.value = String(snapshot.bearing);
+                if (bearingNumber) bearingNumber.value = String(snapshot.bearing);
+                if (heightInput && Number.isFinite(Number(snapshot.platformHeightM))) heightInput.value = String(snapshot.platformHeightM);
+                renderStationEditorPreview();
+                stationEditor.session?.placement?.update?.({
+                    type: 'Feature', properties: {},
+                    geometry: createStationFootprint(stationEditor.center, stationEditor.bearing, stationEditor.type)
+                });
+                syncStationEditorDraft();
+            }
+        });
+        if (!history) return null;
+        stationEditor.history = history;
+        history.bindKeyboard(global.document, { enabled: () => !!stationEditor });
+        return history;
+    }
+
+    function startStationMove(event, pointerValue, source) {
+        if (!stationEditor || stationEditor.move) return;
+        const pointer = coordinate(pointerValue || event?.latlng);
+        if (!pointer) return;
+        try {
+            if (event?.originalEvent) global.L.DomEvent?.stop?.(event.originalEvent);
+            else if (event) global.L.DomEvent?.stopPropagation?.(event);
+        } catch (_) { }
+        const geometry = createStationFootprint(stationEditor.center, stationEditor.bearing, stationEditor.type);
+        if (!geometry) return;
+        stationEditor.move = {
+            from: { lng: pointer[0], lat: pointer[1] },
+            startCenter: stationEditor.center.slice(),
+            startGeometry: geometry,
+            startBearing: stationEditor.bearing,
+            recorded: false,
+            source,
+            mapDraggingWasEnabled: global.map?.dragging?.enabled?.() === true
+        };
+        try { global.map?.dragging?.disable?.(); } catch (_) { }
+        if (source === 'body') {
+            global.map?.on('mousemove', moveStationBody);
+            global.map?.on('touchmove', moveStationBody);
+            global.map?.on('mouseup', endStationMove);
+            global.map?.on('touchend', endStationMove);
+            global.map?.on('touchcancel', endStationMove);
+            global.document?.addEventListener('mouseup', endStationMove);
+            global.document?.addEventListener('touchend', endStationMove);
+            global.document?.addEventListener('touchcancel', endStationMove);
+        }
+    }
+
+    function updateStationMove(event) {
+        const move = stationEditor?.move;
+        const raw = coordinate(event?.latlng);
+        if (!move || !raw) return;
+        const placement = stationEditor.session?.placement;
+        let target = { lng: raw[0], lat: raw[1] };
+        try {
+            target = placement?.moveTarget?.(
+                move.startGeometry, move.from, target, event?.originalEvent
+            ) || target;
+        } catch (_) { return; }
+        if (!Number.isFinite(target?.lng) || !Number.isFinite(target?.lat)) return;
+        const mover = global.SingleBuildingGeometry?.moveCoordinateCollection;
+        if (typeof mover !== 'function') return;
+        let center;
+        let feature;
+        try {
+            center = mover(move.startCenter, move.from, target);
+            const geometry = createStationFootprint(center, stationEditor.bearing, stationEditor.type);
+            feature = { type: 'Feature', properties: {}, geometry };
+            if (!geometry || (placement?.accepts && !placement.accepts(feature))) return;
+        } catch (_) { return; }
+        if (Math.abs(center[0] - move.startCenter[0]) < 1e-12 && Math.abs(center[1] - move.startCenter[1]) < 1e-12) return;
+        if (!move.recorded) {
+            ensureStationEditorHistory()?.record();
+            move.recorded = true;
+        }
+        stationEditor.center = center;
+        placement?.update?.(feature);
+        renderStationEditorPreview();
+    }
+
+    function moveStationBody(event) { updateStationMove(event); }
+
+    function startStationBodyMove(event) {
+        startStationMove(event, event?.latlng, 'body');
+    }
+
+    function startStationMarkerMove(event) {
+        startStationMove(event, stationEditor?.center, 'marker');
+    }
+
+    function moveStationMarker(event) {
+        const latLng = event?.target?.getLatLng?.();
+        if (!latLng) return;
+        updateStationMove({ ...event, latlng: latLng });
+    }
+
+    function endStationMove() {
+        const move = stationEditor?.move;
+        if (!move) return;
+        stationEditor.move = null;
+        if (move.source === 'body' && global.map) {
+            global.map.off('mousemove', moveStationBody);
+            global.map.off('touchmove', moveStationBody);
+            global.map.off('mouseup', endStationMove);
+            global.map.off('touchend', endStationMove);
+            global.map.off('touchcancel', endStationMove);
+            global.document?.removeEventListener('mouseup', endStationMove);
+            global.document?.removeEventListener('touchend', endStationMove);
+            global.document?.removeEventListener('touchcancel', endStationMove);
+        }
+        if (move.mapDraggingWasEnabled) {
+            try { global.map?.dragging?.enable?.(); } catch (_) { }
+        }
+        const changed = stationEditor.center[0] !== move.startCenter[0] || stationEditor.center[1] !== move.startCenter[1];
+        if (move.recorded && !changed) stationEditor.history?.discardLast?.();
+        const geometry = createStationFootprint(stationEditor.center, stationEditor.bearing, stationEditor.type);
+        stationEditor.session?.placement?.update?.({ type: 'Feature', properties: {}, geometry });
+        renderStationEditorPreview();
+        if (changed) syncStationEditorDraft();
     }
 
     function renderStationEditorPreview() {
@@ -804,9 +921,15 @@
         const geometry = createStationFootprint(stationEditor.center, stationEditor.bearing, stationEditor.type);
         if (!geometry) return;
         const color = COLORS[stationEditor.type] || '#334155';
-        global.L.geoJSON({ type: 'Feature', properties: {}, geometry }, {
+        const previewFeature = { type: 'Feature', properties: {}, geometry };
+        global.L.geoJSON(previewFeature, {
             pane: STATION_EDITOR_PANE,
-            interactive: false,
+            interactive: true,
+            onEachFeature: (_feature, layer) => {
+                layer.on('mousedown', startStationBodyMove);
+                layer.on('touchstart', startStationBodyMove);
+            },
+            className: 'station-editor-footprint',
             style: { color, weight: 3, fillColor: color, fillOpacity: 0.25, dashArray: '8 5' }
         }).addTo(stationEditor.layer);
         const directionEnd = offsetCoordinate(
@@ -826,11 +949,21 @@
             weight: 4,
             opacity: 0.9
         }).addTo(stationEditor.layer);
-        global.L.marker([stationEditor.center[1], stationEditor.center[0]], {
-            pane: STATION_EDITOR_PANE,
-            icon: markerIcon(stationEditor.type, true),
-            interactive: false
-        }).addTo(stationEditor.layer);
+        if (!stationEditor.centerMarker) {
+            stationEditor.centerMarker = global.L.marker([stationEditor.center[1], stationEditor.center[0]], {
+                pane: STATION_EDITOR_PANE,
+                icon: markerIcon(stationEditor.type, true),
+                interactive: true,
+                draggable: true,
+                keyboard: true,
+                title: stationEditorText('dragCenter', 'Drag to move the station')
+            }).addTo(stationEditor.handleLayer);
+            stationEditor.centerMarker.on('dragstart', startStationMarkerMove);
+            stationEditor.centerMarker.on('drag', moveStationMarker);
+            stationEditor.centerMarker.on('dragend', endStationMove);
+        } else {
+            stationEditor.centerMarker.setLatLng([stationEditor.center[1], stationEditor.center[0]]);
+        }
     }
 
     function syncStationEditorDraft() {
@@ -838,12 +971,16 @@
         const draft = global.proposalDraftStore?.getDraft?.(stationEditor.draftId);
         const current = draft?.editorPayload?.structureProposal;
         const next = buildEditedStationStructure(current, {
+            center: stationEditor.center,
             bearing: stationEditor.bearing,
             platformHeightM: stationEditor.platformHeightM
         });
         if (!draft || !next) return null;
         const updated = typeof global.syncActiveProposalDraftFromEditor === 'function'
-            ? global.syncActiveProposalDraftFromEditor('station', { structureProposal: next }, { coalesceKey: 'editor:station' })
+            ? global.syncActiveProposalDraftFromEditor('station', { structureProposal: next }, {
+                coalesceKey: 'editor:station',
+                placement: { site: clone(next.geometry), free: true }
+            })
             : global.proposalDraftStore.updateDraft(draft.id, {
                 fields: { selectedParcelIds: clone(next.selectedParcelIds || draft.fields?.selectedParcelIds || []) },
                 editorPayload: { ...draft.editorPayload, geometry: clone(next.geometry), structureProposal: next },
@@ -876,12 +1013,13 @@
     function teardownStationEditor() {
         const previous = stationEditor;
         if (!previous) return null;
-        try { previous.unregisterEscape?.(); } catch (_) { }
+        if (previous.move) endStationMove();
         try { previous.panel?.removeEventListener('click', previous.onClick); } catch (_) { }
         try { previous.panel?.removeEventListener('input', previous.onInput); } catch (_) { }
-        try { previous.panel?.classList.remove('is-open'); } catch (_) { }
-        try { previous.panel?.remove(); } catch (_) { }
+        try { previous.history?.destroy?.(); } catch (_) { }
+        previous.session?.close();
         try { global.map?.removeLayer(previous.layer); } catch (_) { }
+        try { global.map?.removeLayer(previous.handleLayer); } catch (_) { }
         stationEditor = null;
         global.transitStationGeometryEditorActive = false;
         try { updateTransitStationsLayer(); } catch (_) { }
@@ -907,24 +1045,34 @@
 
     function saveStationGeometryEditor() {
         if (!stationEditor) return false;
+        if (stationEditor.move) endStationMove();
         const draftId = stationEditor.draftId;
-        syncStationEditorDraft();
+        const isCommit = global.isProposalDesignCommitSession?.() === true;
+        try {
+            if (!syncStationEditorDraft()) {
+                global.reportProposalDesignSaveFailure?.();
+                return false;
+            }
+        } catch (error) {
+            global.reportProposalDesignSaveFailure?.(error);
+            return false;
+        }
         teardownStationEditor();
-        global.finishProposalDraftDesignSession?.(draftId);
-        if (typeof global.updateStatus === 'function') {
+        if (global.finishProposalDraftDesignSession?.(draftId) === null) return false;
+        // Commit sessions report their actual async result in the shared proposal shell.
+        if (!isCommit && typeof global.updateStatus === 'function') {
             global.updateStatus(stationEditorText('saved', 'Station geometry saved.'));
         }
         return true;
     }
 
     function openStationGeometryEditor(draftOrId) {
-        if (!global.map || !global.L || !global.turf) return false;
+        if (!global.map || !global.L || !global.turf || !global.OnMapEditor?.open || stationEditor) return false;
         const draft = typeof draftOrId === 'string' ? global.proposalDraftStore?.getDraft?.(draftOrId) : draftOrId;
         const structure = draft?.editorPayload?.structureProposal;
         const type = normalizeType(structure?.stationType);
         const center = coordinate(structure?.center);
         if (!draft || (draft.adapterKey || draft.goal) !== 'station' || !type || !center) return false;
-        if (stationEditor) teardownStationEditor();
         const sourceProposalId = draft.sourceProposalId || draft.sourceSnapshot?.proposalId || draft.sourceSnapshot?.id || null;
         stationEditor = {
             draftId: draft.id,
@@ -936,18 +1084,33 @@
             reselectKey: global.ProposalSelection?.getKey?.() || null,
             panel: null,
             layer: null,
+            handleLayer: null,
+            centerMarker: null,
+            history: null,
+            move: null,
             onInput: null,
             onClick: null,
             onKey: null
         };
-        ensureStationEditorPane();
+        const session = global.OnMapEditor.open({
+            owner: 'station-geometry-editor', id: 'station-geometry-editor',
+            title: stationEditorText('title', 'Edit station geometry'),
+            modes: ['2d'], content: stationEditorMarkup(), footer: stationEditorFooter(),
+            placement: {
+                site: clone(structure.geometry),
+                onLockChange: () => stationEditor?.session?.placement?.update?.({
+                    type: 'Feature', properties: {},
+                    geometry: createStationFootprint(stationEditor.center, stationEditor.bearing, stationEditor.type)
+                })
+            },
+            onCancel: cancelStationGeometryEditor
+        });
+        if (!session) { stationEditor = null; return false; }
+        stationEditor.session = session;
         stationEditor.layer = global.L.layerGroup().addTo(global.map);
-        const panel = ensureStationEditorPanel();
-        if (!panel) {
-            teardownStationEditor();
-            return false;
-        }
-        panel.innerHTML = stationEditorMarkup();
+        stationEditor.handleLayer = global.L.layerGroup().addTo(global.map);
+        const panel = session.root;
+        stationEditor.panel = panel;
         stationEditor.onInput = event => {
             if (event.target?.matches?.('[data-station-editor-bearing-range]')) updateStationEditorInputs('range');
             else if (event.target?.matches?.('[data-station-editor-bearing]')) updateStationEditorInputs('number');
@@ -955,18 +1118,17 @@
         };
         stationEditor.onClick = event => {
             const action = event.target?.closest?.('[data-station-editor-action]')?.dataset.stationEditorAction;
+            if (action === 'undo') return;
             if (action === 'cancel') void cancelStationGeometryEditor();
             else if (action === 'save') saveStationGeometryEditor();
         };
         panel.addEventListener('input', stationEditor.onInput);
         panel.addEventListener('click', stationEditor.onClick);
-        stationEditor.unregisterEscape = global.ModalEscape?.register(panel, () => {
-            void cancelStationGeometryEditor();
-        });
-        try { global.hideProposalDetailsPanel?.(true); } catch (_) { }
-        try { global.hideParcelInfoPanel?.(); } catch (_) { }
+        ensureStationEditorHistory()?.bindButton(panel.querySelector('[data-station-editor-action="undo"]'));
         global.transitStationGeometryEditorActive = true;
-        panel.classList.add('is-open');
+        session.setHint?.(stationEditorText('moveHint', 'Drag the station footprint or centre marker to reposition it. Its type, size, rotation and platform height stay the same.'));
+        session.placement?.update?.({ type: 'Feature', properties: {}, geometry: createStationFootprint(center, stationEditor.bearing, type) });
+        session.fitFeature({ type: 'Feature', properties: {}, geometry: structure.geometry }, { maxZoom: 20 });
         updateTransitStationsLayer();
         renderStationEditorPreview();
         return true;

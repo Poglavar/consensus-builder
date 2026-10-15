@@ -12,6 +12,7 @@
     // Modal state
     let rowHouseModal = null;
     let rowHouseMap = null;
+    let rowHouseGenerationTimer = null;
     let rowHouseParcelLayer = null;
     let rowHouseBuildingLayer = null;
     // A row is one bar, but the houses under it belong to individual owners: the bar is cut into one
@@ -31,11 +32,14 @@
     let rowExcluded = [];
     let rowHousePolygonEditor = null;
     let rowHousePendingVertexActionIndex = null;
+    let rowHouseHistory = null;
+    let rowHouseUndoButton = null;
+    let rowHouseHistoryKeydown = null;
+    let rowHouseManualMode = false;
     let generatedRowHouseFeature = null;
     let rowHouseBlockNameOverride = null;
     let rowHouseBlock = null;
     let pendingRowHouseProposalContext = null;
-    let rowHouseMapResizeObserver = null;
 
     // Default parameter values
     const DEFAULT_BUILDING_LENGTH = 40; // meters (length along longest side, will be auto-calculated)
@@ -65,6 +69,7 @@
     let dragStartOffset = null;
     let dragStartFeature = null;
     let dragLastValidFeature = null;
+    let dragMapWasEnabled = true;
 
     // Cached superparcel data for boundary checking
     let cachedSuperparcel = null;
@@ -72,23 +77,6 @@
     let cachedCentroid = null;
     let cachedMetersPerDegLng = null;
     let cachedMetersPerDegLat = null;
-
-    // 3D preview state
-    let rowHouse3D = {
-        handle: null,
-        renderer: null,
-        scene: null,
-        camera: null,
-        controls: null,
-        frameId: null,
-        container: null,
-        originHTRS: null,
-        modelGroup: null,
-        contextGroup: null,
-        resizeHandler: null,
-        hasCenteredOnce: false,
-        anchorLngLat: { lng: 0, lat: 0 }
-    };
 
     // Helper functions
     function formatRowHouseText(template, params = {}) {
@@ -159,6 +147,12 @@
         return Array.isArray(ring) && ring.length >= 4 ? ring : null;
     }
 
+    function rowHouseGeneratorSite(block) {
+        if (block?.generatorSite?.geometry) return cloneRowHouseFeature(block.generatorSite);
+        if (block?.site?.geometry) return cloneRowHouseFeature(block.site);
+        return robustUnionLocal((block?.parcels || []).map(parcel => parcel?.feature).filter(Boolean));
+    }
+
     function rowHouseFeatureWithRing(feature, ring) {
         const next = cloneRowHouseFeature(feature);
         if (!next?.geometry || !Array.isArray(ring) || ring.length < 3) return null;
@@ -175,56 +169,127 @@
         try {
             if (!feature?.geometry || feature.geometry.type !== 'Polygon' || turf.area(feature) < 0.5) return false;
             if (typeof turf.kinks === 'function' && turf.kinks(feature).features.length) return false;
-            if (!cachedSuperparcel?.geometry) return true;
-            return window.SingleBuildingGeometry?.footprintWithinBoundary?.(
-                feature,
-                cachedSuperparcel,
-                turf
-            ) === true;
+            if (rowHouseModal?.placement?.locked) return rowHouseModal.placement.accepts(feature) === true;
+            return true;
         } catch (_) {
             return false;
         }
+    }
+
+    function rowHousePlacementLocked() { return rowHouseModal?.placement?.locked === true; }
+
+    function rowHouseGeometrySnapshot() {
+        return {
+            feature: cloneRowHouseFeature(generatedRowHouseFeature),
+            manualMode: rowHouseManualMode,
+            length: currentBuildingLength, width: currentBuildingWidth, height: currentBuildingHeight,
+            chamfer: currentChamfer, offsetX: currentOffsetX, offsetY: currentOffsetY,
+            rotation: currentRotation, seed: rowVariationSeed
+        };
+    }
+
+    function restoreRowHouseGeometrySnapshot(snapshot) {
+        if (!snapshot) return;
+        generatedRowHouseFeature = cloneRowHouseFeature(snapshot.feature);
+        rowHouseManualMode = snapshot.manualMode === true;
+        currentBuildingLength = snapshot.length ?? currentBuildingLength;
+        currentBuildingWidth = snapshot.width ?? currentBuildingWidth;
+        currentBuildingHeight = snapshot.height ?? currentBuildingHeight;
+        currentChamfer = snapshot.chamfer ?? currentChamfer;
+        currentOffsetX = snapshot.offsetX ?? currentOffsetX;
+        currentOffsetY = snapshot.offsetY ?? currentOffsetY;
+        currentRotation = snapshot.rotation ?? currentRotation;
+        rowVariationSeed = snapshot.seed ?? rowVariationSeed;
+        syncRowHouseGeometryControls();
+        if (generatedRowHouseFeature) {
+            rowHouseModal?.placement?.update?.(generatedRowHouseFeature);
+            displayRowHouseBuildingInModal(generatedRowHouseFeature);
+            autosaveRowHouseDraft();
+        }
+    }
+
+    function ensureRowHouseHistory() {
+        if (rowHouseHistory || !window.GeometryEditHistory?.create || !rowHouseMap) return rowHouseHistory;
+        rowHouseHistory = window.GeometryEditHistory.create({
+            capture: rowHouseGeometrySnapshot,
+            restore: restoreRowHouseGeometrySnapshot
+        });
+        rowHouseHistoryKeydown = rowHouseHistory.bindKeyboard(document, { enabled: () => !!rowHouseModal });
+        try {
+            rowHouseUndoButton = document.createElement('button');
+            rowHouseUndoButton.type = 'button';
+            rowHouseUndoButton.className = 'map-shell-button geom-undo-button';
+            rowHouseUndoButton.title = translateRowHouseText('onMapEditor.undo', 'Undo (Cmd/Ctrl+Z)');
+            rowHouseUndoButton.setAttribute('aria-label', rowHouseUndoButton.title);
+            rowHouseUndoButton.textContent = '↶';
+            rowHouseUndoButton.disabled = true;
+            L.DomEvent?.disableClickPropagation?.(rowHouseUndoButton);
+            L.DomEvent?.disableScrollPropagation?.(rowHouseUndoButton);
+            rowHouseMap.getContainer()?.appendChild(rowHouseUndoButton);
+            rowHouseHistory.bindButton(rowHouseUndoButton);
+        } catch (_) { rowHouseUndoButton = null; }
+        return rowHouseHistory;
+    }
+
+    function syncRowHouseGeometryControls() {
+        const controls = [
+            ['rowhouse-length-slider', currentBuildingLength],
+            ['rowhouse-width-slider', currentBuildingWidth],
+            ['rowhouse-chamfer-slider', currentChamfer],
+            ['rowhouse-height-slider', currentBuildingHeight]
+        ];
+        controls.forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) element.value = String(value);
+        });
+        const labels = [
+            ['rowhouse-length-value', currentBuildingLength, 1], ['rowhouse-width-value', currentBuildingWidth, 1],
+            ['rowhouse-height-value', currentBuildingHeight, 0], ['rowhouse-chamfer-value', currentChamfer, 1]
+        ];
+        labels.forEach(([id, value, digits]) => {
+            const element = document.getElementById(id);
+            if (element) element.textContent = CbFormat.formatNumber(Number(value), { maxFractionDigits: digits, minFractionDigits: digits });
+        });
+        ['rowhouse-length-slider', 'rowhouse-width-slider', 'rowhouse-chamfer-slider'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) element.disabled = rowHouseManualMode;
+        });
+        const toggle = document.getElementById('rowhouse-manual-toggle');
+        if (toggle) {
+            toggle.setAttribute('data-i18n-key', rowHouseManualMode
+                ? 'rowHouses.modal.returnGenerated' : 'rowHouses.modal.editShape');
+            toggle.setAttribute('data-i18n-attr', 'text');
+            toggle.textContent = rowHouseManualMode
+                ? translateRowHouseText('rowHouses.modal.returnGenerated', 'Discard manual shape and return to generated geometry')
+                : translateRowHouseText('rowHouses.modal.editShape', 'Edit shape manually');
+            toggle.setAttribute('aria-pressed', rowHouseManualMode ? 'true' : 'false');
+        }
+    }
+
+    async function toggleRowHouseManualMode() {
+        if (!generatedRowHouseFeature?.geometry) return;
+        if (!rowHouseManualMode) {
+            rowHouseHistory?.record?.();
+            rowHouseManualMode = true;
+        } else {
+            const proceed = await window.CbDialog.confirm(
+                translateRowHouseText('rowHouses.modal.confirmReturnGenerated', 'Discard manual edits and return to the generated shape?'),
+                { destructive: true, okText: translateRowHouseText('proposalDrafts.discardDesign.confirm', 'Discard') }
+            );
+            if (!proceed) return;
+            rowHouseHistory?.record?.();
+            rowHouseManualMode = false;
+        }
+        syncRowHouseGeometryControls();
+        if (rowHouseManualMode) renderRowHousePolygonEditor();
+        else generateRowHouseInModal();
+        autosaveRowHouseDraft();
     }
 
     function destroyRowHousePolygonEditor() {
         if (!rowHousePolygonEditor) return;
         try { rowHousePolygonEditor.destroy(); } catch (_) { }
         rowHousePolygonEditor = null;
-    }
-
-    // Keep the Leaflet map sized to its flex container so the full viewport stays interactive
-    function invalidateRowHouseMapSize(reason = 'unknown') {
-        if (!rowHouseMap || typeof rowHouseMap.invalidateSize !== 'function') return;
-
-        const run = () => {
-            try {
-                rowHouseMap.invalidateSize();
-                const container = typeof rowHouseMap.getContainer === 'function'
-                    ? rowHouseMap.getContainer()
-                    : null;
-                if (container && typeof console !== 'undefined' && typeof console.debug === 'function') {
-                    console.debug('[RowHouses] invalidate map size', reason, container.clientWidth, container.clientHeight);
-                }
-            } catch (err) {
-                if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-                    console.warn('[RowHouses] map size invalidate failed', err);
-                }
-            }
-        };
-
-        if (typeof requestAnimationFrame === 'function') {
-            requestAnimationFrame(run);
-        } else {
-            setTimeout(run, 0);
-        }
-    }
-
-    function attachRowHouseMapResizeObserver() {
-        if (rowHouseMapResizeObserver || typeof ResizeObserver === 'undefined') return;
-        const target = document.getElementById('rowhouse-main') || document.getElementById('rowhouse-map');
-        if (!target) return;
-        rowHouseMapResizeObserver = new ResizeObserver(() => invalidateRowHouseMapSize('resize-observer'));
-        try { rowHouseMapResizeObserver.observe(target); } catch (_) { }
     }
 
     function getRowHouseDisplayName() {
@@ -431,9 +496,10 @@
             return null;
         }
 
-        // Create superparcel by merging all parcels
+        // An authored site can extend beyond the currently selected child parcels. Keep it as
+        // the geometry boundary while parcel features still define ownership and row splitting.
         const parcelFeatures = block.parcels.map(p => p.feature);
-        let superparcel = robustUnionLocal(parcelFeatures);
+        let superparcel = rowHouseGeneratorSite(block) || robustUnionLocal(parcelFeatures);
 
         if (!superparcel) {
             throw new Error('Failed to create superparcel');
@@ -614,9 +680,10 @@
             return { maxLength: DEFAULT_BUILDING_LENGTH, maxWidth: DEFAULT_BUILDING_WIDTH };
         }
 
-        // Create superparcel by merging all parcels
+        // Use the authored site as the fit boundary when one was supplied; parcel features remain
+        // the ownership inputs for the generated row.
         const parcelFeatures = block.parcels.map(p => p.feature);
-        let superparcel = robustUnionLocal(parcelFeatures);
+        let superparcel = rowHouseGeneratorSite(block) || robustUnionLocal(parcelFeatures);
 
         if (!superparcel) {
             return { maxLength: DEFAULT_BUILDING_LENGTH, maxWidth: DEFAULT_BUILDING_WIDTH };
@@ -904,40 +971,61 @@
     }
 
     // Start drag interaction
+    function rowHousePointerEvent(event) {
+        const nativeEvent = event?.originalEvent || event;
+        const touch = nativeEvent?.changedTouches?.[0] || nativeEvent?.touches?.[0];
+        if (!touch) return event;
+        nativeEvent.preventDefault?.();
+        return { clientX: touch.clientX, clientY: touch.clientY, target: nativeEvent.target, originalEvent: nativeEvent, preventDefault: () => nativeEvent.preventDefault?.() };
+    }
+
     function startDrag(e) {
         const originalTarget = e?.originalEvent?.target;
         if (originalTarget && typeof originalTarget.closest === 'function'
             && originalTarget.closest('.polygon-geometry-editor__vertex, .polygon-geometry-editor__delete-marker')) return;
+        if (e?.originalEvent && typeof e.originalEvent.preventDefault === 'function') e.originalEvent.preventDefault();
         isDragging = true;
+        dragMapWasEnabled = rowHouseMap?.dragging?.enabled?.() !== false;
         dragStartLatLng = e.latlng;
         dragStartOffset = [currentOffsetX, currentOffsetY];
         dragStartFeature = cloneRowHouseFeature(generatedRowHouseFeature);
         dragLastValidFeature = cloneRowHouseFeature(generatedRowHouseFeature);
+        rowHouseHistory?.record?.();
         rowHousePendingVertexActionIndex = null;
         destroyRowHousePolygonEditor();
 
         rowHouseMap.dragging.disable();
         document.addEventListener('mousemove', onDragMove);
         document.addEventListener('mouseup', onDragEnd);
+        document.addEventListener('touchmove', onDragMove, { passive: false });
+        document.addEventListener('touchend', onDragEnd);
+        document.addEventListener('touchcancel', onDragEnd);
     }
 
     // Handle drag movement
     function onDragMove(e) {
         if (!isDragging || !rowHouseMap || !dragStartLatLng) return;
 
-        const containerPoint = rowHouseMap.mouseEventToContainerPoint(e);
+        const pointer = rowHousePointerEvent(e);
+        const containerPoint = rowHouseMap.mouseEventToContainerPoint(pointer);
         const latlng = rowHouseMap.containerPointToLatLng(containerPoint);
 
         if (!dragStartFeature?.geometry || !window.SingleBuildingGeometry?.moveGeometry) return;
         // The footprint keeps its ground metres from the drag's start point, placed at the cursor.
-        const geometry = window.SingleBuildingGeometry.moveGeometry(dragStartFeature.geometry, dragStartLatLng, latlng);
+        const geometry = rowHouseModal?.placement?.moveGeometry?.(dragStartFeature.geometry, dragStartLatLng, latlng, pointer)
+            || window.SingleBuildingGeometry.moveGeometry(dragStartFeature.geometry, dragStartLatLng, latlng);
         const candidate = cloneRowHouseFeature(dragStartFeature);
         if (!candidate || !geometry) return;
         candidate.geometry = geometry;
         if (!rowHouseFeatureValid(candidate)) return;
+        rowHouseModal?.placement?.update?.(candidate);
 
-        const startMeters = latLngToMeters(dragStartLatLng);
-        const currentMeters = latLngToMeters(latlng);
+        // Snapping may place the accepted geometry away from the raw pointer. Persist the
+        // accepted displacement so later slider regeneration stays at the visible position.
+        const startCenter = turf.centroid(dragStartFeature).geometry.coordinates;
+        const movedCenter = turf.centroid(candidate).geometry.coordinates;
+        const startMeters = latLngToMeters({ lng: startCenter[0], lat: startCenter[1] });
+        const currentMeters = latLngToMeters({ lng: movedCenter[0], lat: movedCenter[1] });
         currentOffsetX = dragStartOffset[0] + currentMeters[0] - startMeters[0];
         currentOffsetY = dragStartOffset[1] + currentMeters[1] - startMeters[1];
         candidate.properties = { ...(candidate.properties || {}), offsetX: currentOffsetX, offsetY: currentOffsetY };
@@ -948,24 +1036,29 @@
             rowHouseBuildingLayer?.eachLayer?.(layer => layer.setLatLngs?.(latLngs));
         } catch (_) { }
         updateBuildingMetrics(candidate);
-        try { updateRowHouse3DScene(candidate); } catch (_) { }
     }
 
     // End drag interaction
     function onDragEnd() {
         const finalFeature = dragLastValidFeature || dragStartFeature;
+        const changed = !!(finalFeature?.geometry && dragStartFeature?.geometry
+            && JSON.stringify(finalFeature.geometry) !== JSON.stringify(dragStartFeature.geometry));
         isDragging = false;
         dragStartLatLng = null;
         dragStartOffset = null;
         dragStartFeature = null;
         dragLastValidFeature = null;
-        if (rowHouseMap) rowHouseMap.dragging.enable();
+        if (rowHouseMap && dragMapWasEnabled) rowHouseMap.dragging.enable();
         document.removeEventListener('mousemove', onDragMove);
         document.removeEventListener('mouseup', onDragEnd);
+        document.removeEventListener('touchmove', onDragMove);
+        document.removeEventListener('touchend', onDragEnd);
+        document.removeEventListener('touchcancel', onDragEnd);
         if (finalFeature) {
             generatedRowHouseFeature = finalFeature;
             displayRowHouseBuildingInModal(finalFeature);
-            autosaveRowHouseDraft();
+            if (changed) autosaveRowHouseDraft();
+            else rowHouseHistory?.discardLast?.();
         }
     }
 
@@ -981,7 +1074,9 @@
             height: Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT),
             footprintMode: 'polygon'
         };
+        if (!rowHouseModal?.placement?.accepts?.(candidate)) return false;
         generatedRowHouseFeature = candidate;
+        rowHouseModal?.placement?.update?.(candidate);
         displayRowHouseBuildingInModal(candidate);
         autosaveRowHouseDraft();
         return true;
@@ -995,15 +1090,22 @@
         if (!rowHouseMap || !ring || !window.PolygonGeometryEditor?.create) return;
         rowHousePolygonEditor = window.PolygonGeometryEditor.create({
             map: rowHouseMap,
+            pane: rowHouseModal?.handlePane,
             leaflet: L,
             turf,
             ring,
-            boundary: () => cachedSuperparcel,
+            boundary: () => rowHousePlacementLocked() ? (rowHouseBlock?.site || cachedSuperparcel) : null,
+            snapCoordinate: (coordinate, event) => rowHouseModal?.placement?.snapCoordinate?.(coordinate, event) || coordinate,
+            undo: false,
             initialSelectedVertexIndex,
             showInitialDeleteAction: Number.isInteger(initialSelectedVertexIndex),
             vertexTitle: translateRowHouseText('rowHouses.modal.vertexLabel', 'Drag to reshape'),
             deleteTitle: translateRowHouseText('rowHouses.modal.deleteVertexLabel', 'Delete selected vertex'),
+            onDragStart: () => rowHouseHistory?.record?.(),
             onCommit: ({ ring: committedRing, reason, vertexIndex }) => {
+                if (reason !== 'move') rowHouseHistory?.record?.();
+                rowHouseManualMode = true;
+                syncRowHouseGeometryControls();
                 rowHousePendingVertexActionIndex = reason === 'move' ? vertexIndex : null;
                 const committed = commitRowHousePolygonRing(committedRing);
                 rowHousePendingVertexActionIndex = null;
@@ -1026,6 +1128,7 @@
             }
         } catch (_) { }
         if (!candidate || !rowHouseFeatureValid(candidate)) return;
+        rowHouseHistory?.record?.();
         currentRotation += deltaDegrees * Math.PI / 180;
         candidate.properties = {
             ...(generatedRowHouseFeature.properties || {}),
@@ -1033,6 +1136,7 @@
             footprintMode: 'polygon'
         };
         generatedRowHouseFeature = candidate;
+        rowHouseModal?.placement?.update?.(candidate);
         displayRowHouseBuildingInModal(candidate);
         autosaveRowHouseDraft();
     }
@@ -1051,7 +1155,10 @@
                 showRowHouseEditorAlert('uploadNoPolygon', 'No usable polygon found in that file.');
                 return;
             }
-            const constrained = window.PolygonGeometryEditor.constrainRingToBoundary(ring, cachedSuperparcel, turf) || ring;
+            rowHouseHistory?.record?.();
+            const constrained = rowHousePlacementLocked()
+                ? (window.PolygonGeometryEditor.constrainRingToBoundary(ring, rowHouseBlock?.site || cachedSuperparcel, turf) || ring)
+                : ring;
             const candidate = rowHouseFeatureWithRing(generatedRowHouseFeature, constrained);
             if (!candidate || !rowHouseFeatureValid(candidate)) {
                 showRowHouseEditorAlert('uploadOutside', 'The uploaded polygon does not overlap these parcels in a usable way.');
@@ -1067,7 +1174,10 @@
             currentOffsetX = 0;
             currentOffsetY = 0;
             currentRotation = 0;
+            rowHouseManualMode = true;
+            syncRowHouseGeometryControls();
             generatedRowHouseFeature = candidate;
+            rowHouseModal?.placement?.update?.(candidate);
             displayRowHouseBuildingInModal(candidate);
             autosaveRowHouseDraft();
         };
@@ -1107,6 +1217,30 @@
             return;
         }
         const deps = { turf };
+        const parcelUnion = robustUnionLocal(parcels.map(parcel => parcel.feature));
+        let fitsParcelUnion = true;
+        try {
+            fitsParcelUnion = !!parcelUnion?.geometry
+                && window.SingleBuildingGeometry?.footprintWithinBoundary?.(barFeature, parcelUnion, turf) === true;
+        } catch (_) { fitsParcelUnion = false; }
+        if (!rowHousePlacementLocked() && (rowHouseBlock?.syntheticSite || !fitsParcelUnion)) {
+            const rule = currentRowRule();
+            const massing = cloneRowHouseFeature(barFeature);
+            massing.properties = {
+                ...(massing.properties || {}),
+                massing: true,
+                urbanRule: rule,
+                variationSeed: rowVariationSeed
+            };
+            const compelled = rule.kind === 'range' && rule.minDepthM > 0
+                ? window.UrbanRuleVariation.buildToMinimum(massing, rule.minDepthM, deps)
+                : null;
+            if (compelled?.geometry) massing.properties.minFootprint = compelled.geometry;
+            rowUnits = [massing];
+            rowExcluded = [];
+            rowBuildOut = [window.UrbanRuleVariation.realizeFeature(massing, deps)];
+            return;
+        }
         const split = window.UrbanRuleVariation.splitMassingByParcels(
             barFeature, parcels, currentRowRule(), rowVariationSeed, deps);
         rowUnits = split.pieces;
@@ -1163,7 +1297,8 @@
         rowExcluded.forEach(entry => {
             if (!entry || !entry.feature || entry.status === 'no-massing-here') return;
             const layer = L.geoJSON(entry.feature, {
-                style: { fillColor: '#b0453a', fillOpacity: 0.16, color: '#b0453a', weight: 1.5, dashArray: '2, 5' }
+                pane: rowHouseModal?.pane,
+            style: { fillColor: '#b0453a', fillOpacity: 0.16, color: '#b0453a', weight: 1.5, dashArray: '2, 5' }
             }).addTo(rowHouseMap);
             layer.bindTooltip(rowExclusionReason(entry.status), { direction: 'center' });
             rowExcludedLayers.push(layer);
@@ -1171,12 +1306,14 @@
         rowUnits.forEach(unit => {
             const color = unit.properties?.color || '#8899aa';
             const layer = L.geoJSON(unit, {
-                style: { fillColor: color, fillOpacity: 0.75, color: '#33465c', weight: 1 }
+                pane: rowHouseModal?.pane,
+            style: { fillColor: color, fillOpacity: 0.75, color: '#33465c', weight: 1 }
             }).addTo(rowHouseMap);
             rowUnitLayers.push(layer);
         });
 
         rowHouseBuildingLayer = L.geoJSON(feature, {
+            pane: rowHouseModal?.pane,
             style: {
                 fillColor: '#0d6efd',
                 fillOpacity: rowUnits.length ? 0.05 : 0.5,
@@ -1186,10 +1323,12 @@
             },
             onEachFeature: function (feat, layer) {
                 // Enable dragging on the polygon
-                layer.on('mousedown', (e) => {
+                const beginRowDrag = (e) => {
                     L.DomEvent.stopPropagation(e);
                     startDrag(e);
-                });
+                };
+                layer.on('mousedown', beginRowDrag);
+                layer.on('touchstart', beginRowDrag);
             }
         }).addTo(rowHouseMap);
 
@@ -1199,8 +1338,18 @@
         // Update metrics display
         updateBuildingMetrics(feature);
 
-        // Update 3D view
-        try { updateRowHouse3DScene(rowBuildOut.length ? rowBuildOut : feature); } catch (_) { }
+        const previewFeatures = rowBuildOut.length ? rowBuildOut : [feature];
+        rowHouseModal?.setPreview({
+            draftPreview: { kind: 'buildings', features: rowBuildOut },
+            boundary: rowHouseBlock?.site || cachedSuperparcel,
+            envelopes: rowRuleKind === 'exact' ? [] : rowUnits,
+            excluded: rowExcluded.filter(entry => entry?.feature?.geometry).map(entry => entry.feature)
+        });
+        const anchorFeature = previewFeatures[0] || feature;
+        try {
+            const center = turf.centroid(anchorFeature).geometry.coordinates;
+            rowHouseModal?.setAnchor({ lat: center[1], lng: center[0], height: Number(anchorFeature.properties?.height || currentBuildingHeight) });
+        } catch (_) { }
     }
 
     // Calculate and display building metrics
@@ -1249,7 +1398,7 @@
             || typeof window.syncActiveProposalDraftFromEditor !== 'function') return;
         const parentDetails = [];
         const parcelIds = [];
-        block.parcels.forEach(parcel => {
+        if (!block.syntheticSite) block.parcels.forEach(parcel => {
             const props = parcel?.feature?.properties;
             const parcelId = typeof ensureParcelId === 'function'
                 ? ensureParcelId(parcel?.feature)
@@ -1259,7 +1408,7 @@
             parcelIds.push(id);
             parentDetails.push({ id, number: String(props?.BROJ_CESTICE || id) });
         });
-        const feature = JSON.parse(JSON.stringify(generatedRowHouseFeature));
+        const feature = window.UrbanRuleVariation.massingWithRule(generatedRowHouseFeature, currentRowRule(), rowVariationSeed, { turf });
         window.syncActiveProposalDraftFromEditor('building', {
             parcelIds,
             parentDetails,
@@ -1274,12 +1423,13 @@
                 rotation: Number(currentRotation) || 0,
                 typology: 'row',
                 rule: currentRowRule(),
-                seed: rowVariationSeed
+                seed: rowVariationSeed,
+                manualMode: rowHouseManualMode,
+                placementBaseSite: cloneRowHouseFeature(block.generatorSite || block.site || cachedSuperparcel)
             },
-            // The per-parcel houses, not the bar: one feature spanning four parcels would put all
-            // four parcels' gain on whichever one it happened to be keyed to.
-            buildingFeature: rowUnits[0] || feature,
-            buildings: rowUnits.length ? JSON.parse(JSON.stringify(rowUnits)) : [feature]
+            buildingFeature: feature,
+            buildings: [feature],
+            placement: { site: cloneRowHouseFeature(feature), free: true }
         }, { coalesceKey: 'row-house-live' });
     }
 
@@ -1293,11 +1443,8 @@
         setRowHouseInfo('rowHouses.modal.generating', 'Generating row houses...');
 
         try {
-            // Ensure 3D is initialized
-            try { if (!rowHouse3D || !rowHouse3D.renderer) initRowHouse3DSimple(); } catch (_) { }
-
             // Check if current parameters fit, if not try to adjust offset
-            if (!checkBuildingFitsInSuperparcel(currentBuildingLength, currentBuildingWidth, currentChamfer, currentOffsetX, currentOffsetY, currentRotation)) {
+            if (rowHousePlacementLocked() && !checkBuildingFitsInSuperparcel(currentBuildingLength, currentBuildingWidth, currentChamfer, currentOffsetX, currentOffsetY, currentRotation)) {
                 // Try resetting offset to center
                 if (checkBuildingFitsInSuperparcel(currentBuildingLength, currentBuildingWidth, currentChamfer, 0, 0, currentRotation)) {
                     currentOffsetX = 0;
@@ -1327,6 +1474,7 @@
             }
 
             generatedRowHouseFeature = buildingFeature;
+            rowHouseModal?.placement?.update?.(buildingFeature);
             displayRowHouseBuildingInModal(buildingFeature);
             autosaveRowHouseDraft();
 
@@ -1348,205 +1496,6 @@
         }
     }
 
-    // --- 3D Preview ---
-
-    async function ensureThreeForRowHouse() {
-        if (typeof THREE !== 'undefined') return true;
-        // THREE (incl. OrbitControls) comes from index.html's ESM bootstrap — never load a
-        // second copy here, an old UMD build would clobber the r184 global for the whole app.
-        if (typeof window.whenThreeReady === 'function') await window.whenThreeReady();
-        return typeof THREE !== 'undefined';
-    }
-
-    function getRowHouseProjector() {
-        const crs = (rowHouseMap && rowHouseMap.options && rowHouseMap.options.crs) || L.CRS.EPSG3857;
-        if (!crs || typeof crs.project !== 'function' || typeof crs.unproject !== 'function') return null;
-        return {
-            project: (ll) => {
-                const p = crs.project(L.latLng(ll.lat, ll.lng));
-                return [p.x, p.y];
-            },
-            unproject: (xy) => {
-                const llOut = crs.unproject(L.point(xy[0], xy[1]));
-                return [llOut.lat, llOut.lng];
-            }
-        };
-    }
-
-    function computeRowHouseOrigin(feature, projector) {
-        try {
-            if (!feature || !feature.geometry || !projector) return [0, 0];
-            const coords = [];
-            const geom = feature.geometry;
-            if (geom.type === 'Polygon') {
-                geom.coordinates.forEach(ring => {
-                    ring.forEach(coord => coords.push(coord));
-                });
-            } else if (geom.type === 'MultiPolygon') {
-                geom.coordinates.forEach(poly => {
-                    poly.forEach(ring => {
-                        ring.forEach(coord => coords.push(coord));
-                    });
-                });
-            }
-            if (!coords.length) return [0, 0];
-            let sumX = 0, sumY = 0;
-            coords.forEach(([lng, lat]) => {
-                const [x, y] = projector.project(L.latLng(lat, lng));
-                sumX += x;
-                sumY += y;
-            });
-            return [sumX / coords.length, sumY / coords.length];
-        } catch (_) {
-            return [0, 0];
-        }
-    }
-
-    async function initRowHouse3DSimple() {
-        const ok = await ensureThreeForRowHouse();
-        if (!ok) return;
-        const container = document.getElementById('rowhouse-3d');
-        if (!container) return;
-
-        disposeRowHouse3D();
-
-        const handle = window.ThreeEditScene.create({ container, defaultHeight: 200 });
-
-        const modelGroup = new THREE.Group();
-        handle.scene.add(modelGroup);
-
-        rowHouse3D.handle = handle;
-        rowHouse3D.container = handle.container;
-        rowHouse3D.renderer = handle.renderer;
-        rowHouse3D.scene = handle.scene;
-        rowHouse3D.camera = handle.camera;
-        rowHouse3D.controls = handle.controls;
-        rowHouse3D.modelGroup = modelGroup;
-        rowHouse3D.contextGroup = handle.contextGroup;
-    }
-
-    function disposeRowHouse3D() {
-        if (rowHouse3D.handle && typeof rowHouse3D.handle.dispose === 'function') {
-            rowHouse3D.handle.dispose();
-        }
-        rowHouse3D.handle = null;
-        rowHouse3D.renderer = null;
-        rowHouse3D.scene = null;
-        rowHouse3D.camera = null;
-        rowHouse3D.controls = null;
-        rowHouse3D.frameId = null;
-        rowHouse3D.container = null;
-        rowHouse3D.originHTRS = null;
-        rowHouse3D.modelGroup = null;
-        rowHouse3D.contextGroup = null;
-        rowHouse3D.resizeHandler = null;
-    }
-
-    function loadRowHouseContextBuildings(queryFeature, origin) {
-        if (!rowHouse3D.contextGroup || !window.ContextBuildings3D || !queryFeature || !queryFeature.geometry) return;
-        const projector = getRowHouseProjector();
-        if (!projector) return;
-        const safeOrigin = Array.isArray(origin) ? origin : [0, 0];
-        const latLngToLocalXY = (lng, lat) => {
-            const [x, y] = projector.project(L.latLng(lat, lng));
-            return [x - safeOrigin[0], y - safeOrigin[1]];
-        };
-        try {
-            window.ContextBuildings3D.loadInto(rowHouse3D.contextGroup, {
-                geometry: queryFeature.geometry,
-                latLngToLocalXY
-            });
-        } catch (e) {
-            console.warn('[row-house] context buildings load failed:', e);
-        }
-    }
-
-    function clearThreeGroup(group) {
-        if (!group) return;
-        for (let i = group.children.length - 1; i >= 0; i--) {
-            const child = group.children[i];
-            try {
-                if (child.geometry && typeof child.geometry.dispose === 'function') child.geometry.dispose();
-            } catch (_) { }
-            try {
-                if (child.material) {
-                    if (Array.isArray(child.material)) {
-                        child.material.forEach(mat => { if (mat && typeof mat.dispose === 'function') mat.dispose(); });
-                    } else if (typeof child.material.dispose === 'function') {
-                        child.material.dispose();
-                    }
-                }
-            } catch (_) { }
-            try { group.remove(child); } catch (_) { }
-        }
-    }
-
-    // Accepts the whole bar, or the per-parcel houses cut from it (each with its own height and
-    // shade), so a terrace of separately owned houses reads as one.
-    function updateRowHouse3DScene(featureOrFeatures) {
-        if (!rowHouse3D.modelGroup || typeof THREE === 'undefined') return;
-        const features = (Array.isArray(featureOrFeatures) ? featureOrFeatures : [featureOrFeatures])
-            .filter(f => f && f.geometry && f.geometry.type === 'Polygon');
-        if (!features.length) return;
-
-        clearThreeGroup(rowHouse3D.modelGroup);
-
-        const projector = getRowHouseProjector();
-        const origin = computeRowHouseOrigin(features[0], projector);
-        rowHouse3D.originHTRS = origin;
-        loadRowHouseContextBuildings(features[0], origin);
-
-        let tallest = 0;
-        features.forEach(feature => {
-            const height = feature.properties?.height || currentBuildingHeight || DEFAULT_BUILDING_HEIGHT;
-            const ring = feature.geometry.coordinates[0];
-            if (!Array.isArray(ring) || ring.length < 4) return;
-            tallest = Math.max(tallest, height);
-
-            const shape = new THREE.Shape();
-            ring.forEach(([lng, lat], idx) => {
-                const [x, y] = projector ? projector.project(L.latLng(lat, lng)) : [lng, lat];
-                const px = x - origin[0];
-                const py = y - origin[1];
-                if (idx === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
-            });
-
-            const extrudeGeom = new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: false, steps: 1 });
-            const material = new THREE.MeshLambertMaterial({
-                color: new THREE.Color(feature.properties?.color || 0x0d6efd),
-                transparent: true,
-                opacity: 0.8
-            });
-            rowHouse3D.modelGroup.add(new THREE.Mesh(extrudeGeom, material));
-
-            const edgeGeom = new THREE.EdgesGeometry(extrudeGeom);
-            const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x333333 });
-            rowHouse3D.modelGroup.add(new THREE.LineSegments(edgeGeom, edgeMaterial));
-        });
-
-        // Fit camera
-        fitRowHouseCamera(tallest || DEFAULT_BUILDING_HEIGHT);
-    }
-
-    function fitRowHouseCamera(height = 20) {
-        if (!rowHouse3D.camera || !rowHouse3D.controls || !rowHouse3D.modelGroup) return;
-
-        const box = new THREE.Box3().setFromObject(rowHouse3D.modelGroup);
-        if (box.isEmpty()) return;
-
-        const center = new THREE.Vector3();
-        box.getCenter(center);
-        const size = new THREE.Vector3();
-        box.getSize(size);
-
-        const maxDim = Math.max(size.x, size.y, size.z, 50);
-        const dist = maxDim * 1.5;
-
-        rowHouse3D.camera.position.set(center.x + dist * 0.6, center.y + dist * 0.6, center.z + dist * 0.4);
-        rowHouse3D.controls.target.copy(center);
-        rowHouse3D.camera.lookAt(center);
-    }
-
     // --- Modal management ---
 
     function showRowHouseModal() {
@@ -1555,40 +1504,28 @@
             if (typeof updateStatus === 'function') {
                 updateStatus(translateRowHouseText('status.messages.no_block_selected', 'No block selected'));
             }
-            return;
+            return false;
         }
 
         rowHouseBlock = block;
+        if (!block.site?.geometry) {
+            block.site = robustUnionLocal(block.parcels.map(parcel => parcel.feature).filter(Boolean));
+        }
+        if (!block.generatorSite?.geometry) {
+            block.generatorSite = cloneRowHouseFeature(block.site);
+        }
         const blockLabel = getRowHouseDisplayName();
 
         console.log('[RowHouses] showRowHouseModal called for block:', blockLabel, 'with', block.parcels.length, 'parcels');
 
         // Create modal if it doesn't exist
-        if (!document.getElementById('rowhouse-modal')) {
-            // The editor wears the dialog primitive (css/primitives.css: overlay, card, header,
-            // body, footer, the phone bottom sheet); css/modals.css only lays out its map, 3D
-            // preview and sidebar inside it, the same as the Urban rule editor.
-            const modalDiv = document.createElement('div');
-            modalDiv.id = 'rowhouse-modal';
-            modalDiv.className = 'cb-dialog-overlay';
-
+        if (!rowHouseModal) {
+            // The shared map editor owns the floating panel, map and view controls; this module
+            // contributes the row-house parameters, rotation tools and commit actions.
             const container = document.createElement('div');
             container.id = 'rowhouse-container';
             container.className = 'cb-dialog cb-dialog--xl';
-            container.setAttribute('role', 'dialog');
-            container.setAttribute('aria-modal', 'true');
-            container.setAttribute('aria-labelledby', 'rowhouse-title');
-
             container.innerHTML = `
-                <div id="rowhouse-header" class="cb-dialog__header">
-                    <h2 id="rowhouse-title" class="cb-dialog__title" data-i18n-key="rowHouses.modal.title">Row houses</h2>
-                    <button id="rowhouse-close" type="button" class="close-circle-btn close-circle-btn--lg" data-i18n-key="rowHouses.modal.closeAria" data-i18n-attr="aria-label" aria-label="Close row houses modal">×</button>
-                </div>
-                <div id="rowhouse-body" class="cb-dialog__body">
-                <div id="rowhouse-main">
-                    <div id="rowhouse-map"></div>
-                    <div id="rowhouse-3d"></div>
-                </div>
                 <div id="rowhouse-sidebar">
                     <h3 class="cb-kicker" data-i18n-key="rowHouses.modal.parametersTitle">Parameters</h3>
                     <div class="parameter-group">
@@ -1621,6 +1558,9 @@
                         <input type="range" id="rowhouse-length-slider" min="4" max="200" value="${DEFAULT_BUILDING_LENGTH}" step="0.5">
                     </div>
                     <div class="parameter-group">
+                        <button type="button" id="rowhouse-manual-toggle" class="btn btn-block" aria-pressed="false" data-i18n-key="rowHouses.modal.editShape" data-i18n-attr="text">Edit shape manually</button>
+                    </div>
+                    <div class="parameter-group">
                         <label for="rowhouse-width-slider">
                             <span data-i18n-key="rowHouses.modal.labels.width" data-i18n-attr="text">Width (m):</span>
                             <span id="rowhouse-width-value">${CbFormat.formatNumber(DEFAULT_BUILDING_WIDTH, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
@@ -1635,82 +1575,121 @@
                         <input type="range" id="rowhouse-height-slider" min="3" max="80" value="${DEFAULT_BUILDING_HEIGHT}" step="1">
                     </div>
                     <div class="parameter-group">
-                        <label for="rowhouse-chamfer-slider">
-                            <span data-i18n-key="rowHouses.modal.labels.chamfer" data-i18n-attr="text">Chamfer (m):</span>
-                            <span id="rowhouse-chamfer-value">${CbFormat.formatNumber(DEFAULT_CHAMFER, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
-                        </label>
-                        <input type="range" id="rowhouse-chamfer-slider" min="0" max="10" value="${DEFAULT_CHAMFER}" step="0.5">
-                    </div>
-                    <div class="parameter-group">
                         <label data-i18n-key="rowHouses.modal.labels.rotation" data-i18n-attr="text">Rotate footprint</label>
                         <div class="single-building-rotation-buttons">
                             <button id="rowhouse-rotate-counterclockwise" class="btn" type="button" data-i18n-key="rowHouses.modal.rotateCounterclockwise" data-i18n-attr="aria-label" aria-label="Rotate counterclockwise 5 degrees"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> 5°</button>
                             <button id="rowhouse-rotate-clockwise" class="btn" type="button" data-i18n-key="rowHouses.modal.rotateClockwise" data-i18n-attr="aria-label" aria-label="Rotate clockwise 5 degrees"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i> 5°</button>
                         </div>
                     </div>
-                    <div class="parameter-group">
-                        <button id="rowhouse-geojson-upload" class="btn btn-block" type="button" data-i18n-key="rowHouses.modal.uploadGeojson" data-i18n-attr="text">Upload GeoJSON</button>
-                        <input id="rowhouse-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
-                    </div>
-                    <div class="parameter-metrics">
-                        <div class="metric-row">
-                            <span data-i18n-key="rowHouses.modal.labels.circumference" data-i18n-attr="text">Circumference (m):</span>
-                            <span id="rowhouse-circumference-value">0</span>
+                    <details class="on-map-editor__more-options">
+                        <summary data-i18n-key="onMapEditor.moreOptions">${translateRowHouseText('onMapEditor.moreOptions', 'More options')}</summary>
+                        <div class="parameter-group">
+                            <label for="rowhouse-chamfer-slider">
+                                <span data-i18n-key="rowHouses.modal.labels.chamfer" data-i18n-attr="text">Chamfer (m):</span>
+                                <span id="rowhouse-chamfer-value">${CbFormat.formatNumber(DEFAULT_CHAMFER, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
+                            </label>
+                            <input type="range" id="rowhouse-chamfer-slider" min="0" max="10" value="${DEFAULT_CHAMFER}" step="0.5">
                         </div>
-                        <div class="metric-row">
-                            <span data-i18n-key="rowHouses.modal.labels.area" data-i18n-attr="text">Area (m²):</span>
-                            <span id="rowhouse-area-value">0</span>
+                        <div class="parameter-group">
+                            <button id="rowhouse-geojson-upload" class="btn btn-block" type="button" data-i18n-key="rowHouses.modal.uploadGeojson" data-i18n-attr="text">Upload GeoJSON</button>
+                            <input id="rowhouse-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
                         </div>
-                        <div class="metric-row">
-                            <span data-i18n-key="rowHouses.modal.labels.volume" data-i18n-attr="text">Volume (m³):</span>
-                            <span id="rowhouse-volume-value">0</span>
+                        <div class="parameter-metrics">
+                            <div class="metric-row">
+                                <span data-i18n-key="rowHouses.modal.labels.circumference" data-i18n-attr="text">Circumference (m):</span>
+                                <span id="rowhouse-circumference-value">0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span data-i18n-key="rowHouses.modal.labels.area" data-i18n-attr="text">Area (m²):</span>
+                                <span id="rowhouse-area-value">0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span data-i18n-key="rowHouses.modal.labels.volume" data-i18n-attr="text">Volume (m³):</span>
+                                <span id="rowhouse-volume-value">0</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="parameter-info">
-                        <p data-i18n-key="rowHouses.modal.helper.adjust">Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.</p>
-                        <p data-i18n-key="rowHouses.modal.helper.dimensions">Length is parallel to the longest parcel side. Width is perpendicular.</p>
-                        <p data-i18n-key="rowHouses.modal.helper.chamfer">Chamfer cuts the corners at 45° angles.</p>
-                    </div>
-                </div>
+                        <div class="parameter-info">
+                            <p data-i18n-key="rowHouses.modal.helper.adjust">Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.</p>
+                            <p data-i18n-key="rowHouses.modal.helper.dimensions">Length is parallel to the longest parcel side. Width is perpendicular.</p>
+                            <p data-i18n-key="rowHouses.modal.helper.chamfer">Chamfer cuts the corners at 45° angles.</p>
+                        </div>
+                    </details>
                 </div>
                 <div id="rowhouse-controls" class="cb-dialog__footer">
                     <div id="rowhouse-info" data-i18n-attr="text" role="status" aria-live="polite"></div>
                     <div id="rowhouse-buttons">
+                        <button type="button" class="btn btn-quiet" id="btn-rowhouse-cancel" data-i18n-key="cancel" data-i18n-attr="text">Cancel</button>
                         <button type="button" class="btn" id="btn-rowhouse-regenerate" hidden data-i18n-key="rowHouses.modal.regenerate" data-i18n-attr="text">Regenerate</button>
                         <button type="button" class="btn btn-primary" id="btn-rowhouse-done" data-i18n-key="rowHouses.modal.done" data-i18n-attr="text">Done</button>
                     </div>
                 </div>
             `;
 
-            modalDiv.appendChild(container);
-            document.body.appendChild(modalDiv);
-
+            const content = container.querySelector('#rowhouse-sidebar');
+            const footer = container.querySelector('#rowhouse-controls');
+            const rotationTools = container.querySelector('.single-building-rotation-buttons');
+            footer?.classList.remove('cb-dialog__footer');
+            rowHouseModal = window.OnMapEditor?.open({
+                owner: 'row-house',
+                id: 'rowhouse',
+                title: translateRowHouseText('rowHouses.modal.title', 'Row houses'),
+                content,
+                footer,
+                modes: ['2d', 'model'],
+                wide: false,
+                tools: rotationTools,
+                placement: {
+                    site: block.site || cachedSuperparcel,
+                    onLockChange: () => {
+                        if (generatedRowHouseFeature) {
+                            if (rowHouseFeatureValid(generatedRowHouseFeature)) displayRowHouseBuildingInModal(generatedRowHouseFeature);
+                            else setRowHouseInfo('', translateRowHouseText('onMapEditor.lockReject', 'The current footprint is outside the locked site. Move it back inside to use site lock.'));
+                        }
+                    }
+                },
+                hints: {
+                    '2d': translateRowHouseText('rowHouses.modal.helper.adjust', 'Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.'),
+                    model: translateRowHouseText('rowHouses.modal.helper.dimensions', 'Length follows the longest parcel side; width is perpendicular.')
+                },
+                onCancel: requestCloseRowHouseModal,
+                onModeChange: mode => { if (mode === '2d') renderRowHousePolygonEditor(); }
+            });
+            if (!rowHouseModal) return false;
+            if (rowHouseModal.tools) {
+                rowHouseModal.tools.setAttribute('role', 'toolbar');
+                rowHouseModal.tools.setAttribute('aria-label', translateRowHouseText('rowHouses.modal.labels.rotation', 'Rotate footprint'));
+            }
+            rowHouseMap = rowHouseModal.map;
+            ensureRowHouseHistory();
             setRowHouseInfo('rowHouses.modal.generating', 'Generating row houses...');
 
             // Apply translations
             try {
                 if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.applyTranslations === 'function') {
-                    window.i18n.applyTranslations(container);
+                    window.i18n.applyTranslations(rowHouseModal.content);
+                    window.i18n.applyTranslations(rowHouseModal.tools);
                 }
             } catch (_) { }
 
-            document.dispatchEvent(new CustomEvent('rowHouseModalOpened'));
-            document.dispatchEvent(new CustomEvent('urbanRuleModalOpened'));
 
             // Add event listeners
-            document.getElementById('rowhouse-close').addEventListener('click', requestCloseRowHouseModal);
-            document.addEventListener('keydown', handleRowHouseKeydown);
             const doneButton = document.getElementById('btn-rowhouse-done');
             if (doneButton) {
                 doneButton.addEventListener('click', saveRowHouseDesignForProposal);
                 doneButton.disabled = true;
             }
 
+            const cancelButton = document.getElementById('btn-rowhouse-cancel');
+            if (cancelButton) cancelButton.addEventListener('click', requestCloseRowHouseModal);
+            document.getElementById('rowhouse-manual-toggle')?.addEventListener('click', toggleRowHouseManualMode);
+
             // Slider event listeners with boundary checking
             document.getElementById('rowhouse-length-slider').addEventListener('input', function (e) {
+                if (rowHouseManualMode) return;
+                rowHouseHistory?.record?.();
                 const proposedLength = parseFloat(e.target.value);
                 // Check if proposed length fits (try to adjust position first)
-                if (checkBuildingFitsInSuperparcel(proposedLength, currentBuildingWidth, currentChamfer, currentOffsetX, currentOffsetY, currentRotation)) {
+                if (!rowHousePlacementLocked() || checkBuildingFitsInSuperparcel(proposedLength, currentBuildingWidth, currentChamfer, currentOffsetX, currentOffsetY, currentRotation)) {
                     currentBuildingLength = proposedLength;
                 } else if (checkBuildingFitsInSuperparcel(proposedLength, currentBuildingWidth, currentChamfer, 0, 0, currentRotation)) {
                     // Reset position to center
@@ -1732,15 +1711,19 @@
             });
 
             document.getElementById('rowhouse-chamfer-slider').addEventListener('input', function (e) {
+                if (rowHouseManualMode) return;
+                rowHouseHistory?.record?.();
                 currentChamfer = parseFloat(e.target.value);
                 document.getElementById('rowhouse-chamfer-value').textContent = CbFormat.formatNumber(currentChamfer, { maxFractionDigits: 1, minFractionDigits: 1 });
                 generateRowHouseInModal();
             });
 
             document.getElementById('rowhouse-width-slider').addEventListener('input', function (e) {
+                if (rowHouseManualMode) return;
+                rowHouseHistory?.record?.();
                 const proposedWidth = parseFloat(e.target.value);
                 // Check if proposed width fits (try to adjust position first)
-                if (checkBuildingFitsInSuperparcel(currentBuildingLength, proposedWidth, currentChamfer, currentOffsetX, currentOffsetY, currentRotation)) {
+                if (!rowHousePlacementLocked() || checkBuildingFitsInSuperparcel(currentBuildingLength, proposedWidth, currentChamfer, currentOffsetX, currentOffsetY, currentRotation)) {
                     currentBuildingWidth = proposedWidth;
                 } else if (checkBuildingFitsInSuperparcel(currentBuildingLength, proposedWidth, currentChamfer, 0, 0, currentRotation)) {
                     // Reset position to center
@@ -1762,9 +1745,10 @@
             });
 
             document.getElementById('rowhouse-height-slider').addEventListener('input', function (e) {
+                rowHouseHistory?.record?.();
                 currentBuildingHeight = parseFloat(e.target.value);
                 document.getElementById('rowhouse-height-value').textContent = CbFormat.formatNumber(currentBuildingHeight, { maxFractionDigits: 0, minFractionDigits: 0 });
-                // Height affects 3D extrusion and volume metric
+                // Height affects the model preview and volume metric
                 if (generatedRowHouseFeature) {
                     generatedRowHouseFeature.properties.height = Math.round(currentBuildingHeight);
                     syncRowRuleControls(); // the minimum rides on the ceiling
@@ -1829,38 +1813,10 @@
             // No outside-click close: a stray click on the backdrop would throw the design away.
             // The editor is left only via the X (discard, after confirming) or Done (save).
 
-            // Ensure 3D canvas is interactive
-            const threeDiv = document.getElementById('rowhouse-3d');
-            if (threeDiv) {
-                threeDiv.style.pointerEvents = 'auto';
-            }
         }
-
-        // Initialize the map if needed
-        if (!rowHouseMap) {
-            rowHouseMap = L.map('rowhouse-map', {
-                zoomControl: true,
-                dragging: true,
-                scrollWheelZoom: true,
-                maxZoom: 22
-            });
-
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 22,
-                maxNativeZoom: 19,
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(rowHouseMap);
-
-            attachRowHouseMapResizeObserver();
-        }
-
-        invalidateRowHouseMapSize('modal-open');
 
         // Display the block on the map
         displayBlockOnRowHouseMap(block);
-
-        // Allow layout to settle and then ensure the map tiles fill the container
-        setTimeout(() => invalidateRowHouseMapSize('post-open'), 150);
 
         // Calculate max dimensions based on superparcel (also sets baseRotation and cached values)
         const { maxLength, maxWidth, maxSliderValue } = calculateMaxBuildingDimensions(block);
@@ -1874,6 +1830,7 @@
         rowMinHeightM = 0;
         rowMinPlotAreaM2 = DEFAULT_ROW_MIN_PLOT_AREA_M2;
         rowVariationSeed = (Math.floor(Math.random() * 0xffffffff) >>> 0);
+        rowHouseManualMode = false;
         rowUnits = [];
         rowBuildOut = [];
         rowExcluded = [];
@@ -1908,6 +1865,7 @@
                 if (num(savedRule.minPlotAreaM2) !== null) rowMinPlotAreaM2 = num(savedRule.minPlotAreaM2);
             }
             if (num(seed.seed) !== null) rowVariationSeed = num(seed.seed) >>> 0;
+            rowHouseManualMode = seed.manualMode === true;
         }
         // Note: baseRotation is intentionally NOT reset here - it's set by calculateMaxBuildingDimensions
         // based on the longest side of the superparcel for consistent boundary checking
@@ -1946,9 +1904,12 @@
             document.getElementById('rowhouse-minplot-value').textContent = String(rowMinPlotAreaM2);
         }
         syncRowRuleControls();
+        syncRowHouseGeometryControls();
 
         // Generate row house immediately
-        setTimeout(() => {
+        rowHouseGenerationTimer = setTimeout(() => {
+            rowHouseGenerationTimer = null;
+            if (!rowHouseModal || rowHouseBlock !== block) return;
             if (seedFeature?.geometry && rowHouseFeatureValid(seedFeature)) {
                 seedFeature.properties = {
                     ...(seedFeature.properties || {}),
@@ -1966,6 +1927,7 @@
                 generateRowHouseInModal();
             }
         }, 500);
+        return true;
     }
 
     function displayBlockOnRowHouseMap(block) {
@@ -1984,6 +1946,7 @@
 
         // Add the parcels to the map
         rowHouseParcelLayer = L.geoJSON(featureCollection, {
+            pane: rowHouseModal?.pane,
             style: {
                 fillColor: 'red',
                 fillOpacity: 0.2,
@@ -1993,17 +1956,7 @@
         }).addTo(rowHouseMap);
 
         // Fit the map to the bounds of the block
-        rowHouseMap.fitBounds(rowHouseParcelLayer.getBounds(), {
-            padding: [50, 50]
-        });
-
-        invalidateRowHouseMapSize('fit-block');
-
-        // Safeguard: double-check sizing after the next frame in case flex layout shifts
-        setTimeout(() => invalidateRowHouseMapSize('fit-block-late'), 50);
-
-        // Initialize 3D preview
-        try { initRowHouse3DSimple(); } catch (e) { console.warn('3D init failed', e); }
+        rowHouseModal?.fitFeature(block.site?.geometry ? block.site : featureCollection, { maxZoom: 21 });
     }
 
     // The X / Esc path. Closing NEVER saves — only "Done" (saveRowHouseDesignForProposal) does.
@@ -2017,46 +1970,43 @@
         closeRowHouseModal();
     }
 
-    // Escape closes the editor exactly like the X does (discard, after confirming).
-    function handleRowHouseKeydown(event) {
-        if (event.key !== 'Escape') return;
-        if (!document.getElementById('rowhouse-modal')) return;
-        event.preventDefault();
-        requestCloseRowHouseModal();
-    }
-
-    // Pure teardown: the design is committed (or not) by the caller — "Done" saves first,
-    // X/Esc discards the design session first.
     function closeRowHouseModal(options = {}) {
         const { preservePending = false } = options;
-        document.removeEventListener('keydown', handleRowHouseKeydown);
+        if (rowHouseGenerationTimer !== null) {
+            clearTimeout(rowHouseGenerationTimer);
+            rowHouseGenerationTimer = null;
+        }
         destroyRowHousePolygonEditor();
+        rowHouseHistoryKeydown?.();
+        rowHouseHistoryKeydown = null;
+        rowHouseHistory?.destroy?.();
+        rowHouseHistory = null;
+        if (rowHouseUndoButton?.parentNode) rowHouseUndoButton.parentNode.removeChild(rowHouseUndoButton);
+        rowHouseUndoButton = null;
         rowHousePendingVertexActionIndex = null;
-
-        if (rowHouseMapResizeObserver) {
-            try { rowHouseMapResizeObserver.disconnect(); } catch (_) { }
-            rowHouseMapResizeObserver = null;
-        }
-
-        // Remove the map instance
         if (rowHouseMap) {
-            if (rowHouseParcelLayer) {
-                rowHouseMap.removeLayer(rowHouseParcelLayer);
-                rowHouseParcelLayer = null;
-            }
-            if (rowHouseBuildingLayer) {
-                rowHouseMap.removeLayer(rowHouseBuildingLayer);
-                rowHouseBuildingLayer = null;
-            }
-            rowHouseMap.remove();
-            rowHouseMap = null;
+            [rowHouseParcelLayer, rowHouseBuildingLayer].forEach(layer => {
+                if (layer) { try { rowHouseMap.removeLayer(layer); } catch (_) { } }
+            });
+            [rowUnitLayers, rowExcludedLayers].forEach(layers => layers.forEach(layer => {
+                if (layer) { try { rowHouseMap.removeLayer(layer); } catch (_) { } }
+            }));
         }
+        rowHouseParcelLayer = null;
+        rowHouseBuildingLayer = null;
+        rowUnitLayers = [];
+        rowExcludedLayers = [];
+        rowHouseMap = null;
+        const editorSession = rowHouseModal;
+        rowHouseModal = null;
+        editorSession?.close();
 
         // Clear state
         generatedRowHouseFeature = null;
         rowHouseSeedFeature = null;
         rowHouseBlock = null;
         rowHouseBlockNameOverride = null;
+        rowHouseManualMode = false;
 
         // Clear cached superparcel data
         cachedSuperparcel = null;
@@ -2065,21 +2015,8 @@
         cachedMetersPerDegLng = null;
         cachedMetersPerDegLat = null;
 
-        // Dispose 3D resources
-        disposeRowHouse3D();
-
-        // Remove the modal from DOM
-        const modal = document.getElementById('rowhouse-modal');
-        if (modal) {
-            modal.remove();
-            document.dispatchEvent(new CustomEvent('rowHouseModalClosed'));
-            document.dispatchEvent(new CustomEvent('urbanRuleModalClosed'));
-        }
-
-        // Force a reflow of the main map
-        if (typeof map !== 'undefined' && map) {
-            map.invalidateSize();
-        }
+        document.dispatchEvent(new CustomEvent('rowHouseModalClosed'));
+        document.dispatchEvent(new CustomEvent('urbanRuleModalClosed'));
 
         // Reset parameters to defaults
         currentBuildingLength = DEFAULT_BUILDING_LENGTH;
@@ -2161,7 +2098,7 @@
             }
         }
 
-        block.parcels.forEach(parcel => {
+        if (!block.syntheticSite) block.parcels.forEach(parcel => {
             const props = parcel?.feature?.properties;
             const parcelId = typeof ensureParcelId === 'function'
                 ? ensureParcelId(parcel?.feature)
@@ -2185,13 +2122,13 @@
             multiParcelSelection.updateUI();
         }
 
-        if (!normalizedParcelIds.length) {
+        if (!normalizedParcelIds.length && !block.syntheticSite) {
             setRowHouseInfo('rowHouses.modal.messages.unableToMapParcels', 'Unable to map parcels for this block.');
             return;
         }
 
-        const clonedFeature = JSON.parse(JSON.stringify(generatedRowHouseFeature));
-        const clonedUnits = rowUnits.length ? JSON.parse(JSON.stringify(rowUnits)) : null;
+        const clonedFeature = window.UrbanRuleVariation.massingWithRule(generatedRowHouseFeature, currentRowRule(), rowVariationSeed, { turf });
+        const clonedUnits = [cloneRowHouseFeature(clonedFeature)];
         const context = {
             parcelIds: normalizedParcelIds.slice(),
             parentDetails: parentDetails.slice(),
@@ -2208,10 +2145,13 @@
                 // What the rule compels and the variation it was saved with, so reopening redraws
                 // the same terrace rather than a different one under the same name.
                 rule: currentRowRule(),
-                seed: rowVariationSeed
+                seed: rowVariationSeed,
+                manualMode: rowHouseManualMode,
+                placementBaseSite: cloneRowHouseFeature(block.generatorSite || block.site || cachedSuperparcel)
             },
-            buildingFeature: clonedUnits ? clonedUnits[0] : clonedFeature,
-            buildings: clonedUnits || [clonedFeature]
+            buildingFeature: clonedFeature,
+            buildings: clonedUnits,
+            placement: { site: cloneRowHouseFeature(generatedRowHouseFeature), free: true }
         };
 
         window.pendingRowHouseFromModal = clonedFeature;
@@ -2247,13 +2187,14 @@
     // Entry point for opening row house modal from parcels
     // Saved parameters keep the sliders meaningful; `initialFeature` preserves arbitrary edits or
     // an uploaded polygon instead of regenerating a rectangle when the proposal is reopened.
-    function openRowHouseForParcels({ blockName, parcelIds, initialParameters = null, initialFeature = null }) {
+    function openRowHouseForParcels({ blockName, parcelIds, initialParameters = null, initialFeature = null, site = null }) {
         const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
-        if (!ids.length) {
+        const authoredSite = site?.type === 'Feature' && site.geometry ? cloneRowHouseFeature(site) : null;
+        if (!ids.length && !authoredSite?.geometry) {
             if (typeof updateStatus === 'function') {
                 updateStatus('Select parcels before launching the row house tool.');
             }
-            return;
+            return false;
         }
         rowHouseSeedParameters = initialParameters || null;
         rowHouseSeedFeature = initialFeature?.geometry ? cloneRowHouseFeature(initialFeature) : null;
@@ -2263,17 +2204,23 @@
             if (typeof updateStatus === 'function') {
                 updateStatus(translateRowHouseText('status.messages.could_not_resolve_parcel_data_for_the_selected_parcels', 'Could not resolve parcel data for the selected parcels.'));
             }
-            return;
+            return false;
         }
+        if (!ids.length && authoredSite?.geometry) liveParcels.push({ id: '__placement-site__', feature: authoredSite });
 
         rowHouseBlock = {
             parcels: liveParcels,
             parcelIds: ids,
+            site: authoredSite,
+            generatorSite: initialParameters?.placementBaseSite?.geometry
+                ? cloneRowHouseFeature(initialParameters.placementBaseSite)
+                : cloneRowHouseFeature(authoredSite),
+            syntheticSite: ids.length === 0,
             valid: true,
             polygon: null
         };
         rowHouseBlockNameOverride = blockName || describeRowHouseParcelSelection(ids);
-        showRowHouseModal();
+        return showRowHouseModal() === true;
     }
 
     // Export to window

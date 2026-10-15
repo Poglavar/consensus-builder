@@ -116,7 +116,9 @@ test('Explore banner requests its place, opens World view, and dismisses for thi
   await expect(page.locator('#world-view')).toBeVisible();
   await page.locator('#world-view').getByRole('button', { name: 'Back to map' }).click();
   await expect(page.locator('#world-view')).toHaveCount(0);
-  await banner.getByRole('button', { name: 'Dismiss', exact: true }).click();
+  // This banner's accessible close label is localized as "Close" (the close-circle control),
+  // while "Dismiss" belongs to the parcel-source warning banner.
+  await banner.locator('.explore-banner__close').click();
   await expect(banner).toHaveCount(0);
   await page.reload({ waitUntil: 'domcontentloaded' });
   await waitForMapReady(page);

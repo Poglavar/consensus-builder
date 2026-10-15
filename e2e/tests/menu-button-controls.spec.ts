@@ -60,14 +60,14 @@ test('parcel menu Offer my land explains the ownership proof required from a gue
   await expect(page.locator('.create-proposal-modal:visible')).toHaveCount(0);
 });
 
-test('parcel menu View in 3D enters the model with the selected parcel centered', async ({ mockApi: page }) => {
+test('global 3D mode opens from a selected parcel and retains parcel picking and isolation', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
   await openCity(page);
   await page.evaluate(({ id, geometry }) => (window as any).proposalStorage.addProposal({
     title: '3D parcel proposal', goal: 'decide-later', cadastreParcelIds: [id], geometry, applied: false,
   }), { id: PARCEL_ID, geometry: PARCEL_GEOMETRY });
   await clickMapPoint(page, 15.9822, 45.80025);
-  await page.locator('#parcel-menu [data-command="parcel.view3d"]').click();
+  await page.locator('#mode-3d-toggle').click();
   await expect(page.locator('#three-container canvas')).toBeVisible();
   await expect(page.locator('body')).toHaveClass(/three-mode-active/);
   await expect(page.locator('#parcel-menu')).toBeHidden();

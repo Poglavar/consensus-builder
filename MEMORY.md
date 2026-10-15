@@ -1,5 +1,9 @@
 # Memory
 
+- 2026-10-15: For the on-map production cutover, preserve built capabilities without maintaining legacy implementation compatibility. The user accepts switching between 2D and model views instead of simultaneous previews, and intentionally removes the parcel/ground View in 3D shortcut.
+
+- 2026-10-14: Geometry editors use the global view buttons; in desktop 3D their controls dock left so Layers can remain open on the right.
+
 - 2026-10-09: Run the population-ranked parcel research task in an isolated Valhalla checkout with durable per-city checkpoints so it continues when the laptop is closed; future publication remains an explicit release action.
 - 2026-10-09: Public parcel research must continue beyond human-facing UI: inspect viewer configuration, network requests and first-party WFS/OGC/ArcGIS/download endpoints, distinguishing a UI login or fetch failure from unavailable parcel geometry; source discovery and runtime qualification remain separate.
 
@@ -666,6 +670,44 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 
 - 2026-10-14: User chose `zagreb.lol/novogradnje/` as the public new-build catalogue, with building/apartment links, search and apartment filters, sourced construction years for older buildings, and links to Moja parcela and Lovac na prilike. Discovery spans agencies and architecture studios; owned asset downloads follow supported map location. Keep plan originals and structured results, replace completed raw sources with URL/hash-bound evidence and tombstones, and leave recurring scheduling disabled. Rationale: visitors need mapped, inspectable homes while repeat collection stays inexpensive and the archive stays small.
 
+- 2026-10-14: User approved the on-map editing experiment on `on-map-editing`: freeform buildings use floating properties and rotation controls on the main map, with footprint handles in 2D and a shared live draft in model 3D; phones use a compact bottom panel. Rationale: place and size a building while keeping its surroundings visible; photorealistic editing is deferred.
+
+- 2026-10-14: User expanded the on-map editing pattern to every geometry proposal family, retaining each tool’s rules, ownership controls, furniture, transport settings, and upload flow. The shared editor owns the main map and supported views; reopening buildings uses the authored site, not the smaller parcel created by the first placement. Rationale: edits must retain their surrounding context and original room to move.
+
+- 2026-10-15: User chose free movement for physical proposal geometry, with parcel snapping, warnings and an optional site lock; saving recomputes destination land binding and published records always fork. Blocks and row houses support generated or manual shapes: moving/rotating preserves generated controls, while reshaping disables footprint sliders and keeps height editable. Detached rules stay parcel-relative; ownership and land readjustment stay fixed to their land. Rationale: parcels guide design without permanently constraining a physical proposal to its initial selection.
+
+- 2026-10-08: The user approved researching current contacts and sending the next developed-country batch of 47 candidates in Australia, Germany, the UK, Canada, New Zealand and the US, retaining slow individual sends and prior-contact suppression.
+
 - 2026-10-13: User accepted synthetic parcel references where the source has no better identity and requested the exact latest map source in Settings. Expand India using `ramSeraph/indian_cadastrals` and its original services, including other cities on Mumbai's coastal provider; keep published plot labels separate from outline-derived references because the labels may repeat.
 - 2026-10-14: User approved a seam rule for Indian parcel layers whose outlines overlap (village maps georeferenced one village at a time): sources with `overlapResolution: overlap-ground-v1-area-desc-id-asc-turf6` give each overlap to the larger outline (ties: lower reference) and publish the rest as derived ground; references stay the published outline or key. Applied only where overlaps were found (Kerala, Karnataka, Puducherry NCSCM; Bihar Matribhoomi) because each view reads a padded box. Rationale: overlaps blocked qualification while the strict 0.01 m² gate stays.
+- 2026-10-15: User chose the integration path `on-map-editing` → `colosseum-worlds-fair` → `main`, with the merge into `main` happening later.
+
+- 2026-10-11: Outreach history and planning-contact research live in the private sibling `ugt-outreach` directory; one central ledger gates introductions by both entity and mailbox across municipalities and universities, including queues and submitted forms.
+
+- 2026-10-14: The standalone `/traffic/` preview animates saved lane-topology answers over OSM, with random allowed turns, adjacent lane changes and explicitly simulated signals; its compressed export reuses the existing topology pipeline without writing or promoting solver results.
+- 2026-10-14: Traffic-preview cars must remain visible at missing exits; signal positions use mapped OSM nodes from the road snapshot, with only their cycles simulated and source links available on click.
+- 2026-10-14: The traffic preview may reuse checked movements at an otherwise unresolved junction; normal traffic circulates within connected lane regions so missing exits do not strand cars.
+- 2026-10-14: The user wants `/traffic/` to develop into a simulator for changing roads and comparing effects; derived physical lane geometry is shared by guides and vehicle motion, while saved permitted movements remain authoritative.
+- 2026-10-14: Traffic edits apply during the current run, preserving vehicles, clock and flow counters; occupied closures wait for clearance before cutting lane spans, and meters retain the pre-edit rate for comparison.
+
+- Simulator prometa: hrvatsko sučelje, kanonska putanja zagreb.lol/promet/simulator/ i mreža iz API-ja; priprema paketa ne uključuje objavu.
+- 2026-10-14: The user explicitly accepted gridlock as a limitation of the traffic simulator and asked to publish the current version; keep collision, signal, permitted-route and vehicle-identity checks, without requiring every queued car to eventually progress.
+- 2026-10-14: Published the simulator at https://zagreb.lol/promet/simulator/ with a dedicated PM2 service, bundled topology runtime and read-only traffic API; production saved-junction evidence is copied into the isolated traffic_simulator schema owned by geo_user.
+
+- 2026-10-14: Traffic cars use only current free space, actual stop lines and collision checks on every tick; future exit reservations are removed, and gridlock is accepted.
+- 2026-10-14: The traffic simulator has quiet viewport-based engine and tyre ambience with a sound switch; pause and hidden tabs suspend it.
+
+- 2026-10-14: The user permits slow standstill lane changes inside junctions across lane markings; preserve vehicle identity and physical collision, signal and closure constraints.
+- 2026-10-14: Flow counters show the total across every crossed lane separately for each direction, with live arrow labels on the map.
+
+- 2026-10-14: Traffic junction pavement follows actual lane and movement footprints; never fill empty outer corners by joining unrelated portals.
+- 2026-10-14: Tram rails reuse the shared OSM rail centerlines and gauge/track tags; the tram bed sits beneath road pavement so reserved and shared alignments retain their mapped positions.
+- 2026-10-15: Lane-count changes preserve longitudinal painted boundaries; new outer lanes get parallel markings on pavement, while vehicle-routing fans remain unpainted.
+
+- 2026-10-15: Traffic drivers use seeded spacing, patience, moods and occasional horns; local merge priority and physical forward/reverse escapes reduce mutual blocking, with full vehicle footprints and road/closure/red-stop checks. City buses, police cars and ambulances follow the same ordinary rules.
+
+- 2026-10-15: Traffic recovery can replace an already-started maneuver from its actual pose; other drivers yield its short swept path across gear changes so they do not fill the space needed to finish backing around an obstacle.
+
+- 2026-10-15: The user approved extracting traffic simulation and observed junction recognition into private domain repositories, with public reads in the shared API and canonical tables in shared geodata; preserve existing behavior and defer new functionality.
+- 2026-10-15: Keep the small production packaging step and use the ordered script lists in `frontend/index.html` as the shared loader/build inventory; explicit bundle markers replace a second manually maintained list.
 - 2026-10-14: Indian cities whose original cadastral services are dead or India-only are read from ramSeraph/indian_cadastrals' vector tiles at indianopenmaps.com (CORS open, browser-direct, no relay) through the `vector-tiles` adapter: zoom-max tiles are cut to their core, cut rows are followed into neighbouring tiles until they close (cuts left open by up to 16 units, a tile builder's dropped sliver, are accepted and counted), fragments join only where their cuts meet, and references are outline hashes. Every such source credits ramSeraph and Datameet in its attribution (user request). Rationale: the GitHub release files have no CORS, and the tiles keep the app independent of our server.

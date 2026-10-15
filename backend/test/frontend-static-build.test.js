@@ -7,24 +7,33 @@ import { parse } from '@babel/parser';
 import { describe, expect, it } from 'vitest';
 
 const require = createRequire(import.meta.url);
-const { SAFE_GROUPS, assertScopeIsolated, buildStatic, findScriptArrays } = require('../../frontend/build-static.cjs');
+const { assertScopeIsolated, buildStatic, findBundleGroups, findScriptArrays } = require('../../frontend/build-static.cjs');
 const read = relative => readFileSync(new URL(relative, import.meta.url), 'utf8');
 
 function makeTempRoot(prefix) {
     return mkdtempSync(path.join(os.tmpdir(), prefix));
 }
 
-function fixtureFrontend(root) {
+function fixtureFrontend(root, { group = 'fixture' } = {}) {
     mkdirSync(path.join(root, 'js'), { recursive: true });
     writeFileSync(path.join(root, 'build-static.cjs'), '// deployment helper, never publish');
     writeFileSync(path.join(root, 'index.html'), `<!doctype html><script>
 function appendBuildToken(path) {
     return path + '?build=fixture';
 }
-window.writeVersionedLocalScripts(['js/a.js?v=old', 'js/b.js?v=old', 'js/global.js', 'js/current.js']);
+window.writeVersionedLocalScripts([
+    // bundle:start ${group}
+    'js/a.js?v=old',
+    'js/new-safe.js',
+    'js/b.js?v=old',
+    // bundle:end ${group}
+    'js/global.js',
+    'js/current.js'
+]);
 </script>`);
     writeFileSync(path.join(root, 'js/a.js'), `(function () { window.trace.push('a'); window.a = 1; })();`);
     writeFileSync(path.join(root, 'js/b.js'), `(function () { window.trace.push('b:' + window.a); window.b = 2; })();`);
+    writeFileSync(path.join(root, 'js/new-safe.js'), `(function () { window.trace.push('new-safe:' + window.a); window.newSafe = true; })();`);
     writeFileSync(path.join(root, 'js/global.js'), `function fixtureGlobal() {}\nwindow.trace.push('global');`);
     writeFileSync(path.join(root, 'js/current.js'), `(function () { if (document.currentScript) window.trace.push('current'); })();`);
 }
@@ -49,16 +58,14 @@ describe('production static frontend build', () => {
         mkdirSync(output);
         fixtureFrontend(source);
         const originalIndex = readFileSync(path.join(source, 'index.html'), 'utf8');
-        const groups = [{ name: 'fixture', paths: ['js/a.js?v=new', 'js/b.js?v=new'] }];
-
         const originalPaths = findScriptArrays(originalIndex).flatMap(array => array.items.map(item => item.value));
         const baseline = runScripts(source, originalPaths);
-        const result = buildStatic(source, output, groups);
+        const result = buildStatic(source, output);
         const stagedIndex = readFileSync(path.join(output, 'index.html'), 'utf8');
         const stagedPaths = findScriptArrays(stagedIndex).flatMap(array => array.items.map(item => item.value));
         const staged = runScripts(output, stagedPaths);
 
-        expect(result).toMatchObject({ beforeCount: 4, afterCount: 3, reduction: 1 });
+        expect(result).toMatchObject({ beforeCount: 5, afterCount: 3, reduction: 2 });
         expect(stagedPaths).toHaveLength(3);
         expect(stagedPaths[0]).toMatch(/^js\/bundles\/fixture\.[a-f0-9]{16}\.js$/);
         expect(stagedIndex).toContain('if (/^js\\/bundles\\/[^/]+\\.[a-f0-9]{16}\\.js$/.test(path)) return path;');
@@ -69,6 +76,7 @@ describe('production static frontend build', () => {
         expect(cacheProbe.normalToken).toBe('js/global.js?build=fixture');
         expect(stagedPaths.slice(1)).toEqual(['js/global.js', 'js/current.js']);
         expect(staged.trace).toEqual(baseline.trace);
+        expect(baseline.trace).toEqual(['a', 'new-safe:1', 'b:1', 'global', 'current']);
         expect(staged.fixtureGlobal).toBeTypeOf('function');
         expect(staged.a).toBe(1);
         expect(staged.b).toBe(2);
@@ -77,12 +85,41 @@ describe('production static frontend build', () => {
 
         const oldBundle = stagedPaths[0];
         writeFileSync(path.join(source, 'js/b.js'), `(function () { window.trace.push('b:' + window.a); window.b = 2; window.trace.push('changed'); })();`);
-        buildStatic(source, output, groups);
+        buildStatic(source, output);
         const rebuiltPaths = findScriptArrays(readFileSync(path.join(output, 'index.html'), 'utf8'))
             .flatMap(array => array.items.map(item => item.value));
         expect(rebuiltPaths[0]).not.toBe(oldBundle);
         expect(readdirSync(path.join(output, 'js/bundles'))).toHaveLength(1);
-        expect(runScripts(output, rebuiltPaths).trace).toEqual(['a', 'b:1', 'changed', 'global', 'current']);
+        expect(runScripts(output, rebuiltPaths).trace).toEqual(['a', 'new-safe:1', 'b:1', 'changed', 'global', 'current']);
+        rmSync(temp, { recursive: true, force: true });
+    });
+
+    it('automatically bundles a new safe script added only to a marked index run', () => {
+        const temp = makeTempRoot('cb-static-inventory-');
+        const source = path.join(temp, 'source');
+        const output = path.join(temp, 'stage');
+        mkdirSync(source);
+        fixtureFrontend(source);
+
+        const index = readFileSync(path.join(source, 'index.html'), 'utf8');
+        const group = findBundleGroups(index);
+        expect(group).toMatchObject([{ name: 'fixture', paths: ['js/a.js', 'js/new-safe.js', 'js/b.js'] }]);
+        const built = buildStatic(source, output);
+        expect(built.bundles).toHaveLength(1);
+        const bundled = readFileSync(path.join(output, built.bundles[0]), 'utf8');
+        expect(bundled.indexOf('source: js/a.js')).toBeLessThan(bundled.indexOf('source: js/new-safe.js'));
+        expect(bundled.indexOf('source: js/new-safe.js')).toBeLessThan(bundled.indexOf('source: js/b.js'));
+        rmSync(temp, { recursive: true, force: true });
+    });
+
+    it('rejects a newly added unsafe script in a marked index run', () => {
+        const temp = makeTempRoot('cb-static-unsafe-inventory-');
+        const source = path.join(temp, 'source');
+        const output = path.join(temp, 'stage');
+        mkdirSync(source);
+        fixtureFrontend(source);
+        writeFileSync(path.join(source, 'js/new-safe.js'), 'function escapedGlobal() {}');
+        expect(() => buildStatic(source, output)).toThrow(/parenthesized IIFE/);
         rmSync(temp, { recursive: true, force: true });
     });
 
@@ -109,29 +146,27 @@ describe('production static frontend build', () => {
         const sentinel = path.join(output, 'keep.txt');
         writeFileSync(sentinel, 'leave this directory alone');
 
-        expect(() => buildStatic(source, output, [{ name: 'fixture', paths: ['js/a.js', 'js/b.js'] }]))
+        expect(() => buildStatic(source, output))
             .toThrow(/Refusing to replace a non-empty output directory/);
         expect(readFileSync(sentinel, 'utf8')).toBe('leave this directory alone');
         rmSync(temp, { recursive: true, force: true });
     });
 
-    it('every safe group is one consecutive script run in the real index.html (the server build refuses otherwise)', () => {
+    it('derives the seven marked production bundles and full ordered inventory from the real index.html', () => {
         const index = readFileSync(new URL('../../frontend/index.html', import.meta.url), 'utf8');
         const arrays = findScriptArrays(index);
-        for (const group of SAFE_GROUPS) {
-            let found = 0;
-            for (const array of arrays) {
-                const items = array.items;
-                for (let i = 0; i <= items.length - group.paths.length; i += 1) {
-                    if (group.paths.every((pathEntry, offset) => items[i + offset].value.split('?')[0] === pathEntry.split('?')[0])) found += 1;
-                }
-            }
-            expect(found, `${group.name}: a script inserted inside the group, or a group member moved, breaks the run`).toBe(1);
-        }
+        const groups = findBundleGroups(index, arrays);
+        expect(groups.map(({ name }) => name)).toEqual([
+            'foundation', 'environment-before-city', 'environment-after-city', 'chain-clients',
+            'parcel-data-clients', 'map-ui', 'proposal-geometry'
+        ]);
+        expect(groups.every(group => group.paths.length >= 2)).toBe(true);
     });
 
-    it('keeps the production allowlist scope-isolated and deploys only the staged tree', () => {
-        for (const group of SAFE_GROUPS) {
+    it('keeps marked production scripts scope-isolated and deploys only the staged tree', () => {
+        const index = readFileSync(new URL('../../frontend/index.html', import.meta.url), 'utf8');
+        const groups = findBundleGroups(index);
+        for (const group of groups) {
             for (const entry of group.paths) {
                 const file = path.resolve(new URL('../../frontend', import.meta.url).pathname, entry.split('?')[0]);
                 const ast = parse(readFileSync(file, 'utf8'), { sourceType: 'script' });
@@ -149,5 +184,37 @@ describe('production static frontend build', () => {
         expect(buildAt).toBeGreaterThan(stampAt);
         expect(syncAt).toBeGreaterThan(buildAt);
         expect(deploy.slice(syncAt, syncAt + 600)).toContain('"$STAGING_DIR/" "$DOCROOT/"');
+    });
+
+    it.each([
+        ['malformed', index => index.replace('// bundle:start fixture', '// bundle:begin fixture')],
+        ['duplicate name', index => index.replace("'js/global.js',", "// bundle:start fixture\n    'js/a.js',\n    'js/b.js',\n    // bundle:end fixture\n    'js/global.js',")],
+        ['nested', index => index.replace('// bundle:end fixture', '// bundle:start inner\n    // bundle:end fixture\n    // bundle:end inner')],
+        ['cross-array', index => index.replace(
+            "    // bundle:end fixture\n    'js/global.js',\n    'js/current.js'\n]);",
+            "    ]);\nwindow.writeVersionedLocalScripts([\n    // bundle:end fixture\n    'js/global.js',\n    'js/current.js'\n]);"
+        )]
+    ])('rejects %s bundle marker structure', (_, transform) => {
+        const temp = makeTempRoot('cb-static-markers-');
+        const source = path.join(temp, 'source');
+        const output = path.join(temp, 'stage');
+        mkdirSync(source);
+        fixtureFrontend(source);
+        const indexPath = path.join(source, 'index.html');
+        writeFileSync(indexPath, transform(readFileSync(indexPath, 'utf8')));
+        expect(() => buildStatic(source, output)).toThrow();
+        rmSync(temp, { recursive: true, force: true });
+    });
+
+    it('rejects bundle paths that escape the frontend source root', () => {
+        const temp = makeTempRoot('cb-static-path-escape-');
+        const source = path.join(temp, 'source');
+        const output = path.join(temp, 'stage');
+        mkdirSync(source);
+        fixtureFrontend(source);
+        const indexPath = path.join(source, 'index.html');
+        writeFileSync(indexPath, readFileSync(indexPath, 'utf8').replace('js/new-safe.js', '../outside.js'));
+        expect(() => buildStatic(source, output)).toThrow(/escapes frontend source/);
+        rmSync(temp, { recursive: true, force: true });
     });
 });

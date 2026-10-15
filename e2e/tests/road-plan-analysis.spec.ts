@@ -71,7 +71,7 @@ test.describe('Government plan and road analysis controls @features', () => {
     await installLayerDatasets(page);
     await openCity(page);
     await openParcel(page);
-    await page.locator('#parcel-info-panel .parcel-tab-btn').filter({ hasText: 'Tools' }).click();
+    await page.locator('#parcel-info-panel').getByRole('tab', { name: 'Tools' }).click();
     await page.locator('#analyzeRoadButton').click();
     await expect(page.locator('#road-analysis-panel')).toHaveClass(/visible/);
     await expect.poll(() => page.evaluate(() => document.querySelectorAll('#map .leaflet-overlay-pane path').length)).toBeGreaterThan(0);

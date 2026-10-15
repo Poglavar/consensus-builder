@@ -10,7 +10,7 @@ test.describe('Wallet connection @features', () => {
   // app, and their results were computed and then never asserted on. Removed rather than left to
   // imply coverage that was never there — the real wallet API is `walletManager`, exercised below.
   test('the wallet CDN libraries (ethers + solanaWeb3) are loaded', async ({ mockApi: page }) => {
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await waitForMapReady(page);
     await waitForBlockchainRuntime(page, ['ethers', 'solanaWeb3', 'walletManager']);
 
@@ -35,7 +35,7 @@ test.describe('Wallet connection @features', () => {
       walletKind: 'metamask',
     });
 
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await waitForMapReady(page);
     await openWalletModal(page);
 
@@ -77,7 +77,7 @@ test.describe('Wallet connection @features', () => {
       walletKind: 'metamask',
     });
 
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await waitForMapReady(page);
     await openWalletModal(page);
 
@@ -104,7 +104,7 @@ test.describe('Wallet connection @features', () => {
       providerName: 'phantom',
     });
 
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await waitForMapReady(page);
     await openWalletModal(page);
 
@@ -150,7 +150,7 @@ test.describe('Wallet connection @features', () => {
       providerName: 'brave',
     });
 
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await waitForMapReady(page);
     await openWalletModal(page);
 

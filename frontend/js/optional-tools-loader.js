@@ -6,10 +6,10 @@
     const groups = {
         roadAnalysis: ['js/road-analysis.js'],
         roadDetection: ['js/road-detection.js'],
-        singleBuilding: ['js/single-building-geometry.js', 'js/single-building.js'],
-        rowHouse: ['js/single-building-geometry.js', 'js/row-house.js'],
-        parcelBased: ['js/single-building-geometry.js', 'js/parcel-based.js'],
-        buildingUpload: ['js/single-building-geometry.js', 'js/single-building.js', 'js/building-upload.js']
+        singleBuilding: ['js/single-building.js'],
+        rowHouse: ['js/row-house.js'],
+        parcelBased: ['js/parcel-based.js'],
+        buildingUpload: ['js/single-building.js', 'js/building-upload.js']
     };
     const loaded = new Set();
     const inFlight = new Map();

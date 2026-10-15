@@ -38,7 +38,7 @@ test.describe('Supporting pages @core', () => {
     await expect(page.locator('.ae-run-detail')).toContainText('Preserve open space');
   });
 
-  test('transaction explorer filters returned transactions and refreshes through the sync boundary', async ({ mockApi: page }) => {
+  test('transaction explorer filters stored transactions and refreshes its database read', async ({ mockApi: page }) => {
     const calls: string[] = [];
     const payload = {
       cluster: 'devnet', fetchedAt: '2026-09-30T12:00:00Z', cached: false,
@@ -54,7 +54,6 @@ test.describe('Supporting pages @core', () => {
       const url = new URL(request.url());
       calls.push(`${request.method()} ${url.pathname}${url.search}`);
       if (url.pathname.endsWith('/transactions/watched')) return json(route, { watched: payload.watched, explorer: payload.explorer });
-      if (url.pathname.endsWith('/transactions/sync')) return json(route, { synced: 0, new: 0 });
       return json(route, payload);
     });
 
@@ -64,9 +63,11 @@ test.describe('Supporting pages @core', () => {
     await expect(page.locator('#tx-tbody tr')).toHaveCount(1);
     await expect(page.locator('#tx-tbody')).toContainText('sig-alpha');
     await page.locator('#tx-filter-clear').click();
+    const listReadsBeforeRefresh = calls.filter(call => call.startsWith('GET /transactions?limit=25')).length;
     await page.locator('#tx-refresh').click();
-    await expect.poll(() => calls.some(call => call.startsWith('POST /transactions/sync'))).toBe(true);
-    await expect.poll(() => calls.some(call => call.includes('/transactions?limit=25&sync=0'))).toBe(true);
+    await expect.poll(() => calls.filter(call => call.startsWith('GET /transactions?limit=25')).length)
+      .toBeGreaterThan(listReadsBeforeRefresh);
+    expect(calls.some(call => call.startsWith('POST /transactions/sync'))).toBe(false);
   });
 
   test('Lens console reads a member service and filters its attestation list', async ({ mockApi: page }) => {
@@ -179,15 +180,15 @@ test.describe('Supporting pages @core', () => {
       has: page.locator(`.canton-party-id[title="${owner}"]`),
     });
     await expect(partyRow).toHaveCount(1);
-    await partyRow.locator('.canton-party-copy').click();
+    await partyRow.getByRole('button', { name: 'Copy', exact: true }).click();
     await expect(page.locator('#canton-status')).toContainText('Copied party id: Owner');
-    await partyRow.locator('.canton-party-ccview').click();
+    await partyRow.getByRole('button', { name: 'CCView', exact: true }).click();
     await expect(partyRow.locator('.canton-ccview-out')).toContainText('Not yet indexed on CCView');
     await expect(partyRow.locator('.canton-ccview-out a')).toHaveAttribute('href', 'https://ccview.example/party/owner');
-    await partyRow.locator('.canton-party-view').click();
+    await partyRow.getByRole('button', { name: 'View', exact: true }).click();
     await expect(page.locator('#canton-party')).toHaveValue(owner);
     await expect(page.locator('.canton-card')).toHaveCount(1);
-    await partyRow.locator('.canton-party-del').click();
+    await partyRow.getByRole('button', { name: 'Forget', exact: true }).click();
     await expect(page.locator('.canton-party-row')).toHaveCount(0);
     // Entering an existing party and pressing Load remains a separate supported action.
     await page.locator('#canton-party').fill(owner);

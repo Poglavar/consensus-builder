@@ -18,6 +18,32 @@ function hideRoadInfoPanel() {
 // ---------------------------------------------------------------------------
 let roadDrawingMode = false;
 let corridorDrawKind = 'road';
+let roadDrawingModeButtonState = null;
+
+function setRoadDrawingModeButtonsDisabled(disabled) {
+    const buttons = ['mode-3d-toggle', 'mode-realistic-toggle', 'mode-ai-toggle']
+        .map(id => document.getElementById(id)).filter(Boolean);
+    if (disabled) {
+        if (!roadDrawingModeButtonState) {
+            roadDrawingModeButtonState = buttons.map(button => ({ button, disabled: button.disabled }));
+        }
+        buttons.forEach(button => { button.disabled = true; });
+        return;
+    }
+    if (!roadDrawingModeButtonState) return;
+    roadDrawingModeButtonState.forEach(({ button, disabled: previous }) => { button.disabled = previous; });
+    roadDrawingModeButtonState = null;
+}
+
+function canStartRoadDrawingInCurrentMode() {
+    const state = typeof window !== 'undefined' ? window.__mapModeState : null;
+    if (typeof window !== 'undefined' && window.OnMapEditor?.isActive?.()) return false;
+    if (typeof window !== 'undefined' && window.__mapEditLock?.isHeld?.()) return false;
+    if (state?.desired && state.desired !== '2d') return false;
+    if (typeof window !== 'undefined' && window.__pending3DMode) return false;
+    if (typeof window !== 'undefined' && typeof window.isThreeModeActive === 'function' && window.isThreeModeActive()) return false;
+    return !document.body?.classList?.contains('three-mode-active');
+}
 
 // The kind of the corridor CURRENTLY on the tool: a rail lane in the cross-section makes it a track,
 // whichever button opened the session (drop a tram lane into a street and the rail limits apply).
@@ -47,6 +73,7 @@ function updateGlobalRoadDrawingMode(value) {
     if (typeof window !== 'undefined') {
         window.roadDrawingMode = value;
     }
+    setRoadDrawingModeButtonsDisabled(value);
     announceCorridorDrawingModeChange();
 }
 
@@ -2295,6 +2322,7 @@ function setRoadPanelLabelsForMode(mode = 'road') {
 // standard-gauge track — and nothing else about the session. Pressing the button that is already active
 // closes the tool (which, in this SimCity lifecycle, means finishing what has been drawn).
 async function requestCorridorDrawingTool(kind) {
+    if (!roadDrawingMode && !canStartRoadDrawingInCurrentMode()) return false;
     if (roadDrawingMode) {
         // The other button while drawing: end this corridor, then open the tool on the other seed.
         const closed = await cancelRoadDrawing();
@@ -2322,19 +2350,21 @@ async function requestCorridorDrawingTool(kind) {
     if (typeof ensureCorridorBuildingFootprintsLoaded === 'function') {
         await ensureCorridorBuildingFootprintsLoaded();
     }
+    if (!roadDrawingMode && !canStartRoadDrawingInCurrentMode()) return false;
     corridorDrawKind = kind === 'track' ? 'track' : 'road';
     toggleRoadDrawTool();
     return true;
 }
 
 async function startSeededCorridorDrawing(kind, seed, copySource) {
-    if (!seed) return false;
+    if (!seed || !canStartRoadDrawingInCurrentMode()) return false;
     if (roadDrawingMode) exitRoadDrawingMode();
-    if (copySource?.draftId && window.proposalDraftStore?.getDraft(copySource.draftId)) {
-        window.beginProposalDraftDesignSession?.(copySource.draftId);
-    }
     if (typeof ensureCorridorBuildingFootprintsLoaded === 'function') {
         await ensureCorridorBuildingFootprintsLoaded();
+    }
+    if (!canStartRoadDrawingInCurrentMode()) return false;
+    if (copySource?.draftId && window.proposalDraftStore?.getDraft(copySource.draftId)) {
+        window.beginProposalDraftDesignSession?.(copySource.draftId);
     }
     window.pendingRoadCopySource = copySource || null;
     corridorDrawKind = kind === 'track' ? 'track' : 'road';
@@ -2358,7 +2388,9 @@ function corridorDrawButton() {
 }
 
 function toggleRoadDrawTool() {
-    updateGlobalRoadDrawingMode(!roadDrawingMode);
+    const entering = !roadDrawingMode;
+    if (entering && !canStartRoadDrawingInCurrentMode()) return false;
+    updateGlobalRoadDrawingMode(entering);
     const roadDrawButton = corridorDrawButton();
 
     if (roadDrawingMode) {
@@ -2554,6 +2586,9 @@ function discardRoadDrawing() {
 
 // Handle keyboard events during road drawing
 function handleRoadKeydown(e) {
+    // The shared editor owns keyboard controls while it is open. This listener is registered
+    // first, so it must leave Escape and editor shortcuts untouched for the shell.
+    if (e.defaultPrevented || (typeof window !== 'undefined' && window.OnMapEditor?.isActive?.())) return;
     if (document.body.classList.contains('three-mode-active')) return;
     // Prevent handling if we're typing
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {

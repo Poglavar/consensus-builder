@@ -99,12 +99,12 @@ async function installSupportRpcFixture(page: import('@playwright/test').Page, a
 }
 
 const cases: ActionCase[] = [
-  { action: 'pledge', lifecycle: 'Active', button: 'Pledge USDC', success: 'boosting this proposal with 1 of USDC', instruction: 'set_pledge' },
-  { action: 'revokePledge', lifecycle: 'Active', button: 'Revoke my pledge', success: 'pledge was revoked', instruction: 'revoke_pledge' },
-  { action: 'releaseDonations', lifecycle: 'Executed', button: 'Release donations', success: 'donations were released', instruction: 'release_donations' },
-  { action: 'fulfillPledge', lifecycle: 'Executed', button: 'Fulfill my pledge', success: 'pledged USDC was transferred', instruction: 'fulfill_pledge' },
-  { action: 'refundMyDonations', lifecycle: 'Cancelled', button: 'Refund my donations', success: 'refundable donations were returned', instruction: 'refund_donation' },
-  { action: 'voidPledge', lifecycle: 'Cancelled', button: 'Clear my pledge', success: 'pledge was cleared', instruction: 'void_pledge' },
+  { action: 'pledge', lifecycle: 'Active', button: 'Pledge USDC', success: 'Success! Thank you for supporting this proposal with 1 USDC.', instruction: 'set_pledge' },
+  { action: 'revokePledge', lifecycle: 'Active', button: 'Revoke my pledge', success: 'Your pledge was revoked; no USDC moved.', instruction: 'revoke_pledge' },
+  { action: 'releaseDonations', lifecycle: 'Executed', button: 'Release donations', success: 'Escrowed donations were released to the proposal owner.', instruction: 'release_donations' },
+  { action: 'fulfillPledge', lifecycle: 'Executed', button: 'Fulfill my pledge', success: 'Your pledged USDC was transferred to the proposal owner.', instruction: 'fulfill_pledge' },
+  { action: 'refundMyDonations', lifecycle: 'Cancelled', button: 'Refund my donations', success: 'Your refundable donations were returned.', instruction: 'refund_donation' },
+  { action: 'voidPledge', lifecycle: 'Cancelled', button: 'Clear my pledge', success: 'Your pledge was cleared; no USDC moved.', instruction: 'void_pledge' },
 ];
 
 test.describe('Proposal support settlement @features', () => {
@@ -139,8 +139,11 @@ test.describe('Proposal support settlement @features', () => {
         await compactAction.click();
       }
 
-      const alert = page.locator('.cb-dialog-overlay--confirm');
-      await expect(alert.locator('.cb-dialog-overlay--confirm .cb-dialog__body')).toContainText(row.success, { timeout: 10000 });
+      const alert = page.getByRole('alertdialog');
+      await expect(alert).toBeVisible({ timeout: 10000 });
+      await expect(alert.locator('.cb-dialog__body')).toContainText(row.success);
+      await expect(alert.getByRole('link', { name: 'See transaction on Solana Explorer' }))
+        .toHaveAttribute('href', 'https://explorer.solana.com/tx/5N2o4X1mockSignature?cluster=devnet');
       expect(await page.evaluate(() => (window as any).__proposalSupportRpcEvents)).toEqual(['send', 'confirm']);
       const instructionData = await page.evaluate((name) => {
         const w = window as any;

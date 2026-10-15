@@ -15,6 +15,7 @@ const {
     readjustmentInputFeatures
 } = require('../../frontend/js/reparcellization-ui-state.js');
 const source = readFileSync(new URL('../../frontend/js/reparcellization.js', import.meta.url), 'utf8');
+const styles = readFileSync(new URL('../../frontend/css/on-map-reparcellization.css', import.meta.url), 'utf8');
 const locale = code => JSON.parse(readFileSync(new URL(`../../frontend/i18n/${code}.json`, import.meta.url), 'utf8'));
 
 describe('saved readjustment inputs', () => {
@@ -87,6 +88,38 @@ describe('land-readjustment UI state', () => {
         expect(source).toContain('data-reparcel-finish>${t(\'reparcellization.modal.drawFinish\', \'Finish plot\')} (F)</button>');
         expect(source).toContain('data-reparcel-cancel-draw>${t(\'reparcellization.modal.drawCancel\', \'Cancel\')} (C)</button>');
         expect(source).toContain('const action = resolveDrawShortcut({');
+    });
+
+    it('uses the shared map editor session and never destroys the app map on close', () => {
+        const bodyOf = (name, next) => source.slice(source.indexOf(`function ${name}(`), source.indexOf(`function ${next}(`));
+        const open = bodyOf('buildModalStructure', 'initMap');
+        const init = bodyOf('initMap', 'formatArea');
+        const destroy = bodyOf('destroyMap', 'layoutSignature');
+        const close = bodyOf('closeModal', 'buildModalStructure');
+
+        expect(open).toContain('window.OnMapEditor?.open?.({');
+        expect(open).toContain("modes: ['2d']");
+        expect(open).toContain('handleEscape: false');
+        expect(init).toContain('state.session?.map || window.map');
+        expect(init).not.toMatch(/\bL\.map\s*\(/);
+        expect(destroy).not.toMatch(/(?:state\.)?map\.remove\s*\(/);
+        expect(close).toContain('state.session?.close?.()');
+        expect(source).not.toContain('L.tileLayer(\'https://{s}.tile.openstreetmap.org');
+    });
+
+    it('keeps layout undo and an active draw toolbar visible when secondary tools are collapsed', () => {
+        const controls = source.slice(source.indexOf('const algorithmControls = `'), source.indexOf('// Inputs and outputs are the two halves'));
+        expect(controls).toContain('class="reparcel-secondary-controls" data-reparcel-secondary-controls');
+        expect(controls).toMatch(/<span class="reparcel-tools-spacer"><\/span>\s*<\/div>\s*<\/div>\s*<\/div>\s*<div class="reparcel-persistent-controls">/);
+        expect(controls.indexOf('class="reparcel-persistent-controls"')).toBeLessThan(controls.indexOf('data-reparcel-draw-toolbar'));
+        expect(source).toContain('class="reparcel-persistent-controls"');
+        expect(source).toContain('data-reparcel-undo-edit disabled');
+        expect(source).toContain('data-reparcel-draw-toolbar hidden');
+        expect(source).toContain('data-reparcel-active-mode');
+        expect(source).toContain('state.session?.setHint?.(active || null)');
+        expect(styles).toContain('.on-map-editor.is-collapsed .reparcel-secondary-controls { display: none; }');
+        expect(styles).toContain('left: var(--map-mode-strip, 60px);');
+        expect(styles).toMatch(/\.reparcel-actions \[data-reparcel-cancel\],[\s\S]*?min-width: 0;/);
     });
 });
 

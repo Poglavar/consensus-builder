@@ -1,5 +1,6 @@
 import { Page } from '@playwright/test';
 import { sampleParcels } from './parcel-data';
+import { fixtureSiteBinding } from './site-binding';
 
 export const TEST_PARCEL_ID = 'HR-335754-1234';
 const PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238'];
@@ -51,6 +52,11 @@ export async function installLayerDatasets(page: Page): Promise<void> {
       geometry: { type: 'Polygon' as const, coordinates: [[[west,south],[east,south],[east,north],[west,north],[west,south]]] },
     };
     });
+  await page.route('**/proposals/binding', route => {
+    const body = route.request().postDataJSON();
+    return route.fulfill({ json: { binding: fixtureSiteBinding(body.site, body.toleranceM, parcelFixtures()) } });
+  });
+
   // Block detection expands the viewport through the same `/parcels?bbox=` API; return these
   // fixture faces there instead of mixing them with unrelated baseline polygons.
   await page.route('**/parcels**', async (route) => {

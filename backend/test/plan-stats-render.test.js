@@ -67,7 +67,7 @@ function makeNode(tag) {
     return node;
 }
 
-function makeWindow(proposals, { search = '', getProposals = null } = {}) {
+function makeWindow(proposals, { search = '', getProposals = null, withPlanStatsButton = false, deferFrame = false } = {}) {
     const root = makeNode('root');
     const document = {
         body: root,
@@ -93,12 +93,24 @@ function makeWindow(proposals, { search = '', getProposals = null } = {}) {
         console,
         __planYield: planYield,
         __siteStats: siteStats,
-        requestAnimationFrame: fn => fn(),
+        requestAnimationFrame: fn => deferFrame ? (window.__frames.push(fn), window.__frames.length) : fn(),
         location: { search },
         setTimeout: fn => { timers.push(fn); return timers.length; },
         proposalStorage: { getAllProposals: getProposals || (() => proposals) }
     };
+    if (withPlanStatsButton) {
+        const planStatsButton = makeNode('button');
+        planStatsButton.id = 'planStatsButton';
+        const label = makeNode('span');
+        label.className = 'plan-stats-label';
+        const spinner = makeNode('span');
+        spinner.className = 'plan-stats-spinner';
+        planStatsButton.appendChild(label);
+        planStatsButton.appendChild(spinner);
+        root.appendChild(planStatsButton);
+    }
     window.window = window;
+    window.__frames = [];
     window.__timers = timers;
     window.__tick = () => { const due = timers.splice(0); due.forEach(fn => fn()); };
     window.__advance = ms => { clock += ms; };
@@ -121,6 +133,37 @@ function openDialog(proposals, options = {}) {
     });
     return window;
 }
+
+describe('Plan Stats button availability', () => {
+    it('starts disabled without applied proposals and updates when the plan changes', () => {
+        const proposals = [];
+        const window = openDialog(proposals, { withPlanStatsButton: true });
+        const button = window.document.getElementById('planStatsButton');
+        fireReady(window);
+        expect(button.disabled).toBe(true);
+
+        proposals.push(block(null));
+        window.updatePlanStatsButtonState();
+        expect(button.disabled).toBe(false);
+
+        proposals[0].applied = false;
+        window.updatePlanStatsButtonState();
+        expect(button.disabled).toBe(true);
+    });
+
+    it('keeps the button disabled while calculating, even during a plan refresh', async () => {
+        const proposals = [block(null)];
+        const window = openDialog(proposals, { withPlanStatsButton: true, deferFrame: true });
+        const button = window.document.getElementById('planStatsButton');
+        const opening = window.showPlanStatsModal();
+        expect(button.disabled).toBe(true);
+        window.updatePlanStatsButtonState();
+        expect(button.disabled).toBe(true);
+        window.__frames.shift()();
+        await opening;
+        expect(button.disabled).toBe(false);
+    });
+});
 
 // The dialog binds itself on DOMContentLoaded; the tests above call showPlanStatsModal directly,
 // so only the deep-link tests need the event actually fired.

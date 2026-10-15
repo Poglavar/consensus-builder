@@ -260,21 +260,41 @@ async function _runProposalMutationBoundary(manager, kind, proposalId, options, 
     const proposalStore = typeof proposalStorage !== 'undefined' ? proposalStorage : null;
     const agents = typeof agentStorage !== 'undefined' ? agentStorage : (browserRoot.agentStorage || null);
     const storage = typeof PersistentStorage !== 'undefined' ? PersistentStorage : (browserRoot.PersistentStorage || null);
-    return parcelMutationCoordinator.run({
-        kind,
-        proposalId: _normalizeProposalId(proposalId)
-    }, async context => operation(context, {
-            ...(options || {}),
-            _parcelMutation: context
-        }), {
-        runtime: browserRoot,
-        proposalStore,
-        agentStore: agents,
-        storage,
-        fabric: mutatesMap ? browserRoot.LiveParcelFabric : null,
-        // undefined → the coordinator's PARCEL_MUTATION_TIMEOUT_MS (or a window override).
-        timeoutMs: options && options.mutationTimeoutMs
-    });
+    const reportsApply = ['apply', 'replay-apply', 'proposal-derive'].includes(kind);
+    if (reportsApply) manager._clearLastApplyFailure?.(proposalId);
+    try {
+        const result = await parcelMutationCoordinator.run({
+            kind,
+            proposalId: _normalizeProposalId(proposalId)
+        }, async context => operation(context, {
+                ...(options || {}),
+                _parcelMutation: context
+            }), {
+            runtime: browserRoot,
+            proposalStore,
+            agentStore: agents,
+            storage,
+            fabric: mutatesMap ? browserRoot.LiveParcelFabric : null,
+            // undefined → the coordinator's PARCEL_MUTATION_TIMEOUT_MS (or a window override).
+            timeoutMs: options && options.mutationTimeoutMs
+        });
+        if (reportsApply) {
+            if (result !== false) manager._clearLastApplyFailure?.(proposalId);
+            else if (!manager.getLastApplyFailure?.(proposalId)) {
+                manager._setLastApplyFailure?.(proposalId, _proposalApplyFailure('proposal-apply-failed'));
+            }
+        }
+        return result;
+    } catch (error) {
+        if (reportsApply) {
+            manager._setLastApplyFailure?.(proposalId, {
+                code: error?.code || 'proposal-apply-failed',
+                message: error?.message || _proposalApplyFailure('proposal-apply-failed').message,
+                missingIds: error?.parcelIds || []
+            });
+        }
+        throw error;
+    }
 }
 
 function _proposalStore(options) {
@@ -565,6 +585,31 @@ function _flatGroundCoverageIsComplete(declaredCount, resolvedCount, coverage, f
         || !(area > 0) || !(ratio > 0) || !Number.isFinite(ratio)) return false;
     const boundedRatio = Math.max(0, Math.min(1, ratio));
     return area * (1 - boundedRatio) <= FLAT_GROUND_AREA_EPSILON_M2;
+}
+
+const _PROPOSAL_APPLY_FAILURE_TEXT = {
+    'proposal-footprint-outside-cadastre': ['outsideCadastre', 'The proposal geometry extends beyond its selected cadastral parcels. Keep it within the selected land, or create a proposal that includes the additional parcels.'],
+    'proposal-footprint-outside-site': ['outsideSite', 'The proposal geometry extends beyond its site. Keep it inside the site, or edit the site before applying.'],
+    'cadastral-ground-unavailable': ['groundUnavailable', 'Cadastral parcel data could not be loaded. Check your connection and try applying again.'],
+    'cadastral-ground-absent': ['groundMissing', 'Cadastral parcel data is unavailable for: {{parcels}}. This proposal cannot be applied until those parcels can be loaded.'],
+    'proposal-ground-undeclared': ['undeclared', 'This proposal has no cadastral parcels or open-ground site. Define its site before applying.'],
+    'proposal-footprint-invalid': ['invalidGeometry', 'The proposal geometry is missing or invalid. Edit its geometry before applying.'],
+    'proposal-apply-failed': ['applyFailed', 'The proposal could not be placed on the map because its geometry could not be derived from the selected land.'],
+    'proposal-map-busy': ['busy', 'Another map update is still running. Wait for it to finish and try again.'],
+    'proposal-store-unavailable': ['storeUnavailable', 'Proposals are not loaded yet. Wait for the city to finish loading and try again.'],
+    'proposal-not-found': ['notFound', 'This proposal is no longer available. Refresh the proposals list and try again.']
+};
+
+function _proposalApplyFailure(code, params = {}) {
+    const [name, fallback] = _PROPOSAL_APPLY_FAILURE_TEXT[code] || _PROPOSAL_APPLY_FAILURE_TEXT['proposal-apply-failed'];
+    const key = `proposalApplyFailures.${name}`;
+    const root = typeof window !== 'undefined' ? window : globalThis;
+    let message = '';
+    try { message = root.i18n?.t?.(key, params) || ''; } catch (_) { }
+    if (!message || message === key) {
+        message = fallback.replace(/\{\{(\w+)\}\}/g, (_, field) => String(params[field] ?? ''));
+    }
+    return { code, message };
 }
 
 const _now = () => ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now());
@@ -1215,11 +1260,13 @@ const ProposalManager = {
         } catch (_) { footprint = null; }
 
         let complete = true;
+        let failure = null;
         if (footprint && footprint.geometry && openGroundApi.hasOpenGround(record)) {
             // On open ground the host IS the rest of the site (site − bound parcels, apply time),
             // so the footprint is fully hosted exactly when it lies inside its site. The binding,
             // not what happens to be loaded, says where the parcels end.
             complete = this._footprintInsideSite(record, footprint);
+            if (!complete) failure = _proposalApplyFailure('proposal-footprint-outside-site');
         } else if (footprint && footprint.geometry) {
             let resolved = null;
             try {
@@ -1238,10 +1285,25 @@ const ProposalManager = {
                 coverage,
                 footprintArea
             );
+            if (!complete) {
+                const code = !(footprintArea > 0) ? 'proposal-footprint-invalid'
+                    : !declared.length ? 'proposal-ground-undeclared'
+                        : !resolved ? 'cadastral-ground-unavailable'
+                            : 'proposal-footprint-outside-cadastre';
+                failure = _proposalApplyFailure(code);
+            }
         }
 
         const flat = Array.from(new Set((declared || []).map(String).filter(Boolean)));
-        return { cadastreParcelIds: flat, complete };
+        return { cadastreParcelIds: flat, complete, ...(failure ? { failure } : {}) };
+    },
+
+    // Read-only preflight for geometry editors. Application repeats the same check after loading
+    // the declared parcels; this never discovers new anchors or mutates the authored record.
+    getProposalGroundFailure(record) {
+        const resolution = this._resolveAndStampFlatCadastreAnchors(record);
+        return resolution.complete ? null
+            : (resolution.failure || _proposalApplyFailure('cadastral-ground-unavailable'));
     },
 
     // The authored footprint lies inside the record's site (shared-edge rounding aside). A
@@ -1271,14 +1333,16 @@ const ProposalManager = {
             await this._loadReplayGround(members, groundOptions);
         }
         const ids = new Set(proposalClaims.cadastreParcelIdsOf({ cadastreParcelIds: extraCadastreParcelIds }));
-        let complete = true;
-
+        const failed = [];
         members.forEach(record => {
             const resolution = this._resolveAndStampFlatCadastreAnchors(record);
             resolution.cadastreParcelIds.forEach(id => ids.add(id));
-            if (!resolution.complete) complete = false;
+            if (!resolution.complete) {
+                const failure = resolution.failure || _proposalApplyFailure('cadastral-ground-unavailable');
+                failed.push({ proposalId: record.proposalId, ...failure, reason: failure.message });
+            }
         });
-        return { cadastreParcelIds: Array.from(ids), complete };
+        return { cadastreParcelIds: Array.from(ids), complete: failed.length === 0, failed };
     },
 
     // State removal never rediscovers a proposal's land relationship from today's map geometry.
@@ -1454,7 +1518,7 @@ const ProposalManager = {
                 (_context, transactionOptions) => this.rematerializeCorridorScope(seedRecords, transactionOptions));
         }
         if (this._rebuildInProgress) {
-            return { ok: false, reentered: true, failed: [] };
+            return { ok: false, reentered: true, failed: [_proposalApplyFailure('proposal-map-busy')] };
         }
         const seeds = (Array.isArray(seedRecords) ? seedRecords : [seedRecords]).filter(Boolean);
         const seedResolution = await this._corridorScopeSeeds(seeds, opts.extraCadastreParcelIds || [], opts);
@@ -1476,7 +1540,7 @@ const ProposalManager = {
                 (_context, transactionOptions) => this.rematerializeFlatScope(seedRecords, transactionOptions));
         }
         if (this._rebuildInProgress) {
-            return { ok: false, reentered: true, failed: [] };
+            return { ok: false, reentered: true, failed: [_proposalApplyFailure('proposal-map-busy')] };
         }
 
         const seeds = (Array.isArray(seedRecords) ? seedRecords : [seedRecords]).filter(Boolean);
@@ -1486,7 +1550,7 @@ const ProposalManager = {
             return {
                 ok: false,
                 applied: 0,
-                failed: [{ reason: 'cadastral ground is incomplete' }],
+                failed: seedResolution.failed,
                 cadastreParcelIds: seedResolution.cadastreParcelIds,
                 proposalIds: []
             };
@@ -1601,21 +1665,26 @@ const ProposalManager = {
                         }
                         stood = await this.applyProposal(id, replayOptions);
                     } catch (error) {
+                        const failure = this.getLastApplyFailureInfo?.(id);
                         failed.push({
                             proposalId: id,
                             title: record.title || record.name || id,
+                            code: error?.code || failure?.code || null,
+                            missingIds: error?.missingIds || failure?.missingIds || [],
                             reason: String(error && error.message || error)
                         });
                     }
                     if (!stood) {
                         if (!failed.some(entry => String(entry.proposalId || '') === id)) {
-                            // getLastApplyFailure returns the message itself (a string). Reading
-                            // `.message` off it lost every real reason to the generic fallback.
-                            const failure = this.getLastApplyFailure?.(id);
+                            // Preserve the structured refusal through the local summary. Keeping
+                            // only its message made deriveForNewProposal overwrite its code and IDs.
+                            const failure = this.getLastApplyFailureInfo?.(id);
                             failed.push({
                                 proposalId: id,
                                 title: record.title || record.name || id,
-                                reason: failure || 'proposal could not be materialized locally'
+                                code: failure?.code || null,
+                                missingIds: failure?.missingIds || [],
+                                reason: failure?.message || 'proposal could not be materialized locally'
                             });
                         }
                         continue;
@@ -1632,9 +1701,11 @@ const ProposalManager = {
             }
 
             if (!failed.length) {
-                // Closure members replay with deferred presentation; their layers still changed
-                // (a park cut by a new square on the same ground). One redraw per kind replayed.
-                const replayedKinds = new Set(orderedReplay.map(record => {
+                this._reconcileStructurePresentation(seedById.values(), opts);
+                // Every removed or replayed output changes its presentation layer. Superseded
+                // records are no longer applied, so they are absent from orderedReplay even though
+                // their old rendered output must disappear. Redraw each affected kind after commit.
+                const affectedKinds = new Set(Array.from(seedById.values(), record => {
                     const classified = applyRoute?.classifyApplyRoute?.(record) || {};
                     return classified.route === 'building' ? 'building' : String(classified.goalKey || '');
                 }));
@@ -1646,7 +1717,7 @@ const ProposalManager = {
                     try { if (typeof scheduleCorridorStripRefresh === 'function') scheduleCorridorStripRefresh(); } catch (_) { }
                     const redraw = { park: 'updateParksLayer', square: 'updateSquaresLayer', lake: 'updateLakesLayer', station: 'updateTransitStationsLayer', building: 'updateProposedBuildingsLayer' };
                     const browserRoot = typeof window !== 'undefined' ? window : globalThis;
-                    replayedKinds.forEach(kind => {
+                    affectedKinds.forEach(kind => {
                         const name = redraw[kind];
                         try { if (name && typeof browserRoot[name] === 'function') browserRoot[name](); } catch (_) { }
                     });
@@ -1781,7 +1852,7 @@ const ProposalManager = {
         const purpose = String(options.purpose || 'application');
         const service = _cadastralParcelRepository();
         if (!service || typeof service.ensureProposalGround !== 'function') {
-            throw new Error('Cadastral ground service is unavailable.');
+            throw Object.assign(new Error(_proposalApplyFailure('cadastral-ground-unavailable').message), { code: 'cadastral-ground-unavailable' });
         }
 
         const profile = await service.ensureProposalGround(members, {
@@ -1790,7 +1861,7 @@ const ProposalManager = {
             mutation: _fabricDraft(options) || undefined
         });
         if (Array.isArray(profile?.missingIds) && profile.missingIds.length) {
-            const error = new Error(`Cadastral ground is absent for: ${profile.missingIds.join(', ')}`);
+            const error = new Error(_proposalApplyFailure('cadastral-ground-absent', { parcels: profile.missingIds.join(', ') }).message);
             error.code = 'cadastral-ground-absent';
             error.parcelIds = profile.missingIds.slice();
             throw error;
@@ -2332,6 +2403,10 @@ const ProposalManager = {
             .map(id => _getProposalRecord(id, options))
             .filter(Boolean)
             .forEach(addSuperseded);
+        // A failed edit must leave its source standing. Supersession is part of this private
+        // mutation, so both the source flag and its map output roll back with a refused result.
+        const supersession = this._commitReplacementSupersession?.(proposal.proposalId, proposal, options);
+        if (supersession?.source) addSuperseded(supersession.source);
         const localSeeds = [proposal, ...supersededById.values()];
         const materialize = goalKey === 'road-track'
             ? this.rematerializeCorridorScope
@@ -2351,7 +2426,16 @@ const ProposalManager = {
         // Refusal is a transaction failure, not a successful mutation with a null result. Returning
         // false makes ParcelMutation discard the tentative applied flag, collection changes,
         // ownership writes and fabric edits together.
-        if (targetFailed) return false;
+        if (targetFailed) {
+            const failed = Array.isArray(summary?.failed) ? summary.failed : [];
+            const failure = failed.find(entry => String(entry.proposalId) === key) || failed[0];
+            if (failure?.message || failure?.reason) {
+                this._setLastApplyFailure?.(key, failure);
+            } else if (!this.getLastApplyFailure?.(key)) {
+                this._setLastApplyFailure?.(key, _proposalApplyFailure('proposal-apply-failed'));
+            }
+            return false;
+        }
         return { applied: true, goalKey, ...summary };
     },
 
@@ -2628,6 +2712,7 @@ const ProposalManager = {
             // depth where it found it, or every later save in the session is silently suppressed.
             if (replayBatched) batchStore.endBatch();
         }
+        if (!failed.length) this._reconcileStructurePresentation(appliedList, passOptions);
         // Recorded, not yet printed: the caller adds the strip refresh and the pass count, so a
         // rebuild reports itself in ONE line instead of one per phase.
         this._lastRebuildProfile = {
@@ -2932,9 +3017,15 @@ const ProposalManager = {
         }
 
         const store = _proposalStore(applyOptions);
-        if (!store) return false;
+        if (!store) {
+            this._setLastApplyFailure(proposalId, _proposalApplyFailure('proposal-store-unavailable'));
+            return false;
+        }
         const proposal = _getProposalRecord(proposalId, applyOptions);
-        if (!proposal) return false;
+        if (!proposal) {
+            this._setLastApplyFailure(proposalId, _proposalApplyFailure('proposal-not-found'));
+            return false;
+        }
         if (appliedOf(proposal)) return true;
 
         // Superseding is what an explicit Apply click means. Shared-plan application passes

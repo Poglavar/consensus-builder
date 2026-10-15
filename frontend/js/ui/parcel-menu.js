@@ -1,4 +1,4 @@
-// ui/parcel-menu.js — the parcel menu: the compact popover a parcel click opens at the click point
+// ui/parcel-menu.js — the parcel menu: the compact popover a parcel click opens beside its footprint
 // (a bottom-sheet peek on phones), with the parcel id, a line of facts already known about it and
 // the actions UiCommands lists for the 'parcel-menu' surface. It follows the map on pan/zoom, flips
 // to stay in view and closes on a map click elsewhere, Esc, or another panel opening. The actions
@@ -17,6 +17,7 @@
         el: null,
         parcelId: null,
         latlng: null,
+        parcelBounds: null,
         facts: null,
         observersWired: false,
         mapWired: false
@@ -75,13 +76,6 @@
         try { return win.turf.area(feature); } catch (_) { return null; }
     }
 
-    function can3d() {
-        const button = doc.getElementById('mode-3d-toggle');
-        if (!button || button.hidden || button.disabled) return false;
-        if (doc.body.classList.contains('three-mode-active')) return false;
-        return !!(button.offsetWidth || button.offsetHeight || button.getClientRects().length);
-    }
-
     function blocksEnabled() {
         const config = win.CityConfigManager;
         const enabled = config && typeof config.isFeatureEnabled === 'function' ? config.isFeatureEnabled('parcelBlocks') : true;
@@ -117,7 +111,6 @@
             historyIds,
             isGround,
             blocksEnabled: blocksEnabled(),
-            can3d: can3d(),
             siteToolAvailable: !!(win.SiteTool && typeof win.SiteTool.isActive === 'function' && !win.SiteTool.isActive()),
             // Proposals touching this parcel, for "Compare proposals here" (null when not loaded).
             compareCount: !isGround && win.ParcelCompare ? win.ParcelCompare.countFor(id) : null,
@@ -212,8 +205,14 @@
         const offscreen = point.x < 0 || point.y < 0 || point.x > size.x || point.y > size.y;
         el.classList.toggle('is-offscreen', offscreen);
         if (offscreen) return;
+        let parcelBounds = null;
+        if (state.parcelBounds?.isValid()) {
+            const nw = win.map.latLngToContainerPoint(state.parcelBounds.getNorthWest());
+            const se = win.map.latLngToContainerPoint(state.parcelBounds.getSouthEast());
+            parcelBounds = { left: nw.x, top: nw.y, right: se.x, bottom: se.y };
+        }
         const place = model.placeMenuAtPoint(point, { width: el.offsetWidth, height: el.offsetHeight },
-            { width: size.x, height: size.y });
+            { width: size.x, height: size.y }, { parcelBounds });
         el.style.setProperty('--parcel-menu-left', `${place.left}px`);
         el.style.setProperty('--parcel-menu-top', `${place.top}px`);
     }
@@ -256,7 +255,7 @@
         });
         doc.addEventListener('keydown', onKeyDown);
         // An open menu re-renders its labels on a live language switch.
-        const relabel = () => { if (isOpen() && state.facts) render(state.facts); };
+        const relabel = () => { if (isOpen() && state.facts) { render(state.facts); position(); } };
         win.addEventListener('i18n:translationsLoaded', relabel);
         if (win.i18n && typeof win.i18n.onChange === 'function') win.i18n.onChange(relabel);
     }
@@ -321,6 +320,7 @@
         const el = ensureElement();
         state.parcelId = String(parcelId);
         state.latlng = anchorFor(latlng, feature);
+        state.parcelBounds = win.L.geoJSON(feature).getBounds();
         state.facts = factsFor(parcelId, feature);
         render(state.facts);
         el.classList.remove('is-zooming');
@@ -340,6 +340,7 @@
         state.el.classList.remove('visible');
         state.facts = null;
         state.latlng = null;
+        state.parcelBounds = null;
         state.parcelId = null;
     }
 
@@ -375,20 +376,6 @@
         try { first.scrollIntoView({ block: 'start', behavior: 'auto' }); } catch (_) { }
     }
 
-    function viewIn3d(facts) {
-        const feature = featureFor(facts);
-        // 3D frames the area around the map's centre; there is no parcel focus to pass it, so
-        // centre the map on the parcel first, then press the mode strip's 3D button (which also
-        // loads the 3D stack on first use).
-        try {
-            const bounds = win.L.geoJSON(feature).getBounds();
-            if (bounds.isValid()) win.map.setView(bounds.getCenter(), win.map.getZoom(), { animate: false });
-        } catch (error) {
-            console.warn(`[${new Date().toISOString()}] [ParcelMenu] could not centre on ${facts.parcelId}`, error);
-        }
-        doc.getElementById('mode-3d-toggle').click();
-    }
-
     const ACTION_RUNNERS = {
         propose: facts => showPanelTab(facts, 'propose-tab'),
         details: facts => showPanelTab(facts, 'info-tab'),
@@ -399,7 +386,6 @@
         selectMore: () => win.multiParcelSelection.toggle({ preserveSelectedParcel: true }),
         // The build palette's own Offer tool (it opens the ownership-only proposal dialog).
         offer: () => win.startParcelBuildTool('offer'),
-        view3d: viewIn3d,
         detectBlock: () => win.animateFloodfillFromSelected(),
         // This parcel as the starting outline of an editable site (js/site-drawing.js).
         useAsSite: facts => win.SiteTool.startFromParcels([facts.parcelId])

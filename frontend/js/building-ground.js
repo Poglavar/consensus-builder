@@ -43,9 +43,8 @@
         try { return Number(turf.area(feature)) || 0; } catch (_) { return 0; }
     }
 
-    // The surround polygon: the proposal's merged parcel area minus every building footprint on it.
-    // `blockFeature` is the same union the freeform editor validates footprints against, so the
-    // surface and the "must stay inside the block" rule always agree.
+    // The surround polygon: the authored ground boundary minus every building footprint on it.
+    // The freeform editor moves this boundary with the design; the starting parcels are optional guides.
     function computeSurfacePolygon(blockFeature, buildingFeatures) {
         if (typeof turf === 'undefined' || typeof turf.difference !== 'function') return null;
         let surface = asFeature(blockFeature);

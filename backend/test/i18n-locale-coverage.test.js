@@ -38,6 +38,7 @@ const DYNAMIC_KEY_PREFIXES = [
     'panel.parcel.ownershipType.',
     'panel.proposal.bindingDrift.coverageKinds.', // plot-crossings.test.js checks all four kinds, all locales
     'proposalDrafts.validation.issues.',
+    'proposalDrafts.placement.',
     'reparcellization.validation.',
     'proposals.roadDesignation.',
     'rowHouses.modal.',
@@ -154,6 +155,20 @@ describe('i18n locale coverage', () => {
     it('every allowlisted dynamic prefix names a real subtree of en.json', () => {
         const dead = DYNAMIC_KEY_PREFIXES.filter(prefix => !Object.keys(locales.en).some(key => key.startsWith(prefix)));
         expect(dead).toEqual([]);
+    });
+
+    it('defines all proposal apply failure messages in every locale', () => {
+        const keys = [
+            'outsideCadastre', 'outsideSite', 'groundUnavailable', 'groundMissing', 'undeclared',
+            'invalidGeometry', 'applyFailed', 'busy', 'storeUnavailable', 'notFound'
+        ];
+        for (const lang of LANGS) {
+            for (const key of keys) {
+                const value = locales[lang][`proposalApplyFailures.${key}`];
+                expect(value, `${lang}: proposalApplyFailures.${key}`).toEqual(expect.any(String));
+                expect(value.length).toBeGreaterThan(0);
+            }
+        }
     });
 
     it('every en key exists in hr, es and sr', () => {

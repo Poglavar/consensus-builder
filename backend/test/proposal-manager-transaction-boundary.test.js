@@ -20,6 +20,7 @@ describe('ProposalManager mutation boundary', () => {
     let store;
 
     beforeEach(() => {
+        ProposalManager._lastApplyFailureByProposalId.clear();
         previousStorage = globalThis.proposalStorage;
         originalApplyBody = ProposalManager._applyProposalTransactionBody;
         originalUnapplyBody = ProposalManager._unapplyProposalTransactionBody;
@@ -136,6 +137,7 @@ describe('ProposalManager mutation boundary', () => {
 
         await expect(ProposalManager.applyProposal('target', { replay: true })).rejects.toBe(cause);
         expect(store.getProposal('target').value).toBe('before');
+        expect(ProposalManager.getLastApplyFailure('target')).toBe('geometry exploded');
         expect(store.batchDepth).toBe(0);
     });
 
@@ -147,6 +149,7 @@ describe('ProposalManager mutation boundary', () => {
         });
 
         await expect(ProposalManager.deriveForNewProposal(targetIdentity)).resolves.toBeNull();
+        expect(ProposalManager.getLastApplyFailure('target')).toBe('cadastral ground is incomplete');
 
         expect(store.getProposal('target')).toBe(targetIdentity);
         expect(targetIdentity).toEqual({ proposalId: 'target', applied: false, value: 'before' });

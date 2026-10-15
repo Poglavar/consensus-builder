@@ -45,6 +45,20 @@ describe('proposal API serializer', () => {
         expect(value).toEqual({ roadProposal: { definition: { width: 6 } } });
     });
 
+    it('retains the authored free-placement marker and authoritative binding on a published record', () => {
+        const proposal = stripLocalProposalState({
+            freePlacement: true,
+            site: { type: 'MultiPolygon', coordinates: [] },
+            binding: { source: 'server:hr-cadastre', coverage: 'none', parcels: [] },
+            cadastreParcelIds: []
+        });
+        expect(proposal).toMatchObject({
+            freePlacement: true,
+            binding: { source: 'server:hr-cadastre', coverage: 'none', parcels: [] },
+            cadastreParcelIds: []
+        });
+    });
+
     it('uses the effective lifecycle and a single row-over-JSON precedence rule', () => {
         const proposal = serializeProposalRow({
             id: 5,

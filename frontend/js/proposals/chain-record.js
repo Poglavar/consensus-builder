@@ -19,7 +19,7 @@
         'ownershipTransferDirection', 'ownershipTransferRecipient', 'ownershipTransferProposal',
         'acquisitionMode', 'boundaryAdjustment', 'primaryType', 'typologyType', 'tags', 'facets',
         'isCorridor', 'copiedFromProposalId', 'copiedFromName', 'sourceProposalId',
-        'replacementOfProposalId', 'landFork', 'agent',
+        'replacementOfProposalId', 'landFork', 'freePlacement', 'agent',
         // The approval setup (rights snapshot and policy): with the parcels and lens it is the
         // approval context every owner decision signs, so chain + IPFS alone can verify decisions.
         'approvalConfig'

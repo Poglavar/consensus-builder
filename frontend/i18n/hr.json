@@ -1,4 +1,21 @@
 {
+  "onMapEditor": {
+    "missingSite": "Ova spremljena zgrada nema valjanu granicu izvorne lokacije pa nije moguće sigurno uređivati njezinu geometriju.",
+    "cancel": "Odustani",
+    "editing": "Uređivanje",
+    "controls": "Postavke",
+    "showControls": "Prikaži postavke",
+    "hideControls": "Sakrij postavke",
+    "moreOptions": "Više opcija",
+    "undo": "Poništi (Cmd/Ctrl+Z)",
+    "lockReject": "Trenutačni tlocrt nalazi se izvan zaključane lokacije. Pomaknite ga unutar lokacije da biste je zaključali.",
+    "placement": {
+      "snap": "Poravnaj s rubovima",
+      "lock": "Zaključaj uz početnu lokaciju",
+      "outside": "Izvan početne lokacije. Pogođene čestice ponovno će se izračunati pri spremanju.",
+      "lockOutside": "Pomaknite dizajn unutar početne lokacije prije zaključavanja."
+    }
+  },
     "optionalTools": {
         "loadFailed": "Alat se nije uspio učitati. Pokušajte ponovno."
     },
@@ -175,7 +192,7 @@
     },
     "multitab": {
         "warning": "Ovaj grad je već otvoren u drugoj kartici. Da se spremljeni prijedlozi ne izgube, promjene u ovoj kartici neće se spremiti — zatvorite ostale kartice ovog grada i ponovno učitajte ovu za uređivanje. Drugi gradovi mogu ostati otvoreni.",
-        "notSaved": "Prijedlog NIJE spremljen i izgubit će se pri ponovnom učitavanju stranice."
+        "notSaved": "Ovaj grad otvoren je u drugoj kartici. Vaše se promjene čuvaju u kopiji za oporavak, ali se ne spremaju u zajednički plan. Za spremanje promjena upotrijebite glavnu karticu."
     },
     "proposalApproval": {
         "ownerLabel": "Vlasnik {{label}}",
@@ -287,6 +304,18 @@
             "sponsorReceives": "Pokrovitelj prima {{amount}}.",
             "sponsorNothing": "Uplate vlasnika pokrivaju sve isplate; pokrovitelj ne plaća ništa."
         }
+    },
+    "proposalApplyFailures": {
+        "outsideCadastre": "Geometrija prijedloga prelazi granice odabranih katastarskih čestica. Zadržite je unutar odabranog zemljišta ili izradite prijedlog koji uključuje dodatne čestice.",
+        "outsideSite": "Geometrija prijedloga prelazi granice lokacije. Zadržite je unutar lokacije ili uredite lokaciju prije primjene.",
+        "groundUnavailable": "Podaci katastarskih čestica nisu se mogli učitati. Provjerite vezu i pokušajte ponovno.",
+        "groundMissing": "Katastarski podaci nisu dostupni za: {{parcels}}. Prijedlog se ne može primijeniti dok se te čestice ne učitaju.",
+        "undeclared": "Prijedlog nema katastarske čestice ni lokaciju na slobodnom zemljištu. Odredite lokaciju prije primjene.",
+        "invalidGeometry": "Geometrija prijedloga nedostaje ili nije valjana. Uredite je prije primjene.",
+        "applyFailed": "Prijedlog se nije mogao postaviti na kartu jer se geometrija nije mogla izvesti iz odabranog zemljišta.",
+        "busy": "U tijeku je druga izmjena karte. Pričekajte da završi pa pokušajte ponovno.",
+        "storeUnavailable": "Prijedlozi se još nisu učitali. Pričekajte da se grad učita pa pokušajte ponovno.",
+        "notFound": "Ovaj prijedlog više nije dostupan. Osvježite popis prijedloga i pokušajte ponovno."
     },
     "proposalDrafts": {
         "title": "Skice",
@@ -419,7 +448,27 @@
             "road": "Cesta",
             "track": "Pruga",
             "parcelOnly": "Ovaj prijedlog nema zasebnu geometriju dizajna. Isticanje čestica ostaje aktivno dok uređujete ostale stavke.",
-            "unavailable": "Ovaj uređivač dizajna nije dostupan."
+            "unavailable": "Ovaj uređivač dizajna nije dostupan.",
+            "editorBusy": "Drugi uređivač geometrije već koristi kartu. Zatvorite ga prije pokretanja ovog dizajna lokacije.",
+            "siteUnavailable": "Odabrana lokacija nije dostupna. Odaberite valjanu lokaciju i pokušajte ponovno.",
+            "parcelsUnavailable": "Za ovu lokaciju nema dostupnih čestica za dizajn. Ponovno odaberite lokaciju i pokušajte kada se njezine čestice učitaju.",
+            "draftCreateFailed": "Nije moguće spremiti lokalni nacrt ovog dizajna. Lokacija nije promijenjena.",
+            "handoffFailed": "Uređivač dizajna nije se mogao otvoriti. Lokacija nije promijenjena, a nacrt dizajna sačuvan je lokalno.",
+            "handoffFailedReason": "Uređivač dizajna nije se mogao otvoriti: {{reason}}. Lokacija nije promijenjena, a nacrt dizajna sačuvan je lokalno."
+        },
+        "placement": {
+            "fixedSite": "Ova vrsta prijedloga vezana je uz izvornu lokaciju i ne može se premjestiti.",
+            "existingBuilding": "Prijedlozi postojećih zgrada zadržavaju tlocrt vezan uz izvornu zgradu i ne mogu se slobodno premještati.",
+            "invalidSite": "Za slobodno postavljanje potrebna je valjana poligonska lokacija.",
+            "freshBinding": "Za slobodno postavljanje potrebno je novo, autoritativno povezivanje lokacije.",
+            "unknownCoverage": "Poslužitelj ne može provjeriti ovu lokaciju prema podržanom katastru. Premjestite je na podržano područje ili se obratite gradskom timu za podatke.",
+            "unverifiedCoverage": "Povezivanje lokacije nije potvrdilo katastarski obuhvat. Pokušajte ponovno prije primjene ili objave.",
+            "pending": "Ponovno povežite premještenu lokaciju prije primjene ili objave ovog nacrta.",
+            "bindingUnavailable": "Usluga za autoritativno povezivanje lokacije nije dostupna. Premješteni nacrt spremljen je lokalno.",
+            "geometryChanged": "Geometrija se promijenila tijekom povezivanja lokacije. Ponovno spremite nacrt.",
+            "buildingOutsideSite": "Geometrija premještene zgrade mora u cijelosti biti unutar nove lokacije.",
+            "surroundingsOutsideSite": "Premješteno uređenje terena mora u cijelosti biti unutar nove lokacije. Premjestite cijeli prijedlog ili prilagodite granicu terena prije spremanja.",
+            "massingOutsideSite": "Masa premještene zgrade mora u cijelosti biti unutar nove lokacije."
         },
         "review": {
             "title": "Pregled promjena",
@@ -495,6 +544,11 @@
         "errors": {
             "draftFailed": "Nije moguće otvoriti ovaj prijedlog za uređivanje.",
             "instantCreateFailed": "Novi objekt nije bilo moguće spremiti.",
+            "designSaveFailed": "Izmjene nije bilo moguće spremiti. Pokušajte ponovno.",
+            "designSaveFailedReason": "Izmjene nije bilo moguće spremiti ({{reason}}). Pokušajte ponovno.",
+            "structureGeometryFailed": "Nije moguće izraditi geometriju iz odabranih čestica.",
+            "designEditorReopenFailed": "Nije moguće ponovno otvoriti uređivač dizajna.",
+            "siteRestoreFailed": "Nije moguće vratiti lokaciju. Pokušajte ponovno.",
             "noAdapter": "Za ovu vrstu prijedloga nije registriran uređivač.",
             "notReshapeable": "Ovoj se vrsti prijedloga ne može mijenjati oblik.",
             "parcelsNotContiguous": "Odabrane čestice moraju činiti jednu povezanu površinu.",
@@ -1366,6 +1420,14 @@
                 "editApproval": "Uredi vlasništvo i odobravanje",
                 "addApproval": "Dodaj vlasništvo i odobravanje",
                 "editApprovalHint": "Otvara uređivač na kartici Odobravanje. Spremanje stvara zamjenski prijedlog; prihvaćanja ovog prijedloga se ne prenose.",
+                "applyFailed": "Nije moguće primijeniti ovaj prijedlog: {{reason}}",
+                "applyFailedUnknown": "Nije moguće primijeniti ovaj prijedlog. Pokušajte ponovno.",
+                "applyUnavailable": "Ovaj prijedlog nije moguće primijeniti na kartu.",
+                "applyUnsupported": "Ova vrsta prijedloga ne podržava primjenu na karti.",
+                "missingProposal": "Nije odabran prijedlog za primjenu.",
+                "unapplyFailed": "Ovaj prijedlog nije moguće ukloniti s karte: {{reason}}",
+                "unapplyFailedUnknown": "Ovaj prijedlog nije moguće ukloniti s karte. Pokušajte ponovno.",
+                "unapplyUnavailable": "Ovaj prijedlog nije moguće ukloniti s karte.",
                 "betOutcome": "Kladi se na ishod"
             },
             "expiry": {
@@ -2040,6 +2102,10 @@
             "deleteLabel": "Obriši zgradu",
             "renameLabel": "Preimenuj zgradu",
             "closeLabel": "Zatvori prozor jedne zgrade",
+            "cancel": "Odustani",
+            "more": "Čestica i detalji",
+            "mapHint": "Povuci zgradu ili njezine vrhove. Dodirni brid za dodavanje vrha.",
+            "modelHint": "Podesi visinu i okreni prikaz za provjeru uklapanja. Koristi 2D za promjenu tlocrta.",
             "previewLabel": "3D pregled",
             "confirm": "Gotovo",
             "parametersTitle": "Parametri",
@@ -2058,12 +2124,14 @@
             "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
             "uploadOutside": "Učitani poligon ne preklapa se s ovim blokom na upotrebljiv način.",
             "uploadError": "Datoteku nije moguće pročitati.",
-            "infoText": "Povuci tlocrt za promjenu položaja. Povuci vrh za promjenu oblika, klikni brid za dodavanje vrha ili odaberi vrh pa ga obriši tipkom koša ili tipkom Delete/Backspace. Zgrada mora ostati unutar bloka.",
-            "infoTextTouch": "Povuci tlocrt za promjenu položaja. Povuci vrh za promjenu oblika, dodirni brid za dodavanje vrha ili odaberi vrh pa ga obriši tipkom koša. Zgrada mora ostati unutar bloka.",
+            "infoText": "Povucite tlocrt za promjenu položaja. Povucite vrh za promjenu oblika, kliknite brid za dodavanje vrha ili odaberite vrh pa ga obrišite tipkom koša ili Delete/Backspace. Zaključajte uz početnu lokaciju da biste zadržali zgradu unutar nje; inače je možete slobodno premještati.",
+            "infoTextTouch": "Povucite tlocrt za promjenu položaja. Povucite vrh za promjenu oblika, dodirnite brid za dodavanje vrha ili odaberite vrh pa ga obrišite tipkom koša. Zaključajte uz početnu lokaciju da biste zadržali zgradu unutar nje; inače je možete slobodno premještati.",
             "parcelLabel": "Čestica zgrade",
             "parcelFootprint": "Čestica po tlocrtu",
             "parcelWhole": "Uzmi cijele čestice",
-            "parcelInfo": "Zgrada zadano formira vlastitu česticu prema tlocrtu, a ostatak zemljišta ostaje vlasniku. Uzimanjem cijelih čestica one postaju čestica zgrade kakve jesu."
+            "parcelInfo": "Zgrada zadano formira vlastitu česticu prema tlocrtu, a ostatak zemljišta ostaje vlasniku. Uzimanjem cijelih čestica one postaju čestica zgrade kakve jesu.",
+            "moveTogether": "Pomakni cijeli prijedlog",
+            "uploadInvalid": "Učitani poligon nije valjan ili se nalazi izvan zaključane lokacije."
         },
         "buildingUpload": {
             "title": "Učitaj 3D model zgrade",
@@ -2151,6 +2219,7 @@
         },
         "corridor": {
             "title": "Poprečni presjek",
+            "openError": "Nije moguće otvoriti uređivač poprečnog presjeka.",
             "subtitle": "Ukupna širina zbroj je traka — dodate li traku, cesta se proširi; uklonite li je, suzi se",
             "drawingSubtitle": "Promjene se prikazuju na karti prije stvaranja prijedloga",
             "proposalSubtitle": "Ovdje pregledajte promjene pa ih primijenite na crtež ceste koji se može uređivati",
@@ -3250,6 +3319,7 @@
     },
     "blockify": {
         "modal": {
+            "mapHint": "Uredite čestice i granice na karti; u panelu pregledajte vlasništvo i udjele.",
             "title": "Urbano pravilo",
             "closeAria": "Zatvori blockify prozor",
             "generating": "Generiram zgradu…",
@@ -3356,9 +3426,9 @@
             },
             "manual": {
                 "edit": "Ručno uredi oblik",
-                "back": "Natrag na klizače",
-                "hint": "Ručni način: povucite vrh za promjenu obrisa, kliknite brid za dodavanje vrha ili odaberite vrh pa ga obrišite tipkom koša ili tipkom Delete/Backspace. Širina i visina i dalje se mogu podešavati.",
-                "hintSimplified": "Ručni način: obris je pojednostavljen na {{count}} točaka koje se povlače. Povucite točku za promjenu obrisa, kliknite brid za dodavanje točke ili odaberite točku pa je obrišite tipkom koša ili tipkom Delete/Backspace. Širina i visina i dalje se mogu podešavati.",
+                "back": "Odbaci ručni oblik i vrati se na generiranu geometriju",
+                "hint": "Ručni način: povucite vrh za promjenu oblika, kliknite brid za dodavanje vrha ili odaberite vrh pa ga obrišite tipkom koša ili Delete/Backspace. Visina se i dalje može podešavati.",
+                "hintSimplified": "Ručni način: pojednostavljeni obris s {{count}} točaka koje možete pomicati. Povucite točku za promjenu oblika, kliknite brid za dodavanje točke ili odaberite točku pa je obrišite tipkom koša ili Delete/Backspace. Visina se i dalje može podešavati.",
                 "needShape": "Prvo generirajte oblik klizačima, zatim ga uredite ručno.",
                 "confirmReset": "Odbaciti ručne izmjene i vratiti se na klizače?",
                 "error": "Nije moguće izgraditi iz ručnog obrisa. Pokušajte vratiti vrh.",
@@ -3426,7 +3496,10 @@
                 "proceed": "Ipak nastavi",
                 "cancel": "Natrag"
             },
-            "regenerate": "Regeneriraj"
+            "regenerate": "Regeneriraj",
+            "editShape": "Ručno uredi tlocrt",
+            "returnGenerated": "Odbaci ručne izmjene i vrati se na generirani oblik",
+            "confirmReturnGenerated": "Vratiti se na generirani oblik i odbaciti ručne izmjene?"
         }
     },
     "parcelBased": {
@@ -3479,6 +3552,7 @@
     },
     "reparcellization": {
         "modal": {
+            "mapHint": "Uredite granice čestica na karti; ovdje pregledajte vlasništvo i udjele.",
             "savedRecipientUnresolved": "Spremljeni primatelj izlazne čestice nema odgovarajući doprinos među trenutačnim ulazima.",
             "ownerReview": "Pregled vlasnika",
             "allOwners": "Svi vlasnici",
@@ -3661,6 +3735,7 @@
             "siteUnavailable": "Ovu lokaciju ovdje nije moguće parcelirati.",
             "siteGroundTaken": "Lokacija pokriva tlo koje je već oblikovao drugi prijedlog: {{names}}. Nacrtajte lokaciju izvan njega ili najprije poništite primjenu tog prijedloga.",
             "layoutTitle": "Početni raspored",
+            "activeMode": "Aktivno: {{mode}}",
             "sharedCourtyard": "Zajedničko dvorište",
             "courtyardFromBuilding": "Iz građevnog bloka",
             "courtyardDraw": "Nacrtaj na karti",
@@ -5117,6 +5192,14 @@
         }
     },
     "structureEditor": {
+    "titleLake": "Uređivanje granice jezera",
+    "instructionsLake": "Povucite točke granice za promjenu oblika jezera. Dodirnite rub za dodavanje točke.",
+    "lakeBoundaryHint": "Obala i voda prate promjene obrisa.",
+    "hintLake": "Odaberite točku granice za pomicanje ili brisanje.",
+    "lakeInvalid": "Granica jezera mora tvoriti jednu povezanu površinu. Prilagodite obris i pokušajte ponovno.",
+    "lakeVertexTitle": "Povucite za promjenu granice jezera",
+    "lakeDeleteVertexTitle": "Izbriši ovu točku granice",
+    "lakeUndoTitle": "Poništi promjenu granice jezera",
         "ariaLabel": "Uređivač geometrije strukture",
         "titlePark": "Uređivanje parka",
         "titleSquare": "Uređivanje trga",
@@ -5131,29 +5214,36 @@
             "fountain": "Fontana",
             "stall": "Stol",
             "statue": "Kip",
-            "erase": "Ukloni"
+            "erase": "Ukloni",
+            "move": "Premjesti"
         },
         "finishPath": "Završi stazu",
+        "undo": "Poništi",
         "cancel": "Odustani",
         "save": "Spremi dizajn",
         "hintErase": "Klikni element da ga ukloniš.",
         "hintPlace": "Klikni na kartu da postaviš odabrani element.",
+        "hintPath": "Klikni za dodavanje točaka staze, zatim odaberi „Završi stazu“.",
         "hintSelect": "Odaberi element za početak.",
         "statusOutside": "Elemente postavljaj unutar granice strukture.",
-        "statusSaved": "Dizajn strukture je spremljen."
+        "statusSaved": "Dizajn strukture je spremljen.",
+        "hintMove": "Povucite unutar granice da biste premjestili cijeli dizajn. Obris i svi njegovi sadržaji pomiču se zajedno.",
+        "moveUnavailable": "Dizajn nije moguće premjestiti. Pokušajte ponovno."
     },
     "stationEditor": {
         "ariaLabel": "Uređivač geometrije postaje",
         "title": "Uredi geometriju postaje",
         "station": "Postaja",
         "close": "Zatvori",
-        "fixedPosition": "Središte postaje ostaje fiksno. Zakrenite postaju oko njega.",
         "rotation": "Zakretanje",
         "platformHeight": "Visina perona iznad tla",
         "hint": "Pregled na karti ažurira se tijekom uređivanja.",
         "cancel": "Odustani",
         "save": "Gotovo",
-        "saved": "Geometrija postaje je spremljena."
+        "saved": "Geometrija postaje je spremljena.",
+        "moveHint": "Povucite tlocrt postaje ili središnju oznaku da biste je premjestili. Vrsta, veličina, zakretanje i visina perona ostaju isti.",
+        "dragCenter": "Povucite za premještanje postaje",
+        "undo": "Poništi"
     },
     "claims": {
         "onParcels": "Na česticama:",

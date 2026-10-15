@@ -60,6 +60,12 @@ test.describe('Supporting identity controls @core', () => {
     await page.route('**/contracts/contracts.json', route => route.fulfill({ json: {
       '1337': {}, '84532': {}, '11155111': {},
     } }));
+    // Keep the popup URL/query assertions real without requiring the separate Attestify dev server.
+    await page.context().route('http://localhost:3000/**', route => route.fulfill({
+      status: 200,
+      contentType: 'text/html',
+      body: '<!doctype html><title>Attestify test fixture</title>',
+    }));
     await openCity(page);
     const profile = await openProfile(page, 'Identity controls actor');
 
@@ -133,7 +139,7 @@ test.describe('Supporting identity controls @core', () => {
     await expect(attestify).toHaveCount(0);
 
     await profile.locator('.wallet-attest-link').click();
-    const popupPromise = page.waitForEvent('popup');
+    const popupPromise = page.context().waitForEvent('page');
     await attestify.locator('[data-attest-proceed]').click();
     const popup = await popupPromise;
     await expect(attestify).toHaveCount(0);

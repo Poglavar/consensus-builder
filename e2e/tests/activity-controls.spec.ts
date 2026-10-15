@@ -77,9 +77,8 @@ test.describe('Activity and simulation controls @features', () => {
     await modal.locator('.game-log-modal-close').click();
     await expect(modal).toHaveCount(0);
 
-    // Opening the explorer closes its parent Activity sheet. Reopen the sheet to verify its
-    // dedicated Actors shortcut reaches the same view as the explorer's internal switch.
-    await page.locator('#activity-button').click();
+    // Closing the explorer leaves its parent Activity sheet open. Its dedicated Actors shortcut
+    // should reach the same view as the explorer's internal switch.
     await expect(page.locator('#activity-sheet')).toBeVisible();
     await page.locator('#activity-agents-button').click();
     await expect(modal).toBeVisible();
@@ -141,23 +140,20 @@ test.describe('Activity and simulation controls @features', () => {
 
     const beforeReset = await page.locator('#game-turns').innerText();
     const newGame = settings.getByRole('button', { name: /New Game/i });
+    const confirm = page.locator('.cb-dialog--confirm');
     const confirmText = /start a NEW game\?/i;
-    let cancelMessage = '';
-    page.once('dialog', async dialog => {
-      cancelMessage = dialog.message();
-      await dialog.dismiss();
-    });
     await newGame.click();
-    expect(cancelMessage).toMatch(confirmText);
+    await expect(confirm).toBeVisible();
+    await expect(confirm).toContainText(confirmText);
+    await confirm.locator('[data-action-id="cancel"]').click();
+    await expect(confirm).toHaveCount(0);
     await expect(page.locator('#game-turns')).toHaveText(beforeReset);
 
-    let acceptMessage = '';
-    page.once('dialog', async dialog => {
-      acceptMessage = dialog.message();
-      await dialog.accept();
-    });
     await newGame.click();
-    expect(acceptMessage).toMatch(confirmText);
+    await expect(confirm).toBeVisible();
+    await expect(confirm).toContainText(confirmText);
+    await confirm.locator('[data-action-id="ok"]').click();
+    await expect(confirm).toHaveCount(0);
     await expect.poll(() => page.locator('#game-turns').innerText()).toBe('0');
     await expect(play).toHaveAttribute('aria-pressed', 'false');
   });

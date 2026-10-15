@@ -81,9 +81,9 @@ test.describe('compact proposal card actions @features', () => {
     await expect(shareDialog).toBeHidden();
 
     await footer.locator('.btn-edit-geometry').click();
-    const editor = page.locator('.structure-geometry-editor');
+    const editor = page.locator('#structure-geometry-editor');
     await expect(editor).toBeVisible();
-    await editor.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await editor.locator('button[data-action="cancel"]').click();
     await expect(editor).toBeHidden();
     expect((await proposalState(page, proposalId)).title).toBe(sourceBefore.title);
 

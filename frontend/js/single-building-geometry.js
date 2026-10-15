@@ -200,11 +200,22 @@
     // Move a footprint so that `from` lands on `to` ({lat, lng} each), keeping its ground shape and
     // size exactly: every vertex keeps its metres east/north of `from` (in a frame there) and gets the
     // same metres east/north of `to` (in a frame there), however far it moves.
-    function moveGeometry(geometry, from, to) {
-        if (!geometry || !from || !to) return null;
+    function moveCoordinateCollection(value, from, to) {
         const source = pointFrame(from);
         const target = pointFrame(to);
-        return mapGeometryCoordinates(geometry, coordinate => target.toLngLat(source.toLocal(coordinate)));
+        function move(coordinates) {
+            if (!Array.isArray(coordinates)) return coordinates;
+            if (coordinates.length >= 2 && Number.isFinite(coordinates[0]) && Number.isFinite(coordinates[1])) {
+                return [...target.toLngLat(source.toLocal(coordinates)), ...coordinates.slice(2)];
+            }
+            return coordinates.map(move);
+        }
+        return move(value);
+    }
+
+    function moveGeometry(geometry, from, to) {
+        if (!geometry || !from || !to || !['Polygon', 'MultiPolygon'].includes(geometry.type)) return null;
+        return { ...geometry, coordinates: moveCoordinateCollection(geometry.coordinates, from, to) };
     }
 
     function moveGeometryCenter(geometry, target) {
@@ -275,6 +286,7 @@
         isSimpleRing,
         geometryCenter,
         moveGeometry,
+        moveCoordinateCollection,
         moveGeometryCenter,
         rotateGeometry
     };

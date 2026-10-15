@@ -6,6 +6,7 @@ import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
 
 const require = createRequire(import.meta.url);
+const History = require('../../frontend/js/geometry-edit/history.js');
 const {
     coordinateOnEdge,
     constrainRingToBoundary,
@@ -21,9 +22,10 @@ const square = [[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]];
 const squareFeature = turf.polygon([square]);
 
 function fakeLeaflet() {
-    const makeLayer = (kind, latLng = null) => ({
+    const makeLayer = (kind, latLng = null, options = {}) => ({
         kind,
         latLng,
+        options,
         handlers: {},
         addTo(target) {
             if (!Array.isArray(target.layers)) target.layers = [];
@@ -57,14 +59,14 @@ function fakeLeaflet() {
             };
             return group;
         },
-        polyline() {
-            return makeLayer('edge');
+        polyline(_latLngs, options) {
+            return makeLayer('edge', null, options);
         },
-        polygon() {
-            return makeLayer('live');
+        polygon(_latLngs, options) {
+            return makeLayer('live', null, options);
         },
-        marker(latLng) {
-            return makeLayer('marker', { lat: latLng[0], lng: latLng[1] });
+        marker(latLng, options) {
+            return makeLayer('marker', { lat: latLng[0], lng: latLng[1] }, options);
         },
         divIcon(options) {
             return options;
@@ -94,6 +96,21 @@ function fakeMap() {
         getContainer() {
             return null;
         }
+    };
+}
+
+function fakeDocument() {
+    const listeners = new Map();
+    return {
+        addEventListener(name, handler) {
+            const handlers = listeners.get(name) || [];
+            handlers.push(handler);
+            listeners.set(name, handlers);
+        },
+        removeEventListener(name, handler) {
+            listeners.set(name, (listeners.get(name) || []).filter(item => item !== handler));
+        },
+        fire(name, event) { (listeners.get(name) || []).forEach(handler => handler(event)); }
     };
 }
 
@@ -151,6 +168,49 @@ describe('shared polygon ring operations', () => {
 });
 
 describe('shared Leaflet interaction model', () => {
+    it('propagates a custom pane to vertex handles, edge hit targets, delete action, and live outline', () => {
+        const pane = 'single-building-handles';
+        const editor = create({
+            map: fakeMap(),
+            leaflet: fakeLeaflet(),
+            turf,
+            ring: square,
+            pane,
+            initialSelectedVertexIndex: 1,
+            showInitialDeleteAction: true
+        });
+
+        expect(editor.vertexMarkers.every(marker => marker.options.pane === pane)).toBe(true);
+        expect(editor.layerGroup.layers.filter(layer => layer.kind === 'edge').every(edge => edge.options.pane === pane)).toBe(true);
+        expect(editor.deleteMarker.options.pane).toBe(pane);
+
+        const marker = editor.vertexMarkers[1];
+        marker.handlers.dragstart({ target: marker });
+        marker.setLatLng({ lng: 1.1, lat: 0.5 });
+        marker.handlers.drag({ target: marker });
+        expect(editor.liveLayer.options.pane).toBe(pane);
+        editor.destroy();
+    });
+
+    it('keeps the normal Leaflet pane defaults when no pane is supplied', () => {
+        const editor = create({
+            map: fakeMap(),
+            leaflet: fakeLeaflet(),
+            turf,
+            ring: square,
+            showDeleteAction: false
+        });
+
+        expect(editor.vertexMarkers[0].options.pane).toBe('markerPane');
+        expect(editor.layerGroup.layers.find(layer => layer.kind === 'edge').options.pane).toBe('overlayPane');
+        const marker = editor.vertexMarkers[0];
+        marker.handlers.dragstart({ target: marker });
+        marker.setLatLng({ lng: -0.1, lat: 0.5 });
+        marker.handlers.drag({ target: marker });
+        expect(editor.liveLayer.options.pane).toBe('overlayPane');
+        editor.destroy();
+    });
+
     it('renders only real vertex markers and inserts through an edge click', () => {
         const commits = [];
         const editor = create({
@@ -206,6 +266,60 @@ describe('shared Leaflet interaction model', () => {
         expect(commits[0].ring[1][0]).toBeCloseTo(1, 10);
         expect(commits[0].ring[1][1]).toBeCloseTo(0.4, 3);
         expect(openRing(editor.ring)).toHaveLength(4);
+        editor.destroy();
+    });
+
+    it('undoes the complete vertex drag and does not create an undo step for a no-op drag', () => {
+        const document = fakeDocument();
+        const commits = [];
+        const editor = create({
+            map: fakeMap(), leaflet: fakeLeaflet(), turf, ring: square,
+            history: History, document, showUndoButton: false,
+            onCommit: payload => commits.push(payload)
+        });
+        const original = openRing(square);
+        const marker = editor.vertexMarkers[1];
+
+        marker.handlers.dragstart({ target: marker });
+        marker.setLatLng({ lng: 1.2, lat: 0.3 });
+        marker.handlers.drag({ target: marker });
+        marker.handlers.dragend({ target: marker });
+        expect(editor.ring[1]).toEqual([1.2, 0.3]);
+        expect(editor.history.canUndo()).toBe(true);
+
+        const undoEvent = { key: 'z', ctrlKey: true, target: {}, preventDefault() {} };
+        document.fire('keydown', undoEvent);
+        expect(openRing(editor.ring)).toEqual(original);
+        expect(commits.map(commit => commit.reason)).toEqual(['move', 'undo']);
+        expect(editor.history.canUndo()).toBe(false);
+
+        const unchanged = editor.vertexMarkers[0];
+        unchanged.handlers.dragstart({ target: unchanged });
+        unchanged.handlers.dragend({ target: unchanged });
+        expect(editor.history.canUndo()).toBe(false);
+        editor.destroy();
+    });
+
+    it('keeps edge insert and vertex delete undo snapshots before their changes', () => {
+        const document = fakeDocument();
+        const editor = create({
+            map: fakeMap(), leaflet: fakeLeaflet(), turf, ring: square,
+            history: History, document, showUndoButton: false
+        });
+
+        editor.layerGroup.layers.find(layer => layer.kind === 'edge').handlers.click({
+            latlng: { lng: 0.25, lat: 0 }
+        });
+        expect(editor.ring).toHaveLength(5);
+        document.fire('keydown', { key: 'z', ctrlKey: true, target: {}, preventDefault() {} });
+        expect(openRing(editor.ring)).toEqual(openRing(square));
+
+        editor.vertexMarkers[1].handlers.click({});
+        editor.deleteMarker.handlers.click({});
+        expect(editor.ring).toHaveLength(3);
+        document.fire('keydown', { key: 'z', ctrlKey: true, target: {}, preventDefault() {} });
+        expect(editor.ring).toHaveLength(4);
+        expect(openRing(editor.ring)).toEqual(openRing(square));
         editor.destroy();
     });
 

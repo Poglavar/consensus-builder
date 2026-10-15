@@ -2,14 +2,16 @@
 // The completion path must resolve the CURRENT button and render from authoritative state; putting
 // the captured pre-await HTML back made a successfully parked proposal still say "Unapply".
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { runInNewContext } from 'node:vm';
 
 const require = createRequire(import.meta.url);
 const ProposalMapAction = require('../../frontend/js/proposals/map-action.js');
 const source = readFileSync(fileURLToPath(new URL('../../frontend/js/proposals/layer-render.js', import.meta.url)), 'utf8');
+const executionSource = readFileSync(fileURLToPath(new URL('../../frontend/js/proposals/execution.js', import.meta.url)), 'utf8');
 const dictionary = locale => JSON.parse(readFileSync(
     fileURLToPath(new URL(`../../frontend/i18n/${locale}.json`, import.meta.url)),
     'utf8'
@@ -105,5 +107,63 @@ describe('proposal action after unapply', () => {
         ['unapplying', 'restoringGround', 'saving', 'unappliedStatus']
             .forEach(key => expect(actions[key], `${locale} missing ${key}`).toBeTruthy());
         expect(actions.unappliedStatus).toContain('{{name}}');
+    });
+});
+
+describe('unapply failure feedback', () => {
+    function loadRemove({ result = false, throws = null, existingError = '' } = {}) {
+        const buttonNode = button();
+        const panelError = existingError ? { dataset: { proposalMapActionError: 'park' }, remove: vi.fn() } : null;
+        const document = {
+            getElementById: () => buttonNode,
+            querySelectorAll: () => panelError ? [panelError] : []
+        };
+        const messages = vi.fn();
+        const proposal = { proposalId: 'park', title: 'Park', applied: true };
+        const manager = {
+            applyProposal() {},
+            unapplyProposal: vi.fn(async () => { if (throws) throw throws; return result; }),
+            _getProposalChildParcels: () => []
+        };
+        const globals = {
+            document,
+            window: { __proposalMapActionFailures: existingError ? { park: existingError } : Object.create(null) },
+            console: { log: vi.fn(), error: vi.fn(), warn: vi.fn() },
+            ProposalManager: manager,
+            proposalStorage: { getProposal: () => proposal },
+            getLifecycleStatus: () => 'Active',
+            isApplied: value => value.applied === true,
+            reconcileProposalMapActionButton: vi.fn(() => { buttonNode.disabled = false; }),
+            getProposalI18nHelper: () => (key, fallback, params = {}) => String(fallback)
+                .replace(/\{\{\s*(\w+)\s*\}\}/g, (match, name) => params[name] ?? match),
+            showEphemeralMessage: messages
+        };
+        const helpersStart = executionSource.indexOf('function proposalApplyFailureReason(');
+        const helpersEnd = executionSource.indexOf('function openAcceptOwnershipTransferDialog(', helpersStart);
+        const removeStart = source.indexOf('async function removeProposalFromMap(');
+        const removeEnd = source.indexOf('\nfunction focusOnRemovedParcelLocation(', removeStart);
+        runInNewContext(`${executionSource.slice(helpersStart, helpersEnd)}\n${source.slice(removeStart, removeEnd)}\nthis.remove = removeProposalFromMap;`, globals);
+        return { remove: globals.remove, globals, manager, messages, panelError, button: buttonNode };
+    }
+
+    it('reports a false manager result with an explicit unapply fallback', async () => {
+        const { remove, globals, messages, button: buttonNode } = loadRemove();
+
+        await expect(remove('park')).resolves.toBe(false);
+
+        expect(messages).toHaveBeenCalledWith('Could not remove this proposal from the map. Please try again.', 8000, 'error');
+        expect(globals.window.__proposalMapActionFailures.park).toContain('Could not remove this proposal');
+        expect(buttonNode.disabled).toBe(false);
+    });
+
+    it('reports an unapply exception and clears its stale apply error after a successful retry', async () => {
+        const failure = loadRemove({ throws: new Error('ground restore failed') });
+        await expect(failure.remove('park')).resolves.toBe(false);
+        expect(failure.messages).toHaveBeenCalledWith('Could not remove this proposal from the map: ground restore failed', 8000, 'error');
+
+        const success = loadRemove({ result: true, existingError: 'old apply error' });
+        await expect(success.remove('park')).resolves.toBe(true);
+        expect(success.globals.window.__proposalMapActionFailures).not.toHaveProperty('park');
+        expect(success.messages).not.toHaveBeenCalled();
     });
 });

@@ -1,10 +1,12 @@
-// Applying an immutable replacement parks its source. Unapplying the replacement never restores
-// the source; the cadastre is re-derived from the records that are still explicitly applied.
+// Applying a local immutable replacement parks its source. A fork of a published source keeps
+// that source's map state unless an actual geometry collision requires an ordinary apply switch.
+// Unapplying a local replacement never restores its source; the cadastre is re-derived from the
+// records that are still explicitly applied.
 (function attachProposalSupersession(root, factory) {
-    const api = factory();
+    const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root) Object.assign(root, api);
-})(typeof window !== 'undefined' ? window : globalThis, function proposalSupersessionFactory() {
+})(typeof window !== 'undefined' ? window : globalThis, function proposalSupersessionFactory(root) {
     'use strict';
 
     // Resolver alias for the canonical applied accessor: the browser global wins; node tests require it.
@@ -27,6 +29,22 @@
         return value === undefined || value === null || !String(value) ? null : String(value);
     }
 
+    // Publication is an identity boundary. A generic content hash is not evidence that a local
+    // copy has been minted or stored by the server.
+    function isPublishedProposalRecord(proposal) {
+        if (!proposal || typeof proposal !== 'object') return false;
+        try {
+            if (typeof root?.isProposalImmutable === 'function' && root.isProposalImmutable(proposal)) return true;
+            if (typeof root?.isProposalMinted === 'function' && root.isProposalMinted(proposal)) return true;
+        } catch (_) { }
+        if (proposal.serverProposalId || proposal.onchain?.transactionHash || proposal.onchainData
+            || proposal.isMinted === true || proposal.tokenId || proposal.chainProposalId) return true;
+        const status = typeof root?.getLifecycleStatus === 'function'
+            ? root.getLifecycleStatus(proposal)
+            : String(proposal.lifecycleStatus || proposal.effectiveStatus || proposal.status || '').toLowerCase();
+        return ['published', 'minted', 'on-chain', 'onchain'].includes(String(status).toLowerCase());
+    }
+
     // A direct edit points at its immutable source, but alternatives form an undirected family for
     // map application: choosing the source again must park its replacement just as choosing the
     // replacement parks the source. Follow the whole component so A -> B -> C can be toggled in any
@@ -35,6 +53,10 @@
         const targetId = proposalRecordId(proposal);
         if (!targetId) return new Set();
         const adjacency = new Map();
+        const recordsById = new Map((Array.isArray(records) ? records : [])
+            .filter(Boolean)
+            .map(record => [proposalRecordId(record), record])
+            .filter(([id]) => id));
         const link = (left, right) => {
             if (!left || !right || left === right) return;
             if (!adjacency.has(left)) adjacency.set(left, new Set());
@@ -48,6 +70,8 @@
             if (record?.landFork) return;
             const id = proposalRecordId(record);
             const sourceId = proposalReplacementSourceId(record);
+            const source = recordsById.get(sourceId);
+            if (source && isPublishedProposalRecord(source)) return;
             if (id && sourceId) link(id, sourceId);
         });
 
@@ -184,6 +208,7 @@
         if (!sourceId || !resolvedReplacementId || sourceId === resolvedReplacementId) return null;
         const source = findProposal(sourceId);
         if (!source || source === replacement || !proposalIsAppliedForReplacement(source)) return null;
+        if (isPublishedProposalRecord(source)) return null;
         source.applied = false;
         delete source.appliedAt;
         return { source, sourceId, replacementId: resolvedReplacementId };
@@ -192,6 +217,7 @@
     return {
         proposalIsAppliedForReplacement,
         proposalReplacementSourceId,
+        isPublishedProposalRecord,
         proposalReplacementFamilyIds,
         collectAppliedProposalAlternatives,
         commitReplacementSupersession

@@ -66,7 +66,7 @@ test.describe('Parcel info panel tabs @core', () => {
 
   test('the Tools icon tab shows claim controls', async ({ mockApi: page }) => {
     await openDetails(page);
-    await page.locator('#parcel-info-panel').getByRole('button', { name: 'Tools', exact: true }).click();
+    await page.locator('#parcel-info-panel').getByRole('tab', { name: 'Tools', exact: true }).click();
     await expect(page.locator('#tools-tab')).toBeVisible();
     await expect(page.locator('#claimButton')).toBeDisabled();
     await expect(page.locator('#mintAndClaimButton')).toBeDisabled();

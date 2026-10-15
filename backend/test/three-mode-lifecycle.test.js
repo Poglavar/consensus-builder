@@ -26,6 +26,23 @@ function loadInContext(declarations, values) {
     return context;
 }
 
+function threeModeListenerRegistration(eventName) {
+    const ast = parse(threeModeSource, { sourceType: 'script' });
+    const body = ast.program.body.find(node => node.type === 'ExpressionStatement')
+        .expression.callee.body.body;
+    const registration = body.find(node => {
+        if (node.type !== 'ExpressionStatement') return false;
+        const call = node.expression;
+        return call.type === 'CallExpression'
+            && call.callee.type === 'MemberExpression'
+            && call.callee.object.type === 'Identifier' && call.callee.object.name === 'window'
+            && call.callee.property.name === 'addEventListener'
+            && call.arguments[0]?.value === eventName;
+    });
+    expect(registration, `missing ${eventName} registration`).toBeDefined();
+    return threeModeSource.slice(registration.start, registration.end);
+}
+
 it('resolves an obsolete mode request as false after a pending scene entry is cancelled', async () => {
     const calls = [];
     let finishSceneEntry;
@@ -217,6 +234,71 @@ it('marks pending uploaded-model loads incomplete before the exit path clears th
     expect(context.nearbyProposalBuildingsFetching).toBe(false);
     expect(context.nearbyTreesFetching).toBe(false);
     expect(context.nearbyWaterFetching).toBe(false);
+});
+
+it('repaints existing life simulation from changed building footprints on active building events only', () => {
+    const replaced = [];
+    const eventHandlers = new Map();
+    let surfaceInput = null;
+    const window = {
+        proposedBuildings: [], parks: [], squares: [], lakes: [],
+        addEventListener: (name, callback) => eventHandlers.set(name, callback),
+        __lifeGraph: {
+            createGraphBuilder() {
+                const blocked = [];
+                return {
+                    addBlockedFeature(feature) { blocked.push(feature); },
+                    build() { return { tracks: [], stats: { blocked: blocked.length }, surface: { blocked } }; }
+                };
+            }
+        },
+        __lifeSurface: {
+            buildWalkableSurface(input) {
+                surfaceInput = input;
+                return { stats: { blocked: input.blocked.length }, blocked: input.blocked };
+            }
+        }
+    };
+    const context = loadInContext(threeModeDeclarations([
+        'refreshLifeSurface', 'buildLifeGraph', 'addLifeBlockedFootprints', 'buildLifeSurfaceFrom',
+        'lifeSurfaceBounds', 'lifeProjector', 'lifeMercatorK'
+    ]), {
+        window, isActive: true, scene: {}, origin3857: { x: 0, y: 0 },
+        lifeAnchorBounds: [0, 0, 1, 1], lifeQueryBounds: null, lifeOsmFeatures: null,
+        nearbyProposalBuildings: [], nearbyWater: [],
+        lifeSim: { people: [], replaceSurface(surface) { replaced.push(surface); } },
+        L: { CRS: { EPSG3857: { unproject: () => ({ lat: 0 }) } }, point: () => ({}) },
+        latLngToXY: (lat, lng) => [lng, lat],
+        performance: { now: () => 1 }, console,
+        syncLifeVisibility() {}, invalidateThreeView() {}
+    });
+    context.refreshLifeSurface();
+    expect(replaced).toHaveLength(1);
+    expect(surfaceInput.blocked).toEqual([]);
+
+    context.rebuild3DBuildingsOnly = () => {};
+    context.rebuildProposalInteraction3D = () => {};
+    context.nearbyProposalBuildingsKey = 'cached';
+    vm.runInContext(threeModeListenerRegistration('proposedBuildingsUpdated'), context);
+    vm.runInContext(threeModeListenerRegistration('buildingsLayerUpdated'), context);
+
+    const proposedFootprint = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [] }, properties: { id: 'proposal-bldg' } };
+    window.proposedBuildings = [proposedFootprint];
+    context.isActive = false;
+    eventHandlers.get('proposedBuildingsUpdated')();
+    eventHandlers.get('buildingsLayerUpdated')();
+    expect(replaced).toHaveLength(1);
+
+    context.isActive = true;
+    eventHandlers.get('proposedBuildingsUpdated')();
+    expect(surfaceInput.blocked).toEqual([proposedFootprint]);
+    expect(replaced.at(-1).blocked).toEqual([proposedFootprint]);
+    const existingFootprint = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [] }, properties: { id: 'existing-bldg' } };
+    window.proposedBuildings = [existingFootprint];
+    eventHandlers.get('buildingsLayerUpdated')();
+    expect(surfaceInput.blocked).toEqual([existingFootprint]);
+    expect(replaced.at(-1).blocked).toEqual([existingFootprint]);
+    expect(replaced).toHaveLength(3);
 });
 
 function warmEnterFixture() {

@@ -52,7 +52,7 @@
     }
 
     // A structure's stored decorations kept to the ground it actually stands on (a body carved by a
-    // later road): points outside are dropped, polylines are split into their inside runs, rings
+    // later formation): points outside are dropped, polylines are split into their inside runs, rings
     // (ponds, flowerbeds) are kept only when wholly inside. Pure; never written back to the record.
     function decorationsOnGround(decorations, geometry, turfRef) {
         if (!decorations || typeof decorations !== 'object' || !geometry || !turfRef) return decorations;
@@ -71,6 +71,7 @@
             const kept = [];
             value.forEach(entry => {
                 if (isCoord(entry)) { if (inside(entry)) kept.push(entry); return; }
+                if (entry && isCoord(entry.coordinate)) { if (inside(entry.coordinate)) kept.push(entry); return; }
                 if (Array.isArray(entry) && entry.length && entry.every(isCoord)) {
                     if (isRing(entry)) { if (entry.every(inside)) kept.push(entry); return; }
                     let run = [];
@@ -88,8 +89,56 @@
         return out;
     }
 
+    // Presentation follows the final live body, not the authored footprint before later proposals
+    // took their ground. Fabric bodies are already disjoint connected pieces; joining their rings
+    // needs no new overlay operation. Cadastral remainders share the producer but are not its body.
+    function structureFeatureOnGround(feature, producedGround, turfRef) {
+        const props = feature.properties || {};
+        const coordinates = (producedGround || []).filter(piece =>
+            String(piece.properties?.producedByProposalId || '') === String(props.proposalId || '')
+            && piece.properties?.structureType === props.structureType
+        ).flatMap(piece => piece.geometry?.type === 'Polygon'
+            ? [piece.geometry.coordinates]
+            : (piece.geometry?.type === 'MultiPolygon' ? piece.geometry.coordinates : []));
+        if (!coordinates.length) return null;
+        const geometry = coordinates.length === 1
+            ? { type: 'Polygon', coordinates: coordinates[0] }
+            : { type: 'MultiPolygon', coordinates };
+        if (JSON.stringify(geometry) === JSON.stringify(feature.geometry)) return feature;
+        return {
+            ...feature,
+            geometry: JSON.parse(JSON.stringify(geometry)),
+            properties: {
+                ...props,
+                decorations: decorationsOnGround(props.decorations, geometry, turfRef),
+                ...(props.structureType === 'lake' ? { lakeGraphics: null } : {})
+            }
+        };
+    }
+
     return {
     decorationsOnGround,
+    structureFeatureOnGround,
+    _reconcileStructurePresentation(records, options = {}) {
+        const mutation = options._parcelMutation;
+        const ids = new Set(Array.from(records || [], record => String(record?.proposalId || '')).filter(Boolean));
+        const turfRef = typeof turf !== 'undefined' ? turf : null;
+        for (const name of ['parks', 'squares', 'lakes']) {
+            const collection = mutation?.collections?.[name];
+            if (!Array.isArray(collection)) continue;
+            const projected = collection.flatMap(feature => {
+                const id = String(feature?.properties?.proposalId || '');
+                if (!ids.has(id)) return [feature];
+                const next = structureFeatureOnGround(feature, mutation.fabric.producedBy(id), turfRef);
+                if (!next) return [];
+                if (name === 'lakes' && next !== feature && typeof ensureLakeGraphics === 'function') {
+                    ensureLakeGraphics(next);
+                }
+                return [next];
+            });
+            collection.splice(0, collection.length, ...projected);
+        }
+    },
     structureNeedsGroundFormation,
     structureTakeContext,
     structureGeometryIsContiguous,

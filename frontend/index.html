@@ -116,6 +116,9 @@
                 'css/grain-score.css',
                 'css/proposal-editor.css',
                 'css/structure-geometry-editor.css',
+                'css/on-map-building.css',
+                'css/on-map-editor.css',
+                'css/on-map-reparcellization.css',
                 'css/station-geometry-editor.css',
                 'css/corridor-editor.css',
                 'css/corridor-render.css',
@@ -317,10 +320,12 @@
             </div>
         </section>
 
-        <!-- Floating status toast: the latest status line, always visible, small and out of the way.
-             The full status bar and its log live in the Activity sheet. -->
-        <div id="floating-status" class="floating-status cb-toast cb-toast--status">
-            <span class="cb-toast__spinner" aria-hidden="true"></span><span id="floating-status-text"></span>
+        <!-- Shared map feedback stack: measured by normal flow so a wrapped status and the view
+             hint sit above the bottom dock without fixed row offsets. The full status log is in Activity. -->
+        <div id="map-feedback-stack" class="map-feedback-stack">
+            <div id="floating-status" class="floating-status cb-toast cb-toast--status">
+                <span class="cb-toast__spinner" aria-hidden="true"></span><span id="floating-status-text"></span>
+            </div>
         </div>
 
         <!-- ===== Floating map shell (js/ui/map-shell.js, css/map-shell.css) =====
@@ -878,7 +883,7 @@
                     <div class="btn-group">
                         <button id="showProposalsButton" hidden class="btn btn-block btn-primary" onclick="showAllProposalsModal()"
                             data-i18n-key="sidebar.proposals.listButton" data-i18n-params='{"count":0}'>Proposals List (0)</button>
-                        <button id="planStatsButton" class="btn btn-block plan-stats-button">
+                        <button id="planStatsButton" class="btn btn-block plan-stats-button" disabled aria-disabled="true">
                             <i class="fas fa-chart-pie" aria-hidden="true"></i>
                             <span class="plan-stats-label"
                                 data-i18n-key="sidebar.proposals.planStats.buttonLabel">Plan Stats</span>
@@ -1655,13 +1660,16 @@
             'js/optional-tools-loader.js',
             'js/shared-utils.js',
             'js/ui/banner-stack.js',
+            // bundle:start foundation
             'js/ui/modal-escape.js',
             'js/ui/dialogs.js',
             'js/persistent-storage.js',
             'js/i18n.js',
             'js/format.js',
             'js/multi-tab-guard.js',
+            // bundle:end foundation
             'js/versions.js',
+            // bundle:start environment-before-city
             'js/i18n-loader.js',
             'js/version-history.js',
             'js/environment.js',
@@ -1669,11 +1677,14 @@
             'js/world/world-entry-model.js',
             'js/metric-frame.js',
             'js/parcel-source-settings.js',
+            // bundle:end environment-before-city
             'js/city-config.js?v=20261008-africa-capitals',
+            // bundle:start environment-after-city
             'js/parcel-source-notice.js',
             'js/ui/world-entry.js',
             'js/city-switch-prompt.js',
             'js/ens/ens-name.js'
+            // bundle:end environment-after-city
         ]);
     </script>
     <!-- pako is DECODE-ONLY legacy support. Share links are short server-side ids now, and nothing
@@ -1730,6 +1741,7 @@
             'js/proposals/counts.js',
             'js/proposals/chain-status.js',
             'js/proposal-parcel-identity.js',
+            // bundle:start chain-clients
             'js/wallet-connection.js',
             'js/solana/wallet-adapter.js',
             'js/lens-core.js',
@@ -1760,7 +1772,9 @@
             'js/guest-policy.js',
             'js/map-screenshot.js',
             'js/og-metadata.js',
+            // bundle:end chain-clients
             'js/parcels/browser-client.js',
+            // bundle:start parcel-data-clients
             'js/data-source.js',
             'js/basemap.js?v=20261009-map-credits',
             'js/parcels/source-in-view.js',
@@ -1768,10 +1782,12 @@
             'js/parcels/utils/fetch-config.js',
             'js/parcels/controller.js',
             'js/parcels/activity-listener.js',
+            // bundle:end parcel-data-clients
             'js/map-core.js?v=20261009-map-credits',
             'js/user-management.js',
             'js/site-intro.js',
             'js/map-controls.js',
+            // bundle:start map-ui
             'js/urban-blocks-model.js',
             'js/urban-blocks-controller.js',
             'js/urban-blocks-layout.js',
@@ -1852,9 +1868,11 @@
             'js/parcels/route.js',
             'js/proposals/owner-acceptance.js',
             'js/proposals/selection.js',
+            // bundle:end map-ui
             'js/proposals/state.js',
             'js/proposals/lifecycle.js',
             'js/proposals/parcel-id.js?v=20261008-geometry-reference',
+            // bundle:start proposal-geometry
             'js/proposals/footprint-parts.js',
             'js/proposals/plan-order.js',
             'js/proposals/site-binding.js',
@@ -1875,6 +1893,9 @@
             'js/proposals/formation-edit.js',
             'js/proposals/corridor-levels.js',
             'js/map-edit-lock.js',
+            'js/single-building-geometry.js',
+            'js/on-map-placement.js',
+            'js/on-map-editor.js',
             'js/geometry-edit/history.js',
             'js/geometry-edit/handles.js',
             'js/proposals/plot-topology.js',
@@ -1904,6 +1925,7 @@
             'js/footprint-geometry.js',
             'js/building-ground.js',
             'js/proposal-own-parcel.js',
+            // bundle:end proposal-geometry
             'js/proposals/geometry.js',
             'js/proposals/chain.js',
             'js/proposals/roads.js',

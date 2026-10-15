@@ -1,4 +1,21 @@
 {
+  "onMapEditor": {
+    "missingSite": "This saved building has no valid authored site boundary, so its geometry cannot be edited safely.",
+    "cancel": "Cancel",
+    "editing": "Editing",
+    "controls": "Controls",
+    "showControls": "Show controls",
+    "hideControls": "Hide controls",
+    "moreOptions": "More options",
+    "undo": "Undo",
+    "lockReject": "The current footprint is outside the locked site. Move it back inside to use site lock.",
+    "placement": {
+      "snap": "Snap to edges",
+      "lock": "Lock to starting site",
+      "outside": "Outside the starting site. Save to recalculate affected parcels.",
+      "lockOutside": "Move the design inside the starting site before locking it."
+    }
+  },
     "optionalTools": {
         "loadFailed": "Could not load this tool. Please try again."
     },
@@ -175,7 +192,7 @@
     },
     "multitab": {
         "warning": "This city is already open in another tab. To avoid losing saved proposals, changes made here won't be saved — close the other tabs of this city and reload this one to edit. Other cities can stay open.",
-        "notSaved": "Proposal was NOT saved and will be lost on browser reload."
+        "notSaved": "This city is open in another tab. Your changes are kept in a recovery copy, but are not saved to the shared plan. Use the main tab to save changes."
     },
     "proposalApproval": {
         "ownerLabel": "Owner {{label}}",
@@ -287,6 +304,18 @@
             "sponsorReceives": "The sponsor receives {{amount}}.",
             "sponsorNothing": "Owner payments cover every payout; the sponsor pays nothing."
         }
+    },
+    "proposalApplyFailures": {
+        "outsideCadastre": "The proposal geometry extends beyond its selected cadastral parcels. Keep it within the selected land, or create a proposal that includes the additional parcels.",
+        "outsideSite": "The proposal geometry extends beyond its site. Keep it inside the site, or edit the site before applying.",
+        "groundUnavailable": "Cadastral parcel data could not be loaded. Check your connection and try applying again.",
+        "groundMissing": "Cadastral parcel data is unavailable for: {{parcels}}. This proposal cannot be applied until those parcels can be loaded.",
+        "undeclared": "This proposal has no cadastral parcels or open-ground site. Define its site before applying.",
+        "invalidGeometry": "The proposal geometry is missing or invalid. Edit its geometry before applying.",
+        "applyFailed": "The proposal could not be placed on the map because its geometry could not be derived from the selected land.",
+        "busy": "Another map update is still running. Wait for it to finish and try again.",
+        "storeUnavailable": "Proposals are not loaded yet. Wait for the city to finish loading and try again.",
+        "notFound": "This proposal is no longer available. Refresh the proposals list and try again."
     },
     "proposalDrafts": {
         "title": "Drafts",
@@ -419,7 +448,27 @@
             "road": "Road",
             "track": "Track",
             "parcelOnly": "This proposal has no separate design geometry. Parcel highlighting remains live while you edit its other facets.",
-            "unavailable": "This design editor is unavailable."
+            "unavailable": "This design editor is unavailable.",
+            "editorBusy": "Another geometry editor is already using the map. Close it before starting this site design.",
+            "siteUnavailable": "The selected site is unavailable. Select a valid site and try again.",
+            "parcelsUnavailable": "No design parcels are available for this site. Select the site again and try once its parcels are loaded.",
+            "draftCreateFailed": "Could not save a local draft for this site design. The site remains unchanged.",
+            "handoffFailed": "The design editor could not open. Your site is unchanged, and the design draft was preserved locally.",
+            "handoffFailedReason": "The design editor could not open: {{reason}}. Your site is unchanged, and the design draft was preserved locally."
+        },
+        "placement": {
+            "fixedSite": "This proposal type has a fixed site and cannot be moved.",
+            "existingBuilding": "Existing-building proposals keep their source-aware footprint and cannot use free placement.",
+            "invalidSite": "A free placement needs a valid polygon site.",
+            "freshBinding": "A free placement needs a fresh authoritative site binding.",
+            "unknownCoverage": "The server cannot verify this site against a supported cadastre. Move it into a supported area or contact the city data team.",
+            "unverifiedCoverage": "The site binding did not confirm its cadastral coverage. Retry the binding before applying or publishing.",
+            "pending": "The moved site must be rebound before this draft can be applied or published.",
+            "bindingUnavailable": "The authoritative site binding service is unavailable. Your moved draft is saved locally.",
+            "geometryChanged": "The moved geometry changed while its site was being bound. Retry the save.",
+            "buildingOutsideSite": "The moved building geometry must fit entirely inside its new site.",
+            "surroundingsOutsideSite": "The moved surroundings must fit entirely inside the new site. Move the whole proposal or adjust its ground boundary before saving.",
+            "massingOutsideSite": "The moved block massing must fit entirely inside its new site."
         },
         "review": {
             "title": "Review changes",
@@ -495,6 +544,11 @@
         "errors": {
             "draftFailed": "Could not open this proposal for editing.",
             "instantCreateFailed": "Could not save the new object.",
+            "designSaveFailed": "Your changes could not be saved. Try again.",
+            "designSaveFailedReason": "Your changes could not be saved ({{reason}}). Try again.",
+            "structureGeometryFailed": "Geometry could not be built from the selected parcels.",
+            "designEditorReopenFailed": "The design editor could not be reopened.",
+            "siteRestoreFailed": "The site could not be restored. Try again.",
             "noAdapter": "No editor is registered for this proposal type.",
             "notReshapeable": "This proposal type cannot be reshaped.",
             "parcelsNotContiguous": "The selected parcels must form one connected area.",
@@ -1332,6 +1386,14 @@
                 "editApproval": "Edit ownership and approval",
                 "addApproval": "Add ownership and approval",
                 "editApprovalHint": "Opens the editor on its Approval tab. Saving creates a replacement proposal; acceptances of this one do not carry over.",
+                "applyFailed": "Could not apply this proposal: {{reason}}",
+                "applyFailedUnknown": "Could not apply this proposal. Please try again.",
+                "applyUnavailable": "This proposal cannot be applied to the map.",
+                "applyUnsupported": "This proposal type does not support map application.",
+                "missingProposal": "No proposal was selected to apply.",
+                "unapplyFailed": "Could not remove this proposal from the map: {{reason}}",
+                "unapplyFailedUnknown": "Could not remove this proposal from the map. Please try again.",
+                "unapplyUnavailable": "This proposal cannot be removed from the map.",
                 "betOutcome": "Bet on outcome"
             },
             "expiry": {
@@ -2024,6 +2086,10 @@
             "deleteLabel": "Delete building",
             "renameLabel": "Rename building",
             "closeLabel": "Close single building modal",
+            "cancel": "Cancel",
+            "more": "Site & details",
+            "mapHint": "Drag the building or its corners. Tap an edge to add a corner.",
+            "modelHint": "Adjust the height and orbit to see the fit. Use 2D to reshape the footprint.",
             "previewLabel": "3D preview",
             "confirm": "Done",
             "parametersTitle": "Parameters",
@@ -2042,12 +2108,14 @@
             "uploadNoPolygon": "No usable polygon found in that file.",
             "uploadOutside": "The uploaded polygon does not overlap this block in a usable way.",
             "uploadError": "Could not read that file.",
-            "infoText": "Drag the footprint to move it. Drag a vertex to reshape it, click an edge to add a vertex, or select a vertex and use the trash button or Delete/Backspace to remove it. The building must remain fully within the block.",
-            "infoTextTouch": "Drag the footprint to move it. Drag a vertex to reshape it, tap an edge to add a vertex, or select a vertex and use the trash button to remove it. The building must remain fully within the block.",
+            "infoText": "Drag the footprint to move it. Drag a vertex to reshape it, click an edge to add a vertex, or select a vertex and use the trash button or Delete/Backspace to remove it. Use “Lock to starting site” to keep it within this site; otherwise you can move it freely.",
+            "infoTextTouch": "Drag the footprint to move it. Drag a vertex to reshape it, tap an edge to add a vertex, or select a vertex and use the trash button to remove it. Use “Lock to starting site” to keep it within this site; otherwise you can move it freely.",
             "parcelLabel": "Building parcel",
             "parcelFootprint": "Footprint parcel",
             "parcelWhole": "Take the whole parcels",
-            "parcelInfo": "By default the building forms its own parcel from its footprint and the rest of the land stays with its owner. Taking whole parcels makes them the building’s parcel as they are."
+            "parcelInfo": "By default the building forms its own parcel from its footprint and the rest of the land stays with its owner. Taking whole parcels makes them the building’s parcel as they are.",
+            "moveTogether": "Move whole proposal",
+            "uploadInvalid": "The uploaded polygon is invalid or outside the locked site."
         },
         "buildingUpload": {
             "title": "Upload a building model",
@@ -2134,6 +2202,7 @@
         },
         "corridor": {
             "title": "Cross-section",
+            "openError": "The cross-section editor could not open.",
             "subtitle": "The total width is the sum of the lanes — add or remove a lane and the road widens or narrows",
             "drawingSubtitle": "Changes update the road on the map before you create the proposal",
             "proposalSubtitle": "Preview changes here, then apply them to an editable road drawing",
@@ -3202,6 +3271,7 @@
     },
     "blockify": {
         "modal": {
+            "mapHint": "Edit plots and boundaries on the map; use the panel to review ownership and shares.",
             "title": "Urban rule",
             "closeAria": "Close blockify modal",
             "generating": "Generating building…",
@@ -3306,9 +3376,9 @@
             },
             "manual": {
                 "edit": "Edit shape manually",
-                "back": "Back to sliders",
-                "hint": "Manual mode: drag a vertex to reshape, click an edge to add one, or select a vertex and use the trash button or Delete/Backspace to remove it. Width and height stay adjustable.",
-                "hintSimplified": "Manual mode: outline simplified to {{count}} draggable points. Drag a point to reshape, click an edge to add one, or select a point and use the trash button or Delete/Backspace to remove it. Width and height stay adjustable.",
+                "back": "Discard manual shape and return to generated geometry",
+                "hint": "Manual mode: drag a vertex to reshape, click an edge to add one, or select a vertex and use the trash button or Delete/Backspace to remove it. Height stays adjustable.",
+                "hintSimplified": "Manual mode: outline simplified to {{count}} draggable points. Drag a point to reshape, click an edge to add one, or select a point and use the trash button or Delete/Backspace to remove it. Height stays adjustable.",
                 "needShape": "Generate a shape with the sliders first, then edit it manually.",
                 "confirmReset": "Discard manual edits and go back to the sliders?",
                 "error": "Could not build from the manual outline. Try moving the vertex back.",
@@ -3376,7 +3446,10 @@
                 "proceed": "Proceed anyway",
                 "cancel": "Go back"
             },
-            "regenerate": "Regenerate"
+            "regenerate": "Regenerate",
+            "editShape": "Edit footprint manually",
+            "returnGenerated": "Discard manual edits and return to the generated shape",
+            "confirmReturnGenerated": "Return to the generated shape and discard manual edits?"
         }
     },
     "parcelBased": {
@@ -3429,6 +3502,7 @@
     },
     "reparcellization": {
         "modal": {
+            "mapHint": "Adjust plot boundaries on the map; review ownership and shares here.",
             "savedRecipientUnresolved": "Saved output recipient has no matching current input contribution.",
             "ownerReview": "Review one owner",
             "allOwners": "All owners",
@@ -3464,6 +3538,7 @@
             },
             "algorithmTitle": "Land readjustment type",
             "layoutTitle": "Starting layout",
+            "activeMode": "Active: {{mode}}",
             "sharedCourtyard": "Shared courtyard",
             "courtyardFromBuilding": "From a building block",
             "courtyardDraw": "Draw on map",
@@ -5065,6 +5140,14 @@
         }
     },
     "structureEditor": {
+    "titleLake": "Lake boundary editor",
+    "instructionsLake": "Drag boundary points to reshape the lake. Tap an edge to add a point.",
+    "lakeBoundaryHint": "The shore and water update with the outline.",
+    "hintLake": "Select a boundary point to move or delete it.",
+    "lakeInvalid": "A lake boundary must form one connected area. Adjust the outline and try again.",
+    "lakeVertexTitle": "Drag to reshape the lake boundary",
+    "lakeDeleteVertexTitle": "Delete this boundary point",
+    "lakeUndoTitle": "Undo lake boundary edit",
         "ariaLabel": "Structure geometry editor",
         "titlePark": "Park editor",
         "titleSquare": "Square editor",
@@ -5079,29 +5162,36 @@
             "fountain": "Fountain",
             "stall": "Table",
             "statue": "Statue",
-            "erase": "Remove"
+            "erase": "Remove",
+            "move": "Move"
         },
         "finishPath": "Finish path",
+        "undo": "Undo",
         "cancel": "Cancel",
         "save": "Save design",
         "hintErase": "Click an item to remove it.",
         "hintPlace": "Click the map to place the selected item.",
+        "hintPath": "Click to add path points, then choose Finish path.",
         "hintSelect": "Select an item to begin.",
         "statusOutside": "Place items inside the structure boundary.",
-        "statusSaved": "Structure design saved."
+        "statusSaved": "Structure design saved.",
+        "hintMove": "Drag inside the boundary to move the full design. The outline and all its contents move together.",
+        "moveUnavailable": "Could not move this design. Try again."
     },
     "stationEditor": {
         "ariaLabel": "Station geometry editor",
         "title": "Edit station geometry",
         "station": "Station",
         "close": "Close",
-        "fixedPosition": "The station centre stays fixed. Rotate the station around it.",
         "rotation": "Rotation",
         "platformHeight": "Platform height above ground",
         "hint": "The map preview updates while you edit.",
         "cancel": "Cancel",
         "save": "Done",
-        "saved": "Station geometry saved."
+        "saved": "Station geometry saved.",
+        "moveHint": "Drag the station footprint or centre marker to reposition it. Its type, size, rotation and platform height stay the same.",
+        "dragCenter": "Drag to move the station",
+        "undo": "Undo"
     },
     "claims": {
         "onParcels": "On parcels:",

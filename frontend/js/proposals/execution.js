@@ -614,6 +614,70 @@ async function autoApplyExecutedProposalToMap(proposal) {
     }
 }
 
+function proposalApplyFailureReason(proposalId, error = null) {
+    try {
+        const manager = typeof ProposalManager === 'undefined' ? null : ProposalManager;
+        const info = manager?.getLastApplyFailureInfo?.(proposalId);
+        if (info?.message) return String(info.message);
+        const message = manager?.getLastApplyFailure?.(proposalId);
+        if (message) return String(message);
+    } catch (_) { }
+    return String(error?.message || error || '').trim();
+}
+
+function reportProposalMapActionFailure(proposalId, reason = '', fallbackKey = 'applyFailedUnknown', action = 'apply') {
+    const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+    let fallback;
+    switch (fallbackKey) {
+        case 'unapplyUnavailable': fallback = t ? t('panel.proposal.actions.unapplyUnavailable', 'This proposal cannot be removed from the map.') : 'This proposal cannot be removed from the map.'; break;
+        case 'applyUnavailable': fallback = t ? t('panel.proposal.actions.applyUnavailable', 'This proposal cannot be applied to the map.') : 'This proposal cannot be applied to the map.'; break;
+        case 'applyUnsupported': fallback = t ? t('panel.proposal.actions.applyUnsupported', 'This proposal type does not support map application.') : 'This proposal type does not support map application.'; break;
+        case 'missingProposal': fallback = t ? t('panel.proposal.actions.missingProposal', 'No proposal was selected to apply.') : 'No proposal was selected to apply.'; break;
+        case 'applyFailedUnknown': fallback = t ? t('panel.proposal.actions.applyFailedUnknown', 'Could not apply this proposal. Please try again.') : 'Could not apply this proposal. Please try again.'; break;
+        default: fallback = t ? t('panel.proposal.actions.unapplyFailedUnknown', 'Could not remove this proposal from the map. Please try again.') : 'Could not remove this proposal from the map. Please try again.';
+    }
+    let message = fallback;
+    if (reason) {
+        const template = action === 'unapply'
+            ? (t ? t('panel.proposal.actions.unapplyFailed', 'Could not remove this proposal from the map: {{reason}}') : 'Could not remove this proposal from the map: {{reason}}')
+            : (t ? t('panel.proposal.actions.applyFailed', 'Could not apply this proposal: {{reason}}') : 'Could not apply this proposal: {{reason}}');
+        message = typeof template === 'string' ? template.replace('{{reason}}', String(reason)) : template;
+    }
+    if (proposalId) {
+        const failures = window.__proposalMapActionFailures || (window.__proposalMapActionFailures = Object.create(null));
+        failures[String(proposalId)] = message;
+        const detailsContent = typeof document !== 'undefined' ? document.getElementById('proposal-details-content') : null;
+        if (detailsContent?.dataset?.proposalId === String(proposalId)) {
+            const panelError = [...document.querySelectorAll('[data-proposal-map-action-error]')]
+                .find(element => element.dataset.proposalMapActionError === String(proposalId));
+            if (panelError) panelError.textContent = message;
+            else {
+                const footer = document.getElementById('proposal-details-footer');
+                if (footer?.appendChild && typeof document.createElement === 'function') {
+                    const notice = document.createElement('div');
+                    notice.className = 'proposal-editor-approval-error proposal-map-action-error';
+                    notice.dataset.proposalMapActionError = String(proposalId);
+                    notice.setAttribute('role', 'alert');
+                    notice.textContent = message;
+                    footer.appendChild(notice);
+                }
+            }
+        }
+    }
+    if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 8000, 'error');
+    return message;
+}
+
+function clearProposalMapActionFailure(proposalId) {
+    if (!proposalId || typeof window === 'undefined') return;
+    if (window.__proposalMapActionFailures) delete window.__proposalMapActionFailures[String(proposalId)];
+    if (typeof document !== 'undefined') {
+        [...document.querySelectorAll('[data-proposal-map-action-error]')]
+            .filter(element => element.dataset.proposalMapActionError === String(proposalId))
+            .forEach(element => element.remove());
+    }
+}
+
 async function applyProposalToMap(proposalIdOrHash, options = {}) {
     const startTime = performance.now();
     const safeId = proposalIdOrHash ? String(proposalIdOrHash) : '';
@@ -621,6 +685,7 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
 
     if (!safeId || typeof ProposalManager === 'undefined' || typeof ProposalManager.applyProposal !== 'function') {
         console.warn(`[applyProposalToMap] Invalid proposal id/hash or ProposalManager unavailable`);
+        reportProposalMapActionFailure(safeId, '', safeId ? 'applyUnavailable' : 'missingProposal');
         return false;
     }
 
@@ -633,6 +698,7 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
     const { supportsMapToggle, isRoadProposal } = computeProposalCategoryFlags(proposal, { fallbackProposal: proposal });
     if (!supportsMapToggle) {
         console.debug(`[applyProposalToMap] Skipping unsupported map apply action for proposal ${safeId}`);
+        reportProposalMapActionFailure(safeId, '', 'applyUnsupported');
         return false;
     }
 
@@ -679,6 +745,8 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
 
         if (applied === false) {
             console.warn(`[applyProposalToMap] Proposal application returned false`);
+            const reason = proposalApplyFailureReason(safeId);
+            reportProposalMapActionFailure(safeId, reason);
             if (button && originalButtonContent) {
                 button.innerHTML = originalButtonContent;
                 button.disabled = false;
@@ -687,6 +755,8 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
         }
     } catch (error) {
         console.error(`[applyProposalToMap] Error applying proposal to map (${(performance.now() - startTime).toFixed(2)}ms):`, error);
+        const reason = proposalApplyFailureReason(safeId, error);
+        reportProposalMapActionFailure(safeId, reason);
         // Restore button on error
         if (button && originalButtonContent) {
             button.innerHTML = originalButtonContent;
@@ -694,6 +764,8 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
         }
         return false;
     }
+
+    clearProposalMapActionFailure(safeId);
 
     const step5Time = performance.now();
     // Clear the preview overlay (dashed outline) when proposal is applied

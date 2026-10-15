@@ -8,7 +8,9 @@ const require = createRequire(import.meta.url);
 const turf = require('../../frontend/vendor/turf-6.5.0/turf.min.js');
 const facades = require('../../frontend/js/three-building-facades.js');
 const source = readFileSync(new URL('../../frontend/js/three-mode.js', import.meta.url), 'utf8');
-const sliceFunction = source.slice(source.indexOf('    function createBuildingSlices('),
+const facadePreparation = source.slice(source.indexOf('    function prepareProceduralFacadeMeshes('),
+    source.indexOf('    function createBuildingSlices('));
+const sliceFunction = facadePreparation + source.slice(source.indexOf('    function createBuildingSlices('),
     source.indexOf('    function getBuildingParcelIntersectionPoints('));
 
 class Color {

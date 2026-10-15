@@ -290,15 +290,38 @@ button.status-log-message {
     }
 }
 
-/* Status line (ephemerals.md): what the app is doing now, replaced never stacked, gone when idle.
-   Centred one row above the dock and click-through; the look is .cb-toast--status
-   (css/primitives.css). The full status bar and its log are in the Activity sheet. */
-.floating-status {
+/* Map feedback is one normal-flow stack above the bottom navigation dock. The view-angle hint
+   and status toast share its width and spacing, so wrapped messages cannot overlap each other. */
+.map-feedback-stack {
     position: absolute;
     left: 50%;
     bottom: var(--map-shell-bottom-clearance);
     transform: translateX(-50%);
     z-index: var(--cb-z-map-chrome);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--cb-space-2);
+    width: max-content;
+    max-width: min(520px, calc(100% - 112px));
+    pointer-events: none;
+}
+
+#map-feedback-stack:has(#floating-status-text:empty):not(:has(.three-view-hint)) {
+    display: none;
+}
+
+/* The selection tray occupies the toast's usual row, so raise the whole stack above it. */
+body:has(#selection-tray) .map-feedback-stack {
+    bottom: calc(var(--map-shell-bottom-clearance) + var(--map-shell-button-size) + var(--map-shell-gap));
+}
+
+/* Status line (ephemerals.md): what the app is doing now, replaced never stacked, gone when idle.
+   Its visual treatment is .cb-toast--status (css/primitives.css); Activity holds the full log. */
+.floating-status {
+    position: static;
+    transform: none;
+    max-width: 100%;
     pointer-events: none;
 }
 
@@ -855,11 +878,6 @@ button.status-log-message {
 
 .block-item.active .block-count {
     color: rgba(255, 255, 255, 0.8);
-}
-
-#blockify-buttons .btn {
-    flex: 1 1 auto;
-    width: 100%;
 }
 
 /* Blockify Sidebar Styles
