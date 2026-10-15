@@ -18,6 +18,19 @@ const native = id => ({ type: 'Feature', id: `transport.${id}`,
         [472386.8724, 995291.661], [472395.6068, 995281.2943]
     ]]] } });
 
+test('published native CRS metadata does not change a default geographic WFS response', async () => {
+    const { responseSrid, ...geographicDescriptor } = descriptor;
+    geographicDescriptor.projection = 'EPSG:31983';
+    const source = createWfsParcelSource(geographicDescriptor, { fetchImpl: async url => {
+        assert.equal(new URL(url).searchParams.get('srsName'), 'EPSG:4326');
+        const feature = native('AA000041000409');
+        feature.geometry = { type: 'Polygon', coordinates: [[[38, 9], [38.01, 9], [38.01, 9.01], [38, 9]]] };
+        return new Response(JSON.stringify({ type: 'FeatureCollection', features: [feature], totalFeatures: 1 }));
+    } });
+    const result = await source.queryBounds([38, 9, 38.001, 9.001]);
+    assert.deepEqual(result.features[0].geometry.coordinates[0][0], [38, 9]);
+});
+
 test('Addis WFS 1.0 requests only native geometry and parcel ID, pages, and transforms through the declared operation', async () => {
     const ids = ['AA000041000409', 'AA000041000776'];
     const requests = [];

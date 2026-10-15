@@ -34,7 +34,8 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
     const responseSrid = descriptor.responseSrid;
     // Projected responses require a published operation in the descriptor and independent
     // native-coordinate alignment evidence before the source is admitted.
-    const responseProjection = descriptor.projection;
+    const responseProjection = responseSrid !== undefined && responseSrid !== 3857
+        ? descriptor.projection : undefined;
     const responseCoordinatePrecision = descriptor.responseCoordinatePrecision;
     const requestProperties = descriptor.requestProperties;
     const idBatchSize = descriptor.idBatchSize ?? 80;
