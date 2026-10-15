@@ -4,7 +4,7 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-15 (bounded reconstruction diagnostic running after four review rounds; default unchanged). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-15 (bounded reconstruction diagnostic complete; margin-0 arm frozen and donor exports running; default unchanged). Status values: todo · running · done · dropped (with the reason).
 
 ## Where we stand (2026-10-14)
 
@@ -58,7 +58,7 @@ in three lanes, two Split runs about 40 minutes; a 1,600-tile 30-epoch run is ab
 | 1 | Bootstrap confidence intervals in the scorer | laptop | done 2026-10-13 (`bootstrap.py`) |
 | 2 | Transfer table with three seeds | GPU | done 2026-10-13 (round 2) |
 | 3 | Split learning curve and Zagreb-donor fine-tune curve | GPU | done 2026-10-13 (round 2) |
-| 4 | Per-city reconstruction settings and seed connectivity | laptop | initial study done; bounded saved-map diagnostic running 2026-10-15 |
+| 4 | Per-city reconstruction settings and seed connectivity | laptop | bounded saved-map diagnostic complete; Split-specific candidate passes development guards |
 | 5 | Visibility audit (image support) | laptop + vision model | done 2026-10-13 (machine labels; interpretation corrected) |
 | 6 | Zagreb model levers, one at a time | GPU | 60-epoch trial done, not adopted; target margin or diagnosed marker/surface treatment next |
 | 7 | Milestone 4 on both final splits | GPU or laptop | todo |
@@ -97,6 +97,42 @@ separation remain fixed. The review changes the next experiments from colour/lon
 The rim affects only free-interior connectivity, never OSM markers, barriers or the flood domain.
 No default changes automatically. The prepaid GPU balance was checked at 08:22 UTC: $5.1650,
 with no active rental; the diagnostic itself uses no GPU credit.
+
+The diagnostic finished all 816 tile units, verified every native saved-map control and retained all
+clipped references. Its source snapshot and 1,805 frozen input/code hashes are preserved under
+`output/reconstruction-study-20261015/`; later training changes do not rewrite that evidence.
+
+| Development track | Original F1 | Rim-1 source-chooser F1 | Change and 95% block interval | Decision |
+|---|---:|---:|---|---|
+| Zagreb → Split | 0.1561 | 0.1825 | +0.0264 [+0.0126, +0.0515] | fails precision guard (change −0.0478, interval −0.0921 to +0.0040) |
+| Zagreb own-city | 0.2927 | 0.3111 | +0.0184 [−0.0244, +0.0700] | fails F1 interval and precision guards |
+| Split own-city | 0.2268 | 0.2607 | +0.0340 [+0.0157, +0.0533] | all development checks pass; specialization only |
+
+Split's three F1 changes are +0.0364, +0.0352 and +0.0303. The original per-run settings with only
+rim 1 fail the Split area-recall guard; the bounded source chooser is part of the passing candidate.
+No general default is replaced. On exact target maps, seeds ON plus the rim raises F1 from 0.4355
+to 0.6002 in Zagreb and 0.3759 to 0.5155 in Split; seeds OFF is exactly unchanged. These are probes,
+not deployment scores. The marker/surface substitutions have large interactions: neither substitution
+alone explains the remaining errors. Removing the 120 m² merge does not improve the common learned
+configuration's mean F1 in any of the three main tracks. Under identical common reconstruction,
+resolution augmentation still improves Zagreb-to-Split F1 by +0.0417 [+0.0126, +0.0678], so the earlier
+gain was not solely caused by different selected reconstruction settings. All intervals remain conditional
+on these three fits and twelve reused geographic blocks.
+
+`gpu/plans/selection-v3-margin.json` freezes the next three fresh 30-epoch Zagreb fits. Margin 0 is
+the only training treatment; original rim-0 reconstruction, source-only checkpoint/config selection,
+data, seeds, runtime and pretrained weights stay fixed. The primary comparison is transfer to Split;
+own-city scores are secondary. The generated cache records and validates size/cap/dilation/margin,
+and evaluation checks checkpoint, recipe and results metadata before loading targets. Nine synthetic
+target/cache checks pass, including retained tile-edge boundary endpoints, cache reuse and mismatched
+metadata rejection. A real production-grid cache/source proof is also required on the rented GPU.
+
+City roles are frozen in `plans/nearby-donor-v1.json`: Zadar donor (12 development blocks, four
+reserved blocks) and Šibenik conditional untouched confirmation (12 final blocks, no development or
+training). Both use strict density strata and 500 m/source-ID separation. Eligibility was checked
+against eleven historical manifests before export; actual imagery screens and final exported hashes
+must pass before the matched donor recipe is frozen. Exporting confirmation imagery does not authorize
+using its model outcomes for decisions.
 
 **1. Bootstrap confidence intervals.** Resample tiles to give every pooled score a 95% interval and the
 minimum detectable effect per benchmark. Success: every comparison in the ledger reads as a difference

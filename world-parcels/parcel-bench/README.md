@@ -335,9 +335,20 @@ The study changes RGB alone at model input and cannot measure accuracy on a diff
 provider. Full metrics, per-block differences and hashes: `output/imagery-study-20261013/`; ledger methods
 `layered-imagery-*`. No final split was scored.
 
-Next (the living plan with status, success checks, ETA and spend is `PLAN.md`): the bounded saved-map
-reconstruction diagnostic in `plans/reconstruction-v3.json`, then a fresh target treatment and nearby
-Dalmatian donor comparison. Source-city selection stays separate from Split development and a
-provisionally untouched confirmation city. Colour augmentation and larger encoders are deferred.
+The bounded reconstruction diagnostic (`plans/reconstruction-v3.json`, completed 2026-10-15) verified
+816 tile units against frozen inputs. Rim 1 plus the original source-only configuration chooser passes
+the Split own-city development gate: F1 0.2268 → 0.2607, change +0.0340 with a 95% paired block interval
+of +0.0157 to +0.0533. Its Zagreb-to-Split gain fails the precision guard, and Zagreb's own-city result
+fails both the F1 interval and precision guards, so this remains a Split specialization. Exact-map,
+marker/surface and no-merge probes are diagnostic only. Full per-seed, clipped/interior, density and
+association results: `output/reconstruction-study-20261015/report.json`.
+
+Next (the living plan is `PLAN.md`): three fresh margin-0 target fits, frozen in
+`gpu/plans/selection-v3-margin.json`, retaining original reconstruction to isolate the target change.
+Target definitions now travel with recipes/checkpoints/results and versioned caches; old controls
+retain their recorded margin-2 definition. Zadar donor and untouched Šibenik confirmation roles are
+frozen in `plans/nearby-donor-v1.json`; exports are running, with no new-city model scores.
+Source-city selection stays separate from Split development and confirmation. Colour augmentation
+and larger encoders are deferred.
 Broader selection, resolution augmentation and the longer-schedule trial are complete; the baseline
 default remains unchanged. Real satellite transfer, Ljubljana and a Spanish Csa city remain pending.
