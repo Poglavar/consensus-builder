@@ -33,7 +33,7 @@ The 2008 GDI object under buildings 795/796 is only 1.4 m high and evidently rec
 ## Reproduction
 
 ```bash
-PGHOST=localhost node backend/scripts/seed-pionir-observed-proposals.mjs --apply --export
+node backend/scripts/seed-pionir-observed-proposals.mjs --apply --export
 ```
 
 `proposal.geojson` uses `consensus-builder.reconstruction.v1` and must survive a lossless export/import/export round trip.

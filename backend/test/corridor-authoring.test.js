@@ -141,6 +141,23 @@ describe('atomic corridor authoring plan', () => {
         expect({ through, branch }).toEqual(originals);
     });
 
+    it('writes the OSM form onto the new record and every joined record (roads.md §11)', () => {
+        const osmForm = require('../../frontend/js/corridor-osm-form.js');
+        const through = corridor('through', [[P(0, 0), P(0, 10)]]);
+        const branch = corridor(null, [[P(5, 5), P(0, 5)]]);
+        through.roadProposal.definition.profile = { strips: [{ type: 'driving', width: 3.5 }, { type: 'driving', width: 3.5 }] };
+        branch.roadProposal.definition.profile = { strips: [{ type: 'driving', width: 3 }] };
+        const result = plan(branch, [through]);
+        [result.proposal.roadProposal.definition, result.existingChanges[0].definition].forEach(definition => {
+            expect(definition.osm.elements.some(element => element.type === 'way')).toBe(true);
+            expect(osmForm.osmFormAgreement(definition)).toEqual({ ok: true, checked: true });
+        });
+        // The joined road was split at the node: two ways sharing it.
+        const joined = result.existingChanges[0].definition.osm.elements.filter(element => element.type === 'way');
+        expect(joined).toHaveLength(2);
+        expect(joined[0].nodes[joined[0].nodes.length - 1]).toBe(joined[1].nodes[0]);
+    });
+
     it('records the junction and the other road\'s arms in both definitions, and an end-to-end join too', () => {
         const through = corridor('through', [[P(0, 0), P(0, 10)]]);
         const branch = corridor(null, [[P(5, 5), P(0, 5)]]);

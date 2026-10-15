@@ -7,7 +7,7 @@
 import dotenv from 'dotenv';
 dotenv.config({ quiet: true });
 
-import pg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import { createRpcConnection } from '../solana/rpc.js';
 import { createRpcMethodCounter } from '../solana/rpc-method-counts.js';
 import { runLandEventJob } from '../oracle/land-event-job.js';
@@ -45,13 +45,7 @@ function required(value, label) {
 const RPC_URL = required(process.env.SOLANA_RPC_URL, 'SOLANA_RPC_URL');
 const PROGRAM_ACCOUNTS_RPC_URL = required(process.env.SOLANA_PROGRAM_ACCOUNTS_RPC_URL, 'SOLANA_PROGRAM_ACCOUNTS_RPC_URL');
 
-const pool = new pg.Pool({
-    host: process.env.PGHOST,
-    port: Number(process.env.PGPORT),
-    user: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
-    database: process.env.PGDATABASE
-});
+const pool = createPool();
 // General reads and writes use SOLANA_RPC_URL; createRpcConnection sends only getProgramAccounts
 // to SOLANA_PROGRAM_ACCOUNTS_RPC_URL after verifying that both endpoints are on the same cluster.
 const rpcCounter = createRpcMethodCounter();

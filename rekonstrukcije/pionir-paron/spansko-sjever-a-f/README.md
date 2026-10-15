@@ -9,7 +9,7 @@ python3 backend/scripts/reconstruct-borongaj-floors.py \
   --sources rekonstrukcije/pionir-paron/spansko-sjever-a-f/floor-plan-sources.json \
   --proposal rekonstrukcije/pionir-paron/spansko-sjever-a-f/proposal.geojson \
   --cache-dir /tmp/spansko-floor-cache --fetch --write
-PGHOST=localhost node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs \
+node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs \
   --archive rekonstrukcije/pionir-paron/spansko-sjever-a-f/proposal.geojson
 ```
 
@@ -30,5 +30,5 @@ Refresh the official source snapshots and rebuild locally with:
 ```sh
 cd backend
 node scripts/fetch-pionir-edozvola-sources.mjs --project spansko-sjever-a-f
-PGHOST=localhost node scripts/seed-spansko-sjever-proposal.mjs --apply --export
+node scripts/seed-spansko-sjever-proposal.mjs --apply --export
 ```

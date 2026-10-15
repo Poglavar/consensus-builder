@@ -6,7 +6,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs as parseNodeArgs } from 'node:util';
 import { performance } from 'node:perf_hooks';
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createClient } from '../db/connection.cjs';
 import { normalizeSiteHost } from '../floor-plans/crawl-queue.js';
 import { compactSources, drainSourceRetention } from '../floor-plans/compact-sources.js';
 import { acquireCrawlLock } from '../floor-plans/crawl-locks.js';
@@ -115,15 +115,12 @@ export function calculateHostLimits({
 async function boundedRetention({ host, deadline, limit, log }) {
   const timeoutMs = Math.max(0, Math.floor(deadline - Date.now()));
   if (!timeoutMs) return { status: 'partial', partial: true, remaining: true, deferred: 0, stopReason: 'deadline' };
-  const connectionString = process.env.DATABASE_URL;
   const connection = {
-    ...(connectionString ? { connectionString } : {}),
-    ...(process.env.PGHOST ? { host: process.env.PGHOST } : {}),
     connectionTimeoutMillis: timeoutMs,
     statement_timeout: timeoutMs,
     query_timeout: timeoutMs,
   };
-  const client = new pg.Client(connection);
+  const client = createClient(connection);
   let connected = false;
   let releaseLock;
   try {

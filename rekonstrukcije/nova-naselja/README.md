@@ -28,10 +28,10 @@ Park and square polygons are ordinary proposals. They resolve live parcel ground
 The reconstruction is reproducible from the local spatial database:
 
 ```sh
-PGHOST=localhost node backend/scripts/seed-neighbourhood-reconstructions.mjs --dry-run --export
-PGHOST=localhost node backend/scripts/seed-neighbourhood-reconstructions.mjs --apply --export
+node backend/scripts/seed-neighbourhood-reconstructions.mjs --dry-run --export
+node backend/scripts/seed-neighbourhood-reconstructions.mjs --apply --export
 ```
 
-The first command validates and exports without changing proposal rows. The second upserts the proposals and the three `ens_plan` records into a local database. The generator refuses a non-local `PGHOST`.
+The first command validates and exports without changing proposal rows. The second upserts the proposals and the three `ens_plan` records into a local database. The generator refuses a `DATABASE_URL` (from backend/.env) whose host is not local.
 
 Canonical building archives use `consensus-builder.reconstruction.v1`, roads use `consensus-builder.corridor-reconstruction.v1`, and parks/squares use `consensus-builder.structure-reconstruction.v1`. Every export must survive an export/import/export identity check before it is written.

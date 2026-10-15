@@ -1,7 +1,7 @@
 // Exercise file export, metadata writes, deletion and idempotent migration on isolated PostgreSQL temporary tables.
 import { describe,it,expect } from 'vitest';
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createClient } from '../db/connection.cjs';
 import { mkdtemp,rm,readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -12,9 +12,7 @@ import { contentHash,writeBlob,readBlob,sourceFilePath,pruneDiscardedFiles } fro
 describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST==='1')('filesystem source storage on temporary PostgreSQL tables',()=>{
  it('preserves bytes through verified export, then drops them only with explicit opt-in',async()=>{
   dotenv.config({path:fileURLToPath(new URL('../.env',import.meta.url)),quiet:true});
-  const connectionUrl=process.env.DATABASE_URL?new URL(process.env.DATABASE_URL):null;
-  if(connectionUrl){connectionUrl.hostname='127.0.0.1';connectionUrl.port='5432';}
-  const client=new pg.Client({connectionString:connectionUrl?.href,host:'127.0.0.1',port:5432,
+  const client=createClient({
    connectionTimeoutMillis:5000,statement_timeout:10000,application_name:'floor-plan-file-storage-tests'});
   const root=await mkdtemp(join(tmpdir(),'floor-plan-storage-sql-'));
   await client.connect();

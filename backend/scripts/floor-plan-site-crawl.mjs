@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs as parseNodeArgs } from 'node:util';
 import { performance } from 'node:perf_hooks';
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createClient } from '../db/connection.cjs';
 import { crawl } from '../floor-plans/crawler.js';
 import { countPendingTargets, createTargetSelector, normalizeSiteHost, revisitKnownTargets } from '../floor-plans/crawl-queue.js';
 import { fetchPublic } from '../floor-plans/fetch-public.js';
@@ -171,7 +171,7 @@ function makeSnapshot(options, progress, trace, pending, extra = {}) {
 }
 
 export async function runSiteCrawl(options, dependencies = {}) {
-  const clientFactory = dependencies.clientFactory || (connection => new pg.Client(connection));
+  const clientFactory = dependencies.clientFactory || (() => createClient());
   const crawlFn = dependencies.crawlFn || crawl;
   const countFn = dependencies.countPendingFn || countPendingTargets;
   const selectorFactory = dependencies.selectorFactory || createTargetSelector;
@@ -217,10 +217,7 @@ export async function runSiteCrawl(options, dependencies = {}) {
   progress.cleanupIssues ||= false;
   progress.foldedRunIds ||= [];
 
-  const connection = process.env.DATABASE_URL
-    ? { connectionString: process.env.DATABASE_URL, ...(process.env.PGHOST ? { host: process.env.PGHOST } : {}) }
-    : undefined;
-  const db = clientFactory(connection);
+  const db = clientFactory();
   await db.connect();
   const controller = new AbortController();
   const stop = () => controller.abort();

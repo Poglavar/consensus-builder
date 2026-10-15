@@ -8,7 +8,7 @@
 //   node scripts/expire-proposals.mjs [--run] [--city <id>] [--limit <n>] [--keypair <file>]
 //
 // Needs AGENT_LIFECYCLE_LENS_SERVICE_URL + AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN (the member that signs
-// verdicts), SOLANA_RPC_URL and PG* in backend/.env. The submitter keypair pays the verdict record's
+// verdicts), SOLANA_RPC_URL and DATABASE_URL in backend/.env. The submitter keypair pays the verdict record's
 // rent and the resolve fee; it needs devnet SOL only.
 
 import { createRpcConnection } from '../solana/rpc.js';
@@ -18,7 +18,7 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import { Keypair } from '@solana/web3.js';
 import { lifecycleLensConfig } from '../agents/run-policy.js';
 import { fetchLensStatus } from '../agents/lens-ownership-client.js';
@@ -111,7 +111,7 @@ async function main() {
     const lifecycle = { ...lensConfig, key: status.key, credentialName: status.credentialName || undefined };
     log(`lifecycle lens member ${lifecycle.key} at ${lifecycle.serviceUrl}`);
 
-    const pool = new pg.Pool();
+    const pool = createPool();
     const connection = createRpcConnection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
     try {
         const params = [];

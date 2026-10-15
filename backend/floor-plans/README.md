@@ -161,16 +161,16 @@ Back up this ignored directory alongside PostgreSQL. A database backup alone pre
 
 ## Run locally
 
-Commands below run from the repository root. The CLI loads `backend/.env`; `PGHOST=localhost` selects the existing laptop PostgreSQL instance. It does not create another database.
+Commands below run from the repository root. The CLI loads `backend/.env`; its `DATABASE_URL` selects the existing laptop PostgreSQL instance. It does not create another database.
 
 ```sh
 npm install --prefix backend
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs init
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs import --registry data/floor-plan-agencies/registry.json --websites data/floor-plan-agencies/verified-websites.json
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs sites --file data/floor-plan-agencies/candidate-websites.json
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs websites --file data/floor-plan-agencies/website-discovery.json
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs daily --max-pages 10000 --max-minutes 180 --max-assets 100 --ai-budget-usd 5 --ai-chunk-size 1
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs status
+node backend/scripts/floor-plan-archive.mjs init
+node backend/scripts/floor-plan-archive.mjs import --registry data/floor-plan-agencies/registry.json --websites data/floor-plan-agencies/verified-websites.json
+node backend/scripts/floor-plan-archive.mjs sites --file data/floor-plan-agencies/candidate-websites.json
+node backend/scripts/floor-plan-archive.mjs websites --file data/floor-plan-agencies/website-discovery.json
+node backend/scripts/floor-plan-archive.mjs daily --max-pages 10000 --max-minutes 180 --max-assets 100 --ai-budget-usd 5 --ai-chunk-size 1
+node backend/scripts/floor-plan-archive.mjs status
 ```
 
 Long runs should use the installed `run-job` helper or an equivalent persistent process runner. A posting is kept when it carries any location signal for the advertised object: an explicit street and house number, a street named in its title, address field or prose (not a "near X" mention), a map pin, a cited permit KLASA or a parcel number. Pages with none receive a minimal permanent exclusion record across known URL aliases; they do not enter image screening or plan extraction. Site location (below) then decides where the object is before floor geometry is processed. By default, `daily` submits one site-adjudication chunk; `--ai-stage images`, `--ai-stage plans`, `--ai-stage sheets` and the explicit `--ai-stage buildings` reader are alternatives, while `--ai-stage none` collects without submitting. Explicit source hashes and old queued tasks pass the same gates. If evidence is lost before a paid response is applied, retain its response and cost for review without producing geometry. The run then attempts registration of eligible complete floors. Every source and task is checkpointed, and advisory locks prevent duplicate runs. Limits, blocked requests and item failures remain explicit; failed fetches never prove a listing was removed.
@@ -196,7 +196,7 @@ Daily download totals include registry, discovery and asset requests. Host count
 To finish fetching one agency site before moving to the next, use the separate site runner:
 
 ```sh
-PGHOST=localhost node backend/scripts/floor-plan-site-crawl.mjs --site opereta.hr --run-dir backend/logs/opereta-2026-10-11
+node backend/scripts/floor-plan-site-crawl.mjs --site opereta.hr --run-dir backend/logs/opereta-2026-10-11
 ```
 
 Run it under a persistent process runner. It drains that site's due discovery queue, then address-qualified listing-owned images and documents, in chunks of at most 500 requests. External CDN assets need both current listing ownership and the exact-address gate. `--asset-mode plans` limits downloads to labelled plans and documents. This command only fetches sources and does not submit AI work. The lower-level `crawl` command supports `--site HOST`, `--discovery-only`, `--assets-only`, and `--plan-assets-only` for bounded diagnostics.
@@ -298,22 +298,22 @@ The one-off production daily run (`5227b510-50dc-470d-84da-9a3f317ba220`) ran fr
 `extract-floor-plan-draft.py` requires Python 3 with OpenCV, NumPy and Pillow, plus `tesseract`, `pdfinfo`, `pdftotext` and `pdftoppm` on PATH. `FLOOR_PLAN_PYTHON` selects the runtime; production uses an isolated pinned virtual environment. Screening and candidate extraction are local. All three LLM stages use batch requests through `floor-plans/batch-worker.js` and the shared `agents/lib/llm-cost/llm.mjs`, which chooses the model and effort from `defaults.json`, sends strict structured-output schemas, and prices and ledgers results at the model that answered. There is no per-repo model setting. The structured responses are validated locally before storage. PDF screening examines up to 30 pages; vision tasks cover the source's declared total pages, capped at 1,000, one separately rendered page per task. The daily chunk and spend limits bound actual processing. The stages and their LLM inventory are listed in [`docs/llm-tasks.md`](../../docs/llm-tasks.md).
 
 ```sh
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs match
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs verify-sites
+node backend/scripts/floor-plan-archive.mjs match
+node backend/scripts/floor-plan-archive.mjs verify-sites
 # Stop the active crawl before rebuilding current associations after a parser correction.
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs reparse
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs resolve-bindings
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs enqueue-buildings --limit 100
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs recognition-status --limit 20
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs recognize-buildings --budget-usd 5 --chunk-size 1
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs enqueue-images --limit 1000
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs classify-images --budget-usd 5 --chunk-size 1
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs image-status --limit 20
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs extract --max-assets 500
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs enqueue-plans --limit 1000
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs interpret --budget-usd 5 --chunk-size 1
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs interpret --collect-only
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs publish
+node backend/scripts/floor-plan-archive.mjs reparse
+node backend/scripts/floor-plan-archive.mjs resolve-bindings
+node backend/scripts/floor-plan-archive.mjs enqueue-buildings --limit 100
+node backend/scripts/floor-plan-archive.mjs recognition-status --limit 20
+node backend/scripts/floor-plan-archive.mjs recognize-buildings --budget-usd 5 --chunk-size 1
+node backend/scripts/floor-plan-archive.mjs enqueue-images --limit 1000
+node backend/scripts/floor-plan-archive.mjs classify-images --budget-usd 5 --chunk-size 1
+node backend/scripts/floor-plan-archive.mjs image-status --limit 20
+node backend/scripts/floor-plan-archive.mjs extract --max-assets 500
+node backend/scripts/floor-plan-archive.mjs enqueue-plans --limit 1000
+node backend/scripts/floor-plan-archive.mjs interpret --budget-usd 5 --chunk-size 1
+node backend/scripts/floor-plan-archive.mjs interpret --collect-only
+node backend/scripts/floor-plan-archive.mjs publish
 ```
 
 ## Review and verification

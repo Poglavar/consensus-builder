@@ -23,7 +23,7 @@
         "sync:land-events": "node scripts/sync-land-events.mjs",
         "lens:member": "node lens/run.mjs",
         "smoke:prod:parcels": "node scripts/smoke-production-bbox.mjs",
-        "plan-yield": "PGHOST=${PGHOST:-localhost} node scripts/plan-yield.js",
+        "plan-yield": "node scripts/plan-yield.js",
         "build:parcels:browser": "node scripts/build-browser-parcels.mjs"
     },
     "dependencies": {

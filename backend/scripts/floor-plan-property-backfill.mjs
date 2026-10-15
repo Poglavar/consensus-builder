@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 // Materialize newly supported property facts from retained pages without downloading or using AI.
-import pg from 'pg';
+import { createClient } from '../db/connection.cjs';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'node:url';
 import { extractPageEvidence } from '../floor-plans/page-evidence.js';
 import { readBlobRow } from '../floor-plans/blob-store.js';
 if (!process.argv.includes('--apply')) { console.log('Usage: node backend/scripts/floor-plan-property-backfill.mjs --apply'); process.exit(0); }
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
-const db = new pg.Client({ connectionString: process.env.DATABASE_URL, ...(process.env.PGHOST ? { host: process.env.PGHOST } : {}) });
+const db = createClient();
 await db.connect();
 const locked = (await db.query("SELECT pg_try_advisory_lock(hashtext('floor-plan-crawl')) AS locked")).rows[0].locked;
 if (!locked) { await db.end(); throw new Error('Stop the active crawl before materializing property facts.'); }

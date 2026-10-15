@@ -22,7 +22,7 @@
 //   The lens (whose attestations decide the proposal) is --lens or, when absent, chosen from the attester
 //   directory (GET /agent/lenses/members, agents/lens-directory-client.js); never the persona's own key.
 //   STAGE: planned | chosen | minted | posted | staked (default staked)
-// Env: PG* (run with PGHOST=localhost on the host), AGENT_DAILY_ACTION_CAP (4),
+// Env: DATABASE_URL (from backend/.env), AGENT_DAILY_ACTION_CAP (4),
 //      AGENT_RETIRE_AFTER_DAYS (7), AGENT_RETIRE_MAX_PER_RUN (3),
 //      AGENT_LIFECYCLE_LENS_SERVICE_URL + AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN (optional expiry verdicts),
 //      AGENT_DAILY_USDC_CAP (0.35), AGENT_API_BASE (default http://localhost:$API_PORT),
@@ -36,7 +36,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
-import pg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import { Keypair } from '@solana/web3.js';
 import * as turf from '@turf/turf';
 import { fetchCandidateParcels } from './parcel-source.js';
@@ -332,10 +332,7 @@ async function main() {
     const apiBase = (args.api || process.env.AGENT_API_BASE || `http://localhost:${process.env.API_PORT || 3000}`).replace(/\/$/, '');
     const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
     const personas = loadPersonas(args.persona);
-    const pool = new pg.Pool({
-        host: process.env.PGHOST, port: process.env.PGPORT, user: process.env.PGUSER,
-        password: process.env.PGPASSWORD, database: process.env.PGDATABASE
-    });
+    const pool = createPool();
     const mode = args.dryRun ? 'dry-run' : 'live';
     log(`${mode} · day ${day}${slot ? ` · slot ${slot}` : ''} · ${personas.length} persona(s) · controller ${controller}${llm ? ` (${llm.model}, effort ${llm.effort})` : ' ($0 model spend)'} · api ${apiBase}`);
 

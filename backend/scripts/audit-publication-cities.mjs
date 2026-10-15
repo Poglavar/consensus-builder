@@ -12,12 +12,12 @@
 // the report files.
 //
 //   node scripts/audit-publication-cities.mjs --help
-//   PGHOST=127.0.0.1 node scripts/audit-publication-cities.mjs --db --out /tmp/cities-local.md
+//   node scripts/audit-publication-cities.mjs --db --out /tmp/cities-local.md
 //   node scripts/audit-publication-cities.mjs --input rows.json --label production --out /tmp/cities-prod.md
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createClient } from '../db/connection.cjs';
 import { bindingFrame } from '../proposals/binding.js';
 import { footprintParts, hasFootprint } from '../proposals/footprint.js';
 import { citiesCovering, resolvePublicationCity, SITE_IN_OTHER_CITY } from '../proposals/publication-city.js';
@@ -28,7 +28,7 @@ const USAGE = `Usage:
   node scripts/audit-publication-cities.mjs --input rows.json [--label name] [--out report.md] [--json records.json]
 
 Rows: { id, proposal_id, city, created_at, site_geojson, proposal_data } (proposal_data as JSON).
---db reads the local database in a read-only transaction (PG* from backend/.env).`;
+--db reads the local database in a read-only transaction (DATABASE_URL from backend/.env).`;
 
 const log = message => console.error(`[${new Date().toISOString()}] ${message}`);
 const parseJson = value => {
@@ -126,7 +126,7 @@ function parseArgs(argv) {
 async function readRowsFromDb(table) {
     if (!/^[a-z_][a-z0-9_]*\.[a-z_][a-z0-9_]*$/.test(table)) throw new Error(`--table must be schema.table, got ${table}`);
     dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
-    const client = new pg.Client({ options: '-c default_transaction_read_only=on' });
+    const client = createClient({ options: '-c default_transaction_read_only=on' });
     await client.connect();
     try {
         const { rows } = await client.query(`SELECT id, proposal_id, city, created_at, ST_AsGeoJSON(site) AS site_geojson, proposal_data

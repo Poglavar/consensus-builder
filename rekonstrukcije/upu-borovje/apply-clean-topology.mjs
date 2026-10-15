@@ -14,7 +14,7 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, '..', '..');
 const require = createRequire(path.join(repoRoot, 'backend', 'package.json'));
 const turf = require('@turf/turf');
-const { Pool } = require('pg');
+const { createPool, describeDatabase } = require('./db/connection.cjs');
 require('dotenv').config({ path: path.join(repoRoot, 'backend', '.env') });
 
 const BASE_READJUSTMENT_ID = 633;
@@ -318,14 +318,14 @@ async function ensureBackup(client) {
 async function run(argv = process.argv.slice(2)) {
     const args = parseArgs(argv);
     if (args.help) { usage(); return; }
-    if (!process.env.PGDATABASE) throw new Error('PGDATABASE is not set; refusing to guess a database');
+    if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is not set; refusing to guess a database');
 
     const [parcelation, streets] = await Promise.all([
         loadGeojson('parcelation.geojson'),
         loadGeojson('streets.geojson')
     ]);
     const topology = buildBorovjeTopology(parcelation, streets, turf);
-    const pool = new Pool();
+    const pool = createPool();
     const client = await pool.connect();
     let written = 0;
     const ids = {};
@@ -340,7 +340,7 @@ async function run(argv = process.argv.slice(2)) {
         const missing = REQUIRED_IDS.filter(id => !byId.has(id));
         if (missing.length) throw new Error(`Required local proposal rows are missing: ${missing.join(', ')}`);
 
-        console.log(`database: ${process.env.PGDATABASE}   mode: ${args.apply ? 'APPLY' : 'DRY RUN'}`);
+        console.log(`database: ${describeDatabase().database}   mode: ${args.apply ? 'APPLY' : 'DRY RUN'}`);
         console.log(`plan ${topology.stats.poolM2.toFixed(1)} m² = roads ${topology.stats.roadsM2.toFixed(1)} + plots ${topology.stats.plotsM2.toFixed(1)}`);
         console.log(`${topology.stats.readjustmentCount} connected readjustments; ${topology.stats.plotCount} plots; smallest ${topology.stats.minPlotM2.toFixed(1)} m²`);
         console.log(`mesh gap ${topology.stats.gapM2.toFixed(3)}; outside ${topology.stats.outsideM2.toFixed(3)}; overlap ${topology.stats.overlapM2.toFixed(3)} m²`);

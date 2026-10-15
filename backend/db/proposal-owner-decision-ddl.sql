@@ -5,7 +5,7 @@
 -- signed decision, and each owner's current acceptance is the fold of its rows in signing order.
 --
 -- Applied by deploy-backend.sh (DDL_FILES) as geo_user; locally:
---   PGHOST=127.0.0.1 psql -U zagreb_user -d geodata -c 'SET ROLE geo_user' -f backend/db/proposal-owner-decision-ddl.sql
+--   psql "$DATABASE_URL" -c 'SET ROLE geo_user' -f backend/db/proposal-owner-decision-ddl.sql   (DATABASE_URL from backend/.env)
 -- Idempotent; safe to re-run.
 
 CREATE SCHEMA IF NOT EXISTS consensus;

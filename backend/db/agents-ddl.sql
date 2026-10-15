@@ -3,7 +3,7 @@
 -- with its exact cost, so the daily spend cap and the per-item cost display read the same numbers.
 --
 -- Applied by hand like the other DDL files in this repo (there is no auto-apply):
---   local:   PGHOST=localhost psql -U zagreb_user -d geodata -f backend/db/agents-ddl.sql
+--   local:   psql "$DATABASE_URL" -f backend/db/agents-ddl.sql   (DATABASE_URL from backend/.env)
 --   server:  psql "$DATABASE_URL" -f backend/db/agents-ddl.sql
 -- Idempotent; safe to re-run.
 

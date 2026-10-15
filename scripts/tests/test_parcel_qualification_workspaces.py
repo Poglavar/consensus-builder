@@ -184,6 +184,146 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
             self.assertEqual((child / rel).read_bytes(), (self.parent / rel).read_bytes())
         self.assertEqual((child / "backend/parcels/adapter.js").read_text(), "parent overlay\n")
 
+    def _ignored_packet(self, name: str, *, city_code: str = "1868"):
+        input_dir = self.parent / "tmp/qualification-inputs"
+        input_dir.mkdir(parents=True, exist_ok=True)
+        city_path = input_dir / f"{name}-city.json"
+        review_path = input_dir / f"{name}-review.json"
+        city_path.write_text(json.dumps({"cityCode": city_code, "sampleFiles": []}) + "\n")
+        review_path.write_text(json.dumps({"sampleFiles": []}) + "\n")
+        packet = dict(self.packet)
+        packet["cityPath"] = str(city_path)
+        packet["reviewPath"] = str(review_path)
+        packet["city"] = {"cityCode": city_code, "sampleFiles": []}
+        packet["review"] = {"sampleFiles": []}
+        return packet, city_path, review_path
+
+    def test_reuse_tracks_ignored_input_ownership_across_different_packet_and_archives_old_bytes(self):
+        first_packet, first_city_path, _ = self._ignored_packet("first")
+        first = workspaces.prepare_workspace(self.parent, self.state_dir, 1,
+                                             self.city, self.receipt, first_packet)
+        first_child = first["root"]
+        first_city = first_child / first_city_path.relative_to(self.parent)
+        first_city_bytes = first_city.read_bytes()
+        first_city_mtime = first_city.stat().st_mtime_ns
+        workspaces.finish_workspace(first)
+
+        different_packet, different_city_path, _ = self._ignored_packet("different", city_code="9999")
+        different_city_path.write_text('{"cityCode":"9999","sampleFiles":[],"changed":true}\n')
+        second = workspaces.prepare_workspace(self.parent, self.state_dir, 1,
+                                              {**self.city, "cityCode": "9999"}, self.receipt,
+                                              different_packet)
+        workspaces.finish_workspace(second)
+
+        first_city_path.write_bytes(b'{"cityCode":"1868","sampleFiles":[],"changed":true}\n')
+        changed_mtime = first_city_path.stat().st_mtime_ns
+        third = workspaces.prepare_workspace(self.parent, self.state_dir, 1,
+                                             self.city, self.receipt, first_packet)
+        restored = third["root"] / first_city_path.relative_to(self.parent)
+        self.assertEqual(restored.read_bytes(), first_city_path.read_bytes())
+        self.assertEqual(restored.stat().st_mtime_ns, changed_mtime)
+        self.assertNotEqual(restored.read_bytes(), first_city_bytes)
+        self.assertNotEqual(restored.stat().st_mtime_ns, first_city_mtime)
+
+        history = self.state_dir / "qualification-workspaces/input-history" / third["runId"]
+        manifest = json.loads((history / "manifest.json").read_text())
+        rows = {row["path"]: row for row in manifest["entries"]}
+        row = rows[str(first_city_path.relative_to(self.parent))]
+        self.assertEqual(row["kind"], "file")
+        self.assertEqual((history / row["storedPath"]).read_bytes(), first_city_bytes)
+        self.assertEqual(row["sha256"], hashlib.sha256(first_city_bytes).hexdigest())
+
+    def test_unknown_ignored_input_collision_refuses_before_reset_archive_or_metadata_change(self):
+        first_packet, _, _ = self._ignored_packet("first")
+        first = workspaces.prepare_workspace(self.parent, self.state_dir, 1,
+                                             self.city, self.receipt, first_packet)
+        first["root"].joinpath("backend/parcels/adapter.js").write_text(
+            "worker edits survive collision\n")
+        workspaces.finish_workspace(first)
+        child = first["root"]
+        tracked = child / "backend/parcels/adapter.js"
+        metadata_path = first["metadataPath"]
+        metadata_before = metadata_path.read_bytes()
+        foreign_path = child / "tmp/qualification-inputs/new-city.json"
+        foreign_path.parent.mkdir(parents=True, exist_ok=True)
+        foreign_path.write_bytes(b"foreign private bytes\n")
+        packet, parent_city_path, _ = self._ignored_packet("new")
+        parent_city_path.write_bytes(b"reviewed parent bytes\n")
+
+        with self.assertRaisesRegex(RuntimeError, "conflicts with ignored private data"):
+            workspaces.prepare_workspace(self.parent, self.state_dir, 1,
+                                         {**self.city, "cityCode": "7777"}, self.receipt, packet)
+        self.assertEqual(tracked.read_text(), "worker edits survive collision\n")
+        self.assertEqual(metadata_path.read_bytes(), metadata_before)
+        self.assertFalse((self.state_dir / "qualification-workspaces/history" / first["runId"]).exists())
+        foreign_path.rename(child / "tmp/retained-foreign.json")
+        resumed = workspaces.prepare_workspace(self.parent, self.state_dir, 1,
+                                               self.city, self.receipt, packet)
+        self.assertEqual((resumed["root"] / parent_city_path.relative_to(self.parent)).read_bytes(),
+                         parent_city_path.read_bytes())
+
+    def test_edited_owned_ignored_copy_is_preserved(self):
+        packet, city_path, _ = self._ignored_packet("owned")
+        workspace = workspaces.prepare_workspace(self.parent, self.state_dir, 1,
+                                                  self.city, self.receipt, packet)
+        workspaces.finish_workspace(workspace)
+        copied = workspace["root"] / city_path.relative_to(self.parent)
+        copied.write_bytes(b"foreign edits to a runner copy\n")
+        metadata_before = workspace["metadataPath"].read_bytes()
+        with self.assertRaisesRegex(RuntimeError, "conflicts with ignored private data"):
+            workspaces.prepare_workspace(self.parent, self.state_dir, 1,
+                                         self.city, self.receipt, packet)
+        self.assertEqual(copied.read_bytes(), b"foreign edits to a runner copy\n")
+        self.assertEqual(workspace["metadataPath"].read_bytes(), metadata_before)
+
+    def test_symlink_at_ignored_input_path_refuses_even_when_target_bytes_match(self):
+        first_packet, _, _ = self._ignored_packet("first")
+        first = workspaces.prepare_workspace(self.parent, self.state_dir, 1,
+                                             self.city, self.receipt, first_packet)
+        workspaces.finish_workspace(first)
+        child = first["root"]
+        target = first["root"] / "tmp/qualification-inputs/target.json"
+        target.write_bytes(b"same bytes\n")
+        packet, parent_city_path, _ = self._ignored_packet("symlink")
+        parent_city_path.write_bytes(target.read_bytes())
+        symlink = child / parent_city_path.relative_to(self.parent)
+        symlink.parent.mkdir(parents=True, exist_ok=True)
+        symlink.symlink_to(target)
+        metadata_before = first["metadataPath"].read_bytes()
+        with self.assertRaisesRegex(RuntimeError, "symlink"):
+            workspaces.prepare_workspace(self.parent, self.state_dir, 1,
+                                         self.city, self.receipt, packet)
+        self.assertTrue(symlink.is_symlink())
+        self.assertEqual(first["metadataPath"].read_bytes(), metadata_before)
+
+    def test_existing_verified_reuse_archive_is_idempotent(self):
+        workspace = self.prepare()
+        child = workspace["root"]
+        changed = child / "backend/parcels/adapter.js"
+        changed.write_text("archive once\n")
+        workspaces.finish_workspace(workspace)
+        manifest = workspaces._archive_changes(child, self.state_dir, workspace["runId"])
+        history = self.state_dir / "qualification-workspaces/history" / workspace["runId"]
+        self.assertEqual(json.loads((history / "manifest.json").read_text()), manifest)
+        next_workspace = self.prepare()
+        self.assertEqual((next_workspace["root"] / "backend/parcels/adapter.js").read_text(),
+                         "export const baseline = true;\n")
+        row = next(row for row in manifest["entries"] if row["path"] == "backend/parcels/adapter.js")
+        self.assertEqual((history / row["storedPath"]).read_text(), "archive once\n")
+
+    def test_corrupt_existing_reuse_archive_refuses(self):
+        workspace = self.prepare()
+        child = workspace["root"]
+        changed = child / "backend/parcels/adapter.js"
+        changed.write_text("archive corruption\n")
+        workspaces.finish_workspace(workspace)
+        history = workspaces._archive_changes(child, self.state_dir, workspace["runId"])
+        file_entry = next(entry for entry in history["entries"] if entry["kind"] == "file")
+        (self.state_dir / "qualification-workspaces/history" / workspace["runId"] /
+         file_entry["storedPath"]).write_bytes(b"tampered\n")
+        with self.assertRaisesRegex((IOError, RuntimeError), "archive|backup|history"):
+            self.prepare()
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,7 +1,7 @@
 // Exercise location gates against PostgreSQL temporary fixtures; opt in to the local geodata connection.
 import {afterAll,beforeAll,beforeEach,describe,expect,it,vi} from 'vitest';
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createClient } from '../db/connection.cjs';
 import {fileURLToPath} from 'node:url';
 import {locatedListingSql,LOCATED_ASSET_SQL,LOCATED_PLAN_TASK_SQL} from '../floor-plans/building-location.js';
 import {BUILDING_PROCESSOR} from '../floor-plans/building-reading.js';
@@ -28,9 +28,7 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST==='1')('floor-plan locati
     let client,db;
     beforeAll(async()=>{
         dotenv.config({path:fileURLToPath(new URL('../.env',import.meta.url)),quiet:true});
-        const connectionUrl=process.env.DATABASE_URL?new URL(process.env.DATABASE_URL):null;
-        if(connectionUrl) {connectionUrl.hostname='127.0.0.1';connectionUrl.port='5432';}
-        client=new pg.Client({connectionString:connectionUrl?.href,host:'127.0.0.1',port:5432,
+        client=createClient({
             connectionTimeoutMillis:5000,statement_timeout:5000,application_name:'floor-plan-location-tests'});
         await client.connect();
         expect((await client.query('SELECT current_database() AS name')).rows[0].name).toBe('geodata');

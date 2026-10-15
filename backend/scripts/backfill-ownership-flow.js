@@ -16,13 +16,12 @@
 // Only Zagreb-style cadastral parcels are supported (the `parcel` table). Rows for other cities are
 // reported as skipped rather than guessed at.
 
-import pkg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import 'dotenv/config';
 import { createRequire } from 'node:module';
 import { serializeProposalRow } from '../proposals/serializer.js';
 
 const require = createRequire(import.meta.url);
-const { Pool } = pkg;
 
 // plan-order.js reads `turf` from the runtime global, exactly as it does in the browser.
 globalThis.turf = require('@turf/turf');
@@ -75,18 +74,12 @@ export async function run(argv = process.argv.slice(2)) {
     const args = parseArgs(argv);
     if (args.help) { usage(); return 0; }
 
-    if (!process.env.PGDATABASE) {
-        console.error('PGDATABASE is not set — refusing to guess a database. Run from backend/ so .env loads.');
+    if (!process.env.DATABASE_URL) {
+        console.error('DATABASE_URL is not set — refusing to guess a database. Run from backend/ so .env loads.');
         return 1;
     }
 
-    const pool = new Pool({
-        host: process.env.PGHOST,
-        port: Number(process.env.PGPORT) || 5432,
-        user: process.env.PGUSER,
-        password: process.env.PGPASSWORD,
-        database: process.env.PGDATABASE
-    });
+    const pool = createPool();
 
     const stats = { total: 0, skippedCity: 0, skippedHasValue: 0, contentOnly: 0, noFootprint: 0, noParcels: 0, computed: 0, written: 0, unchanged: 0 };
 

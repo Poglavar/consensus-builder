@@ -104,7 +104,7 @@ LENS_OPERATOR_TOKEN=dev npm run lens:member -- --dry-run --owners /tmp/owners.js
 curl -s localhost:3095/lens/status
 ```
 
-Without `--owners` the registry is read from `consensus.lens_devnet_owner` via the `PG*` env.
+Without `--owners` the registry is read from `consensus.lens_devnet_owner` via `DATABASE_URL`.
 
 ## Register the schemas, then run live
 

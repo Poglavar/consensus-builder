@@ -3,7 +3,7 @@
 // (frontend/js/proposals/site-binding.js). The same sites go to both; the bound parcels, coverage
 // and intrusion widths must agree. Opt-in, it talks to the real geodata database (local docker):
 //
-//   cd backend && set -a && . ./.env && set +a && RUN_DB_TESTS=1 PGHOST=localhost npx vitest run test/proposal-binding-db.test.js
+//   cd backend && set -a && . ./.env && set +a && RUN_DB_TESTS=1 npx vitest run test/proposal-binding-db.test.js
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 import { computeBinding } from '../proposals/binding.js';
@@ -22,14 +22,8 @@ live('binding SQL and the pure rule agree on real parcels', () => {
     let pool;
 
     beforeAll(async () => {
-        const { default: pg } = await import('pg');
-        pool = new pg.Pool({
-            host: process.env.PGHOST || 'localhost',
-            port: Number(process.env.PGPORT) || 5432,
-            user: process.env.PGUSER,
-            password: process.env.PGPASSWORD,
-            database: process.env.PGDATABASE || 'geodata'
-        });
+        const { createPool } = await import('../db/connection.cjs');
+        pool = createPool();
     });
     afterAll(async () => { await pool?.end(); });
 

@@ -8,8 +8,8 @@
 // spaces; the reconstruction does not carry a second, presentation-only application mode.
 //
 // Usage:
-//   PGHOST=localhost node backend/scripts/seed-neighbourhood-reconstructions.mjs --dry-run --export
-//   PGHOST=localhost node backend/scripts/seed-neighbourhood-reconstructions.mjs --apply --export
+//   node backend/scripts/seed-neighbourhood-reconstructions.mjs --dry-run --export
+//   node backend/scripts/seed-neighbourhood-reconstructions.mjs --apply --export
 
 import { createRequire } from 'node:module';
 import crypto from 'node:crypto';
@@ -17,7 +17,7 @@ import dotenv from 'dotenv';
 import * as turf from '@turf/turf';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import pg from 'pg';
+import { createPool, describeDatabase, isLocalDatabase } from '../db/connection.cjs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { assertReconstructionGeoJSONRoundTrip } from '../proposals/reconstruction-geojson.js';
 import { assertCorridorReconstructionGeoJSONRoundTrip } from '../proposals/corridor-reconstruction-geojson.js';
@@ -28,11 +28,9 @@ dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet:
 
 const require = createRequire(import.meta.url);
 const { corridorProfileFromOsmTags, corridorProfileWidth } = require('../../frontend/js/corridor-profile.js');
-const { Pool } = pg;
 
 const ARCHIVE_ROOT = fileURLToPath(new URL('../../rekonstrukcije/nova-naselja/', import.meta.url));
 const RECONSTRUCTION_DATE = '2026-08-14T00:00:00.000Z';
-const LOCAL_DB_HOSTS = new Set(['localhost', '127.0.0.1', '::1']);
 const MIN_PARENT_INTERSECTION_M2 = 0.25;
 const MIN_ROAD_SEGMENT_LENGTH_M = 3;
 const PODBREZJE_SLAB_WIDTH_M = 18.75;
@@ -142,9 +140,8 @@ export function parseArgs(argv) {
 }
 
 function assertLocalDatabase() {
-    const host = String(process.env.PGHOST || 'localhost').trim().toLowerCase();
-    if (!LOCAL_DB_HOSTS.has(host)) {
-        throw new Error(`Refusing to seed non-local PGHOST=${host || '(empty)'}.`);
+    if (!isLocalDatabase()) {
+        throw new Error(`Refusing to seed non-local database host ${describeDatabase().host || '(empty)'}.`);
     }
 }
 
@@ -1022,7 +1019,7 @@ export async function main(argv = process.argv.slice(2)) {
         throw new Error(`Unknown project key(s): ${missing.join(', ')}.`);
     }
 
-    const pool = new Pool();
+    const pool = createPool();
     try {
         for (const config of selected) {
             const result = await buildNeighbourhood(pool, config);

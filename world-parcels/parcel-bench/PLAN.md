@@ -4,7 +4,7 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-15 (bounded reconstruction and margin-0 comparisons complete; matched donor fits running; default unchanged). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-15 (bounded reconstruction, margin-0 and matched-donor comparisons complete; defaults unchanged; GPU closed). Status values: todo · running · done · dropped (with the reason).
 
 ## Where we stand (2026-10-14)
 
@@ -66,7 +66,7 @@ in three lanes, two Split runs about 40 minutes; a 1,600-tile 30-epoch run is ab
 | 9 | Serving check (CPU inference) | laptop | todo |
 | 10 | Product decision: show guesses where the score clears a bar | the user | todo |
 | 11 | Satellite domain: score and train for satellite-like input | laptop + GPU | (a) done; (b) resolution trial done, not adopted; other degradations and (c) real imagery pending |
-| 12 | Nearby Dalmatian donor: zero-shot development on Split and untouched-city confirmation | laptop + GPU | exports and matching audited; six donor fits running; target fine-tuning deferred |
+| 12 | Nearby Dalmatian donor: zero-shot development on Split and untouched-city confirmation | laptop + GPU | zero-shot comparison done; advancement failed; untouched confirmation and target fine-tuning deferred |
 
 ### Agreed reconstruction and transfer sequence (2026-10-15)
 
@@ -145,7 +145,7 @@ imagery, file-hash, source-ID and geographic-separation audits against eleven hi
 Zadar has 681 eligible training tiles, 48 source-selection tiles and 16 reserved final tiles; Šibenik
 has only 48 final tiles and remains unscored.
 
-`gpu/plans/selection-v3-donors.json` now freezes six fresh fits, using the failed primary margin gate
+`gpu/plans/selection-v3-donors.json` freezes six fresh fits, all completed, using the failed primary margin gate
 to select common margin 2 and keeping rim 0. Exact parcel-count matching produces 632 tiles and
 27,344 parcel instances per donor, with identical low/medium/high/dense counts of 74/93/205/260.
 Unique cadastral IDs differ (22,987 distant, 19,845 nearby); the matched annotation budget counts
@@ -155,6 +155,39 @@ the paired target comparison uses the same 48 reused Split selection tiles. Only
 development gate permits separately frozen Šibenik confirmation, requiring at least +0.02 F1 and
 all remaining guards. Exporting confirmation imagery does not authorize using its model outcomes
 for development decisions.
+
+The matched-donor comparison fails advancement. The table averages three seed-pooled Split selection
+scores; intervals use 2,000 paired resamples of the same twelve whole geographic blocks.
+
+| Split transfer metric | Distant Zagreb donor | Nearby Zadar donor | Nearby minus distant, 95% block interval |
+|---|---:|---:|---|
+| Parcel F1 | 0.2064 | 0.1958 | −0.0106 [−0.0247, +0.0074] |
+| Precision | 0.3917 | 0.3400 | −0.0517 [−0.0684, −0.0304] |
+| Interior recall | 0.1533 | 0.1402 | −0.0131 [−0.0354, +0.0110] |
+| Area-weighted recall | 0.2821 | 0.3364 | +0.0543 [−0.0013, +0.1245] |
+| Boundary F1 | 0.4653 | 0.4562 | −0.0090 [−0.0195, +0.0047] |
+
+Seed F1 differences are −0.018870, +0.000907 and −0.013917. The mean-gain, positive-interval,
+median-seed and drop-best-seed checks fail, as do the precision and interior-recall guards;
+only the area-recall guard passes. The F1 difference remains unresolved, while the precision interval
+is entirely negative. This comparison does not support switching to the nearby donor. Its source
+regions bundle geography, cadastral fabric and imagery, so it does not isolate a climate effect or
+establish a general limit on nearby donors.
+
+Mean F1 falls by 0.0067 in the high-density stratum and 0.0188 in the dense stratum. The low-density
+increase of 0.1622 comes from one block with only 21 references, all clipped and none interior;
+its interior recall remains null. Across the full selection set, the 1,033 clipped and 763 interior
+references remain included. Source-selected epochs are 16/18/16 for Zagreb and 8/14/12 for Zadar;
+their own-city scores describe different geographies and are not a paired comparison.
+
+All six journals satisfy 30 epochs, 3,180 updates and fifteen source-selection evaluations. All 576
+saved tile-score records were repooled, every selected own-city metric matched its training record,
+and all 1,795 donor artifacts (4.60 GB), including best/last checkpoints and actual cache proofs,
+passed SHA-256 verification. The twelve selection ledger rows and
+`output/runs/selection-v3-donors-comparison/report.json` retain every seed, guard, source choice,
+density stratum, clipped/interior count and artifact hash. Šibenik confirmation was not frozen or
+run because development failed; all final splits remain unscored in this study. Keep the existing
+default and donor policy. These intervals condition on three fitted seeds and reused Split blocks.
 
 **1. Bootstrap confidence intervals.** Resample tiles to give every pooled score a 95% interval and the
 minimum detectable effect per benchmark. Success: every comparison in the ledger reads as a difference
@@ -253,16 +286,13 @@ The resolution-only trial is complete, not the broader satellite work. Keep the 
 the augmentation loses clean precision; retain its checkpoints for a separately defined donor-transfer
 comparison. Detailed results and the uncertainty limits are below.
 
-**12. Nearby same-climate donor.** The direct test of the practice-region thesis that round 2 could not
-make (Zagreb and Split differ in climate as well as distance): export a Dalmatian Csa city 60–120 km from Split
-(Šibenik or Zadar; same national parcel table and DGU imagery, so `export_city.py` covers it), train on it, and
-score on Split's selection split zero-shot and as a fine-tune donor at 50 tiles. Success: a paired difference
-against the fresh v2 Zagreb donor (baseline zero-shot F1 0.156 over three seeds) whose interval excludes zero supports a benefit from this nearby
-same-climate donor on these blocks. Quantify label savings against the target-only learning curve; an
-unresolved difference leaves the donor effect uncertain. The old 0.122 donor score and target-only curve
-use v1 and cannot be compared directly with v2; refit any target-label curve under v2. Hold the training
-recipe fixed across donors, including whether resolution augmentation is used. ETA about
-half a day (export) plus 1 GPU-h, about $0.50.
+**12. Nearby same-climate donor.** The zero-shot phase is complete under the matched six-fit protocol
+above. Zadar did not clear the development gate against the equally sized Zagreb donor; Šibenik remains
+untouched. The matched Zagreb control's F1 is 0.2064; the earlier full-pool value of 0.156 uses a different
+training budget and source-selected policy and is not this comparison's control. Target fine-tuning and
+label-savings curves remain deferred and would need a new frozen comparison using v2 holdouts. The old
+v1 donor score and target-only curve cannot be compared directly with v2. This completed experiment
+does not establish a general effect of climate, distance or target-label savings.
 
 ## ETA and spend
 
@@ -287,6 +317,20 @@ The slow backup accounts for much of the extra rental time. Credit decreased fro
 about $1.00 including setup, compute and transfers (account-balance change, not an itemized invoice).
 The GPU was destroyed and inventory was empty at 10:18 UTC; the balance was checked again at 10:22 UTC.
 Receipt: `output/runs/selection-v2-longer-rental.json`.
+
+2026-10-15 reconstruction and transfer sequence: the saved-map diagnostic used no GPU credit.
+Three margin-0 fits took 41 minutes of queue time, followed by six matched-donor fits in 28 minutes,
+both with two lanes. The corrected rental cost $0.4622/hour including storage. The account balance
+fell from $5.1650 to $3.7294, about $1.44 including two failed startups, setup, compute and recovery;
+this is an account-balance change, not an itemized invoice. All 2,695 trial output files (6.87 GB)
+were hash-verified locally before the approved rental deletion at 13:03 UTC; the 13:20 UTC balance
+check confirmed no active rentals. Receipts: `output/reconstruction-study-20261015/gpu-support/`.
+
+Operational deviation: all training finished at 11:34 UTC, but repeated SSH failures, slow artifact
+recovery and deletion approval delayed closure beyond the frozen 11:44 UTC study deadline. The
+corrected rental lasted about 2 hours 52 minutes. The time bound was missed; the $1.50 spending cap
+was met. The delay added no training, selection opportunities or final scoring. Future transfers must
+retain partial files, retry failed connections and use a separate recovery reserve.
 
 ## Learned (newest first)
 

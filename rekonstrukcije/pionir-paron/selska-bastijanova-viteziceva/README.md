@@ -47,7 +47,7 @@ Where two footprints share one archived parcel, the proposal retains the pair of
 ## Reproduction
 
 ```bash
-PGHOST=localhost node backend/scripts/seed-pionir-observed-proposals.mjs --apply --export
+node backend/scripts/seed-pionir-observed-proposals.mjs --apply --export
 ```
 
 `proposal.geojson` uses `consensus-builder.reconstruction.v1` and must survive a lossless export/import/export round trip.
