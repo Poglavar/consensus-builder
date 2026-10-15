@@ -67,7 +67,7 @@ async function closeDesignEditor(page: Page, root: string, cancelButton: string)
     const discardButton = discard.getByRole('button', { name: /discard|cancel design/i }).first();
     if (await discardButton.isVisible().catch(() => false)) await discardButton.click();
   }
-  await expect(page.locator(root)).toBeHidden();
+  await expect(page.locator(root)).toHaveCount(0);
 }
 
 test.describe('Shared on-map editor shell @features', () => {
@@ -183,9 +183,9 @@ test.describe('Shared on-map editor shell @features', () => {
 
       await page.locator('#editRoadCrossSectionButton').click();
       const crossSection = page.locator('#corridor-editor-overlay');
-      await expect(crossSection).toBeVisible();
+      await expect(crossSection.locator('.on-map-editor__panel')).toBeVisible();
       await crossSection.locator('.on-map-editor__header .close-circle-btn').click();
-      await expect(crossSection).toBeHidden();
+      await expect(crossSection).toHaveCount(0);
       await expect(page.locator('#road-drawing-controls')).toBeVisible();
       for (const selector of MODES) await expect(page.locator(selector)).toBeDisabled();
 

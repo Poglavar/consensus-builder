@@ -10,6 +10,8 @@ const { ParcelMutation } = require('../../frontend/js/proposals/apply/transactio
 const formationDepth = require('../../frontend/js/proposals/formation-depth.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
 const dataSource = readFileSync(new URL('../../frontend/js/proposals/data.js', import.meta.url), 'utf8');
+const storageSource = readFileSync(new URL('../../frontend/js/proposals/storage.js', import.meta.url), 'utf8');
+const deterministicHash = new Function(`${storageSource}\nreturn hashStringDeterministic;`)();
 
 const saved = new Map();
 function install(name, value) {
@@ -120,6 +122,41 @@ describe('proposal rows: mutations', () => {
         store.proposals.set('a', record('a'));
         await run(store, storage, async context => { context.proposals.getProposal('a').title = 'x'; return true; });
         expect(storage.writes[0].deletes).toEqual(['cadastre_proposals']);
+    });
+});
+
+describe('proposal rows: deterministic ID collisions', () => {
+    it('allocates unique ids when several authored proposals share one immutable seed in the same millisecond, and reloads every row', () => {
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2026-10-16T12:34:56.000Z'));
+        try {
+            const storage = fakeStorage();
+            const store = bootStore(storage);
+            install('getCurrentCityId', () => 'zagreb');
+            install('hashStringDeterministic', deterministicHash);
+            const base = {
+                goal: 'buildings',
+                cadastreParcelIds: ['HR-1'],
+                applied: false,
+                geometry: {},
+            };
+            const titles = ['First scheme', 'Second scheme', 'Third scheme', 'Fourth scheme'];
+            expect(store._buildHashSeed({ ...base, title: titles[0] })).toBe(store._buildHashSeed({ ...base, title: titles[1] }));
+            const ids = titles.map(title => store.addProposal({ ...base, title }));
+
+            expect(ids[0]).toMatch(/^p-[a-z0-9]+$/);
+            expect(new Set(ids).size).toBe(titles.length);
+            expect(store.proposals.size).toBe(titles.length);
+            expect(store.getAllProposals().map(proposal => proposal.title).sort()).toEqual(titles.slice().sort());
+
+            const reloaded = bootStore(storage);
+            reloaded.load();
+            expect(reloaded.getAllProposals()).toHaveLength(titles.length);
+            expect(reloaded.getAllProposals().map(proposal => proposal.proposalId)).toEqual(ids);
+            expect(reloaded.getAllProposals().map(proposal => proposal.title).sort()).toEqual(titles.slice().sort());
+        } finally {
+            vi.useRealTimers();
+        }
     });
 });
 

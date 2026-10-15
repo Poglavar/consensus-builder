@@ -1,4 +1,4 @@
-// Give authored buttons stable source identities in the test server without changing app handlers.
+// Give authored buttons and form controls stable test identities without changing app handlers.
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -25,19 +25,19 @@ export function instrumentControls(source, filename) {
   const sites = [];
   const edits = [];
   const repetitions = new Map();
-  const add = (offset, snippet, kind, end, insertion = offset + 7, receiver = null) => {
+  const add = (offset, snippet, kind, end, insertion = offset + 7, receiver = null, interaction = 'click', controlType = 'button') => {
     const signature = snippet.replace(/\s+/g, ' ').trim();
     const hash = crypto.createHash('sha256').update(`${filename}\n${kind}\n${signature}`).digest('hex').slice(0, 14);
     const count = (repetitions.get(hash) || 0) + 1;
     repetitions.set(hash, count);
     const id = `control-${hash}-${count}`;
-    sites.push({ id, source: filename, line: source.slice(0, offset).split('\n').length, kind, markup: signature });
+    sites.push({ id, source: filename, line: source.slice(0, offset).split('\n').length, kind, markup: signature, interaction, controlType });
     if (kind === 'element') {
       // The unquoted attribute contains only ASCII letters, digits and hyphens. It is safe inside
       // HTML, single/double-quoted JavaScript strings and template literals alike.
       edits.push({ start: insertion, end: insertion, value: ` data-ui-control=${id}` });
     } else if (kind === 'role') {
-      edits.push({ start: offset, end, value: `((e)=>(e.setAttribute('data-ui-control',[(e.getAttribute('data-ui-control')||''),'${id}'].filter(Boolean).join(' ')),e.setAttribute('role','button')))(${receiver})` });
+      edits.push({ start: offset, end, value: `((e)=>(e.setAttribute('data-ui-control',[(e.getAttribute('data-ui-control')||''),'${id}'].filter(Boolean).join(' ')),e.setAttribute('role','${controlType === 'slider' ? 'slider' : 'button'}')))(${receiver})` });
     } else {
       const original = source.slice(offset, end);
       // A generic factory may set role=button after createElement returns (for example a
@@ -54,10 +54,14 @@ export function instrumentControls(source, filename) {
       const snippet = source.slice(start, end < 0 ? start + match[0].length : end + 1);
       const tag = match[1].toLowerCase();
       const classes = snippet.match(/\bclass\s*=\s*\\?(["'])(.*?)\\?\1/)?.[2];
+      const inputType = snippet.match(/\btype\s*=\s*\\?["']([\w-]+)\\?["']/)?.[1]?.toLowerCase() || 'text';
+      const isSlider = /\brole\s*=\s*\\?["']slider\\?["']/.test(snippet);
+      const isField = isSlider || tag === 'select' || tag === 'textarea' || (tag === 'input' && !['button', 'submit', 'reset', 'hidden'].includes(inputType));
       if (tag !== 'button' && !/\brole\s*=\s*\\?["']button\\?["']/.test(snippet)
           && !(tag === 'a' && hasButtonClass(classes))
-          && !(tag === 'input' && /\btype\s*=\s*\\?["'](?:button|submit|reset)\\?["']/.test(snippet))) continue;
-      add(start, snippet, 'element', undefined, start + match[0].length);
+          && !(tag === 'input' && /\btype\s*=\s*\\?["'](?:button|submit|reset)\\?["']/.test(snippet)) && !isField) continue;
+      add(start, snippet, 'element', undefined, start + match[0].length, null,
+        isField ? 'change' : 'click', isSlider ? 'slider' : isField ? (tag === 'input' ? inputType : tag) : 'button');
     }
   };
   const javascript = (text, offset = 0) => {
@@ -95,15 +99,20 @@ export function instrumentControls(source, filename) {
       }
       if (node.type === 'CallExpression' && node.callee?.type === 'MemberExpression'
           && !node.callee.computed && node.callee.property?.name === 'createElement'
-          && node.arguments?.[0] && (node.arguments[0].type !== 'StringLiteral' || node.arguments[0].value === 'button' || anchorButtons.has(node))) {
-        add(offset + node.start, text.slice(node.start, node.end), node.arguments[0].type === 'StringLiteral' ? 'factory' : 'factory-dynamic', offset + node.end);
+          && node.arguments?.[0] && (node.arguments[0].type !== 'StringLiteral'
+            || ['button', 'input', 'select', 'textarea'].includes(node.arguments[0].value) || anchorButtons.has(node))) {
+        const tag = node.arguments[0].value;
+        const dynamic = node.arguments[0].type !== 'StringLiteral';
+        const isField = ['input', 'select', 'textarea'].includes(tag);
+        add(offset + node.start, text.slice(node.start, node.end), dynamic ? 'factory-dynamic' : 'factory', offset + node.end,
+          undefined, null, dynamic ? 'auto' : isField ? 'change' : 'click', dynamic ? 'dynamic' : isField ? tag : 'button');
       }
       if (node.type === 'CallExpression' && node.callee?.type === 'MemberExpression'
           && !node.callee.computed && node.callee.property?.name === 'setAttribute'
-          && node.arguments?.[0]?.value === 'role' && node.arguments?.[1]?.value === 'button'
+          && node.arguments?.[0]?.value === 'role' && ['button', 'slider'].includes(node.arguments?.[1]?.value)
           && ['Identifier', 'MemberExpression'].includes(node.callee.object.type)) {
         add(offset + node.start, text.slice(node.start, node.end), 'role', offset + node.end, undefined,
-          text.slice(node.callee.object.start, node.callee.object.end));
+          text.slice(node.callee.object.start, node.callee.object.end), node.arguments[1].value === 'slider' ? 'change' : 'click', node.arguments[1].value);
       }
     });
   };

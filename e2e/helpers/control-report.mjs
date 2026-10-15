@@ -1,4 +1,4 @@
-// Attribute coverage only to trusted clicks in passing browser tests; retain failures and gaps.
+// Attribute clicks and value changes only to passing behavior tests; retain failures and gaps.
 import fs from 'node:fs';
 
 export function readControlResults(paths) {
@@ -31,16 +31,17 @@ export function readControlResults(paths) {
 }
 
 export function summarizeControlCoverage(sites, tests) {
-  const byId = new Map(sites.map(site => [site.id, { ...site, observed: false, clicks: [], variants: [] }]));
+  const byId = new Map(sites.map(site => [site.id, { ...site, observed: false, clicks: [], changes: [], interactions: [], variants: [] }]));
   const unattributed = new Map();
   for (const test of tests) {
     for (const event of test.events) for (const id of event.sourceIds?.length ? event.sourceIds : [event.sourceId]) {
       const source = id && byId.get(id);
       if (!source) {
         const key = JSON.stringify(event.attrs);
-        const entry = unattributed.get(key) || { label: event.label, attrs: event.attrs, clicked: false, tests: [] };
-        if (event.kind === 'clicked' && test.status === 'passed') {
-          entry.clicked = true;
+        const entry = unattributed.get(key) || { label: event.label, attrs: event.attrs, interaction: event.interaction || 'click', clicked: false, changed: false, tests: [] };
+        if (['clicked', 'changed'].includes(event.kind) && test.status === 'passed') {
+          if (event.kind === 'clicked') entry.clicked = true;
+          if (event.kind === 'changed') entry.changed = true;
           if (!entry.tests.includes(test.key)) entry.tests.push(test.key);
         }
         unattributed.set(key, entry);
@@ -52,11 +53,19 @@ export function summarizeControlCoverage(sites, tests) {
       const variantKey = JSON.stringify([event.label, event.attrs]);
       let variant = source.variants.find(variant => variant.key === variantKey);
       if (!variant) {
-        variant = { key: variantKey, label: event.label, attrs: event.attrs, clicks: [] };
+        variant = { key: variantKey, label: event.label, attrs: event.attrs, interaction: event.interaction || 'click', clicks: [], changes: [], interactions: [] };
         source.variants.push(variant);
       }
-      if (event.kind === 'clicked' && test.status === 'passed' && !variant.clicks.includes(test.key)) variant.clicks.push(test.key);
-      if (event.kind === 'clicked' && test.status === 'passed' && !source.clicks.includes(test.key)) source.clicks.push(test.key);
+      const interaction = source.interaction === 'auto' ? event.interaction : source.interaction;
+      const expectedKind = interaction === 'change' ? 'changed' : 'clicked';
+      const exercised = event.kind === expectedKind && test.status === 'passed';
+      if (exercised) {
+        const history = event.kind === 'changed' ? 'changes' : 'clicks';
+        if (!variant[history].includes(test.key)) variant[history].push(test.key);
+        if (!source[history].includes(test.key)) source[history].push(test.key);
+        if (!variant.interactions.includes(test.key)) variant.interactions.push(test.key);
+        if (!source.interactions.includes(test.key)) source.interactions.push(test.key);
+      }
     }
   }
   const controls = [...byId.values()];
@@ -68,15 +77,18 @@ export function summarizeControlCoverage(sites, tests) {
       skipped: tests.filter(test => test.status === 'skipped').length,
       controls: controls.length,
       clicked: controls.filter(control => control.clicks.length).length,
+      changed: controls.filter(control => control.changes.length).length,
+      interacted: controls.filter(control => control.interactions.length).length,
       observed: controls.filter(control => control.observed).length,
     },
     controls,
-    uncovered: controls.filter(control => !control.clicks.length),
+    uncovered: controls.filter(control => !control.interactions.length),
     unattributed: [...unattributed.values()],
   };
 }
 
 function matchesVariant(variant, expected) {
+  if (expected.interaction && variant.interaction !== expected.interaction) return false;
   if (expected.label !== undefined && variant.label !== expected.label) return false;
   if (expected.labelPattern && !new RegExp(expected.labelPattern).test(variant.label)) return false;
   for (const name of expected.classes || []) if (!(variant.attrs.class || '').split(/\s+/).includes(name)) return false;
@@ -103,15 +115,16 @@ export function checkControlCoverage(summary, contract) {
   }
   for (const control of summary.controls) {
     const rule = expected.get(control.id);
-    if (!rule) errors.push(`New button needs a contract: ${control.source}:${control.line} ${control.id}`);
+    if (!rule) errors.push(`New control needs a contract: ${control.source}:${control.line} ${control.id}`);
     if (rule?.exempt) {
-      if (rule.mustRemainInactive && control.observed) errors.push(`Exempt button became reachable; add a behavior test: ${control.source}:${control.line} ${control.id}`);
+      if (rule.mustRemainInactive && control.observed) errors.push(`Exempt control became reachable; add a behavior test: ${control.source}:${control.line} ${control.id}`);
       continue;
     }
-    if (!control.clicks.length) errors.push(`No passing click: ${control.source}:${control.line} ${control.id}`);
+    const action = control.interaction === 'auto' ? 'interaction' : control.interaction === 'change' ? 'change' : 'click';
+    if (!control.interactions.length) errors.push(`No passing ${action}: ${control.source}:${control.line} ${control.id}`);
     for (const variant of rule?.variants || []) {
-      if (!control.variants.some(actual => actual.clicks.length && matchesVariant(actual, variant))) {
-        errors.push(`No passing click for ${variant.name}: ${control.source}:${control.line} ${control.id}`);
+      if (!control.variants.some(actual => actual.interactions.length && matchesVariant(actual, variant))) {
+        errors.push(`No passing ${action} for ${variant.name}: ${control.source}:${control.line} ${control.id}`);
       }
     }
     if (rule?.exhaustiveVariants) {
@@ -123,18 +136,18 @@ export function checkControlCoverage(summary, contract) {
     }
   }
   for (const rule of contract.controls) {
-    if (!current.has(rule.id)) errors.push(`Button removed or changed; review its contract: ${rule.source} ${rule.id}`);
+    if (!current.has(rule.id)) errors.push(`Control removed or changed; review its contract: ${rule.source} ${rule.id}`);
     if ('exempt' in rule && !String(rule.exempt).trim()) errors.push(`Missing exemption reason: ${rule.id}`);
   }
   for (const rule of contract.runtimeControls || []) {
-    if (!rule.exempt && !summary.unattributed.some(actual => actual.clicked && matchesVariant(actual, rule))) {
-      errors.push(`No passing click for runtime button: ${rule.name}`);
+    if (!rule.exempt && !summary.unattributed.some(actual => (rule.interaction === 'change' ? actual.changed : actual.clicked) && matchesVariant(actual, rule))) {
+      errors.push(`No passing ${rule.interaction === 'change' ? 'change for runtime field' : 'click for runtime button'}: ${rule.name}`);
     }
   }
   if (contract.checkRuntimeControls) {
     for (const control of summary.unattributed) {
       if (!(contract.runtimeControls || []).some(rule => matchesVariant(control, rule))) {
-        errors.push(`Unattributed button needs a contract: ${control.label} ${control.attrs.class || ''}`);
+        errors.push(`Unattributed control needs a contract: ${control.label} ${control.attrs.class || ''}`);
       }
     }
   }

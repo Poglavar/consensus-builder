@@ -2,6 +2,9 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, clickMapPoint, showProposal, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
+import { installAreaMonitorSpaFallback } from '../helpers/mocks/area-monitor-server';
+import { selectNativeOption } from '../helpers/controls';
+import { waitForMapReady } from '../helpers/app';
 import type { Page } from '@playwright/test';
 
 const BLOCK_PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238'];
@@ -31,7 +34,7 @@ async function openRowHouseEditor(page: Page): Promise<void> {
   await page.locator('#parcel-info-panel .close-button').click();
   await page.locator('#selection-tray [data-command="selection.propose"]').click();
   await page.locator('.parcel-build-btn--row').click();
-  await expect(page.locator('#rowhouse')).toBeVisible();
+  await expect(page.locator('#rowhouse').locator('.on-map-editor__panel')).toBeVisible();
   await expect(page.locator('#btn-rowhouse-done')).toBeEnabled({ timeout: 20_000 });
 }
 
@@ -187,5 +190,312 @@ test.describe('Remaining UI controls @features', () => {
     await modal.locator('[data-status-log-close]').click();
     await expect(modal).toBeHidden();
     await expect(page.locator('#activity-sheet')).toBeVisible();
+  });
+
+  test('activity explorer source, actor, controller, action, and result fields filter events', async ({ mockApi: page }) => {
+    await page.route('**/agent/activity**', route => route.fulfill({ json: { events: [
+      {
+        id: 'filter-human-publish', occurredAt: '2026-10-01T12:00:00Z', recordedAt: '2026-10-01T12:00:00Z',
+        actor: { id: 'human-1', name: 'Filter Human', kind: 'human', controller: 'human' },
+        action: { type: 'publish' }, entity: { type: 'proposal', id: 'filter-proposal-1' },
+        source: 'live', message: 'Published filter test proposal', ok: true,
+      },
+      {
+        id: 'filter-agent-create', occurredAt: '2026-10-01T11:00:00Z', recordedAt: '2026-10-01T11:00:00Z',
+        actor: { id: 'agent-1', name: 'Filter Algorithm', kind: 'agent', controller: 'algorithm' },
+        action: { type: 'create' }, entity: { type: 'proposal', id: 'filter-proposal-2' },
+        source: 'live', message: 'Created filter test proposal', ok: true,
+      },
+      {
+        id: 'filter-agent-failure', occurredAt: '2026-10-01T10:00:00Z', recordedAt: '2026-10-01T10:00:00Z',
+        actor: { id: 'agent-2', name: 'Filter LLM', kind: 'agent', controller: 'llm' },
+        action: { type: 'publish' }, entity: { type: 'proposal', id: 'filter-proposal-3' },
+        source: 'live', message: 'Failed filter test proposal', ok: false,
+      },
+    ] } }));
+
+    await openCity(page);
+    await page.locator('#activity-button').click();
+    await page.locator('#activity-explorer-button').click();
+    const modal = page.locator('.game-log-modal');
+    await expect(modal).toBeVisible();
+    const content = modal.locator('#game-log-content');
+    await expect(content).toContainText('Published filter test proposal');
+    await expect(content).toContainText('Created filter test proposal');
+    await expect(content).toContainText('Failed filter test proposal');
+
+    const field = (name: string) => modal.locator(`[data-activity-filter-field="${name}"]`);
+    await selectNativeOption(field('source'), 'simulation');
+    await expect(content).not.toContainText('Published filter test proposal');
+    await selectNativeOption(field('source'), 'live');
+    await expect(content).toContainText('Published filter test proposal');
+
+    await selectNativeOption(field('kind'), 'human');
+    await expect(content).toContainText('Published filter test proposal');
+    await expect(content).not.toContainText('Created filter test proposal');
+    await selectNativeOption(field('kind'), 'agent');
+    await expect(content).toContainText('Created filter test proposal');
+    await expect(content).not.toContainText('Published filter test proposal');
+
+    await selectNativeOption(field('controller'), 'llm');
+    await expect(content).toContainText('Failed filter test proposal');
+    await expect(content).not.toContainText('Created filter test proposal');
+
+    await selectNativeOption(field('controller'), 'algorithm');
+    await selectNativeOption(field('action'), 'create');
+    await expect(content).not.toContainText('Failed filter test proposal');
+    await expect(content).toContainText('Created filter test proposal');
+
+    await selectNativeOption(field('status'), 'failed');
+    await expect(content).toContainText(/No matching activity/i);
+    await selectNativeOption(field('status'), 'success');
+    await expect(content).toContainText('Created filter test proposal');
+    await selectNativeOption(field('controller'), 'all');
+    await selectNativeOption(field('kind'), 'all');
+    await selectNativeOption(field('action'), 'publish');
+    await selectNativeOption(field('status'), 'failed');
+    await expect(content).toContainText('Failed filter test proposal');
+    await expect(content).not.toContainText('Published filter test proposal');
+    await selectNativeOption(field('status'), 'success');
+    await expect(content).toContainText('Published filter test proposal');
+    await expect(content).not.toContainText('Failed filter test proposal');
+  });
+
+  test('actor explorer search narrows profiles and activity, then restores the list', async ({ mockApi: page }) => {
+    await page.route('**/agent/activity**', route => route.fulfill({ json: { events: [
+      {
+        id: 'search-ari', occurredAt: '2026-10-01T12:00:00Z', recordedAt: '2026-10-01T12:00:00Z',
+        actor: { id: 'search-human', name: 'Ari Steward', kind: 'human', controller: 'human' },
+        action: { type: 'publish' }, entity: { type: 'proposal', id: 'search-park' },
+        source: 'proposal', message: 'Published a river park', ok: true,
+      },
+      {
+        id: 'search-agent', occurredAt: '2026-10-01T11:00:00Z', recordedAt: '2026-10-01T11:00:00Z',
+        actor: { id: 'search-agent', name: 'Block Planner', kind: 'agent', controller: 'algorithm' },
+        action: { type: 'create' }, entity: { type: 'proposal', id: 'search-square' },
+        source: 'agent', message: 'Created a square proposal', ok: true,
+      },
+    ] } }));
+    await page.goto('/actor-explorer.html');
+    await expect(page.locator('.ae-event')).toHaveCount(2);
+    const search = page.getByRole('searchbox', { name: 'Search actor, proposal, run or transaction' });
+    await search.fill('Ari');
+    await expect(page.locator('.ae-event')).toHaveCount(1);
+    await expect(page.locator('.ae-event')).toContainText('Published a river park');
+    await expect(page.locator('.ae-profile-grid')).toContainText('Ari Steward');
+    await search.fill('search-square');
+    await expect(page.locator('.ae-event')).toHaveCount(1);
+    await expect(page.locator('.ae-event')).toContainText('Created a square proposal');
+    await search.fill('');
+    await expect(page.locator('.ae-event')).toHaveCount(2);
+  });
+
+  test('both watched-area name filters narrow their real lists', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.locator('#activity-button').click();
+    const inlineList = page.locator('#activity-watched-areas-list');
+    const inlineFilter = inlineList.locator('.area-monitor-list-filter');
+    await expect(inlineFilter).toBeVisible();
+    await inlineFilter.fill('vukovarska');
+    await expect(inlineList.locator('.area-monitor-list-item:not([hidden])')).toHaveCount(1);
+    await expect(inlineList.locator('.area-monitor-list-item:not([hidden])')).toContainText('Vukovarska Corridor');
+    await inlineFilter.fill('no such area');
+    await expect(inlineList.locator('.area-monitor-list-message:not([hidden])')).toContainText('No monitors match');
+
+    await installAreaMonitorSpaFallback(page);
+    await page.goto('/monitors/1?city=zg', { waitUntil: 'domcontentloaded' });
+    const detail = page.locator('#area-monitor-detail-panel');
+    await expect(detail).toBeVisible();
+    await detail.locator('#am-list-others').click();
+    const modal = page.locator('#area-monitor-list-modal');
+    const modalFilter = modal.locator('#am-list-filter');
+    await expect(modalFilter).toBeVisible();
+    await modalFilter.fill('jarunski');
+    await expect(modal.locator('.area-monitor-list-item:not([hidden])')).toHaveCount(1);
+    await expect(modal.locator('.area-monitor-list-item:not([hidden])')).toContainText('Zapadni Jarunski Most');
+    await modalFilter.fill('unmatched');
+    await expect(modal.locator('#am-list-no-match')).toBeVisible();
+  });
+
+  test('each Schelling parameter input updates the generated plan preview', async ({ mockApi: page }) => {
+    await page.route('**/parcels**', route => {
+      const request = route.request();
+      if (['fetch', 'xhr'].includes(request.resourceType()) && request.method() === 'GET'
+          && new URL(request.url()).hostname !== 'register.example.test') {
+        return route.fulfill({ status: 503, json: { error: 'Register unavailable', retryAfterSeconds: 0 } });
+      }
+      return route.fallback();
+    });
+    await page.goto('/?city=zg&at=45.80025,15.9822,18&lang=en&reduceMotion=1', { waitUntil: 'domcontentloaded' });
+    await waitForMapReady(page);
+    const dialog = page.locator('.ground-fallback-dialog');
+    await expect(dialog).toBeVisible();
+    await dialog.locator('[data-option="schelling"]').click();
+    const preview = dialog.locator('.ground-fallback-preview svg');
+    const assumptions = dialog.locator('details:has(> summary:has-text("Adjust the assumptions"))');
+    await assumptions.locator('> summary').click();
+    const previewShape = () => preview.evaluate(svg => JSON.stringify({
+      viewBox: svg.getAttribute('viewBox'),
+      blocks: Array.from(svg.querySelectorAll('.ground-fallback-preview-block')).map(block => [
+        block.getAttribute('x'), block.getAttribute('y'), block.getAttribute('width'), block.getAttribute('height'),
+      ]),
+    }));
+    const edits = [
+      ['arterialSpacingM', '500'],
+      ['arterialWidthM', '40'],
+      ['streetWidthM', '18'],
+      ['targetBlockM', '90'],
+    ] as const;
+    for (const [name, value] of edits) {
+      const input = dialog.locator(`.ground-fallback-param input[data-param="${name}"]`);
+      const before = await previewShape();
+      await input.fill(value);
+      await input.press('Tab');
+      await expect(input).toHaveValue(value);
+      await expect.poll(previewShape).not.toBe(before);
+      await expect(dialog.getByRole('button', { name: 'Draw this plan here' })).toBeEnabled();
+    }
+    await expect(dialog.getByRole('button', { name: 'Draw this plan here' })).toBeEnabled();
+  });
+
+  test('mint parcel selection checkboxes determine which parcels are submitted', async ({ mockApi: page }) => {
+    await page.route('**/metadata', route => route.fulfill({ json: { metadataUrl: 'ipfs://e2e-selected-parcel.json' } }));
+    await openCity(page);
+    await page.evaluate(() => {
+      const w = window as any;
+      w.solanaWalletManager = { getState: () => ({ status: 'connected', accounts: ['e2e-owner'], cluster: 'devnet' }) };
+      w.resolveParcelNftAddressSolana = async () => '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1';
+      w.__mintedParcelIds = [];
+      w.mintParcelSolana = async (parcelId: string) => {
+        w.__mintedParcelIds.push(parcelId);
+        return { txHash: 'e2e-parcel-mint' };
+      };
+      const feature = (parcelId: string) => ({ type: 'Feature', properties: { parcelId }, geometry: null });
+      void w.ParcelsUIClaim.openParcelMintModal({ parcels: [
+        { parcelId: 'TEST-PARCEL-1', parcelName: 'Test Parcel One', feature: feature('TEST-PARCEL-1') },
+        { parcelId: 'TEST-PARCEL-2', parcelName: 'Test Parcel Two', feature: feature('TEST-PARCEL-2') },
+      ] });
+    });
+    const dialog = page.locator('.parcel-mint-modal');
+    await expect(dialog).toBeVisible();
+    const first = dialog.locator('#parcel-mint-checkbox-0');
+    const second = dialog.locator('#parcel-mint-checkbox-1');
+    await expect(first).toBeChecked();
+    await expect(second).toBeChecked();
+    await first.uncheck();
+    await expect(first).not.toBeChecked();
+    await dialog.getByRole('button', { name: 'Mint', exact: true }).click();
+    await expect(dialog.getByRole('status')).toContainText('Mint successful');
+    await expect.poll(() => page.evaluate(() => (window as any).__mintedParcelIds)).toEqual(['TEST-PARCEL-2']);
+  });
+
+  test('suggested-layout checkbox draws and clears the generated 2D floor plan', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.evaluate(async ({ parcelId, geometry }) => {
+      const w = window as any;
+      await w.CadastralParcelRepository.ensureIds([parcelId]);
+      w.proposedBuildings = [{
+        type: 'Feature', id: 'suggested-layout-control-fixture', geometry,
+        properties: { parcelId, height: 10, levels: 3, name: 'Suggested layout fixture' },
+      }];
+      w.dispatchEvent(new Event('proposedBuildingsUpdated'));
+    }, { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
+    await page.locator('#layers-button').click();
+    const checkbox = page.locator('#showSuggestedLayouts');
+    await expect(checkbox).toBeVisible();
+    await expect(checkbox).not.toBeChecked();
+    expect(await page.evaluate(() => (window as any).__suggestedLayouts2D.isEnabled())).toBe(false);
+    await checkbox.check();
+    await expect.poll(() => page.evaluate(() => (window as any).__suggestedLayouts2D.isEnabled())).toBe(true);
+    await expect.poll(() => page.evaluate(() => (window as any).__suggestedLayouts2D.snapshot().drawn)).toBeGreaterThan(0);
+    await checkbox.uncheck();
+    await expect.poll(() => page.evaluate(() => (window as any).__suggestedLayouts2D.isEnabled())).toBe(false);
+    await expect.poll(() => page.evaluate(() => (window as any).__suggestedLayouts2D.snapshot().drawn)).toBe(0);
+  });
+
+  test('station height and bearing controls synchronize and save their new values', async ({ mockApi: page }) => {
+    await openCity(page);
+    const stationId = await page.evaluate(async ({ parcelId, geometry }) => {
+      const w = window as any;
+      await w.CadastralParcelRepository.ensureIds([parcelId]);
+      const center = [15.9822, 45.80025];
+      return w.proposalStorage.addProposal({
+        proposalId: 'remaining-controls-station', title: 'Editable elevated station', description: 'Station input test.',
+        offer: 100, offerCurrency: 'EUR', city: 'zg', goal: 'station', lifecycleStatus: 'Active', applied: false,
+        cadastreParcelIds: [parcelId], structureProposal: {
+          kind: 'station', stationType: 'elevated', center, bearing: 37, platformHeightM: 12,
+          geometry, modelVersion: w.TransitStationModels?.MODEL_VERSION || 1,
+        },
+      });
+    }, { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
+    await showProposal(page, stationId);
+    await page.locator('#proposal-details-footer .btn-edit-geometry').click();
+    const editor = page.locator('#station-geometry-editor');
+    await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
+    const bearingRange = editor.locator('[data-station-editor-bearing-range]');
+    const bearing = editor.locator('[data-station-editor-bearing]');
+    const height = editor.locator('[data-station-editor-height]');
+    await bearing.fill('52');
+    await bearing.press('Tab');
+    await expect(bearingRange).toHaveValue('52');
+    await bearingRange.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(bearingRange).toHaveValue('53');
+    await expect(bearing).toHaveValue('53');
+    await height.fill('14.5');
+    await height.press('Tab');
+    await expect(height).toHaveValue('14.5');
+    await editor.locator('[data-station-editor-action="save"]').click();
+    const saved = await page.evaluate(id => {
+      const proposal = (window as any).proposalStorage.getAllProposals().find((item: any) => item.sourceProposalId === id);
+      return {
+        id: proposal?.proposalId,
+        bearing: proposal?.structureProposal?.bearing,
+        height: proposal?.structureProposal?.platformHeightM,
+        geometry: proposal?.structureProposal?.geometry,
+      };
+    }, stationId);
+    expect(saved.bearing).toBe(53);
+    expect(saved.height).toBe(14.5);
+    expect(saved.geometry).toBeTruthy();
+    await page.reload();
+    await openCity(page);
+    const reloaded = await page.evaluate(id => {
+      const proposal = (window as any).proposalStorage.getAllProposals().find((item: any) => item.proposalId === id);
+      return {
+        bearing: proposal?.structureProposal?.bearing,
+        height: proposal?.structureProposal?.platformHeightM,
+        geometry: proposal?.structureProposal?.geometry,
+      };
+    }, saved.id);
+    expect(reloaded).toEqual({ bearing: 53, height: 14.5, geometry: saved.geometry });
+  });
+
+  test('proposal epoch card validates and saves a custom year through its real selector', async ({ mockApi: page }) => {
+    await openCity(page);
+    const proposalId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
+      title: 'Custom epoch park fixture', goal: 'park', city: 'zagreb', applied: false,
+      lifecycleStatus: 'Active', cadastreParcelIds: [parcelId], epochYear: 2035,
+      geometry, structureProposal: { kind: 'park', applied: false, geometry },
+    }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
+    await showProposal(page, proposalId);
+    await page.locator('#proposals-button').click();
+    const select = page.locator(`.proposal-epoch-card-select[data-proposal-id="${proposalId}"]`);
+    await expect(select).toBeVisible();
+    await selectNativeOption(select, 'custom');
+    const input = page.locator('.cb-dialog__prompt');
+    await expect(input).toHaveValue('2077');
+    await input.fill('2000');
+    await page.getByRole('button', { name: 'OK', exact: true }).click();
+    await expect(input).toHaveAttribute('aria-invalid', 'true');
+    await expect(page.locator('.cb-dialog--prompt')).toBeVisible();
+    await input.fill('2077');
+    await page.getByRole('button', { name: 'OK', exact: true }).click();
+    await expect.poll(() => page.evaluate(id => {
+      const storage = (window as any).proposalStorage;
+      const proposal = storage.getAllProposals().find((item: any) => item.proposalId === id || item.id === id);
+      return proposal?.epochYear ?? proposal?.epoch?.year ?? null;
+    }, proposalId)).toBe(2077);
+    await expect(page.locator('.cb-dialog--prompt')).toHaveCount(0);
   });
 });

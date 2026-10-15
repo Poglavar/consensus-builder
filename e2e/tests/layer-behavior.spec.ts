@@ -1,6 +1,7 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, PARCEL_ID } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
+import { openAndClosePopup } from '../helpers/controls';
 
 const PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238'];
 
@@ -42,6 +43,8 @@ async function openLayers(page: any) {
 
 test.describe('Layers sheet behavior @features', () => {
   test('parcel, ownership, label, ad, and minted controls produce visible map data', async ({ mockApi: page }) => {
+    // This complete sheet flow also opens and closes two real external browser tabs.
+    test.setTimeout(60_000);
     await openLayers(page);
     const mapHasParcels = () => page.evaluate(() => (window as any).map.hasLayer((window as any).parcelLayer));
     await page.locator('#parcelsCheckbox').uncheck();
@@ -95,14 +98,14 @@ test.describe('Layers sheet behavior @features', () => {
       // Returning from an external tab can refresh the parcel panel and close its popover.
       if (!(await adActions.isVisible())) await page.locator('.parcel-ad-link-btn').click();
       await page.context().route(`${url}**`, route => route.fulfill({ contentType: 'text/html', body: '<title>External destination fixture</title>' }));
-      const opened = page.context().waitForEvent('page');
-      await adActions.getByRole('button', { name, exact: true }).click();
-      const child = await opened;
-      // The popup destination is a tiny mocked page; commit is enough to verify the
-      // external URL and avoids waiting for the full load event from a cross-origin tab.
-      await child.waitForURL(actual => actual.href.startsWith(url), { waitUntil: 'commit' });
-      if (name === 'Parcel builder') expect(new URL(child.url()).searchParams.get('parcel_identifier')).toBe('1234-335754');
-      await child.close();
+      await openAndClosePopup(page, () => adActions.getByRole('button', { name, exact: true }).click(), async child => {
+        // Verify and close the external tab as soon as it opens. Headed Chrome may hold the
+        // parent click's input acknowledgement while this new native window remains open.
+        // Commit is enough to verify the mocked destination without its full load event.
+        await child.waitForURL(actual => actual.href.startsWith(url), { waitUntil: 'commit' });
+        expect(page.context().pages().filter(candidate => candidate !== page)).toEqual([child]);
+        if (name === 'Parcel builder') expect(new URL(child.url()).searchParams.get('parcel_identifier')).toBe('1234-335754');
+      });
     }
     if (!(await adActions.isVisible())) await page.locator('.parcel-ad-link-btn').click();
     await page.locator('.parcel-ad-link-btn').click();
@@ -165,7 +168,7 @@ test.describe('Layers sheet behavior @features', () => {
     if (await prompt.isVisible().catch(() => false)) {
       await prompt.getByRole('button', { name: 'No, just this parcel' }).click();
     }
-    await expect(page.locator('#single-building-editor')).toBeVisible();
+    await expect(page.locator('#single-building-editor').locator('.on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#single-building-confirm')).toBeEnabled();
     await page.locator('#single-building-confirm').click();
     await expect.poll(() => page.evaluate(() => (window as any).proposedBuildings.length)).toBeGreaterThan(0);

@@ -9,7 +9,9 @@ export async function buildBrowserParcels({ outdir = resolve(root, 'frontend/ass
     const outputDir = resolve(root, outdir);
     const result = await build({ absWorkingDir: root, entryPoints: [resolve(root, 'backend/parcels/browser-worker.js')],
         outdir: outputDir, entryNames: 'worker', chunkNames: 'chunks/[name]-[hash]', bundle: true, platform: 'browser',
-        format: 'esm', splitting: true, minify: true, target: ['es2022'], legalComments: 'external',
+        // Keep dependency identities relative to this checkout when node_modules is shared by
+        // symlink between worktrees; otherwise identical chunks acquire different file names.
+        format: 'esm', splitting: true, minify: true, target: ['es2022'], legalComments: 'external', preserveSymlinks: true,
         define: { 'process.env.NODE_ENV': '"production"' },
         banner: { js: '// Generated shared parcel worker asset; rebuild with npm run build:parcels:browser.' },
         metafile: true, plugins: [{ name: 'browser-snapshot-storage', setup(builder) {

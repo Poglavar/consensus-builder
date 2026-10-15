@@ -73,7 +73,7 @@ test.describe('Proposal creation and map lifecycle @features', () => {
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--reparcellization').click();
     const modal = page.locator('.on-map-reparcellization');
-    await expect(modal).toBeVisible();
+    await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     await expect(modal.locator('[data-reparcel-newplots-table]')).not.toBeEmpty();
     await modal.locator('[data-reparcel-plots-tab="old"]').click();
     await expect(modal.locator('[data-reparcel-oldplots-table]')).toContainText('1234');
@@ -82,7 +82,7 @@ test.describe('Proposal creation and map lifecycle @features', () => {
     await expect(modal.locator('[data-reparcel-owners-table]')).not.toContainText('Privatni vlasnik');
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled();
     await modal.locator('[data-reparcel-commit]').click();
-    await expect(modal).toBeHidden();
+    await expect(modal).toHaveCount(0);
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.applied && p.reparcellization?.polygons?.length))).toBe(true);
   });
 });

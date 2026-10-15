@@ -13,6 +13,7 @@ const {
     normalizeCorridorGraph,
     normalizeCorridorNetwork,
     normalizeCorridorDefinitionTopology,
+    moveCorridorNodes,
     insertCorridorNode,
     splitCorridorStretchAtNode,
     removeCorridorEdge,
@@ -267,6 +268,26 @@ describe('normalizeCorridorNetwork junction identity', () => {
 });
 
 describe('authored corridor edits', () => {
+    it('moves stored junctions and arm references with selected vertices without mutating the inputs', () => {
+        const segments = [[{ lat: 0, lng: 0 }, { lat: 0, lng: 5, level: 1 }], [{ lat: 0, lng: 5 }, { lat: 3, lng: 5 }]];
+        const junctions = [
+            { lat: 0.00000001, lng: 5, arms: [{ toward: { lat: 0, lng: 10 }, width: 8 }] },
+            { lat: 3, lng: 5, arms: [{ toward: { lat: 0, lng: 5 }, profile: { strips: [{ width: 4 }] } }] }
+        ];
+        const before = structuredClone({ segments, junctions });
+        const result = moveCorridorNodes(segments, junctions, [
+            { segIndex: 0, pointIndex: 1 }, { segIndex: 1, pointIndex: 0 }
+        ], { lat: 1, lng: 6 });
+        expect(result.changed).toBe(true);
+        expect(result.segments).toEqual([[{ lat: 0, lng: 0 }, { lat: 1, lng: 6, level: 1 }], [{ lat: 1, lng: 6 }, { lat: 3, lng: 5 }]]);
+        expect(result.junctions).toEqual([
+            { ...junctions[0], lat: 1, lng: 6 },
+            { ...junctions[1], arms: [{ ...junctions[1].arms[0], toward: { lat: 1, lng: 6 } }] }
+        ]);
+        expect({ segments, junctions }).toEqual(before);
+        expect(moveCorridorNodes(segments, junctions, [{ segIndex: 8, pointIndex: 0 }], { lat: 1, lng: 6 }).changed).toBe(false);
+    });
+
     it('inserts a projected node without changing segment identity, profile, or source inputs', () => {
         const segments = [[
             { lat: 0, lng: 0, level: -1, elevationM: 100 },

@@ -44,7 +44,7 @@ async function addEditableStructure(page: Page, kind: 'park' | 'square' | 'lake'
   }, { id, kind, geometry: SITE });
   await showProposal(page, id);
   await page.locator('#proposal-details-footer .btn-edit-geometry').click();
-  await expect(page.locator('#structure-geometry-editor')).toBeVisible();
+  await expect(page.locator('#structure-geometry-editor').locator('.on-map-editor__panel')).toBeVisible();
   const draftId = await page.evaluate(() => (window as any).getActiveProposalDesignDraft?.()?.id || null);
   if (!draftId) throw new Error('Geometry editor did not create an active proposal draft');
   return { proposalId: id, draftId };
@@ -206,7 +206,7 @@ test.describe('Whole-site placement editing @features', () => {
       await editor.locator('[data-tool="move"]').click();
       await dragMapPoint(page, from, to);
       await editor.locator('[data-action="save"]').click();
-      await expect(editor).toBeHidden();
+      await expect(editor).toHaveCount(0);
       await expect.poll(() => page.evaluate(id => {
         const kind = id.includes('-park-') ? 'park' : 'square';
         return (window as any).proposalStorage.getAllProposals().some((proposal: any) => proposal.proposalId !== id && proposal.structureProposal?.kind === kind);
@@ -250,7 +250,7 @@ test.describe('Whole-site placement editing @features', () => {
     await page.mouse.up();
     await expect(editor.locator('[data-action="save"]')).toBeEnabled();
     await editor.locator('[data-action="save"]').click();
-    await expect(editor).toBeHidden();
+    await expect(editor).toHaveCount(0);
     const savedLake = (id: string) => page.evaluate(id => {
       const proposal = [...(window as any).proposalStorage.getAllProposals()].reverse().find((item: any) => item.proposalId !== id && item.structureProposal?.kind === 'lake');
       return proposal?.structureProposal?.geometry || null;
@@ -304,7 +304,7 @@ test.describe('Whole-site placement editing @features', () => {
     await showProposal(page, id);
     await page.locator('#proposal-details-footer .btn-edit-geometry').click();
     const editor = page.locator('#station-geometry-editor');
-    await expect(editor).toBeVisible();
+    await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
     const draftId = await page.evaluate(() => (window as any).getActiveProposalDesignDraft?.()?.id || null);
     if (!draftId) throw new Error('Station editor did not create an active proposal draft');
     const bearing = editor.locator('[data-station-editor-bearing]');
@@ -362,7 +362,7 @@ test.describe('Whole-site placement editing @features', () => {
     await expect(bearing).toHaveValue('37');
     await expect(height).toHaveValue('12');
     await editor.locator('[data-station-editor-action="save"]').click();
-    await expect(editor).toBeHidden();
+    await expect(editor).toHaveCount(0);
     const savedStation = () => page.evaluate(id => {
       const proposal = (window as any).proposalStorage.getAllProposals().find((proposal: any) => proposal.sourceProposalId === id);
       return proposal?.structureProposal || null;
@@ -401,6 +401,6 @@ test.describe('Whole-site placement editing @features', () => {
     await settings.locator('[data-sheet-close]').click();
     await expect(settings).toBeHidden();
     await done.click();
-    await expect(editor).toBeHidden();
+    await expect(editor).toHaveCount(0);
   });
 });

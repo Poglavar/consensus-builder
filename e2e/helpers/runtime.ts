@@ -1,6 +1,7 @@
 import { Page, expect } from '@playwright/test';
 import { sampleParcels } from './mocks/parcel-data';
 import { waitForMapReady } from './app';
+import { selectNativeOption } from './controls';
 
 export const PARCEL_ID = sampleParcels.features[0].properties.parcelId;
 export const PARCEL_GEOMETRY = sampleParcels.features[0].geometry;
@@ -87,7 +88,7 @@ export async function drawCorridor(page: Page, kind: 'road'|'track'): Promise<st
 export async function createBuilding(page: Page, rule: 'exact' | 'max' | 'range' = 'exact'): Promise<string> {
   await openParcel(page, 'proposals');
   await page.locator('.parcel-build-btn--buildings').click();
-  await page.locator('#blockify-ruletype-select').selectOption(rule);
+  await selectNativeOption(page.locator('#blockify-ruletype-select'), rule);
   if (rule !== 'exact') {
     await page.locator('#height-slider').focus();
     await page.keyboard.press('End');

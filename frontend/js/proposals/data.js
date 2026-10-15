@@ -1262,8 +1262,15 @@ const proposalStorage = {
 
         normalized.proposalId = this._coerceProposalId(normalized.proposalId);
         if (this.proposals && this.proposals.has(normalized.proposalId)) {
+            const baseId = normalized.proposalId;
             const suffix = Date.now().toString(36);
-            normalized.proposalId = `${normalized.proposalId}-${suffix}`;
+            let collisionIndex = 0;
+            do {
+                normalized.proposalId = collisionIndex === 0
+                    ? `${baseId}-${suffix}`
+                    : `${baseId}-${suffix}-${collisionIndex.toString(36)}`;
+                collisionIndex += 1;
+            } while (this.proposals.has(normalized.proposalId));
         }
         if (normalized.roadProposal) {
             normalized.roadProposal.id = normalized.proposalId;

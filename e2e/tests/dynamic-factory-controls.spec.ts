@@ -2,6 +2,8 @@
 import { test, expect } from '../helpers/fixtures';
 import { clickMapPoint, createBuilding, createSpace, drawCorridor, openCity, openParcel } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
+import { selectNativeOption } from '../helpers/controls';
+import { surveyResponse } from '../helpers/mocks/survey-data';
 
 const BET_ACCOUNT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
 const BET_WALLET = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
@@ -115,9 +117,7 @@ async function startRoadFromAdjacentParcel(page: import('@playwright/test').Page
 async function draftRoadAcrossStructure(page: import('@playwright/test').Page): Promise<void> {
   await clickMapPoint(page, 15.9817, 45.80025);
   await clickMapPoint(page, 15.9827, 45.80025);
-  const choice = page.locator('.cb-dialog-overlay--confirm .cb-dialog');
-  await expect(choice).toBeVisible();
-  await expect(choice).toContainText(/park/i);
+  await expect(page.locator('#road-length')).not.toHaveText('0 m');
 }
 
 test.describe('shared dynamic button factories @features', () => {
@@ -301,16 +301,25 @@ test.describe('shared dynamic button factories @features', () => {
       await createSpace(page, 'park');
       await startRoadFromAdjacentParcel(page);
       await draftRoadAcrossStructure(page);
+      const controls = page.locator('#road-drawing-controls');
       const choice = page.locator('.cb-dialog-overlay--confirm .cb-dialog');
       const routeLengthBeforeChoice = await page.locator('#road-length').innerText();
+      await page.locator('#finishRoadButton').click();
+      await expect(choice).toBeVisible();
+      await expect(choice).toContainText(/park/i);
       await choice.getByRole('button', { name: decision.choice, exact: true }).click();
       await expect(choice).toBeHidden();
       if (decision.accepted) {
-        await expect.poll(() => page.locator('#road-length').innerText()).not.toBe('0 m');
+        await expect(controls).toBeHidden();
+        await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+          .filter((proposal: any) => proposal.applied && proposal.roadProposal).length)).toBe(1);
       } else {
-        // Rejecting the crossing keeps the valid route prefix drawn before the obstacle.
+        // Finish-time refusal leaves this route unchanged and ready to reroute.
         await expect(page.locator('#road-length')).toHaveText(routeLengthBeforeChoice);
         await expect.poll(() => page.evaluate(() => (window as any).roadDrawingMode)).toBe(true);
+        await expect(controls).toBeVisible();
+        await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+          .filter((proposal: any) => proposal.applied && proposal.roadProposal).length)).toBe(0);
       }
     });
   }
@@ -327,33 +336,39 @@ test.describe('shared dynamic button factories @features', () => {
       await startRoadFromAdjacentParcel(page);
       await page.locator('#editRoadCrossSectionButton').click();
       const editor = page.locator('#corridor-editor-overlay');
-      await expect(editor).toBeVisible();
+      await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
       const laneTypes = editor.locator('.corridor-lane-type');
       for (let index = 0; index < await laneTypes.count(); index += 1) {
-        if (await laneTypes.nth(index).inputValue() !== 'sidewalk') await laneTypes.nth(index).selectOption('sidewalk');
+        if (await laneTypes.nth(index).inputValue() !== 'sidewalk') await selectNativeOption(laneTypes.nth(index), 'sidewalk');
       }
       await editor.locator('.corridor-editor-save').click();
-      await expect(editor).toBeHidden();
+      await expect(editor).toHaveCount(0);
       await expect.poll(() => page.evaluate(() => (window as any).getRoadDrawingProfile().strips.every((strip: any) => strip.type === 'sidewalk'))).toBe(true);
 
       await clickMapPoint(page, 15.9822, 45.7998);
       await clickMapPoint(page, 15.9822, 45.8007);
       const choice = page.locator('.cb-dialog-overlay--confirm .cb-dialog');
+      const controls = page.locator('#road-drawing-controls');
+      await expect(controls).toBeVisible();
+      await expect(choice).toBeHidden();
+      const routeLengthBeforeChoice = await page.locator('#road-length').innerText();
+      await page.locator('#finishRoadButton').click();
       await expect(choice).toBeVisible();
       await expect(choice).toContainText('pedestrian route crosses');
-      const routeLengthBeforeChoice = await page.locator('#road-length').innerText();
       await choice.getByRole('button', { name: decision.choice, exact: true }).click();
       await expect(choice).toBeHidden();
 
       if (decision.mode === 'cancel') {
-        // Cancel rejects this segment while preserving the route already drawn up to the obstacle.
+        // Finish-time refusal preserves the full route and leaves it open for rerouting.
         await expect(page.locator('#road-length')).toHaveText(routeLengthBeforeChoice);
         await expect.poll(() => page.evaluate(() => (window as any).roadDrawingMode)).toBe(true);
+        await expect(controls).toBeVisible();
+        await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+          .filter((proposal: any) => proposal.applied && proposal.roadProposal).length)).toBe(1);
         return;
       }
 
       await expect.poll(() => page.locator('#road-length').innerText()).not.toBe('0 m');
-      await page.locator('#finishRoadButton').click();
       await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
         .filter((proposal: any) => proposal.applied && proposal.roadProposal).length)).toBe(2);
       const gradeSeparations = await page.evaluate(() => {
@@ -377,29 +392,36 @@ test.describe('shared dynamic button factories @features', () => {
       await page.route('**/buildings?*', route => route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ type: 'FeatureCollection', features: [{
+        body: JSON.stringify(surveyResponse([{
           type: 'Feature',
-          properties: { id: 'e2e-existing-obstacle', height_m: 12, floors: 4 },
+          properties: { id: 'e2e-existing-obstacle', object_id: 'e2e-existing-obstacle', height_m: 12, floors: 4 },
           geometry: { type: 'Polygon', coordinates: [[[15.98205, 45.8002], [15.98235, 45.8002], [15.98235, 45.8003], [15.98205, 45.8003], [15.98205, 45.8002]]] },
-        }] }),
+        }])),
       }));
       await startRoadFromAdjacentParcel(page);
       await clickMapPoint(page, 15.9819, 45.80025);
       await clickMapPoint(page, 15.9825, 45.80025);
       const choice = page.locator('.cb-dialog-overlay--confirm .cb-dialog');
+      const controls = page.locator('#road-drawing-controls');
+      await expect(controls).toBeVisible();
+      await expect(choice).toBeHidden();
+      const routeLengthBeforeChoice = await page.locator('#road-length').innerText();
+      await page.locator('#finishRoadButton').click();
       await expect(choice).toBeVisible();
       await expect(choice).toContainText(/building/i);
-      const routeLengthBeforeChoice = await page.locator('#road-length').innerText();
       await choice.getByRole('button', { name: decision.choice, exact: true }).click();
       await expect(choice).toBeHidden();
       if (decision.action === 'cancel') {
-        // Reject only the segment through the building; retain the valid route prefix.
+        // Finish-time refusal keeps the full route available for rerouting.
         await expect(page.locator('#road-length')).toHaveText(routeLengthBeforeChoice);
         await expect.poll(() => page.evaluate(() => (window as any).roadDrawingMode)).toBe(true);
+        await expect(controls).toBeVisible();
+        await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+          .filter((proposal: any) => proposal.applied && proposal.roadProposal).length)).toBe(0);
         return;
       }
+      await expect(controls).toBeHidden();
       await expect.poll(() => page.locator('#road-length').innerText()).not.toBe('0 m');
-      await page.locator('#finishRoadButton').click();
       await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
         .filter((proposal: any) => proposal.applied && proposal.roadProposal).length)).toBe(1);
       const road = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()

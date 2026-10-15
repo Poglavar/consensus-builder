@@ -2,6 +2,7 @@
 import { test, expect } from '../helpers/fixtures';
 import { clickMapPoint, openCity, openParcel, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 import { readFile } from 'node:fs/promises';
+import { fillNativeDateTime, selectNativeOption } from '../helpers/controls';
 
 async function addParkSource(
   page: import('@playwright/test').Page,
@@ -47,6 +48,50 @@ async function editSource(
 }
 
 test.describe('Shared proposal editor shell controls @core', () => {
+  test('parcel, ownership and financing fields autosave and survive a reload without changing the source', async ({ mockApi: page }) => {
+    test.setTimeout(60_000);
+    await openCity(page);
+    const sourceId = await addParkSource(page, 'complete-fields');
+    const draftId = await editSource(page, sourceId, 'parcels');
+    await page.locator('[data-draft-path="fields.selectedParcelIds"]').fill(`${PARCEL_ID}\nHR-335754-1235`);
+    await page.locator('[data-editor-action="tab"][data-editor-tab="ownership"]').click();
+    await selectNativeOption(page.locator('[data-draft-path="fields.ownership"]'), 'third-party');
+    await selectNativeOption(page.locator('[data-draft-path="fields.recipientScope"]'), 'specific');
+    await page.locator('[data-draft-path="fields.recipientAddress"]').fill('0x1234567890abcdef1234567890abcdef12345678');
+    await page.locator('[data-editor-action="tab"][data-editor-tab="terms"]').click();
+    await page.locator('[data-draft-path="fields.offer"]').fill('1250');
+    await selectNativeOption(page.locator('[data-draft-path="fields.offerCurrency"]'), 'USD');
+    // Change the conditional choice in both directions, irrespective of the source default.
+    const conditional = page.locator('[data-draft-path="fields.isConditional"]');
+    await conditional.setChecked(!await conditional.isChecked());
+    await conditional.check();
+    await fillNativeDateTime(page.locator('[data-draft-path="fields.expiresAt"]'), '2035-06-15T14:30');
+    await page.locator('[data-draft-path="fields.decayEnabled"]').check();
+    await page.locator('[data-draft-path="fields.decayPercent"]').fill('35');
+    await page.locator('[data-draft-path="fields.decayDurationMs"]').fill('7200000');
+    await page.locator('[data-draft-path="fields.depositEnabled"]').check();
+    await page.locator('[data-draft-path="fields.depositPercent"]').fill('45');
+    await page.locator('[data-draft-path="fields.depositPercent"]').press('Tab');
+    const expected = {
+      selectedParcelIds: [PARCEL_ID, 'HR-335754-1235'], ownership: 'third-party',
+      recipientScope: 'specific', recipientAddress: '0x1234567890abcdef1234567890abcdef12345678',
+      offer: 1250, offerCurrency: 'USD', isConditional: true,
+      decayEnabled: true, decayPercent: 35, decayDurationMs: 7200000,
+      depositEnabled: true, depositPercent: 45,
+    };
+    const fields = () => page.evaluate(id => (window as any).proposalDraftStore.getDraft(id)?.fields, draftId);
+    await expect.poll(fields).toMatchObject(expected);
+    const expiry = await page.locator('[data-draft-path="fields.expiresAt"]').evaluate((input: HTMLInputElement) => new Date(input.value).toISOString());
+    expect((await fields()).expiresAt).toBe(expiry);
+    await page.locator('[data-editor-action="close"]').click();
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect.poll(() => page.evaluate(id => (window as any).proposalDraftStore?.getDraft(id)?.fields, draftId)).toMatchObject({ ...expected, expiresAt: expiry });
+    expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id), sourceId)).toMatchObject({ offer: 100, offerCurrency: 'EUR', cadastreParcelIds: [PARCEL_ID] });
+    await editSource(page, sourceId, 'terms');
+    await expect(page.locator('[data-draft-path="fields.offer"]')).toHaveValue('1250');
+    await expect(page.locator('[data-draft-path="fields.depositEnabled"]')).toBeChecked();
+  });
+
   test('map selection, comparison modes, and draft undo/redo update the active draft', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'info');
@@ -120,11 +165,11 @@ test.describe('Shared proposal editor shell controls @core', () => {
 
     await page.locator('[data-editor-action="open-design"]').click();
     const geometryEditor = page.locator('#structure-geometry-editor');
-    await expect(geometryEditor).toBeVisible();
+    await expect(geometryEditor.locator('.on-map-editor__panel')).toBeVisible();
     await geometryEditor.locator('[data-tool="tree"]').click();
     await clickMapPoint(page, 15.98210, 45.80020);
     await geometryEditor.locator('[data-action="save"]').click();
-    await expect(geometryEditor).toBeHidden();
+    await expect(geometryEditor).toHaveCount(0);
     await expect(page.locator('.proposal-editor-shell.is-open')).toBeVisible();
     await expect.poll(() => page.evaluate(id => (window as any).proposalDraftStore.getDraft(id).editorPayload.structureProposal.decorations.trees.length, draftId))
       .toBeGreaterThan(0);

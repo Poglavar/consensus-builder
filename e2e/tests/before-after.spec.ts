@@ -154,7 +154,7 @@ test.describe('Before / after on the main map @features', () => {
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--reparcellization').click();
     const modal = page.locator('.on-map-reparcellization');
-    await expect(modal).toBeVisible();
+    await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
     await modal.locator('[data-reparcel-commit]').click();
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.applied && p.reparcellization))).toBe(true);
@@ -192,7 +192,7 @@ test.describe('Before / after on the main map @features', () => {
     await crossSection.click();
 
     const editor = page.locator('#corridor-editor-overlay');
-    await expect(editor).toBeVisible();
+    await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
     const chip = editor.locator('.corridor-editor-compare');
     await expect(chip).toBeVisible();
     await expect(chip).toContainText('Before / after');

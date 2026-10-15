@@ -24,7 +24,7 @@ async function openReadjustment(page: Page) {
   await openParcel(page, 'proposals', PARCEL_ID);
   await page.locator('.parcel-build-btn--reparcellization').click();
   const modal = page.locator('.on-map-reparcellization');
-  await expect(modal).toBeVisible();
+  await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
   await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
   return modal;
 }

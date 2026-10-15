@@ -1,3 +1,4 @@
+import { selectNativeOption } from '../helpers/controls';
 // Settings → Data sources: a person's own parcel and building sources, kept in this browser per city
 // (frontend/js/parcel-source-settings.js). The building flow is driven end to end against a mocked
 // discover endpoint: check, pick the height unit, use it (saved + reload), see it ride every
@@ -51,7 +52,7 @@ test.describe('Data sources @features', () => {
     const result = dialog.locator('.parcel-source-settings__result');
     await expect(result).toContainText('4 buildings in the test area');
     await expect(result).toContainText('Heights from the field HEIGHT');
-    await result.getByLabel('Height unit').selectOption('ft');
+    await selectNativeOption(result.getByLabel('Height unit'), 'ft');
     await expect.poll(() => discoverBodies.length).toBe(2);
     expect(discoverBodies[1]).toMatchObject({ url: URL_IN, city: 'zagreb', heightUnit: 'ft' });
     await expect(result.getByLabel('Height unit')).toHaveValue('ft');

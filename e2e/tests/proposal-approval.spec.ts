@@ -1,3 +1,4 @@
+import { selectNativeOption } from '../helpers/controls';
 // Purpose: exercise the shared rights-import, approval-policy and proposal-fork workflow.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, PARCEL_ID } from '../helpers/runtime';
@@ -136,12 +137,14 @@ test('shared proposal editor imports rights, saves approval policy and forks wit
   await expect(page.locator("[data-editor-section='approval']")).toBeVisible();
   await uploadRights(page, 'updated-rights', 125);
 
-  await page.locator('[data-approval-policy-type]').selectOption('threshold');
+  await selectNativeOption(page.locator('[data-approval-policy-type]'), 'threshold');
   await expect(page.locator('[data-approval-fraction="owners"]')).toBeVisible();
   await page.locator('[data-approval-fraction="owners"]').fill('1/2');
   await page.locator('[data-approval-fraction="area"]').fill('3/4');
-  await page.locator('[data-approval-strict="owners"]').selectOption('true');
-  await page.locator('[data-approval-strict="area"]').selectOption('false');
+  await selectNativeOption(page.locator('[data-approval-strict="owners"]'), 'true');
+  await selectNativeOption(page.locator('[data-approval-strict="area"]'), 'true');
+  await expect.poll(() => page.evaluate(() => (window as any).proposalDraftStore.getActiveDraft().fields.approvalConfig.policy.area.strict)).toBe(true);
+  await selectNativeOption(page.locator('[data-approval-strict="area"]'), 'false');
   await page.locator('[data-approval-lens]').fill('e2e-lens\nreviewer-lens');
   await page.locator('[data-approval-lens]').dispatchEvent('change');
   await expect(page.locator('.proposal-editor-autosave')).toContainText('Autosaved locally');

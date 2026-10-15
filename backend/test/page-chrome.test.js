@@ -6,6 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
+import { load } from 'cheerio';
 import { FRONTEND } from './helpers/design-audit.mjs';
 
 const pages = readdirSync(FRONTEND).filter(f => f.endsWith('.html')).sort();
@@ -24,8 +25,12 @@ describe('page chrome', () => {
     });
 
     it.each(pages)('%s has a viewport meta and a lang attribute', (page) => {
-        expect(html[page]).toMatch(/<meta name="viewport"/);
-        expect(html[page]).toMatch(/<html[^>]*\slang="/);
+        const $ = load(html[page]);
+        const viewport = $('meta').filter((_, element) => $(element).attr('name')?.toLowerCase() === 'viewport');
+        expect(viewport).toHaveLength(1);
+        expect(viewport.attr('content')).toMatch(/(?:^|,)\s*width\s*=\s*device-width(?:\s*,|$)/i);
+        expect(viewport.attr('content')).toMatch(/(?:^|,)\s*initial-scale\s*=\s*1(?:\.0+)?(?:\s*,|$)/i);
+        expect($('html').attr('lang')).toMatch(/^[a-z]{2,3}(?:-[A-Z]{2})?$/);
     });
 
     it.each(pages.filter(p => p !== 'index.html'))('%s links back to the map', (page) => {

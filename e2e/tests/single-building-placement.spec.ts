@@ -1,3 +1,4 @@
+import { selectNativeOption } from '../helpers/controls';
 // Real-pointer coverage for whole-building free placement, its starting-parcel guide, snapping,
 // persistence, and the published-source replacement boundary. Geometry reads are observational.
 import { test, expect } from '../helpers/fixtures';
@@ -18,7 +19,7 @@ async function openSingleEditor(page: Page, cityReady = false, parcelId = PARCEL
   await expect.poll(() => page.evaluate(id => !!(window as any).LiveParcelFabric.get(id), parcelId)).toBe(true);
   await openParcel(page, 'proposals', parcelId);
   await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
-  await expect(page.locator(EDITOR)).toBeVisible();
+  await expect(page.locator(`${EDITOR} .on-map-editor__panel`)).toBeVisible();
   await expect(page.locator('#single-building-confirm')).toBeEnabled();
   const details = page.locator(`${EDITOR} details`);
   if (!(await details.evaluate(node => (node as HTMLDetailsElement).open))) {
@@ -27,7 +28,7 @@ async function openSingleEditor(page: Page, cityReady = false, parcelId = PARCEL
   if (multiBuildingDesign) {
     // Use the editor's duplicate and surroundings controls to make a real two-building design.
     await page.locator('#single-building-add').click();
-    await page.locator('#single-ground-treatment').selectOption('green');
+    await selectNativeOption(page.locator('#single-ground-treatment'), 'green');
   }
 }
 
@@ -94,7 +95,7 @@ async function pointerDeltaToEastEdge(page: Page): Promise<number> {
 
 async function finishSingle(page: Page): Promise<void> {
   await page.locator('#single-building-confirm').click();
-  await expect(page.locator(EDITOR)).toBeHidden({ timeout: 20000 });
+  await expect(page.locator(EDITOR)).toHaveCount(0, { timeout: 20000 });
 }
 
 async function createAppliedSingle(page: Page, parcelId = PARCEL_ID): Promise<string> {
@@ -114,7 +115,7 @@ async function createAppliedSingle(page: Page, parcelId = PARCEL_ID): Promise<st
 async function beginGeometryEdit(page: Page, proposalId: string): Promise<void> {
   await showProposal(page, proposalId);
   await page.locator('#proposal-details-panel .btn-edit-geometry').click();
-  await expect(page.locator(EDITOR)).toBeVisible();
+  await expect(page.locator(`${EDITOR} .on-map-editor__panel`)).toBeVisible();
 }
 
 test.describe('Single-building placement and immutable replacement @features', () => {
@@ -286,7 +287,7 @@ test.describe('Single-building placement and immutable replacement @features', (
     const draftId = await page.evaluate(() => (window as any).getActiveProposalDesignDraft().id);
     await page.route('**/proposals/binding', route => route.fulfill({ status: 503, json: { error: 'binding temporarily unavailable' } }));
     await page.locator('#single-building-confirm').click();
-    await expect(page.locator(EDITOR)).toBeVisible({ timeout: 20000 });
+    await expect(page.locator(`${EDITOR} .on-map-editor__panel`)).toBeVisible({ timeout: 20000 });
     expect(await page.evaluate(id => !!(window as any).proposalDraftStore.getDraft(id), draftId)).toBe(true);
     const after = await editorDesign(page);
     expect(after.buildings.map(feature => feature.geometry)).toEqual(before.buildings.map(feature => feature.geometry));

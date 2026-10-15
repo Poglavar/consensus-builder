@@ -1,6 +1,7 @@
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, zoomToParcelLevel } from '../helpers/app';
 import { selectors } from '../helpers/selectors';
+import { selectNativeOption } from '../helpers/controls';
 
 // The fixture defaults to New York. Keep its normal cadastral startup deterministic without
 // depending on the developer's local parcel API; the polygon sits around the configured map center.
@@ -52,7 +53,7 @@ test.describe('Basemap and layer controls @features', () => {
     const beforeUrl = await tileUrl();
     const next = before === 'openstreetmap' ? 'maptiler' : 'openstreetmap';
 
-    await select.selectOption(next);
+    await selectNativeOption(select, next);
     // The change handler (basemap.js initBasemapSelector) must swap the live Leaflet base layer.
     await expect.poll(tileUrl).not.toBe(beforeUrl);
     await expect(select).toHaveValue(next);
@@ -192,12 +193,22 @@ test.describe('Basemap and layer controls @features', () => {
     const current = await page.evaluate(() => (window as any).getCurrentDataSource());
     await expect(select).toHaveValue(current);
 
-    const other = await select.evaluate((el, cur) => Array.from((el as HTMLSelectElement).options)
-      .map((opt) => opt.value)
-      .find((value) => value !== cur) ?? null, current);
+    const other = await select.evaluate((el, cur) => {
+      const options = Array.from((el as HTMLSelectElement).options)
+        .map((option, index) => ({ index, value: option.value, label: option.label, disabled: option.disabled }))
+        .filter(option => !option.disabled);
+      const selectedIndex = (el as HTMLSelectElement).selectedIndex;
+      return options.find(option => {
+        if (option.value === cur) return false;
+        const initial = option.label.trim().slice(0, 1).toLowerCase();
+        const matching = options.filter(candidate => candidate.label.trim().toLowerCase().startsWith(initial));
+        const nextMatch = matching.find(candidate => candidate.index > selectedIndex) ?? matching[0];
+        return nextMatch?.index === option.index;
+      })?.value ?? null;
+    }, current);
     expect(other).not.toBeNull();
 
-    await select.selectOption(other!);
+    await selectNativeOption(select, other!);
     await expect.poll(() => page.evaluate(() => (window as any).__dataSourceConfirms)).toBe(1);
     await expect(select).toHaveValue(current);
     expect(await page.evaluate(() => (window as any).getCurrentDataSource())).toBe(current);

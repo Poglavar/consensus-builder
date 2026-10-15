@@ -82,9 +82,9 @@ test.describe('compact proposal card actions @features', () => {
 
     await footer.locator('.btn-edit-geometry').click();
     const editor = page.locator('#structure-geometry-editor');
-    await expect(editor).toBeVisible();
+    await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
     await editor.locator('button[data-action="cancel"]').click();
-    await expect(editor).toBeHidden();
+    await expect(editor).toHaveCount(0);
     expect((await proposalState(page, proposalId)).title).toBe(sourceBefore.title);
 
     // The footer survives the editor transition; Map applies the same proposal on the real fabric.

@@ -4,6 +4,7 @@ import { Page, Route } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
+import { selectNativeOption } from '../helpers/controls';
 
 async function serveClosedBlocks(page: Page): Promise<string[]> {
   const requests: string[] = [];
@@ -44,6 +45,91 @@ async function openLayerUrbanBlocks(page: Page): Promise<void> {
   if (!(await sheet.isVisible())) await page.locator('#layers-button').click();
   await expect(sheet).toBeVisible();
 }
+
+test('walking-time color and threshold controls recolor the block map and its legend', async ({ mockApi: page }) => {
+  await openCity(page);
+  await serveClosedBlocks(page);
+  await openLayerUrbanBlocks(page);
+  await page.locator('#showUrbanBlocks').check();
+  await expect(page.locator('#urban-block-list button[data-block-id]')).toHaveCount(4);
+  const colors = () => page.evaluate(() => Array.from((window as any).map.getPane('urbanBlocksPane').querySelectorAll('path'))
+    .map((path: any) => path.getAttribute('fill')));
+  const distinct = await colors();
+  expect(new Set(distinct).size).toBeGreaterThan(1);
+  await selectNativeOption(page.locator('#urban-blocks-color-by'), 'walk');
+  await expect(page.locator('#urban-blocks-legend')).toContainText('10 min');
+  await expect.poll(colors).not.toEqual(distinct);
+  await selectNativeOption(page.locator('#urban-blocks-threshold'), '5');
+  await expect(page.locator('#urban-blocks-legend')).toContainText('5 min');
+  await expect(page.locator('#urban-block-list-status')).toContainText('above 5 min');
+  await selectNativeOption(page.locator('#urban-blocks-color-by'), 'distinct');
+  await expect(page.locator('#urban-blocks-legend')).toBeHidden();
+  await expect.poll(colors).toEqual(distinct);
+});
+
+test('block-layout ranges, candidate visibility and alternative selection change the generated shared layout', async ({ mockApi: page, context }) => {
+  test.setTimeout(90_000);
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await openCity(page);
+  await serveClosedBlocks(page);
+  await openLayerUrbanBlocks(page);
+  await page.locator('#showUrbanBlocks').check();
+  await expect(page.locator('#urban-block-list button[data-block-id]')).toHaveCount(4);
+  await page.locator('#urban-block-list button[data-block-id]').first().click();
+  const targetSummary = page.locator('.urban-block-target-summary strong');
+  const originalTarget = await targetSummary.innerText();
+  await selectNativeOption(page.locator('#urban-block-target-size'), '75');
+  await expect(targetSummary).not.toHaveText(originalTarget);
+  await page.locator('#urban-block-see-how').click();
+  const dialog = page.locator('.urban-block-playground');
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('.urban-block-playground__candidate').first()).toBeVisible();
+
+  const settings = [
+    { id: 'urban-block-playground-target-area', name: 'targetAreaM2', key: 'Home', value: 1000 },
+    { id: 'urban-block-playground-max-side', name: 'maxSideM', key: 'ArrowLeft', value: 125 },
+    { id: 'urban-block-playground-perimeter-step', name: 'perimeterStepM', key: 'Home', value: 50 },
+  ];
+  for (const setting of settings) {
+    const slider = dialog.locator(`#${setting.id}`);
+    await slider.focus();
+    await slider.press(setting.key);
+    await expect(slider).toHaveValue(String(setting.value));
+    await expect.poll(async () => Number((await dialog.locator(`[data-output="${setting.name}"]`).innerText()).replace(/[^0-9]/g, ''))).toBe(setting.value);
+  }
+  for (const field of ['showTJunctions', 'showDeadEnds', 'showPerimeter']) {
+    const toggle = dialog.locator(`[data-visibility="${field}"]`);
+    await toggle.focus();
+    await toggle.press('Space');
+    await expect(toggle).not.toBeChecked();
+  }
+  await expect(dialog.locator('.urban-block-playground__candidate')).toHaveCount(0);
+  await expect(dialog.locator('[data-slot="candidate-info"]')).toBeHidden();
+  for (const field of ['showTJunctions', 'showDeadEnds', 'showPerimeter']) {
+    const toggle = dialog.locator(`[data-visibility="${field}"]`);
+    await toggle.focus();
+    await toggle.press('Space');
+    await expect(toggle).toBeChecked();
+  }
+  await expect(dialog.locator('.urban-block-playground__candidate').first()).toBeVisible();
+  await dialog.locator('[data-action="generate"]').click();
+  const layouts = dialog.locator('#urban-block-playground-layout');
+  await expect(layouts).toBeEnabled({ timeout: 60_000 });
+  await expect.poll(() => dialog.locator('.urban-block-playground__piece-row').count()).toBeGreaterThan(1);
+  await dialog.locator('[data-action="share"]').click();
+  const share = dialog.locator('[data-slot="share-url"]');
+  await expect(share).toHaveValue(/#splits=/);
+  const firstLink = await share.inputValue();
+  const first = await page.evaluate(url => (window as any).UrbanBlocksLinks.parse(url).subdivision, firstLink);
+  expect(first.options).toMatchObject({ targetAreaM2: 1000, maxSideM: 125, perimeterStepM: 50 });
+  await selectNativeOption(layouts, '1');
+  await expect(dialog.locator('[data-slot="share-link"]')).toBeHidden();
+  await dialog.locator('[data-action="share"]').click();
+  await expect(share).not.toHaveValue(firstLink);
+  const second = await page.evaluate(url => (window as any).UrbanBlocksLinks.parse(url).subdivision, await share.inputValue());
+  expect(second.options).toEqual(first.options);
+  expect(second.cuts).not.toEqual(first.cuts);
+});
 
 test('OSM block browse, details, fit, copy, collapse, refresh, back, and close buttons work', async ({ mockApi: page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);

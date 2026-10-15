@@ -1293,6 +1293,30 @@ describe('site-first drafts', () => {
         }
     });
 
+    it('saves disconnected building parts inside their bound site and still rejects an outside part', () => {
+        const adapter = buildBuildingAdapter('buildings');
+        const part = (west, east) => [[[west, 45.8001], [east, 45.8001], [east, 45.8003], [west, 45.8003], [west, 45.8001]]];
+        const massing = {
+            type: 'Feature', properties: { height: 18 },
+            geometry: { type: 'MultiPolygon', coordinates: [part(15.97005, 15.9702), part(15.9703, 15.97045)] }
+        };
+        const source = {
+            proposalId: 'split-block', goal: 'buildings', typologyType: 'block', title: 'Block with gap',
+            site: SITE, cadastreParcelIds: [], geometry: { buildings: [massing], blockMassing: massing },
+            buildingProposal: { typologyType: 'block', parameters: { mode: 'manual' } }
+        };
+        const draft = draftFor(adapter, source);
+        const placement = freePlacementPatch(draft, { free: true, site: SITE });
+        draft.fields = { ...draft.fields, ...placement.fields, binding: { source: 'server:live-cadastre', coverage: 'none', parcels: [] } };
+        draft.editorPayload.placement = { ...placement.placement, bindingStatus: 'bound' };
+        const saved = adapter.serializeProposal(draft);
+        expect(saved.geometry.buildings).toEqual([massing]);
+        expect(saved.geometry.blockMassing).toEqual(massing);
+
+        draft.editorPayload.context.buildings[0].geometry.coordinates[1] = part(15.9704, 15.9706);
+        expect(() => adapter.serializeProposal(draft)).toThrow(/building geometry must fit entirely/i);
+    });
+
     it('round-trips a relocated block massing Feature with its properties', async () => {
         const adapter = buildBuildingAdapter('buildings');
         const blockMassing = {

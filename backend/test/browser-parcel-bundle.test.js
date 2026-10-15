@@ -49,7 +49,8 @@ describe('static browser parcel adapters', () => {
             const build = await buildBrowserParcels({ outdir });
             const gridBytes = await readFile(ostn15GridPath);
             expect(createHash('sha256').update(gridBytes).digest('hex')).toBe(OSTN15_GRID_SHA256);
-            expect(await readFile(join(outdir, 'grids', `${OSTN15_GRID_SHA256}.gsb`))).toEqual(gridBytes);
+            // Native byte equality avoids expanding this 16 MB binary into millions of keys.
+            expect((await readFile(join(outdir, 'grids', `${OSTN15_GRID_SHA256}.gsb`))).equals(gridBytes)).toBe(true);
             expect(Object.keys(build.metafile.outputs).some(path => path.endsWith('.gsb'))).toBe(false);
             expect(Object.keys(build.metafile.inputs).some(input => input.endsWith('hmlr-browser-source.js'))).toBe(true);
             expect(Object.keys(build.metafile.inputs).some(input => input.endsWith('disk-geojson-snapshot-source.js'))).toBe(false);

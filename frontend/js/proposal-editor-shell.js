@@ -2036,7 +2036,8 @@
         }
 
         let proposal = null;
-        try { proposal = store.buildProposalFromDraft(draftId); } catch (_) { proposal = null; }
+        try { proposal = store.buildProposalFromDraft(draftId); }
+        catch (error) { return keepAsDraft(error?.message || String(error)); }
         if (!proposal) return keepAsDraft();
         // An edit produces a fresh, not-yet-proposed object even when its source had terms.
         delete proposal.termsConfirmed;

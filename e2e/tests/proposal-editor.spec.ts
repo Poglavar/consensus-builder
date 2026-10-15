@@ -52,7 +52,7 @@ test.describe('SimCity proposal lifecycle @core', () => {
 
     await page.evaluate((proposalId) => (window as any).editProposalGeometry(proposalId), source.proposalId);
     const editor = page.locator('#structure-geometry-editor');
-    await expect(editor).toBeVisible();
+    await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
 
     const place = async (tool: string, lng: number, lat: number) => {
       await editor.locator(`[data-tool="${tool}"]`).click();
@@ -64,7 +64,7 @@ test.describe('SimCity proposal lifecycle @core', () => {
     await place('stall', 15.98230, 45.80015);
     await place('statue', 15.98215, 45.80035);
     await editor.locator('[data-action="save"]').click();
-    await expect(editor).toBeHidden();
+    await expect(editor).toHaveCount(0);
 
     // A square is auto-decorated on creation (a fountain, a statue, a few tables), so assert that
     // each tool ADDED something rather than pinning absolute counts.
@@ -100,7 +100,7 @@ test.describe('SimCity proposal lifecycle @core', () => {
 
     await page.evaluate((proposalId) => (window as any).editProposalGeometry(proposalId), source.proposalId);
     const editor = page.locator('#structure-geometry-editor');
-    await expect(editor).toBeVisible();
+    await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
 
     const place = async (tool: string, lng: number, lat: number) => {
       await editor.locator(`[data-tool="${tool}"]`).click();
@@ -113,7 +113,7 @@ test.describe('SimCity proposal lifecycle @core', () => {
     await clickMapPoint(page, 15.98242, 45.80040);
     await editor.locator('[data-action="finish-path"]').click();
     await editor.locator('[data-action="save"]').click();
-    await expect(editor).toBeHidden();
+    await expect(editor).toHaveCount(0);
 
     await expect.poll(() => page.evaluate((sourceId) => {
       const w = window as any;
@@ -342,7 +342,7 @@ test('structure furniture can be dragged, erased and restored with Undo; cancell
   const original = await page.evaluate(id => JSON.stringify((window as any).getProposalByIdOrHash(id)), source.proposalId);
   await page.evaluate(id => (window as any).editProposalGeometry(id), source.proposalId);
   const editor = page.locator('#structure-geometry-editor');
-  await expect(editor).toBeVisible();
+  await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
   await editor.locator('[data-tool="tree"]').click();
   await clickMapPoint(page, 15.98220, 45.80025);
   const trees = page.locator('.structure-geometry-icon.is-tree');
@@ -365,7 +365,7 @@ test('structure furniture can be dragged, erased and restored with Undo; cancell
   await page.keyboard.press('Meta+z');
   await expect.poll(async () => (await trees.last().boundingBox())!.x).toBeCloseTo(before!.x, 0);
   await editor.locator('[data-action="cancel"]').last().click();
-  await expect(editor).toBeHidden();
+  await expect(editor).toHaveCount(0);
   expect(await page.evaluate(id => JSON.stringify((window as any).getProposalByIdOrHash(id)), source.proposalId)).toBe(original);
   expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(1);
 });

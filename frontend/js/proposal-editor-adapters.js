@@ -382,7 +382,16 @@
         const candidateFeature = featureFromSite(candidate);
         const siteFeature = featureFromSite(site);
         if (!t || typeof t.booleanWithin !== 'function' || !candidateFeature || !siteFeature) return false;
-        try { return t.booleanWithin(candidateFeature, siteFeature); } catch (_) { return false; }
+        try {
+            // Gaps can split one building into several pieces. Turf's first argument supports
+            // Polygon, so check every piece against the complete site, including its holes.
+            const parts = candidateFeature.geometry.type === 'MultiPolygon'
+                ? candidateFeature.geometry.coordinates
+                : [candidateFeature.geometry.coordinates];
+            return parts.every(coordinates => t.booleanWithin({
+                type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates }
+            }, siteFeature));
+        } catch (_) { return false; }
     }
 
     function planFeatures(plan) {

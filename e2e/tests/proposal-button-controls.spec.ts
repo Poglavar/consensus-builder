@@ -2,7 +2,7 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
-import { connectWalletByConnectorId, injectMockEvmWallet, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
+import { connectWalletByConnectorId, injectMockEvmWallet, injectMockSolanaWallet, routeSolanaReads, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { installProposalEvmBoundary, PROPOSAL_EVM_ACCOUNT } from '../helpers/proposal-chain-boundary';
 
 async function addProposal(page: import('@playwright/test').Page, proposal: Record<string, unknown>): Promise<string> {
@@ -34,7 +34,7 @@ async function establishLocalProfile(page: import('@playwright/test').Page): Pro
 }
 
 async function mockEmptySolanaRpc(page: import('@playwright/test').Page): Promise<void> {
-  await page.route('**/api.devnet.solana.com/**', async route => {
+  await routeSolanaReads(page, async route => {
     const input = route.request().postDataJSON() as any;
     const answer = (item: any) => {
       const context = { context: { slot: 1 } };

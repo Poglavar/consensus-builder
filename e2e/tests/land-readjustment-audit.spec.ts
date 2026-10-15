@@ -25,7 +25,7 @@ async function openReadjustment(page: Page) {
   await openParcel(page, 'proposals');
   await page.locator('.parcel-build-btn--reparcellization').click();
   const modal = page.locator('.on-map-reparcellization');
-  await expect(modal).toBeVisible();
+  await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
   await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
   return modal;
 }
@@ -77,13 +77,13 @@ for (const size of [{ name: 'desktop', width: 1440, height: 1000 }, { name: '390
 
     await modal.locator('[data-reparcel-cancel]').click();
     await page.getByRole('button', { name: 'Discard changes', exact: true }).click();
-    await expect(modal).toBeHidden();
+    await expect(modal).toHaveCount(0);
     await expect(page.locator('.map-compare__before, .map-compare__handle, .map-compare__label')).toHaveCount(0);
     // Re-open through the parcel action so the cleanup assertion covers the editor lifecycle too.
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--reparcellization').click();
     const reopened = page.locator('.on-map-reparcellization');
-    await expect(reopened).toBeVisible();
+    await expect(reopened.locator('.on-map-editor__panel')).toBeVisible();
     await expect(reopened.locator('.map-compare__before, .map-compare__handle, .map-compare__label')).toHaveCount(0);
     await attachScreenshot(page, testInfo, `${size.name}-reopened-clean.png`);
   });
@@ -168,7 +168,7 @@ test('joint imported ownership survives apply and reload, then unapply restores 
   await popup.locator('.reparcel-owner-popup__row').filter({ hasText: 'Owner B' }).locator('input').check();
   await popup.locator('.reparcel-owner-popup__close').click();
   await modal.locator('[data-reparcel-commit]').click();
-  await expect(modal).toBeHidden();
+  await expect(modal).toHaveCount(0);
 
   const plan = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).proposalStorage.getAllProposals()
     .find((proposal: any) => proposal.applied && proposal.reparcellization))));
@@ -243,7 +243,7 @@ test('cash-only edits retain cents and require confirmation before discarding', 
   await modal.locator('[data-reparcel-cancel]').click();
   await expect(page.getByRole('button', { name: 'Discard changes', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Discard changes', exact: true }).click();
-  await expect(modal).toBeHidden();
+  await expect(modal).toHaveCount(0);
   expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
     .filter((record: any) => record.reparcellization).length)).toBe(0);
 });

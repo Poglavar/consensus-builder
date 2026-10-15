@@ -1,3 +1,4 @@
+import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, clickMapPoint } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
@@ -101,7 +102,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--parcelBased').click();
     const modal = page.locator('#parcelbased');
-    await expect(modal).toBeVisible();
+    await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#btn-parcelbased-done')).toBeEnabled({ timeout: 20_000 });
 
     const maxFloors = page.locator('#parcelbased-maxfloors-slider');
@@ -115,7 +116,7 @@ test.describe('Designer controls persist their edits @features', () => {
     expect(Number(await page.locator('#parcelbased-mindistance-slider').inputValue())).toBeGreaterThan(initialDistance);
 
     const rule = page.locator('#parcelbased-ruletype-select');
-    await rule.selectOption('range');
+    await selectNativeOption(rule, 'range');
     await expect(page.locator('#parcelbased-minimums')).toBeVisible();
     const minimumFloors = page.locator('#parcelbased-minfloors-slider');
     await expect(minimumFloors).toBeVisible();
@@ -130,9 +131,9 @@ test.describe('Designer controls persist their edits @features', () => {
       await slider.press('ArrowRight');
       expect(Number(await slider.inputValue())).toBeGreaterThan(before);
     }
-    await rule.selectOption('exact');
+    await selectNativeOption(rule, 'exact');
     await expect(page.locator('#parcelbased-minimums')).toBeHidden();
-    await rule.selectOption('max');
+    await selectNativeOption(rule, 'max');
     await page.locator('#btn-parcelbased-done').click();
 
     const context = await page.evaluate(() => (window as any).pendingBuildingProposalContext);
@@ -260,9 +261,9 @@ test.describe('Designer controls persist their edits @features', () => {
     await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 15_000 });
     if (!(await page.locator('#model-layer-controls').isVisible())) await page.locator('#layers-button').click();
     await expect(page.locator('#model-layer-controls .three-mode-ui-panel')).toBeVisible();
-    await page.locator('#three-mode-built-display').selectOption('off');
-    await page.locator('#three-mode-planned-display').selectOption('off');
-    const toggle = page.locator('#model-layer-controls .three-mode-wide-row .three-mode-wide-toggle input');
+    await selectNativeOption(page.locator('#three-mode-built-display'), 'off');
+    await selectNativeOption(page.locator('#three-mode-planned-display'), 'off');
+    const toggle = page.locator('#model-layer-controls label.three-mode-wide-toggle[aria-label*="current applied rule"] input[type="checkbox"]');
     const ineligibleVisibleMeshes = () => page.evaluate(() => {
       const scene = (window as any).getThreeModeInternals()?.scene;
       const group = scene?.getObjectByName('IneligibleBuildings');
@@ -376,7 +377,7 @@ test.describe('Designer controls persist their edits @features', () => {
     if (await wholeBlockPrompt.isVisible().catch(() => false)) {
       await wholeBlockPrompt.getByRole('button', { name: 'No, just this parcel' }).click();
     }
-    await expect(page.locator('#single-building-editor')).toBeVisible();
+    await expect(page.locator('#single-building-editor').locator('.on-map-editor__panel')).toBeVisible();
     const selector = page.locator('#single-building-selector');
     const initialBuildings = await selector.locator('option').count();
     const height = page.locator('#single-height-slider');
@@ -388,8 +389,8 @@ test.describe('Designer controls persist their edits @features', () => {
     // surface controls without bypassing that real geometry gate.
     const siteDetails = page.locator('#single-building-editor details.on-map-building__details > summary');
     await siteDetails.click();
-    await page.locator('#single-ground-treatment').selectOption('green');
-    await page.locator('#single-parcel-mode').selectOption('whole');
+    await selectNativeOption(page.locator('#single-ground-treatment'), 'green');
+    await selectNativeOption(page.locator('#single-parcel-mode'), 'whole');
     await page.locator('#single-building-add').click();
     await expect(selector.locator('option')).toHaveCount(initialBuildings + 1);
     await page.locator('#single-building-confirm').click();
@@ -413,10 +414,10 @@ test.describe('Designer controls persist their edits @features', () => {
     await page.locator('#parcel-info-panel .close-button').click();
     await page.locator('#selection-tray [data-command="selection.propose"]').click();
     await page.locator('.parcel-build-btn--row').click();
-    await expect(page.locator('#rowhouse')).toBeVisible();
+    await expect(page.locator('#rowhouse').locator('.on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#btn-rowhouse-done')).toBeEnabled({ timeout: 20_000 });
 
-    await page.locator('#rowhouse-ruletype-select').selectOption('range');
+    await selectNativeOption(page.locator('#rowhouse-ruletype-select'), 'range');
     await expect(page.locator('#rowhouse-minheight-group')).toBeVisible();
     const minimum = page.locator('#rowhouse-minheight-slider');
     await minimum.focus();
@@ -447,10 +448,10 @@ test.describe('Designer controls persist their edits @features', () => {
     await clickMapPoint(page, 15.9824, 45.8001);
     await page.locator('#editRoadCrossSectionButton').click();
     const editor = page.locator('#corridor-editor-overlay');
-    await expect(editor).toBeVisible();
+    await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
 
     const preset = editor.locator('.corridor-editor-preset-select');
-    await preset.selectOption('18');
+    await selectNativeOption(preset, '18');
     const initialRows = await editor.locator('.corridor-lane-row').count();
     await editor.locator('.corridor-editor-add-lane .cb-lane-dropdown-toggle').click();
     await editor.locator('[data-lane-type="verge"]').click();
@@ -460,7 +461,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await expect(verge).toHaveValue('verge');
     const vergeIndex = await verge.getAttribute('data-lane-index');
     const vergeRow = editor.locator(`.corridor-lane-row[data-lane-index="${vergeIndex}"]`);
-    await vergeRow.locator('.corridor-lane-landscape').selectOption('trees');
+    await selectNativeOption(vergeRow.locator('.corridor-lane-landscape'), 'trees');
     const width = vergeRow.locator('.corridor-lane-width');
     const oldWidth = Number(await width.inputValue());
     await width.fill(String(oldWidth + 0.5));
@@ -496,7 +497,7 @@ test.describe('Designer controls persist their edits @features', () => {
     const rail = editor.locator('.corridor-lane-row:has(.corridor-lane-gauge)').first();
     await expect(rail.locator('.corridor-lane-gauge')).toHaveValue('1435');
     const widthBefore = Number(await rail.locator('.corridor-lane-width').inputValue());
-    await rail.locator('.corridor-lane-gauge').selectOption('1000');
+    await selectNativeOption(rail.locator('.corridor-lane-gauge'), '1000');
     await expect(rail.locator('.corridor-lane-width')).not.toHaveValue(String(widthBefore));
     await editor.locator('.corridor-editor-save').click();
     await page.locator('#finishRoadButton').click();
@@ -523,7 +524,7 @@ test.describe('Designer controls persist their edits @features', () => {
       await page.locator('#selection-tray [data-command="selection.propose"]').click();
       await page.locator('.parcel-build-btn--reparcellization').click();
     }
-    await expect(modal).toBeVisible();
+    await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
     await modal.locator('[data-reparcel-plots-tab="old"]').click();
     await expect(modal.locator('[data-reparcel-oldplots-table]')).toContainText('1234');
@@ -554,7 +555,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
 
     await modal.locator('[data-reparcel-commit]').click();
-    await expect(modal).toBeHidden();
+    await expect(modal).toHaveCount(0);
     const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((proposal: any) => proposal.applied && proposal.reparcellization)?.reparcellization);
     expect(saved.polygons.length).toBeGreaterThan(0);
     expect(saved.algorithm).toBe('sweep-line');
@@ -626,7 +627,7 @@ test.describe('Designer controls persist their edits @features', () => {
     }
     await expect.poll(async () => JSON.stringify(await rows.allInnerTexts())).not.toBe(JSON.stringify(ownershipBeforeShuffle));
     await modal.locator('[data-reparcel-commit]').click();
-    await expect(modal).toBeHidden();
+    await expect(modal).toHaveCount(0);
     const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((proposal: any) => proposal.applied && proposal.reparcellization)?.reparcellization);
     expect(saved.algorithm).toBe('manual');
     expect(saved.polygons).toHaveLength(2);

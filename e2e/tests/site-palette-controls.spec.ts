@@ -107,7 +107,7 @@ test.describe('Site build palette controls @core', () => {
   ]) test(`${item.label} opens its editor draft on the authored site`, async ({ mockApi: page }) => {
     const { panel, site } = await beginParcelSite(page);
     await panel.locator(`.parcel-build-btn--${item.key}`).click();
-    await expect(page.locator(item.surface)).toBeVisible();
+    await expect(page.locator(item.surface).locator('.on-map-editor__panel')).toBeVisible();
     if (item.key === 'single') await expectFreeformDraftSite(page, site);
     else await expectActiveDraftSite(page, site, item.adapter);
   });
@@ -124,7 +124,7 @@ test.describe('Site build palette controls @core', () => {
     await expect(card.locator('[data-site-action="plots-continue"]')).toBeEnabled();
     await expect(card.locator('[data-site-action="plots-back"]')).toBeVisible();
     await card.locator('[data-site-action="plots-continue"]').click();
-    await expect(page.locator(item.surface)).toBeVisible();
+    await expect(page.locator(item.surface).locator('.on-map-editor__panel')).toBeVisible();
     await expectActiveDraftSite(page, site, item.adapter);
   });
 
@@ -170,7 +170,7 @@ test.describe('Site build palette controls @core', () => {
     await expect(subdivide).toHaveText(/Subdivide/i);
     await subdivide.click();
     const modal = page.locator('.on-map-reparcellization');
-    await expect(modal).toBeVisible();
+    await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     const plan = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).pendingReparcellizationPlan)));
     expect(plan.poolSource).toBe('site');
     expect(plan.poolGeometry).toEqual(await page.evaluate(() => JSON.parse(JSON.stringify((window as any).proposalDraftStore.getActiveDraft().fields.site))));

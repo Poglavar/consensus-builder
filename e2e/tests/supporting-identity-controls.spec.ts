@@ -2,6 +2,7 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, PARCEL_ID } from '../helpers/runtime';
 import { getWalletStates, injectMockEvmWallet, injectMockSolanaWallet } from '../helpers/blockchain';
+import { openAndClosePopup } from '../helpers/controls';
 
 async function openProfile(page: import('@playwright/test').Page, username: string) {
   await page.locator('#username-display').click();
@@ -139,13 +140,13 @@ test.describe('Supporting identity controls @core', () => {
     await expect(attestify).toHaveCount(0);
 
     await profile.locator('.wallet-attest-link').click();
-    const popupPromise = page.context().waitForEvent('page');
-    await attestify.locator('[data-attest-proceed]').click();
-    const popup = await popupPromise;
+    await openAndClosePopup(page, () => attestify.locator('[data-attest-proceed]').click(), async popup => {
+      await popup.waitForURL(url => url.searchParams.has('eoaAddress'), { waitUntil: 'commit' });
+      const destination = new URL(popup.url());
+      expect(destination.searchParams.get('eoaAddress')).toBe('0x1234567890abcdef1234567890abcdef12345678');
+      expect(destination.searchParams.get('MY_NAME_IS')).toBe('Identity controls actor');
+    });
     await expect(attestify).toHaveCount(0);
-    await expect.poll(() => new URL(popup.url()).searchParams.get('eoaAddress')).toBe('0x1234567890abcdef1234567890abcdef12345678');
-    await expect.poll(() => new URL(popup.url()).searchParams.get('MY_NAME_IS')).toBe('Identity controls actor');
-    await popup.close();
 
     // Exercise both additional EVM choices through the connected wallet's real chain-switch path.
     await network.click();

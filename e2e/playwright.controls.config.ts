@@ -1,4 +1,4 @@
-// Run the complete behavioral suite headed and produce source-linked button click coverage.
+// Run the same behavioral suite in either browser mode with source-linked interaction coverage.
 import { defineConfig } from '@playwright/test';
 import base from './playwright.config';
 
@@ -9,7 +9,7 @@ const baseURL = `http://127.0.0.1:${port}`;
 export default defineConfig({
   ...base,
   outputDir: process.env.UI_CONTROL_OUTPUT || './test-results/controls',
-  use: { ...base.use, baseURL, headless: false },
+  use: { ...base.use, baseURL, headless: process.env.UI_CONTROL_HEADLESS === '1' },
   reporter: [
     ['list'],
     ['json', { outputFile: process.env.UI_CONTROL_RESULTS || './test-results/control-results.json' }],

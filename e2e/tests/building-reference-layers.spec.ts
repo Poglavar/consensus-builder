@@ -12,6 +12,8 @@
 
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
+import { surveyResponse } from '../helpers/mocks/survey-data';
+import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 
 // A GDI footprint as GET /buildings?bbox=&source=gdi serves it: keyed by object_id.
 const GDI_FEATURE = {
@@ -28,10 +30,10 @@ const GDI_FEATURE = {
 async function installSurveyRoutes(page: import('@playwright/test').Page) {
   await page.route('**/buildings**', async route => {
     const url = new URL(route.request().url());
-    if (url.pathname !== '/buildings') return route.continue();
+    if (url.pathname !== '/buildings') return route.fallback();
     const source = url.searchParams.get('source');
     const feature = source === 'dgu' ? DGU_FEATURE : GDI_FEATURE;
-    return route.fulfill({ json: { type: 'FeatureCollection', source, truncated: false, features: [feature] } });
+    return route.fulfill({ json: { ...surveyResponse([feature]), source } });
   });
 }
 
@@ -189,6 +191,7 @@ test.describe('Building reference layers @features', () => {
   });
 
   test('Enter applies checked surveys; Escape discards dialog edits', async ({ mockApi: page }) => {
+    await installLayerDatasets(page);
     await installSurveyRoutes(page);
     await page.goto('/?city=zg');
     await waitForMapReady(page);
@@ -201,25 +204,30 @@ test.describe('Building reference layers @features', () => {
     const layerState = () => page.evaluate(() => ({
       gdi: (document.getElementById('showBuildings') as HTMLInputElement).checked,
       dgu: (document.getElementById('showBuildingsDgu') as HTMLInputElement).checked,
+      osm: (document.getElementById('showBuildingsOsm') as HTMLInputElement).checked,
     }));
 
-    // Tick GDI and DGU, confirm with Enter — the action button is focused, so Enter is Show.
+    // Tick every survey and confirm with Enter.
     await page.keyboard.press('b');
     const dialog = page.locator('.building-layers-dialog');
     await expect(dialog).toBeVisible();
     await dialog.locator('input[type="checkbox"]').nth(0).check();
     await dialog.locator('input[type="checkbox"]').nth(1).check();
+    await dialog.locator('input[type="checkbox"]').nth(2).check();
     await page.keyboard.press('Enter');
     await expect(dialog).toHaveCount(0);
-    expect(await layerState()).toEqual({ gdi: true, dgu: true });
+    expect(await layerState()).toEqual({ gdi: true, dgu: true, osm: true });
+    await expect.poll(() => page.evaluate(() => !!(window as any).osmBuildingLayer && (window as any).map.hasLayer((window as any).osmBuildingLayer))).toBe(true);
+    await expect.poll(() => page.evaluate(() => (window as any).osmBuildingLayer?.getLayers().length || 0)).toBeGreaterThan(0);
 
     // Reopen, untick everything, then Escape: the map must be exactly as it was.
     await page.keyboard.press('b');
     await expect(dialog).toBeVisible();
     await dialog.locator('input[type="checkbox"]').nth(0).uncheck();
     await dialog.locator('input[type="checkbox"]').nth(1).uncheck();
+    await dialog.locator('input[type="checkbox"]').nth(2).uncheck();
     await page.keyboard.press('Escape');
     await expect(dialog).toHaveCount(0);
-    expect(await layerState()).toEqual({ gdi: true, dgu: true });
+    expect(await layerState()).toEqual({ gdi: true, dgu: true, osm: true });
   });
 });

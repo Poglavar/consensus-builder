@@ -1,3 +1,4 @@
+import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
 
 const json = (route: any, body: unknown, status = 200, headers: Record<string, string> = {}) => route.fulfill({
@@ -30,7 +31,7 @@ test.describe('Supporting pages @core', () => {
 
     await page.goto('/actor-explorer.html');
     await expect(page.locator('.ae-event')).toHaveCount(2);
-    await page.getByRole('combobox', { name: 'Actor controller' }).selectOption('human');
+    await selectNativeOption(page.getByRole('combobox', { name: 'Actor controller' }), 'human');
     await expect(page.locator('.ae-event')).toHaveCount(1);
     await expect(page.locator('.ae-event')).toContainText('Ari');
     await page.getByRole('button', { name: 'Clear selection' }).click();
@@ -98,7 +99,7 @@ test.describe('Supporting pages @core', () => {
     await expect(page.locator('#lc-directory')).toContainText('Test Lens');
     await expect(page.locator('#lc-status')).toContainText('notary');
     await expect(page.locator('#lc-attestations .lc-item')).toHaveCount(2);
-    await page.locator('#lc-filter-kind').selectOption('ownership');
+    await selectNativeOption(page.locator('#lc-filter-kind'), 'ownership');
     await page.locator('#lc-filter-parcel').fill('parcel-1');
     await page.locator('#lc-attestations-load').click();
     await expect(page.locator('#lc-attestations .lc-item')).toHaveCount(1);
@@ -123,7 +124,7 @@ test.describe('Supporting pages @core', () => {
       return json(route, { address: 'verdict-account', accountHash: 'hash-1', reused: false }, 200, { 'access-control-allow-origin': '*' });
     });
     await page.locator('#lc-verdict-proposal').fill(memberKey);
-    await page.locator('#lc-verdict-kind').selectOption('executed');
+    await selectNativeOption(page.locator('#lc-verdict-kind'), 'executed');
     await page.locator('#lc-verdict-evidence').fill('https://records.example/case-1');
     await page.locator('#lc-verdict-observed').fill('2026-09-30T12:00');
     await page.locator('#lc-verdict-token').fill('operator-token-for-test');

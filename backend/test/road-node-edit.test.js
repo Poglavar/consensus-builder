@@ -241,10 +241,16 @@ const settle = () => new Promise(resolve => setImmediate(resolve));
 
 describe('node editor honesty', () => {
     it('undoes a junction drag in one step, putting back every road the junction carried', async () => {
-        const editor = bootNodeEditor([
+        const roads = [
             corridorRecord('road-1', [[[0, 0], [0, 5], [0, 10]]]),
             corridorRecord('road-2', [[[0, 5], [5, 5]]])
-        ], 'road-1');
+        ];
+        const junctions = [
+            [{ lat: 0, lng: 5, arms: [{ toward: { lat: 5, lng: 5 }, width: 8 }] }],
+            [{ lat: 0, lng: 5, arms: [{ toward: { lat: 0, lng: 0 }, width: 12 }, { toward: { lat: 0, lng: 10 }, width: 12 }] }]
+        ];
+        roads.forEach((road, index) => { road.roadProposal.definition.junctions = structuredClone(junctions[index]); });
+        const editor = bootNodeEditor(roads, 'road-1');
         const junction = editor.handleAt(0, 5);
         expect(junction.options.icon.className).toContain('road-node-handle--junction');
 
@@ -254,11 +260,17 @@ describe('node editor honesty', () => {
         await settle();
         expect(editor.pointsOf('road-1')).toEqual([[[0, 0], [1, 5], [0, 10]]]);
         expect(editor.pointsOf('road-2')).toEqual([[[1, 5], [5, 5]]]);
+        roads.forEach((road, index) => {
+            expect(road.roadProposal.definition.junctions).toEqual([{ ...junctions[index][0], lat: 1 }]);
+        });
 
         editor.undo();
         await settle();
         expect(editor.pointsOf('road-1')).toEqual([[[0, 0], [0, 5], [0, 10]]]);
         expect(editor.pointsOf('road-2')).toEqual([[[0, 5], [5, 5]]]);
+        roads.forEach((road, index) => {
+            expect(road.roadProposal.definition.junctions).toEqual(junctions[index]);
+        });
     });
 
     it('takes back the undo step of a drag that every record refused', async () => {

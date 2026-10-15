@@ -141,17 +141,14 @@ test.describe('Bets shared button variants @features', () => {
   test('the dialog Yes button opens a Yes stake form, and quick stakes set the entered amount', async ({ mockApi: page }) => {
     await routeMarkets(page);
     await injectMockSolanaWallet(page, { publicKey: WALLET, providerName: 'phantom' });
-    await page.route('https://api.devnet.solana.com/**', async route => {
-      if (route.request().method() === 'OPTIONS') {
-        return route.fulfill({ status: 204, headers: {
-          'access-control-allow-origin': '*', 'access-control-allow-methods': 'POST, OPTIONS',
-          'access-control-allow-headers': 'content-type',
-        } });
-      }
+    let mockedBalanceRequests = 0;
+    await page.route('**/*', async route => {
+      if (route.request().method() !== 'POST') return route.fallback();
       let request: any = {};
       try { request = route.request().postDataJSON(); } catch (_) { }
       let result: unknown;
       if (request.method === 'getTokenAccountBalance') {
+        mockedBalanceRequests += 1;
         result = { context: { slot: 1 }, value: { amount: '12500000', decimals: 6, uiAmount: 12.5, uiAmountString: '12.5' } };
       } else if (request.method === 'getAccountInfo') {
         result = { context: { slot: 1 }, value: null };
@@ -164,7 +161,7 @@ test.describe('Bets shared button variants @features', () => {
           jsonrpc: '2.0', id: request.id, result,
         }) });
       }
-      return route.continue();
+      return route.fallback();
     });
     await openCity(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
@@ -179,6 +176,7 @@ test.describe('Bets shared button variants @features', () => {
     const max = dialog.locator('.bets-dialog__chip').filter({ hasText: /^Max\b/ });
     await expect(max).toBeVisible();
     await max.click();
+    await expect.poll(() => mockedBalanceRequests).toBeGreaterThan(0);
     await expect(dialog.locator('[data-market-amount]')).toHaveValue('12.5');
   });
 

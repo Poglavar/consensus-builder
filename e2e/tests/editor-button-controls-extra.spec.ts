@@ -56,7 +56,7 @@ test.describe('Dynamic editor control effects @features', () => {
     if (await expand.isVisible()) await expand.click();
     await details.locator('.btn-cross-section').click();
     const editor = page.locator('#corridor-editor-overlay');
-    await expect(editor).toBeVisible();
+    await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
 
     const buildings = editor.locator('.corridor-limit-option[data-limit="buildings"]');
     await buildings.click();
@@ -73,6 +73,6 @@ test.describe('Dynamic editor control effects @features', () => {
     await expect(parcels).toHaveAttribute('aria-pressed', 'true');
     await expect(editor.locator('.corridor-limit-option[data-survey="gdi"]')).toHaveCount(0);
     await editor.locator('.corridor-editor-cancel').click();
-    await expect(editor).toBeHidden();
+    await expect(editor).toHaveCount(0);
   });
 });

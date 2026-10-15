@@ -785,6 +785,31 @@
         return segmentProfiles;
     }
 
+    // Move the selected vertices together with their stored junction positions. A definition's
+    // junctions supply the neighbouring arms when its land is rebuilt; leaving them at the old
+    // position makes that footprint disagree with the edited centreline. Inputs are not mutated.
+    function moveCorridorNodes(segments, junctions, targets, point) {
+        const movedFrom = [];
+        const nextSegments = segments.map(segment => segment.map(vertex => ({ ...vertex })));
+        (targets || []).forEach(({ segIndex, pointIndex }) => {
+            const vertex = nextSegments[segIndex]?.[pointIndex];
+            if (!vertex) return;
+            movedFrom.push({ ...vertex });
+            vertex.lat = point.lat;
+            vertex.lng = point.lng;
+        });
+        const moves = candidate => movedFrom.some(origin => corridorPointsNear(origin, candidate));
+        const nextJunctions = Array.isArray(junctions) ? junctions.map(junction => ({
+            ...junction,
+            ...(moves(junction) ? { lat: point.lat, lng: point.lng } : {}),
+            ...(Array.isArray(junction.arms) ? { arms: junction.arms.map(arm => ({
+                ...arm,
+                ...(moves(arm.toward) ? { toward: { ...arm.toward, lat: point.lat, lng: point.lng } } : {})
+            })) } : {})
+        })) : junctions;
+        return { segments: nextSegments, junctions: nextJunctions, changed: movedFrom.length > 0 };
+    }
+
     // Insert one authored vertex into an existing centerline edge without changing the road's
     // locus, segment identity, or profile. The requested point is projected onto the edge so a
     // click that is a few screen pixels off the line cannot introduce a tiny kink. Inputs are never
@@ -1454,6 +1479,7 @@
         corridorDistanceMeters,
         projectCorridorPointToEdge,
         canonicalizeCorridorNetworkJunctions,
+        moveCorridorNodes,
         insertCorridorNode,
         splitCorridorStretchAtNode,
         removeCorridorEdge,

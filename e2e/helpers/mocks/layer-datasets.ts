@@ -1,6 +1,7 @@
 import { Page } from '@playwright/test';
 import { sampleParcels } from './parcel-data';
 import { fixtureSiteBinding } from './site-binding';
+import { surveyResponse } from './survey-data';
 
 export const TEST_PARCEL_ID = 'HR-335754-1234';
 const PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238'];
@@ -88,10 +89,10 @@ export async function installLayerDatasets(page: Page): Promise<void> {
     const properties = source === 'dgu'
       ? { zgrada_id: 9002, ZGRADA_ID: 9002, building_source: 'dgu' }
       : { object_id: 9001, height_m: 12, building_source: 'gdi' };
-    await route.fulfill({ json: { type: 'FeatureCollection', source, truncated: false, features: [{
+    await route.fulfill({ json: { source, ...surveyResponse([{
       type: 'Feature', properties,
       geometry: { type: 'Polygon', coordinates: [[[15.98208,45.80008],[15.98224,45.80008],[15.98224,45.80022],[15.98208,45.80022],[15.98208,45.80008]]] },
-    }] } });
+    }]) } });
   });
   await page.route('**/buildings/footprints', route => route.fulfill({ json: {
     supported: true,
@@ -111,10 +112,10 @@ export async function installLayerDatasets(page: Page): Promise<void> {
   await page.route('https://services8.arcgis.com/**', route => route.fulfill({ json: { type: 'FeatureCollection', features: [line] } }));
   // Local development builds request the same GUP centreline data through the backend streets API.
   await page.route('**/streets**', route => route.fulfill({ json: { type: 'FeatureCollection', features: [line] } }));
-  await page.route('https://oss.uredjenazemlja.hr/OssWebServices/wfs**', route => route.fulfill({ json: { type: 'FeatureCollection', features: [roadArea] } }));
+  await page.route('https://oss.uredjenazemlja.hr/OssWebServices/wfs**', route => route.fulfill({ json: surveyResponse([roadArea]) }));
   // The development data source reads planned roads from the backend route, not the static plan
-  // catalog. Keep this response in WGS84 so the app's own converter can retain the fixture geometry.
-  await page.route('**/planned-road**', route => route.fulfill({ json: { type: 'FeatureCollection', features: [planArea] } }));
+  // catalog. Both the planned-road API and survey APIs explicitly return EPSG:3765.
+  await page.route('**/planned-road**', route => route.fulfill({ json: surveyResponse([planArea]) }));
   await page.route('**/road-parcels**', route => route.fulfill({ json: { type: 'FeatureCollection', features: [
     { type: 'Feature', properties: { parcelId: TEST_PARCEL_ID }, geometry: sampleParcels.features[0].geometry },
   ] } }));

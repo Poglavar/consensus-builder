@@ -1,3 +1,4 @@
+import { selectNativeOption } from '../helpers/controls';
 // Exercises shared-courtyard readjustment through the current parcel-selection and proposal flows.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, clickMapPoint, showProposal } from '../helpers/runtime';
@@ -70,7 +71,7 @@ async function openCourtyard(page: Page, enclosed = true) {
   await expect(page.locator('.parcel-build-palette')).toBeVisible();
   await page.locator('.parcel-build-btn--reparcellization').click();
   const modal = page.locator('.on-map-reparcellization');
-  await expect(modal).toBeVisible();
+  await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
   await modal.locator('label.reparcel-alg-option:has(input[value="amend"])').click();
   await expect(modal.locator('input[value="amend"]')).toBeChecked();
   await expect(modal.locator('.reparcel-newplot-row')).toHaveCount(2);
@@ -86,7 +87,7 @@ async function finishCourtyard(page: Page, mode: 'single' | 'individual') {
     await expect(modal.locator('[data-reparcel-cashtotal]')).toContainText('300');
   }
   await modal.locator('[data-reparcel-commit]').click();
-  await expect(modal).toBeHidden();
+  await expect(modal).toHaveCount(0);
   await expect.poll(async () => (await appliedPlans(page)).length).toBe(1);
   if (mode === 'single') return;
   const [source] = await appliedPlans(page);
@@ -95,6 +96,19 @@ async function finishCourtyard(page: Page, mode: 'single' | 'individual') {
   await expect(offer).toHaveAttribute('readonly', '');
   expect(Number(await offer.inputValue())).toBe(300);
   await dialog.locator(`input[name="reparcel-agreement"][value="${mode}"]`).check();
+  if (mode === 'individual') {
+    const agreement = (value: 'single' | 'individual') => dialog.locator(`input[name="reparcel-agreement"][value="${value}"]`);
+    const details = dialog.locator('.reparcel-agreement-options .reparcel-agreement-hint').nth(1);
+    await expect(details).toBeVisible();
+    await agreement('single').check();
+    await expect(details).toBeHidden();
+    await expect.poll(() => page.evaluate(() => {
+      const w = window as any;
+      return w.proposalDraftStore?.getDraft(w.pendingProposalDraftId)?.editorPayload?.plan?.agreementMode;
+    })).toBe('single');
+    await agreement('individual').check();
+    await expect(details).toBeVisible();
+  }
   await dialog.locator('#proposalName').fill(`Audited courtyard ${mode}`);
   await dialog.locator('#proposalDescription').fill('Preserve private plots and share the enclosed courtyard.');
   await dialog.locator('#createProposalSubmitButton').click();
@@ -418,7 +432,7 @@ for (const size of [{ name: 'desktop', width: 1280, height: 900 }, { name: 'mobi
     await expect(modal.locator('.reparcel-newplot-row').last()).toContainText(/70(?:\.0)?%/);
 
     const review = modal.locator('[data-reparcel-owner-review]');
-    await review.getByRole('combobox').selectOption({ label: 'Owner A' });
+    await selectNativeOption(review.getByRole('combobox'), { label: 'Owner A' });
     await expect(review.locator('li')).toHaveCount(2);
     await expect(review).toContainText('Input parcels: 1234');
     await expect(review).toContainText(/70(?:\.0)?%/);
@@ -468,7 +482,7 @@ for (const size of [{ name: 'desktop', width: 1280, height: 900 }, { name: 'mobi
 
     if (size.name === 'desktop') {
       // Splitting a custom joint plot preserves its shares; undo restores the original plot.
-      await review.getByRole('combobox').selectOption('');
+      await selectNativeOption(review.getByRole('combobox'), '');
       await modal.locator('[data-reparcel-assign]').click();
       await page.locator('#map-container').scrollIntoViewIfNeeded();
       await modal.locator('[data-reparcel-line]').click();
@@ -504,7 +518,7 @@ for (const size of [{ name: 'desktop', width: 1280, height: 900 }, { name: 'mobi
     const more = panel.locator('summary').filter({ hasText: 'More actions' });
     if (await more.isVisible()) await more.click();
     await panel.locator('.btn-edit-geometry').click();
-    await expect(modal).toBeVisible();
+    await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     await expect(modal.locator('.reparcel-newplot-row').last()).toContainText(/70(?:\.0)?%/);
     await modal.locator('.reparcel-newplot-row').last().getByRole('button', { name: 'Edit shares' }).click();
     await expect(popup.locator('.reparcel-share-mode')).toContainText('stay fixed');

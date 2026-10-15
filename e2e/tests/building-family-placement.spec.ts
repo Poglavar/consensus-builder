@@ -97,7 +97,7 @@ async function reopenGeometryEditor(page: Page, proposalId: string, editorRoot: 
   await openCity(page);
   await showProposal(page, proposalId);
   await page.locator('#proposal-details-footer .btn-edit-geometry').click();
-  await expect(page.locator(editorRoot)).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator(editorRoot).locator('.on-map-editor__panel')).toBeVisible({ timeout: 20_000 });
 }
 
 async function boundsCenter(page: Page, feature: any): Promise<[number, number]> {
@@ -115,7 +115,7 @@ async function openRowHouseEditor(page: Page): Promise<void> {
   await page.locator('#parcel-info-panel .close-button').click();
   await page.locator('#selection-tray [data-command="selection.propose"]').click();
   await page.locator('.parcel-build-btn--row').click();
-  await expect(page.locator('#rowhouse')).toBeVisible();
+  await expect(page.locator('#rowhouse').locator('.on-map-editor__panel')).toBeVisible();
   await expect(page.locator('#btn-rowhouse-done')).toBeEnabled({ timeout: 20_000 });
 }
 

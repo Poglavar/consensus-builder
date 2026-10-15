@@ -34,6 +34,45 @@ async function openLayerActions(page: any, summaryKey: string) {
 }
 
 test.describe('Dataset road tools @features', () => {
+  // Exercise every editable legend bound and verify the rendered analysis uses the new ranges.
+  test('all road-width legend bounds change the classification of the analyzed map geometry', async ({ mockApi: page }) => {
+    test.setTimeout(60_000);
+    await openDatasetTools(page);
+    const analyze = page.locator('#analyzeAllRoadsButton');
+    const results = page.locator('#osm-road-segment-list-popup');
+    await analyze.click();
+    await expect(results).toBeVisible();
+    await expect(results.locator('.road-segment-item')).toHaveCount(1);
+    const width = Number((await results.locator('.road-segment-item__meta').innerText()).match(/[\d.]+/)?.[0]);
+    expect(width).toBeGreaterThan(0.5);
+    const colors = () => page.evaluate(() => (window as any).osmRoadAnalysisLayer.getLayers().map((layer: any) => layer.options.color));
+
+    await results.locator('.close-button').click();
+    await openLayerActions(page, ROAD_DATA);
+    for (let index = 0; index < 6; index++) {
+      const lower = page.locator(`#legend-min-${index}`);
+      await lower.fill(String(index === 0 ? 0.01 : index / 10));
+      await lower.press('Tab');
+      if (index < 5) {
+        const upper = page.locator(`#legend-max-${index}`);
+        await upper.fill(String((index + 1) / 10));
+        await upper.press('Tab');
+      }
+    }
+    await analyze.click();
+    await expect(results).toBeVisible();
+    await expect.poll(colors).toEqual(['black']);
+
+    // Moving the same measured road into the first range must repaint its real map stroke.
+    await results.locator('.close-button').click();
+    await openLayerActions(page, ROAD_DATA);
+    await page.locator('#legend-max-0').fill(String(Math.ceil(width) + 1));
+    await page.locator('#legend-max-0').press('Tab');
+    await analyze.click();
+    await expect(results).toBeVisible();
+    await expect.poll(colors).toEqual(['white']);
+  });
+
   test('OSM, GUP, and DGU road imports draw returned feature geometry', async ({ mockApi: page }) => {
     await openDatasetTools(page);
     await page.locator('button[onclick="drawOSMRoads()"]').click();

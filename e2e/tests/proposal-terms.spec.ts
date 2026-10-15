@@ -16,6 +16,9 @@ test.describe('Proposal terms @features', () => {
     await expect(dialog).toBeVisible();
     await dialog.locator('.proposal-radio').filter({ hasText: /^Third party$/ }).click();
     await dialog.locator('input[name="proposalRecipientScope"][value="specific"]').locator('..').click();
+    await dialog.locator('input[name="proposalRecipientScope"][value="any"]').locator('..').click();
+    await expect(dialog.locator('#proposalRecipientAddress')).toBeHidden();
+    await dialog.locator('input[name="proposalRecipientScope"][value="specific"]').locator('..').click();
     await dialog.locator('#proposalRecipientAddress').fill('0x1234567890abcdef1234567890abcdef12345678');
     const optionsHeader = dialog.locator('#proposalOptionsSection > .collapsible-header');
     if (!await dialog.locator('#proposalOffer').isVisible()) await optionsHeader.click();
@@ -64,10 +67,10 @@ test.describe('Proposal terms @features', () => {
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--reparcellization').click();
     const reparcel = page.locator('.on-map-reparcellization');
-    await expect(reparcel).toBeVisible();
+    await expect(reparcel.locator('.on-map-editor__panel')).toBeVisible();
     await expect(reparcel.locator('[data-reparcel-newplots-table]')).not.toBeEmpty();
     await reparcel.locator('[data-reparcel-commit]').click();
-    await expect(reparcel).toBeHidden();
+    await expect(reparcel).toHaveCount(0);
     const sourceId = await page.evaluate(() => {
       const proposal = (window as any).proposalStorage.getAllProposals()
         .find((item: any) => item.applied && item.reparcellization?.polygons?.length);

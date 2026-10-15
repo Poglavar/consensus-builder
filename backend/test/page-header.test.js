@@ -8,6 +8,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
+import { load } from 'cheerio';
 import { FRONTEND } from './helpers/design-audit.mjs';
 
 const require = createRequire(import.meta.url);
@@ -17,7 +18,7 @@ const EXEMPT = new Set(['index.html', 'deck.html', 'deck2.html', 'deck3.html', '
 const pages = readdirSync(FRONTEND).filter(f => f.endsWith('.html') && !EXEMPT.has(f)).sort();
 const html = Object.fromEntries(pages.map(p => [p, readFileSync(path.join(FRONTEND, p), 'utf8')]));
 const backWords = new Set(Object.values(PageHeader.STRINGS.backToMap));
-const textOf = fragment => fragment.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+const textOf = value => value.replace(/\s+/g, ' ').trim();
 
 describe('satellite page header', () => {
     it('finds the satellite pages', () => {
@@ -25,31 +26,45 @@ describe('satellite page header', () => {
     });
 
     it.each(pages)('%s loads tokens, primitives and page-chrome before any other stylesheet', (page) => {
-        const sheets = [...html[page].matchAll(/<link rel="stylesheet" href="([^"?]+)/g)].map(m => m[1]);
+        const $ = load(html[page]);
+        const sheets = $('link[rel]')
+            .filter((_, element) => $(element).attr('rel')?.toLowerCase().split(/\s+/).includes('stylesheet'))
+            .map((_, element) => $(element).attr('href')?.split('?')[0])
+            .get()
+            .filter(Boolean);
         expect(sheets.slice(0, 3)).toEqual(['css/tokens.css', 'css/primitives.css', 'css/page-chrome.css']);
         expect(sheets).not.toContain('index.css');
     });
 
     it.each(pages)('%s carries one header with the mark, a title and one back link to the map', (page) => {
-        const headers = html[page].match(/<header class="cb-page-header">[\s\S]*?<\/header>/g) || [];
+        const $ = load(html[page]);
+        const headers = $('header.cb-page-header');
         expect(headers).toHaveLength(1);
-        const header = headers[0];
-        expect(header).toMatch(/class="cb-page-header__brand"><img class="cb-page-header__logo" src="images\/consensus-builder-logo\.png"/);
-        expect(textOf(header.match(/<span class="cb-page-header__brand">[\s\S]*?<\/span><\/span>/)[0])).toBe('Consensus Builder');
-        expect(header).toMatch(/<div class="cb-page-header__title"><(h1|p)\b/);
-        const backs = [...html[page].matchAll(/<a class="cb-link cb-back-link" href="([^"]*)">([\s\S]*?)<\/a>/g)];
+        const header = headers.first();
+        const brand = header.find('.cb-page-header__brand');
+        expect(brand).toHaveLength(1);
+        expect(brand.find('img.cb-page-header__logo[src="images/consensus-builder-logo.png"]')).toHaveLength(1);
+        expect(textOf(brand.text())).toBe('Consensus Builder');
+        const titles = header.find('.cb-page-header__title');
+        expect(titles).toHaveLength(1);
+        expect(titles.find('h1, p')).toHaveLength(1);
+        const title = titles.find('h1, p').first();
+        expect(textOf(title.text()) || title.attr('data-i18n') || '').not.toBe('');
+        const backs = header.find('a.cb-link.cb-back-link');
         expect(backs).toHaveLength(1);
-        const [, href, inner] = backs[0];
+        const back = backs.first();
+        const href = back.attr('href');
         expect({ page, href }).toEqual({ page, href: expect.stringMatching(/^\/(\?lang=[a-z]{2})?$/) });
-        expect(inner).toMatch(/^<i class="fa-solid fa-arrow-left" aria-hidden="true"><\/i>/);
-        expect(backWords.has(textOf(inner))).toBe(true);
-        expect((html[page].match(/cb-back-link/g) || []).length).toBe(1);
+        expect(back.find('i.fa-solid.fa-arrow-left[aria-hidden="true"]')).toHaveLength(1);
+        expect(backWords.has(textOf(back.text()))).toBe(true);
+        expect($('a.cb-back-link')).toHaveLength(1);
     });
 
     it.each(pages)('%s keeps none of the retired back-link wordings or looks', (page) => {
-        const visible = textOf(html[page].slice(html[page].indexOf('<body')));
+        const $ = load(html[page]);
+        const visible = textOf($('body').text());
         expect(visible).not.toMatch(/Back to the app|Return to the map|Natrag na aplikaciju|Consensus Builder ↗/);
-        expect(html[page]).not.toMatch(/class="(?:[^"]*\s)?(back-link|primary-link|lang-switch)(?:\s[^"]*)?"/);
+        expect($('[class~="back-link"], [class~="primary-link"], [class~="lang-switch"]')).toHaveLength(0);
     });
 });
 

@@ -51,6 +51,7 @@ test('runtime button roles and generic factories preserve the real element and r
   assert.equal(context.row.role, 'button');
   assert.equal(context.row['data-ui-control'], instrumented.sites.map(site => site.id).join(' '));
   assert.equal(instrumented.sites.length, 2);
+  assert.equal(instrumented.sites[0].interaction, 'auto');
 });
 
 test('button-styled anchor markup is inventoried while ordinary links remain links', () => {
@@ -83,4 +84,43 @@ test('icon action anchors created by assignment retain their source identity', (
   const context = { document: { createElement() { return { setAttribute(name, value) { this[name] = value; } }; } } };
   vm.runInNewContext(instrumented.code, context);
   assert.equal(context.output['data-ui-control'], instrumented.sites[0].id);
+});
+
+test('inputs, selects and textareas retain their HTML and receive value-change identities', () => {
+  const source = `const html = '<input type="range" id="height"><input type="checkbox" id="traffic"><select id="mode"><option>A</option></select><textarea id="notes"></textarea><input type="hidden" id="internal">'; globalThis.output = html;`;
+  const instrumented = instrumentControls(source, 'js/fields.js');
+  assert.equal(instrumented.sites.length, 4);
+  assert.deepEqual(instrumented.sites.map(site => [site.interaction, site.controlType]), [
+    ['change', 'range'], ['change', 'checkbox'], ['change', 'select'], ['change', 'textarea'],
+  ]);
+  const original = {}, candidate = {};
+  vm.runInNewContext(source, original);
+  vm.runInNewContext(instrumented.code, candidate);
+  assert.equal(candidate.output.replace(/ data-ui-control=control-[\w-]+/g, ''), original.output);
+});
+
+test('native field factories retain their object identity and later type assignments', () => {
+  const source = `const slider = document.createElement('input'); slider.type = 'range'; globalThis.output = slider;`;
+  const instrumented = instrumentControls(source, 'js/field-factory.js');
+  const field = { setAttribute(name, value) { this[name] = value; } };
+  const context = { document: { createElement() { return field; } } };
+  vm.runInNewContext(instrumented.code, context);
+  assert.equal(instrumented.sites.length, 1);
+  assert.equal(instrumented.sites[0].interaction, 'change');
+  assert.equal(context.output, field);
+  assert.equal(field.type, 'range');
+  assert.equal(field['data-ui-control'], instrumented.sites[0].id);
+});
+
+test('ARIA sliders retain their role and require value-change coverage', () => {
+  const source = `const slider = document.createElement('div'); slider.setAttribute('role', 'slider'); globalThis.output = slider;`;
+  const instrumented = instrumentControls(source, 'js/slider.js');
+  const real = { getAttribute(name) { return this[name]; }, setAttribute(name, value) { this[name] = value; } };
+  const context = { document: { createElement() { return real; } } };
+  vm.runInNewContext(instrumented.code, context);
+  assert.equal(instrumented.sites.length, 1);
+  assert.equal(instrumented.sites[0].interaction, 'change');
+  assert.equal(instrumented.sites[0].controlType, 'slider');
+  assert.equal(real.role, 'slider');
+  assert.equal(context.output, real);
 });

@@ -1,3 +1,4 @@
+import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 import { openCity, PARCEL_ID } from '../helpers/runtime';
@@ -42,7 +43,7 @@ test.describe('Settings maintenance @features', () => {
     const tile = page.locator('#tile-source-select');
     const original = await tile.inputValue();
     const next = original === 'openstreetmap' ? 'maptiler' : 'openstreetmap';
-    await tile.selectOption(next);
+    await selectNativeOption(tile, next);
     await expect.poll(() => page.evaluate(() => (window as any).baseTileLayer?._url || '')).not.toBe('');
     await page.reload();
     await waitForMapReady(page);
@@ -56,7 +57,9 @@ test.describe('Settings maintenance @features', () => {
     await waitForMapReady(page);
     await openSettings(page);
     const debug = page.locator('#debugModeCheckbox');
-    if (!(await debug.isChecked())) await debug.check();
+    if (await debug.isChecked()) await debug.uncheck();
+    await expect(page.locator('body')).not.toHaveClass(/debug-mode/);
+    await debug.check();
     await expect(page.locator('body')).toHaveClass(/debug-mode/);
     await openResets(page);
     await expect(page.locator('#settings-sheet [data-section="parcels"] .btn-danger')).toBeVisible();
@@ -144,10 +147,21 @@ test.describe('Settings maintenance @features', () => {
     await openSettings(page);
     const select = page.locator('#data-source-select');
     const current = await select.inputValue();
-    const next = await select.locator('option').evaluateAll((options, value) =>
-      options.map(option => (option as HTMLOptionElement).value).find(value2 => value2 !== value), current);
+    const next = await select.evaluate((el, value) => {
+      const options = Array.from((el as HTMLSelectElement).options)
+        .map((option, index) => ({ index, value: option.value, label: option.label, disabled: option.disabled }))
+        .filter(option => !option.disabled);
+      const selectedIndex = (el as HTMLSelectElement).selectedIndex;
+      return options.find(option => {
+        if (option.value === value) return false;
+        const initial = option.label.trim().slice(0, 1).toLowerCase();
+        const matching = options.filter(candidate => candidate.label.trim().toLowerCase().startsWith(initial));
+        const nextMatch = matching.find(candidate => candidate.index > selectedIndex) ?? matching[0];
+        return nextMatch?.index === option.index;
+      })?.value ?? null;
+    }, current);
     expect(next).toBeTruthy();
-    await select.selectOption(next!);
+    await selectNativeOption(select, next!);
     const confirm = page.getByRole('alertdialog');
     await expect(confirm).toBeVisible();
     await confirm.getByRole('button', { name: /cancel/i }).click();

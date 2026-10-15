@@ -10,7 +10,7 @@ const bars = [
 type SortValue = { id: string; value: number | string | null };
 
 async function displayedSortValues(page: any, tableId: string, column: number): Promise<SortValue[]> {
-  return page.locator(`#${tableId} tbody tr`).evaluateAll((rows: HTMLTableRowElement[], index) => rows.map(row => {
+  return page.locator(`#${tableId} tbody tr[data-record-id]`).evaluateAll((rows: HTMLTableRowElement[], index) => rows.map(row => {
     const cell = row.cells[index];
     const badge = cell.querySelector('.cb-badge');
     if (badge) {
@@ -19,10 +19,10 @@ async function displayedSortValues(page: any, tableId: string, column: number): 
     }
     const link = cell.querySelector('a');
     if (link) return { id: row.dataset.recordId || '', value: link.href || null };
-    const button = cell.querySelector('button');
-    if (button) return { id: row.dataset.recordId || '', value: button.textContent?.trim() || null };
     const strong = cell.querySelector('strong');
     if (strong) return { id: row.dataset.recordId || '', value: strong.textContent?.trim() || null };
+    const button = cell.querySelector('button');
+    if (button) return { id: row.dataset.recordId || '', value: button.textContent?.trim() || null };
 
     const text = cell.textContent?.trim() || '';
     if (!text || ['—', 'Unknown', 'Not recorded'].includes(text)) return { id: row.dataset.recordId || '', value: null };
@@ -84,6 +84,8 @@ function expectSortedBothWays(first: SortValue[], second: SortValue[], firstDire
 
 test.describe('parcel coverage report controls @core', () => {
   test('every evidence segment filters the country inventory to its category', async ({ mockApi: page }) => {
+    // Exercise all twelve chart buttons in sequence, each updating the country inventory.
+    test.setTimeout(120_000);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/parcel-coverage-report.html');
     const report = page.locator('#report-content');
@@ -94,7 +96,15 @@ test.describe('parcel coverage report controls @core', () => {
         const segment = page.locator(`.metric-chart:has(h3:text-is("${metric}")) .bar-segment.${category}`);
         await expect(segment).toBeVisible();
         await expect(segment).toHaveAttribute('aria-label', new RegExp(`^${metric} ·`));
-        await segment.click();
+        if (category === 'none') {
+          // The evidence category is a deliberately narrow segment beside the larger "unknown"
+          // segment. Keep the real button reachable without requiring a tiny pointer hit target.
+          await segment.focus();
+          await expect(segment).toBeFocused();
+          await page.keyboard.press('Enter');
+        } else {
+          await segment.click();
+        }
         await expect(page.locator('#country-category')).toHaveValue(category);
         await expect(page.locator('#country-table tbody tr')).not.toHaveCount(0);
       }
@@ -102,6 +112,9 @@ test.describe('parcel coverage report controls @core', () => {
   });
 
   for (const tableId of ['city-table', 'country-table', 'breakdown-table']) test(`${tableId} headings sort the displayed records in both directions`, async ({ mockApi: page }) => {
+    // The city table contains hundreds of rows and is re-rendered on each sort. Allow it extra
+    // time when the shared headless browser is under load from the other control suites.
+    if (tableId === 'city-table') test.setTimeout(120_000);
     await page.goto('/parcel-coverage-report.html');
     await expect(page.locator('#report-content')).toBeVisible();
 

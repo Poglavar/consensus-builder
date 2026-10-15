@@ -77,14 +77,33 @@ test.describe('shared dialog button controls @features', () => {
       }
       return source;
     }, { id: sourceId, geometry: PARCEL_GEOMETRY });
-    const receiver = await newReceiver(browser, baseURL, sharedUrl(payload([proposal])));
+    const unselected = JSON.parse(JSON.stringify(proposal));
+    unselected.proposalId = `${sourceId}-unselected`;
+    unselected.title = 'Park left unselected';
+    const insetGeometry = {
+      type: 'Polygon',
+      coordinates: [[
+        [15.9820, 45.8001], [15.9823, 45.8001], [15.9823, 45.8004],
+        [15.9820, 45.8004], [15.9820, 45.8001],
+      ]],
+    };
+    unselected.geometry = insetGeometry;
+    if (unselected.structureProposal) unselected.structureProposal.geometry = insetGeometry;
+    const receiver = await newReceiver(browser, baseURL, sharedUrl(payload([proposal, unselected])));
     try {
       const modal = receiver.page.locator('.share-modal-overlay');
       await expect(modal).toContainText(/Review shared proposals/i);
+      const items = modal.locator('.shared-payload-inspector .spi-proposal-item');
+      await expect(items).toHaveCount(2);
+      const secondCheckbox = items.nth(1).locator('input[type="checkbox"]');
+      await expect(secondCheckbox).toBeChecked();
+      await secondCheckbox.uncheck();
+      await expect(secondCheckbox).not.toBeChecked();
       const apply = modal.getByRole('button', { name: /^Apply selected$/i });
       await expect(apply).toBeEnabled({ timeout: 30_000 });
       await apply.click();
       await expect.poll(async () => (await proposalState(receiver.page, sourceId))?.applied, { timeout: 60_000 }).toBe(true);
+      expect(await receiver.page.evaluate(id => !!(window as any).proposalStorage.getProposal(id), unselected.proposalId)).toBe(false);
       const summary = receiver.page.locator('.share-modal-overlay').filter({ hasText: 'Applied shared proposals' });
       await expect(summary).toContainText('1 applied.');
       await summary.getByRole('button', { name: 'Unapply applied', exact: true }).click();

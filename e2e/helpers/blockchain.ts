@@ -1,5 +1,19 @@
-import { expect, Page } from '@playwright/test';
+import { expect, Page, Route } from '@playwright/test';
 import { selectors } from './selectors';
+
+/** Mock Solana account reads regardless of the developer's configured RPC provider. */
+export async function routeSolanaReads(page: Page, respond: (route: Route) => Promise<unknown>): Promise<void> {
+  const methods = new Set(['getAccountInfo', 'getMultipleAccounts', 'getProgramAccounts', 'getBalance',
+    'getTokenAccountBalance', 'getSignaturesForAddress', 'getLatestBlockhash']);
+  await page.route('**/*', async route => {
+    if (route.request().method() !== 'POST') return route.fallback();
+    let body: any;
+    try { body = route.request().postDataJSON(); } catch (_) { return route.fallback(); }
+    const requests = Array.isArray(body) ? body : [body];
+    if (!requests.length || !requests.every(item => item?.jsonrpc === '2.0' && methods.has(item.method))) return route.fallback();
+    await respond(route);
+  });
+}
 
 type MockEvmWalletOptions = {
   account?: string;

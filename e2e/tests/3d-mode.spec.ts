@@ -1,6 +1,8 @@
+import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace, createBuilding, proposalState } from '../helpers/runtime';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
+import { surveyResponse } from '../helpers/mocks/survey-data';
 import { Page } from '@playwright/test';
 
 async function enter3D(page: Page) {
@@ -72,7 +74,7 @@ test.describe('3D rendering and controls @features', () => {
     const flat = await modeBoxes();
     await enter3D(page);
     await openModelLayers(page);
-    await page.locator('#three-mode-built-display').selectOption('solid');
+    await selectNativeOption(page.locator('#three-mode-built-display'), 'solid');
     await closeSheets(page);
     await expect.poll(async () => (await sceneBuildings(page)).length).toBe(2);
     const originalBuildings = await sceneBuildings(page);
@@ -99,6 +101,15 @@ test.describe('3D rendering and controls @features', () => {
     const before = await camera();
     await page.mouse.click(point.x, point.y);
     await expect(page.locator('.three-mode-parcel-panel')).toBeVisible();
+    const parcelPanel = page.locator('.three-mode-parcel-panel');
+    const priceSlider = parcelPanel.locator('[data-role="price-slider"]');
+    const valueReadout = parcelPanel.locator('[data-role="value-title"]');
+    const initialPrice = Number(await priceSlider.inputValue());
+    const initialValueReadout = await valueReadout.textContent();
+    await priceSlider.focus();
+    await page.keyboard.press(initialPrice < Number(await priceSlider.getAttribute('max')) ? 'End' : 'Home');
+    await expect.poll(async () => Number(await priceSlider.inputValue())).not.toBe(initialPrice);
+    await expect.poll(async () => await valueReadout.textContent()).not.toBe(initialValueReadout);
     expect(await camera()).toEqual(before);
     const buildings = await sceneBuildings(page);
     expect(buildings).toHaveLength(2);
@@ -130,7 +141,7 @@ test.describe('3D rendering and controls @features', () => {
     await openCity(page);
     await enter3D(page);
     await openModelLayers(page);
-    await page.locator('#three-mode-built-display').selectOption('solid');
+    await selectNativeOption(page.locator('#three-mode-built-display'), 'solid');
     await closeSheets(page);
     await expect.poll(async () => (await sceneBuildings(page)).length).toBe(2);
     expect((await sceneBuildings(page))[0].vertices).toBeGreaterThan(12);
@@ -160,14 +171,14 @@ test.describe('3D rendering and controls @features', () => {
     await openModelLayers(page);
     const display = page.locator('#three-mode-built-display');
     for (const [state, count] of [['solid', 2], ['ghost', 2], ['surviving', 1], ['removed', 1], ['off', 0]] as const) {
-      await display.selectOption(state);
+      await selectNativeOption(display, state);
       await expect.poll(async () => (await sceneBuildings(page)).length, { message: state }).toBe(count);
       if (state === 'ghost') {
         const meshes = await sceneBuildings(page);
         expect(meshes.every(m => m.opacity < 1)).toBe(true);
       }
     }
-    await display.selectOption('solid');
+    await selectNativeOption(display, 'solid');
     await expect.poll(async () => (await sceneBuildings(page)).length).toBe(2);
   });
 
@@ -254,7 +265,7 @@ test.describe('3D rendering and controls @features', () => {
     const source = await proposalState(page, id);
     await enter3D(page);
     await openModelLayers(page);
-    await page.locator('#three-mode-built-display').selectOption('off');
+    await selectNativeOption(page.locator('#three-mode-built-display'), 'off');
     const geometry = () => page.evaluate(() => {
       const meshes: any[] = [];
       (window as any).getThreeModeInternals().scene.traverseVisible((o: any) => {
@@ -266,23 +277,23 @@ test.describe('3D rendering and controls @features', () => {
       });
       return meshes;
     });
-    await page.locator('#three-mode-planned-display').selectOption('solid');
+    await selectNativeOption(page.locator('#three-mode-planned-display'), 'solid');
     await expect.poll(async () => (await geometry()).length).toBeGreaterThan(0);
     expect((await geometry()).every(m => m.opacity === 1)).toBe(true);
-    await page.locator('#three-mode-planned-display').selectOption('ghost');
+    await selectNativeOption(page.locator('#three-mode-planned-display'), 'ghost');
     await expect.poll(async () => (await geometry()).every(m => m.opacity < 1)).toBe(true);
-    await page.locator('#three-mode-planned-display').selectOption('off');
+    await selectNativeOption(page.locator('#three-mode-planned-display'), 'off');
     await expect.poll(async () => (await geometry()).length).toBe(0);
-    await page.locator('#three-mode-planned-display').selectOption('solid');
+    await selectNativeOption(page.locator('#three-mode-planned-display'), 'solid');
 
     const allMeshes = () => page.evaluate(() => {
       let count = 0;
       (window as any).getThreeModeInternals().scene.traverseVisible((o: any) => { if (o.isMesh && o.geometry?.attributes?.position?.count) count++; });
       return count;
     });
-    await page.locator('#three-mode-planned-representation').selectOption('massing');
+    await selectNativeOption(page.locator('#three-mode-planned-representation'), 'massing');
     const massingCount = await allMeshes();
-    await page.locator('#three-mode-planned-representation').selectOption('buildout');
+    await selectNativeOption(page.locator('#three-mode-planned-representation'), 'buildout');
     await expect.poll(async () => (await geometry()).length).toBeGreaterThan(0);
     const buildoutCount = await allMeshes();
     const beforeReroll = await geometry();
@@ -293,7 +304,7 @@ test.describe('3D rendering and controls @features', () => {
       if (JSON.stringify(await geometry()) !== JSON.stringify(beforeReroll)) break;
     }
     expect(await geometry()).not.toEqual(beforeReroll);
-    await page.locator('#three-mode-planned-representation').selectOption('both');
+    await selectNativeOption(page.locator('#three-mode-planned-representation'), 'both');
     await expect.poll(allMeshes).toBeGreaterThan(Math.max(massingCount, buildoutCount));
     expect(await proposalState(page, id)).toEqual(source);
 
@@ -307,7 +318,7 @@ test.describe('3D rendering and controls @features', () => {
     await expect.poll(async () => (await uniforms()).some((p: any) => p.enabled === 1)).toBe(true);
     const styles = await page.locator('#three-mode-facade-style option').evaluateAll(options => options.map((o: any) => o.value));
     for (let index = 0; index < styles.length; index++) {
-      await page.locator('#three-mode-facade-style').selectOption(styles[index]);
+      await selectNativeOption(page.locator('#three-mode-facade-style'), styles[index]);
       await expect.poll(async () => (await uniforms()).some((p: any) => p.style === index - 1)).toBe(true);
     }
     await page.locator('#three-mode-facades').uncheck();
@@ -341,6 +352,58 @@ test('X-ray and Suggested layouts buttons render and remove real generated floor
   await xray.click();
   await expect(suggested).toBeHidden();
   await expect(page.locator('#three-mode-xray-note')).toBeHidden();
+});
+
+test('3D suggested-existing toggle and floor cutaway change rendered floor plans', async ({ mockApi: page }) => {
+  await mockBuildingScene(page);
+  await page.route('**/buildings?*', route => route.fulfill({ json: {
+    source: 'gdi',
+    ...surveyResponse([{
+      type: 'Feature',
+      properties: { object_id: 91001, height_m: 18, floors: 5, building: 'yes' },
+      geometry: { type: 'Polygon', coordinates: [[[15.98270,45.80029],[15.98284,45.80029],[15.98284,45.80043],[15.98270,45.80043],[15.98270,45.80029]]] },
+    }]),
+  } }));
+  await openCity(page);
+  await page.locator('#layers-button').click();
+  await page.locator('#showBuildings').check();
+  await expect.poll(() => page.evaluate(() => (window as any).buildingFeaturePool
+    ?.some((feature: any) => feature.properties?.object_id === 91001) ?? false)).toBe(true);
+  await closeSheets(page);
+  await enter3D(page);
+  await openModelLayers(page);
+
+  const xray = page.locator('#three-mode-xray');
+  const suggested = page.locator('#three-mode-suggested-layouts');
+  await xray.click();
+  await suggested.click();
+  const existingToggle = page.locator('#three-mode-suggested-existing');
+  await expect(existingToggle).toBeVisible();
+  await expect(existingToggle).not.toBeChecked();
+  const existingFloorPlans = () => page.evaluate(() => {
+    const floors = (window as any).getThreeModeInternals().scene.getObjectByName('FloorPlans');
+    return floors?.children.filter((group: any) => group.userData?.suggested
+      && group.userData?.proposalId == null && group.userData?.parcelId == null).length || 0;
+  });
+  await existingToggle.check();
+  await expect.poll(existingFloorPlans).toBeGreaterThan(0);
+  await expect(page.locator('#three-mode-xray-note')).toContainText(/Existing: [1-9]/);
+
+  const floorCutaway = page.locator('#three-mode-floor-cutaway');
+  await expect(floorCutaway).toBeEnabled();
+  const visibleFloorCount = () => page.evaluate(() => {
+    const plans = (window as any).getThreeModeInternals().scene.getObjectByName('FloorPlans');
+    return plans?.children.reduce((count: number, group: any) => count
+      + group.children.filter((floor: any) => floor.userData?.cbFloorPlanFloor && floor.visible !== false).length, 0) || 0;
+  });
+  const allFloors = await visibleFloorCount();
+  expect(allFloors).toBeGreaterThan(1);
+  const levels = await floorCutaway.locator('option').evaluateAll(options => options.map((option: any) => option.value).filter((value: string) => value !== 'all'));
+  expect(levels.length).toBeGreaterThan(0);
+  await selectNativeOption(floorCutaway, levels[Math.floor(levels.length / 2)]);
+  await expect.poll(visibleFloorCount).toBeLessThan(allFloors);
+  await selectNativeOption(floorCutaway, 'all');
+  await expect.poll(visibleFloorCount).toBe(allFloors);
 });
 
 test('3D trees use real instanced geometry, toggle off and restore their saved preference', async ({ mockApi: page }) => {

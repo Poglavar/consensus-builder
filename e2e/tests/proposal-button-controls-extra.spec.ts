@@ -1,3 +1,4 @@
+import { selectNativeOption } from '../helpers/controls';
 // Exercise proposal modal buttons through the UI, with local server and wallet boundaries.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, createSpace, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
@@ -113,6 +114,29 @@ async function expectProposalMintRpc(page: import('@playwright/test').Page): Pro
 }
 
 test.describe('proposal button controls: modal and alternate states @features', () => {
+  test('fresh proposal land-use and parcel choices update the geometry and ownership requirements', async ({ mockApi: page }) => {
+    test.setTimeout(60_000);
+    await installProposalBlockGround(page);
+    await openCity(page);
+    await openBlockProposalDialog(page);
+    const create = page.locator('.create-proposal-modal:visible');
+    for (const landUse of ['square', 'lake', 'single', 'as-is']) {
+      await create.locator(`.proposal-radio:has(input[name="proposalLandUse"][value="${landUse}"])`).click();
+      await expect.poll(() => page.evaluate(() => (window as any).proposalFacets?.landUse)).toBe(landUse);
+      const ownership = landUse === 'single' ? 'to-me' : landUse === 'as-is' ? 'no-change' : 'to-city';
+      await expect.poll(() => page.evaluate(() => (window as any).proposalFacets?.ownership)).toBe(ownership);
+      if (landUse === 'as-is') await expect(create.locator('#proposalParcelsStatic')).toBeHidden();
+      else await expect(create.locator('#proposalParcelsStatic')).toBeVisible();
+    }
+    await create.locator('.proposal-radio:has(input[name="proposalParcelsMode"][value="readjust"])').click();
+    await expect.poll(() => page.evaluate(() => (window as any).proposalFacets)).toMatchObject({ parcels: 'readjust', ownership: 'per-slice' });
+    await expect(create.locator('#proposalOwnershipStatic')).toContainText('Per slice');
+    await create.locator('.proposal-radio:has(input[name="proposalParcelsMode"][value="as-is"])').click();
+    await expect.poll(() => page.evaluate(() => (window as any).proposalFacets)).toMatchObject({ parcels: 'as-is', ownership: 'no-change' });
+    await expect(create.locator('#proposalOwnershipStatic')).toBeHidden();
+    await expect(create.locator('#createProposalSubmitButton')).toBeDisabled();
+  });
+
   test('proposal summary expands the selected parcel details and collapses them again', async ({ mockApi: page }) => {
     await installProposalBlockGround(page);
     await openCity(page);
@@ -165,7 +189,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await create.locator('#proposalName').fill('Mint confirmation test');
     await create.locator('#proposalOptionsSection > .collapsible-header').click();
     await create.locator('#proposalOffer').fill('100');
-    await create.locator('#proposalCurrency').selectOption('EUR');
+    await selectNativeOption(create.locator('#proposalCurrency'), 'EUR');
     await create.locator('#createProposalSubmitButton').click();
     await expectProposalMintRpc(page);
     const success = page.locator('#proposal-mint-success-modal');
@@ -194,7 +218,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await create.locator('#proposalName').fill('Retry mint failure');
     await create.locator('#proposalOptionsSection > .collapsible-header').click();
     await create.locator('#proposalOffer').fill('100');
-    await create.locator('#proposalCurrency').selectOption('EUR');
+    await selectNativeOption(create.locator('#proposalCurrency'), 'EUR');
     await create.locator('#createProposalSubmitButton').click();
     await expectProposalMintRpc(page);
     const failure = page.locator('.cb-dialog-overlay--confirm');
@@ -216,7 +240,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await create.locator('#proposalName').fill('Fallback in-memory proposal');
     await create.locator('#proposalOptionsSection > .collapsible-header').click();
     await create.locator('#proposalOffer').fill('100');
-    await create.locator('#proposalCurrency').selectOption('EUR');
+    await selectNativeOption(create.locator('#proposalCurrency'), 'EUR');
     const before = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length);
     await create.locator('#createProposalSubmitButton').click();
     await expectProposalMintRpc(page);

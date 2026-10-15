@@ -33,7 +33,7 @@ test.describe('Leaflet runtime control effects @features', () => {
     await showProposal(page, proposalId);
     await page.locator('#proposal-details-footer .btn-edit-geometry').click();
     const editor = page.locator('#structure-geometry-editor');
-    await expect(editor).toBeVisible();
+    await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
 
     const decorations = [
       { tool: 'tree', kind: 'tree', lng: 15.98208, lat: 45.80018 },
@@ -53,7 +53,7 @@ test.describe('Leaflet runtime control effects @features', () => {
       await expect(markers).toHaveCount(countBeforeErase - 1);
     }
     await editor.locator('[data-action="save"]').click();
-    await expect(editor).toBeHidden();
+    await expect(editor).toHaveCount(0);
   });
 
   test('clicking an applied transit station marker selects and opens its proposal', async ({ mockApi: page }) => {
@@ -81,7 +81,7 @@ test.describe('Leaflet runtime control effects @features', () => {
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--reparcellization').click();
     const modal = page.locator('.on-map-reparcellization');
-    await expect(modal).toBeVisible();
+    await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
     await modal.locator('label.reparcel-alg-option:has(input[value="manual"])').click();
     const nodes = modal.locator('[data-reparcel-nodes]');

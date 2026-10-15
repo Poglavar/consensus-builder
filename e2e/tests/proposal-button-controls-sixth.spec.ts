@@ -6,6 +6,7 @@ import { connectWalletByConnectorId, injectMockEvmWallet, injectMockSolanaWallet
 import { installProposalEvmBoundary, PROPOSAL_EVM_ACCOUNT } from '../helpers/proposal-chain-boundary';
 import { installSolanaExternalBoundary } from '../helpers/solana-external-boundary';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
+import { openAndClosePopup } from '../helpers/controls';
 
 const EVM_WALLET = PROPOSAL_EVM_ACCOUNT;
 const SOLANA_WALLET = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
@@ -144,11 +145,9 @@ test.describe('proposal button controls sixth pass @features', () => {
     await expect(link).toHaveAttribute('href', /sepolia\.basescan\.org\/token\//);
     const target = await link.getAttribute('href');
     await page.context().route('https://sepolia.basescan.org/**', route => route.fulfill({ status: 200, contentType: 'text/html', body: '<title>Explorer boundary</title>' }));
-    const popupPromise = page.waitForEvent('popup');
-    await link.click();
-    const popup = await popupPromise;
-    await expect.poll(() => popup.url()).toBe(target);
-    await popup.close();
+    await openAndClosePopup(page, () => link.click(), async popup => {
+      await expect.poll(() => popup.url()).toBe(target);
+    });
     await modal.locator('.minted-proposals-close').click();
     await expect(modal).toBeHidden();
   });
@@ -184,7 +183,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     await edit.click();
     await expect.poll(() => page.evaluate(() => (window as any).getSelectedProposalTool?.())).toBe('buildings');
     const editor = page.locator('#blockify-modal');
-    await expect(editor).toBeVisible();
+    await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
     await expect(editor.locator('#btn-blockify-done')).toBeEnabled();
     await expect.poll(() => page.evaluate(() => {
       const features = (window as any).OnMapEditor?.getPreview?.()?.draftPreview?.features;
@@ -199,7 +198,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     const edit = page.locator('#proposal-details-footer .btn-edit-geometry');
     await expect(edit).toBeVisible();
     await edit.click();
-    await expect(page.locator('#structure-geometry-editor')).toBeVisible();
+    await expect(page.locator('#structure-geometry-editor').locator('.on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#structure-geometry-editor [data-action="save"]')).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).proposalDraftStore.getActiveDraft()?.sourceProposalId)).toBeTruthy();
   });

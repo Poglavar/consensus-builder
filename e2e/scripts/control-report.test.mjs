@@ -26,6 +26,40 @@ test('a role assigned to a factory element records both source identities', () =
   assert.equal(summary.counts.clicked, 2);
 });
 
+test('clicking a field cannot replace a passing value-change assertion', () => {
+  const sites = ['changed', 'clicked', 'failed'].map(id => ({ id, source: 'fields.js', interaction: 'change' }));
+  const event = (sourceId, kind) => ({ sourceId, kind, label: sourceId, attrs: { type: 'range' } });
+  const summary = summarizeControlCoverage(sites, [
+    { key: 'green', status: 'passed', events: [event('changed', 'changed'), event('clicked', 'clicked')] },
+    { key: 'red', status: 'failed', events: [event('failed', 'changed')] },
+  ]);
+  assert.equal(summary.counts.changed, 1);
+  assert.equal(summary.counts.clicked, 0);
+  assert.deepEqual(summary.controls[0].changes, ['green']);
+  assert.deepEqual(summary.uncovered.map(control => control.id), ['clicked', 'failed']);
+  assert.ok(checkControlCoverage(summary, { controls: sites }).some(error => error.includes('No passing change: fields.js:undefined clicked')));
+});
+
+test('a generic factory tracks buttons and fields as distinct interaction variants', () => {
+  const site = { id: 'factory', source: 'form.js', interaction: 'auto' };
+  const events = [
+    { sourceId: 'factory', kind: 'clicked', interaction: 'click', label: 'Save', attrs: { class: 'save' } },
+    { sourceId: 'factory', kind: 'clicked', interaction: 'change', label: 'Name', attrs: { name: 'name' } },
+    { sourceId: 'factory', kind: 'changed', interaction: 'change', label: 'Height', attrs: { name: 'height' } },
+  ];
+  const summary = summarizeControlCoverage([site], [{ key: 'form', status: 'passed', events }]);
+  assert.equal(summary.counts.clicked, 1);
+  assert.equal(summary.counts.changed, 1);
+  assert.equal(summary.controls[0].variants[1].interactions.length, 0);
+  const errors = checkControlCoverage(summary, { controls: [{ ...site, variants: [
+    { name: 'name field', interaction: 'change', attrs: { name: 'name' } },
+    { name: 'height field', interaction: 'change', attrs: { name: 'height' } },
+    { name: 'save button', interaction: 'click', classes: ['save'] },
+  ] }] });
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /name field/);
+});
+
 test('an excluded control must remain unreachable and its source guard unchanged', () => {
   const contract = { controls: [{ id: 'legacy', source: 'legacy.js', exempt: 'The modal has no callers', mustRemainInactive: true,
     guards: [{ pattern: '\\bopenLegacy\\b', occurrences: 1 }] }] };
@@ -49,8 +83,8 @@ test('the gate rejects deleted buttons, new buttons, failed tests and unclicked 
   ] });
   assert.equal(errors.length, 4);
   assert.ok(errors.some(error => error.includes('delete action')));
-  assert.ok(errors.some(error => error.includes('Button removed')));
-  assert.ok(errors.some(error => error.includes('New button')));
+  assert.ok(errors.some(error => error.includes('Control removed')));
+  assert.ok(errors.some(error => error.includes('New control')));
   const failed = summarizeControlCoverage([], [{ key: 'broken', status: 'failed', events: [] }]);
   assert.deepEqual(checkControlCoverage(failed, { controls: [] }), ['Test failed: broken']);
 });
@@ -70,7 +104,7 @@ test('closed action domains and runtime controls cannot acquire an unreviewed bu
   assert.equal(errors.length, 3);
   assert.ok(errors.some(error => error.includes('Unreviewed action variant') && error.includes('Delete')));
   assert.ok(errors.some(error => error.includes('No passing click for runtime button: zoom out')));
-  assert.ok(errors.some(error => error.includes('Unattributed button') && error.includes('Locate me')));
+  assert.ok(errors.some(error => error.includes('Unattributed control') && error.includes('Locate me')));
 });
 
 test('exclusions require a checked source condition', () => {

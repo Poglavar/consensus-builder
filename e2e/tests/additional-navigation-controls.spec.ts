@@ -27,14 +27,14 @@ test('deleting a lake boundary point persists a closed triangular replacement', 
   await showProposal(page, sourceId);
   await page.locator('#proposal-details-footer .btn-edit-geometry').click();
   const editor = page.locator('#structure-geometry-editor');
-  await expect(editor).toBeVisible();
+  await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
   const vertices = page.locator('.polygon-geometry-editor__vertex');
   await expect(vertices).toHaveCount(4);
   await vertices.first().click();
   await page.getByRole('button', { name: 'Delete this boundary point', exact: true }).click();
   await expect(vertices).toHaveCount(3);
   await editor.locator('[data-action="save"]').click();
-  await expect(editor).toBeHidden();
+  await expect(editor).toHaveCount(0);
   await expect.poll(() => page.evaluate(id => {
     const replacement = (window as any).proposalStorage.getAllProposals()
       .find((proposal: any) => proposal.sourceProposalId === id && proposal.structureProposal?.kind === 'lake');

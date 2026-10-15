@@ -287,6 +287,10 @@ test.describe('Proposal actions @features', () => {
     await expect(dialog.locator('#proposalOwnerOfferStatus')).toContainText('attested owner of 1 of 1', { timeout: 10000 });
     await expect(dialog.locator('#proposalOwnerOfferCheckbox')).toBeEnabled();
     await expect(dialog.locator('#proposalOwnerOfferCheckbox')).toBeChecked();
+    await dialog.locator('#proposalOwnerOfferCheckbox').uncheck();
+    await expect.poll(() => page.evaluate(() => (window as any).proposalOwnerOfferMode)).toBe(false);
+    await dialog.locator('#proposalOwnerOfferCheckbox').check();
+    await expect.poll(() => page.evaluate(() => (window as any).proposalOwnerOfferMode)).toBe(true);
     await dialog.locator('#proposalName').fill('Verified parcel owner offer');
     await dialog.locator('#proposalDescription').fill('The attested owner offers this parcel for a new community park.');
     await dialog.locator('#proposalOptionsSection > .collapsible-header').click();

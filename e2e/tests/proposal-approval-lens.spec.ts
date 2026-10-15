@@ -13,6 +13,7 @@ import type { Browser, Page, TestInfo } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 import { openCity, proposalState, showProposal } from '../helpers/runtime';
+import { selectNativeOption } from '../helpers/controls';
 
 const BACKEND = path.resolve(__dirname, '../../backend');
 const PARCELS = { a: 'HR-335754-1234', b: 'HR-335754-1235', c: 'HR-335754-1236' };
@@ -56,7 +57,7 @@ async function freePort(): Promise<number> {
 const strip = (x0: number, x1: number) => ({ type: 'Polygon', coordinates: [[[x0, 45.8], [x1, 45.8], [x1, 45.8002], [x0, 45.8002], [x0, 45.8]]] });
 const POOL = strip(15.9819, 15.9821);
 
-async function seedReadjustment(page: Page, memberKey: string, extra: Record<string, unknown> = {}): Promise<string> {
+async function seedReadjustment(page: Page, memberKeys: string | string[], extra: Record<string, unknown> = {}): Promise<string> {
   return page.evaluate(({ parcels, pool, plots, member, extra }) => {
     const w = window as any;
     return w.proposalStorage.addProposal({
@@ -76,7 +77,7 @@ async function seedReadjustment(page: Page, memberKey: string, extra: Record<str
         ] },
         policy: { type: 'unanimous' }
       },
-      lens: [member],
+      lens: Array.isArray(member) ? member : [member],
       offer: 25,
       offerCurrency: 'EUR',
       isConditional: true,
@@ -98,7 +99,7 @@ async function seedReadjustment(page: Page, memberKey: string, extra: Record<str
         ]
       }
     });
-  }, { parcels: PARCELS, pool: POOL, plots: [strip(15.9819, 15.98197), strip(15.98197, 15.98204), strip(15.98204, 15.9821)], member: memberKey, extra });
+  }, { parcels: PARCELS, pool: POOL, plots: [strip(15.9819, 15.98197), strip(15.98197, 15.98204), strip(15.98204, 15.9821)], member: memberKeys, extra });
 }
 
 async function establishLocalProfile(page: Page): Promise<void> {
@@ -217,8 +218,8 @@ async function startBackendProcess(args: string[], url: string, env: Record<stri
 
 type Signer = { ownerId: string; wallet: string };
 // A dry-run lens member with this rights registry; returns its key and service URL.
-async function startMember(testInfo: TestInfo, signers: Signer[]): Promise<{ memberKey: string; serviceUrl: string }> {
-  const dir = testInfo.outputPath('lens-member');
+async function startMember(testInfo: TestInfo, signers: Signer[], name = 'lens-member'): Promise<{ memberKey: string; serviceUrl: string }> {
+  const dir = testInfo.outputPath(name);
   mkdirSync(dir, { recursive: true });
   writeFileSync(path.join(dir, 'owners.json'), '[]');
   writeFileSync(path.join(dir, 'rights.json'), JSON.stringify({
@@ -236,6 +237,69 @@ async function startMember(testInfo: TestInfo, signers: Signer[]): Promise<{ mem
     '--rights', path.join(dir, 'rights.json'), '--port', String(port)], `${serviceUrl}/lens/status`);
   return { memberKey: (await (await fetch(`${serviceUrl}/lens/status`)).json()).key, serviceUrl };
 }
+
+test('choosing the second approval member verifies and records an owner receipt through that member', async ({ mockApi: page }, testInfo) => {
+  test.setTimeout(120_000);
+  const wallets = { a: wallet(), stranger: wallet() };
+  // Both members know Owner A, but only the second recognizes the connected wallet.
+  const first = await startMember(testInfo, [{ ownerId: 'owner-a', wallet: wallets.stranger.address }], 'lens-member-first');
+  const second = await startMember(testInfo, [{ ownerId: 'owner-a', wallet: wallets.a.address }], 'lens-member-second');
+  const firstCalls: string[] = [];
+  const secondCalls: string[] = [];
+  await page.route('**/lenses/members', route => route.fulfill({ json: { members: [
+    { key: first.memberKey, kind: 'owner-consent', name: 'First notary', serviceUrl: first.serviceUrl },
+    { key: second.memberKey, kind: 'owner-consent', name: 'Second notary', serviceUrl: second.serviceUrl },
+  ] } }));
+  await page.route(`${first.serviceUrl}/lens/approval/**`, route => {
+    firstCalls.push(new URL(route.request().url()).pathname);
+    return route.continue();
+  });
+  await page.route(`${second.serviceUrl}/lens/approval/**`, route => {
+    secondCalls.push(new URL(route.request().url()).pathname);
+    return route.continue();
+  });
+  await page.route(/https:\/\/[^/]*tile\.openstreetmap\.org\//, route => route.fulfill({
+    contentType: 'image/svg+xml',
+    body: '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#eee"/></svg>'
+  }));
+  await installSwitchableWallet(page, wallets);
+  await openCity(page);
+  await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+  await establishLocalProfile(page);
+  const proposalId = await seedReadjustment(page, [first.memberKey, second.memberKey]);
+  expect(await page.evaluate(id => {
+    const w = window as any;
+    return !!w.currentConsentBindingHash(w.proposalStorage.getProposal(id));
+  }, proposalId), 'the seeded readjustment must be valid for both lens members').toBe(true);
+
+  await useWallet(page, wallets.a.address);
+  await openLand(page, proposalId);
+  await card(page).locator('[data-approval-action="verify"]').click();
+  const memberSelect = dialog(page).locator('[data-approval-member]');
+  await expect(memberSelect.locator('option')).toHaveCount(2);
+  const memberKeys = await memberSelect.locator('option').evaluateAll(options => options.map(option => (option as HTMLOptionElement).value));
+  const selectedBefore = await memberSelect.inputValue();
+  expect(memberKeys).toContain(second.memberKey);
+  const firstChange = selectedBefore === second.memberKey
+    ? memberKeys.find(memberKey => memberKey !== second.memberKey)!
+    : second.memberKey;
+  // Force a genuine first selection change even if directory ordering selected the second service
+  // by default, then finish on the service whose receipt is asserted below.
+  await selectNativeOption(memberSelect, firstChange);
+  await expect(memberSelect).toHaveValue(firstChange);
+  if (firstChange !== second.memberKey) await selectNativeOption(memberSelect, second.memberKey);
+  await expect(memberSelect).toHaveValue(second.memberKey);
+  await dialog(page).locator('[data-approval-verify-submit]').click();
+  await expect(dialog(page).locator('[data-approval-verified]')).toHaveAttribute('data-approval-verified', 'owner-a');
+  expect(firstCalls).toEqual([]);
+  expect(secondCalls).toEqual(['/lens/approval/challenge', '/lens/approval/authority']);
+
+  await dialog(page).getByRole('button', { name: 'Review and accept as Owner A' }).click();
+  await expect(dialog(page)).toHaveAttribute('data-approval-review', 'owner-a');
+  await dialog(page).locator('[data-approval-accept="owner-a"]').click();
+  await expect(dialog(page)).toHaveAttribute('data-approval-receipt', 'owner-a');
+  await expect(dialog(page).locator('.cb-dialog__title')).toHaveText('Accepted as Owner A');
+});
 
 // The relay's real handlers (backend/proposals/owner-decisions.js) over the in-memory store, serving
 // the published proposal written to `file`.

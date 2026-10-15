@@ -1,3 +1,4 @@
+import { selectNativeOption } from '../helpers/controls';
 // Exercise all proposal kinds in the block inspector against one consistent cadastral fixture.
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
@@ -45,7 +46,7 @@ async function createBlockFixture(page: Page, kind: 'road' | 'building' | 'park'
   // This fixture has an adjacent parcel, so the app correctly asks which extent to author.
   await page.getByRole('alertdialog').getByRole('button', { name: 'No, just this parcel', exact: true }).click();
   if (kind === 'building') {
-    await page.locator('#blockify-ruletype-select').selectOption('exact');
+    await selectNativeOption(page.locator('#blockify-ruletype-select'), 'exact');
     await expect(page.locator('#btn-blockify-done')).toBeEnabled();
     await page.locator('#btn-blockify-done').click();
   }

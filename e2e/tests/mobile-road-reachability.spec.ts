@@ -55,7 +55,7 @@ test('road header and cross-section actions stay reachable at 320px before the f
   const initialStrips = await page.evaluate(() => (window as any).getRoadDrawingProfile().strips.length);
   await crossSection.click();
   const editor = page.locator('#corridor-editor-overlay');
-  await expect(editor).toBeVisible();
+  await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
 
   // The standard-width reset is conditional, so create a non-standard lane width first and then
   // exercise the resulting button through the real editor UI.
@@ -80,23 +80,23 @@ test('road header and cross-section actions stay reachable at 320px before the f
   await expect.poll(() => page.evaluate(() => (window as any).getRoadDrawingProfile().strips.length)).toBe(initialStrips + 1);
   await expectCenterHitTarget(page, '#corridor-editor-overlay .corridor-editor-cancel');
   await editor.locator('.corridor-editor-cancel').click();
-  await expect(editor).toBeHidden();
+  await expect(editor).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => (window as any).getRoadDrawingProfile().strips.length)).toBe(initialStrips);
 
   await crossSection.click();
-  await expect(editor).toBeVisible();
+  await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
   await addSidewalk(page, editor);
   await expectCenterHitTarget(page, '#corridor-editor-overlay .on-map-editor__header .close-circle-btn');
   await editor.locator('.on-map-editor__header .close-circle-btn').click();
-  await expect(editor).toBeHidden();
+  await expect(editor).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => (window as any).getRoadDrawingProfile().strips.length)).toBe(initialStrips);
 
   await crossSection.click();
-  await expect(editor).toBeVisible();
+  await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
   await addSidewalk(page, editor);
   await expectCenterHitTarget(page, '#corridor-editor-overlay .corridor-editor-save');
   await editor.locator('.corridor-editor-save').click();
-  await expect(editor).toBeHidden();
+  await expect(editor).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => (window as any).getRoadDrawingProfile().strips.length)).toBe(initialStrips + 1);
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(0);
 

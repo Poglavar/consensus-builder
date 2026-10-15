@@ -98,6 +98,25 @@ afterEach(() => {
 });
 
 describe('one-click structure creation focus', () => {
+    it('shows the serializer rejection and reopens the retained drawing without creating a record', async () => {
+        const { showEphemeralMessage } = loadInstantCreate({ lands: true });
+        const openProposalDraftDesign = vi.fn(async () => true);
+        install('openProposalDraftDesign', openProposalDraftDesign);
+        vi.spyOn(console, 'error').mockImplementation(() => {});
+        globalThis.proposalDraftStore.buildProposalFromDraft.mockImplementation(() => {
+            throw new Error('The moved building geometry must fit entirely inside its new site.');
+        });
+
+        await expect(globalThis.instantCreateProposalFromDraft('draft-park')).resolves.toBeNull();
+        await Promise.resolve();
+        expect(showEphemeralMessage).toHaveBeenCalledWith(
+            expect.stringContaining('The moved building geometry must fit entirely inside its new site.'), 7000, 'error'
+        );
+        expect(openProposalDraftDesign).toHaveBeenCalledExactlyOnceWith('draft-park');
+        expect(globalThis.proposalStorage.addProposal).not.toHaveBeenCalled();
+        expect(globalThis.proposalDraftStore.consumeAfterPublish).not.toHaveBeenCalled();
+    });
+
     it('reports draft validation failures and attempts to reopen the retained draft', async () => {
         const draft = { id: 'draft-retained', dirty: true };
         const error = new Error('local storage is unavailable');

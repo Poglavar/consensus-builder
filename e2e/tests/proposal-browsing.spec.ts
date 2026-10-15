@@ -1,3 +1,4 @@
+import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
 import { clickMapPoint, openCity, PARCEL_GEOMETRY, PARCEL_ID, proposalState, showProposal } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
@@ -88,9 +89,9 @@ test.describe('Proposal browsing @features', () => {
     await expect(list.locator('.proposal-list-title')).toHaveText('North park plan');
 
     await list.locator('#proposal-filter-search').fill('');
-    await list.locator('#proposal-filter-type').selectOption('park');
+    await selectNativeOption(list.locator('#proposal-filter-type'), 'park');
     await expect(list.locator('.proposal-list-item')).toHaveCount(2);
-    await list.locator('#proposal-sort').selectOption('created-asc');
+    await selectNativeOption(list.locator('#proposal-sort'), 'created-asc');
     await expect(list.locator('.proposal-list-item').first().locator('.proposal-list-title')).toHaveText('North park plan');
     await expect(list.locator('.proposal-list-item').last().locator('.proposal-list-title')).toHaveText('South park plan');
 
@@ -102,7 +103,7 @@ test.describe('Proposal browsing @features', () => {
     await expect(list.locator('.proposal-source-btn[data-source="server"]')).toHaveAttribute('aria-pressed', 'true');
     // Restore local source before deleting; deletion is offered only for locally held records.
     await list.locator('.proposal-source-btn[data-source="local"]').click();
-    await list.locator('#proposal-filter-type').selectOption('all');
+    await selectNativeOption(list.locator('#proposal-filter-type'), 'all');
     await expect(list.locator('.proposal-list-item')).toHaveCount(3);
     // Fold the filters away again to reach the list rows.
     await list.locator('.proposal-filters-toggle').click();

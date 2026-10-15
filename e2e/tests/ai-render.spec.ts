@@ -1,3 +1,4 @@
+import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createBuilding } from '../helpers/runtime';
 import { mockPhotoTiles } from '../helpers/mocks/photo-data';
@@ -39,7 +40,7 @@ test('AI scene captures real pixels and height map, validates prompt, retries ge
   await expect.poll(() => modal.locator('.ai-scene-source-img').evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(100);
   await modal.locator('.ai-scene-height-toggle').click();
   await expect(modal.locator('.ai-scene-height-img')).toBeVisible();
-  await modal.locator('#ai-scene-model').selectOption('fixture-b');
+  await selectNativeOption(modal.locator('#ai-scene-model'), 'fixture-b');
   await expect(modal.locator('#ai-scene-model option[value="unavailable"]')).toBeDisabled();
   await modal.locator('#ai-scene-prompt').fill('');
   await modal.locator('.ai-scene-generate').click();

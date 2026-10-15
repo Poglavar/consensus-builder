@@ -32,7 +32,7 @@ test.describe('Building generation error recovery @features', () => {
     // the malformed cadastral fixture as its selected site.
     await page.evaluate(id => (window as any).openUrbanRuleForParcels({ blockName: 'Invalid test parcel', parcelIds: [id] }), BROKEN_PARCEL_ID);
     const editor = page.locator('#blockify-modal');
-    await expect(editor).toBeVisible();
+    await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
 
     const popup = page.locator('body > div').filter({ has: page.getByRole('button', { name: 'OK', exact: true }) }).last();
     await expect(popup).toBeVisible({ timeout: 20_000 });
@@ -41,7 +41,7 @@ test.describe('Building generation error recovery @features', () => {
     await popup.getByRole('button', { name: 'OK', exact: true }).click();
 
     await expect(popup).toHaveCount(0);
-    await expect(editor).toBeVisible();
+    await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#btn-blockify-done')).toBeDisabled();
 
     // The visitor can leave the failed attempt and use the ordinary parcel editor successfully.

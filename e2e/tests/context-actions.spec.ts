@@ -126,7 +126,7 @@ test.describe('Map context actions @features', () => {
     const panel = page.locator('#proposal-details-panel');
     await panel.locator('#proposal-details-footer .btn-edit-geometry').click();
     const editor = page.locator('#structure-geometry-editor');
-    await expect(editor).toBeVisible();
+    await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
 
     // The geometry editor starts from the source design. Pick visible open land inside that
     // footprint: its centroid may already contain a rendered tree, which consumes a map click
@@ -166,7 +166,7 @@ test.describe('Map context actions @features', () => {
     await clickMapPoint(page, openLand!.lng, openLand!.lat);
     await expect.poll(() => page.locator('.structure-geometry-icon.is-tree').count()).toBe(treeCountBefore + 1);
     await editor.locator('[data-action="save"]').click();
-    await expect(editor).toBeHidden();
+    await expect(editor).toHaveCount(0);
 
     await expect.poll(() => page.evaluate(sourceId => {
       const w = window as any;

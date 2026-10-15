@@ -185,6 +185,8 @@
                                     saved.segmentIds,
                                     saved.segmentProfiles
                                 );
+                                if (saved.junctions) definition.junctions = JSON.parse(JSON.stringify(saved.junctions));
+                                else delete definition.junctions;
                             });
                         } catch (error) {
                             // One record failing must not leave the others unrestored.
@@ -431,24 +433,15 @@
     // A junction is ONE node: every coincident vertex (one per crossing segment) moves together,
     // so dragging the center of an X carries all four legs.
     function moveNodeTargets(definition, targets, latlng) {
-        const segments = (global.corridorCenterlineOf?.(definition) || [])
-            .map(segment => segment.map(point => ({ ...point, lat: point.lat, lng: point.lng })));
-        let moved = false;
-        targets.forEach(({ segIndex, pointIndex }) => {
-            if (segments[segIndex] && segments[segIndex][pointIndex]) {
-                segments[segIndex][pointIndex] = {
-                    ...segments[segIndex][pointIndex],
-                    lat: latlng.lat,
-                    lng: latlng.lng
-                };
-                moved = true;
-            }
-        });
-        if (moved) {
-            definition.points = segments;
-            definition.segments = segments;
+        const result = global.CorridorGeometry.moveCorridorNodes(
+            global.corridorCenterlineOf?.(definition) || [], definition.junctions, targets, latlng
+        );
+        if (result.changed) {
+            definition.points = result.segments;
+            definition.segments = result.segments;
+            if (result.junctions) definition.junctions = result.junctions;
         }
-        return moved;
+        return result.changed;
     }
 
     // Dragging a node near a centerline (this road's other stretches, or another road) snaps it
@@ -666,10 +659,8 @@
     function commitNodeMove(targets, latlng, origin, isTrack, preEditSnapshots, recorded) {
         if (typeof global.updateLocalCorridorGeometry !== 'function') return;
         // Snap at drop time (the snap targets are read from the map as it is now), then serialize the
-        // re-apply. Hand over the geometry captured at dragstart: liveMoveNode has already streamed the
-        // drag into the live definition, so updateLocalCorridorGeometry can no longer snapshot the true
-        // original itself — without it, changed-edge detection and the reroute-rollback baseline would
-        // be the dragged shape, not the starting one.
+        // re-apply. Hand over the geometry captured at dragstart as the changed-edge detection and
+        // reroute-rollback baseline; liveMoveNode only draws a preview of the moving legs.
         clearDragPreview();
         clearSnapRing();
         const snap = findNodeSnap(latlng, origin, isTrack);

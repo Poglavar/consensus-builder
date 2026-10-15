@@ -2,6 +2,7 @@ import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace } from '../helpers/runtime';
 import { mockPhotoTiles } from '../helpers/mocks/photo-data';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
+import { openAndClosePopup } from '../helpers/controls';
 
 test('walk chooses a real 3D ground point, cancels with Escape, and opens the configured walking map', async ({ mockApi: page, context }) => {
   await mockBuildingScene(page);
@@ -17,18 +18,15 @@ test('walk chooses a real 3D ground point, cancels with Escape, and opens the co
   await expect(page.locator('#floating-status-text')).toContainText('Click the ground');
   await page.keyboard.press('Escape');
   await expect(page.locator('#three-container')).not.toHaveClass(/three-mode-walk-pick/);
-  const newPage = context.waitForEvent('page');
   await walk.click();
-  await page.locator('#three-container canvas').click();
-  const destination = await newPage;
-  try {
-    await destination.waitForURL(url => url.origin === new URL(walkUrl).origin && url.pathname === new URL(walkUrl).pathname);
+  await openAndClosePopup(page, () => page.locator('#three-container canvas').click(), async destination => {
+    await destination.waitForURL(url => url.origin === new URL(walkUrl).origin && url.pathname === new URL(walkUrl).pathname, { waitUntil: 'commit' });
     const url = new URL(destination.url());
     expect(url.searchParams.get('st3d')).toBe('walk');
     expect(Number(url.searchParams.get('lat'))).toBeCloseTo(45.80025, 2);
     expect(Number(url.searchParams.get('lon'))).toBeCloseTo(15.9822, 2);
-    await expect(page.locator('#three-container')).not.toHaveClass(/three-mode-walk-pick/);
-  } finally { await destination.close(); }
+  });
+  await expect(page.locator('#three-container')).not.toHaveClass(/three-mode-walk-pick/);
 });
 
 test('walk requires publishing local applied proposals and cancelling preserves the model scene', async ({ mockApi: page }) => {
@@ -47,6 +45,7 @@ test('walk requires publishing local applied proposals and cancelling preserves 
 });
 
 test('Photo view enters the actual tiles renderer and returning to 2D releases its scene', async ({ mockApi: page }) => {
+  test.setTimeout(60_000);
   await mockBuildingScene(page);
   const tiles = await mockPhotoTiles(page);
   await openCity(page);
@@ -54,13 +53,22 @@ test('Photo view enters the actual tiles renderer and returning to 2D releases i
   await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 15000 });
   await expect.poll(tiles.requests, { timeout: 20000 }).toBeGreaterThan(0);
   await expect(page.locator('body')).toHaveClass(/realistic-mode-active/);
-  await expect.poll(() => page.evaluate(() => {
+  const meshVisible = () => page.evaluate(() => {
     const mesh = (window as any).getThreeModeInternals().scene.getObjectByName('FixturePhotorealMesh');
     if (!mesh?.isMesh || !mesh.geometry?.attributes?.position?.count) return false;
     let object = mesh;
     while (object) { if (!object.visible) return false; object = object.parent; }
     return true;
-  }), { timeout: 20000 }).toBe(true);
+  });
+  await expect.poll(meshVisible, { timeout: 20000 }).toBe(true);
+  await page.locator('#layers-button').click();
+  const imagery = page.locator('#aerial-city-visible');
+  await expect(imagery).toBeVisible();
+  await imagery.uncheck();
+  await expect.poll(meshVisible).toBe(false);
+  await imagery.check();
+  await expect.poll(meshVisible).toBe(true);
+  await page.locator('#layers-button').click();
   // Open the generated-scene editor from this real photo-mode session and close it through its
   // visible control; photo rendering remains active after dismissing the dialog.
   await page.locator('#mode-ai-toggle').click();

@@ -1099,9 +1099,12 @@
         if (!isVisible) {
             if (link) {
                 dialog.setAttribute('data-ad-link', link);
-                const btn = dialog.querySelector('[data-i18n-key="panel.parcel.marketplace"]');
+                const btn = dialog.querySelector('[data-i18n-key="panel.parcel.marketplace"]')?.closest('button');
                 if (btn) {
-                    btn.setAttribute('onclick', `window.open('${link}', '_blank', 'noopener,noreferrer'); return false;`);
+                    btn.onclick = () => {
+                        global.open(link, '_blank', 'noopener,noreferrer');
+                        return false;
+                    };
                 }
             }
             dialog.style.display = 'flex';
