@@ -26,7 +26,6 @@ import { setupDecorRoute } from './routes/decor.js';
 import { setupPlannedRoadRoute } from './routes/planned-roads.js';
 import { setupStreetsRoute } from './routes/streets.js';
 import { setupOsmRoadRoute } from './routes/osm-road.js';
-import { setupTrafficSimulatorRoute } from './routes/traffic-simulator.js';
 import { setupUrbanRulesRoute } from './routes/urban-rules.js';
 import { setupLandUsesRoute } from './routes/land-uses.js';
 import { setupDocsRoute } from './routes/docs.js';
@@ -384,7 +383,6 @@ export function createApp({
     setupPlannedRoadRoute(app, activePool);
     setupStreetsRoute(app, activePool);
     setupOsmRoadRoute(app, activePool);
-    setupTrafficSimulatorRoute(app, activePool, { env });
     setupUrbanRulesRoute(app, activePool);
     setupLandUsesRoute(app, activePool);
     setupDocsRoute(app, activePool);

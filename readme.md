@@ -69,6 +69,8 @@ Urban Game Theory also explores how humans and AI agents could propose, back and
 
 The planning client uses JavaScript, Leaflet and Three.js; the backend uses Node.js, Express and PostgreSQL/PostGIS. Optional blockchain integrations live under `blockchain/`.
 
+Traffic simulation and observed junction recognition are maintained as separate domain projects. This application owns proposal and corridor editing and consumes shared data through APIs.
+
 - [`frontend/`](frontend/) — map, editing tools, visualisations and interface.
 - [`backend/`](backend/) — parcel/data services, shared proposals, monitoring and agent services.
 - [`blockchain/`](blockchain/) — chain contracts and experimental integrations.
