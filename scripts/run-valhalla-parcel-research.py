@@ -397,6 +397,7 @@ class Runner:
         self.models = None
         self.receipt_errors: dict[str, list[str]] = {}
         self.validated_stages: set[tuple[str, str]] = set()
+        self.qualification_runners: list[Any] = []
 
     def _model(self, role: str) -> dict[str, Any]:
         if self.models is None:
@@ -433,6 +434,10 @@ class Runner:
              "startedAt": item["startedAt"], "callId": item["call"]["callId"]}
             for item in self.active_processes.values()
         ]
+        for worker in self.qualification_runners:
+            self.state["activeProcesses"].extend(
+                {**item, "role": "qualification", "worktree": str(worker.root)}
+                for item in worker.state.get("activeProcesses", []))
         self.state["discoveryCounts"] = discovery_outcomes.counts(self.state)
         atomic_json(self.state_path, self.state)
 
@@ -1236,9 +1241,12 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
             for row in self.state.get("cities", {}).values()))
 
     def _advance_candidate(self, cities: list[dict[str, Any]], cohort_dir: Path) -> bool:
-        """One serial build/qualification/admission between discovery batches."""
+        """Advance one qualification batch; app admission always remains serial."""
         if not getattr(self.args, "with_adapters", False) or self.stop_requested or self.state.get("adapterStageBlocked"):
             return False
+        if getattr(self.args, "qualification_workers", 1) == 2:
+            from parcel_parallel_qualification import advance_candidates
+            return advance_candidates(self, cities, cohort_dir)
         from parcel_source_stage import run_candidate, revalidate_stage
         from parcel_source_admission import admit_candidate
         for city in cities:
@@ -1447,6 +1455,11 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         self.log("queue loaded", count=len(cities), rankStart=start_rank, rankEnd=end_rank,
                  validatedReviewedOnResume=validated_done, workers=self.args.workers)
 
+        # Start the existing qualification backlog promptly after a restart.
+        if getattr(self.args, "qualification_workers", 1) == 2:
+            if self._advance_candidate(cities, cohort_dir) and once:
+                return True, end_rank
+
         batch_number = 0
         while not self.stop_requested:
             research, review_only = self._select_batch(cities, cohort_dir)
@@ -1621,6 +1634,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--discovery-only", action="store_true", help="review city evidence only; exclude legacy tasks and source admission")
     parser.add_argument("--with-adapters", action="store_true", help="classify discovery, build/qualify candidate adapters and integrate passing cities in this worktree; never deploy")
     parser.add_argument("--workers", type=int, default=3, help="parallel city research workers (1-3; default 3)")
+    parser.add_argument("--qualification-workers", type=int, choices=(1, 2), default=1,
+                        help="parallel qualification cities in isolated worktrees (default 1); admission stays serial")
     parser.add_argument("--job-name", default="valhalla-parcel-research", help="persistent state/log job name")
     parser.add_argument("--repo-root", type=Path, default=DEFAULT_ROOT)
     parser.add_argument("--queue", type=Path, default=DEFAULT_QUEUE)

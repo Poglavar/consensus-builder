@@ -241,6 +241,15 @@ class ParcelSourceStageTests(unittest.TestCase):
         self.assertIn("backend/parcels/adapter.js", result["changedFiles"])
         self.assertIn("runner-independent-tests.log", " ".join(result["evidenceFiles"]))
 
+    def test_reserved_attempt_name_preserves_relocated_evidence_references(self):
+        attempt = self.city_root / "attempt-07"
+        harness = Harness(self.root, attempt)
+        harness.qualification_attempt_name = attempt.name
+        result = self.call_stage(harness)
+        self.assertEqual(result["status"], "adapter-ready")
+        self.assertEqual(Path(result["artifactRoot"]).name, "attempt-07")
+        self.assertIn("attempt-07/inputs.json", result["evidenceFiles"])
+
     def test_candidate_source_identity_must_bind_receipt(self):
         harness = Harness(self.root, self.attempt_dir, wrong_binding=True)
         result = self.call_stage(harness)

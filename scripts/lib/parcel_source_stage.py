@@ -1,4 +1,4 @@
-"""One-at-a-time stage-2 qualification for a reviewed parcel source candidate."""
+"""Stage-2 qualification for one reviewed parcel source in its owning workspace."""
 from __future__ import annotations
 
 import copy
@@ -249,6 +249,7 @@ Attempt directory: `{attempt_dir}`
 The receipt scope is a source-discovery claim that must be checked against first-party evidence; it is not proof that the qualification samples cover the whole city. Confirm the source's actual cadastral/registry parcel purpose. Exclude sale listings, development-only proposals, and planning overlays that are not cadastral parcel records. Do not claim citywide completeness from the qualifier's 13 bounded cells.
 
 Write `{attempt_dir / 'candidate.json'}` and all evidence under `{attempt_dir}`. Candidate identity must bind exactly to receipt `source.sourceId` and `source.endpoint`, city code `{city['cityCode']}`, name `{city['name']}`, and point `{point}`. Include full descriptor fields needed by production catalog/runtime, and include `city.currency={{"locale":"...","code":"..."}}` if available from an existing same-country app config or verified public country metadata; do not guess. Keep frozen identity/source fields unchanged.
+Use attempt-relative local paths in the candidate, including `alignmentEvidence.file`; keep every referenced local evidence file inside this attempt. The complete attempt must remain verifiable after copying unchanged into the coordinator's qualification state.
 
 Use only safe native IDs and necessary geometry fields. Never request/save owner, address, tax/account, or other personal fields. Preserve source geometry unchanged. Alignment is required: retain first-party native CRS, wire axes, hash-bound native sample and published operation/grid evidence. No offsets, fitting, repair, clipping, simplification, union, guessed CRS, ballpark transforms, credentials, or access-control bypasses. If first-party evidence proves a genuine external limitation, save `{attempt_dir / 'evidence/source-block.json'}` with exact receipt `sourceId` and `endpoint`, a specific `reason`, and `evidenceFiles` as strings relative to this attempt directory (for example `evidence/metric-report.json`). Reference the saved source metadata, `qualification.json`, `metric-report.json`, and/or `alignment-report.json` that demonstrate the limitation. A missing adapter, unsupported local implementation, or incomplete local code is not a source limitation. For positive non-parcel evidence use the qualification runner's `evidence/exclusion.json` contract.
 
@@ -467,7 +468,14 @@ def run_candidate(runner: Any, city: dict[str, Any], receipt: dict[str, Any], pa
     code, name, source_id, point_latlon = _validate_inputs(city, receipt, packet)
     endpoint = receipt["source"]["endpoint"]
     city_root = (state_dir / "qualification" / "cities" / code).resolve()
-    _number, attempt_dir = _next_attempt(city_root)
+    reserved_name = getattr(runner, "qualification_attempt_name", None)
+    if reserved_name is None:
+        _number, attempt_dir = _next_attempt(city_root)
+    else:
+        if not re.fullmatch(r"attempt-\d+", reserved_name):
+            raise ValueError("invalid reserved qualification attempt name")
+        attempt_dir = city_root / reserved_name
+        attempt_dir.mkdir(parents=True, exist_ok=False)
     hashes_before = _input_hashes(root, city, receipt, packet)
     _json_write(attempt_dir / "inputs.json", hashes_before)
     city_for_verifier = {"cityCode": code, "cityName": name, "point": point_latlon}
