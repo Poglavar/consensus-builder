@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-15: For the on-map production cutover, preserve built capabilities without maintaining legacy implementation compatibility. The user accepts switching between 2D and model views instead of simultaneous previews, and intentionally removes the parcel/ground View in 3D shortcut.
+
 - 2026-10-14: Geometry editors use the global view buttons; in desktop 3D their controls dock left so Layers can remain open on the right.
 
 - 2026-10-09: Run the population-ranked parcel research task in an isolated Valhalla checkout with durable per-city checkpoints so it continues when the laptop is closed; future publication remains an explicit release action.
@@ -673,3 +675,5 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-14: User expanded the on-map editing pattern to every geometry proposal family, retaining each tool’s rules, ownership controls, furniture, transport settings, and upload flow. The shared editor owns the main map and supported views; reopening buildings uses the authored site, not the smaller parcel created by the first placement. Rationale: edits must retain their surrounding context and original room to move.
 
 - 2026-10-15: User chose free movement for physical proposal geometry, with parcel snapping, warnings and an optional site lock; saving recomputes destination land binding and published records always fork. Blocks and row houses support generated or manual shapes: moving/rotating preserves generated controls, while reshaping disables footprint sliders and keeps height editable. Detached rules stay parcel-relative; ownership and land readjustment stay fixed to their land. Rationale: parcels guide design without permanently constraining a physical proposal to its initial selection.
+
+- 2026-10-08: The user approved researching current contacts and sending the next developed-country batch of 47 candidates in Australia, Germany, the UK, Canada, New Zealand and the US, retaining slow individual sends and prior-contact suppression.

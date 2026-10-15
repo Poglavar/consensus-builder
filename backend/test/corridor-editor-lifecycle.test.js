@@ -39,6 +39,7 @@ describe('corridor editor collision lifecycle', () => {
         const clearPreview = vi.fn();
         const removeListener = vi.fn();
         const logger = { error: vi.fn() };
+        const showEphemeralMessage = vi.fn();
         const document = { removeEventListener: removeListener };
         const window = {
             OnMapEditor: { open },
@@ -48,10 +49,10 @@ describe('corridor editor collision lifecycle', () => {
         };
         const context = {
             editorState: { mode: 'drawing', profile: { strips: [] }, startedCompare: false },
-            window, document, console: logger, clearTimeout: vi.fn(),
+            window, document, console: logger, clearTimeout: vi.fn(), showEphemeralMessage,
             corridorProfileWidth: () => 6,
             corridorEditorTotalText: () => '6 m',
-            corridorEditorI18n: (_key, fallback) => fallback,
+            corridorEditorI18n: (key, fallback) => key === 'modal.corridor.openError' ? 'Localized opening error' : fallback,
             corridorEditorLockMap: value => lockCalls.push(value),
             corridorEditorCancel: vi.fn(),
             clearCorridorProfilePreview: clearPreview,
@@ -90,5 +91,6 @@ describe('corridor editor collision lifecycle', () => {
         expect(removeListener).toHaveBeenCalledWith('building-layers-changed', expect.any(Function));
         expect(context.getState()).toEqual({ state: null, session: null });
         expect(logger.error).toHaveBeenCalledOnce();
+        expect(showEphemeralMessage).toHaveBeenCalledExactlyOnceWith('Localized opening error', 5000, 'error');
     });
 });

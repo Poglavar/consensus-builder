@@ -2150,6 +2150,7 @@
         },
         "corridor": {
             "title": "Cross-section",
+            "openError": "The cross-section editor could not open.",
             "subtitle": "The total width is the sum of the lanes — add or remove a lane and the road widens or narrows",
             "drawingSubtitle": "Changes update the road on the map before you create the proposal",
             "proposalSubtitle": "Preview changes here, then apply them to an editable road drawing",

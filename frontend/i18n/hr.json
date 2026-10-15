@@ -2162,6 +2162,7 @@
         },
         "corridor": {
             "title": "Poprečni presjek",
+            "openError": "Nije moguće otvoriti uređivač poprečnog presjeka.",
             "subtitle": "Ukupna širina zbroj je traka — dodate li traku, cesta se proširi; uklonite li je, suzi se",
             "drawingSubtitle": "Promjene se prikazuju na karti prije stvaranja prijedloga",
             "proposalSubtitle": "Ovdje pregledajte promjene pa ih primijenite na crtež ceste koji se može uređivati",

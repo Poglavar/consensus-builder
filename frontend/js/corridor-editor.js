@@ -2081,6 +2081,9 @@ function corridorEditorOpenOverlay() {
     } catch (error) {
         console.error('[corridorEditor] could not open', error);
         corridorEditorClose();
+        if (typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage(corridorEditorI18n('modal.corridor.openError', 'The cross-section editor could not open.'), 5000, 'error');
+        }
     }
 }
 

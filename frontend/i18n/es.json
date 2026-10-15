@@ -2201,6 +2201,7 @@
         },
         "corridor": {
             "title": "Sección transversal",
+            "openError": "No se pudo abrir el editor de sección transversal.",
             "subtitle": "El ancho total es la suma de los carriles: añade o quita un carril y la vía se ensancha o se estrecha",
             "drawingSubtitle": "Los cambios se muestran en el mapa antes de crear la propuesta",
             "proposalSubtitle": "Previsualiza los cambios aquí y aplícalos después a un trazado de carretera editable",

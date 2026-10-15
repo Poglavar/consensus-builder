@@ -196,6 +196,8 @@ const SAFE_GROUPS = [
             "js/proposals/formation-edit.js",
             "js/proposals/corridor-levels.js",
             "js/map-edit-lock.js",
+            "js/single-building-geometry.js",
+            "js/on-map-placement.js",
             "js/on-map-editor.js",
             "js/geometry-edit/history.js",
             "js/geometry-edit/handles.js",
