@@ -141,6 +141,36 @@ describe('atomic corridor authoring plan', () => {
         expect({ through, branch }).toEqual(originals);
     });
 
+    it('records the junction and the other road\'s arms in both definitions, and an end-to-end join too', () => {
+        const through = corridor('through', [[P(0, 0), P(0, 10)]]);
+        const branch = corridor(null, [[P(5, 5), P(0, 5)]]);
+        through.roadProposal.definition.profile = { strips: [{ type: 'driving', width: 3.5 }, { type: 'driving', width: 3.5 }] };
+        branch.roadProposal.definition.profile = { strips: [{ type: 'driving', width: 3 }] };
+        const result = plan(branch, [through]);
+        // The branch learns of the through road's two arms at the node it ends on…
+        const branchJunctions = result.proposal.roadProposal.definition.junctions;
+        expect(branchJunctions).toHaveLength(1);
+        expect(branchJunctions[0]).toMatchObject({ lat: 0, lng: 5 });
+        expect(branchJunctions[0].arms.map(arm => arm.toward).sort((a, b) => a.lng - b.lng)).toEqual([P(0, 0), P(0, 10)]);
+        expect(branchJunctions[0].arms.every(arm => arm.profile && Array.isArray(arm.profile.strips))).toBe(true);
+        // …and the through road learns of the branch's one arm there.
+        const throughJunctions = result.existingChanges[0].definition.junctions;
+        expect(throughJunctions).toHaveLength(1);
+        expect(throughJunctions[0].arms.map(arm => arm.toward)).toEqual([P(5, 5)]);
+
+        // Two roads meeting end to end change no geometry, yet the junction is recorded and the
+        // existing record is re-snapshotted to carry it (a narrow road widens back to a wide one
+        // from its own definition — corridor-transition.js).
+        const west = corridor('west', [[P(0, -10), P(0, 0)]]);
+        const east = corridor(null, [[P(0, 0), P(0, 10)]]);
+        west.roadProposal.definition.width = 12; // a record that only knows its width still records an arm
+        const joined = plan(east, [west]);
+        expect(joined.existingChanges).toHaveLength(1);
+        expect(joined.existingChanges[0].definition.junctions[0].arms.map(arm => arm.toward)).toEqual([P(0, 10)]);
+        expect(joined.proposal.roadProposal.definition.junctions[0].arms).toEqual([{ toward: P(0, -10), width: 12 }]);
+        expect(joined.junctionRecords).toBe(1);
+    });
+
     it('nodes both records at an X crossing before either is persisted', () => {
         const eastWest = corridor('east-west', [[P(0, -5), P(0, 5)]]);
         const northSouth = corridor(null, [[P(-5, 0), P(5, 0)]]);
@@ -155,17 +185,37 @@ describe('atomic corridor authoring plan', () => {
         expect(newNodes.some(point => point.lat === 0 && point.lng === 0)).toBe(true);
     });
 
-    it('touches only applied corridors of the same kind', () => {
+    it('touches only applied corridors', () => {
         const newRoad = corridor(null, [[P(0, -5), P(0, 5)]]);
         const parkedRoad = corridor('parked', [[P(-5, 0), P(5, 0)]], { applied: false });
-        const track = corridor('track', [[P(-5, 0), P(5, 0)]], { track: true });
         const farRoad = corridor('far', [[P(20, 20), P(20, 25)]]);
 
-        const result = plan(newRoad, [parkedRoad, track, farRoad]);
+        const result = plan(newRoad, [parkedRoad, farRoad]);
 
         expect(result.existingChanges).toEqual([]);
         expect(result.junctionRecords).toBe(0);
         expect(result.proposal.roadProposal.definition.points).toHaveLength(1);
+    });
+
+    // This used to assert the opposite ("touches only applied corridors of the same kind"): a road
+    // drawn across a track stayed two strangers. Decision 4 of road-editor.md: roads and tracks form
+    // junctions with each other — a tram crossing a road is a level crossing that shares the node,
+    // as in OSM.
+    it('nodes a road with an applied track it crosses', () => {
+        const newRoad = corridor(null, [[P(0, -5), P(0, 5)]]);
+        const track = corridor('track', [[P(-5, 0), P(5, 0)]], { track: true });
+
+        const result = plan(newRoad, [track]);
+
+        expect(result.isTrack).toBe(false);
+        expect(result.junctionRecords).toBe(1);
+        expect(result.existingChanges.map(change => change.proposalId)).toEqual(['track']);
+        const trackNodes = result.existingChanges[0].definition.points.flat();
+        const roadNodes = result.proposal.roadProposal.definition.points.flat();
+        expect(trackNodes.some(point => point.lat === 0 && point.lng === 0)).toBe(true);
+        expect(roadNodes.some(point => point.lat === 0 && point.lng === 0)).toBe(true);
+        // The track stays a track: only its topology changed.
+        expect(result.existingChanges[0].definition.metadata.isTrack).toBe(true);
     });
 
     it('does not turn a protected crossing into a junction', () => {

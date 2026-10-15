@@ -296,7 +296,12 @@ describe('corridor decorations and junction topology', () => {
         const junctions = buildCorridorJunctionTreatments([main, branch], profile, IDENTITY_FRAME);
         expect(junctions).toHaveLength(1);
         expect(junctions[0].degree).toBe(3);
-        expect(junctions[0].surfacePolygons).toHaveLength(3);
+        // A junction is corner geometry now (corridor-junction.js): one carriageway box per arm
+        // plus one kerb-return fillet per corner (two at a T), a footway band around each corner,
+        // and stop lines on the approaches.
+        expect(junctions[0].surfacePolygons).toHaveLength(5);
+        expect(junctions[0].cornerPolygons).toHaveLength(2);
+        expect(junctions[0].stopLinePolygons).toHaveLength(3);
         expect(junctions[0].crosswalkPolygons.length).toBeGreaterThan(3);
     });
 
@@ -469,7 +474,58 @@ describe('corridorProfileFromOsmTags', () => {
             'sidewalk', 'cycleway', 'parking', 'driving', 'driving', 'parking', 'cycleway', 'sidewalk'
         ]);
         expect(close(corridorProfileWidth(profile), 18)).toBe(true);
-        expect(profile.strips.filter(s => s.type === 'driving').map(s => s.direction)).toEqual(['forward', 'backward']);
+        // Was ['forward', 'backward']: the import mirrored every street relative to the presets.
+        // Changed 2026-10-15 (road-editor.md decision 6): right-hand traffic, so the left (first-listed)
+        // half carries the oncoming flow — backward lanes and cycle lane first, exactly as a drawn road.
+        expect(profile.strips.filter(s => s.type === 'driving').map(s => s.direction)).toEqual(['backward', 'forward']);
+        expect(profile.strips.filter(s => s.type === 'cycleway').map(s => s.direction)).toEqual(['backward', 'forward']);
+    });
+
+    it('imports a two-way street backward lanes first, putting its traffic where a drawn road has it', () => {
+        const imported = corridorProfileFromOsmTags({ highway: 'residential', lanes: '2', 'sidewalk:both': 'yes' });
+        expect(imported.strips.map(s => s.direction)).toEqual([undefined, 'backward', 'forward', undefined]);
+        // The same test the presets pass: every forward lane right of (a smaller offset than) every
+        // backward one, measured with corridorStripSpans' positive-is-left offsets.
+        const center = s => (s.left + s.right) / 2;
+        const spans = corridorStripSpans(imported);
+        const forward = spans.filter(s => s.direction === 'forward').map(center);
+        const backward = spans.filter(s => s.direction === 'backward').map(center);
+        expect(Math.max(...forward)).toBeLessThan(Math.min(...backward));
+    });
+
+    it('imports oneway=yes with lanes=2 as two forward lanes, cycle lanes running with it', () => {
+        const profile = corridorProfileFromOsmTags({
+            highway: 'residential', lanes: '2', oneway: 'yes', 'cycleway:both': 'lane'
+        });
+        expect(profile.strips.filter(s => s.type === 'driving').map(s => s.direction)).toEqual(['forward', 'forward']);
+        expect(profile.strips.filter(s => s.type === 'cycleway').map(s => s.direction)).toEqual(['forward', 'forward']);
+    });
+
+    it('splits the lanes by lanes:forward, lanes:backward and lanes:both_ways, backward group first', () => {
+        const directions = tags => corridorProfileFromOsmTags({ highway: 'primary', ...tags })
+            .strips.filter(s => s.type === 'driving').map(s => s.direction);
+        expect(directions({ lanes: '3', 'lanes:forward': '2' })).toEqual(['backward', 'forward', 'forward']);
+        expect(directions({ lanes: '3', 'lanes:backward': '2' })).toEqual(['backward', 'backward', 'forward']);
+        expect(directions({ lanes: '3', 'lanes:forward': '1', 'lanes:backward': '1', 'lanes:both_ways': '1' }))
+            .toEqual(['backward', 'both', 'forward']);
+        // A count larger than the lanes is clamped instead of spilling the median out of the middle.
+        expect(directions({ lanes: '2', 'lanes:forward': '5' })).toEqual(['forward', 'forward']);
+    });
+
+    it('puts a median between the backward and the forward group', () => {
+        const profile = corridorProfileFromOsmTags({
+            highway: 'primary', width: '20', lanes: '4', 'lanes:forward': '1', median: 'yes', 'median:width': '4'
+        });
+        expect(profile.strips.map(s => s.direction || s.type))
+            .toEqual(['backward', 'backward', 'backward', 'median', 'forward']);
+    });
+
+    it('lets cycleway:<side>:oneway override the side default', () => {
+        const profile = corridorProfileFromOsmTags({
+            highway: 'residential', lanes: '2', 'cycleway:both': 'lane',
+            'cycleway:left:oneway': 'yes', 'cycleway:right:oneway': 'no'
+        });
+        expect(profile.strips.filter(s => s.type === 'cycleway').map(s => s.direction)).toEqual(['forward', 'both']);
     });
 
     // Only 9 of 5167 ways across central Zagreb carry a width tag, so this is the normal path.
@@ -565,14 +621,58 @@ describe('corridorProfileFromOsmTags', () => {
 });
 
 describe('corridorProfileToOsmTags', () => {
-    it('round-trips every preset through OSM tags without losing a lane or a metre', () => {
+    it('round-trips every preset through OSM tags without losing a lane, a metre or a direction', () => {
         for (const [total, strips] of Object.entries(CORRIDOR_PROFILE_PRESETS)) {
             const profile = { strips };
             const tags = corridorProfileToOsmTags(profile);
             const back = corridorProfileFromOsmTags(tags);
             expect(back.strips.map(s => s.type), `preset ${total}`).toEqual(profile.strips.map(s => s.type));
             expect(close(corridorProfileWidth(back), Number(total)), `preset ${total} width`).toBe(true);
+            expect(back.strips.map(s => s.direction), `preset ${total} directions`)
+                .toEqual(normalizeCorridorProfile(profile).strips.map(s => s.direction));
+            // The presets' cycle lanes run the way the reader assumes, so they need no oneway tags.
+            expect(Object.keys(tags).filter(key => key.endsWith(':oneway')), `preset ${total}`).toEqual([]);
         }
+    });
+
+    it('counts lanes:forward from the lanes that run forward, an undirected one included', () => {
+        const tags = corridorProfileToOsmTags({ strips: [
+            { type: 'driving', width: 3, direction: 'backward' },
+            { type: 'driving', width: 3 },
+            { type: 'driving', width: 3, direction: 'forward' }
+        ] });
+        expect(tags).toMatchObject({ lanes: '3', 'lanes:forward': '2', 'lanes:backward': '1' });
+        expect(corridorProfileFromOsmTags(tags).strips.map(s => s.direction)).toEqual(['backward', 'forward', 'forward']);
+    });
+
+    it('writes an all-backward street as oneway=-1 and a centre turn lane as lanes:both_ways', () => {
+        const backward = { strips: [
+            { type: 'driving', width: 3, direction: 'backward' },
+            { type: 'driving', width: 3, direction: 'backward' }
+        ] };
+        expect(corridorProfileToOsmTags(backward)).toMatchObject({ oneway: '-1' });
+        expect(corridorProfileToOsmTags(backward)['lanes:forward']).toBe(undefined);
+        expect(corridorProfileFromOsmTags(corridorProfileToOsmTags(backward)).strips.map(s => s.direction))
+            .toEqual(['backward', 'backward']);
+
+        const turnLane = { strips: [
+            { type: 'driving', width: 3, direction: 'backward' },
+            { type: 'driving', width: 3, direction: 'both' },
+            { type: 'driving', width: 3, direction: 'forward' }
+        ] };
+        const tags = corridorProfileToOsmTags(turnLane);
+        expect(tags).toMatchObject({ 'lanes:forward': '1', 'lanes:backward': '1', 'lanes:both_ways': '1' });
+        expect(corridorProfileFromOsmTags(tags).strips.map(s => s.direction)).toEqual(['backward', 'both', 'forward']);
+    });
+
+    it('carries a cycle lane flipped against its side through cycleway:<side>:oneway', () => {
+        const flipped = { strips: CORRIDOR_PROFILE_PRESETS[18].map(s => ({ ...s })) };
+        flipped.strips[1] = { ...flipped.strips[1], direction: 'forward' }; // left cycle lane, now with traffic
+        const tags = corridorProfileToOsmTags(flipped);
+        expect(tags['cycleway:left:oneway']).toBe('yes');
+        expect(tags['cycleway:right:oneway']).toBe(undefined);
+        expect(corridorProfileFromOsmTags(tags).strips.filter(s => s.type === 'cycleway').map(s => s.direction))
+            .toEqual(['forward', 'forward']);
     });
 
     it('emits the per-side schemes OSM actually uses', () => {
@@ -839,7 +939,9 @@ describe('buildCrossCorridorJunctionTreatments', () => {
             const junctions = buildCrossCorridorJunctionTreatments(inZagreb([main, branch]));
             expect(junctions).toHaveLength(1);
             expect(junctions[0].degree).toBe(3);
-            expect(junctions[0].surfacePolygons).toHaveLength(3);
+            // three arm boxes + two kerb-return fillets (corridor-junction.js)
+            expect(junctions[0].surfacePolygons).toHaveLength(5);
+            expect(junctions[0].cornerPolygons).toHaveLength(2);
         });
     });
 
@@ -949,9 +1051,10 @@ describe('per-segment cross-sections', () => {
             ], IDENTITY_FRAME);
             expect(junctions).toHaveLength(1);
             expect(junctions[0].degree).toBe(3);
-            expect(junctions[0].surfacePolygons).toHaveLength(3);
-            // The narrow footpath arm crosses at 2 m: exactly one zebra stripe fits; the two
-            // collector arms fit many. Per-arm sizing is what makes the counts differ.
+            // Three arm boxes plus the fillets between the footpath and each collector arm.
+            expect(junctions[0].surfacePolygons).toHaveLength(5);
+            // The narrow footpath arm is 2 m of footway with no carriageway: no zebra fits it, the
+            // two collector arms get many. Per-arm sizing is what makes the counts differ.
             expect(junctions[0].crosswalkPolygons.length).toBeGreaterThan(3);
         }
     });
@@ -1441,8 +1544,9 @@ describe('two roads meeting end to end', () => {
             const junctions = buildCrossCorridorJunctionTreatments(inZagreb([west, north]));
             expect(junctions).toHaveLength(1);
             expect(junctions[0].degree).toBe(2);
-            // One asphalt patch per arm — together they cover the overlap and fill the notch.
-            expect(junctions[0].surfacePolygons).toHaveLength(2);
+            // A bend: the notch triangle on the outside plus one box per arm over the inside overlap.
+            expect(junctions[0].surfacePolygons).toHaveLength(3);
+            expect(junctions[0].stopLinePolygons).toEqual([]);
         });
     });
 

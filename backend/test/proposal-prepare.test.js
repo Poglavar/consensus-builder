@@ -88,7 +88,7 @@ describe('prepareProposal', () => {
         const land = artifact.corridor.polygon;
         expect(land.type).toBe('Polygon');
         expect(stableStringify(land)).not.toBe(stableStringify(bogus));
-        expect(artifact.corridor.constructionFrame).toMatchObject({ kind: 'local-tmerc', algorithm: 'corridor-footprint/2' });
+        expect(artifact.corridor.constructionFrame).toMatchObject({ kind: 'local-tmerc', algorithm: 'corridor-footprint/3' });
         // the anchor is the authored centre line's own (bbox midpoint), not a city's
         expect(artifact.corridor.constructionFrame.anchor).toEqual([15.97085, 45.8006]);
         expect(proposal.roadProposal.definition.polygon).toEqual(land);

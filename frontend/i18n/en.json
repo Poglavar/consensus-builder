@@ -1793,7 +1793,6 @@
             "parcelsAffected": "{{count}} parcels affected",
             "parcelsNone": "None",
             "builtStatus": "Road built — click it to edit or propose.",
-            "segmentCancelledStatus": "Segment cancelled — placed segments stay. Esc again builds the road.",
             "builtStatusTrack": "Track built — click it to edit or propose.",
             "nodeHint": "Drag to move · ⌥-click to remove this node",
             "edgeActionsHint": "＋ Add a node · × Bulldoze this stretch",
@@ -1811,15 +1810,51 @@
             "buildingTrack": "Building the track…",
             "junctionHint": "Junction — drag to move all legs · ⌥-click to disconnect",
             "looseEndHint": "Loose end — drag onto a road or node to join it · ⌥-click to remove",
+            "boundaryHint": "Stretch boundary — the cross-section can change here · drag to move · ⌥-click to disconnect",
+            "interiorNodeHint": "Drag to move · click to split the stretch here or remove the node · ⌥-click to remove it",
+            "removeNodeEmptiesStretch": "Removing this node would delete its whole stretch. Bulldoze the stretch instead (× at its middle).",
+            "splitProtectedStatus": "A stretch cannot be split beside a ramp, a tunnel or a grade-separated edge.",
+            "stretchSplitStatus": "Stretch split. Click either half, then Edit cross-section → This segment to give it its own lanes.",
+            "nodeChoicePrompt": "What should happen at this node?",
+            "splitStretchHere": "Split the stretch here — so the two halves can have different cross-sections",
+            "removeThisNode": "Remove this node",
             "finishButtonShortTrack": "Finish track (F)",
             "lengthLabelTrack": "Track length:",
             "areaLabelTrack": "Track area:",
             "ownedByInstitutionLabel": "Owned by institution:",
             "costLabel": "Cost:",
-            "continueHint": "Continuing this segment — click to add points, press F to finish the road",
-            "continueHintTrack": "Continuing this segment — click to add points, press F to finish the track",
-            "addPointsHint": "Click to add road points, press F to finish the road",
-            "addPointsHintTrack": "Click to add track points, press F to finish the track"
+            "continueHint": "Continuing this segment — click to add points. Double-click or Enter builds the road, Esc lifts the pen.",
+            "continueHintTrack": "Continuing this segment — click to add points. Double-click or Enter builds the track, Esc lifts the pen.",
+            "addPointsHint": "Click to add road points. Double-click or Enter builds the road, Esc lifts the pen, Alt places without snapping.",
+            "addPointsHintTrack": "Click to add track points. Double-click or Enter builds the track, Esc lifts the pen, Alt places without snapping.",
+            "startHintTrack": "Click on the map to start drawing a track",
+            "seededHint": "Click a segment end to continue it, or click the map to draw a new one",
+            "penLiftedStatus": "Pen lifted — click a node to continue from it, or anywhere to start a new stretch. Enter builds the road.",
+            "penLiftedStatusTrack": "Pen lifted — click a node to continue from it, or anywhere to start a new stretch. Enter builds the track.",
+            "conflictsRecordedStatus": "{{list}} in the way — you decide at Finish.",
+            "finishBlockedStatus": "Not built — {{list}} in the way. Undo or reroute around the red rings, then finish again.",
+            "conflictPlots": {
+                "one": "plots of {{count}} proposal",
+                "other": "plots of {{count}} proposals"
+            },
+            "conflictParks": {
+                "one": "{{count}} park",
+                "other": "{{count}} parks"
+            },
+            "conflictSquares": {
+                "one": "{{count}} square",
+                "other": "{{count}} squares"
+            },
+            "conflictLakes": {
+                "one": "{{count}} lake",
+                "other": "{{count}} lakes"
+            },
+            "conflictCrossings": {
+                "one": "{{count}} road crossing",
+                "other": "{{count}} road crossings"
+            },
+            "snapsToStreet": "Snaps to {{name}}",
+            "snapsToUnnamedStreet": "Snaps to an existing street"
         },
         "roadAnalysis": {
             "title": "Road width analysis",
@@ -2197,7 +2232,44 @@
             "measuredFallback": "nothing shown — measuring against GDI",
             "lockedControl": "Not available while the cross-section is open — apply or cancel first",
             "ceilingOver": "Wider than fits here ({{max}} m) without a new demolition — open the Corridor tab to see how it could fit",
-            "ceilingTitle": "The widest this road fits here without a new demolition; it may need to be moved (see the Corridor tab)"
+            "ceilingTitle": "The widest this road fits here without a new demolition; it may need to be moved (see the Corridor tab)",
+            "refusedGeneric": "That change is not possible here.",
+            "refusedLaneMissing": "That lane is no longer in the cross-section.",
+            "refusedUnknownType": "That is not a lane type the editor knows.",
+            "refusedWidthNotNumber": "Type the width in metres, for example 3.25.",
+            "refusedDrivingMin": "A traffic lane must be at least {{min}} m wide — narrower is not a traffic lane.",
+            "refusedLaneMin": "{{lane}} cannot be narrower than {{min}} m — narrower is a line, not a lane.",
+            "refusedFixedWidth": "{{lane}} keeps the standard bay depth of {{width}} m.",
+            "refusedLastLane": "A corridor needs at least one lane, so the last one cannot be removed.",
+            "refusedSeam": "The seam stops here: {{lane}} cannot be narrower than {{min}} m.",
+            "refusedTreeEvery": "Type a whole number of parking spaces (0 for no trees).",
+            "refusedNotApplicable": "{{lane}} has no such setting.",
+            "replaceStretches": {
+                "one": "Also replace the {{count}} stretch that has its own cross-section",
+                "other": "Also replace the {{count}} stretches that have their own cross-section"
+            },
+            "replaceStretchesNote": "Unticked, those stretches keep their own cross-section when you apply, and the map previews the new lanes only where they will change.",
+            "takeWidth": "Width {{before}} → {{after}}.",
+            "takeAdded": {
+                "one": "This cross-section takes land from {{count}} more parcel:",
+                "other": "This cross-section takes land from {{count}} more parcels:"
+            },
+            "takeFreed": {
+                "one": "It frees {{count}} parcel:",
+                "other": "It frees {{count}} parcels:"
+            },
+            "takeMore": "plus {{count}} more",
+            "takeNone": "No parcel is added or freed: the new width stays within the parcels this road already crosses.",
+            "takeUnmeasured": {
+                "one": "{{count}} parcel piece could not be measured, so these lists may be incomplete.",
+                "other": "{{count}} parcel pieces could not be measured, so these lists may be incomplete."
+            },
+            "takeNoFabric": "The parcels this land takes cannot be listed: the parcel map is not loaded here.",
+            "takeNoParcels": "There are no surveyed parcels under this road (unsurveyed land), so there are none to list.",
+            "takeNoFootprint": "The new land could not be built, so the parcels it would take cannot be listed.",
+            "takeNoStoredLand": "This road has no stored land to compare with, so the parcels cannot be listed.",
+            "takeApply": "Apply",
+            "keepEditing": "Keep editing"
         },
         "corridorDraft": {
             "title": "Unsaved drawing draft",
@@ -2222,7 +2294,7 @@
             "show": "Show"
         },
         "corridorTunnel": {
-            "offer": "This {{kind}} intersects {{count}} building(s). Keep this edge at surface level or author a tunnel?",
+            "offer": "This {{kind}} intersects {{count}} building(s). Keep it at surface level through them, or tunnel through them?",
             "road": "road",
             "track": "track",
             "proposalImpact": "This road is later than these building proposals; a surface crossing takes their ground during replay:",

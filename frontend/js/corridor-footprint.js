@@ -6,12 +6,17 @@
 // in node. Every failure THROWS — a partial footprint must never be built, let alone published.
 //
 // Recipe (ALGORITHM below names it; change the name when the recipe changes):
-//   1. per segment (corridorSegmentEntries: its own width), per acquiring span (corridor-levels:
-//      fully underground stretches take nothing): a rectangle per edge and a bevel wedge at every
-//      interior bend, unioned in order;
+//   1. per piece (corridorRenderPieces: a stretch's body at its own width, and each transition
+//      zone tapering linearly to its neighbour's width — corridor-transition.js), per acquiring
+//      span (corridor-levels: fully underground stretches take nothing): a rectangle (a trapezoid
+//      across a zone) per edge and a bevel wedge at every interior bend, unioned in order;
 //   2. a wedge at every node where two pieces of ONE original stretch meet (a bend that a junction
-//      split turned into two arm ends), so splitting never loses a sliver of footprint;
-//   3. all metric coordinates snapped to SNAP_M before clipping; every output edge split into pieces of
+//      split turned into two arm ends), so splitting never loses a sliver of footprint, and at every
+//      two-arm node where two different stretches bend into each other (a road drawn in two strokes);
+//   3. at every node where three or more arms meet, the land each kerb-return corner needs beyond
+//      the straight edges (corridor-junction.js, road-editor.md decision 2) — a junction's corners
+//      belong to the junction, so the land take has them too;
+//   4. all metric coordinates snapped to SNAP_M before clipping; every output edge split into pieces of
 //      at most DENSIFY_M, then the union back to WGS84 through the same frame. Densifying matters
 //      because whoever reads the stored polygon (PostGIS, Leaflet, turf) treats each edge as a
 //      straight line in lon/lat, while it was straight in the frame: an undivided 500 m edge bows
@@ -24,7 +29,7 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (global) {
     'use strict';
 
-    const ALGORITHM = 'corridor-footprint/2';
+    const ALGORITHM = 'corridor-footprint/3';
     const SNAP_M = 1e-4;
     const DENSIFY_M = 50;
     const NUDGE_M = 0.1; // a zero-length edge is nudged this far due east, deterministically
@@ -59,6 +64,9 @@
     const segmentEntries = definition => fromGlobalOrRequire('corridorSegmentEntries', './corridor-profile.js', 'corridorSegmentEntries')(definition);
     const profileWidth = profile => fromGlobalOrRequire('corridorProfileWidth', './corridor-profile.js', 'corridorProfileWidth')(profile);
     const acquiringSpans = points => fromGlobalOrRequire('__corridorLevels', './proposals/corridor-levels.js', 'acquiringSpans')(points);
+    const junctionApi = () => fromGlobalOrRequire('__corridorJunction', './corridor-junction.js');
+    const profileEdges = profile => fromGlobalOrRequire('corridorProfileEdges', './corridor-profile.js', 'corridorProfileEdges')(profile);
+    const renderPieces = (entries, frame, options) => fromGlobalOrRequire('corridorRenderPieces', './corridor-profile.js', 'corridorRenderPieces')(entries, frame, options);
 
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     const snap = value => Math.round(value / SNAP_M) * SNAP_M;
@@ -66,15 +74,19 @@
 
     // ---- planar pieces (metric [x, y]) ---------------------------------------------------------
 
-    function rectangle(a, b, width) {
+    // One edge's piece: a rectangle at `width`, or a trapezoid when `widthEnd` differs (a
+    // transition zone tapers linearly along its edges).
+    function rectangle(a, b, width, widthEnd = width) {
         let dx = b[0] - a[0];
         let dy = b[1] - a[1];
         let length = Math.hypot(dx, dy);
         let end = b;
         if (length < 1e-3) { end = [a[0] + NUDGE_M, a[1]]; dx = NUDGE_M; dy = 0; length = NUDGE_M; }
-        const nx = -dy / length * (width / 2);
-        const ny = dx / length * (width / 2);
-        return [[a[0] + nx, a[1] + ny], [end[0] + nx, end[1] + ny], [end[0] - nx, end[1] - ny], [a[0] - nx, a[1] - ny], [a[0] + nx, a[1] + ny]];
+        const nx = -dy / length;
+        const ny = dx / length;
+        const ha = width / 2;
+        const hb = (finite(widthEnd) ? widthEnd : width) / 2;
+        return [[a[0] + nx * ha, a[1] + ny * ha], [end[0] + nx * hb, end[1] + ny * hb], [end[0] - nx * hb, end[1] - ny * hb], [a[0] - nx * ha, a[1] - ny * ha], [a[0] + nx * ha, a[1] + ny * ha]];
     }
 
     // The bevel patch on the outer side of a bend: the triangle pA–pB–anchor whose only new boundary
@@ -147,9 +159,11 @@
     // Wedging every pair of arms at a node instead is wrong, and visibly so: at a T it fills the outer
     // corners between the branch and each half of the through road, which together pave a patch on
     // the FAR side of the through road — a phantom fourth arm, showing up as an extra strip of footway
-    // sticking out of the junction. A junction's corners are the junction treatment's business; the
-    // footprint only owes the road its own continuity. The wider arm sets the wedge, so it always
-    // reaches the outer corner that needs covering.
+    // sticking out of the junction. A junction's corners are junctionLandCorners' business below; the
+    // wedge only owes the road its own continuity. A node with exactly TWO ends is a bend whatever
+    // the stretch ids say (a road drawn in two strokes bends through it exactly as one polyline
+    // would), so it is wedged too. The wider arm sets the wedge, so it always reaches the outer
+    // corner that needs covering.
     function sharedNodeWedges(arms) {
         const key = p => `${Math.round(p[0] / NODE_KEY_M)},${Math.round(p[1] / NODE_KEY_M)}`;
         const byNode = new Map();
@@ -166,15 +180,59 @@
         const wedges = [];
         [...byNode.keys()].sort().forEach(k => {
             const { node, ends } = byNode.get(k);
+            const bend = ends.length === 2;
             for (let a = 0; a < ends.length - 1; a += 1) {
                 for (let b = a + 1; b < ends.length; b += 1) {
-                    if (!ends[a].stretchId || ends[a].stretchId !== ends[b].stretchId) continue;
+                    if (!bend && (!ends[a].stretchId || ends[a].stretchId !== ends[b].stretchId)) continue;
                     const wedge = bendWedge(ends[a].neighbour, node, ends[b].neighbour, Math.max(ends[a].width || 0, ends[b].width || 0));
                     if (wedge) wedges.push(wedge);
                 }
             }
         });
         return wedges;
+    }
+
+    // The land every junction corner needs: where three or more arms meet, corridor-junction.js
+    // fits a kerb-return fillet between each pair of angular neighbours, and the footway wrapping
+    // that fillet reaches past the two straight land edges by a corner piece. An arm knows its kerbs
+    // and footways through `edges` (corridorProfileEdges); an arm given only a width has no footway,
+    // so the whole fillet is land. `foreign` are the arms of OTHER records at nodes this corridor
+    // shares with them ([{ point: [x,y], arms: [{ dir, edges, width }] }], from the definition's
+    // stored junctions), so a branch takes the corner land of the junction it joins. Returns metric
+    // rings to union.
+    function junctionLandCorners(arms, foreign = []) {
+        const api = junctionApi();
+        const entries = arms.map(arm => ({ points: arm.points, width: arm.width, edges: arm.edges || null }));
+        const rings = [];
+        const nodes = api.collectNodes(entries, { minDegree: 1 });
+        const byKey = new Map(nodes.map(node => [api.nodeKey(node.point), node]));
+        const widthOnly = width => ({ total: width, carriagewayLeft: width / 2, carriagewayRight: -width / 2, outerLeft: 0, outerRight: 0 });
+        const specs = new Map();
+        nodes.forEach(node => specs.set(node, node.arms.map(arm => ({
+            dir: arm.dir,
+            reversed: arm.reversed,
+            length: arm.length,
+            edges: arm.entry.edges || widthOnly(arm.width)
+        }))));
+        (foreign || []).forEach(junction => {
+            const node = byKey.get(api.nodeKey(junction.point));
+            if (!node) return;
+            (junction.arms || []).forEach(arm => {
+                const length = Math.hypot(arm.dir[0], arm.dir[1]);
+                if (!(length > 1e-9)) return;
+                const dir = [arm.dir[0] / length, arm.dir[1] / length];
+                // An arm this corridor already has in that direction is the same arm.
+                if (specs.get(node).some(own => own.dir[0] * dir[0] + own.dir[1] * dir[1] > 0.9999)) return;
+                specs.get(node).push({ dir, reversed: false, length: Infinity, edges: arm.edges || widthOnly(arm.width) });
+            });
+        });
+        nodes.forEach(node => {
+            const armSpecs = specs.get(node);
+            if (armSpecs.length < 3) return;
+            const junction = api.buildJunction(node.point, armSpecs, { crossings: false });
+            if (junction) junction.land.forEach(ring => rings.push([...ring, ring[0]]));
+        });
+        return rings;
     }
 
     // A closed metric ring with every edge split into equal pieces no longer than maxM.
@@ -216,16 +274,31 @@
         return positions;
     }
 
-    // The footprint of a set of arms — [{ points: [{lat, lng}, …], width, stretchId? }] — in `frame`,
-    // as GeoJSON (Polygon or MultiPolygon), or null when no arm has an edge. The recipe above without
-    // a definition: what the drawing tool and the editor build their in-progress pieces with, so a
-    // preview is constructed exactly like the land the server stores. `stretchId` is already the BASE
-    // stretch id (baseStretchId). Throws on a non-finite point, a width that is not positive, a point
-    // outside the frame, or a failed union.
-    function footprintOfArms(arms, frame) {
+    // The footprint of a set of arms — [{ points: [{lat, lng}, …], width, stretchId?, edges? }] — in
+    // `frame`, as GeoJSON (Polygon or MultiPolygon), or null when no arm has an edge. The recipe above
+    // without a definition: what the drawing tool and the editor build their in-progress pieces with,
+    // so a preview is constructed exactly like the land the server stores. `stretchId` is already the
+    // BASE stretch id (baseStretchId); `edges` are the arm's kerb and footway numbers
+    // (corridorProfileEdges) and decide how much land its junction corners take. Throws on a
+    // non-finite point, a width that is not positive, a point outside the frame, or a failed union.
+    function footprintOfArms(arms, frame, options = {}) {
         const turf = turfLib();
         let accumulated = null;
         const metricArms = [];
+        // Junctions with other records, as the definition stores them, in this frame.
+        const foreign = (Array.isArray(options.junctions) ? options.junctions : []).map(junction => {
+            if (!junction || !finite(junction.lat) || !finite(junction.lng)) return null;
+            const point = frame.toMetric([junction.lng, junction.lat]);
+            const foreignArms = (junction.arms || []).map(arm => {
+                if (!arm || !arm.toward || !finite(arm.toward.lat) || !finite(arm.toward.lng)) return null;
+                const toward = frame.toMetric([arm.toward.lng, arm.toward.lat]);
+                const edges = arm.profile ? profileEdges(arm.profile) : null;
+                const width = edges ? edges.total : Number(arm.width);
+                if (!finite(width) || width <= 0) return null;
+                return { dir: [toward[0] - point[0], toward[1] - point[1]], edges, width };
+            }).filter(Boolean);
+            return foreignArms.length ? { point, arms: foreignArms } : null;
+        }).filter(Boolean);
         (Array.isArray(arms) ? arms : []).forEach(arm => {
             const width = Number(arm && arm.width);
             if (!finite(width) || width <= 0) throw new Error('corridor-footprint: an arm has no width');
@@ -235,17 +308,22 @@
                 if (!p || !finite(p.lat) || !finite(p.lng)) throw new Error('corridor-footprint: a centre-line point is not finite');
                 return frame.toMetric([p.lng, p.lat]);
             });
+            // Per-vertex widths (a zone) or the one width everywhere.
+            const widths = Array.isArray(arm.widths) && arm.widths.length === metric.length && arm.widths.every(w => finite(w) && w > 0)
+                ? arm.widths
+                : metric.map(() => width);
             for (let i = 0; i < metric.length - 1; i += 1) {
-                accumulated = unionFeatures(turf, accumulated, rectangle(metric[i], metric[i + 1], width));
+                accumulated = unionFeatures(turf, accumulated, rectangle(metric[i], metric[i + 1], widths[i], widths[i + 1]));
                 if (i >= 1) {
-                    const wedge = bendWedge(metric[i - 1], metric[i], metric[i + 1], width);
+                    const wedge = bendWedge(metric[i - 1], metric[i], metric[i + 1], widths[i]);
                     if (wedge) accumulated = unionFeatures(turf, accumulated, wedge);
                 }
             }
-            metricArms.push({ points: metric, width, stretchId: arm.stretchId === undefined ? null : arm.stretchId });
+            metricArms.push({ points: metric, width: Math.max(...widths), stretchId: arm.stretchId === undefined ? null : arm.stretchId, edges: arm.edges || null });
         });
         if (!accumulated) return null;
         sharedNodeWedges(metricArms).forEach(wedge => { accumulated = unionFeatures(turf, accumulated, wedge); });
+        junctionLandCorners(metricArms, foreign).forEach(corner => { accumulated = unionFeatures(turf, accumulated, corner); });
 
         const geometry = accumulated.geometry;
         const toLngLatRing = ring => densifyRing(ring, DENSIFY_M).map(xy => frame.toLngLat(xy));
@@ -255,10 +333,9 @@
 
     // The footprint of `definition` in `frame`, as GeoJSON (Polygon, or MultiPolygon when tunnels
     // split it). Throws on any point outside the frame, any non-finite input, or a failed union.
-    function footprintIn(definition, frame) {
+    function footprintIn(definition, frame, options = {}) {
         const entries = segmentEntries(definition);
         if (!entries.length) throw new Error('corridor-footprint: the definition has no centre line');
-        const arms = [];
         entries.forEach(entry => {
             // corridorSegmentEntries falls back to 10 m when neither a profile nor `width` says
             // anything; a footprint must not be built from a width nobody declared.
@@ -266,12 +343,37 @@
             if (!finite(declared) || declared <= 0) throw new Error(`corridor-footprint: segment ${entry.segmentId ?? ''} has no width`);
             const width = Number(entry.width);
             if (!finite(width) || width <= 0) throw new Error(`corridor-footprint: segment ${entry.segmentId ?? ''} has no width`);
-            acquiringSpans(entry.points).forEach(span => {
+        });
+        const arms = [];
+        // Transition zones are derived from the stretches' own profiles in this same frame, so the
+        // land tapers exactly where the strips do.
+        renderPieces(entries, frame, { transitions: options.transitions !== false, junctions: definition.junctions }).forEach(piece => {
+            const edges = piece.profile ? profileEdges(piece.profile) : null;
+            const widthAt = piece.taper
+                ? (() => {
+                    const metric = piece.points.map(p => frame.toMetric([p.lng, p.lat]));
+                    const stations = [0];
+                    for (let i = 1; i < metric.length; i += 1) stations.push(stations[i - 1] + Math.hypot(metric[i][0] - metric[i - 1][0], metric[i][1] - metric[i - 1][1]));
+                    const total = stations[stations.length - 1] || 1;
+                    return point => {
+                        const index = piece.points.indexOf(point);
+                        const s = index >= 0 ? stations[index] / total : 0;
+                        return piece.taper.widthStart + (piece.taper.widthEnd - piece.taper.widthStart) * s;
+                    };
+                })()
+                : null;
+            acquiringSpans(piece.points).forEach(span => {
                 if (span.length < 2) return;
-                arms.push({ points: span, width, stretchId: baseStretchId(entry.segmentId) });
+                arms.push({
+                    points: span,
+                    width: Number(piece.width),
+                    widths: widthAt ? span.map(point => widthAt(point)) : null,
+                    stretchId: baseStretchId(piece.segmentId),
+                    edges
+                });
             });
         });
-        const polygon = footprintOfArms(arms, frame);
+        const polygon = footprintOfArms(arms, frame, { junctions: definition.junctions });
         if (!polygon) throw new Error('corridor-footprint: nothing acquires the surface (every edge is underground)');
         return polygon;
     }
@@ -314,7 +416,9 @@
     function materialize(definition, options = {}) {
         const api = frames();
         const frame = options.frame || api.frameFor(centerlinePositions(definition));
-        const polygon = footprintIn(definition, frame);
+        // `options.transitions === false` builds the stepped land without transition zones: a
+        // diagnostic for comparing against land built before zones existed, never a stored recipe.
+        const polygon = footprintIn(definition, frame, { transitions: options.transitions !== false });
         const diameter = diameterIn(polygon, frame);
         if (diameter > api.CONTRACT.MAX_FOOTPRINT_DIAMETER_M) {
             throw new Error(`corridor-footprint: footprint spans ${Math.round(diameter)} m, more than the ${api.CONTRACT.MAX_FOOTPRINT_DIAMETER_M} m allowed`);
@@ -322,5 +426,5 @@
         return { polygon, constructionFrame: { ...frame.provenance(), algorithm: ALGORITHM, ...versions() } };
     }
 
-    return Object.freeze({ ALGORITHM, SNAP_M, DENSIFY_M, rectangle, bendWedge, sharedNodeWedges, densifyRing, baseStretchId, centerlinePositions, footprintOfArms, footprintIn, frameForDefinition, materialize });
+    return Object.freeze({ ALGORITHM, SNAP_M, DENSIFY_M, rectangle, bendWedge, sharedNodeWedges, junctionLandCorners, densifyRing, baseStretchId, centerlinePositions, footprintOfArms, footprintIn, frameForDefinition, materialize });
 });

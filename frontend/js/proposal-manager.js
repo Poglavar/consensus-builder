@@ -868,6 +868,13 @@ const ProposalManager = {
                 fail(`A road needed by this junction disappeared (${change.proposalId}).`);
             }
             authoring.writeDefinition(target, change.definition);
+            // The joined road's LAND changes with the junction (the corner land its kerb returns
+            // need, a zone widening back to the new road — corridor-footprint.js reads the
+            // junction the plan just wrote into the definition): rebuild it and declare the
+            // parcels it now reaches, or the record keeps the land it had before the junction.
+            const joined = target.roadProposal.definition;
+            if (typeof rebuildRoadDefinitionFootprint === 'function') rebuildRoadDefinitionFootprint(joined);
+            if (typeof declareParcelsUnderRoadLand === 'function') declareParcelsUnderRoadLand(target, joined.polygon);
             authoring.detachPublishedIdentity(target);
             target.updatedAt = changedAt;
             store._indexProposal?.(target);
@@ -921,8 +928,9 @@ const ProposalManager = {
             }
         };
         const fabricStarted = _now();
+        // The joined roads are in the scope too: their land moved at the junction.
         const derived = await this.rematerializeCorridorScope(
-            [stored, ...supersededRecords],
+            [stored, ...supersededRecords, ...changedRecords],
             {
                 _parcelMutation: options._parcelMutation,
                 deferSave: true,

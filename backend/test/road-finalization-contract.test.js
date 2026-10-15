@@ -1,5 +1,6 @@
-// Integration contract for drawing completion: segment/profile edits own obstacle choices, while F
-// is a single-flight pen-up action and cannot invoke cut/demolish/tunnel discovery of its own.
+// Integration contract for drawing completion: each placed edge FINDS its obstacles and F reviews
+// them once (road-editor.md decision 5); F is a single-flight action that cannot invoke
+// cut/demolish/tunnel discovery of its own.
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 
@@ -35,13 +36,39 @@ describe('road drawing finalization contract', () => {
         expect(wrapper).toContain('finishRoadDrawingOnce()');
     });
 
-    it('does not discover or prompt for building impacts while handling F', () => {
+    // This was "does not discover or prompt for building impacts while handling F": every edge asked
+    // at its click. Since road-editor.md decision 5 the clicks only record, and F asks ONCE for the
+    // whole drawing — so F prompts now, but still discovers nothing of its own.
+    it('reviews the recorded obstacles once, before building, and discovers nothing at F', () => {
+        const wrapper = sourceSection(drawingSource, 'function finishRoadDrawing()', '\n}');
+        expect(wrapper).toContain('await reviewRoadConflictsAtFinish()');
+        // Before the build, and before the busy indicator (no "Building the road…" under a question).
+        expect(wrapper.indexOf('reviewRoadConflictsAtFinish')).toBeLessThan(wrapper.indexOf('beginApplyIndicator'));
+        expect(wrapper.indexOf('reviewRoadConflictsAtFinish')).toBeLessThan(wrapper.indexOf('finishRoadDrawingOnce()'));
+
+        const review = sourceSection(drawingSource, 'async function reviewRoadConflictsAtFinish()', '\n}');
+        // The fixed order: plots, buildings (one answer for all), parks/squares/lakes, crossings.
+        const order = ['resolvePlotCrossings(', 'resolveBuildingObstacles(', 'resolveStructureCrossings(', 'buildPedestrianCrossingPrompt('];
+        order.forEach(call => expect(review, call).toContain(call));
+        order.reduce((previous, call) => {
+            expect(review.indexOf(call)).toBeGreaterThan(previous);
+            return review.indexOf(call);
+        }, -1);
+        expect(review).not.toContain('resolvePedestrianRoadCrossings(');   // one dialog, not per edge
+
         const finish = sourceSection(
             drawingSource,
             'async function finishRoadDrawingOnce()',
             '// Closing the drawing tool'
         );
-        expect(finish).not.toContain('ensureBuildingTunnelsForSegments(');
+        const discovery = ['ensureBuildingTunnelsForSegments(', 'detectLoadedBuildingTunnelIntersections(',
+            'ensureBuildingFootprintsForRoadEdge(', 'detectPlotCrossings(', 'detectStructureCrossings(',
+            'detectPedestrianRoadCrossings('];
+        discovery.forEach(call => {
+            expect(finish, call).not.toContain(call);
+            expect(review, call).not.toContain(call);
+        });
+        // The dialogs are the review's; the build after it asks nothing.
         expect(finish).not.toContain('resolveBuildingObstacles(');
         expect(finish).not.toContain('showStyledChoice(');
     });

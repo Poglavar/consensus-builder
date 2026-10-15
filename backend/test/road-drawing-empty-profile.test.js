@@ -64,7 +64,6 @@ function createHarness(segments = [], { withCancel = false, originalProfile = nu
         let roadPolygonLayer = null;
         let roadPreviewLine = null;
         let roadPreviewPolygonLayer = null;
-        let roadPreviewPolygon = null;
         let roadBuildingTunnels = [];
         let roadGradeSeparations = [];
         const roadSegmentProfiles = {};
@@ -92,6 +91,13 @@ function createHarness(segments = [], { withCancel = false, originalProfile = nu
         const formatParcelArea = () => '—';
         const updateRoadAcquiringDifficulty = vi.fn();
         const updateUndoButtonState = vi.fn();
+        // Undo drops the obstacles recorded against the edge it removes (none are recorded here) and
+        // says on the status line whether the pen is down or up afterwards.
+        const pruneRoadEdgeConflicts = vi.fn();
+        const clearPreviewAffectedParcels = vi.fn();
+        const updateStatus = vi.fn();
+        const roadPenDownStatusText = () => 'pen down';
+        const roadPenUpStatusText = () => 'pen up';
         const translateRoadText = (_key, fallback) => fallback;
         const roadDrawingMode = true;
         let corridorEditorState = withCancel
@@ -103,6 +109,7 @@ function createHarness(segments = [], { withCancel = false, originalProfile = nu
         ${lift(roadSource, 'roadSessionFrame')}
         ${lift(roadSource, 'rebuildRoadGeometryFromSegments')}
         ${lift(roadSource, 'setRoadDrawingProfile')}
+        ${lift(roadSource, 'clearRoadRubberBand')}
         ${undo}
         ${cancel}
         return {

@@ -624,10 +624,12 @@
         const kind = corridorKind === 'track'
             ? tunnelText('modal.corridorTunnel.track', 'track')
             : tunnelText('modal.corridorTunnel.road', 'road');
+        // Asked once at Finish for every building the drawing runs through (road-drawing.js
+        // reviewRoadConflictsAtFinish), so it speaks of the road, not of one edge.
         let message = count
             ? tunnelText(
                 'modal.corridorTunnel.offer',
-                'This {{kind}} intersects {{count}} building(s). Keep this edge at surface level or author a tunnel?',
+                'This {{kind}} intersects {{count}} building(s). Keep it at surface level through them, or tunnel through them?',
                 { kind, count }
             )
             : '';

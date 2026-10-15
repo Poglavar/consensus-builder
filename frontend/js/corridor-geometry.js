@@ -844,6 +844,47 @@
         return { ...result, changed: true, insertedPoint, t };
     }
 
+    // Split one stretch in two at an interior vertex, so the halves can carry different
+    // cross-sections (road-editor.md decision 3, the minimum form of roads.md §9 stations). Nothing
+    // moves: the halves share the split vertex and keep every other one, so the centre line, the
+    // graph's edges and the footprint stay exactly where they were. Identity follows
+    // removeCorridorEdge: the leading half keeps the stretch's id, the trailing half gets a stable
+    // derived id plus a copy of the stretch's own cross-section when it has one (a stretch on the
+    // road's default profile leaves two halves on the default). Refused at either end of the stretch
+    // (already a boundary) and where the caller marks the vertex protected — next to a building
+    // tunnel, a grade separation or a ramp, whose edge-level meaning a cross-section change at that
+    // vertex would contradict. Inputs are never mutated.
+    function splitCorridorStretchAtNode(segments, segmentIds, segmentProfiles, segmentIndex, pointIndex, options = {}) {
+        const result = corridorEditInputs(segments, segmentIds, segmentProfiles);
+        const target = result.segments[segmentIndex];
+        if (!Array.isArray(target) || !Number.isInteger(pointIndex) || !target[pointIndex]) {
+            return { ...result, changed: false, reason: 'missing-node' };
+        }
+        if (pointIndex === 0 || pointIndex === target.length - 1) {
+            return { ...result, changed: false, reason: 'endpoint' };
+        }
+        if (options.protected === true) return { ...result, changed: false, reason: 'protected' };
+
+        const sourceId = result.segmentIds[segmentIndex] ?? null;
+        const usedIds = new Set(result.segmentIds
+            .filter(id => id !== null && id !== undefined)
+            .map(String));
+        const derivedId = nextSplitSegmentId(sourceId, usedIds);
+        if (result.segmentProfiles && sourceId !== null && sourceId !== undefined
+            && result.segmentProfiles[String(sourceId)]) {
+            result.segmentProfiles[String(derivedId)] = cloneCorridorValue(
+                result.segmentProfiles[String(sourceId)]
+            );
+        }
+        // Two objects for the shared vertex, so a later in-place edit of one half's end cannot
+        // reach into the other half.
+        const leading = target.slice(0, pointIndex + 1);
+        const trailing = target.slice(pointIndex).map(point => ({ ...point }));
+        result.segments.splice(segmentIndex, 1, leading, trailing);
+        result.segmentIds.splice(segmentIndex, 1, sourceId, derivedId);
+        return { ...result, changed: true, derivedId };
+    }
+
     // Remove exactly one authored centerline edge. A road is one formation even when this leaves
     // disconnected stretches: those stretches remain in this ONE result and replay re-derives its
     // complete footprint. Segment identity stays index-aligned; when one polyline becomes two, the
@@ -1287,81 +1328,113 @@
         return Math.hypot(p.x - q.x, p.y - q.y);
     }
 
-    // Tiered nearest-snap. localSegments: [[{x,y}...], ...]; externalSegments: [{points:[{x,y}...]}].
-    // Priority: any LOCAL VERTEX within radius beats any LOCAL EDGE beats any EXTERNAL (placed road).
+    // A node is preferred to an edge it is not much farther than: a candidate's ranking distance is
+    // its pixel distance × VERTEX_SNAP_PREFERENCE for a vertex/node/endpoint, × 1 for an edge, so a
+    // node 10 px away still beats an edge 7.5 px away and a corner is joined rather than missed by a
+    // few centimetres along one of its edges.
+    const VERTEX_SNAP_PREFERENCE = 0.7;
+
+    // Nearest-first snap. localSegments: [[{x,y}...], ...] (this drawing's own segments);
+    // externalSegments: [{points:[{x,y}...]}] (applied corridors); streetSegments (optional):
+    // [{points:[{x,y}...], name, wayId}] (the city's existing street centre lines).
+    //
+    // Every candidate within radiusPx competes on ONE scale — the ranking distance above — whatever
+    // it belongs to. This used to be a tier ladder (any local vertex, then any local edge, then
+    // placed corridors), so a node of the road being snapped onto lost to a far-off vertex of the
+    // drawing's own. The radius is a plain pixel distance; the preference only ranks. Equal ranks
+    // keep the earlier candidate: local before applied before street, vertex before edge.
     // The active segment's growing tip is skipped (snapping to it makes a zero-length edge) and the
     // active segment is never edge-inserted (that renumbers vertices under the pointer). Returns a
     // raw descriptor (indices + winning pixel) the UI resolves back to a latlng; null if nothing near.
-    function pickSnapTarget(cursorPx, localSegments, externalSegments, activeIndex, radiusPx) {
-        let best = null;
+    // A node within half the radius wins outright, before ranking: the drawing's own node sits ON
+    // the street it was snapped to, and a click 2 px along that street must resume the stretch at
+    // the node, not start a new one on the street's centre line.
+    const VERTEX_SNAP_WINS_WITHIN = 0.5;
 
-        // Tier 1: local vertices
-        localSegments.forEach((seg, segmentIndex) => {
+    function pickSnapTarget(cursorPx, localSegments, externalSegments, activeIndex, radiusPx, streetSegments) {
+        let best = null;
+        let bestRank = Infinity;
+        let bestVertex = null;
+        const offer = (distance, isVertex, describe) => {
+            if (!(distance <= radiusPx)) return;
+            if (isVertex && distance <= radiusPx * VERTEX_SNAP_WINS_WITHIN && (!bestVertex || distance < bestVertex.distance)) {
+                bestVertex = { distance, ...describe() };
+            }
+            const rank = isVertex ? distance * VERTEX_SNAP_PREFERENCE : distance;
+            if (rank >= bestRank) return;
+            bestRank = rank;
+            best = { distance, ...describe() };
+        };
+        const vertices = (seg, visit) => seg.forEach((vertex, vertexIndex) => visit(vertex, vertexIndex));
+        const edges = (seg, visit) => {
+            for (let i = 0; i < seg.length - 1; i++) {
+                const projected = projectPointOnPixelSegment(cursorPx, seg[i], seg[i + 1]);
+                visit(projected, i);
+            }
+        };
+
+        // This drawing's own vertices…
+        (localSegments || []).forEach((seg, segmentIndex) => {
             if (!Array.isArray(seg) || !seg.length) return;
-            seg.forEach((vertex, vertexIndex) => {
+            vertices(seg, (vertex, vertexIndex) => {
                 if (segmentIndex === activeIndex && vertexIndex === seg.length - 1) return;
-                const distance = pixelDistance(cursorPx, vertex);
-                if (distance > radiusPx) return;
-                if (best && distance >= best.distance) return;
                 const isEndpoint = vertexIndex === 0 || vertexIndex === seg.length - 1;
-                best = {
-                    distance, source: 'local', kind: isEndpoint ? 'endpoint' : 'vertex',
+                offer(pixelDistance(cursorPx, vertex), true, () => ({
+                    source: 'local', kind: isEndpoint ? 'endpoint' : 'vertex',
                     segmentIndex, vertexIndex, atStart: vertexIndex === 0, pixel: vertex
-                };
+                }));
             });
         });
-        if (best) return best;
-
-        // Tier 2: local edges
-        localSegments.forEach((seg, segmentIndex) => {
+        // …and edges.
+        (localSegments || []).forEach((seg, segmentIndex) => {
             if (!Array.isArray(seg) || seg.length < 2) return;
             if (segmentIndex === activeIndex) return;
-            for (let i = 0; i < seg.length - 1; i++) {
-                const projected = projectPointOnPixelSegment(cursorPx, seg[i], seg[i + 1]);
-                const distance = pixelDistance(cursorPx, projected);
-                if (distance > radiusPx) continue;
-                if (best && distance >= best.distance) continue;
-                best = { distance, source: 'local', kind: 'edge', segmentIndex, insertAfter: i, pixel: projected };
-            }
+            edges(seg, (projected, i) => offer(pixelDistance(cursorPx, projected), false, () => ({
+                source: 'local', kind: 'edge', segmentIndex, insertAfter: i, pixel: projected
+            })));
         });
-        if (best) return best;
 
-        // Tier 3: every explicit node on a placed (external) corridor. Internal junction/bend
-        // vertices are real graph nodes too; limiting this pass to endpoints made the cursor snap
-        // to the nearby centreline instead of the existing node the user was aiming at.
-        externalSegments.forEach((entry, externalIndex) => {
+        // Every explicit node on a placed (external) corridor. Internal junction/bend vertices are
+        // real graph nodes too; limiting this pass to endpoints made the cursor snap to the nearby
+        // centreline instead of the existing node the user was aiming at.
+        (externalSegments || []).forEach((entry, externalIndex) => {
             const seg = entry && entry.points;
             if (!Array.isArray(seg) || seg.length < 2) return;
-            seg.forEach((vertex, vertexIndex) => {
+            vertices(seg, (vertex, vertexIndex) => {
                 const isEndpoint = vertexIndex === 0 || vertexIndex === seg.length - 1;
-                const distance = pixelDistance(cursorPx, vertex);
-                if (distance > radiusPx) return;
-                if (best && distance >= best.distance) return;
-                best = {
-                    distance,
-                    source: 'external',
-                    kind: isEndpoint ? 'external-endpoint' : 'external-node',
-                    externalIndex,
-                    vertexIndex,
-                    pixel: vertex
-                };
+                offer(pixelDistance(cursorPx, vertex), true, () => ({
+                    source: 'external', kind: isEndpoint ? 'external-endpoint' : 'external-node',
+                    externalIndex, vertexIndex, pixel: vertex
+                }));
             });
         });
-        if (best) return best;
-
-        // Tier 4: an arbitrary point on a placed corridor's centreline.
-        externalSegments.forEach((entry, externalIndex) => {
+        // An arbitrary point on a placed corridor's centreline.
+        (externalSegments || []).forEach((entry, externalIndex) => {
             const seg = entry && entry.points;
             if (!Array.isArray(seg) || seg.length < 2) return;
-            for (let i = 0; i < seg.length - 1; i++) {
-                const projected = projectPointOnPixelSegment(cursorPx, seg[i], seg[i + 1]);
-                const distance = pixelDistance(cursorPx, projected);
-                if (distance > radiusPx) continue;
-                if (best && distance >= best.distance) continue;
-                best = { distance, source: 'external', kind: 'external-edge', externalIndex, insertAfter: i, pixel: projected };
-            }
+            edges(seg, (projected, i) => offer(pixelDistance(cursorPx, projected), false, () => ({
+                source: 'external', kind: 'external-edge', externalIndex, insertAfter: i, pixel: projected
+            })));
         });
-        return best;
+
+        // An existing street's nodes, then any point on its centre line.
+        (streetSegments || []).forEach((entry, streetIndex) => {
+            const seg = entry && entry.points;
+            if (!Array.isArray(seg) || seg.length < 2) return;
+            vertices(seg, (vertex, vertexIndex) => offer(pixelDistance(cursorPx, vertex), true, () => ({
+                source: 'street', kind: 'street-node', streetIndex, vertexIndex, pixel: vertex,
+                name: entry.name ?? null, wayId: entry.wayId ?? null
+            })));
+        });
+        (streetSegments || []).forEach((entry, streetIndex) => {
+            const seg = entry && entry.points;
+            if (!Array.isArray(seg) || seg.length < 2) return;
+            edges(seg, (projected, i) => offer(pixelDistance(cursorPx, projected), false, () => ({
+                source: 'street', kind: 'street-edge', streetIndex, insertAfter: i, pixel: projected,
+                name: entry.name ?? null, wayId: entry.wayId ?? null
+            })));
+        });
+        return bestVertex || best;
     }
 
     const api = {
@@ -1370,6 +1443,8 @@
         checkCurvatureConstraint,
         projectPointOnPixelSegment,
         pickSnapTarget,
+        VERTEX_SNAP_PREFERENCE,
+        VERTEX_SNAP_WINS_WITHIN,
         planarSegmentIntersection,
         insertCorridorCrossingNodes,
         splitCorridorSelfJunctions,
@@ -1380,6 +1455,7 @@
         projectCorridorPointToEdge,
         canonicalizeCorridorNetworkJunctions,
         insertCorridorNode,
+        splitCorridorStretchAtNode,
         removeCorridorEdge,
         removeCorridorNodes,
         segmentsIntersect,

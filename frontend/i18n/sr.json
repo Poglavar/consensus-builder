@@ -1827,7 +1827,6 @@
             "openGroundValue": "{{count}} · {{area}}",
             "parcelCountLabel": "Broj parcela:",
             "builtStatus": "Put izgrađen — kliknite ga za uređivanje ili predlog.",
-            "segmentCancelledStatus": "Segment poništen — postavljeni segmenti ostaju. Esc ponovo gradi put.",
             "builtStatusTrack": "Pruga izgrađena — kliknite je za uređivanje ili predlog.",
             "nodeHint": "Prevucite za pomeranje · ⌥-klik uklanja ovaj čvor",
             "edgeActionsHint": "＋ Dodaj čvor · × Sruši ovu deonicu",
@@ -1845,15 +1844,56 @@
             "buildingTrack": "Gradim prugu…",
             "junctionHint": "Raskrsnica — prevucite za pomeranje svih krakova · ⌥-klik razdvaja",
             "looseEndHint": "Slobodan kraj — prevucite na put ili čvor da ih spojite · ⌥-klik uklanja",
+            "boundaryHint": "Granica deonica — ovde se poprečni presek može promeniti · prevucite za pomeranje · ⌥-klik razdvaja",
+            "interiorNodeHint": "Prevucite za pomeranje · klik deli deonicu ovde ili uklanja čvor · ⌥-klik ga uklanja",
+            "removeNodeEmptiesStretch": "Uklanjanjem ovog čvora nestala bi cela deonica. Umesto toga srušite deonicu (× na njenoj sredini).",
+            "splitProtectedStatus": "Deonica se ne može podeliti pored rampe, tunela ili denivelisanog dela.",
+            "stretchSplitStatus": "Deonica je podeljena. Kliknite jednu polovinu, zatim Uredi poprečni presek → Ovu deonicu da dobije svoje trake.",
+            "nodeChoicePrompt": "Šta uraditi sa ovim čvorom?",
+            "splitStretchHere": "Podeli deonicu ovde — da dve polovine mogu imati različite poprečne preseke",
+            "removeThisNode": "Ukloni ovaj čvor",
             "finishButtonShortTrack": "Završi prugu (F)",
             "lengthLabelTrack": "Dužina pruge:",
             "areaLabelTrack": "Površina pruge:",
             "ownedByInstitutionLabel": "U vlasništvu institucija:",
             "costLabel": "Cena:",
-            "continueHint": "Nastavljate ovaj segment — kliknite za dodavanje tačaka, pritisnite F za završetak puta",
-            "continueHintTrack": "Nastavljate ovaj segment — kliknite za dodavanje tačaka, pritisnite F za završetak pruge",
-            "addPointsHint": "Kliknite za dodavanje tačaka puta, pritisnite F za završetak puta",
-            "addPointsHintTrack": "Kliknite za dodavanje tačaka pruge, pritisnite F za završetak pruge"
+            "continueHint": "Nastavljate ovaj segment — kliknite za dodavanje tačaka. Dvoklik ili Enter gradi put, Esc podiže olovku.",
+            "continueHintTrack": "Nastavljate ovaj segment — kliknite za dodavanje tačaka. Dvoklik ili Enter gradi prugu, Esc podiže olovku.",
+            "addPointsHint": "Kliknite za dodavanje tačaka puta. Dvoklik ili Enter gradi put, Esc podiže olovku, Alt postavlja tačku bez spajanja.",
+            "addPointsHintTrack": "Kliknite za dodavanje tačaka pruge. Dvoklik ili Enter gradi prugu, Esc podiže olovku, Alt postavlja tačku bez spajanja.",
+            "startHintTrack": "Klikni na mapu da počneš crtanje pruge",
+            "seededHint": "Kliknite kraj segmenta da ga nastavite ili kliknite mapu da nacrtate novi",
+            "penLiftedStatus": "Olovka podignuta — kliknite čvor da nastavite od njega ili bilo gde za novu deonicu. Enter gradi put.",
+            "penLiftedStatusTrack": "Olovka podignuta — kliknite čvor da nastavite od njega ili bilo gde za novu deonicu. Enter gradi prugu.",
+            "conflictsRecordedStatus": "Na putu: {{list}} — odlučujete kad završite.",
+            "finishBlockedStatus": "Nije izgrađeno — na putu: {{list}}. Poništite ili zaobiđite crvene krugove, pa ponovo završite.",
+            "conflictPlots": {
+                "one": "parcele {{count}} predloga",
+                "few": "parcele {{count}} predloga",
+                "other": "parcele {{count}} predloga"
+            },
+            "conflictParks": {
+                "one": "{{count}} park",
+                "few": "{{count}} parka",
+                "other": "{{count}} parkova"
+            },
+            "conflictSquares": {
+                "one": "{{count}} trg",
+                "few": "{{count}} trga",
+                "other": "{{count}} trgova"
+            },
+            "conflictLakes": {
+                "one": "{{count}} jezero",
+                "few": "{{count}} jezera",
+                "other": "{{count}} jezera"
+            },
+            "conflictCrossings": {
+                "one": "{{count}} prelaz puta",
+                "few": "{{count}} prelaza puta",
+                "other": "{{count}} prelaza puta"
+            },
+            "snapsToStreet": "Spaja se na {{name}}",
+            "snapsToUnnamedStreet": "Spaja se na postojeću ulicu"
         },
         "roadAnalysis": {
             "title": "Analiza širine puta",
@@ -2209,7 +2249,48 @@
             "measuredFallback": "ništa nije prikazano — meri se prema GDI-ju",
             "lockedControl": "Nedostupno dok je presek otvoren — prvo primeni ili odustani",
             "ceilingOver": "Šire nego što ovde staje ({{max}} m) bez novog rušenja — otvori karticu Koridor da vidiš kako bi moglo da stane",
-            "ceilingTitle": "Najveća širina koju ovaj put ovde može da ima bez novog rušenja; možda ga treba pomeriti (vidi karticu Koridor)"
+            "ceilingTitle": "Najveća širina koju ovaj put ovde može da ima bez novog rušenja; možda ga treba pomeriti (vidi karticu Koridor)",
+            "refusedGeneric": "Tu promenu ovde nije moguće napraviti.",
+            "refusedLaneMissing": "Te trake više nema u poprečnom preseku.",
+            "refusedUnknownType": "To nije vrsta trake koju uređivač poznaje.",
+            "refusedWidthNotNumber": "Upišite širinu u metrima, na primer 3,25.",
+            "refusedDrivingMin": "Saobraćajna traka mora biti široka najmanje {{min}} m — uža nije saobraćajna traka.",
+            "refusedLaneMin": "{{lane}}: najmanje {{min}} m — sve uže je linija, a ne traka.",
+            "refusedFixedWidth": "{{lane}}: standardna dubina parking mesta je {{width}} m i ne menja se.",
+            "refusedLastLane": "Koridor mora imati najmanje jednu traku, pa se poslednja ne može ukloniti.",
+            "refusedSeam": "Granica dalje ne može: {{lane}} ima najmanje {{min}} m.",
+            "refusedTreeEvery": "Upišite ceo broj parking mesta (0 za bez drveća).",
+            "refusedNotApplicable": "{{lane}} nema to podešavanje.",
+            "replaceStretches": {
+                "one": "Zameni i {{count}} deonicu koja ima sopstveni poprečni presek",
+                "few": "Zameni i {{count}} deonice koje imaju sopstveni poprečni presek",
+                "other": "Zameni i {{count}} deonica koje imaju sopstveni poprečni presek"
+            },
+            "replaceStretchesNote": "Ako nije označeno, te deonice pri primeni zadržavaju svoj presek, a mapa prikazuje nove trake samo tamo gde će se promeniti.",
+            "takeWidth": "Širina {{before}} → {{after}}.",
+            "takeAdded": {
+                "one": "Ovaj poprečni presek uzima zemljište sa još {{count}} parcele:",
+                "few": "Ovaj poprečni presek uzima zemljište sa još {{count}} parcele:",
+                "other": "Ovaj poprečni presek uzima zemljište sa još {{count}} parcela:"
+            },
+            "takeFreed": {
+                "one": "Oslobađa {{count}} parcelu:",
+                "few": "Oslobađa {{count}} parcele:",
+                "other": "Oslobađa {{count}} parcela:"
+            },
+            "takeMore": "i još {{count}}",
+            "takeNone": "Nijedna parcela nije dodata ni oslobođena: nova širina ostaje unutar parcela koje put već prelazi.",
+            "takeUnmeasured": {
+                "one": "{{count}} deo parcele nije bilo moguće izmeriti, pa spiskovi možda nisu potpuni.",
+                "few": "{{count}} dela parcela nije bilo moguće izmeriti, pa spiskovi možda nisu potpuni.",
+                "other": "{{count}} delova parcela nije bilo moguće izmeriti, pa spiskovi možda nisu potpuni."
+            },
+            "takeNoFabric": "Parcele koje ovo zemljište zauzima ne mogu se navesti: mapa parcela ovde nije učitana.",
+            "takeNoParcels": "Ispod ovog puta nema katastarski izmerenih parcela (neizmereno zemljište), pa nema šta da se navede.",
+            "takeNoFootprint": "Novi obuhvat nije bilo moguće izračunati, pa se parcele koje bi zauzeo ne mogu navesti.",
+            "takeNoStoredLand": "Ovaj put nema sačuvan obuhvat za poređenje, pa se parcele ne mogu navesti.",
+            "takeApply": "Primeni",
+            "keepEditing": "Nastavi uređivanje"
         },
         "corridorDraft": {
             "title": "Nesačuvani nacrt trase",
@@ -2234,7 +2315,7 @@
             "show": "Prikaži"
         },
         "corridorTunnel": {
-            "offer": "Ovaj {{kind}} preseca {{count}} zgradu/zgrada. Zadržati ovu deonicu na površini ili projektovati tunel?",
+            "offer": "Ovaj {{kind}} preseca {{count}} zgradu/zgrada. Zadržati ga kroz njih na površini ili kroz njih projektovati tunel?",
             "road": "put",
             "track": "pruga",
             "proposalImpact": "Ovaj put je kasniji od ovih predloga zgrada; površinski prelaz preuzima njihovo zemljište tokom ponovne izvedbe:",

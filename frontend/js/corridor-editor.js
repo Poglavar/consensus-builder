@@ -14,7 +14,8 @@
 // picker offers), which is the fast path: take a correct section, then tweak it.
 //
 // Clearance and obstacle overlays are design information only. Apply mints an immutable replacement
-// proposal and one canonical replay derives parcel cuts and building impacts from its footprint.
+// proposal and one canonical replay derives parcel cuts and building impacts from its footprint. When
+// the width changes, Apply first names the parcels the new land adds and frees, and asks.
 
 let corridorEditorState = null;
 let corridorEditorObstacleTimer = null;
@@ -109,30 +110,30 @@ function corridorEditorKeydown(event) {
     }
 }
 
-// Apply an edit, or refuse it. `edit` returns a new profile or null; null means the edit was meaningless
-// (a lane below its minimum, the last lane, an unknown type) and the right answer is to say so.
+// Apply an edit, or refuse it — out loud. `edit` returns a new profile or null; null means the edit was
+// meaningless (a lane below its minimum, the last lane, an unknown type) and the right answer is to say
+// WHY. The with* transforms only answer null, so `attempt` records what was tried — which transform,
+// with what ({ op, index, width, … }) — and corridorEditorRefusalReason turns that into a reason the
+// user can act on.
 //
-// The only other refusal is the hard width cap: the total is the sum of the lanes, so a widening edit
+// The other refusal is the hard width cap: the total is the sum of the lanes, so a widening edit
 // cannot fail on room — it can only run past the widest corridor the app will draw, and then it must SAY
 // so. A silent no-op here is the exact bug this editor was rebuilt to remove.
-function corridorEditorApply(edit) {
+function corridorEditorApply(edit, attempt = null) {
     if (!corridorEditorState) return;
     const next = edit(corridorEditorState.profile);
     if (!next) {
-        // Redraw from the model so the refused number does not sit in the input pretending to be real.
-        corridorEditorState.notice = null;
-        corridorEditorRender();
-        corridorEditorFlashRefusal();
+        corridorEditorRefuse(corridorEditorRefusalText(
+            corridorEditorRefusalReason(corridorEditorState.profile, attempt)
+        ));
         return;
     }
     if (corridorProfileWidth(next) > CORRIDOR_EDITOR_MAX_WIDTH + 1e-6) {
-        corridorEditorState.notice = corridorEditorI18n(
+        corridorEditorRefuse(corridorEditorI18n(
             'modal.corridor.maxWidthReached',
             'A corridor cannot be wider than {{max}} m. Remove or narrow a lane first.',
             { max: CORRIDOR_EDITOR_MAX_WIDTH }
-        );
-        corridorEditorRender();
-        corridorEditorFlashRefusal();
+        ));
         return;
     }
     corridorEditorState.notice = null;
@@ -141,13 +142,22 @@ function corridorEditorApply(edit) {
     if (corridorEditorState.mode === 'drawing' && typeof setRoadDrawingProfile === 'function') {
         setRoadDrawingProfile(next);
     } else if (typeof setCorridorProfilePreview === 'function') {
-        setCorridorProfilePreview(
-            corridorEditorState.proposalKey,
-            next,
-            corridorEditorState.scope === 'segment' ? corridorEditorState.segmentId : null
-        );
+        corridorEditorPreview(next);
     }
     corridorEditorRender();
+}
+
+// The live map preview of the profile being edited, scoped exactly as the save will be: one
+// stretch, or the whole road except the stretches that keep their own cross-section.
+function corridorEditorPreview(profile) {
+    const state = corridorEditorState;
+    if (!state || typeof setCorridorProfilePreview !== 'function') return;
+    setCorridorProfilePreview(
+        state.proposalKey,
+        profile,
+        state.scope === 'segment' ? state.segmentId : null,
+        { keepOverrides: state.scope !== 'segment' && state.replaceStretchProfiles !== true }
+    );
 }
 
 // The total lives in the header, which a render does not rebuild, so the class has to come off by
@@ -163,6 +173,122 @@ function corridorEditorFlashRefusal() {
         () => total.classList.remove('corridor-editor-total--refused'),
         { once: true }
     );
+}
+
+// Refuse out loud: the reason stays in the panel until the next edit lands, and the total flashes.
+// The redraw from the model also puts a refused number back, so it does not sit in its input
+// pretending to be real.
+function corridorEditorRefuse(text) {
+    if (!corridorEditorState) return;
+    corridorEditorState.notice = text;
+    corridorEditorRender();
+    corridorEditorFlashRefusal();
+}
+
+// Why an edit was refused, as { key, fallback, params } — read off the ATTEMPT (which with* transform
+// was called, with what) and the profile it was tried on, because the transforms only answer null.
+// Each case mirrors that transform's refusal rule in corridor-profile.js. Params carry raw values
+// (lane types, metres); corridorEditorRefusalText puts them into words. Pure.
+function corridorEditorRefusalReason(profile, attempt) {
+    const strips = (normalizeCorridorProfile(profile) || { strips: [] }).strips;
+    const reason = (key, fallback, params = {}) => ({ key: `modal.corridor.${key}`, fallback, params });
+    const generic = reason('refusedGeneric', 'That change is not possible here.');
+    const missing = reason('refusedLaneMissing', 'That lane is no longer in the cross-section.');
+    const unknownType = reason('refusedUnknownType', 'That is not a lane type the editor knows.');
+    const notANumber = reason('refusedWidthNotNumber', 'Type the width in metres, for example 3.25.');
+    const isLaneType = type => Object.prototype.hasOwnProperty.call(CORRIDOR_LANE_TYPES, type);
+    const op = attempt && attempt.op;
+    const lane = attempt && Number.isInteger(attempt.index) ? strips[attempt.index] : undefined;
+
+    switch (op) {
+        case 'width': {
+            if (!lane) return missing;
+            if (corridorLaneWidthFixed(lane.type)) {
+                return reason('refusedFixedWidth', '{{lane}} keeps the standard bay depth of {{width}} m.',
+                    { laneType: lane.type, width: corridorStandardWidth(lane.type) });
+            }
+            const width = Number(attempt.width);
+            if (!Number.isFinite(width) || width <= 0) return notANumber;
+            if (width >= corridorMinLaneWidth(lane.type)) return generic;
+            return lane.type === 'driving'
+                ? reason('refusedDrivingMin', 'A traffic lane must be at least {{min}} m wide — narrower is not a traffic lane.',
+                    { min: corridorMinLaneWidth('driving') })
+                : reason('refusedLaneMin', '{{lane}} cannot be narrower than {{min}} m — narrower is a line, not a lane.',
+                    { laneType: lane.type, min: corridorMinLaneWidth(lane.type) });
+        }
+        case 'seam': {
+            const left = strips[attempt.seamIndex];
+            const right = strips[attempt.seamIndex + 1];
+            if (!left || !right) return missing;
+            if (corridorLaneWidthFixed(left.type) || corridorLaneWidthFixed(right.type)) {
+                return reason('seamLocked', 'Parking keeps its fixed width');
+            }
+            // Dragging left takes width from the left lane, dragging right from the right one.
+            const shrinking = Number(attempt.delta) < 0 ? left : right;
+            return reason('refusedSeam', 'The seam stops here: {{lane}} cannot be narrower than {{min}} m.',
+                { laneType: shrinking.type, min: CORRIDOR_MIN_LANE_WIDTH });
+        }
+        case 'remove':
+            if (!lane) return missing;
+            return strips.length < 2
+                ? reason('refusedLastLane', 'A corridor needs at least one lane, so the last one cannot be removed.')
+                : generic;
+        case 'type':
+            if (!lane) return missing;
+            return isLaneType(attempt.type) ? generic : unknownType;
+        case 'insert': {
+            if (!isLaneType(attempt.lane && attempt.lane.type)) return unknownType;
+            const width = Number(attempt.lane.width);
+            return (!Number.isFinite(width) || width <= 0) ? notANumber : generic;
+        }
+        case 'treeEvery':
+            if (!lane) return missing;
+            if (!corridorParkingOrientation(lane.type)) {
+                return reason('refusedNotApplicable', '{{lane}} has no such setting.', { laneType: lane.type });
+            }
+            return reason('refusedTreeEvery', 'Type a whole number of parking spaces (0 for no trees).');
+        case 'landscape':
+        case 'paving':
+        case 'gauge':
+        case 'direction':
+            if (!lane) return missing;
+            return reason('refusedNotApplicable', '{{lane}} has no such setting.', { laneType: lane.type });
+        case 'move':
+            return strips[attempt.from] ? generic : missing;
+        default:
+            return generic;
+    }
+}
+
+// A refusal reason in the UI language: lane types become their labels, metres are formatted.
+function corridorEditorRefusalText(reason) {
+    const params = { ...(reason.params || {}) };
+    if (params.laneType) params.lane = corridorLaneTypeLabel(params.laneType);
+    ['min', 'width'].forEach(name => {
+        if (typeof params[name] === 'number') params[name] = CbFormat.formatNumber(params[name], { maxFractionDigits: 2 });
+    });
+    return corridorEditorI18n(reason.key, reason.fallback, params);
+}
+
+// Show (or, with no text, clear) the notice without a render — for a seam drag, where a render would
+// replace the seam under the pointer and end the drag.
+function corridorEditorShowNoticeInPlace(text) {
+    const body = document.querySelector('.corridor-editor-body');
+    if (!body) return;
+    let notice = body.querySelector('.corridor-editor-notice');
+    if (!text) {
+        if (notice) notice.remove();
+        return;
+    }
+    if (!notice) {
+        notice = document.createElement('div');
+        notice.className = 'corridor-editor-notice';
+        notice.setAttribute('role', 'status');
+        const section = body.querySelector('.corridor-section');
+        if (section) section.insertAdjacentElement('afterend', notice);
+        else body.prepend(notice);
+    }
+    notice.textContent = text;
 }
 
 // Everything the corridor's footprint would collide with at the given total width: buildings the
@@ -1136,11 +1262,25 @@ function corridorEditorRenderEdgeFillPreview() {
     })).addTo(map);
 }
 
+// The one transaction a Move / Widen toward commits: the shifted centre line and — while the
+// cross-section is still only a preview — that cross-section with it, under the same scope rules as
+// Apply (corridorEditorProfileMutator). Committing the geometry alone moved the road for a width it
+// did not have yet: the widening stayed a preview, and closing the editor dropped the very lanes the
+// road had been moved to make room for. `request` is null when there is no preview to carry. Pure.
+function corridorEditorFitShiftMutator(moved, scope, request) {
+    const profileEdit = request ? corridorEditorProfileMutator(request) : null;
+    return definition => {
+        corridorEditorWriteScopedSegmentPoints(definition, moved, scope);
+        if (profileEdit) profileEdit(definition);
+    };
+}
+
 // Bake a lateral shift into the scoped segment's stored centerline. The shift goes through
 // updateLocalCorridorGeometry like any other geometry edit (a node drag, a reroute), so the
 // footprint and parcel cuts are derived by one replay on the moved alignment. Endpoints welded to
 // other roads (or to the rest of this network) are held: the
-// shift tapers to zero toward them, the shape of a real realignment.
+// shift tapers to zero toward them, the shape of a real realignment. A previewed cross-section rides
+// in the same commit (corridorEditorFitShiftMutator).
 async function corridorEditorApplyFitShift(shiftMeters) {
     const state = corridorEditorState;
     if (!state || state.mode !== 'proposal' || !Number.isFinite(shiftMeters) || !shiftMeters) return;
@@ -1172,14 +1312,28 @@ async function corridorEditorApplyFitShift(shiftMeters) {
         ? corridorEditorShiftText(state.clearanceCache.flat, shiftMeters)
         : `${corridorEditorFormatMeters(Math.abs(shiftMeters))} m`;
 
-    const updated = await updateLocalCorridorGeometry(state.proposalKey, definition => {
-        corridorEditorWriteScopedSegmentPoints(definition, moved);
-    });
+    const carried = state.dirty ? corridorEditorSaveRequest(state) : null;
+    const updated = await updateLocalCorridorGeometry(
+        state.proposalKey,
+        corridorEditorFitShiftMutator(moved, { scope: state.scope, segmentId: state.segmentId }, carried)
+    );
     if (!corridorEditorState || corridorEditorState !== state) return;
     if (!updated) {
         state.notice = corridorEditorI18n('modal.corridor.moveFailed', 'The road could not be moved.');
         corridorEditorRender();
         return;
+    }
+    // The record now holds the moved road — and the carried cross-section, which is therefore no
+    // longer a preview: it is what the editor opened from as far as the next Apply is concerned.
+    const fresh = (typeof getProposalByIdOrHash === 'function') ? getProposalByIdOrHash(state.proposalKey) : null;
+    const freshDefinition = fresh ? corridorProposalDefinition(fresh) : null;
+    if (freshDefinition) {
+        state.source = fresh;
+        state.definition = freshDefinition;
+    }
+    if (carried) {
+        state.originalProfile = JSON.parse(JSON.stringify(state.profile));
+        state.dirty = false;
     }
     // The centerline moved: every cache derived from it is stale, including the opening-width
     // baseline the blocking decision compares against.
@@ -1230,9 +1384,10 @@ function corridorEditorOtherCenterlinesPlanar() {
 }
 
 // Replace the scoped segment's points inside the stored definition, whatever raw shape it uses
-// (one flat point list, or a list of segments under `points` or `segments`).
-function corridorEditorWriteScopedSegmentPoints(definition, latlngs) {
-    const state = corridorEditorState;
+// (one flat point list, or a list of segments under `points` or `segments`). `scope` ({ scope,
+// segmentId }) is the open editor's unless given.
+function corridorEditorWriteScopedSegmentPoints(definition, latlngs, scope = corridorEditorState) {
+    const state = scope;
     const points = latlngs.map(point => ({ lat: point.lat, lng: point.lng }));
     const raw = (Array.isArray(definition.points) && definition.points.length && definition.points)
         || (Array.isArray(definition.segments) && definition.segments)
@@ -1637,6 +1792,8 @@ function corridorEditorRender() {
     // Both tabs: the limit governs the buildable width AND the pavement fill, and the fill follows
     // the cross-section, which is edited on the other tab.
     corridorEditorRenderLimitRow();
+    // The keep-or-replace question about stretches with their own cross-section follows the scope.
+    corridorEditorRenderStretchesOption();
     corridorEditorRenderEdgeFillPreview();
 
     if (corridorEditorState.activeTab === 'corridor' && corridorEditorState.mode === 'proposal') {
@@ -1784,7 +1941,7 @@ function corridorEditorBindBody(body) {
             const target = ins > from ? ins - 1 : ins;
             if (target === from) return;
             corridorEditorState.selected = target;
-            corridorEditorApply(profile => withLaneMoved(profile, from, target));
+            corridorEditorApply(profile => withLaneMoved(profile, from, target), { op: 'move', from, to: target });
         });
         section.addEventListener('dragend', () => { corridorEditorState.dragIndex = null; corridorEditorState.dropInsertion = null; clearDragLayout(); });
     }
@@ -1810,11 +1967,28 @@ function corridorEditorBindBody(body) {
             const startProfile = JSON.parse(JSON.stringify(state.profile));
             const startTotal = corridorProfileWidth(startProfile);
             let moved = false;
+            // Why the seam stopped, while it is stopped: said once per stop, in place, since a render
+            // mid-drag would replace the seam under the pointer.
+            let stopped = null;
 
             const onMove = moveEvent => {
                 const delta = ((moveEvent.clientX - startX) / sectionWidth) * startTotal;
                 const next = withSeamMoved(startProfile, seamIndex, delta);
-                if (!next) return; // clamped at the half-metre lane minimum
+                if (!next) {
+                    // Clamped at the half-metre lane minimum: the seam stays where it last fitted.
+                    if (!stopped) {
+                        stopped = corridorEditorRefusalText(
+                            corridorEditorRefusalReason(startProfile, { op: 'seam', seamIndex, delta })
+                        );
+                        corridorEditorShowNoticeInPlace(stopped);
+                        corridorEditorFlashRefusal();
+                    }
+                    return;
+                }
+                if (stopped) {
+                    stopped = null;
+                    corridorEditorShowNoticeInPlace(null);
+                }
                 state.profile = next;
                 moved = true;
                 corridorEditorSyncWidthsInPlace(next);
@@ -1823,9 +1997,17 @@ function corridorEditorBindBody(body) {
                 seam.removeEventListener('pointermove', onMove);
                 seam.removeEventListener('pointerup', onUp);
                 seam.removeEventListener('pointercancel', onUp);
-                if (!moved) return;
+                if (!moved) {
+                    if (stopped) corridorEditorRefuse(stopped);
+                    return;
+                }
                 // Commit like any other edit: map preview, dirty flag, full re-render, checks.
                 corridorEditorApply(() => state.profile);
+                // Let go against the stop: the reason outlives the commit's re-render.
+                if (stopped && corridorEditorState === state) {
+                    state.notice = stopped;
+                    corridorEditorRender();
+                }
             };
             seam.addEventListener('pointermove', onMove);
             seam.addEventListener('pointerup', onUp);
@@ -1837,15 +2019,16 @@ function corridorEditorBindBody(body) {
         select.addEventListener('change', () => {
             const index = Number(select.dataset.laneIndex);
             corridorEditorState.selected = index;
-            corridorEditorApply(profile => withLaneType(profile, index, select.value));
+            corridorEditorApply(profile => withLaneType(profile, index, select.value), { op: 'type', index, type: select.value });
         });
     });
 
     body.querySelectorAll('.corridor-lane-width').forEach(input => {
         input.addEventListener('change', () => {
             const index = Number(input.dataset.laneIndex);
+            const width = Number(input.value);
             corridorEditorState.selected = index;
-            corridorEditorApply(profile => withLaneWidth(profile, index, Number(input.value)));
+            corridorEditorApply(profile => withLaneWidth(profile, index, width), { op: 'width', index, width });
         });
     });
 
@@ -1853,7 +2036,7 @@ function corridorEditorBindBody(body) {
         select.addEventListener('change', () => {
             const index = Number(select.dataset.laneIndex);
             corridorEditorState.selected = index;
-            corridorEditorApply(profile => withLanePaving(profile, index, select.value));
+            corridorEditorApply(profile => withLanePaving(profile, index, select.value), { op: 'paving', index });
         });
     });
 
@@ -1861,7 +2044,7 @@ function corridorEditorBindBody(body) {
         select.addEventListener('change', () => {
             const index = Number(select.dataset.laneIndex);
             corridorEditorState.selected = index;
-            corridorEditorApply(profile => withLaneLandscape(profile, index, select.value));
+            corridorEditorApply(profile => withLaneLandscape(profile, index, select.value), { op: 'landscape', index });
         });
     });
 
@@ -1871,7 +2054,7 @@ function corridorEditorBindBody(body) {
             corridorEditorState.selected = index;
             // withLaneGauge also re-widths the lane to that gauge's standard, so the corridor's total
             // moves with it — the same way any other width edit moves it.
-            corridorEditorApply(profile => withLaneGauge(profile, index, select.value));
+            corridorEditorApply(profile => withLaneGauge(profile, index, select.value), { op: 'gauge', index });
         });
     });
 
@@ -1883,15 +2066,16 @@ function corridorEditorBindBody(body) {
             corridorEditorApply(profile => {
                 const lane = profile.strips[index];
                 return withLaneDirection(profile, index, lane && lane.direction === 'backward' ? 'forward' : 'backward');
-            });
+            }, { op: 'direction', index });
         });
     });
 
     body.querySelectorAll('.corridor-lane-tree-every').forEach(input => {
         input.addEventListener('change', () => {
             const index = Number(input.dataset.laneIndex);
+            const treeEvery = Number(input.value);
             corridorEditorState.selected = index;
-            corridorEditorApply(profile => withLaneTreeEvery(profile, index, Number(input.value)));
+            corridorEditorApply(profile => withLaneTreeEvery(profile, index, treeEvery), { op: 'treeEvery', index, treeEvery });
         });
     });
 
@@ -1899,7 +2083,7 @@ function corridorEditorBindBody(body) {
         const index = Number(button.dataset.moveUp);
         button.addEventListener('click', () => {
             corridorEditorState.selected = index - 1;
-            corridorEditorApply(profile => withLaneMoved(profile, index, index - 1));
+            corridorEditorApply(profile => withLaneMoved(profile, index, index - 1), { op: 'move', from: index, to: index - 1 });
         });
     });
 
@@ -1907,7 +2091,7 @@ function corridorEditorBindBody(body) {
         const index = Number(button.dataset.moveDown);
         button.addEventListener('click', () => {
             corridorEditorState.selected = index + 1;
-            corridorEditorApply(profile => withLaneMoved(profile, index, index + 1));
+            corridorEditorApply(profile => withLaneMoved(profile, index, index + 1), { op: 'move', from: index, to: index + 1 });
         });
     });
 
@@ -1915,7 +2099,7 @@ function corridorEditorBindBody(body) {
         const index = Number(button.dataset.remove);
         button.addEventListener('click', () => {
             corridorEditorState.selected = Math.max(0, index - 1);
-            corridorEditorApply(profile => withLaneRemoved(profile, index));
+            corridorEditorApply(profile => withLaneRemoved(profile, index), { op: 'remove', index });
         });
     });
 
@@ -1923,10 +2107,12 @@ function corridorEditorBindBody(body) {
         const index = Number(button.dataset.resetStandard);
         button.addEventListener('click', () => {
             corridorEditorState.selected = index;
+            const current = corridorEditorState.profile.strips[index];
+            const width = current ? corridorStandardWidth(current.type, current.gauge) : NaN;
             corridorEditorApply(profile => {
                 const lane = profile.strips[index];
                 return withLaneWidth(profile, index, corridorStandardWidth(lane.type, lane.gauge));
-            });
+            }, { op: 'width', index, width });
         });
     });
 
@@ -1972,7 +2158,7 @@ function corridorEditorBindBody(body) {
                 // A fresh track is a standard-gauge one; its row's gauge selector is how it becomes a tram.
                 if (type === 'rail') lane.gauge = CORRIDOR_DEFAULT_RAIL_GAUGE;
                 state.selected = at; // the new lane lands at `at`, and the render below highlights it
-                corridorEditorApply(profile => withLaneInserted(profile, at, lane));
+                corridorEditorApply(profile => withLaneInserted(profile, at, lane), { op: 'insert', index: at, lane });
             });
         });
     }
@@ -1987,6 +2173,289 @@ function corridorEditorBindBody(body) {
             corridorEditorApply(() => normalizeCorridorProfile(preset.map(strip => ({ ...strip }))));
         });
     }
+}
+
+// What an Apply writes, read off the editor state — and what a Move / Widen toward carries along
+// while the cross-section is still a preview, so the two commit the same thing.
+function corridorEditorSaveRequest(state) {
+    // The pavement fill is derived, not stored — but WHICH LIMIT it was drawn to is the author's
+    // decision, and every later viewer (the 2D map, the 3D model, photo view) must honour it rather
+    // than fall back to a default. Read here, written by corridorEditorProfileMutator.
+    //
+    // CARRY THE STORED CHOICE THROUGH — do not re-derive it from clearanceMode. That is the
+    // CLEARANCE tab's measurement basis (what the corridor's free width is measured against), and it
+    // starts at 'buildings'; deriving the fill from it meant merely opening the cross-section editor
+    // and saving switched pavement expansion ON for a road whose author never asked for it.
+    const storedEdgeFill = (state.definition && state.definition.edgeFill) || null;
+    return {
+        scope: state.scope,
+        segmentId: state.segmentId,
+        profile: state.profile,
+        edgeFill: {
+            limit: (storedEdgeFill && storedEdgeFill.limit) || 'none',
+            survey: (storedEdgeFill && storedEdgeFill.survey) || corridorEditorBuildingSurveyKey()
+        },
+        replaceStretchProfiles: state.replaceStretchProfiles === true
+    };
+}
+
+// The definition mutation an Apply performs, as a function of the request alone (pure; the profile is
+// copied, never shared with the editor's working copy).
+//
+// Road scope used to delete every per-stretch cross-section — silently: a collector with narrow side
+// stretches came back uniform. A stretch that has its own cross-section now keeps it, unless the user
+// ticked "Also replace the N stretches that have their own cross-section" (replaceStretchProfiles).
+function corridorEditorProfileMutator(request) {
+    const profile = JSON.parse(JSON.stringify(request.profile));
+    return definition => {
+        definition.edgeFill = { ...request.edgeFill };
+        if (request.scope === 'segment' && request.segmentId) {
+            // One segment of the network takes the new cross-section; the rest is untouched.
+            definition.segmentProfiles = definition.segmentProfiles || {};
+            const defaultProfile = (typeof corridorProfileOf === 'function') ? corridorProfileOf(definition) : null;
+            if (defaultProfile && JSON.stringify(defaultProfile) === JSON.stringify(profile)) {
+                delete definition.segmentProfiles[String(request.segmentId)];
+            } else {
+                definition.segmentProfiles[String(request.segmentId)] = JSON.parse(JSON.stringify(profile));
+            }
+            return;
+        }
+        // Whole network: the new profile becomes the default cross-section — and the uniform one
+        // only when the stretches with their own are replaced too.
+        definition.profile = JSON.parse(JSON.stringify(profile));
+        if (request.replaceStretchProfiles) delete definition.segmentProfiles;
+        if (typeof corridorProfileWidth === 'function') definition.width = corridorProfileWidth(profile);
+        const sidewalks = (profile.strips || []).filter(strip => strip.type === 'sidewalk');
+        definition.sidewalkWidth = sidewalks.length
+            ? sidewalks.reduce((sum, strip) => sum + strip.width, 0) / sidewalks.length
+            : 0;
+    };
+}
+
+// How many stretches of the road have a cross-section of their own (a live stretch with an override).
+function corridorEditorOwnProfileCount(definition) {
+    const overrides = (definition && definition.segmentProfiles) || {};
+    const live = new Set((Array.isArray(definition && definition.segmentIds) ? definition.segmentIds : [])
+        .filter(id => id !== null && id !== undefined)
+        .map(String));
+    return Object.keys(overrides).filter(id => overrides[id] && live.has(id)).length;
+}
+
+// The road-scope question about those stretches: keep their own cross-sections (the default) or
+// replace them too. Only for a placed road, edited road-wide, that has such stretches. The note
+// under it is there because the map preview cannot show the difference: a road-wide preview paints
+// the new lanes on every stretch. Pure, so the shell is asserted headlessly.
+function corridorEditorStretchesOptionHtml({ mode, scope, count, checked, label, note } = {}) {
+    if (mode !== 'proposal' || scope !== 'road' || !(count > 0)) return '';
+    return `<label class="corridor-editor-stretches">`
+        + `<input type="checkbox" class="corridor-editor-stretches-input"${checked ? ' checked' : ''}>`
+        + `<span>${label}</span></label>`
+        + (checked || !note ? '' : `<div class="corridor-editor-stretches-note">${note}</div>`);
+}
+
+// Repaint the stretches option in its header host — the header is not rebuilt by a render, and the
+// option follows the scope radio.
+function corridorEditorRenderStretchesOption() {
+    const host = document.querySelector('.corridor-editor-stretches-host');
+    const state = corridorEditorState;
+    if (!host || !state) return;
+    const count = state.mode === 'proposal' ? corridorEditorOwnProfileCount(state.definition) : 0;
+    host.innerHTML = corridorEditorStretchesOptionHtml({
+        mode: state.mode,
+        scope: state.scope,
+        count,
+        checked: state.replaceStretchProfiles === true,
+        label: corridorEditorI18n('modal.corridor.replaceStretches',
+            'Also replace the {{count}} stretches that have their own cross-section', { count }),
+        note: corridorEditorI18n('modal.corridor.replaceStretchesNote',
+            'The map previews the new lanes on every stretch; unticked, those stretches keep their own when you apply.')
+    });
+    const input = host.querySelector('.corridor-editor-stretches-input');
+    if (input) {
+        input.addEventListener('change', () => {
+            if (corridorEditorState !== state) return;
+            state.replaceStretchProfiles = input.checked;
+            // The map shows exactly what the save will store: ticked, every stretch takes the
+            // new lanes; unticked, the stretches with their own cross-section keep theirs.
+            corridorEditorPreview(state.profile);
+            corridorEditorRenderStretchesOption();
+        });
+    }
+}
+
+// ---------------------------------------------------------------------------
+// The land a cross-section takes
+//
+// A width change moves the footprint, and the footprint is the land the road takes from the parcels
+// under it. The ruling of 2026-10-10 ("street land is what its lanes cut"): widening and narrowing
+// are allowed, but must show the parcels they affect. So before such an Apply the editor builds the
+// would-be land, reads off the live fabric which parcels each land takes from, and names the parcels
+// the change adds and frees — then asks.
+// ---------------------------------------------------------------------------
+
+// Below this an overlap is the shared edge of two faces, not land taken: the same floor under which
+// parcel-arrangement.js treats a cut piece as boundary noise (MIN_PIECE_M2).
+const CORRIDOR_EDITOR_TAKE_SLIVER_M2 = 0.25;
+// How many parcels each list names before "plus N more".
+const CORRIDOR_EDITOR_TAKE_LISTED = 5;
+
+// What a footprint change does to the parcels it takes land from. `before` and `after` list
+// [{ id, areaM2 }] — cadastral parcels, areaM2 the land taken from each (repeats are summed; a missing
+// area stays null rather than becoming 0). Added and removed come back largest take first, so the few
+// named are the ones that matter. Pure.
+function corridorEditorParcelTakeDiff(before, after) {
+    const index = list => {
+        const byId = new Map();
+        (Array.isArray(list) ? list : []).forEach(entry => {
+            if (!entry || entry.id === undefined || entry.id === null) return;
+            const id = String(entry.id);
+            const area = (typeof entry.areaM2 === 'number' && Number.isFinite(entry.areaM2)) ? entry.areaM2 : null;
+            if (!byId.has(id)) {
+                byId.set(id, area);
+                return;
+            }
+            const known = byId.get(id);
+            byId.set(id, known === null ? area : (area === null ? known : known + area));
+        });
+        return byId;
+    };
+    const was = index(before);
+    const will = index(after);
+    const largestFirst = (a, b) => ((b.areaM2 ?? -1) - (a.areaM2 ?? -1)) || a.id.localeCompare(b.id);
+    return {
+        added: [...will].filter(([id]) => !was.has(id)).map(([id, areaM2]) => ({ id, areaM2 })).sort(largestFirst),
+        removed: [...was].filter(([id]) => !will.has(id)).map(([id, areaM2]) => ({ id, areaM2 })).sort(largestFirst),
+        unchanged: [...will].filter(([id]) => was.has(id))
+            .map(([id, afterM2]) => ({ id, beforeM2: was.get(id), afterM2 }))
+            .sort((a, b) => a.id.localeCompare(b.id))
+    };
+}
+
+// Why the parcels could not be listed, keyed by corridorEditorTakeDisclosure's `unavailable`.
+const CORRIDOR_EDITOR_TAKE_UNAVAILABLE = {
+    'no-fabric': ['modal.corridor.takeNoFabric', 'The parcels this land takes cannot be listed: the parcel map is not loaded here.'],
+    'no-parcels': ['modal.corridor.takeNoParcels', 'There are no surveyed parcels under this road (unsurveyed land), so there are none to list.'],
+    'footprint': ['modal.corridor.takeNoFootprint', 'The new land could not be built, so the parcels it would take cannot be listed.'],
+    'stored-land': ['modal.corridor.takeNoStoredLand', 'This road has no stored land to compare with, so the parcels cannot be listed.']
+};
+
+// The disclosure, one line per fact (the dialog renders the lines). `take` is what
+// corridorEditorTakeDisclosure measured: the widths, and the parcel diff or why there is none.
+// `format` supplies { width(m), area(m2) }; the defaults are the app's formatters.
+function corridorEditorTakeMessage(take, format = {}) {
+    const width = format.width || (metres => corridorEditorTotalText(metres));
+    const area = format.area || (squareMetres => CbFormat.formatArea(squareMetres));
+    const lines = [];
+    if (typeof take.widthBefore === 'number' && typeof take.widthAfter === 'number'
+        && Math.abs(take.widthBefore - take.widthAfter) > 1e-6) {
+        lines.push(corridorEditorI18n('modal.corridor.takeWidth', 'Width {{before}} → {{after}}.',
+            { before: width(take.widthBefore), after: width(take.widthAfter) }));
+    }
+    if (take.unavailable) {
+        const [key, fallback] = CORRIDOR_EDITOR_TAKE_UNAVAILABLE[take.unavailable] || CORRIDOR_EDITOR_TAKE_UNAVAILABLE['no-fabric'];
+        lines.push(corridorEditorI18n(key, fallback));
+        return lines.join('\n');
+    }
+    const list = entries => {
+        entries.slice(0, CORRIDOR_EDITOR_TAKE_LISTED).forEach(entry => {
+            lines.push(`${entry.id} · ${entry.areaM2 === null ? '?' : area(entry.areaM2)}`);
+        });
+        if (entries.length > CORRIDOR_EDITOR_TAKE_LISTED) {
+            lines.push(corridorEditorI18n('modal.corridor.takeMore', 'plus {{count}} more',
+                { count: entries.length - CORRIDOR_EDITOR_TAKE_LISTED }));
+        }
+    };
+    const { added, removed } = take.diff;
+    if (added.length) {
+        lines.push(corridorEditorI18n('modal.corridor.takeAdded',
+            'This cross-section takes land from {{count}} more parcels:', { count: added.length }));
+        list(added);
+    }
+    if (removed.length) {
+        lines.push(corridorEditorI18n('modal.corridor.takeFreed', 'It frees {{count}} parcels:', { count: removed.length }));
+        list(removed);
+    }
+    if (!added.length && !removed.length) {
+        lines.push(corridorEditorI18n('modal.corridor.takeNone',
+            'No parcel is added or freed: the new width stays within the parcels this road already crosses.'));
+    }
+    if (take.unmeasured > 0) {
+        lines.push(corridorEditorI18n('modal.corridor.takeUnmeasured',
+            '{{count}} parcel pieces could not be measured, so these lists may be incomplete.', { count: take.unmeasured }));
+    }
+    return lines.join('\n');
+}
+
+// The cadastral parcels a footprint takes land from, read off the live fabric, with the land taken
+// from each. Every face it overlaps by more than a sliver counts — corridor ground included, since
+// the land a placed road already takes is a corridor face of the parcel it came from
+// (parcel-arrangement.js) — under the cadastral parcels that face came from; a face formed from
+// several names each of them with the face's overlap. A face from no cadastral parcel (open ground)
+// names none.
+function corridorEditorParcelTake(footprintGeometry) {
+    const fabric = window.LiveParcelFabric;
+    const turfApi = window.turf;
+    if (!fabric || typeof fabric.queryBounds !== 'function' || typeof fabric.explicitCadastreIds !== 'function' || !turfApi) {
+        return { available: false, faces: 0, parcels: [], unmeasured: 0 };
+    }
+    const footprint = { type: 'Feature', properties: {}, geometry: footprintGeometry };
+    const faces = fabric.queryBounds(turfApi.bbox(footprint), { includeCorridors: true });
+    const parcels = [];
+    let unmeasured = 0;
+    faces.forEach(face => {
+        let overlap = null;
+        try {
+            overlap = turfApi.intersect(footprint, face);
+        } catch (error) {
+            // turf's clipper can fail outright on real cadastre (see parcel-arrangement.js): counted,
+            // and the dialog says the lists may be incomplete.
+            unmeasured += 1;
+            console.warn(`[${new Date().toISOString()}] [corridorEditor] could not measure the land taken from a parcel face`, error);
+            return;
+        }
+        const areaM2 = overlap ? turfApi.area(overlap) : 0;
+        if (!(areaM2 > CORRIDOR_EDITOR_TAKE_SLIVER_M2)) return;
+        fabric.explicitCadastreIds(face).forEach(id => parcels.push({ id, areaM2 }));
+    });
+    return { available: true, faces: faces.length, parcels, unmeasured };
+}
+
+// Before a footprint-changing Apply: the would-be definition, its land in the editor's frame, and the
+// parcels both lands take — or why they could not be listed. Null when no stretch changes width: a
+// cross-section edit never moves the centre line, so then the land cannot change.
+function corridorEditorTakeDisclosure(state, mutator) {
+    const definition = state.definition;
+    const edited = JSON.parse(JSON.stringify(definition));
+    mutator(edited);
+    const widths = value => corridorSegmentEntries(value).map(entry => entry.width);
+    const before = widths(definition);
+    const after = widths(edited);
+    const widthChanged = before.length !== after.length
+        || before.some((width, index) => Math.abs(width - after[index]) > 1e-6);
+    if (!widthChanged) return null;
+
+    const take = {
+        widthBefore: corridorProfileWidth(state.originalProfile || state.profile),
+        widthAfter: corridorProfileWidth(state.profile)
+    };
+    if (!definition.polygon) return { ...take, unavailable: 'stored-land' };
+    let footprint = null;
+    try {
+        footprint = window.__corridorFootprint.footprintIn(edited, state.frame);
+    } catch (error) {
+        console.error(`[${new Date().toISOString()}] [corridorEditor] the edited road's land could not be built`, error);
+        return { ...take, unavailable: 'footprint' };
+    }
+    const was = corridorEditorParcelTake(definition.polygon);
+    const will = corridorEditorParcelTake(footprint);
+    if (!was.available || !will.available) return { ...take, unavailable: 'no-fabric' };
+    // No parcel at all under either land: the road runs over unsurveyed ground (or ground not loaded).
+    if (!was.faces && !will.faces) return { ...take, unavailable: 'no-parcels' };
+    return {
+        ...take,
+        diff: corridorEditorParcelTakeDiff(was.parcels, will.parcels),
+        unmeasured: was.unmeasured + will.unmeasured
+    };
 }
 
 // Drawing-mode Apply commits the edited profile to the active authored core. Finishing the drawing
@@ -2008,52 +2477,47 @@ async function corridorEditorSave() {
         }
         return;
     }
+    const state = corridorEditorState;
+    if (state.saving) return;
     // Settle the informational collision indicator before minting the replacement snapshot.
     if (corridorEditorObstacleTimer) {
         clearTimeout(corridorEditorObstacleTimer);
         corridorEditorObstacleTimer = null;
         corridorEditorRunObstacleCheck();
     }
-    const { source, profile, scope, segmentId: scopedSegmentId } = corridorEditorState;
-    // The pavement fill is derived, not stored — but WHICH LIMIT it was drawn to is the author's
-    // decision, and every later viewer (the 2D map, the 3D model, photo view) must honour it rather
-    // than fall back to a default. Read before the editor closes; written in the mutator below.
-    //
-    // CARRY THE STORED CHOICE THROUGH — do not re-derive it from clearanceMode. That is the
-    // CLEARANCE tab's measurement basis (what the corridor's free width is measured against), and it
-    // starts at 'buildings'; deriving the fill from it meant merely opening the cross-section editor
-    // and saving switched pavement expansion ON for a road whose author never asked for it.
-    const storedEdgeFill = (corridorEditorState.definition && corridorEditorState.definition.edgeFill) || null;
-    const edgeFillLimit = (storedEdgeFill && storedEdgeFill.limit) || 'none';
-    const edgeFillSurvey = (storedEdgeFill && storedEdgeFill.survey) || corridorEditorBuildingSurveyKey();
+    const { source, profile } = state;
+    // Read before the editor closes; the mutator is what the commit below writes.
+    const mutator = corridorEditorProfileMutator(corridorEditorSaveRequest(state));
     const sourceKey = (typeof getProposalKey === 'function' ? getProposalKey(source) : null) || source.proposalId;
     const sourceName = source.title || source.name || sourceKey;
+
+    // A width change moves the land the road takes: name the parcels it adds and frees and ask, BEFORE
+    // the editor closes. "Keep editing" goes back to the open editor with the preview as it was.
+    const take = corridorEditorTakeDisclosure(state, mutator);
+    if (take) {
+        state.saving = true;
+        const saveButton = document.querySelector('.corridor-editor-save');
+        if (saveButton) saveButton.disabled = true;
+        let confirmed = false;
+        try {
+            confirmed = await window.showStyledConfirm(corridorEditorTakeMessage(take), {
+                okText: corridorEditorI18n('modal.corridor.takeApply', 'Apply'),
+                cancelText: corridorEditorI18n('modal.corridor.keepEditing', 'Keep editing')
+            });
+        } finally {
+            state.saving = false;
+        }
+        if (corridorEditorState !== state) return;
+        if (!confirmed) {
+            corridorEditorRender();
+            return;
+        }
+    }
     corridorEditorClose();
 
     // Editing creates a new local snapshot and parks the source; one replay applies the new order.
     if (typeof window.updateLocalCorridorGeometry === 'function') {
-        const updated = await window.updateLocalCorridorGeometry(sourceKey, definition => {
-            definition.edgeFill = { limit: edgeFillLimit, survey: edgeFillSurvey };
-            if (scope === 'segment' && scopedSegmentId) {
-                // One segment of the network takes the new cross-section; the rest is untouched.
-                definition.segmentProfiles = definition.segmentProfiles || {};
-                const defaultProfile = (typeof corridorProfileOf === 'function') ? corridorProfileOf(definition) : null;
-                if (defaultProfile && JSON.stringify(defaultProfile) === JSON.stringify(profile)) {
-                    delete definition.segmentProfiles[String(scopedSegmentId)];
-                } else {
-                    definition.segmentProfiles[String(scopedSegmentId)] = JSON.parse(JSON.stringify(profile));
-                }
-                return;
-            }
-            // Whole network: the new profile becomes the uniform cross-section again.
-            definition.profile = JSON.parse(JSON.stringify(profile));
-            delete definition.segmentProfiles;
-            if (typeof corridorProfileWidth === 'function') definition.width = corridorProfileWidth(profile);
-            const sidewalks = (profile.strips || []).filter(strip => strip.type === 'sidewalk');
-            definition.sidewalkWidth = sidewalks.length
-                ? sidewalks.reduce((sum, strip) => sum + strip.width, 0) / sidewalks.length
-                : 0;
-        });
+        const updated = await window.updateLocalCorridorGeometry(sourceKey, mutator);
         if (updated) {
             if (typeof updateStatus === 'function') updateStatus('Cross-section updated.');
             return;
@@ -2154,7 +2618,7 @@ function corridorEditorOpenOverlayBody() {
                 </div>
                 <button type="button" class="close-circle-btn corridor-editor-close" aria-label="Close">&times;</button>
             </div>
-            ${scopeHtml}
+            ${scopeHtml}${drawing ? '' : '<div class="corridor-editor-stretches-host"></div>'}
             <div class="corridor-editor-meta">
                 <span>${corridorEditorI18n('modal.corridor.totalWidth', 'Total width')}</span>
                 ${totalControl}
@@ -2186,9 +2650,7 @@ function corridorEditorOpenOverlayBody() {
             try { window.refreshSelectedCorridorSegmentHighlight?.(); } catch (_) { }
             state.dirty = false;
             state.notice = null;
-            if (typeof setCorridorProfilePreview === 'function') {
-                setCorridorProfilePreview(state.proposalKey, state.profile, state.scope === 'segment' ? state.segmentId : null);
-            }
+            corridorEditorPreview(state.profile);
             corridorEditorRender();
             corridorEditorScheduleObstacleCheck();
             // The edited extent changed with the scope, so point the map at it.
@@ -2293,7 +2755,10 @@ function openCorridorProfileEditor(proposalIdOrHash) {
         selected: 0,
         dragIndex: null,
         notice: null,
-        dirty: false
+        dirty: false,
+        // Road scope only: also overwrite the stretches that have a cross-section of their own.
+        // Off by default — a road-wide edit keeps them (corridorEditorProfileMutator).
+        replaceStretchProfiles: false
     };
     corridorEditorOpenOverlay();
     // The amber segment highlight is painted only while this editor is open in segment scope.
@@ -2532,6 +2997,14 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         corridorEditorFitPadding,
         corridorEditorWriteScopedSegmentPoints,
-        corridorEditorCompareHtml
+        corridorEditorCompareHtml,
+        corridorEditorRefusalReason,
+        corridorEditorRefusalText,
+        corridorEditorProfileMutator,
+        corridorEditorFitShiftMutator,
+        corridorEditorOwnProfileCount,
+        corridorEditorStretchesOptionHtml,
+        corridorEditorParcelTakeDiff,
+        corridorEditorTakeMessage
     };
 }
