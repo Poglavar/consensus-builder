@@ -9,7 +9,7 @@ python3 backend/scripts/reconstruct-borongaj-floors.py \
   --sources rekonstrukcije/pionir-paron/lovinciceva-4090-1/floor-plan-sources.json \
   --proposal rekonstrukcije/pionir-paron/lovinciceva-4090-1/proposal.geojson \
   --cache-dir /tmp/lovinciceva-floor-cache --fetch --write
-PGHOST=localhost node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs \
+node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs \
   --archive rekonstrukcije/pionir-paron/lovinciceva-4090-1/proposal.geojson
 ```
 

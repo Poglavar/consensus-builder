@@ -2,7 +2,7 @@
 // Runs the evidence archive; no paid calls or unreviewed model publication.
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import pg from 'pg';
+import { createClient } from '../db/connection.cjs';
 import dotenv from 'dotenv';
 import { importAgencies,enqueue,coverage } from '../floor-plans/archive.js';
 import { crawl } from '../floor-plans/crawler.js';
@@ -28,12 +28,11 @@ if(args.includes('--help')||!args.length) {
  reparse                      Rebuild current listing associations from archived HTML
  daily [--max-pages 5000] [--max-minutes 120] [--max-assets 500]
  status                       Print coverage and recent run
-Environment: backend/.env, PGHOST override or DATABASE_URL. Public sources only.
+Environment: DATABASE_URL from backend/.env. Public sources only.
 Incomplete/blocked crawl exits 2 and preserves prior evidence.`);process.exit(0);
 }
 dotenv.config({path:fileURLToPath(new URL('../.env',import.meta.url)),quiet:true});
-const connectionString=process.env.DATABASE_URL;
-const client=new pg.Client(connectionString?{connectionString,...(process.env.PGHOST?{host:process.env.PGHOST}:{})}:undefined);
+const client=createClient();
 const json=async path=>JSON.parse(await readFile(path,'utf8'));
 await client.connect();
 try {

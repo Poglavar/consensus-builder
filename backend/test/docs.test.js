@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { setupDocsRoute } from '../routes/docs.js';
 import { createRouteApp } from './helpers/create-route-app.js';
@@ -149,6 +149,10 @@ describe('GET /docs/api', () => {
 });
 
 describe('GET /docs/database', () => {
+    // The schema names its database from DATABASE_URL (see db/connection.cjs); the password never leaves it.
+    beforeEach(() => vi.stubEnv('DATABASE_URL', 'postgres://docs_user:docs_pw@localhost:5432/geodata'));
+    afterEach(() => vi.unstubAllEnvs());
+
     it('returns generated database schema json', async () => {
         const pool = createDocsPool();
         const { setupDocsRoute: freshSetupDocsRoute } = await loadFreshDocsRoute();
@@ -158,6 +162,8 @@ describe('GET /docs/database', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.title).toBe('Consensus Builder Database Schema');
+        expect(res.body.database).toBe('geodata');
+        expect(JSON.stringify(res.body)).not.toContain('docs_pw');
         expect(res.body.tables).toHaveProperty('parcel');
         expect(res.body.tables.parcel.columns).toHaveProperty('id');
     });

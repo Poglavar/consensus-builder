@@ -5,14 +5,13 @@ import dotenv from 'dotenv';
 import * as turf from '@turf/turf';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
-import pg from 'pg';
+import { createPool, describeDatabase, isLocalDatabase } from '../db/connection.cjs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { assertReconstructionGeoJSONRoundTrip } from '../proposals/reconstruction-geojson.js';
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 await import('../../frontend/js/building-density-stats.js');
 
-const { Pool } = pg;
 const densityStats = globalThis.BuildingDensityStats;
 const RECONSTRUCTION_DATE = '2026-08-13T00:00:00.000Z';
 const ARCHIVE_ROOT = fileURLToPath(new URL('../../rekonstrukcije/pionir-paron/', import.meta.url));
@@ -202,9 +201,8 @@ function usage() {
 }
 
 function assertLocalDatabase() {
-    const host = String(process.env.PGHOST || 'localhost').trim().toLowerCase();
-    if (!['localhost', '127.0.0.1', '::1'].includes(host)) {
-        throw new Error(`Refusing to seed non-local PGHOST=${host || '(empty)'}.`);
+    if (!isLocalDatabase()) {
+        throw new Error(`Refusing to seed non-local database host ${describeDatabase().host || '(empty)'}.`);
     }
 }
 
@@ -638,7 +636,7 @@ async function main() {
     }
 
     assertLocalDatabase();
-    const pool = new Pool();
+    const pool = createPool();
     try {
         for (const config of selectedProjects) {
             const { proposal, stats } = await constructObservedProposal(pool, config);

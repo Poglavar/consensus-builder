@@ -33,11 +33,11 @@ The backend deployment applies `backend/db/building-floor-model.sql` before relo
 
 ```sh
 # Review first; the default is a rolled-back transaction.
-PGHOST=localhost node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs \
+node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs \
   --archive path/to/proposal.geojson --init-schema
 
 # Save only that project's validated models. Repeating this is a no-op.
-PGHOST=localhost node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs \
+node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs \
   --archive path/to/proposal.geojson --apply
 ```
 

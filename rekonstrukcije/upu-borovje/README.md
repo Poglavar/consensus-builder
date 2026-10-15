@@ -39,8 +39,8 @@ For the current local database, use `repair-flat-plan.mjs`. It preserves all 22 
 to their intended plots, and recomputes the one flat cadastral declaration per record:
 
 ```
-PGHOST=127.0.0.1 node repair-flat-plan.mjs --dry-run
-PGHOST=127.0.0.1 node repair-flat-plan.mjs --apply
+node repair-flat-plan.mjs --dry-run
+node repair-flat-plan.mjs --apply
 ```
 
 Every changed row is backed up in `public.proposal_borovje_flat_backup` in the update transaction.

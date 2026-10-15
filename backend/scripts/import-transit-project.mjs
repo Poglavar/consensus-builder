@@ -23,14 +23,13 @@
 //   node backend/scripts/import-transit-project.mjs --project 141 --ko 335533,335541 --apply
 
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createPool, describeDatabase, isLocalDatabase } from '../db/connection.cjs';
 import { fileURLToPath } from 'node:url';
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 const corridorLevels = (await import('../../frontend/js/proposals/corridor-levels.js')).default
     ?? globalThis.__corridorLevels;
 
-const { Pool } = pg;
 
 // consensus-builder's own track width (DEFAULT_CORRIDOR_WIDTHS.track), per parallel track. The
 // planner stores no land-take width — its halfWidth is a rendering weight — so this is a stated
@@ -66,14 +65,9 @@ function usage() {
   --apply          write the proposal; without it nothing is written`);
 }
 
-// `db` is this repo's docker-compose service name, so it is as local as localhost is — the point of
-// the guard is to refuse a production host, not to insist on one spelling.
-const LOCAL_DB_HOSTS = new Set(['localhost', '127.0.0.1', '::1', 'db', 'postgres']);
-
 function assertLocalDatabase() {
-    const host = String(process.env.PGHOST || 'localhost').trim().toLowerCase();
-    if (!LOCAL_DB_HOSTS.has(host)) {
-        throw new Error(`Refusing to import into non-local PGHOST=${host || '(empty)'}.`);
+    if (!isLocalDatabase()) {
+        throw new Error(`Refusing to import into non-local database host ${describeDatabase().host || '(empty)'}.`);
     }
 }
 
@@ -351,7 +345,7 @@ async function main() {
     if (args.help || !Number.isFinite(args.project)) { usage(); return; }
 
     assertLocalDatabase();
-    const pool = new Pool();
+    const pool = createPool();
     try {
         const project = await readProject(pool, args.project);
         const tracks = tracksOf(project.project_data);

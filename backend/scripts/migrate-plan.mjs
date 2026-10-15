@@ -21,6 +21,7 @@
 // The target is always stated explicitly; there is no default to fall into.
 
 import pg from 'pg';
+import { databaseUrl } from '../db/connection.cjs';
 import { randomBytes, createHash } from 'node:crypto';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'node:url';
@@ -47,7 +48,7 @@ function usage() {
     console.log(`Usage: node scripts/migrate-plan.mjs --slug <plan> [--source-url <postgres url>] --target-url <postgres url> [--track-id <id>] [--apply]
 
   --slug        ens_plan slug to replicate (required)
-  --source-url  source database; defaults to the standard PG* environment
+  --source-url  source database; defaults to DATABASE_URL from backend/.env
   --target-url  the DATABASE THE PLAN SHIPS TO — stated, never guessed (required)
   --track-id    target-side proposal id of the natively re-imported rail track;
                 spliced where the source plan listed its own transit import
@@ -64,7 +65,7 @@ async function main() {
         dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
     }
 
-    const source = new pg.Pool({ ...(args.sourceUrl ? { connectionString: args.sourceUrl } : {}), max: 1 });
+    const source = new pg.Pool({ connectionString: args.sourceUrl || databaseUrl(), max: 1 });
     const target = new pg.Pool({ connectionString: args.targetUrl, max: 1 });
     try {
         // ── Read the plan and its proposals from the source ────────────────

@@ -6,16 +6,16 @@ The official HGK **broker companies** (`posrednici`) registry is fetched in full
 
 ## Run locally
 
-Commands below run from the repository root. The CLI loads `backend/.env`; `PGHOST=localhost` selects the existing laptop PostgreSQL instance. It does not create another database.
+Commands below run from the repository root. The CLI loads `backend/.env`; its `DATABASE_URL` selects the existing laptop PostgreSQL instance. It does not create another database.
 
 ```sh
 npm install --prefix backend
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs init
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs import --registry data/floor-plan-agencies/registry.json --websites data/floor-plan-agencies/verified-websites.json
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs sites --file data/floor-plan-agencies/candidate-websites.json
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs websites --file data/floor-plan-agencies/website-discovery.json
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs daily --max-pages 10000 --max-minutes 180 --max-assets 2000
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs status
+node backend/scripts/floor-plan-archive.mjs init
+node backend/scripts/floor-plan-archive.mjs import --registry data/floor-plan-agencies/registry.json --websites data/floor-plan-agencies/verified-websites.json
+node backend/scripts/floor-plan-archive.mjs sites --file data/floor-plan-agencies/candidate-websites.json
+node backend/scripts/floor-plan-archive.mjs websites --file data/floor-plan-agencies/website-discovery.json
+node backend/scripts/floor-plan-archive.mjs daily --max-pages 10000 --max-minutes 180 --max-assets 2000
+node backend/scripts/floor-plan-archive.mjs status
 ```
 
 Long runs should use the installed `run-job` helper or an equivalent persistent process runner. `daily` refreshes the registry, crawls due URLs, extracts pending source files, and proposes building candidates. Every source is checkpointed. Session advisory locks prevent duplicate crawls, extractors and daily runs. Limits, blocked requests and item failures return status `partial` and exit code 2; failed fetches never erase archived evidence or prove a listing was removed.
@@ -38,11 +38,11 @@ The generic HTML parser does not execute client-side application code. Sites who
 `extract-floor-plan-draft.py` requires Python 3 with OpenCV, NumPy and Pillow, plus `tesseract`, `pdfinfo`, `pdftotext` and `pdftoppm` on PATH. `FLOOR_PLAN_PYTHON` selects a configured Python runtime. The local verified runtime uses OpenCV 5.0.0, NumPy 2.5.2 and Pillow 12.1.1. No paid model APIs are used.
 
 ```sh
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs extract --max-assets 500
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs match
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs verify-sites
+node backend/scripts/floor-plan-archive.mjs extract --max-assets 500
+node backend/scripts/floor-plan-archive.mjs match
+node backend/scripts/floor-plan-archive.mjs verify-sites
 # Stop the active crawl before rebuilding current associations after a parser correction.
-PGHOST=localhost node backend/scripts/floor-plan-archive.mjs reparse
+node backend/scripts/floor-plan-archive.mjs reparse
 ```
 
 ## Review and verification

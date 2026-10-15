@@ -6,12 +6,11 @@
 //   3. deploy API versions that no longer read/write `applied`
 //   4. node scripts/remove-server-applied.js --apply --drop-applied
 
-import pkg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import 'dotenv/config';
 import { canonicalizeLifecycleStatus } from '../proposals/lifecycle.js';
 import { stripLocalProposalState } from '../proposals/serializer.js';
 
-const { Pool } = pkg;
 const SUB_COLUMNS = Object.freeze(['road_proposal', 'building_proposal', 'structure_proposal', 'reparcellization']);
 
 export function parseArgs(argv) {
@@ -67,13 +66,7 @@ async function main() {
     if (args.dropApplied && !args.apply) throw new Error('--drop-applied requires --apply.');
     if (args.dropApplied && args.proposals) throw new Error('--drop-applied cannot be used with --proposals.');
 
-    const pool = new Pool({
-        host: process.env.PGHOST,
-        port: Number(process.env.PGPORT) || 5432,
-        user: process.env.PGUSER,
-        password: process.env.PGPASSWORD,
-        database: process.env.PGDATABASE
-    });
+    const pool = createPool();
 
     try {
         const hasApplied = await columnExists(pool, 'applied');

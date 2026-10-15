@@ -9,15 +9,15 @@
 // transaction it already stored, and the next run only fetches the signatures still missing. Nothing
 // is ever refetched, so rerunning is cheap and safe.
 //
-//   PGHOST=localhost node scripts/sync-transactions.mjs --run
-//   PGHOST=localhost node scripts/sync-transactions.mjs --run --limit 25
-//   PGHOST=localhost node scripts/sync-transactions.mjs --dry-run
+//   node scripts/sync-transactions.mjs --run              (DATABASE_URL from backend/.env)
+//   node scripts/sync-transactions.mjs --run --limit 25
+//   node scripts/sync-transactions.mjs --dry-run
 //
 // The public devnet RPC throttles getParsedTransactions far harder than the 400 ms default assumes
 // (measured 2026-09-16: ~one 5-signature chunk per run before a 429 the retries cannot outwait).
 // Raise --spacing when backfilling a long history; the table is the checkpoint either way.
 
-import pkg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import 'dotenv/config';
 import path from 'path';
 import fs from 'fs';
@@ -26,7 +26,6 @@ import { Connection } from '@solana/web3.js';
 import { buildAddressBook, watchedAddresses } from '../solana/address-book.js';
 import { syncTransactions, countTransactions, DEFAULT_SIGNATURE_SCAN_LIMIT, FETCH_CHUNK_SPACING_MS } from '../solana/tx-store.js';
 
-const { Pool } = pkg;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CLUSTER = 'devnet';
 
@@ -41,9 +40,9 @@ function usage() {
         '  --help               Show this message.',
         '',
         'The table is the checkpoint: rerun after a rate limit and only the still-missing',
-        'signatures are fetched. Connect to the local database with PGHOST=localhost.',
+        'signatures are fetched. The database is DATABASE_URL from backend/.env.',
         '',
-        '  PGHOST=localhost node scripts/sync-transactions.mjs --run --limit 25'
+        '  node scripts/sync-transactions.mjs --run --limit 25'
     ].join('\n'));
 }
 
@@ -90,13 +89,7 @@ async function main() {
     const book = buildAddressBook({ env: process.env, personas });
     const watched = watchedAddresses(book);
 
-    const pool = new Pool({
-        host: process.env.PGHOST,
-        port: Number(process.env.PGPORT),
-        user: process.env.PGUSER,
-        password: process.env.PGPASSWORD,
-        database: process.env.PGDATABASE
-    });
+    const pool = createPool();
     const connection = new Connection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
 
     try {

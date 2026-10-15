@@ -14,8 +14,8 @@
 //     its measured cross-section supports two rows of perpendicular bays.
 //
 // Dry-run by default is not allowed: state intent explicitly.
-//   PGHOST=localhost node backend/scripts/seed-pionir-observed-circulation.mjs --dry-run --export
-//   PGHOST=localhost node backend/scripts/seed-pionir-observed-circulation.mjs --apply --export
+//   node backend/scripts/seed-pionir-observed-circulation.mjs --dry-run --export
+//   node backend/scripts/seed-pionir-observed-circulation.mjs --apply --export
 
 import { createRequire } from 'node:module';
 import crypto from 'node:crypto';
@@ -23,7 +23,7 @@ import dotenv from 'dotenv';
 import * as turf from '@turf/turf';
 import { mkdir, readdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
-import pg from 'pg';
+import { createPool, describeDatabase, isLocalDatabase } from '../db/connection.cjs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { reconstructionGeoJSONToProposal } from '../proposals/reconstruction-geojson.js';
 import { assertCorridorReconstructionGeoJSONRoundTrip } from '../proposals/corridor-reconstruction-geojson.js';
@@ -36,7 +36,6 @@ const {
     corridorProfileWidth
 } = require('../../frontend/js/corridor-profile.js');
 
-const { Pool } = pg;
 const ARCHIVE_ROOT = fileURLToPath(new URL('../../rekonstrukcije/pionir-paron/', import.meta.url));
 const RECONSTRUCTION_DATE = '2026-08-13T00:00:00.000Z';
 
@@ -48,7 +47,6 @@ export const MIN_PARKING_AISLE_LENGTH_M = 20;
 export const MIN_DOUBLE_SIDED_PARKING_WIDTH_M = 12.5;
 export const MAX_DOUBLE_SIDED_PARKING_WIDTH_M = 20;
 
-const LOCAL_DB_HOSTS = new Set(['localhost', '127.0.0.1', '::1']);
 
 function usage() {
     console.log(`Usage: node backend/scripts/seed-pionir-observed-circulation.mjs --dry-run|--apply [--export] [--only key,key]
@@ -77,9 +75,8 @@ export function parseArgs(argv) {
 }
 
 function assertLocalDatabase() {
-    const host = String(process.env.PGHOST || 'localhost').trim().toLowerCase();
-    if (!LOCAL_DB_HOSTS.has(host)) {
-        throw new Error(`Refusing to seed non-local PGHOST=${host || '(empty)'}.`);
+    if (!isLocalDatabase()) {
+        throw new Error(`Refusing to seed non-local database host ${describeDatabase().host || '(empty)'}.`);
     }
 }
 
@@ -891,7 +888,7 @@ async function main() {
         throw new Error(`Unknown project key(s): ${missing.join(', ')}.`);
     }
 
-    const pool = new Pool();
+    const pool = createPool();
     const audit = {
         schema: 'consensus-builder.pionir-circulation-audit.v1',
         generatedAt: RECONSTRUCTION_DATE,

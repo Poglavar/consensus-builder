@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { marked } from 'marked';
 import { readX402Config } from '../utils/x402-payment.js';
+import { describeDatabase } from '../db/connection.cjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -302,7 +303,7 @@ async function generateDatabaseSchema(pool) {
             title: "Consensus Builder Database Schema",
             description: "Live database schema generated from information_schema (public schema only, excluding backup and temporary tables)",
             generated_at: new Date().toISOString(),
-            database: process.env.PGDATABASE,
+            database: describeDatabase().database,
             schema: 'public',
             excluded_patterns: ['_bkp', '_tmp'],
             tables: {}

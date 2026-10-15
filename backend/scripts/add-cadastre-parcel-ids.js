@@ -12,10 +12,9 @@
 //   node scripts/add-cadastre-parcel-ids.js
 //   node scripts/add-cadastre-parcel-ids.js --apply
 
-import pkg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import 'dotenv/config';
 
-const { Pool } = pkg;
 
 export function parseArgs(argv) {
     const args = { apply: false, help: false };
@@ -48,20 +47,14 @@ export async function run(argv = process.argv.slice(2)) {
     const args = parseArgs(argv);
     if (args.help) { usage(); return 0; }
 
-    // Same PG* convention the API and the other migration scripts use — never a guessed default,
+    // Same DATABASE_URL convention the API and the other migration scripts use — never a guessed default,
     // so this can only ever touch the database the environment already points at.
-    if (!process.env.PGDATABASE) {
-        console.error('PGDATABASE is not set — refusing to guess a database. Run from backend/ so .env loads.');
+    if (!process.env.DATABASE_URL) {
+        console.error('DATABASE_URL is not set — refusing to guess a database. Run from backend/ so .env loads.');
         return 1;
     }
 
-    const pool = new Pool({
-        host: process.env.PGHOST,
-        port: Number(process.env.PGPORT) || 5432,
-        user: process.env.PGUSER,
-        password: process.env.PGPASSWORD,
-        database: process.env.PGDATABASE
-    });
+    const pool = createPool();
     try {
         const { rows: [db] } = await pool.query('SELECT current_database() AS name');
         const { rows: existing } = await pool.query(

@@ -6,7 +6,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { embeddableStatic } from './utils/embeddable-static.js';
 import rateLimit from 'express-rate-limit';
-import pkg from 'pg';
 import path from 'path';
 import { AsyncLocalStorage } from 'node:async_hooks';
 
@@ -48,17 +47,10 @@ import { setupEnsRoute } from './routes/ens.js';
 import { setupEnsPlansRoute } from './routes/ens-plans.js';
 import { setupCantonRoute } from './routes/canton.js';
 import { setupAiSceneRoute } from './routes/ai-scene.js';
-
-const { Pool } = pkg;
+import { createPool as createDatabasePool } from './db/connection.cjs';
 
 function createPool(env = process.env) {
-    return new Pool({
-        host: env.PGHOST,
-        port: Number(env.PGPORT),
-        user: env.PGUSER,
-        password: env.PGPASSWORD,
-        database: env.PGDATABASE,
-    });
+    return createDatabasePool({}, env);
 }
 
 const MAX_FORMATTED_VALUE_LENGTH = 256;

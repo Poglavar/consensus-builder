@@ -9,7 +9,7 @@
 //   node agents/run.mjs --dry-run [--persona NAME] [--day YYYY-MM-DD] [--candidates N]
 //   node agents/run.mjs --live    [--persona NAME] [--day YYYY-MM-DD] [--until STAGE] [--api URL]
 //   STAGE: planned | chosen | minted | posted | staked (default staked)
-// Env: PG* (run with PGHOST=localhost on the host), ANTHROPIC_API_KEY, AGENT_LLM_MODEL,
+// Env: DATABASE_URL (from backend/.env), ANTHROPIC_API_KEY, AGENT_LLM_MODEL,
 //      AGENT_LLM_DAILY_CAP_USD (1000), AGENT_API_BASE (default http://localhost:$API_PORT),
 //      SOLANA_RPC_URL, TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID for failure alerts; TELEGRAM_ACTIVITY_* for activity topics.
 
@@ -19,7 +19,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
-import pg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import Anthropic from '@anthropic-ai/sdk';
 import { Connection, Keypair } from '@solana/web3.js';
 import * as turf from '@turf/turf';
@@ -119,10 +119,7 @@ async function main() {
     const apiBase = (args.api || process.env.AGENT_API_BASE || `http://localhost:${process.env.API_PORT || 3000}`).replace(/\/$/, '');
     const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
     const personas = loadPersonas(args.persona);
-    const pool = new pg.Pool({
-        host: process.env.PGHOST, port: process.env.PGPORT, user: process.env.PGUSER,
-        password: process.env.PGPASSWORD, database: process.env.PGDATABASE
-    });
+    const pool = createPool();
     const mode = args.dryRun ? 'dry-run' : 'live';
     log(`${mode} · day ${day} · ${personas.length} persona(s) · model ${model} · api ${apiBase}`);
 

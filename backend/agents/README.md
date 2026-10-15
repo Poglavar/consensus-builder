@@ -84,7 +84,7 @@ A batch that has not finished inside `awaitMs` is not an error — `runPickBatch
 |---|---|---|
 | `ANTHROPIC_API_KEY` | `llm-picker.js` (via the SDK client the caller constructs) | the Batches API key |
 | `AGENT_LLM_MODEL` | the orchestrator, passed into `buildPickRequests`/`runPickBatch` | overrides `DEFAULT_MODEL` (the shared layer's Anthropic default from `agents/lib/llm-cost/defaults.json`); must be priced in `agents/lib/llm-cost/rates.json` or the cost call throws |
-| `PGHOST` / `PGPORT` / `PGUSER` / `PGPASSWORD` / `PGDATABASE` | `parcel-source.js` (via the pool the caller passes) | the shared `geodata` database |
+| `DATABASE_URL` | `parcel-source.js` (via the pool the caller passes, built by `db/connection.cjs`) | the shared `geodata` database, from backend/.env |
 | `X402_*`, `CDP_API_KEY_ID`, `CDP_API_KEY_SECRET` | `routes/agent-proposals.js` | the hosted-CDP pay-to-post gate; see the design doc §WS1 |
 
 ## Tests
@@ -101,9 +101,9 @@ None of them touch the network or the ledger. The one test that needs the databa
 
 ```bash
 cd backend
-PGHOST=localhost node agents/run.mjs --dry-run                       # plan + cost estimate, writes nothing
-PGHOST=localhost node agents/run.mjs --live --persona densifier-01 --api http://localhost:3999
-PGHOST=localhost node agents/run.mjs --live --until posted          # stop before staking
+node agents/run.mjs --dry-run                       # plan + cost estimate, writes nothing
+node agents/run.mjs --live --persona densifier-01 --api http://localhost:3999
+node agents/run.mjs --live --until posted          # stop before staking
 ```
 
 One `consensus.agent_run` row per persona per UTC day is the checkpoint (`stage`, `summary` with

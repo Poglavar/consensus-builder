@@ -19,10 +19,9 @@
 //
 //   node scripts/analyze-plan-conflicts.js --ids 633-651,699
 
-import pkg from 'pg';
+import { createPool, describeDatabase } from '../db/connection.cjs';
 import 'dotenv/config';
 
-const { Pool } = pkg;
 
 // Same floor as plan-order.js: below this an intersection is shared-border noise, not a claim.
 const MIN_INTERSECTION_M2 = 0.25;
@@ -100,9 +99,9 @@ async function main() {
     const ids = argv.includes('--ids') ? parseIds(idsArg) : [];
     if (!ids.length) { console.error('--ids is required (e.g. --ids 633-651,699)'); process.exit(1); }
 
-    const pool = new Pool();
+    const pool = createPool();
     const client = await pool.connect();
-    console.log(`database: ${process.env.PGDATABASE || 'geodata'}   (read-only)`);
+    console.log(`database: ${describeDatabase().database}   (read-only)`);
 
     try {
         const { rows } = await client.query(

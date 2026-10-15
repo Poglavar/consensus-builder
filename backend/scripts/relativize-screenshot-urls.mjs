@@ -14,9 +14,8 @@ dotenv.config({ quiet: true });
 import fs from 'fs';
 import path from 'path';
 import { pathToFileURL } from 'url';
-import pkg from 'pg';
+import { createPool } from '../db/connection.cjs';
 
-const { Pool } = pkg;
 
 const LOCAL_ORIGIN = /^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?(?=\/)/i;
 const ANY_ORIGIN = /^https?:\/\/[^/]+(?=\/)/i;
@@ -43,7 +42,7 @@ Options:
   --limit <n>      Touch at most n rows.
   --help           Print this help and exit without doing anything.
 
-Environment: DATABASE_URL or PGHOST PGPORT PGUSER PGPASSWORD PGDATABASE (read from backend/.env).
+Environment: DATABASE_URL (read from backend/.env).
 `;
 
 function parseArgs(argv) {
@@ -69,7 +68,7 @@ async function main() {
     const args = parseArgs(process.argv.slice(2));
     if (args.help) { console.log(USAGE); return 0; }
 
-    const pool = new Pool(process.env.DATABASE_URL ? { connectionString: process.env.DATABASE_URL } : undefined);
+    const pool = createPool();
     try {
         const { rows } = await pool.query(
             `SELECT id, proposal_id, screenshot_url FROM proposal WHERE screenshot_url ~ '^https?://' ORDER BY id`

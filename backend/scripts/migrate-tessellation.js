@@ -27,7 +27,7 @@
 //   node scripts/migrate-tessellation.js --apply --normalize-only
 //   node scripts/migrate-tessellation.js --apply --ids 97,98
 
-import pkg from 'pg';
+import { createPool, describeDatabase } from '../db/connection.cjs';
 import 'dotenv/config';
 import { pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
@@ -39,7 +39,6 @@ const requireCjs = createRequire(import.meta.url);
 const formationEdit = requireCjs('../../frontend/js/proposals/formation-edit.js');
 const authoredRecord = requireCjs('../../frontend/js/proposals/authored-record.js');
 
-const { Pool } = pkg;
 const CRUMB_DEG2 = 1.2e-10;
 export const MIGRATION_ID = 'authoritative-parcel-records-v3';
 const MIGRATION_POLICY = Object.freeze({
@@ -1050,12 +1049,12 @@ export async function run(argv = process.argv.slice(2)) {
         usage();
         return 0;
     }
-    if (!process.env.PGDATABASE) {
-        console.error('PGDATABASE is not set — refusing to guess a database.');
+    if (!process.env.DATABASE_URL) {
+        console.error('DATABASE_URL is not set — refusing to guess a database.');
         return 1;
     }
 
-    const pool = new Pool();
+    const pool = createPool();
     const client = args.apply ? await pool.connect() : null;
     const db = client || pool;
     const migrationId = scopedMigrationId(args);
@@ -1087,7 +1086,7 @@ export async function run(argv = process.argv.slice(2)) {
         const where = params.length ? 'WHERE id = ANY($1::int[])' : '';
         const { rows } = await db.query('SELECT * FROM proposal ' + where + ' ORDER BY id', params);
         stats.total = rows.length;
-        console.log('database: ' + process.env.PGDATABASE + '   mode: ' + (args.apply ? 'APPLY' : 'DRY RUN'));
+        console.log('database: ' + describeDatabase().database + '   mode: ' + (args.apply ? 'APPLY' : 'DRY RUN'));
         console.log(rows.length + ' row(s) to consider');
         const declarationReport = buildDryRunReport(rows, { migrationId });
         console.log('declaration report:');

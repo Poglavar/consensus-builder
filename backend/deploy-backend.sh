@@ -44,7 +44,7 @@ echo "Applying building floor-model schema..."
     # shellcheck disable=SC1091
     . ./.env
     set +a
-    psql -X -q -v ON_ERROR_STOP=1 --single-transaction \
+    psql "$DATABASE_URL" -X -q -v ON_ERROR_STOP=1 --single-transaction \
         -c 'SET ROLE geo_user' -f db/building-floor-model.sql
 )
 

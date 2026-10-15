@@ -29,7 +29,7 @@ The final [archived project landing page](https://web.archive.org/web/2019011119
 ## Reproduction
 
 ```bash
-PGHOST=localhost node backend/scripts/seed-pionir-observed-proposals.mjs --apply --export
+node backend/scripts/seed-pionir-observed-proposals.mjs --apply --export
 ```
 
 `proposal.geojson` uses `consensus-builder.reconstruction.v1` and must survive a lossless export/import/export round trip.
