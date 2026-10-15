@@ -495,6 +495,7 @@
         "errors": {
             "draftFailed": "No se pudo abrir esta propuesta para editarla.",
             "instantCreateFailed": "No se pudo guardar el nuevo objeto.",
+            "designSaveFailed": "No se pudo guardar este diseño: {{reason}}. El borrador sigue disponible; resuelve el problema e inténtalo de nuevo.",
             "noAdapter": "No hay un editor registrado para este tipo de propuesta.",
             "notReshapeable": "Este tipo de propuesta no se puede remodelar.",
             "parcelsNotContiguous": "Las parcelas seleccionadas deben formar una sola superficie continua.",

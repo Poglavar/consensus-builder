@@ -495,6 +495,7 @@
         "errors": {
             "draftFailed": "Nije moguće otvoriti ovaj predlog za uređivanje.",
             "instantCreateFailed": "Novi objekat nije bilo moguće sačuvati.",
+            "designSaveFailed": "Nije moguće sačuvati ovaj dizajn: {{reason}}. Nacrt je i dalje dostupan; rešite problem i pokušajte ponovo.",
             "noAdapter": "Za ovu vrstu predloga nije registrovan uređivač.",
             "notReshapeable": "Ovoj vrsti predloga se ne može menjati oblik.",
             "parcelsNotContiguous": "Izabrane parcele moraju činiti jednu povezanu površinu.",
