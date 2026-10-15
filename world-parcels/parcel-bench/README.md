@@ -349,11 +349,19 @@ F1 improves 0.1561 → 0.1928, a change of +0.0367 with a 95% paired block inter
 default. Every journal, selected checkpoint/configuration, saved map and actual target-cache proof
 was verified; no final split was scored. Full results: `output/runs/selection-v3-margin-comparison/`.
 
-Next (the living plan is `PLAN.md`): six fresh matched-donor fits are running under
+The six fresh matched-donor fits are complete under
 `gpu/plans/selection-v3-donors.json`, with common margin 2 and rim 0. Audited Zadar and Zagreb pools
 each contain 632 tiles and 27,344 parcel instances, matched exactly by tile parcel count. Source-city
-selection stays separate from the paired Split development comparison. Šibenik's 48 untouched final
-tiles are reserved for a passing development policy and a separately frozen confirmation gate.
+selection stayed separate from the paired Split development comparison. Nearby Zadar averages F1
+0.1958 versus 0.2064 for the matched Zagreb donor: change −0.0106, 95% paired block interval
+[−0.0247, +0.0074]. Precision falls by 0.0517 [−0.0684, −0.0304], and the interior-recall and seed
+robustness checks also fail. Retain the existing donor policy. The F1 difference remains unresolved;
+this result does not establish a general effect of climate or proximity. The twelve new selection rows
+and `output/runs/selection-v3-donors-comparison/` preserve the full comparison. All 1,795 donor output
+files passed byte-for-byte verification, and the GPU rental was deleted after backup. Šibenik's 48
+untouched final tiles remain unscored because the development policy failed advancement.
+
+The living plan is `PLAN.md`, including actual spend and the recovery-related rental-time overrun.
 Colour augmentation, target fine-tuning and larger encoders remain deferred.
 Broader selection, resolution augmentation and the longer-schedule trial are complete; the baseline
 default remains unchanged. Real satellite transfer, Ljubljana and a Spanish Csa city remain pending.
