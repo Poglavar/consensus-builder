@@ -8,11 +8,18 @@
 // projection never labels a bbox); it is densified and transformed here, and filtered against the
 // indexed geom_3765. Output is geom (already 4326, ready for GeoJSON) — the heavy buffered columns
 // are never returned.
+//
+// Outside the ingested table (any city without osm_road rows) a scene-sized bbox is answered from
+// OpenStreetMap live, through the shared Overpass chain (roads/osm-road-overpass.js), in the same
+// feature shape with `source: 'overpass'`. The 3D life layer and the 2D existing-roads layer thus
+// see OSM streets everywhere without the browser ever holding an Overpass credential.
 import { parseWgs84Bbox, wgs84BboxFilterSql, POSTGIS_SRID } from '../utils/helpers.js';
+import { fetchOverpassRoads as defaultFetchOverpassRoads, roadsBboxTooLarge } from '../roads/osm-road-overpass.js';
 
 const MAX_FEATURES = 8000;
 
-export function setupOsmRoadRoute(app, pool) {
+export function setupOsmRoadRoute(app, pool, options = {}) {
+    const fetchOverpassRoads = options.fetchOverpassRoads || defaultFetchOverpassRoads;
     app.get('/osm-road', async (req, res) => {
         try {
             const boxes = parseWgs84Bbox(req.query.bbox, req.query.crs);
@@ -56,7 +63,19 @@ export function setupOsmRoadRoute(app, pool) {
                 geometry: row.geometry
             }));
 
-            res.json({ type: 'FeatureCollection', features, truncated: features.length >= MAX_FEATURES });
+            if (!features.length && hasBbox && boxes.length === 1 && !roadsBboxTooLarge(boxes[0])) {
+                try {
+                    const live = await fetchOverpassRoads(boxes[0]);
+                    return res.json({
+                        type: 'FeatureCollection', features: live.features, source: 'overpass',
+                        truncated: !!live.truncated, partial: !!live.partial
+                    });
+                } catch (err) {
+                    console.warn(`[${new Date().toISOString()}] /osm-road: no table rows and Overpass unavailable (${err && err.message ? err.message : err})`);
+                    return res.json({ type: 'FeatureCollection', features: [], source: 'osm_road', truncated: false, overpass: 'unavailable' });
+                }
+            }
+            res.json({ type: 'FeatureCollection', features, source: 'osm_road', truncated: features.length >= MAX_FEATURES });
         } catch (err) {
             console.error('Error in /osm-road:', err);
             res.status(500).json({ error: 'Internal server error' });

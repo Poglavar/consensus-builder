@@ -5043,6 +5043,8 @@
             "neither": "Nijedno",
             "showAllParcels": "Prikaži sve čestice",
             "trees": "Stabla",
+            "life": "Ljudi i promet",
+            "lifeTooltip": "Prikažite ili sakrijte shematske ljude i vozila koji se kreću 3D prikazom",
             "water": "Voda",
             "plannedAs": "Planirano kao",
             "facades": "Pročelja",

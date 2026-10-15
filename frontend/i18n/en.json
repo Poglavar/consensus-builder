@@ -4991,6 +4991,8 @@
             "neither": "Neither",
             "showAllParcels": "Show all parcels",
             "trees": "Trees",
+            "life": "People and traffic",
+            "lifeTooltip": "Show or hide schematic people and vehicles moving through the 3D view",
             "water": "Water",
             "plannedAs": "Planned as",
             "facades": "Facades",
