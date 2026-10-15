@@ -38,7 +38,9 @@ def _admit(runner, city, receipt, result, digest):
     entry = runner._city_entry(city)
     before = runner._candidate_workspace_snapshot()
     try:
-        admission = admit_candidate(runner, city, receipt, result)
+        # A previously integrated stage has just passed the same hash checks;
+        # admission expects the verified input status before it checks app bindings.
+        admission = admit_candidate(runner, city, receipt, {**result, "status": "adapter-ready"})
     except Exception as exc:
         admission = {"status": "failed", "summary": f"Admission error: {type(exc).__name__}: {exc}"}
     entry["admission"] = admission

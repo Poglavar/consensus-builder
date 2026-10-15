@@ -222,6 +222,22 @@ class ParallelTests(unittest.TestCase):
                 parallel._recover_interrupted(ws)
         finish.assert_not_called()
 
+    def test_integrated_stage_is_reverified_as_ready_without_requalifying(self):
+        ws, isolation, document = self.isolated()
+        result = parallel._import_result(self.runner, self.city, {}, {}, isolation, document)
+        result.update(status="integrated", receiptSha256=self.digest)
+        self.runner._city_entry(self.city)["qualification"] = result
+        def admit(parent, city, receipt, verified):
+            self.assertEqual(verified["status"], "adapter-ready")
+            return {"status": "integrated", "summary": "bindings reverified"}
+        with patch.object(parallel, "admit_candidate", side_effect=admit) as admission, \
+                patch.object(parallel, "prepare_workspace") as prepare:
+            self.assertTrue(parallel.advance_candidates(self.runner, [self.city], self.root))
+            self.assertFalse(parallel.advance_candidates(self.runner, [self.city], self.root))
+        prepare.assert_not_called()
+        self.assertEqual(admission.call_count, 1)
+        self.assertEqual(self.runner._city_entry(self.city)["qualification"]["status"], "integrated")
+
     def test_stop_reaches_both_workers_and_leaves_durable_results_for_resume(self):
         barrier = threading.Barrier(2)
         stopped = []
