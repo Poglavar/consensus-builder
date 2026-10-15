@@ -343,12 +343,17 @@ fails both the F1 interval and precision guards, so this remains a Split special
 marker/surface and no-merge probes are diagnostic only. Full per-seed, clipped/interior, density and
 association results: `output/reconstruction-study-20261015/report.json`.
 
-Next (the living plan is `PLAN.md`): three fresh margin-0 target fits, frozen in
-`gpu/plans/selection-v3-margin.json`, retaining original reconstruction to isolate the target change.
-Target definitions now travel with recipes/checkpoints/results and versioned caches; old controls
-retain their recorded margin-2 definition. Zadar donor and untouched Šibenik confirmation roles are
-frozen in `plans/nearby-donor-v1.json`; exports are running, with no new-city model scores.
-Source-city selection stays separate from Split development and confirmation. Colour augmentation
-and larger encoders are deferred.
+The three fresh margin-0 fits are also complete (`gpu/plans/selection-v3-margin.json`). Split transfer
+F1 improves 0.1561 → 0.1928, a change of +0.0367 with a 95% paired block interval of +0.0167 to
++0.0667, but fails the precision guard (−0.0330, interval −0.0842 to +0.0304). Margin 2 remains the
+default. Every journal, selected checkpoint/configuration, saved map and actual target-cache proof
+was verified; no final split was scored. Full results: `output/runs/selection-v3-margin-comparison/`.
+
+Next (the living plan is `PLAN.md`): six fresh matched-donor fits are running under
+`gpu/plans/selection-v3-donors.json`, with common margin 2 and rim 0. Audited Zadar and Zagreb pools
+each contain 632 tiles and 27,344 parcel instances, matched exactly by tile parcel count. Source-city
+selection stays separate from the paired Split development comparison. Šibenik's 48 untouched final
+tiles are reserved for a passing development policy and a separately frozen confirmation gate.
+Colour augmentation, target fine-tuning and larger encoders remain deferred.
 Broader selection, resolution augmentation and the longer-schedule trial are complete; the baseline
 default remains unchanged. Real satellite transfer, Ljubljana and a Spanish Csa city remain pending.

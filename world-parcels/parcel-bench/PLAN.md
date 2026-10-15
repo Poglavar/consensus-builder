@@ -4,7 +4,7 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-15 (bounded reconstruction diagnostic complete; margin-0 arm frozen and donor exports running; default unchanged). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-15 (bounded reconstruction and margin-0 comparisons complete; matched donor fits running; default unchanged). Status values: todo · running · done · dropped (with the reason).
 
 ## Where we stand (2026-10-14)
 
@@ -60,13 +60,13 @@ in three lanes, two Split runs about 40 minutes; a 1,600-tile 30-epoch run is ab
 | 3 | Split learning curve and Zagreb-donor fine-tune curve | GPU | done 2026-10-13 (round 2) |
 | 4 | Per-city reconstruction settings and seed connectivity | laptop | bounded saved-map diagnostic complete; Split-specific candidate passes development guards |
 | 5 | Visibility audit (image support) | laptop + vision model | done 2026-10-13 (machine labels; interpretation corrected) |
-| 6 | Zagreb model levers, one at a time | GPU | 60-epoch trial done, not adopted; target margin or diagnosed marker/surface treatment next |
+| 6 | Zagreb model levers, one at a time | GPU | 60-epoch and margin-0 trials done; neither adopted |
 | 7 | Milestone 4 on both final splits | GPU or laptop | todo |
 | 8 | Ljubljana and a Spanish Csa city | laptop + GPU | todo |
 | 9 | Serving check (CPU inference) | laptop | todo |
 | 10 | Product decision: show guesses where the score clears a bar | the user | todo |
 | 11 | Satellite domain: score and train for satellite-like input | laptop + GPU | (a) done; (b) resolution trial done, not adopted; other degradations and (c) real imagery pending |
-| 12 | Nearby Dalmatian donor: zero-shot development on Split and untouched-city confirmation | laptop + GPU | eligibility audit in progress; target fine-tuning deferred |
+| 12 | Nearby Dalmatian donor: zero-shot development on Split and untouched-city confirmation | laptop + GPU | exports and matching audited; six donor fits running; target fine-tuning deferred |
 
 ### Agreed reconstruction and transfer sequence (2026-10-15)
 
@@ -119,20 +119,42 @@ resolution augmentation still improves Zagreb-to-Split F1 by +0.0417 [+0.0126, +
 gain was not solely caused by different selected reconstruction settings. All intervals remain conditional
 on these three fits and twelve reused geographic blocks.
 
-`gpu/plans/selection-v3-margin.json` freezes the next three fresh 30-epoch Zagreb fits. Margin 0 is
-the only training treatment; original rim-0 reconstruction, source-only checkpoint/config selection,
-data, seeds, runtime and pretrained weights stay fixed. The primary comparison is transfer to Split;
-own-city scores are secondary. The generated cache records and validates size/cap/dilation/margin,
-and evaluation checks checkpoint, recipe and results metadata before loading targets. Nine synthetic
-target/cache checks pass, including retained tile-edge boundary endpoints, cache reuse and mismatched
-metadata rejection. A real production-grid cache/source proof is also required on the rented GPU.
+The three fresh 30-epoch fits in `gpu/plans/selection-v3-margin.json` are complete. Margin 0 was
+the only training treatment; original rim-0 reconstruction and the source-only checkpoint/configuration
+chooser stayed fixed, along with data, seeds, runtime and pretrained weights. Each journal contains
+8,130 updates and fifteen source-selection evaluations. The actual 512-pixel cache proof retained 182
+boundary pixels on the outer rim that margin 2 erased, with identical interior targets and input arrays.
+All 900 output files (2.28 GB), including best and last checkpoints, were copied and hash-verified.
+
+| Margin-0 comparison | Control F1 | Margin-0 F1 | Change and 95% block interval | Decision |
+|---|---:|---:|---|---|
+| Zagreb → Split, primary | 0.1561 | 0.1928 | +0.0367 [+0.0167, +0.0667] | fails precision guard: −0.0330 [−0.0842, +0.0304] |
+| Zagreb own-city, secondary | 0.2927 | 0.3140 | +0.0212 [−0.0196, +0.0772] | fails F1 interval and precision guards |
+
+All three primary F1 changes are positive (+0.0648, +0.0089, +0.0363); area-weighted and interior
+recall also improve. The complete predeclared gate still fails because precision non-inferiority is
+unresolved. Retain margin 2. This is a result for the whole source-selected policy: the margin-0 fits
+selected interior seeds ON, whereas the immutable controls selected them OFF. No final split was
+scored. The six new selection ledger rows and `output/runs/selection-v3-margin-comparison/report.json`
+retain every seed, density stratum, clipped/interior count, source choice and artifact hash.
 
 City roles are frozen in `plans/nearby-donor-v1.json`: Zadar donor (12 development blocks, four
 reserved blocks) and Šibenik conditional untouched confirmation (12 final blocks, no development or
-training). Both use strict density strata and 500 m/source-ID separation. Eligibility was checked
-against eleven historical manifests before export; actual imagery screens and final exported hashes
-must pass before the matched donor recipe is frozen. Exporting confirmation imagery does not authorize
-using its model outcomes for decisions.
+training). Both use strict density strata and 500 m/source-ID separation. Both exports passed actual
+imagery, file-hash, source-ID and geographic-separation audits against eleven historical manifests.
+Zadar has 681 eligible training tiles, 48 source-selection tiles and 16 reserved final tiles; Šibenik
+has only 48 final tiles and remains unscored.
+
+`gpu/plans/selection-v3-donors.json` now freezes six fresh fits, using the failed primary margin gate
+to select common margin 2 and keeping rim 0. Exact parcel-count matching produces 632 tiles and
+27,344 parcel instances per donor, with identical low/medium/high/dense counts of 74/93/205/260.
+Unique cadastral IDs differ (22,987 distant, 19,845 nearby); the matched annotation budget counts
+tile-level parcel instances, not distinct parcels. Both arms train for 30 epochs and 3,180 updates
+per seed. Each source chooses its own checkpoint/configuration on its 48 source-selection tiles;
+the paired target comparison uses the same 48 reused Split selection tiles. Only a passing complete
+development gate permits separately frozen Šibenik confirmation, requiring at least +0.02 F1 and
+all remaining guards. Exporting confirmation imagery does not authorize using its model outcomes
+for development decisions.
 
 **1. Bootstrap confidence intervals.** Resample tiles to give every pooled score a 95% interval and the
 minimum detectable effect per benchmark. Success: every comparison in the ledger reads as a difference
