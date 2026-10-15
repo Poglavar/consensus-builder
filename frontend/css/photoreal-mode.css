@@ -146,3 +146,9 @@ body.realistic-mode-active #mode-walk-toggle {
 #three-container .photoreal-attribution-text:empty {
     display: none;
 }
+
+/* Model-mode frame-time readout (`?fps=1`), a status badge like the photo one above it. */
+#three-container .three-perf-readout {
+    display: block;
+    top: 8px;
+}

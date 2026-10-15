@@ -4960,6 +4960,8 @@
             "neither": "Ninguno",
             "showAllParcels": "Mostrar todas las parcelas",
             "trees": "Árboles",
+            "life": "Personas y tráfico",
+            "lifeTooltip": "Muestra u oculta personas y vehículos esquemáticos que se mueven por la vista 3D",
             "water": "Agua",
             "plannedAs": "Planificado como",
             "facades": "Fachadas",

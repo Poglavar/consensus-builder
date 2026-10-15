@@ -220,6 +220,10 @@
     let proposalDraftGroup = null; // source-vs-draft comparison overlay; never mutates proposal state
     let latestProposalDraftPreviewDetail = null;
     let treesEnabled = true; // user toggle (default ON); real value loaded from storage on 3D init
+    let lifeGroup = null; // schematic people and vehicles (three-life.js), toggleable layer
+    let lifeLayer = null; // __threeLife instance owning the instanced meshes of the current scene
+    let lifeEnabled = true; // user toggle (default ON); real value loaded from storage on 3D init
+    let lifeToggleEl = null;
     // Plots an applied urban rule left out, drawn as see-through volumes. Default OFF: it answers
     // "why is there nothing on this plot", it is not part of the plan being looked at.
     let showIneligibleParcels = false;
@@ -1575,6 +1579,28 @@
         ineligibleLabel.appendChild(ineligibleText);
         ineligibleRow.appendChild(ineligibleLabel);
         buildingModeControlsEl.appendChild(ineligibleRow);
+
+        // Schematic people and vehicles: a frontend-only layer every city can show, so it is not
+        // fetched from /decor/layers either. Same row shape as the plots toggle above.
+        lifeEnabled = loadLifeEnabledPref();
+        const lifeRow = document.createElement('div');
+        lifeRow.className = 'three-mode-trees-row three-mode-wide-row';
+        const lifeLabel = document.createElement('label');
+        lifeLabel.className = 'three-mode-trees-toggle three-mode-wide-toggle';
+        const lifeBox = document.createElement('input');
+        lifeBox.type = 'checkbox';
+        lifeBox.checked = lifeEnabled;
+        lifeBox.addEventListener('change', () => setLifeEnabled(lifeBox.checked));
+        const lifeText = document.createElement('span');
+        lifeText.className = 'three-mode-emphasis-label';
+        lifeText.textContent = threeI18n('threeMode.controls.life', 'People and traffic');
+        lifeLabel.title = threeI18n('threeMode.controls.lifeTooltip', 'Show or hide schematic people and vehicles moving through the 3D view');
+        lifeLabel.setAttribute('aria-label', lifeLabel.title);
+        lifeLabel.appendChild(lifeBox);
+        lifeLabel.appendChild(lifeText);
+        lifeRow.appendChild(lifeLabel);
+        buildingModeControlsEl.appendChild(lifeRow);
+        lifeToggleEl = lifeBox;
 
         // Where the context buildings came from, and how many heights are estimates (OSM).
         buildingsSourceNoteEl = document.createElement('p');
@@ -5054,6 +5080,7 @@
                 const dupCount = rawBuildings.length - nearbyProposalBuildings.length;
                 console.log(`[3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings (${sceneLoadGeometrySource}+${buffer}m${dupCount > 0 ? `, dropped ${dupCount} coincident duplicate${dupCount === 1 ? '' : 's'}` : ''})`);
                 if (isActive) rebuild3DBuildingsOnly({ family: 'existing' });
+                refreshLifeSurface();
                 updateBuildingsLoader();
                 ensureNearbyWater();
             })
@@ -5235,6 +5262,334 @@
         invalidateThreeView();
     }
 
+    // --- Life: schematic people and vehicles (three-life.js + life/*.js) ---
+    // A toggleable layer of to-scale figures walking sidewalks, footways and plazas, and vehicles
+    // driving applied-corridor lanes and existing streets (/osm-road). The pure graph and
+    // simulation modules do the work; this section gathers the scene's inputs, owns the toggle and
+    // the frame hook, and keeps the render loop on-demand whenever the layer is off. See 3d-life.md.
+    const LIFE_STORAGE_KEY = 'cb_3d_life_enabled';
+    let lifeOsmFeatures = null;     // /osm-road features for the current snapshot bounds; null until fetched
+    let lifeOsmKey = null;
+    let lifeOsmFetching = false;
+    let lifeQueryBounds = null;
+    let lifeAnchorBounds = null;    // where context buildings are loaded: the walkable surface stays inside it
+    let lifeFrameHook = null;
+
+    function loadLifeEnabledPref() {
+        try {
+            if (typeof PersistentStorage !== 'undefined' && PersistentStorage) {
+                const v = PersistentStorage.getItem(LIFE_STORAGE_KEY);
+                if (v === '0' || v === 'false') return false;
+                if (v === '1' || v === 'true') return true;
+            }
+        } catch (_) { }
+        return true; // default ON
+    }
+
+    // `?life=0|1` overrides the saved preference (tests, demos); reduced motion keeps the layer off.
+    function lifeUrlOverride() {
+        try {
+            const v = new URLSearchParams(window.location.search || '').get('life');
+            if (v === '0' || v === 'off' || v === 'false') return false;
+            if (v === '1' || v === 'on' || v === 'true') return true;
+        } catch (_) { }
+        return null;
+    }
+
+    function lifeShouldRun() {
+        const override = lifeUrlOverride();
+        if (override === false) return false;
+        if (window.__reducedMotion && override !== true) return false;
+        return override === true || lifeEnabled;
+    }
+
+    // Population caps; a phone gets half the crowd.
+    function lifeCaps() {
+        const small = typeof window !== 'undefined' && window.innerWidth > 0 && window.innerWidth < 700;
+        return small ? { vehicles: 50, people: 32 } : { vehicles: 100, people: 64 };
+    }
+
+    // Scene XY is EPSG:3857 metres, inflated by 1/cos(lat) against true metres while Z stays true.
+    function lifeMercatorK() {
+        if (!origin3857) return 1;
+        const lat = L.CRS.EPSG3857.unproject(L.point(origin3857.x, origin3857.y)).lat;
+        return 1 / Math.max(0.1, Math.cos(lat * Math.PI / 180));
+    }
+
+    function ensureLifeLayer() {
+        if (lifeLayer || !scene || !window.__threeLife) return;
+        lifeLayer = window.__threeLife.create({ THREE, k: lifeMercatorK() });
+        lifeGroup = lifeLayer.group;
+        lifeGroup.visible = false;
+        scene.add(lifeGroup);
+    }
+
+    // Everything the population moves on, in true metres: applied corridor lanes (with
+    // grade-separation heights), existing streets once OSM has answered, and the walkable surface
+    // painted from all of it — sidewalk bands, footways, plazas and park lawns are preferred,
+    // carriageways are only crossed, and building, structure and water footprints are never entered.
+    function lifeProjector() {
+        const k = lifeMercatorK();
+        return (lng, lat) => { const [x, y] = latLngToXY(lat, lng); return [x / k, y / k]; };
+    }
+
+    function lifeSurfaceBounds(project) {
+        const b = (Array.isArray(lifeAnchorBounds) && lifeAnchorBounds.length === 4) ? lifeAnchorBounds
+            : (Array.isArray(lifeQueryBounds) && lifeQueryBounds.length === 4) ? lifeQueryBounds : null;
+        if (!b) return null;
+        const corners = [project(b[0], b[1]), project(b[2], b[1]), project(b[2], b[3]), project(b[0], b[3])];
+        const xs = corners.map(c => c[0]), ys = corners.map(c => c[1]);
+        const pad = 10;
+        return [Math.min(...xs) - pad, Math.min(...ys) - pad, Math.max(...xs) + pad, Math.max(...ys) + pad];
+    }
+
+    // Footprints people never enter: context buildings, proposed buildings, water, lakes.
+    function addLifeBlockedFootprints(builder, project) {
+        const features = [];
+        (Array.isArray(nearbyProposalBuildings) ? nearbyProposalBuildings : []).forEach(f => features.push(f));
+        (Array.isArray(window.proposedBuildings) ? window.proposedBuildings : []).forEach(f => features.push(f));
+        (Array.isArray(nearbyWater) ? nearbyWater : []).forEach(piece => { if (piece && piece.geometry) features.push({ type: 'Feature', geometry: piece.geometry }); });
+        (Array.isArray(window.lakes) ? window.lakes : []).forEach(f => features.push(f));
+        let count = 0;
+        features.forEach(feature => { try { builder.addBlockedFeature(feature, project); count++; } catch (_) { } });
+        return count;
+    }
+
+    function buildLifeSurfaceFrom(graph, project) {
+        const api = window.__lifeSurface;
+        const bounds = lifeSurfaceBounds(project);
+        if (!api || !bounds || !graph) return null;
+        return api.buildWalkableSurface({ bounds, ...graph.surface });
+    }
+
+    function buildLifeGraph() {
+        const api = window.__lifeGraph;
+        if (!api || !origin3857) return null;
+        const k = lifeMercatorK();
+        const project = lifeProjector();
+        const builder = api.createGraphBuilder();
+        if (typeof isAppliedCorridorProposal === 'function' && typeof corridorStripSpans === 'function'
+            && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function') {
+            proposalStorage.getAllProposals().filter(isAppliedCorridorProposal).forEach(proposal => {
+                try {
+                    const definition = corridorProposalDefinition(proposal);
+                    const entries = corridorRenderEntriesForDefinition(definition);
+                    const records = (Array.isArray(definition?.gradeSeparations) ? definition.gradeSeparations : [])
+                        .filter(record => record && record.from && record.crossing && record.to);
+                    const zAt = records.length
+                        ? (x, y) => records.reduce((z, record) => z + gradeElevationAtXY(record, x * k, y * k), 0)
+                        : null;
+                    const sidewalkKerb = Number(typeof CORRIDOR_LANE_TYPES !== 'undefined' && CORRIDOR_LANE_TYPES.sidewalk && CORRIDOR_LANE_TYPES.sidewalk.height) || 0;
+                    builder.addCorridor({
+                        id: proposal.proposalId != null ? String(proposal.proposalId) : 'corridor',
+                        zLift: CORRIDOR_STRIP_Z, footZLift: CORRIDOR_STRIP_Z + sidewalkKerb, zAt,
+                        segments: entries.map(entry => ({
+                            id: entry.segmentId,
+                            points: entry.points.map(p => project(p.lng, p.lat)),
+                            spans: corridorStripSpans(entry.profile)
+                        }))
+                    });
+                } catch (error) { console.warn('[3D life] corridor skipped', error); }
+            });
+        }
+        (Array.isArray(window.parks) ? window.parks : []).forEach(park => {
+            try { builder.addPark(park, project); } catch (_) { }
+        });
+        (Array.isArray(window.squares) ? window.squares : []).forEach(square => {
+            try { builder.addSquare(square, project); } catch (_) { }
+        });
+        if (Array.isArray(lifeOsmFeatures)) builder.addOsmRoads(lifeOsmFeatures, project);
+        addLifeBlockedFootprints(builder, project);
+        return builder.build();
+    }
+
+    // Footprints arrive after the first build (buildings, water): repaint the surface under the
+    // existing crowd instead of respawning everyone.
+    let lifeSim = null;
+    function refreshLifeSurface() {
+        if (!lifeSim || !isActive || !scene) return;
+        try {
+            const t0 = performance.now();
+            const graph = buildLifeGraph();
+            const surface = buildLifeSurfaceFrom(graph, lifeProjector());
+            if (surface) {
+                lifeSim.replaceSurface(surface);
+                console.log(`[3D life] surface repainted: ${surface.stats.blocked} blocked cells from ${graph.stats.blocked} footprints, `
+                    + `${Math.round(surface.stats.preferredAreaM2)} m² preferred, ${lifeSim.people.length} people · ${(performance.now() - t0).toFixed(0)} ms`);
+            }
+            syncLifeVisibility();
+            invalidateThreeView();
+        } catch (error) { console.warn('[3D life] surface refresh failed', error); }
+    }
+
+    function lifeSeed() {
+        if (!origin3857) return 1;
+        return ((Math.round(origin3857.x) * 73856093) ^ (Math.round(origin3857.y) * 19349663)) >>> 0;
+    }
+
+    function setLifeHook(on) {
+        if (on && !lifeFrameHook && lifeLayer) {
+            lifeFrameHook = (now) => { lifeLayer.onFrame(now); };
+            window.registerThreeModeFrameHook(lifeFrameHook);
+        } else if (!on && lifeFrameHook) {
+            window.unregisterThreeModeFrameHook(lifeFrameHook);
+            lifeFrameHook = null;
+        }
+    }
+
+    // The hook runs only while a population is both simulated and visible, so an off or hidden
+    // layer lets the render loop fall back to on-demand frames.
+    function syncLifeVisibility() {
+        if (!lifeGroup || !lifeLayer) return;
+        const stats = lifeLayer.stats();
+        const show = lifeShouldRun() && !realisticLayerActive && (stats.vehicles + stats.people) > 0;
+        lifeGroup.visible = show;
+        setLifeHook(show);
+    }
+
+    function rebuildLifeOnly() {
+        if (!isActive || !scene) return;
+        ensureLifeLayer();
+        if (!lifeLayer) return;
+        setLifeHook(false);
+        lifeLayer.clear();
+        lifeSim = null;
+        if (lifeShouldRun() && window.__lifeAgents) {
+            const t0 = performance.now();
+            const graph = buildLifeGraph();
+            const surface = buildLifeSurfaceFrom(graph, lifeProjector());
+            if (graph && (graph.tracks.length || surface)) {
+                const caps = lifeCaps();
+                lifeSim = window.__lifeAgents.createSimulation(graph, surface, { seed: lifeSeed(), maxVehicles: caps.vehicles, maxPeople: caps.people });
+                lifeLayer.setSimulation(lifeSim);
+                const stats = lifeSim.stats();
+                const s = surface ? surface.stats : null;
+                console.log(`[3D life] ${stats.vehicles} vehicles on ${Math.round(stats.driveLength)} m of lanes, ${stats.people} people on `
+                    + (s ? `${Math.round(s.preferredAreaM2)} m² of preferred walking space (grid ${s.cellM} m, ${s.blocked} blocked cells)` : 'no surface')
+                    + (Array.isArray(lifeOsmFeatures) ? `, ${lifeOsmFeatures.length} OSM ways` : ', OSM streets pending')
+                    + ` · built in ${(performance.now() - t0).toFixed(0)} ms`);
+            }
+        }
+        syncLifeVisibility();
+        invalidateThreeView();
+    }
+
+    // Existing streets and footways for the snapshot bounds, fetched once per bounds; the layer
+    // rebuilds with them when they arrive. OSM is the source everywhere: /osm-road answers from
+    // the ingested table where a city has rows and otherwise from the backend's Overpass chain
+    // (the paid Tracestrack instance, whose key never leaves the server). Only when the backend
+    // itself cannot answer does the browser ask a public Overpass instance directly, so the layer
+    // still works with our server down; failing that, life runs on proposals and plazas alone.
+    // Public Overpass instances, tried in order: the main one answers a 3 km box in 5–40 s under
+    // load (measured 2026-10-15), the mirrors cover its outages.
+    const LIFE_OVERPASS_URLS = [
+        'https://overpass-api.de/api/interpreter',
+        'https://overpass.kumi.systems/api/interpreter',
+        'https://overpass.private.coffee/api/interpreter'
+    ];
+    const LIFE_OVERPASS_TIMEOUT_S = 60;
+    const LIFE_OVERPASS_MAX_SPAN_DEG = 0.03;   // ≈ 3 km; a city-wide entry is clipped around its centre
+
+    function overpassBoundsFor(bounds) {
+        let [w, s, e, n] = bounds.map(Number);
+        const cx = (w + e) / 2, cy = (s + n) / 2;
+        const halfLat = Math.min((n - s) / 2, LIFE_OVERPASS_MAX_SPAN_DEG / 2);
+        const halfLng = Math.min((e - w) / 2, LIFE_OVERPASS_MAX_SPAN_DEG / 2 / Math.max(0.2, Math.cos(cy * Math.PI / 180)));
+        return [cx - halfLng, cy - halfLat, cx + halfLng, cy + halfLat];
+    }
+
+    // Overpass ways → the /osm-road feature shape the graph builder reads.
+    function overpassWaysToFeatures(payload) {
+        const elements = (payload && Array.isArray(payload.elements)) ? payload.elements : [];
+        const features = [];
+        elements.forEach(el => {
+            if (!el || el.type !== 'way' || !Array.isArray(el.geometry) || el.geometry.length < 2) return;
+            const tags = el.tags || {};
+            if (!tags.highway) return;
+            const width = parseFloat(tags.width);
+            features.push({
+                type: 'Feature',
+                geometry: { type: 'LineString', coordinates: el.geometry.map(p => [p.lon, p.lat]) },
+                properties: { osm_id: el.id, highway_type: tags.highway, width_meters: Number.isFinite(width) && width > 0 ? width : null, tags, source: 'overpass' }
+            });
+        });
+        return features;
+    }
+
+    function fetchLifeOverpass(bounds) {
+        const [w, s, e, n] = overpassBoundsFor(bounds);
+        const query = `[out:json][timeout:${LIFE_OVERPASS_TIMEOUT_S}];way[highway](${s},${w},${n},${e});out body geom;`;
+        const tryInstance = (index) => {
+            if (index >= LIFE_OVERPASS_URLS.length) return Promise.reject(new Error('every Overpass instance failed'));
+            const url = LIFE_OVERPASS_URLS[index];
+            const controller = typeof AbortController === 'function' ? new AbortController() : null;
+            const timer = controller ? setTimeout(() => controller.abort(), (LIFE_OVERPASS_TIMEOUT_S + 10) * 1000) : null;
+            const t0 = performance.now();
+            return fetch(`${url}?data=${encodeURIComponent(query)}`, controller ? { signal: controller.signal } : undefined)
+                .then(response => (response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`))))
+                .then(payload => {
+                    const features = overpassWaysToFeatures(payload);
+                    console.log(`[3D life] Overpass ${new URL(url).host} answered in ${((performance.now() - t0) / 1000).toFixed(1)} s`);
+                    return features;
+                })
+                .catch(error => {
+                    console.warn(`[3D life] Overpass ${new URL(url).host} failed (${error && error.message ? error.message : error}); trying the next instance`);
+                    return tryInstance(index + 1);
+                })
+                .finally(() => { if (timer) clearTimeout(timer); });
+        };
+        return tryInstance(0);
+    }
+
+    function ensureLifeOsmRoads(bounds) {
+        if (!Array.isArray(bounds) || bounds.length !== 4 || !lifeShouldRun()) return;
+        const key = bounds.map(v => Number(v).toFixed(5)).join(',');
+        if (lifeOsmKey === key && (lifeOsmFeatures || lifeOsmFetching)) return;
+        lifeOsmKey = key;
+        lifeOsmFetching = true;
+        lifeOsmFeatures = null;
+        const base = (typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
+        const llBounds = L.latLngBounds([[bounds[1], bounds[0]], [bounds[3], bounds[2]]]);
+        const query = (typeof wgs84BboxParam === 'function') ? wgs84BboxParam(llBounds)
+            : `bbox=${bounds[0]},${bounds[1]},${bounds[2]},${bounds[3]}&crs=EPSG:4326`;
+        const settle = (features, source) => {
+            if (lifeOsmKey !== key) return;
+            lifeOsmFetching = false;
+            lifeOsmFeatures = Array.isArray(features) ? features : [];
+            console.log(`[3D life] ${lifeOsmFeatures.length} OSM ways from ${source}`);
+            if (isActive && scene) rebuildLifeOnly();
+        };
+        fetch(`${base}/osm-road?${query}`)
+            .then(response => (response.ok ? response.json() : null))
+            .then(collection => {
+                const features = (collection && Array.isArray(collection.features)) ? collection.features : [];
+                if (features.length) return settle(features, collection.source === 'overpass' ? 'the backend’s Overpass chain' : 'the ingested osm_road table');
+                return fetchLifeOverpass(bounds).then(ways => settle(ways, 'a public Overpass instance'));
+            })
+            .catch(error => {
+                if (lifeOsmKey !== key) return;
+                lifeOsmFetching = false;
+                lifeOsmFeatures = [];
+                console.warn('[3D life] existing streets unavailable; life runs on proposals and plazas only', error);
+            });
+    }
+
+    function setLifeEnabled(on) {
+        lifeEnabled = !!on;
+        try { PersistentStorage.setItem(LIFE_STORAGE_KEY, lifeEnabled ? '1' : '0'); } catch (_) { }
+        if (lifeToggleEl && lifeToggleEl.checked !== lifeEnabled) lifeToggleEl.checked = lifeEnabled;
+        if (lifeEnabled) ensureLifeOsmRoads(lifeQueryBounds);
+        rebuildLifeOnly();
+    }
+
+    function disposeLife() {
+        setLifeHook(false);
+        if (lifeLayer) { try { lifeLayer.dispose(); } catch (_) { } }
+        lifeLayer = null;
+        lifeGroup = null;
+        lifeSim = null;
+    }
+
     // --- Real-world water (sea, lakes, rivers, streams) ---
     // Fetched via POST /decor/water for the same query geometry and radius as the trees, every piece
     // already a polygon (the backend widens river and stream lines), drawn flat just above the ground
@@ -5336,6 +5691,7 @@
                 nearbyWaterFetching = false;
                 console.log(`[3D] Loaded ${nearbyWater.length} nearby water pieces (${sceneTreeLoadGeometrySource}+${buffer}m)`);
                 rebuildWaterOnly();
+                refreshLifeSurface();
             })
             .catch(err => {
                 if (!current() || err.name === 'AbortError') return;
@@ -6660,6 +7016,8 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         threeContainer.innerHTML = '';
         threeContainer.appendChild(renderer.domElement);
+        perfReadout = null;
+        ensurePerfReadout();
         ensureBuildingModeControls();
         // Populate scenery toggles for the active city (which layers it has ingested).
         refreshDecorToggles();
@@ -6752,6 +7110,12 @@
             Math.max(viewBounds[2], anchorBounds[2]), Math.max(viewBounds[3], anchorBounds[3])
         ];
         sceneParcelSnapshot = window.LiveParcelFabric.queryBounds(queryBounds, { includeCorridors: true });
+        // Existing streets for the life layer load alongside everything else and join the
+        // population when they arrive; nothing below waits for them. People keep to the band
+        // where buildings are loaded, so nobody walks through a block that is not drawn yet.
+        lifeQueryBounds = queryBounds;
+        lifeAnchorBounds = anchorBounds;
+        ensureLifeOsmRoads(queryBounds);
         // Loading the real-world context must not depend on a parcel or proposal mesh being
         // produced below. Explore has neither, but its frozen camera anchor is still a valid
         // /buildings/near query. Starting it here also leaves the rest of scene construction
@@ -6788,6 +7152,7 @@
         buildingWorkIncomplete = false;
         rebuildTreesOnly();
         rebuildWaterOnly();
+        try { rebuildLifeOnly(); } catch (error) { console.warn('[3D life] build failed', error); }
         rebuildProposalInteraction3D();
         rebuildProposalDraftPreview3D();
 
@@ -7065,14 +7430,64 @@
     let loopRunning = false;
     let renderInvalidated = false;
     let lastPlaneDist = 0;
-    function invalidateThreeView() {
+    // While only frame hooks (the life layer, photo tiles) keep the loop alive and nothing is being
+    // moved, frames come at HOOK_IDLE_FPS instead of the display's rate: the same motion at a
+    // fraction of the battery cost. Any interaction or invalidation returns to full rate at once.
+    const HOOK_IDLE_FPS = 30;
+    let frameTimer = null;
+    function invalidateThreeView(delayMs) {
         renderInvalidated = true;
-        if (isActive && loopRunning && !document.hidden && !frameId) frameId = requestAnimationFrame(renderFrame);
+        if (!isActive || !loopRunning || document.hidden || frameId) return;
+        if (frameTimer) {
+            if (delayMs > 0) return; // a paced frame is already on its way
+            clearTimeout(frameTimer);
+            frameTimer = null;
+        }
+        if (delayMs > 0) {
+            frameTimer = setTimeout(() => {
+                frameTimer = null;
+                if (isActive && loopRunning && !document.hidden && !frameId) frameId = requestAnimationFrame(renderFrame);
+            }, delayMs);
+        } else {
+            frameId = requestAnimationFrame(renderFrame);
+        }
     }
+    // `?fps=1`: a model-mode frame-time readout (photo mode has its own). It keeps the WORST frame of
+    // each one-second window rather than the mean, because an isolated stall vanishes in an average.
+    let perfReadout = null;
+    const perfWindow = { start: 0, frames: 0, maxFrame: 0, maxHooks: 0, maxRender: 0, lastLog: 0 };
+    function ensurePerfReadout() {
+        let wanted = false;
+        try { wanted = !!new URLSearchParams(window.location.search || '').get('fps'); } catch (_) { }
+        if (!wanted || perfReadout || !threeContainer) return;
+        perfReadout = document.createElement('div');
+        perfReadout.className = 'photoreal-status three-perf-readout';
+        threeContainer.appendChild(perfReadout);
+    }
+    function recordPerfFrame(now, t0, t1, t2) {
+        const w = perfWindow;
+        if (!w.start) w.start = now;
+        w.frames++;
+        w.maxFrame = Math.max(w.maxFrame, t2 - t0);
+        w.maxHooks = Math.max(w.maxHooks, t1 - t0);
+        w.maxRender = Math.max(w.maxRender, t2 - t1);
+        if (now - w.start < 1000) return;
+        const fps = Math.round(w.frames * 1000 / (now - w.start));
+        const life = lifeLayer ? lifeLayer.stats() : null;
+        const text = `${fps} fps · worst frame ${w.maxFrame.toFixed(1)} ms · hooks ${w.maxHooks.toFixed(1)} ms · render ${w.maxRender.toFixed(1)} ms`
+            + ` · ${renderer ? renderer.info.render.calls : 0} draw calls`
+            + (life && (life.vehicles || life.people)
+                ? ` · life ${life.frameMs.toFixed(2)} ms (${life.vehicles} vehicles, ${life.people} people, ${life.drawCalls} draws)` : '');
+        if (perfReadout) perfReadout.textContent = text;
+        if (now - w.lastLog > 5000) { console.log('[3D perf] ' + text); w.lastLog = now; }
+        w.start = now; w.frames = 0; w.maxFrame = 0; w.maxHooks = 0; w.maxRender = 0;
+    }
+
     function renderFrame(now) {
         frameId = null;
         if (!isActive || !loopRunning || document.hidden) return;
         renderInvalidated = false;
+        const perfT0 = perfReadout ? performance.now() : 0;
         stepManualAutoRotate(now);
         const moving = controls ? controls.update() : false;
         if (camera) {
@@ -7087,8 +7502,13 @@
         for (const hook of frameHooks) {
             try { hook(now); } catch (error) { console.error('[3D] frame hook failed', error); }
         }
+        const perfT1 = perfReadout ? performance.now() : 0;
         renderScene();
-        if (renderInvalidated || moving || controls?.autoRotate || manualAutoRotateActive || frameHooks.length) invalidateThreeView();
+        if (perfReadout) recordPerfFrame(now, perfT0, perfT1, performance.now());
+        const hooksOnly = !renderInvalidated && !moving && !controls?.autoRotate && !manualAutoRotateActive && frameHooks.length > 0;
+        if (renderInvalidated || moving || controls?.autoRotate || manualAutoRotateActive || frameHooks.length) {
+            invalidateThreeView(hooksOnly ? Math.max(0, Math.round(1000 / HOOK_IDLE_FPS) - 4) : 0);
+        }
     }
     function startLoop() {
         cancelLoop();
@@ -7121,6 +7541,10 @@
         if (frameId) {
             try { cancelAnimationFrame(frameId); } catch (_) { }
             frameId = null;
+        }
+        if (frameTimer) {
+            clearTimeout(frameTimer);
+            frameTimer = null;
         }
     }
 
@@ -7173,6 +7597,8 @@
         corridorTerrainSampler = null;
         corridorTerrainReferenceGeneration += 1;
         disposeTerrainCorridorGroup();
+        disposeLife();
+        perfReadout = null;
         hideRenderingOverlay();
         isTransitioning3D = false;
         if (controls && controls.dispose) {
@@ -7548,6 +7974,8 @@
             rebuildInteraction: rebuildProposalInteraction3D,
             onError: (label, error) => console.error(`[three-mode] Failed to rebuild ${label} in 3D`, error)
         }, eventName);
+        // Parks and plazas are where people wander, so the population follows a structure change.
+        try { rebuildLifeOnly(); } catch (error) { console.warn('[3D life] rebuild after structures failed', error); }
     }
 
     ['parksUpdated', 'squaresUpdated', 'lakesUpdated', 'stationsUpdated', 'buildingGroundsUpdated'].forEach(eventName => {
@@ -8031,6 +8459,7 @@
         if (flatGroup) flatGroup.visible = !realisticLayerActive;
         if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
         if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;
+        syncLifeVisibility();
         // Photo mode is view-only: hide the model-mode building controls (radius / built / proposed)
         // and drop any isolation + the "Proposal info" panel, so the whole cut scene and all its
         // proposals are shown. Restored on return to model 3D.

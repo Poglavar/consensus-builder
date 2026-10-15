@@ -69,6 +69,8 @@ it('resolves a caller waiting on scene readiness as false when the pending scene
         resizeObserver: null,
         handleResize() {},
         cancelLoop() {},
+        disposeLife() {},
+        perfReadout: null,
         disposeFloorPlans() {},
         scene: null,
         threeResources: { disposeSharedSubtree() {} },
