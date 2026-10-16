@@ -15,7 +15,7 @@
 set -euo pipefail
 
 BACKEND_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SSH_HOST="${SSH_HOST:-do}"
+SSH_HOST="${SSH_HOST:-prod-de}"
 RUN=0
 case "${1:-}" in
     --run) RUN=1 ;;

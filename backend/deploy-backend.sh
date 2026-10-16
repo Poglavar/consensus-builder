@@ -7,7 +7,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SSH_HOST="${SSH_HOST:-do}"
+SSH_HOST="${SSH_HOST:-prod-de}"
 DEPLOY_DIR="${DEPLOY_DIR:-/root/code/consensus-builder/backend}"
 PM2_APP="${PM2_APP:-consensus-builder-api}"
 BRANCH="${BRANCH:-main}"

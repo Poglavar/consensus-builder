@@ -6,7 +6,7 @@
 set -e  # Exit on any error
 
 # Configuration
-SSH_HOST="${SSH_HOST:-do}"   # ssh alias for the prod server; set SSH_HOST to override
+SSH_HOST="${SSH_HOST:-prod-de}"   # ssh alias for the prod server; set SSH_HOST to override
 SSHDO="ssh $SSH_HOST"
 REMOTE_PATH='/var/www/urbangametheory.xyz'
 BACKUP_BASE='/var/www'

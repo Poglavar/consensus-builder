@@ -11,7 +11,7 @@
 set -euo pipefail
 
 # ---- Configuration ----
-SSH_HOST="${SSH_HOST:-do}"
+SSH_HOST="${SSH_HOST:-prod-de}"
 BRANCH="${BRANCH:-main}"
 REPO_URL='https://github.com/Poglavar/consensus-builder.git'   # HTTPS: no server deploy key needed
 REMOTE_REPO='/opt/consensus-builder'                           # server-side clone (deploy-only)

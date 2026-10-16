@@ -9,7 +9,7 @@ if [[ "${1:-}" != '--run' ]]; then
 fi
 release="$(git -C "$ROOT" rev-parse "${2:-HEAD}^{commit}")"
 [[ "$release" =~ ^[a-f0-9]{40}$ ]] || exit 2
-ssh "${SSH_HOST:-do}" bash -s -- "$release" <<'REMOTE'
+ssh "${SSH_HOST:-prod-de}" bash -s -- "$release" <<'REMOTE'
 set -euo pipefail
 release="$1"
 main="$HOME/code/consensus-builder"
