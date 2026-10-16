@@ -7,6 +7,8 @@
 })(typeof self !== 'undefined' ? self : null, function () {
     'use strict';
     const EPS = 0.02, SNAP = 0.5, MAX_PAIRS = 12000, MAX_CUTS = 48, BEAM_WIDTH = 4, RAY_SNAP = 12 * Math.PI / 180;
+    // Shape gates on what a cut creates; the original outline may already break them.
+    const MIN_CORNER = Math.PI / 3, MIN_RECTANGULARITY = 0.6, MAX_ARMS = 4;
     const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
     const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
     const cross = (a, b) => a[0] * b[1] - a[1] * b[0];
@@ -141,7 +143,7 @@
         // must not reward long wedges that merely happen to fit under the new value.
         const shapePenalty = 2 * (1 - rectangularity) + Math.max(0, Math.log(aspectRatio / 1.5))
             + 2 * sharpCorners + 0.5 * (1 - compactness);
-        return { areaM2, longestSideM, perimeterM, compactness, rectangularity, aspectRatio, shapePenalty,
+        return { areaM2, longestSideM, shortestSideM, perimeterM, compactness, rectangularity, aspectRatio, shapePenalty,
             acceptable: areaM2 <= options.targetAreaM2 + 0.1 && longestSideM <= options.maxSideM + EPS };
     }
 
@@ -430,6 +432,16 @@
         return result;
     }
 
+    // Interior angle of a ring at one of its vertices; Infinity when the point is not a vertex.
+    function cornerAngle(ring, point) {
+        const count = ring.length - 1, i = ring.slice(0, -1).findIndex(vertex => same(vertex, point));
+        if (i < 0) return Infinity;
+        const winding = Math.sign(ring.slice(1).reduce((sum, p, k) => sum + cross(ring[k], p), 0));
+        const toPrevious = sub(ring[(i + count - 1) % count], ring[i]), toNext = sub(ring[(i + 1) % count], ring[i]);
+        const angle = Math.atan2(cross(toNext, toPrevious) * winding, dot(toNext, toPrevious));
+        return angle < 0 ? angle + 2 * Math.PI : angle;
+    }
+
     function inwardNormals(point, ring) {
         const winding = Math.sign(ring.slice(1).reduce((sum, p, i) => sum + cross(ring[i], p), 0));
         const result = [];
@@ -493,6 +505,21 @@
                 intersection(...connector, alley.path[k], q) || nearest(alley.path[k], connector).distance < EPS))) return;
             const pieces = splitFace(parent, path, context.options);
             if (!pieces) return;
+            // Where the new street meets the boundary it must leave usable corners, and it must
+            // not crowd a junction: a road T plus a crossing street is already four arms.
+            const street = pieces[0].streets.at(-1);
+            for (const [end, candidate] of [[street[0], a], [street.at(-1), b]]) {
+                if (candidate.path.length > 1) continue;
+                const arms = (candidate.kind === 't' ? 3 : 2) + 1
+                    + parent.streets.filter(other => same(other[0], end) || same(other.at(-1), end)).length;
+                if (arms > MAX_ARMS || pieces.some(piece => cornerAngle(piece.rings[0], end) < MIN_CORNER)) return;
+            }
+            // Nor may it leave a piece thinner or less rectangular than the one it cut, past a floor.
+            const minWidthM = Math.max(15, 0.3 * Math.sqrt(context.options.targetAreaM2));
+            if (pieces.some(piece => (piece.properties.shortestSideM < minWidthM
+                    && piece.properties.shortestSideM < parent.properties.shortestSideM - EPS)
+                || (piece.properties.rectangularity < MIN_RECTANGULARITY
+                    && piece.properties.rectangularity < parent.properties.rectangularity - 1e-6))) return;
             const remaining = pieces.reduce((sum, piece) => sum + work(piece, context.options), 0);
             if (remaining >= work(parent, context.options) - 1e-7) return;
             const bending = bendCost(a, direction, rings[0]) + bendCost(b, direction.map(v => -v), rings[0]);

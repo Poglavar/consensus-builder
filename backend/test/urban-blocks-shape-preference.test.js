@@ -110,3 +110,40 @@ describe('urban block shape preference', () => {
         assertAreaConservedAndDisjoint(layout, block);
     });
 });
+
+describe('urban block shape gates', () => {
+    const square = turf.polygon([[[0, 0], [140, 0], [140, 140], [0, 140], [0, 0]].map(ll)]);
+    // Interior angle at each cut end, measured inside each piece that has that end as a vertex.
+    function cutCornersDeg(layout) {
+        const angles = [];
+        for (const cut of layout.cuts.features) for (const end of [cut.geometry.coordinates[0], cut.geometry.coordinates.at(-1)].map(local)) {
+            for (const piece of layout.pieces.features) {
+                const ring = piece.geometry.coordinates[0].slice(0, -1).map(local), n = ring.length;
+                const i = ring.findIndex(p => distance(p, end) < 0.03);
+                if (i < 0) continue;
+                const a = [ring[(i + n - 1) % n][0] - ring[i][0], ring[(i + n - 1) % n][1] - ring[i][1]];
+                const b = [ring[(i + 1) % n][0] - ring[i][0], ring[(i + 1) % n][1] - ring[i][1]];
+                angles.push(Math.acos((a[0] * b[0] + a[1] * b[1]) / Math.hypot(...a) / Math.hypot(...b)) * 180 / Math.PI);
+            }
+        }
+        return angles;
+    }
+
+    it('never continues an oblique road arm into a corner sharper than 60°', () => {
+        const block = turf.polygon([[[0, 0], [200, 0], [200, 100], [0, 100], [0, 0]].map(ll)]);
+        const roads = turf.featureCollection([road('loop', [[0, 0], [200, 0], [200, 100], [0, 100], [0, 0]]),
+            road('oblique-arm', [[100 - 52, -30], [100, 0]])]);
+        const result = subdivision.plan({ block, roads, options: { targetAreaM2: 10000, maxSideM: 150, perimeterStepM: 150 } }, turf, model);
+        expect(result.layouts.length).toBeGreaterThan(0);
+        for (const layout of result.layouts) for (const angle of cutCornersDeg(layout)) expect(angle).toBeGreaterThanOrEqual(60 - 1e-6);
+    });
+
+    it('does not shave thin strips off a block to get under the limits', () => {
+        const roads = turf.featureCollection([road('loop', [[0, 0], [140, 0], [140, 140], [0, 140], [0, 0]]),
+            road('southwest-corner-arm', [[-30, 30], [0, 0]]), road('northeast-corner-arm', [[170, 110], [140, 140]])]);
+        const result = subdivision.plan({ block: square, roads, options: { targetAreaM2: 10000, maxSideM: 200, perimeterStepM: 150 } }, turf, model);
+        for (const layout of result.layouts) for (const piece of layout.pieces.features) {
+            expect(piece.properties.shortestSideM).toBeGreaterThanOrEqual(30 - 0.02);
+        }
+    });
+});
