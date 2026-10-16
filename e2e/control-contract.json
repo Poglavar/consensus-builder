@@ -9046,6 +9046,13 @@
       "controlType": "button"
     },
     {
+      "id": "control-863f1e2b665502-1",
+      "source": "js/urban-blocks-playground.js",
+      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-action=\"propose\" disabled>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-e1cdfb41b33b77-1",
       "source": "js/urban-blocks-playground.js",
       "markup": "circle.setAttribute('role', 'button')",

@@ -130,6 +130,36 @@ test('block-layout ranges, candidate visibility and alternative selection change
   expect(second.cuts).not.toEqual(first.cuts);
 });
 
+test('Propose turns the selected layout\'s new streets into applied road proposals', async ({ mockApi: page }) => {
+  test.setTimeout(90_000);
+  await openCity(page);
+  await serveClosedBlocks(page);
+  await openLayerUrbanBlocks(page);
+  await page.locator('#showUrbanBlocks').check();
+  await page.locator('#urban-block-list button[data-block-id]').first().click();
+  await page.locator('#urban-block-see-how').click();
+  const dialog = page.locator('.urban-block-playground');
+  const propose = dialog.locator('[data-action="propose"]');
+  await expect(propose).toBeDisabled();
+  for (const [id, key] of [['urban-block-playground-target-area', 'Home'], ['urban-block-playground-perimeter-step', 'Home']]) {
+    await dialog.locator(`#${id}`).focus();
+    await dialog.locator(`#${id}`).press(key);
+  }
+  await dialog.locator('[data-action="generate"]').click();
+  await expect(propose).toBeEnabled({ timeout: 60_000 });
+  const streets = () => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+    .filter((proposal: any) => proposal.roadProposal?.definition?.metadata?.source === 'block-breakup').length);
+  expect(await streets()).toBe(0);
+  await propose.click();
+  await expect(dialog).toBeHidden();
+  await expect.poll(streets).toBeGreaterThan(0);
+  const proposed = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+    .filter((proposal: any) => proposal.roadProposal?.definition?.metadata?.source === 'block-breakup')
+    .map((proposal: any) => ({ goal: proposal.goal, title: proposal.title })));
+  expect(proposed.every(proposal => proposal.goal === 'road-track')).toBe(true);
+  await expect(page.locator('#status')).toContainText(`Proposed ${proposed.length} of`);
+});
+
 test('OSM block browse, details, fit, copy, collapse, refresh, back, and close buttons work', async ({ mockApi: page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await openCity(page);

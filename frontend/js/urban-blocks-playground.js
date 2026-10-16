@@ -13,7 +13,7 @@
     const state = { dialog: null, previewWorker: null, planWorker: null, previewRequest: 0, planRequest: 0,
         block: null, roads: null, parcels: null, focusReturn: null, shareBaseUrl: null, layouts: [], result: null,
         candidates: null, previewStats: null, selectedLayout: 0, generatedOptions: null, stale: false,
-        showTJunctions: true, showDeadEnds: true, showPerimeter: true, inspectedCandidateId: null, shareRequest: 0 };
+        showTJunctions: true, showDeadEnds: true, showPerimeter: true, inspectedCandidateId: null, shareRequest: 0, proposing: false };
     const el = (tag, className, text) => {
         const node = doc.createElement(tag);
         if (className) node.className = className;
@@ -96,6 +96,7 @@
                 <span data-slot="disclaimer"></span>
                 <span class="urban-block-playground__share-status" data-slot="share-status" role="status" aria-live="polite"></span>
                 <button type="button" class="btn" data-action="share"></button>
+                <button type="button" class="btn btn-primary" data-action="propose" disabled></button>
             </footer>`;
         doc.body.append(dialog);
         state.dialog = dialog;
@@ -110,6 +111,7 @@
         });
         dialog.querySelector('[data-action="generate"]').addEventListener('click', generate);
         dialog.querySelector('[data-action="share"]').addEventListener('click', share);
+        dialog.querySelector('[data-action="propose"]').addEventListener('click', event => win.BusyControl.track(event.currentTarget, propose));
         dialog.querySelector('svg').addEventListener('click', clearCandidateTrace);
         dialog.querySelectorAll('[data-setting="targetAreaM2"], [data-setting="maxSideM"], [data-setting="perimeterStepM"]').forEach(input => input.addEventListener('input', () => {
             updateRangeOutput(input.dataset.setting);
@@ -147,6 +149,7 @@
         set('[data-slot="method-note"]', 'methodNote', 'The perimeter walk starts at one junction or alley entrance. It advances to the next existing point within the interval, otherwise places a point at that distance, and continues around the block.');
         set('[data-action="generate"]', 'generate', 'Generate splits');
         set('[data-action="share"]', 'share', 'Share layout');
+        set('[data-action="propose"]', 'propose', 'Propose streets');
         set('[data-slot="layout-label"]', 'alternativeLayout', 'Alternative layout');
         set('[data-slot="pieces-title"]', 'piecesTitle', 'Blocks in this layout');
         set('[data-slot="note"]', 'sideNote', 'The longest side is measured from a fitted bounding rectangle.');
@@ -214,6 +217,7 @@
     function clearResultView() {
         state.dialog.querySelector('[data-slot="layout-select"]').replaceChildren();
         state.dialog.querySelector('[data-slot="layout-select"]').disabled = true;
+        state.dialog.querySelector('[data-action="propose"]').disabled = true;
         state.dialog.querySelector('[data-slot="layout-score"]').textContent = '';
         state.dialog.querySelector('[data-slot="metrics"]').replaceChildren();
         state.dialog.querySelector('[data-slot="pieces"]').replaceChildren();
@@ -361,6 +365,57 @@
             state.dialog.querySelector('[data-slot="share-status"]').textContent = t('shareFailed', 'Could not share this layout: {{reason}}', { reason: message });
             console.warn(`[${new Date().toISOString()}] [urban-block-playground] Share failed: ${message}`);
         }
+    }
+
+    // The selected layout's new streets become road proposals, built and junctioned exactly as an
+    // imported road is: one record per connected network, as a 10 m local street (two 3.5 m lanes,
+    // 1.5 m pavements). They land applied on the map, ready to share and name as one plan.
+    async function propose() {
+        const cuts = state.layouts[state.selectedLayout]?.cuts?.features || [];
+        const status = state.dialog.querySelector('[data-slot="share-status"]');
+        const button = state.dialog.querySelector('[data-action="propose"]');
+        if (!cuts.length || state.proposing) return;
+        // A second click must not create the streets twice.
+        state.proposing = true;
+        button.disabled = true;
+        try {
+            await proposeStreets(cuts, status, button);
+        } finally {
+            state.proposing = false;
+        }
+    }
+
+    async function proposeStreets(cuts, status, button) {
+        const profile = { strips: win.CORRIDOR_PROFILE_PRESETS[10].map(strip => ({ ...strip })) };
+        const parsed = win.UrbanBlocksPropose.importForm(cuts, { tags: { highway: 'residential', ...win.corridorProfileToOsmTags(profile) } });
+        const records = win.__corridorImport.recordsFromImport(parsed, {
+            author: win.getProposalAuthorValue?.() || 'block-breakup',
+            source: 'block-breakup',
+            fallbackTitle: t('newStreet', 'New street'),
+            description: t('proposeDescription', 'New street from a breakup of block {{block}}.', { block: state.block.id })
+        });
+        const created = [], failed = [];
+        for (const record of records) {
+            // The steps a drawn road's Finish takes: its land, the parcels it reaches, then the one
+            // transaction that junctions it with the roads already applied.
+            win.rebuildRoadDefinitionFootprint(record.roadProposal.definition);
+            win.declareParcelsUnderRoadLand(record, record.roadProposal.definition.polygon);
+            try {
+                const result = await win.ProposalManager.createCorridorProposalAtomically(record);
+                if (result?.ok) created.push(result.proposalId); else failed.push(result?.reason || '');
+            } catch (error) {
+                failed.push(String(error?.message || error));
+            }
+        }
+        if (failed.length) console.warn(`[${new Date().toISOString()}] [urban-block-playground] Propose failed for ${failed.length} of ${records.length} streets:`, failed);
+        if (!created.length) {
+            button.disabled = false;
+            status.textContent = t('proposeFailed', 'Could not propose these streets: {{reason}}', { reason: failed.filter(Boolean).join(' ') || '?' });
+            return;
+        }
+        close();
+        win.updateStatus?.(t('proposeDone', 'Proposed {{count}} of {{total}} new streets. Share them as a plan to publish them together.',
+            { count: number(created.length), total: number(records.length) }));
     }
 
     function showError(error) {
@@ -597,6 +652,7 @@
         }));
         select.disabled = state.layouts.length < 2;
         select.value = String(state.selectedLayout);
+        dialog.querySelector('[data-action="propose"]').disabled = state.proposing || !layout?.cuts?.features?.length;
         if (!layout) {
             dialog.querySelector('[data-slot="status"]').textContent = t('noLayout', 'No layout result was returned. Adjust settings and try again.');
             renderLegend();
