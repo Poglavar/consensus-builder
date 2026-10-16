@@ -1861,6 +1861,13 @@ function formatParcelArea(area) {
 }
 
 function resetRoadMetricPlaceholders() {
+    console.debug('[road-drawing] Reset corridor metrics', { kind: corridorDrawKind, previous: { ...committedRoadMetrics } });
+    committedRoadMetrics.length = 0;
+    committedRoadMetrics.area = 0;
+    const lengthEl = document.getElementById('road-length');
+    const areaEl = document.getElementById('road-area');
+    if (lengthEl) lengthEl.textContent = CbFormat.formatLength(0);
+    if (areaEl) areaEl.textContent = CbFormat.formatArea(0);
     roadOpenGroundCrossed.locked.clear();
     roadOpenGroundCrossed.preview.clear();
     const ownerCountEl = document.getElementById('road-individual-owners');
@@ -2422,6 +2429,7 @@ function toggleRoadDrawTool() {
         // Open the panel and start listening for clicks. Shared by the fresh-draw path and the seeded
         // path (which takes its cross-section from the corridor being continued).
         const activateRoadDrawing = (statusText) => {
+            if (!getAllRoadSegments(true).some(segment => segment.length >= 2)) resetRoadMetricPlaceholders();
             const roadInfoPanel = document.getElementById('road-info-panel');
             if (roadInfoPanel) {
                 roadInfoPanel.style.removeProperty('display');
@@ -3306,15 +3314,16 @@ async function handleRoadClick(e) {
     let clickPoint = snap ? snap.latlng : e.latlng;
     clearRoadSnapMarker();
 
-    // A rail lane in the cross-section brings the rail curve limit with it: a train cannot take the
-    // corner a car can, so the click is nudged out to the minimum radius its design speed allows.
-    // A SNAPPED click is exempt — landing exactly on an existing node is the whole point of snapping,
-    // and moving it would break the connection the user asked for.
-    if (!snap && roadHasStarted && corridorDrawingIsTrack() && typeof checkCurvatureConstraint === 'function') {
+    // Check snapped points too. Reject a tight connection rather than silently moving its node.
+    if (roadHasStarted && corridorDrawingIsTrack() && typeof checkCurvatureConstraint === 'function') {
         const constraint = checkCurvatureConstraint(roadPoints, clickPoint, trackMinCurvatureRadius);
+        if (constraint.violatesConstraint || (snap && constraint.wasAdjusted)) {
+            reportTrackCurvatureViolation(calculateCurvatureRadius(roadPoints[roadPoints.length - 2], roadPoints[roadPoints.length - 1], clickPoint));
+            return;
+        }
         if (constraint.adjustedPoint) clickPoint = constraint.adjustedPoint;
         if (constraint.wasAdjusted) {
-            updateStatus(`Curve eased to the ${trackMinCurvatureRadius} m minimum radius for ${trackSpeed} km/h`);
+            updateStatus(translateRoadText('panel.road.curveAdjusted', 'Point adjusted to meet the {{radius}} m three-point radius check.', { radius: trackMinCurvatureRadius }));
         }
     }
 
@@ -4385,6 +4394,15 @@ function corridorFinalizationLabel() {
     );
 }
 
+function reportTrackCurvatureViolation(radius) {
+    const message = translateRoadText('panel.road.curveTooTight',
+        'Track bend: {{measured}} m three-point radius; {{minimum}} m required. Move the bend or use a gentler route. Your drawing is kept.',
+        { measured: CbFormat.formatNumber(Math.round(radius)), minimum: CbFormat.formatNumber(trackMinCurvatureRadius) });
+    console.warn('[road-drawing] Track radius check refused geometry', { radius, minimum: trackMinCurvatureRadius, speed: trackSpeed });
+    updateStatus(message);
+    window.showEphemeralMessage?.(message, 8000, 'warning');
+}
+
 // The drawn corridor is DETACHED, not deleted: tearing the drawing down before the object exists
 // left the map blank for the whole replay, so the very layers the user drew stay exactly where they
 // are — hidden from resetRoadDrawing by nulling the references it would remove them through — until
@@ -4426,6 +4444,17 @@ async function finishRoadDrawingOnce() {
     const segments = drawnSegments.map(entry => entry.segment);
     const segmentIds = drawnSegments.map(entry => entry.id);
     if (!segments.length) return;
+
+    // Validate the authored polylines before normalizing the graph. Splitting at a junction can
+    // turn a three-point bend into two two-point stretches and hide that bend from a later check.
+    // Refusal must also leave the original drawing and per-segment metadata untouched.
+    if (corridorDrawingIsTrack()) {
+        const violation = window.CorridorGeometry.findCurvatureViolation(segments, trackMinCurvatureRadius);
+        if (violation) {
+            reportTrackCurvatureViolation(violation.radius);
+            return false;
+        }
+    }
 
     // No collision detection or choice dialog belongs here. Each edge recorded what it ran into when
     // it was placed, finishRoadDrawing reviewed all of it just before this (and inserted any tunnel
@@ -5065,7 +5094,7 @@ function showTrackSpeedPicker() {
             option.querySelector('.cb-option__title').textContent = opt.label;
             option.querySelector('.cb-option__desc').textContent = translateRoadText(
                 'modal.track.minRadius',
-                'Minimum curvature radius {{radius}} m',
+                'Minimum three-point radius {{radius}} m',
                 { radius: CbFormat.formatNumber(opt.minRadius) }
             );
             option.addEventListener('click', () => {

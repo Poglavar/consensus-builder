@@ -304,7 +304,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const proposalOwnName = [nameSource.title, nameSource.name, nameSource.proposalName]
             .find(candidate => typeof candidate === 'string' && candidate.trim());
         const headerTitle = proposalOwnName
-            ? displayText(proposalOwnName.trim())
+            ? window.ProposalDisplayText.title(proposalOwnName.trim(), nameSource)
             : tProposal('panel.proposal.title', 'Proposal Details');
         proposalPanelTitle.textContent = headerTitle;
         proposalPanelTitle.title = headerTitle; // tooltip while paused or when the marquee is off
@@ -605,7 +605,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         } catch (_) { }
         const safeLabel = typeof escapeHtml === 'function' ? escapeHtml(String(sourceLabel)) : String(sourceLabel);
         const safeId = typeof escapeHtml === 'function' ? escapeHtml(String(copiedFromId)) : String(copiedFromId);
-        const basedOnLabel = tProposal('panel.proposal.basedOn', 'Based on');
+        const basedOnLabel = window.ProposalDisplayText.variantSourceId(fullProposal || proposal)
+            ? tProposal('proposalDrafts.variantOf', 'Variant of')
+            : tProposal('panel.proposal.basedOn', 'Based on');
         // The source opens in this panel: a script link (button.cb-link), never an external mark.
         const inner = sourceExists
             ? `<button type="button" class="cb-link proposal-based-on-link" onclick="focusProposalDetails(${inlineJsArg(copiedFromId)})">${safeLabel}</button>`

@@ -1249,12 +1249,13 @@
         const abLen = Math.hypot(ab[0], ab[1]);
         const bcLen = Math.hypot(bc[0], bc[1]);
         const acLen = Math.hypot(ac[0], ac[1]);
-        if (abLen < 0.1 || bcLen < 0.1 || acLen < 0.1) {
+        if (abLen < 0.1 || bcLen < 0.1) {
             return Infinity; // Points too close, treat as straight
         }
+        if (acLen < 0.1) return 0; // Out-and-back is a reversal, not a straight alignment.
         const area = Math.abs(ab[0] * bc[1] - ab[1] * bc[0]) / 2;
         if (area < 0.1) {
-            return Infinity; // Collinear, treat as straight
+            return ab[0] * bc[0] + ab[1] * bc[1] < 0 ? 0 : Infinity;
         }
         return (abLen * bcLen * acLen) / (4 * area);
     }
@@ -1315,11 +1316,11 @@
             const qc = prevDist * prevDist - minRequiredChordLength * minRequiredChordLength;
             const discriminant = qb * qb - 4 * qa * qc;
             if (discriminant < 0) {
-                return { valid: true, adjustedPoint: newPoint, violatesConstraint: true, wasAdjusted: false };
+                return { valid: false, adjustedPoint: newPoint, violatesConstraint: true, wasAdjusted: false };
             }
             const requiredDist = (-qb + Math.sqrt(discriminant)) / (2 * qa);
             if (requiredDist > dist * 2 || requiredDist < dist * 0.5) {
-                return { valid: true, adjustedPoint: newPoint, violatesConstraint: true, wasAdjusted: false };
+                return { valid: false, adjustedPoint: newPoint, violatesConstraint: true, wasAdjusted: false };
             }
             const scale = requiredDist / dist;
             const adjustedX = lastX + dx * scale;
@@ -1327,12 +1328,25 @@
             const [adjustedLat, adjustedLng] = frame.metricToLatLng(adjustedX, adjustedY);
             const adjustedPoint = makeLatLng(deps, adjustedLat, adjustedLng);
             const adjustedRadius = calculateCurvatureRadius(secondLastPoint, lastPoint, adjustedPoint);
-            if (adjustedRadius >= minRadius * 0.98) {
+            if (adjustedRadius >= minRadius) {
                 return { valid: true, adjustedPoint: adjustedPoint, violatesConstraint: false, wasAdjusted: true };
             }
         }
 
-        return { valid: true, adjustedPoint: newPoint, violatesConstraint: true, wasAdjusted: false };
+        return { valid: false, adjustedPoint: newPoint, violatesConstraint: true, wasAdjusted: false };
+    }
+
+    // Measures the authored vertices, including seeded routes and snapped points. This is a
+    // three-point circumradius check, not certification of a continuous rail alignment.
+    function findCurvatureViolation(segments, minRadius) {
+        for (let segmentIndex = 0; segmentIndex < segments.length; segmentIndex++) {
+            const points = segments[segmentIndex];
+            for (let i = 1; i + 1 < points.length; i++) {
+                const radius = calculateCurvatureRadius(points[i - 1], points[i], points[i + 1]);
+                if (radius < minRadius) return { segmentIndex, vertexIndex: i, radius, minRadius };
+            }
+        }
+        return null;
     }
 
     // ---- Snap-target selection (moved out of road-drawing.js) --------------------------------
@@ -1466,6 +1480,7 @@
         getMinCurvatureRadius,
         calculateCurvatureRadius,
         checkCurvatureConstraint,
+        findCurvatureViolation,
         projectPointOnPixelSegment,
         pickSnapTarget,
         VERTEX_SNAP_PREFERENCE,

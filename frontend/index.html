@@ -350,6 +350,12 @@
 
         <!-- Top-right, beside the user bubble: Layers and Settings -->
         <div id="map-shell-top-right" class="map-shell-cluster map-shell-cluster--top-right">
+            <button type="button" id="start-design-button" class="map-shell-button map-shell-button--labelled" data-map-modes="2d"
+                title="Draw a site, or tap land and choose Propose here" aria-label="Draw a site, or tap land and choose Propose here"
+                data-i18n-key="mapShell.startDesignHint" data-i18n-attr="title,aria-label">
+                <i class="fas fa-pen-ruler" aria-hidden="true"></i>
+                <span class="map-shell-button-label" data-i18n-key="mapShell.startDesign">Design</span>
+            </button>
             <button type="button" id="layers-button" class="map-shell-button" data-sheet-target="layers-sheet"
                 aria-controls="layers-sheet" aria-expanded="false" title="Layers" aria-label="Layers"
                 data-i18n-key="mapShell.layers" data-i18n-attr="title,aria-label">
@@ -2252,7 +2258,7 @@
                     <p class="site-intro-eyebrow" data-i18n-key="modal.siteIntro.tour.propose.eyebrow">From idea to proposal</p>
                     <h2 id="site-intro-title-propose" data-i18n-key="modal.siteIntro.tour.propose.title">Make change visible</h2>
                     <p id="site-intro-lead-propose" class="site-intro-lead" data-i18n-key="modal.siteIntro.tour.propose.body">Turn an idea into a proposal: reshape parcels, sketch streets and parks, or add buildings. Apply a draft to see how it changes the map.</p>
-                    <p class="site-intro-hint" data-i18n-key="modal.siteIntro.tour.propose.hint">Start in Tools, then compare your proposals on the map.</p>
+                    <p class="site-intro-hint" data-i18n-key="modal.siteIntro.tour.propose.hint">Tap land and choose Propose here, or use Design to draw a site. Then compare your proposals on the map.</p>
                 </div>
             </article>
             <article class="site-intro-slide" data-site-intro-slide="consent" hidden>
@@ -2457,9 +2463,7 @@
                     data-i18n-key="modal.common.close" data-i18n-attr="aria-label">&times;</button>
             </div>
             <div class="cb-dialog__body">
-                <p class="track-speed-description" data-i18n-key="modal.track.speedPickerDescription">Select the maximum
-                    speed for this track. This determines the minimum curvature radius. Press Enter to start with the
-                    default selection.</p>
+                    <p class="track-speed-description" data-i18n-key="modal.track.speedPickerDescription">Choose a design speed for the three-point bend check. The route is schematic: this check does not certify a continuous rail curve. Press Enter to use the selected speed.</p>
                 <div id="track-speed-grid" class="track-speed-options" role="group" aria-label="Track speed options"></div>
                 <!-- No width slider: a track's width is the sum of its lanes, set in the cross-section editor
                      (one standard-gauge track to start with), exactly as a road's is. -->

@@ -8,6 +8,8 @@
     --map-shell-gap: 8px;
     --map-shell-edge: 10px;
     --map-shell-button-size: 40px;
+    --map-design-entry-width: 96px;
+    --map-design-entry-gap: var(--map-shell-gap);
     /* Navigation owns the bottom edge. Credits occupy the map above it. */
     --map-shell-bottom: 0px;
     /* The bottom row is Proposals · Bets · Activity: three pills centred on the bottom edge on a
@@ -55,6 +57,17 @@
 .map-shell-cluster--top-right {
     top: var(--map-shell-edge);
     right: var(--map-shell-edge);
+}
+
+#start-design-button {
+    width: var(--map-design-entry-width);
+    min-width: var(--map-design-entry-width);
+    white-space: nowrap;
+}
+
+body.three-mode-active {
+    --map-design-entry-width: 0px;
+    --map-design-entry-gap: 0px;
 }
 
 /* Wide map: three pills on the bottom edge, the same chrome as the top-right cluster, so the map
@@ -376,10 +389,10 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     }
 }
 
-/* The user bubble sits left of the Layers and Settings buttons in the same top row. */
+/* The user bubble sits left of Design, Layers and Settings in the same top row. */
 #map-container .username-display {
     top: var(--map-shell-edge);
-    right: calc(var(--map-shell-edge) + 2 * var(--map-shell-button-size) + 2 * var(--map-shell-gap));
+    right: calc(var(--map-shell-edge) + 2 * var(--map-shell-button-size) + 2 * var(--map-shell-gap) + var(--map-design-entry-width) + var(--map-design-entry-gap));
     height: var(--map-shell-button-size);
     box-sizing: border-box;
     min-width: 0;
@@ -1111,7 +1124,7 @@ body.app-loading .map-shell-cluster {
         padding: 6px 8px;
         gap: 4px;
         font-size: 12px;
-        max-width: calc(100vw - 2 * var(--map-shell-edge) - 2 * var(--map-shell-button-size) - 3 * var(--map-shell-gap) - var(--map-search-compact-width));
+        max-width: calc(100vw - 2 * var(--map-shell-edge) - 2 * var(--map-shell-button-size) - 3 * var(--map-shell-gap) - var(--map-search-compact-width) - var(--map-design-entry-width) - var(--map-design-entry-gap));
     }
 }
 
@@ -1119,6 +1132,8 @@ body.app-loading .map-shell-cluster {
    (data-wallet on the bubble, js/user-management.js): solid green when it is, a dashed neutral ring
    when it is not. */
 @media (max-width: 767.98px) {
+    :root { --map-design-entry-width: var(--map-shell-button-size); }
+    #start-design-button .map-shell-button-label { display: none; }
     #map-container .username-display {
         width: var(--map-shell-button-size);
         min-width: var(--map-shell-button-size);

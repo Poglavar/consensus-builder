@@ -11,7 +11,7 @@
     'use strict';
 
     const SURFACES = Object.freeze([
-        'layers', 'measurement', 'proposals', 'activity', 'settings', 'parcel-menu', 'selection-tray', 'palette', 'ground-menu'
+        'layers', 'measurement', 'proposals', 'activity', 'settings', 'parcel-menu', 'selection-tray', 'palette', 'ground-menu', 'map-shell'
     ]);
 
     // Every control id the old sidebar held that still exists (rehoused into a sheet). Existing code finds these by id, so the test fails if index.html loses one.
@@ -443,7 +443,7 @@
         // ---- Selected road (the proposal card a road click opens; palette) ----
         roadCommand('crossSection', { labelKey: 'panel.road.crossSectionButton', fallbackLabel: 'Edit cross-section', icon: 'fas fa-road' }),
         // The site tool from anywhere (the palette): draw a site with nothing selected.
-        { id: 'site.draw', group: 'site', surfaces: [], modes: ['2d'], when: siteToolIdle,
+        { id: 'site.draw', group: 'site', surfaces: ['map-shell'], modes: ['2d'], when: siteToolIdle,
             run: ctx => ctx.global.SiteTool.start(),
             labelKey: 'siteTool.commands.draw', fallbackLabel: 'Draw site', icon: 'fas fa-draw-polygon' },
 

@@ -7971,9 +7971,8 @@
         warmSceneKey = null;
         isActive = true;
         scheduleViewAngleHint('model');
-        // 3D takes the full stage: fold away an open sheet so the canvas and its in-view controls
-        // get the whole viewport.
-        if (window.MapShell) window.MapShell.closeSheets();
+        // Keep the 2D working panels mounted during loading. The mode owner commits their
+        // closure only after the complete model or aerial view has started successfully.
         // Optional focus: frame only these proposals (by proposalId) instead of all applied ones.
         // Used by shared-link entry so the camera lands on the just-loaded proposal.
         focusProposalIds = (options && Array.isArray(options.focusProposalIds) && options.focusProposalIds.length)
@@ -8002,7 +8001,6 @@
 
         showRenderingOverlay();
         disableLeafletInteractions();
-        closeAllPanelsAndModalsFor3D();
         window.MapShell?.syncModeAvailability();
         if (reuse) {
             sceneAbort = new AbortController();
@@ -8735,7 +8733,12 @@
             originLatLng: function () { const ll = xyToLatLng(0, 0); return { lat: ll.lat, lng: ll.lng }; }
         };
     };
-    window.__threeModeDriver = { enter: enter3D, exit: exit3D };
+    // Only close the 2D working context once the entire requested view has succeeded. A failed
+    // WebGL/model/photo entry leaves proposal panels and their comparison sessions intact.
+    window.__threeModeDriver = { enter: enter3D, exit: exit3D, commit() {
+        window.MapShell?.closeSheets();
+        closeAllPanelsAndModalsFor3D();
+    } };
     // Photo view arrives through its own activation, so it asks for the hint itself.
     window.scheduleViewAngleHint = scheduleViewAngleHint;
     window.isThreeModeActive = function () { return isActive; };

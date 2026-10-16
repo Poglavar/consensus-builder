@@ -60,6 +60,22 @@
         return { displayName: name, identityName: sourceName && !reserved.has(sourceName.toLocaleLowerCase()) ? sourceName : name };
     }
 
+    // Identity is the owner key, never the translated display name. A saved public-use recipient
+    // can already be in the list; include it once without merging distinct cadastral owners.
+    function assignableOwnerChoices(owners, publicOwner) {
+        const choices = new Map();
+        for (const owner of owners || []) if (!choices.has(owner.ownerKey)) choices.set(owner.ownerKey, owner);
+        if (!choices.has(publicOwner.ownerKey)) choices.set(publicOwner.ownerKey, publicOwner);
+        return [...choices.values()];
+    }
+
+    function ownerChoiceLabel(owner, publicKey, translate) {
+        if (owner.ownerKey === publicKey) return translate('reparcellization.modal.publicAllocation', 'Public use allocation (not a recorded owner)');
+        const label = resolveOwnerLabel(owner.displayName, '', translate).displayName;
+        return genericOwnerKind(owner.displayName) === 'public'
+            ? `${label} · ${owner.ownerKey}` : label;
+    }
+
     // A plot carries its owner two ways: the singular ownerKey/displayName (exactly one owner) and
     // owners[] (shares split between several). Both are written on save, and the editor keeps them
     // in lockstep — but a plan authored anywhere else (an imported UPU, an older save) may carry
@@ -139,6 +155,7 @@
 
     const api = {
         resolveDrawShortcut, resolveOwnerDisplayName, resolveOwnerLabel, genericOwnerKind,
+        assignableOwnerChoices, ownerChoiceLabel,
         normalizePlotOwners, plotIsAssigned, readjustmentInputFeatures,
         safePlanColor, ownerLegendCellHtml, cashOfferInputHtml, newPlotOwnerHtml
     };

@@ -1713,6 +1713,7 @@
                             <input type="range" id="single-height-slider" min="3" max="250" step="1" value="${DEFAULT_HEIGHT_M}">
                         </div>
                         <div class="on-map-building__metrics"><span>${modalText.densityFootprint}</span><strong id="single-building-footprint-summary">—</strong></div>
+                        <p class="parameter-info-text" role="note">${modalText.surroundingsInfo}</p>
                         <details class="on-map-building__details">
                             <summary>${modalText.more}</summary>
                             <div class="on-map-building__scroll">
@@ -1726,7 +1727,6 @@
                                 <div class="parameter-group">
                                     <label for="single-ground-treatment">${modalText.surroundingsLabel}</label>
                                     <select id="single-ground-treatment"><option value="none">${modalText.surroundingsNone}</option><option value="paved">${modalText.surroundingsPaved}</option><option value="green">${modalText.surroundingsGreen}</option></select>
-                                    <p class="parameter-info-text">${modalText.surroundingsInfo}</p>
                                 </div>
                                 <div class="parameter-group">
                                     <label for="single-parcel-mode">${modalText.parcelLabel}</label>

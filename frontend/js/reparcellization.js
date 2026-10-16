@@ -3216,7 +3216,7 @@
         ownerList.className = 'reparcel-owner-popup__list';
 
         // Real owners plus the "Public land" option (land set aside for public use).
-        const assignableOwners = state.ownerShares.concat([getPublicLandOwner()]);
+        const assignableOwners = reparcellizationUiState.assignableOwnerChoices(state.ownerShares, getPublicLandOwner());
         assignableOwners.forEach((owner) => {
             const isAssigned = slice.owners.some(o => o.ownerKey === owner.ownerKey);
             const row = document.createElement('label');
@@ -3238,7 +3238,8 @@
             swatch.style.background = owner.color;
 
             const nameSpan = document.createElement('span');
-            nameSpan.textContent = ownerDisplayName(owner.displayName);
+            nameSpan.textContent = reparcellizationUiState.ownerChoiceLabel(owner, PUBLIC_LAND_KEY, t);
+            nameSpan.title = owner.ownerKey;
 
             row.appendChild(checkbox);
             row.appendChild(swatch);
@@ -3263,7 +3264,8 @@
                 const row = document.createElement('label');
                 row.className = 'reparcel-share-row';
                 const name = document.createElement('span');
-                name.textContent = ownerDisplayName(owner.displayName);
+                name.textContent = reparcellizationUiState.ownerChoiceLabel(owner, PUBLIC_LAND_KEY, t);
+                name.title = owner.ownerKey;
                 const input = document.createElement('input');
                 input.type = 'number'; input.min = '0'; input.max = '100'; input.step = 'any';
                 input.value = String(Number((owner.share * 100).toFixed(12)));
