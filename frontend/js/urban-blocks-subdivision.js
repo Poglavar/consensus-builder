@@ -153,8 +153,10 @@
         return forward < reverse ? forward : reverse;
     }
 
-    function face(rings, options) {
-        return { rings, properties: measure(rings, options), key: rings.map(canonical).join('/') };
+    // `streets` are the new street paths this layout has cut so far. A later cut may meet one
+    // of them as a T-junction, exactly as it may meet a real road on the original outline.
+    function face(rings, options, streets = []) {
+        return { rings, streets, properties: measure(rings, options), key: rings.map(canonical).join('/') };
     }
 
     function boundaryArc(from, to, ring) {
@@ -189,11 +191,25 @@
             if (!owner) return null;
             owner.push(hole);
         }
-        const children = rings.map(list => face(list, options));
+        const children = rings.map(list => face(list, options, [...(parent.streets || []), path]));
         const minArea = Math.max(40, options.targetAreaM2 * 0.05);
         if (children.some(child => child.properties.areaM2 < minArea)) return null;
         if (Math.abs(children[0].properties.areaM2 + children[1].properties.areaM2 - parent.properties.areaM2) > 0.1) return null;
         return children;
+    }
+
+    // A T-junction on a new street becomes a vertex of the two pieces it splits, but the piece
+    // across that street shares the edge without it. Insert the exact point there too, so
+    // neighbours share vertices and do not overlap by floating-point slivers.
+    function withVertices(piece, points, options) {
+        let changed = false;
+        const rings = piece.rings.map(ring => points.reduce((result, point) => {
+            const hit = nearest(point, result);
+            if (hit.distance >= EPS || result.some(vertex => same(vertex, point))) return result;
+            changed = true;
+            return [...result.slice(0, hit.index + 1), point, ...result.slice(hit.index + 1)];
+        }, ring));
+        return changed ? face(rings, options, piece.streets) : piece;
     }
 
     function circumferenceRoadRing(block, edges, project, turf) {
@@ -376,7 +392,7 @@
         if (!Number.isFinite(interval) || interval <= EPS || perimeter <= EPS) return [];
         // One ordered walk, seeded only by real road connections. Alley tips lie inside the
         // block, so their boundary entrance is the anchor. Repeated entrances count once.
-        const anchors = existing.filter(candidate => ['t', 'dead-end'].includes(candidate.kind)).flatMap(candidate => {
+        const anchors = existing.filter(candidate => ['t', 'dead-end', 'street-end'].includes(candidate.kind)).flatMap(candidate => {
             const border = nearest(candidate.path[0], ring);
             if (border.distance > SNAP) return [];
             return [{ point: border.point, along: border.along % perimeter,
@@ -475,12 +491,20 @@
             }
             return choices;
         };
-        let choices = evaluate(natural);
+        // Walk this piece's own perimeter, anchored by real roads and by the ends of new streets
+        // where they meet the old outline. Its points on a new street are T-junctions onto it and
+        // compete with the road points. The old outline keeps the previewed fallback points,
+        // which remain a last resort.
+        const streetEnds = parent.streets.flatMap(path => [path[0], path.at(-1)])
+            .filter(point => nearest(point, parent.rings[0]).distance <= SNAP)
+            .map(point => ({ id: `street-end-${pointKey(point)}`, kind: 'street-end', point, path: [point] }));
+        const onStreet = candidate => parent.streets.some(path => path.slice(1)
+            .some((q, i) => nearest(candidate.point, [path[i], q]).distance < EPS));
+        const streetPoints = perimeterCandidates(parent, [...natural, ...streetEnds], context.options.perimeterStepM).filter(onStreet);
+        let choices = evaluate([...natural, ...streetPoints]);
         if (!choices.length && !context.limited) {
             const fallback = candidatesForFace(parent, context.fallback);
-            if (fallback.length) {
-                choices = evaluate([...natural, ...fallback]);
-            }
+            if (fallback.length) choices = evaluate([...natural, ...streetPoints, ...fallback]);
         }
         const best = diverse(choices, choice => choice.score,
             choice => shapePreference(choice.pieces, [choice.cut]), 6);
@@ -606,7 +630,11 @@
                     if (choices.length) { parent = candidate; break; }
                 }
                 if (!parent) { completed.push(state); continue; }
-                for (const choice of choices) next.push({ pieces: [...state.pieces.filter(piece => piece !== parent), ...choice.pieces], cuts: [...state.cuts, choice.cut] });
+                for (const choice of choices) {
+                    const street = choice.pieces[0].streets.at(-1), ends = [street[0], street.at(-1)];
+                    next.push({ pieces: [...state.pieces.filter(piece => piece !== parent).map(piece => withVertices(piece, ends, options)),
+                        ...choice.pieces], cuts: [...state.cuts, choice.cut] });
+                }
             }
             if (!next.length) { beam = []; break; }
             beam = diverse(unique(next), state => stateScore(state, options),
@@ -644,7 +672,8 @@
                 if (children) { parentIndex = i; break; }
             }
             if (!children || distance(...points) < EPS) throw new Error('Shared splits do not fit this block.');
-            pieces = [...pieces.filter((_, i) => i !== parentIndex), ...children];
+            const street = children[0].streets.at(-1), ends = [street[0], street.at(-1)];
+            pieces = [...pieces.filter((_, i) => i !== parentIndex).map(piece => withVertices(piece, ends, options)), ...children];
             cuts.push({ path, points, connectorIndex, fromKind, toKind, lengthM: distance(...points),
                 kind: cutKind(fromKind, toKind) });
         }

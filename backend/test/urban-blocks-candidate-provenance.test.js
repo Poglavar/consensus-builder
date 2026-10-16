@@ -205,12 +205,19 @@ describe('urban block perimeter candidate provenance', () => {
 
         expect(plan.stats.fallbackCount).toBe(preview.stats.fallbackCount);
         expect(perimeterPreview.length).toBeGreaterThan(0);
-        for (const layout of plan.layouts) for (const cut of layout.cuts.features) {
+        // Outline points are the previewed ones; a T-junction onto a new street lies on an earlier cut.
+        const onEarlierCut = (endpoint, earlier) => earlier.some(cut => turf.pointToLineDistance(
+            turf.point(endpoint), turf.lineString(cut.properties.splitPath), { units: 'meters' }) < 0.02);
+        let streetEndpoints = 0;
+        for (const layout of plan.layouts) layout.cuts.features.forEach((cut, index) => {
             for (const [endpoint, kind] of [[cut.geometry.coordinates[0], cut.properties.fromKind],
                 [cut.geometry.coordinates.at(-1), cut.properties.toKind]]) {
                 if (kind !== 'perimeter') continue;
-                expect(perimeterPreview.some(candidate => distanceMetres(endpoint, candidate.geometry.coordinates) < 0.02)).toBe(true);
+                const previewed = perimeterPreview.some(candidate => distanceMetres(endpoint, candidate.geometry.coordinates) < 0.02);
+                if (!previewed) streetEndpoints++;
+                expect(previewed || onEarlierCut(endpoint, layout.cuts.features.slice(0, index))).toBe(true);
             }
-        }
+        });
+        expect(streetEndpoints).toBeGreaterThan(0);
     });
 });
