@@ -972,11 +972,16 @@
             if (liveCityId) {
                 const cityLabel = (coverage.liveCities.find(c => c.id === liveCityId) || {}).name || place.name;
                 const open = el('button', 'btn btn-primary', { type: 'button', text: t('world.action.open', 'Open {{city}}', { city: cityLabel }) });
-                open.addEventListener('click', () => { if (typeof opts.onOpenCity === 'function') opts.onOpenCity(liveCityId, point); });
+                // Landing flies, looks up the city's latest proposal and loads it: the button spins meanwhile.
+                open.addEventListener('click', () => {
+                    if (typeof opts.onOpenCity === 'function') global.BusyControl.track(open, () => opts.onOpenCity(liveCityId, point));
+                });
                 actions.appendChild(open);
             } else {
                 const explore = el('button', 'btn' + (tier === 'source' ? '' : ' btn-primary'), { type: 'button', text: t('world.action.explore', 'Open the map here') });
-                explore.addEventListener('click', () => { if (typeof opts.onExplore === 'function') opts.onExplore(point); });
+                explore.addEventListener('click', () => {
+                    if (typeof opts.onExplore === 'function') global.BusyControl.track(explore, () => opts.onExplore(point));
+                });
                 if (tier === 'source') {
                     const labels = {
                         sending: t('world.request.sending', 'Sending…'),

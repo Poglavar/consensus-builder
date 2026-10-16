@@ -84,8 +84,10 @@
     }
 
     // ---- landing a pick ----
+    // Returns a promise that settles once the pick has landed (the map is up, or the proposal has
+    // opened); a reload to another city never settles, since this page is going away.
     function land(input) {
-        if (state.landing) return;
+        if (state.landing) return Promise.resolve(null);
         try {
             const url = new URL(global.location.href);
             if (url.searchParams.has('focusProposal')) {
@@ -114,7 +116,7 @@
                 console.warn(`[${new Date().toISOString()}] [world-entry] latest proposal lookup failed`, error);
                 return null;
             });
-        global.WorldView.flyTo(input.point).then(async camera => {
+        return global.WorldView.flyTo(input.point).then(async camera => {
             if (!camera) { state.landing = false; return null; } // the view was closed mid-flight
             const proposalId = await latest;
             if (proposalId) {
@@ -127,6 +129,7 @@
             return m.switchCity(decision.cityId, { requireConfirmation: false, clearRoute: true, at: decision.carryAt ? decision.view : null })
                 .then(navigating => {
                     if (!navigating) throw new Error(`switchCity(${decision.cityId}) refused`);
+                    return new Promise(() => { }); // the page is reloading into the city
                 });
         }).catch(error => {
             state.landing = false;
@@ -348,7 +351,8 @@
             actions.appendChild(ask);
         }
         const world = el('button', 'btn btn-sm', { type: 'button', id: 'explore-banner-world', text: t('world.explore.worldView', 'World view') });
-        world.addEventListener('click', () => open({}).catch(error => console.error('[world-entry] world view failed to open', error)));
+        world.addEventListener('click', () => global.BusyControl.track(world, () => open({}))
+            .catch(error => console.error('[world-entry] world view failed to open', error)));
         actions.appendChild(world);
         banner.appendChild(actions);
         if (state.request === 'error') {
@@ -398,7 +402,8 @@
         const button = doc.getElementById('world-view-button');
         if (!button) return;
         button.addEventListener('click', () => {
-            open({}).catch(error => console.error('[world-entry] world view failed to open', error));
+            global.BusyControl.track(button, () => open({}))
+                .catch(error => console.error('[world-entry] world view failed to open', error));
         });
     }
 

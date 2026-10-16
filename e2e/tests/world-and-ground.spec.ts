@@ -244,6 +244,9 @@ test.describe('World navigation and open ground @features', () => {
 
   test('zooming out by wheel returns to a nonclosable globe, while programmatic framing does not bounce', async ({ mockApi: page }) => {
     await openCity(page);
+    // Zoom-out-to-globe is wired once the app has booted (world-entry.js); on a slow machine the map
+    // can be ready before that, and a wheel turned in between is not meant to open the globe.
+    await page.evaluate(() => (window as any).whenAppBooted());
     await page.evaluate(() => (window as any).map.setView([45.8, 16], 4, { animate: false }));
     await expect(page.locator('#world-view')).toHaveCount(0);
     await page.evaluate(() => (window as any).map.setZoom(5, { animate: false }));

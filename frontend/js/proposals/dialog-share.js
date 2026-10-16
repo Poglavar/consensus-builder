@@ -572,7 +572,8 @@ function renderProposalListModal() {
     });
 
     modal.querySelectorAll('.proposal-list-details-btn').forEach(button => {
-        button.addEventListener('click', handleProposalListDetailsClick);
+        // A server proposal downloads before its panel opens: the button spins meanwhile.
+        button.addEventListener('click', event => BusyControl.track(button, () => handleProposalListDetailsClick(event)));
     });
 
     modal.querySelectorAll('.proposal-download-btn').forEach(button => {

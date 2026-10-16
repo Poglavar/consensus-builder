@@ -145,7 +145,7 @@ test.describe('Site build palette controls @core', () => {
     expect(Math.abs(structureArea - siteArea)).toBeLessThan(0.1);
   });
 
-  test('Subdivide opens a site-pool readjustment editor when the authored site includes open ground', async ({ mockApi: page }) => {
+  test('Land readjustment opens a site-pool readjustment editor when the authored site includes open ground', async ({ mockApi: page }) => {
     await openCity(page);
     await page.evaluate(async id => { await (window as any).CadastralParcelRepository.ensureIds([id]); }, SECOND_PARCEL_ID);
     await expect.poll(() => page.evaluate(id => !!(window as any).LiveParcelFabric.get(id), SECOND_PARCEL_ID)).toBe(true);
@@ -167,7 +167,7 @@ test.describe('Site build palette controls @core', () => {
     await panel.locator('[data-site-action="propose"]').click();
     const subdivide = page.locator('#site-info-panel .parcel-build-btn--reparcellization');
     await expect(subdivide).toBeEnabled();
-    await expect(subdivide).toHaveText(/Subdivide/i);
+    await expect(subdivide).toHaveText(/Land readjustment/i);
     await subdivide.click();
     const modal = page.locator('.on-map-reparcellization');
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();

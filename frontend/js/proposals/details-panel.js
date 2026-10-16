@@ -203,7 +203,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             && isProposalApplied(fullProposal || proposal) && parcelCompare.canCompare(fullProposal || proposal))
             ? `<button type="button" class="btn btn-quiet btn-sm btn-compare-parcel" data-focus-parcel="${safeAgentText(String(parcelId))}" aria-pressed="${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}"
                     title="${tProposal('mapCompare.sliderLabel', 'Before and after comparison')}"
-                    onclick="event.stopPropagation(); event.preventDefault(); toggleProposalBeforeAfter(${inlineJsArg(proposalKeyForCompare)}, { focusParcelId: ${inlineJsArg(String(parcelId))} });"><i class="fas fa-left-right" aria-hidden="true"></i> ${tProposal('mapCompare.toggle', 'Before / after')}</button>`
+                    onclick="event.stopPropagation(); event.preventDefault(); BusyControl.track(this, () => toggleProposalBeforeAfter(${inlineJsArg(proposalKeyForCompare)}, { focusParcelId: ${inlineJsArg(String(parcelId))} }));"><i class="fas fa-left-right" aria-hidden="true"></i> ${tProposal('mapCompare.toggle', 'Before / after')}</button>`
             : '';
         const parcelTooltip = isRemoved
             ? tProposal('panel.proposal.parcels.tooltipRemoved', 'Click to focus on where this parcel was')
@@ -509,7 +509,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         ? `
         <button type="button" class="btn btn-compare-proposal"
             aria-pressed="${beforeAfter.isActive(proposalKey) ? 'true' : 'false'}"
-            onclick="toggleProposalBeforeAfter(${inlineJsArg(proposalKey)})">
+            onclick="BusyControl.track(this, () => toggleProposalBeforeAfter(${inlineJsArg(proposalKey)}))">
             <i class="fas fa-left-right" aria-hidden="true"></i> ${tProposal('mapCompare.toggle', 'Before / after')}
         </button>
     `
@@ -549,11 +549,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             connect: `<button type="button" class="btn btn-connect-proposal-support" onclick="handleWalletButtonClick()">${tProposal('panel.proposal.support.connect', 'Connect Solana wallet')}</button>`,
             donate: `<button type="button" class="btn btn-donate-proposal" onclick="openProposalBoostDialog(${inlineJsArg(proposalKey)}, 'donate')"><i class="fas fa-gift" aria-hidden="true"></i> ${tProposal('panel.proposal.support.donate', 'Donate USDC')}</button>`,
             pledge: `<button type="button" class="btn btn-pledge-proposal" onclick="openProposalBoostDialog(${inlineJsArg(proposalKey)}, 'pledge')"><i class="fas fa-hand-holding-dollar" aria-hidden="true"></i> ${tProposal('panel.proposal.boost.send', 'Pledge USDC')}</button>`,
-            revokePledge: `<button type="button" class="btn" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'revokePledge')">${tProposal('panel.proposal.support.revoke', 'Revoke my pledge')}</button>`,
-            releaseDonations: `<button type="button" class="btn" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'releaseDonations')">${tProposal('panel.proposal.support.release', 'Release donations')}</button>`,
-            fulfillPledge: `<button type="button" class="btn" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'fulfillPledge')">${tProposal('panel.proposal.support.fulfill', 'Fulfill my pledge')}</button>`,
-            refundMyDonations: `<button type="button" class="btn" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'refundMyDonations')">${tProposal('panel.proposal.support.refund', 'Refund my donations')}</button>`,
-            voidPledge: `<button type="button" class="btn" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'voidPledge')">${tProposal('panel.proposal.support.void', 'Clear my pledge')}</button>`
+            revokePledge: `<button type="button" class="btn" onclick="if (!BusyControl.isBusy(this)) BusyControl.track(this, () => settleProposalSupport(${inlineJsArg(proposalKey)}, 'revokePledge'))">${tProposal('panel.proposal.support.revoke', 'Revoke my pledge')}</button>`,
+            releaseDonations: `<button type="button" class="btn" onclick="if (!BusyControl.isBusy(this)) BusyControl.track(this, () => settleProposalSupport(${inlineJsArg(proposalKey)}, 'releaseDonations'))">${tProposal('panel.proposal.support.release', 'Release donations')}</button>`,
+            fulfillPledge: `<button type="button" class="btn" onclick="if (!BusyControl.isBusy(this)) BusyControl.track(this, () => settleProposalSupport(${inlineJsArg(proposalKey)}, 'fulfillPledge'))">${tProposal('panel.proposal.support.fulfill', 'Fulfill my pledge')}</button>`,
+            refundMyDonations: `<button type="button" class="btn" onclick="if (!BusyControl.isBusy(this)) BusyControl.track(this, () => settleProposalSupport(${inlineJsArg(proposalKey)}, 'refundMyDonations'))">${tProposal('panel.proposal.support.refund', 'Refund my donations')}</button>`,
+            voidPledge: `<button type="button" class="btn" onclick="if (!BusyControl.isBusy(this)) BusyControl.track(this, () => settleProposalSupport(${inlineJsArg(proposalKey)}, 'voidPledge'))">${tProposal('panel.proposal.support.void', 'Clear my pledge')}</button>`
         };
         return supportButtons[action] || '';
     };
@@ -2024,7 +2024,7 @@ function renderProposalMarketCard(card, proposalAccount, lifecycle, summary) {
             ? (lifecycleModel.canOpen ? connectButton : muted(nextText))
             : !lifecycleModel.canOpen
                 ? muted(nextText)
-                : `<button type="button" class="btn" onclick="settleProposalMarket(${inlineJsArg(proposalAccount)}, 'createMarket')">${safeAgentText(t('bets.row.openMarket', 'Open the pool'))}</button>`;
+                : `<button type="button" class="btn" onclick="if (!BusyControl.isBusy(this)) BusyControl.track(this, () => settleProposalMarket(${inlineJsArg(proposalAccount)}, 'createMarket'))">${safeAgentText(t('bets.row.openMarket', 'Open the pool'))}</button>`;
         return;
     }
     if (yes) yes.textContent = money(model.yesPool);
@@ -2045,13 +2045,13 @@ function renderProposalMarketCard(card, proposalAccount, lifecycle, summary) {
         return;
     }
     if (model.resolved) {
-        controls.innerHTML = model.claimSides.map(side => `<button type="button" class="btn btn-success" onclick="settleProposalMarket(${inlineJsArg(proposalAccount)}, 'claim', ${side === 'yes' ? 1 : 0})">${safeAgentText(t('panel.proposal.market.collect', 'Collect {{side}} winnings', { side: marketSideLabel(side === 'yes' ? 1 : 0) }))}</button>`).join('')
+        controls.innerHTML = model.claimSides.map(side => `<button type="button" class="btn btn-success" onclick="if (!BusyControl.isBusy(this)) BusyControl.track(this, () => settleProposalMarket(${inlineJsArg(proposalAccount)}, 'claim', ${side === 'yes' ? 1 : 0}))">${safeAgentText(t('panel.proposal.market.collect', 'Collect {{side}} winnings', { side: marketSideLabel(side === 'yes' ? 1 : 0) }))}</button>`).join('')
             || muted(t('panel.proposal.market.nothingToCollect', 'Nothing to collect.'));
         controls.innerHTML += openBet;
         return;
     }
     if (lifecycleModel.canResolve) {
-        controls.innerHTML = `<button type="button" class="btn" onclick="settleProposalMarket(${inlineJsArg(proposalAccount)}, 'resolve')">${safeAgentText(t('panel.proposal.market.settle', "Settle {{outcome}} from the proposal's status", { outcome: marketSideLabel(lifecycleModel.expectedOutcome === 'yes' ? 1 : 0) }))}</button>`;
+        controls.innerHTML = `<button type="button" class="btn" onclick="if (!BusyControl.isBusy(this)) BusyControl.track(this, () => settleProposalMarket(${inlineJsArg(proposalAccount)}, 'resolve'))">${safeAgentText(t('panel.proposal.market.settle', "Settle {{outcome}} from the proposal's status", { outcome: marketSideLabel(lifecycleModel.expectedOutcome === 'yes' ? 1 : 0) }))}</button>`;
     } else if (lifecycleModel.canStake) {
         controls.innerHTML = `
             <button type="button" class="btn btn-yes btn-market-yes" onclick="openProposalMarketStakeDialog(${inlineJsArg(proposalAccount)}, 1)">${safeAgentText(t('panel.proposal.market.betYes', 'Bet yes'))}</button>

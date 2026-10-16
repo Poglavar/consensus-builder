@@ -229,7 +229,7 @@
                 global.reportProposalDesignSaveFailure?.('proposalDrafts.design.unavailable');
                 return;
             }
-            Promise.resolve(global.instantCreateStructureFromSelection(toolKey, ids))
+            return Promise.resolve(global.instantCreateStructureFromSelection(toolKey, ids))
                 .catch(error => {
                     if (typeof global.reportProposalDesignSaveFailure === 'function') global.reportProposalDesignSaveFailure(error);
                     else console.warn('[buildPalette] structure creation failed', error);
@@ -239,7 +239,8 @@
                 global.reportProposalDesignSaveFailure?.('proposalDrafts.design.unavailable');
                 return;
             }
-            Promise.resolve(global.startInstantProposalDesign(toolKey, ids))
+            // Returned so the tile spins until the object exists or its design tool is open.
+            return Promise.resolve(global.startInstantProposalDesign(toolKey, ids))
                 .catch(error => {
                     if (typeof global.reportProposalDesignSaveFailure === 'function') global.reportProposalDesignSaveFailure(error);
                     else console.warn('[buildPalette] design tool failed to open', error);
@@ -265,7 +266,7 @@
             const label = labels[tool.key] || tParcel(tool.labelKey, {}, tool.fallback);
             const reason = disabled[tool.key];
             return `
-            <button type="button" class="cb-tile parcel-build-btn parcel-build-btn--${tool.key}" onclick="${buildHandler}('${tool.key}')"
+            <button type="button" class="cb-tile parcel-build-btn parcel-build-btn--${tool.key}" onclick="BusyControl.track(this, () => ${buildHandler}('${tool.key}'))"
                 title="${escapeAttr(reason || label)}"${reason ? ' disabled aria-disabled="true"' : ''}>
                 <i class="cb-tile__icon fas ${tool.icon}" aria-hidden="true"></i>
                 <span class="cb-tile__label">${label}</span>

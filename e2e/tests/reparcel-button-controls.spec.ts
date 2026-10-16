@@ -258,9 +258,9 @@ test.describe('reparcellization button controls @core', () => {
     const popup = page.locator('.reparcel-owner-popup');
     await expect(popup).toBeVisible();
     await popup.getByRole('checkbox', { name: 'Owner A', exact: true }).check();
-    await popup.getByRole('checkbox', { name: 'Public land', exact: true }).last().check();
+    await popup.getByRole('checkbox', { name: 'Public use allocation (not a recorded owner)', exact: true }).last().check();
     const ownerShare = popup.getByRole('spinbutton', { name: 'Owner A share (%)' });
-    const publicShare = popup.getByRole('spinbutton', { name: 'Public land share (%)' });
+    const publicShare = popup.getByRole('spinbutton', { name: 'Public use allocation (not a recorded owner) share (%)' });
     const ownerKey = await ownerShare.getAttribute('data-owner-key');
     const publicLandKey = await publicShare.getAttribute('data-owner-key');
     expect(ownerKey).toBeTruthy();
@@ -274,7 +274,7 @@ test.describe('reparcellization button controls @core', () => {
     await firstPlot.getByRole('button', { name: 'Edit shares', exact: true }).click();
     const editor = page.locator('.reparcel-owner-popup');
     await expect(editor.getByRole('spinbutton', { name: 'Owner A share (%)' })).toHaveValue('50');
-    await expect(editor.getByRole('spinbutton', { name: 'Public land share (%)' })).toHaveValue('50');
+    await expect(editor.getByRole('spinbutton', { name: 'Public use allocation (not a recorded owner) share (%)' })).toHaveValue('50');
     await editor.getByRole('button', { name: 'Apply shares', exact: true }).click();
     await expect(editor).toHaveCount(0);
 
