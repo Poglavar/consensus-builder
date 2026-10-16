@@ -1,5 +1,15 @@
-// Abstract parcel rights, approval context and owner/area tallies shared by all proposal tools.
+// Abstract parcel rights, approval context and the approval rule engine shared by all proposal tools.
 // Uploaded declarations are data, not identity proof; authority evidence is supplied separately.
+//
+// Every scheme decides with the same parts (land-readjustmend.md §23):
+// - parties: abstract holders of ownership or leasehold interests in the declared parcels, plus
+//   any authority whose decision the rules require. All of them decide through the same signed,
+//   lens-backed receipts; `ownerId` in rights, facts and receipts names such a party.
+// - tests: owner-support conditions, each counting heads or area, of owners, leaseholders or both,
+//   over all holders or private ones only (public bodies excluded), with an exact fraction;
+// - authorities: decisions that must be given as well (or alone, for authority-led schemes).
+// The stored policy is canonical: rules expressible as the older `unanimous` / `threshold` forms are
+// stored in those forms, so existing proposals keep their hashes; anything else is `rules`.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -7,12 +17,23 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
     const RIGHTS_SCHEMA = 'parcel-rights/v1';
+    // v2 adds leaseholds (`leases` per parcel) and `publicBodies`. A file using neither normalizes to
+    // v1, so the same rights hash alike, and an older reader refuses a v2 file instead of dropping it.
+    const RIGHTS_SCHEMA_V2 = 'parcel-rights/v2';
     const CONFIG_SCHEMA = 'proposal-approval/v1';
     const CONTEXT_SCHEMA = 'proposal-approval-context/v1';
     const MAX_RECORDS = 10000;
+    const MAX_TESTS = 8;
+    const MAX_AUTHORITIES = 4;
+    const MEASURES = ['headcount', 'area'];
+    const CLASSES = ['owners', 'leaseholders', 'owners+leaseholders'];
+    const SCOPES = ['all', 'private'];
     const crypto = () => root.__consentSha256
         || (typeof require === 'function' ? require('../../vendor/noble-hashes-1.8.0/sha256.js') : null);
+    const regimes = () => root.ProposalApprovalRegimes
+        || (typeof require === 'function' ? require('./approval-regimes.js') : null);
     const compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
+    const unique = list => [...new Set(list)].sort(compare);
     function fail(message) {
         const error = new Error(message);
         error.code = 'invalid-proposal-approval';
@@ -28,54 +49,93 @@
         return id;
     }
     const gcd = (a, b) => b ? gcd(b, a % b) : a;
+    const ZERO = { n: 0n, d: 1n };
+    function reduce(n, d) {
+        const divisor = gcd(n < 0n ? -n : n, d) || 1n;
+        return { n: n / divisor, d: d / divisor };
+    }
     function fraction(value) {
         if (typeof value !== 'string' || !/^\d{1,12}\/\d{1,12}$/.test(value)) fail('A share must be an exact fraction, such as 1/2.');
-        let [n, d] = value.split('/').map(BigInt);
+        const [n, d] = value.split('/').map(BigInt);
         if (d <= 0n || n <= 0n || n > d) fail('Ownership shares must be positive and at most 1/1.');
-        const divisor = gcd(n, d);
-        return { n: n / divisor, d: d / divisor };
+        return reduce(n, d);
     }
-    function add(a, b) {
-        const n = a.n * b.d + b.n * a.d, d = a.d * b.d;
-        const divisor = gcd(n, d);
-        return { n: n / divisor, d: d / divisor };
+    const add = (a, b) => reduce(a.n * b.d + b.n * a.d, a.d * b.d);
+    const multiply = (a, b) => reduce(a.n * b.n, a.d * b.d);
+    const toNumber = value => Number(value.n) / Number(value.d);
+    function area(value, field) {
+        const areaM2 = value ?? null;
+        if (areaM2 !== null && (typeof areaM2 !== 'number' || !Number.isFinite(areaM2) || areaM2 <= 0 || areaM2 > 1e15)) {
+            fail(`${field} needs a positive finite area or null.`);
+        }
+        return areaM2;
+    }
+    // A list of holders with exact shares: an owner list, or the holders of one lease.
+    function holders(list, where, complete, counter) {
+        if ((counter.count += list.length) > MAX_RECORDS) fail('Too many ownership interests.');
+        let sum = ZERO;
+        const seen = new Set();
+        const rows = list.map(holder => {
+            const id = ownerId(holder?.ownerId);
+            if (seen.has(id)) fail(`Duplicate owner ${id} on ${where}.`);
+            seen.add(id);
+            if (holder.kind != null && holder.kind !== 'ownership') fail(`${where}: list leaseholds under the parcel's leases (${RIGHTS_SCHEMA_V2}).`);
+            const share = fraction(holder.share);
+            sum = add(sum, share);
+            return { ownerId: id, share: `${share.n}/${share.d}` };
+        }).sort((a, b) => compare(a.ownerId, b.ownerId));
+        if (sum.n > sum.d || (complete && (!rows.length || sum.n !== sum.d))) {
+            fail(`${counter.noun || 'Shares'} for ${where} must ${complete ? 'sum to' : 'not exceed'} 1/1.`);
+        }
+        return rows;
     }
     function normalizeRights(raw) {
-        if (!raw || raw.schema !== RIGHTS_SCHEMA) fail(`Expected ${RIGHTS_SCHEMA}.`);
+        if (!raw || ![RIGHTS_SCHEMA, RIGHTS_SCHEMA_V2].includes(raw.schema)) fail(`Expected ${RIGHTS_SCHEMA} or ${RIGHTS_SCHEMA_V2}.`);
+        const v2 = raw.schema === RIGHTS_SCHEMA_V2;
         if (!raw.source || typeof raw.source !== 'object') fail('Rights need a source provider.');
         const source = { provider: text(raw.source.provider, 'source.provider') };
         if (raw.source.reference != null && raw.source.reference !== '') source.reference = text(raw.source.reference, 'source.reference');
         if (!Array.isArray(raw.parcels) || raw.parcels.length > MAX_RECORDS) fail('Rights need a bounded parcel list.');
         const seen = new Set();
-        let count = 0;
+        const counter = { count: 0 };
         const parcels = raw.parcels.map(parcel => {
             const parcelId = text(parcel?.parcelId, 'parcelId');
             if (seen.has(parcelId)) fail(`Duplicate parcel ${parcelId}.`);
             seen.add(parcelId);
             if (typeof parcel.complete !== 'boolean') fail(`Parcel ${parcelId} must declare whether its owner list is complete.`);
             if (!Array.isArray(parcel.owners)) fail(`Parcel ${parcelId} needs an owners array.`);
-            if ((count += parcel.owners.length) > MAX_RECORDS) fail('Too many ownership interests.');
-            let sum = { n: 0n, d: 1n };
-            const ownersSeen = new Set();
-            const owners = parcel.owners.map(owner => {
-                const id = ownerId(owner?.ownerId);
-                if (ownersSeen.has(id)) fail(`Duplicate owner ${id} on ${parcelId}.`);
-                ownersSeen.add(id);
-                if (owner.kind != null && owner.kind !== 'ownership') fail('This schema supports ownership rights only.');
-                const share = fraction(owner.share);
-                sum = add(sum, share);
-                return { ownerId: id, share: `${share.n}/${share.d}` };
-            }).sort((a, b) => compare(a.ownerId, b.ownerId));
-            if (sum.n > sum.d || (parcel.complete && (!owners.length || sum.n !== sum.d))) {
-                fail(`Ownership shares for ${parcelId} must ${parcel.complete ? 'sum to' : 'not exceed'} 1/1.`);
-            }
-            const areaM2 = parcel.areaM2 ?? null;
-            if (areaM2 !== null && (typeof areaM2 !== 'number' || !Number.isFinite(areaM2) || areaM2 <= 0 || areaM2 > 1e15)) {
-                fail(`Parcel ${parcelId} needs a positive finite area or null.`);
-            }
-            return { parcelId, complete: parcel.complete, areaM2, owners };
+            const owners = holders(parcel.owners, parcelId, parcel.complete, Object.assign(counter, { noun: 'Ownership shares' }));
+            const areaM2 = area(parcel.areaM2, `Parcel ${parcelId}`);
+            if (parcel.leases == null) return { parcelId, complete: parcel.complete, areaM2, owners };
+            if (!v2) fail(`Leaseholds need ${RIGHTS_SCHEMA_V2}.`);
+            if (!Array.isArray(parcel.leases) || parcel.leases.length > 100) fail(`Parcel ${parcelId} needs a bounded leases list.`);
+            const leaseIds = new Set();
+            // A parcel's `complete` covers its leases too: every lease is listed, with all holders.
+            const leases = parcel.leases.map(lease => {
+                const leaseId = text(lease?.leaseId, 'leaseId');
+                if (leaseIds.has(leaseId)) fail(`Duplicate lease ${leaseId} on ${parcelId}.`);
+                leaseIds.add(leaseId);
+                if (!Array.isArray(lease.holders) || !lease.holders.length) fail(`Lease ${leaseId} on ${parcelId} needs its holders.`);
+                const leaseArea = area(lease.areaM2, `Lease ${leaseId} on ${parcelId}`);
+                if (leaseArea !== null && areaM2 !== null && leaseArea > areaM2) fail(`Lease ${leaseId} covers more than parcel ${parcelId}.`);
+                return { leaseId, areaM2: leaseArea, holders: holders(lease.holders, `lease ${leaseId} on ${parcelId}`, parcel.complete, Object.assign(counter, { noun: 'Lease shares' })) };
+            }).sort((a, b) => compare(a.leaseId, b.leaseId));
+            return leases.length ? { parcelId, complete: parcel.complete, areaM2, owners, leases } : { parcelId, complete: parcel.complete, areaM2, owners };
         }).sort((a, b) => compare(a.parcelId, b.parcelId));
-        return { schema: RIGHTS_SCHEMA, source, parcels };
+        let publicBodies = [];
+        if (raw.publicBodies != null) {
+            if (!v2) fail(`Public bodies need ${RIGHTS_SCHEMA_V2}.`);
+            if (!Array.isArray(raw.publicBodies) || raw.publicBodies.length > MAX_RECORDS) fail('publicBodies must be a bounded list.');
+            const held = new Set(parcels.flatMap(parcel => [...parcel.owners, ...(parcel.leases || []).flatMap(lease => lease.holders)].map(row => row.ownerId)));
+            publicBodies = raw.publicBodies.map(ownerId);
+            if (new Set(publicBodies).size !== publicBodies.length) fail('publicBodies lists a party twice.');
+            const stray = publicBodies.find(id => !held.has(id));
+            if (stray) fail(`Public body ${stray} holds no right in this file.`);
+            publicBodies.sort(compare);
+        }
+        const usesV2 = publicBodies.length > 0 || parcels.some(parcel => parcel.leases);
+        return usesV2 ? { schema: RIGHTS_SCHEMA_V2, source, parcels, ...(publicBodies.length ? { publicBodies } : {}) }
+            : { schema: RIGHTS_SCHEMA, source, parcels };
     }
     function threshold(raw) {
         if (!raw || !Number.isSafeInteger(raw.numerator) || !Number.isSafeInteger(raw.denominator)
@@ -85,14 +145,74 @@
         const divisor = Number(gcd(BigInt(raw.numerator), BigInt(raw.denominator)));
         return { numerator: raw.numerator / divisor, denominator: raw.denominator / divisor, strict: raw.strict };
     }
-    function normalizePolicy(raw) {
-        if (!raw || raw.type === 'unanimous') return { type: 'unanimous' };
-        if (raw.type !== 'threshold') fail('Unknown approval policy.');
-        return { type: 'threshold', owners: threshold(raw.owners), area: threshold(raw.area) };
+    const UNANIMOUS_TEST = { measure: 'headcount', of: 'owners', scope: 'all', numerator: 1, denominator: 1, strict: false };
+    const testKey = test => `${test.measure}:${test.of}:${test.scope}`;
+    function testOf(raw) {
+        if (!raw || !MEASURES.includes(raw.measure) || !CLASSES.includes(raw.of)) fail('Each approval test counts heads or area, of owners, leaseholders or both.');
+        const scope = raw.scope == null ? 'all' : raw.scope;
+        if (!SCOPES.includes(scope)) fail('An approval test counts all holders or private holders only.');
+        return { measure: raw.measure, of: raw.of, scope, ...threshold(raw) };
+    }
+    function sortedTests(list) {
+        if (!Array.isArray(list) || list.length > MAX_TESTS) fail(`Use at most ${MAX_TESTS} approval tests.`);
+        const tests = list.map(testOf).sort((a, b) => compare(testKey(a), testKey(b)));
+        tests.forEach((test, index) => { if (index && testKey(tests[index - 1]) === testKey(test)) fail('Two approval tests count the same thing.'); });
+        return tests;
+    }
+    // Any stored or authored policy as its tests and required authority decisions.
+    function policyRules(raw) {
+        if (!raw || raw.type === 'unanimous') return { tests: [{ ...UNANIMOUS_TEST }], authorities: [] };
+        if (raw.type === 'threshold') {
+            if (raw.owners == null && raw.area == null) fail('A threshold needs an owner-count or an area test.');
+            return { tests: sortedTests([
+                ...(raw.owners != null ? [{ measure: 'headcount', of: 'owners', scope: 'all', ...threshold(raw.owners) }] : []),
+                ...(raw.area != null ? [{ measure: 'area', of: 'owners', scope: 'all', ...threshold(raw.area) }] : [])
+            ]), authorities: [] };
+        }
+        if (raw.type !== 'rules') fail('Unknown approval policy.');
+        const tests = sortedTests(raw.tests || []);
+        const list = raw.authorities || [];
+        if (!Array.isArray(list) || list.length > MAX_AUTHORITIES) fail(`Use at most ${MAX_AUTHORITIES} authority decisions.`);
+        const authorities = unique(list.map(row => ownerId(row?.authorityId))).map(authorityId => ({ authorityId }));
+        if (authorities.length !== list.length) fail('An authority is named twice.');
+        if (!tests.length && !authorities.length) fail('The rules need an owner test or an authority decision.');
+        return { tests, authorities };
+    }
+    const sameTest = (a, b) => testKey(a) === testKey(b) && a.numerator === b.numerator && a.denominator === b.denominator && a.strict === b.strict;
+    const rule = test => ({ numerator: test.numerator, denominator: test.denominator, strict: test.strict });
+    // The canonical stored form of a set of rules (see the header).
+    function compact({ tests, authorities }) {
+        if (!authorities.length) {
+            if (tests.length === 1 && sameTest(tests[0], UNANIMOUS_TEST)) return { type: 'unanimous' };
+            if (tests.every(test => test.of === 'owners' && test.scope === 'all')) {
+                const owners = tests.find(test => test.measure === 'headcount');
+                const area = tests.find(test => test.measure === 'area');
+                return { type: 'threshold', ...(owners ? { owners: rule(owners) } : {}), ...(area ? { area: rule(area) } : {}) };
+            }
+        }
+        return { type: 'rules', tests, authorities };
+    }
+    const normalizePolicy = raw => compact(policyRules(raw));
+    // A named scheme (approval-regimes.js) pins its id and version; its tests and authority count
+    // must be exactly the template's, so the label never names rules it does not have.
+    function normalizeRegime(raw, policy) {
+        if (raw == null) return null;
+        const id = text(raw.id, 'regime.id'), version = text(raw.version, 'regime.version');
+        const template = regimes()?.get(id, version);
+        if (!template) fail(`Unknown agreement rules ${id} (${version}).`);
+        const rules = policyRules(policy);
+        const expected = sortedTests(template.tests);
+        if (rules.authorities.length !== template.authorities || rules.tests.length !== expected.length
+            || rules.tests.some((test, index) => !sameTest(test, expected[index]))) {
+            fail(`The approval rule is not ${id} (${version}); choose Custom rules to change it.`);
+        }
+        return { id, version };
     }
     function normalizeConfig(raw) {
         if (!raw || raw.schema !== CONFIG_SCHEMA) fail(`Expected ${CONFIG_SCHEMA}.`);
-        return { schema: CONFIG_SCHEMA, rights: raw.rights == null ? null : normalizeRights(raw.rights), policy: normalizePolicy(raw.policy) };
+        const policy = normalizePolicy(raw.policy);
+        const regime = normalizeRegime(raw.regime, policy);
+        return { schema: CONFIG_SCHEMA, rights: raw.rights == null ? null : normalizeRights(raw.rights), policy, ...(regime ? { regime } : {}) };
     }
     function lensKeys(proposal) {
         const rows = proposal?.lens || [];
@@ -106,7 +226,7 @@
         return {
             schema: CONTEXT_SCHEMA,
             cadastreParcelIds: [...new Set((proposal?.cadastreParcelIds || []).map(id => text(String(id), 'parcelId')))].sort(compare),
-            rights: config.rights, policy: config.policy, lens: lensKeys(proposal)
+            rights: config.rights, policy: config.policy, ...(config.regime ? { regime: config.regime } : {}), lens: lensKeys(proposal)
         };
     }
     function stableStringify(value) {
@@ -122,24 +242,55 @@
     };
     function inspect(proposal) {
         const context = contextContent(proposal);
+        const rules = policyRules(context.policy);
         const byParcel = new Map((context.rights?.parcels || []).map(parcel => [parcel.parcelId, parcel]));
         const parcels = context.cadastreParcelIds.map(id => byParcel.get(id)).filter(Boolean);
         const missingParcelIds = context.cadastreParcelIds.filter(id => !byParcel.get(id)?.complete);
-        const ownerIds = [...new Set(parcels.flatMap(parcel => parcel.owners.map(owner => owner.ownerId)))].sort(compare);
+        const ownerIds = unique(parcels.flatMap(parcel => parcel.owners.map(owner => owner.ownerId)));
+        const leaseholderIds = unique(parcels.flatMap(parcel => (parcel.leases || []).flatMap(lease => lease.holders.map(holder => holder.ownerId))));
+        const holderIds = new Set([...ownerIds, ...leaseholderIds]);
+        const authorityIds = rules.authorities.map(row => row.authorityId);
+        const publicIds = (context.rights?.publicBodies || []).filter(id => holderIds.has(id));
         const reason = !context.rights ? 'missing-rights' : !context.cadastreParcelIds.length ? 'missing-parcels'
-            : missingParcelIds.length ? 'incomplete-rights' : !ownerIds.length ? 'missing-owners' : null;
-        return { ready: !reason, reason, ownerIds, parcels, missingParcelIds, context };
+            : missingParcelIds.length ? 'incomplete-rights' : !ownerIds.length ? 'missing-owners'
+                : authorityIds.some(id => holderIds.has(id)) ? 'authority-is-holder' : null;
+        return {
+            ready: !reason, reason, ownerIds, leaseholderIds, authorityIds, publicIds,
+            partyIds: unique([...holderIds, ...authorityIds]), parcels, missingParcelIds, context, rules
+        };
+    }
+    // "A", "B", … "Z", "AA" for a 1-based position.
+    function letters(position) {
+        let number = position, label = '';
+        while (number) { number -= 1; label = String.fromCharCode(65 + number % 26) + label; number = Math.floor(number / 26); }
+        return label;
     }
     function ownerLabel(id, ids) {
-        let number = ids.indexOf(id) + 1, label = '';
-        if (!number) return 'Owner';
-        while (number) { number -= 1; label = String.fromCharCode(65 + number % 26) + label; number = Math.floor(number / 26); }
-        return `Owner ${label}`;
+        const number = ids.indexOf(id) + 1;
+        return number ? `Owner ${letters(number)}` : 'Owner';
     }
-    function createTemplate(parcelIds = []) {
+    // What a party is in this proposal and its English label: owners are "Owner A…", holders of a
+    // lease only "Leaseholder A…", required authorities "Authority" (or "Authority A…").
+    function partyOf(id, state) {
+        if (state.authorityIds.includes(id)) {
+            return { kind: 'authority', letter: state.authorityIds.length > 1 ? letters(state.authorityIds.indexOf(id) + 1) : '' };
+        }
+        if (state.ownerIds.includes(id)) return { kind: 'owner', letter: letters(state.ownerIds.indexOf(id) + 1) };
+        const leaseOnly = state.leaseholderIds.filter(holder => !state.ownerIds.includes(holder));
+        return leaseOnly.includes(id) ? { kind: 'leaseholder', letter: letters(leaseOnly.indexOf(id) + 1) } : null;
+    }
+    function partyLabel(id, state) {
+        const party = partyOf(id, state);
+        if (!party) return 'Owner';
+        return party.kind === 'authority' ? `Authority${party.letter ? ` ${party.letter}` : ''}`
+            : `${party.kind === 'owner' ? 'Owner' : 'Leaseholder'} ${party.letter}`;
+    }
+    function createTemplate(parcelIds = [], { leases = false, publicBodies = false } = {}) {
+        const v2 = leases || publicBodies;
         return {
-            schema: RIGHTS_SCHEMA, source: { provider: 'upload', reference: 'rights-snapshot-1' },
-            parcels: [...new Set(parcelIds.map(String))].map(parcelId => ({ parcelId, complete: false, areaM2: null, owners: [] }))
+            schema: v2 ? RIGHTS_SCHEMA_V2 : RIGHTS_SCHEMA, source: { provider: 'upload', reference: 'rights-snapshot-1' },
+            parcels: [...new Set(parcelIds.map(String))].map(parcelId => ({ parcelId, complete: false, areaM2: null, owners: [], ...(leases ? { leases: [] } : {}) })),
+            ...(publicBodies ? { publicBodies: [] } : {})
         };
     }
     // Numbers are converted to their exact decimal representation for threshold comparisons.
@@ -151,39 +302,77 @@
         const n = BigInt(whole + fractional);
         return shift >= 0 ? { n: n * 10n ** BigInt(shift), d: 1n } : { n, d: 10n ** BigInt(-shift) };
     }
-    function passes(yes, total, rule) {
-        if (total.n <= 0n) return false;
-        const left = yes.n * total.d * BigInt(rule.denominator);
-        const right = total.n * yes.d * BigInt(rule.numerator);
-        return rule.strict ? left > right : left >= right;
+    function passes(yes, total, test) {
+        const left = yes.n * total.d * BigInt(test.denominator);
+        const right = total.n * yes.d * BigInt(test.numerator);
+        return test.strict ? left > right : left >= right;
     }
-    function tally(proposal, approvedOwnerIds = []) {
-        const state = inspect(proposal);
-        const yes = new Set(approvedOwnerIds.filter(id => state.ownerIds.includes(id)));
-        const acceptedParcelIds = state.ready ? state.parcels.filter(parcel => parcel.owners.every(owner => yes.has(owner.ownerId))).map(parcel => parcel.parcelId) : [];
-        const areaKnown = state.ready && state.parcels.every(parcel => parcel.areaM2 !== null);
-        let totalArea = { n: 0n, d: 1n }, yesArea = { n: 0n, d: 1n };
-        if (areaKnown) for (const parcel of state.parcels) {
-            const area = decimal(parcel.areaM2);
-            totalArea = add(totalArea, area);
-            if (acceptedParcelIds.includes(parcel.parcelId)) yesArea = add(yesArea, area);
+    // The least support that meets a test: a whole number of heads, or an area ("more than" when strict).
+    function needed(test, total) {
+        if (test.measure === 'headcount') {
+            const product = total.n * BigInt(test.numerator), denominator = total.d * BigInt(test.denominator);
+            return Number(test.strict ? product / denominator + 1n : (product + denominator - 1n) / denominator);
         }
-        const policy = state.context.policy;
-        const ownerThresholdMet = state.ready && (policy.type === 'unanimous' ? yes.size === state.ownerIds.length
-            : passes({ n: BigInt(yes.size), d: 1n }, { n: BigInt(state.ownerIds.length), d: 1n }, policy.owners));
-        const areaThresholdMet = state.ready && (policy.type === 'unanimous' ? acceptedParcelIds.length === state.parcels.length
-            : areaKnown && passes(yesArea, totalArea, policy.area));
+        return toNumber(multiply(total, reduce(BigInt(test.numerator), BigInt(test.denominator))));
+    }
+    // One test over the parties' approvals. Heads are distinct parties; area is each parcel's (or
+    // lease's) area times the counted holders' shares, and counts only once all of them approved.
+    // An empty electorate (no leaseholders, say) does not block: the test is met and marked vacuous.
+    function evaluate(test, state, yes) {
+        const publicIds = new Set(state.publicIds);
+        const counted = id => test.scope === 'all' || !publicIds.has(id);
+        let support = ZERO, total = ZERO, known = true;
+        if (test.measure === 'headcount') {
+            const pool = test.of === 'owners' ? state.ownerIds : test.of === 'leaseholders' ? state.leaseholderIds
+                : unique([...state.ownerIds, ...state.leaseholderIds]);
+            const electorate = pool.filter(counted);
+            total = { n: BigInt(electorate.length), d: 1n };
+            support = { n: BigInt(electorate.filter(id => yes.has(id)).length), d: 1n };
+        } else {
+            const units = [
+                ...(test.of !== 'leaseholders' ? state.parcels.map(parcel => ({ areaM2: parcel.areaM2, holders: parcel.owners })) : []),
+                ...(test.of !== 'owners' ? state.parcels.flatMap(parcel => (parcel.leases || [])
+                    .map(lease => ({ areaM2: lease.areaM2 ?? parcel.areaM2, holders: lease.holders }))) : [])
+            ];
+            for (const unit of units) {
+                const voters = unit.holders.filter(holder => counted(holder.ownerId));
+                if (!voters.length) continue;
+                if (unit.areaM2 === null) { known = false; continue; }
+                const weight = multiply(decimal(unit.areaM2), voters.reduce((sum, holder) => add(sum, fraction(holder.share)), ZERO));
+                total = add(total, weight);
+                if (voters.every(holder => yes.has(holder.ownerId))) support = add(support, weight);
+            }
+        }
+        const vacuous = known && total.n === 0n;
         return {
-            ready: state.ready, reason: state.reason, totalOwners: state.ready ? state.ownerIds.length : null,
-            acceptedOwners: state.ready ? yes.size : 0, acceptedParcelIds,
-            totalAreaM2: areaKnown ? Number(totalArea.n) / Number(totalArea.d) : null,
-            acceptedAreaM2: areaKnown ? Number(yesArea.n) / Number(yesArea.d) : null,
-            ownerThresholdMet, areaThresholdMet, passed: ownerThresholdMet && areaThresholdMet
+            measure: test.measure, of: test.of, scope: test.scope, numerator: test.numerator, denominator: test.denominator, strict: test.strict,
+            known, vacuous, support: known ? toNumber(support) : null, total: known ? toNumber(total) : null,
+            needed: known && !vacuous ? needed(test, total) : null,
+            met: known && (vacuous || passes(support, total, test))
+        };
+    }
+    function tally(proposal, approvedIds = []) {
+        const state = inspect(proposal);
+        const yes = new Set(approvedIds.filter(id => state.partyIds.includes(id)));
+        const ready = state.ready;
+        const acceptedParcelIds = ready ? state.parcels.filter(parcel => parcel.owners.every(owner => yes.has(owner.ownerId))).map(parcel => parcel.parcelId) : [];
+        const tests = ready ? state.rules.tests.map(test => evaluate(test, state, yes)) : [];
+        const authorities = state.rules.authorities.map(({ authorityId }) => ({ authorityId, approved: ready && yes.has(authorityId) }));
+        // Owners and the land they hold, whatever the rules count: the figures other views show.
+        const ownership = ready ? evaluate({ ...UNANIMOUS_TEST, measure: 'area' }, state, yes) : null;
+        const supportMet = ready && tests.every(test => test.met);
+        const authorityMet = ready && authorities.every(row => row.approved);
+        return {
+            ready, reason: state.reason, tests, authorities, supportMet, authorityMet, passed: supportMet && authorityMet,
+            totalOwners: ready ? state.ownerIds.length : null, acceptedOwners: ready ? state.ownerIds.filter(id => yes.has(id)).length : 0,
+            acceptedParcelIds,
+            totalAreaM2: ownership?.known ? ownership.total : null,
+            acceptedAreaM2: ownership?.known ? ownership.support : null
         };
     }
     function evidenceAllows(proposal, owner, actorId, evidence) {
         const state = inspect(proposal);
-        if (!state.ready || !state.ownerIds.includes(owner) || !actorId || !evidence) return false;
+        if (!state.ready || !state.partyIds.includes(owner) || !actorId || !evidence) return false;
         const expected = contextHash(proposal);
         return ['rights', 'authority'].every(kind => {
             const fact = evidence[kind];
@@ -209,10 +398,11 @@
             ownerId: receipt.ownerId, actorId: receipt.actorId, effectHash: receipt.effectHash,
             decision: receipt.decision, acceptedAt: receipt.acceptedAt, contextHash: contextHash(proposal) };
     }
+    // Every party (owner, leaseholder or authority) whose current approval verifies for these terms.
     function validOwnerIds(proposal, designCommitment, verifyReceipt) {
         const state = inspect(proposal);
         if (!state.ready || !designCommitment || typeof verifyReceipt !== 'function') return [];
-        return state.ownerIds.filter(id => {
+        return state.partyIds.filter(id => {
             const receipt = proposal.ownerApprovals?.[id];
             return receipt?.effectHash === designCommitment && receipt?.ownerId === id
                 && receipt.decision === 'approve' && evidenceAllows(proposal, id, receipt.actorId, receipt.evidence)
@@ -239,7 +429,8 @@
         next.acceptedParcelIds = result.acceptedParcelIds;
         return { proposal: next, tally: result };
     }
-    return { RIGHTS_SCHEMA, CONFIG_SCHEMA, CONTEXT_SCHEMA, normalizeRights, normalizeConfig, normalizePolicy,
-        lensKeys, contextContent, contextHash, consentHash, stableStringify, inspect, ownerLabel, createTemplate,
+    return { RIGHTS_SCHEMA, RIGHTS_SCHEMA_V2, CONFIG_SCHEMA, CONTEXT_SCHEMA, MEASURES, CLASSES, SCOPES, MAX_TESTS, MAX_AUTHORITIES,
+        normalizeRights, normalizeConfig, normalizePolicy, policyRules, testOf,
+        lensKeys, contextContent, contextHash, consentHash, stableStringify, inspect, ownerLabel, partyOf, partyLabel, letters, createTemplate,
         tally, evidenceAllows, subjectOf, decisionContent, validOwnerIds, recordDecision };
 });

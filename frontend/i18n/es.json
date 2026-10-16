@@ -195,6 +195,153 @@
     },
     "proposalApproval": {
         "ownerLabel": "Propietario {{label}}",
+        "leaseholderLabel": "Arrendatario {{label}}",
+        "authorityLabel": "Autoridad",
+        "authorityLabelLettered": "Autoridad {{label}}",
+        "rules": {
+            "all": "la totalidad",
+            "and": " y ",
+            "authorityGeneric": "la aprobación de una autoridad",
+            "authorityOnly": "Solo necesita {{authority}}. Los propietarios son oídos; sus respuestas no deciden.",
+            "passesWith": "Se aprueba con {{tests}}.",
+            "passesWithAuthority": "Se aprueba con {{tests}}, y necesita {{authority}}.",
+            "vacuous": "No hay nadie a quien contar aquí, así que esta prueba no bloquea.",
+            "heard": "Oídos, no se cuentan",
+            "ownersHeard": "Los propietarios son oídos; decide la autoridad.",
+            "of": {
+                "headcount-owners-all": "de los propietarios",
+                "headcount-owners-private": "de los propietarios privados",
+                "headcount-leaseholders-all": "de los arrendatarios",
+                "headcount-leaseholders-private": "de los arrendatarios privados",
+                "headcount-owners-and-leaseholders-all": "de los propietarios y arrendatarios juntos",
+                "headcount-owners-and-leaseholders-private": "de los propietarios y arrendatarios privados juntos",
+                "area-owners-all": "de la superficie",
+                "area-owners-private": "del suelo privado",
+                "area-leaseholders-all": "de la superficie arrendada",
+                "area-leaseholders-private": "de la superficie arrendada privada",
+                "area-owners-and-leaseholders-all": "de la superficie en propiedad y en arriendo",
+                "area-owners-and-leaseholders-private": "de la superficie privada en propiedad y en arriendo"
+            },
+            "meter": {
+                "headcount-owners-private": "Propietarios privados",
+                "headcount-leaseholders-all": "Arrendatarios",
+                "headcount-leaseholders-private": "Arrendatarios privados",
+                "headcount-owners-and-leaseholders-all": "Propietarios y arrendatarios",
+                "headcount-owners-and-leaseholders-private": "Propietarios y arrendatarios privados",
+                "area-owners-private": "Suelo privado",
+                "area-leaseholders-all": "Superficie arrendada",
+                "area-leaseholders-private": "Superficie arrendada privada",
+                "area-owners-and-leaseholders-all": "Superficie en propiedad y en arriendo",
+                "area-owners-and-leaseholders-private": "Superficie privada en propiedad y en arriendo"
+            }
+        },
+        "regime": {
+            "research": "Plantilla de investigación",
+            "stage": "Para qué sirve este apoyo: {{stage}}",
+            "stages": {
+                "agreement": "un acuerdo voluntario",
+                "initiative": "iniciar el procedimiento (iniciativa)",
+                "association": "constituir la asociación",
+                "plan": "el plan de reajuste",
+                "execution": "ejecutar el reajuste"
+            },
+            "families": {
+                "voluntary": "Acuerdo voluntario",
+                "support-and-authority": "Apoyo de los propietarios y luego decide una autoridad",
+                "authority-led": "Dirigido por la autoridad: los propietarios son oídos"
+            },
+            "basis": {
+                "area": "superficie",
+                "value": "valor del suelo"
+            },
+            "basisArea": "Las nuevas parcelas se reparten por superficie.",
+            "basisValue": "Las nuevas parcelas se reparten por valor del suelo, así que las parcelas necesitan valores.",
+            "capPool": "El suelo que no vuelve a los propietarios es como máximo el {{percent}} % del conjunto.",
+            "capOwnerWhenArea": "Si se reparte por superficie, ningún propietario cede más del {{percent}} % de su suelo.",
+            "capOwner": "Ningún propietario cede más del {{percent}} % de su suelo.",
+            "check": {
+                "basisOk": "Repartido por {{basis}}, como exige el esquema.",
+                "basisWrong": "El esquema reparte por {{basis}}, pero este plan reparte por {{actual}}.",
+                "capOwnerNone": "Ningún propietario cede suelo.",
+                "capOwnerOk": "Quien más cede es {{owner}}: {{given}}; el límite es {{limit}}.",
+                "capOwnerOver": "{{owner}} cede el {{given}} de su suelo; el límite es {{limit}}.",
+                "capPoolUnknown": "Se desconoce la superficie del conjunto, así que no se puede comprobar el límite del {{limit}}.",
+                "capPoolOk": "El {{given}} del conjunto no vuelve a los propietarios; el límite es {{limit}}.",
+                "capPoolOver": "El {{given}} del conjunto no vuelve a los propietarios, por encima del límite del {{limit}}."
+            }
+        },
+        "authority": {
+            "approved": "aprobado: {{role}}",
+            "pending": "pendiente: {{role}}",
+            "given": "la autoridad aprobó",
+            "awaited": "falta la autoridad"
+        },
+        "schemes": {
+            "nl-kavelruil": {
+                "name": "Países Bajos — intercambio voluntario de suelo urbano (kavelruil)",
+                "note": "Todas las partes están de acuerdo. El intercambio se formaliza en escritura notarial y se inscribe en el Kadaster; participan al menos tres partes."
+            },
+            "tw-owner-organized": {
+                "name": "Taiwán — reajuste urbano organizado por los propietarios",
+                "authority": "la aprobación de la autoridad competente",
+                "note": "Cuenta solo a los propietarios privados y el suelo privado. El suelo para equipamientos públicos y costes puede ocupar como máximo el 45 % de la superficie (existe un procedimiento de excepción)."
+            },
+            "kr-association": {
+                "name": "Corea del Sur — asociación de desarrollo urbano",
+                "authority": "la autorización de la asociación por la autoridad que designa la zona",
+                "note": "Estas pruebas autorizan a constituir la asociación; el plan de reparcelación tiene su propia aprobación posterior."
+            },
+            "es-ct-basic": {
+                "name": "Cataluña — compensación básica",
+                "authority": "la aprobación municipal del proyecto de compensación",
+                "note": "Los propietarios de más de la mitad de la superficie pueden iniciarla; los propietarios que no se adhieren tienen funciones definidas."
+            },
+            "es-ct-concertacion": {
+                "name": "Cataluña — compensación por concertación",
+                "authority": "la selección y aprobación municipal",
+                "note": "Los propietarios de más de una cuarta parte de la superficie pueden iniciarla; después el ayuntamiento hace una selección."
+            },
+            "es-md-compensation": {
+                "name": "Madrid — compensación por los propietarios",
+                "authority": "la aprobación municipal",
+                "note": "Al menos la mitad de la superficie: aquí basta exactamente la mitad, a diferencia de Cataluña."
+            },
+            "co-readjustment": {
+                "name": "Colombia — unidad de actuación urbanística / reajuste de terrenos",
+                "authority": "la aprobación de la autoridad municipal de planeación",
+                "note": "Propietarios del 51 % del área comprometida; el proyecto también necesita más de un partícipe."
+            },
+            "jp-association": {
+                "name": "Japón — asociación de propietarios del suelo",
+                "authority": "la aprobación del gobernador de la prefectura",
+                "note": "Tres pruebas a la vez: propietarios, arrendatarios y superficie en propiedad y en arriendo. El suelo público queda fuera. El suelo se redistribuye por valor; el suelo de reserva puede venderse para financiar las obras."
+            },
+            "jp-joint": {
+                "name": "Japón — ejecución individual o conjunta",
+                "authority": "la aprobación del plan por el gobernador de la prefectura",
+                "note": "Todos los propietarios y arrendatarios consienten; algunos otros derechos están exentos."
+            },
+            "de-umlegung-new": {
+                "name": "Alemania — Umlegung, suelo que se urbaniza por primera vez",
+                "authority": "la adopción del plan de reajuste por la autoridad de Umlegung",
+                "note": "Sin votación de propietarios: la autoridad ordena y decide, y los propietarios son oídos. Si se reparte por superficie, ningún propietario cede más del 30 % de su suelo para equipamientos públicos (§58); si se reparte por valor, la ganancia se liquida en dinero."
+            },
+            "de-umlegung-developed": {
+                "name": "Alemania — Umlegung, suelo ya urbanizado",
+                "authority": "la decisión de la autoridad de Umlegung sobre el plan de reajuste",
+                "note": "Sin votación de propietarios: la autoridad ordena y decide, y los propietarios son oídos. Si se reparte por superficie, ningún propietario cede más del 10 % de su suelo (§58)."
+            },
+            "tr-article-18": {
+                "name": "Turquía — reajuste del artículo 18",
+                "authority": "la decisión municipal sobre el plan de parcelación",
+                "note": "No se necesita el consentimiento de los propietarios. Cada finca cede como máximo el 45 % de su superficie para usos públicos (DOP); la ley lo aplica por parcela."
+            },
+            "in-gj-tps": {
+                "name": "India, Guyarat — plan de urbanismo (town planning scheme)",
+                "authority": "la aprobación del plan por el gobierno del Estado",
+                "note": "La autoridad prepara el plan y atiende objeciones escritas; las parcelas finales se reconstituyen por valoración."
+            }
+        },
         "deals": {
             "title": "Lo que cada propietario aporta y recibe",
             "dealOf": "Acuerdo de {{owner}}",
@@ -221,6 +368,7 @@
         "status": {
             "passed": "Suficiente para aprobarse",
             "pending": "Aún no es suficiente",
+            "authorityPending": "Pendiente de la autoridad",
             "unresolved": "Propiedad sin resolver"
         },
         "ruleUnanimous": "Todos los propietarios deben aceptar.",
@@ -289,7 +437,12 @@
             "needsMore": "Después de ti deben aceptar más propietarios para que se apruebe.",
             "verifyFirst": "Para aceptar, primero confirma con un miembro de la lente que tu billetera puede actuar por este propietario.",
             "notSigned": "La billetera no firmó, así que no se aceptó nada.",
-            "cashYouPay": "Dinero que pagas"
+            "cashYouPay": "Dinero que pagas",
+            "approveAs": "Aprobar como {{owner}}",
+            "lease": "Arriendo {{lease}} sobre {{parcel}}",
+            "heldWith": "compartido con {{owners}}",
+            "leaseNote": "El plan redistribuye la propiedad. Un arriendo cuenta para las reglas de aprobación pero no recibe parcela del libro de este plan.",
+            "planTitle": "El plan que se decide"
         },
         "receipt": {
             "signed": "Firmado por {{signer}} el {{date}}.",
@@ -392,6 +545,32 @@
             "change": "Cambiar…",
             "setUp": "Configurar…",
             "apply": "Usar esta configuración",
+            "summaryLeaseholders": ", {{count}} arrendatario(s)",
+            "publicBody": "organismo público",
+            "leaseRow": "Arriendo {{lease}} · {{area}}",
+            "rightsNeeded": "El archivo de derechos debe indicar {{what}} (parcel-rights/v2); la plantilla descargada los incluye.",
+            "needLeases": "cada arriendo y sus titulares",
+            "needPublicBodies": "qué titulares son organismos públicos",
+            "sources": "Fuentes:",
+            "researchCaveat": "Revisado el {{date}}. Investigación comparada, no asesoría jurídica: confirma la ley vigente y los pasos propios del procedimiento (avisos, audiencias, inscripción).",
+            "testComparison": "Comparación",
+            "testFraction": "Fracción",
+            "testMeasure": "Qué se cuenta",
+            "measureHeadcount": "del número de",
+            "measureArea": "de la superficie de",
+            "testOf": "De quién",
+            "ofOwners": "propietarios",
+            "ofLeaseholders": "arrendatarios",
+            "ofBoth": "propietarios y arrendatarios",
+            "testScope": "Qué titulares",
+            "scopeAll": "todos los titulares",
+            "scopePrivate": "solo privados",
+            "removeTest": "Quitar esta prueba",
+            "noTests": "Sin prueba de propietarios: solo decide la autoridad.",
+            "addTest": "Añadir una prueba",
+            "authorityId": "Autoridad (un ID abstracto; un miembro de la lente confirma quién actúa por ella)",
+            "customAuthority": "También debe aprobar una autoridad",
+            "unknownRegime": "Reglas de acuerdo desconocidas.",
             "explainer": "Carga derechos abstractos de propietarios de parcelas y define quién debe aprobar. Estos datos son independientes de la geometría; su ausencia no impide revisar la propuesta geométrica. Los derechos describen la propiedad declarada, pero no demuestran autorización.",
             "rightsTitle": "Derechos de propietarios",
             "importHelp": "Importa un archivo JSON de derechos de parcelas o carga los datos desde una fuente registrada. Si falla la importación, se conserva el conjunto anterior.",
@@ -412,14 +591,15 @@
                 "missingRights": "No se han cargado datos de derechos de propiedad.",
                 "missingParcels": "Selecciona parcelas para comprobar los datos de propiedad.",
                 "incompleteRights": "Los datos de propiedad están incompletos para una o más parcelas seleccionadas.",
-                "missingOwners": "No se han declarado propietarios para las parcelas seleccionadas."
+                "missingOwners": "No se han declarado propietarios para las parcelas seleccionadas.",
+                "authorityIsHolder": "El ID de una autoridad también es titular de derechos; dale a la autoridad su propio ID."
             },
             "missingParcels": "Faltan parcelas seleccionadas: {{parcels}}",
             "emptyRights": "El conjunto de datos aún no contiene parcelas.",
-            "policyTitle": "Política de aprobación",
-            "policyType": "Política",
-            "unanimous": "Unanimidad",
-            "threshold": "Umbrales personalizados",
+            "policyTitle": "Reglas del acuerdo",
+            "policyType": "Reglas",
+            "unanimous": "Todos los propietarios deben estar de acuerdo",
+            "threshold": "Reglas personalizadas",
             "ownerThreshold": "Umbral de cantidad de propietarios (fracción)",
             "areaThreshold": "Umbral de superficie (fracción)",
             "ownerRule": "Regla de cantidad de propietarios",

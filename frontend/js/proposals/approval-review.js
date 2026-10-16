@@ -1,6 +1,7 @@
-// What one abstract owner is asked to accept: the land they contribute, what a land readjustment
-// gives them back, their cash, the conditions, and how far the proposal is from passing before and
-// after their acceptance. Pure (no DOM); proposals/approval-panel.js renders it.
+// What one abstract party is asked to accept: the land (or lease) they contribute, what a land
+// readjustment gives them back, their cash, the conditions, and how far the proposal is from passing
+// before and after their decision. An authority sees the same terms and progress. Pure (no DOM);
+// proposals/approval-panel.js renders it.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -17,34 +18,32 @@
         return n / d;
     };
 
-    // The smallest owner count that meets a rule, exactly (shares of a headcount are integers).
-    function ownersNeeded(total, policy) {
-        if (policy.type === 'unanimous') return total;
-        const rule = policy.owners;
-        const product = BigInt(total) * BigInt(rule.numerator), den = BigInt(rule.denominator);
-        return Number(rule.strict ? product / den + 1n : (product + den - 1n) / den);
-    }
-
-    // The tally an electorate would show with exactly these owners accepted, and what is missing.
+    // The tally the parties would show with exactly these approvals, and what is missing: each test
+    // (heads or area, with what it needs), each required authority decision, and who has not yet
+    // approved among the holders the tests count.
     function progress(proposal, acceptedOwnerIds = []) {
         const A = approval();
         const state = A.inspect(proposal);
         const tally = A.tally(proposal, acceptedOwnerIds);
         const policy = state.context.policy;
-        if (!state.ready) return { ready: false, reason: state.reason, policy, passed: false };
-        const yes = new Set(acceptedOwnerIds.filter(id => state.ownerIds.includes(id)));
-        const parcelsOf = id => state.parcels.filter(parcel => parcel.owners.some(owner => owner.ownerId === id)).map(parcel => parcel.parcelId);
+        const regime = state.context.regime || null;
+        if (!state.ready) return { ready: false, reason: state.reason, policy, regime, passed: false };
+        const yes = new Set(acceptedOwnerIds.filter(id => state.partyIds.includes(id)));
+        const parcelsOf = id => state.parcels.filter(parcel => parcel.owners.some(owner => owner.ownerId === id)
+            || (parcel.leases || []).some(lease => lease.holders.some(holder => holder.ownerId === id))).map(parcel => parcel.parcelId);
+        // Holders whose approval some test counts (a public body outside every "private" test is heard, not counted).
+        const counted = new Set(tally.tests.flatMap(test => {
+            const pool = test.of === 'owners' ? state.ownerIds : test.of === 'leaseholders' ? state.leaseholderIds : [...state.ownerIds, ...state.leaseholderIds];
+            return pool.filter(id => test.scope === 'all' || !state.publicIds.includes(id));
+        }));
         return {
-            ready: true, reason: null, policy,
+            ready: true, reason: null, policy, regime,
+            tests: tally.tests, authorities: tally.authorities,
+            supportMet: tally.supportMet, authorityMet: tally.authorityMet, passed: tally.passed,
             totalOwners: tally.totalOwners, acceptedOwners: tally.acceptedOwners,
-            ownersNeeded: ownersNeeded(tally.totalOwners, policy),
             totalAreaM2: tally.totalAreaM2, acceptedAreaM2: tally.acceptedAreaM2,
-            areaNeededM2: tally.totalAreaM2 == null ? null
-                : policy.type === 'unanimous' ? tally.totalAreaM2 : tally.totalAreaM2 * policy.area.numerator / policy.area.denominator,
-            areaStrict: policy.type === 'threshold' && policy.area.strict,
-            ownerThresholdMet: tally.ownerThresholdMet, areaThresholdMet: tally.areaThresholdMet, passed: tally.passed,
             acceptedParcelIds: tally.acceptedParcelIds,
-            outstanding: state.ownerIds.filter(id => !yes.has(id)).map(ownerId => ({ ownerId, parcelIds: parcelsOf(ownerId) })),
+            outstanding: [...counted].sort().filter(id => !yes.has(id)).map(ownerId => ({ ownerId, parcelIds: parcelsOf(ownerId) })),
             // A co-owned parcel's area counts only once every co-owner has accepted.
             coOwned: state.parcels.filter(parcel => parcel.owners.length > 1).map(parcel => ({
                 parcelId: parcel.parcelId, areaM2: parcel.areaM2, counts: tally.acceptedParcelIds.includes(parcel.parcelId),
@@ -90,6 +89,7 @@
         const offer = Number(proposal.offer);
         return {
             policy: context.policy,
+            regime: context.regime || null,
             lens: context.lens,
             rightsSource: context.rights?.source || null,
             isConditional: proposal.isConditional === true,
@@ -106,12 +106,14 @@
 
     /**
      * @param {object} proposal
-     * @param {string} ownerId abstract owner from the proposal's rights snapshot
+     * @param {string} ownerId abstract party from the proposal's rights snapshot or rules: an owner,
+     *   a leaseholder or a required authority
      * @param {{ acceptedOwnerIds?: string[], turf?: object }} options turf measures readjustment plots
      */
     function ownerReview(proposal, ownerId, { acceptedOwnerIds = [], turf = null } = {}) {
         const state = approval().inspect(proposal);
-        if (!state.ready || !state.ownerIds.includes(ownerId)) return null;
+        if (!state.ready || !state.partyIds.includes(ownerId)) return null;
+        const kind = approval().partyOf(ownerId, state).kind;
         const contributes = state.parcels.filter(parcel => parcel.owners.some(owner => owner.ownerId === ownerId)).map(parcel => {
             const share = parcel.owners.find(owner => owner.ownerId === ownerId).share;
             return {
@@ -120,14 +122,28 @@
                 coOwnerIds: parcel.owners.map(owner => owner.ownerId).filter(id => id !== ownerId)
             };
         });
+        // Leases this party holds. The plan's ledger reallocates ownership; a lease's holders approve
+        // under the rules but get no plot from the ledger, which the review says plainly.
+        const leases = state.parcels.flatMap(parcel => (parcel.leases || [])
+            .filter(lease => lease.holders.some(holder => holder.ownerId === ownerId)).map(lease => {
+                const share = lease.holders.find(holder => holder.ownerId === ownerId).share;
+                const leaseAreaM2 = lease.areaM2 ?? parcel.areaM2;
+                return {
+                    parcelId: parcel.parcelId, leaseId: lease.leaseId, share, leaseAreaM2,
+                    shareAreaM2: leaseAreaM2 == null ? null : leaseAreaM2 * shareValue(share),
+                    coHolderIds: lease.holders.map(holder => holder.ownerId).filter(id => id !== ownerId)
+                };
+            }));
         const knownAreas = contributes.every(row => row.shareAreaM2 != null);
         const accepted = acceptedOwnerIds.filter(id => id !== ownerId);
         return {
             ownerId,
+            kind,
             ownerIds: state.ownerIds,
             contributes,
+            leases,
             contributedAreaM2: knownAreas ? contributes.reduce((sum, row) => sum + row.shareAreaM2, 0) : null,
-            receives: deal().isReadjustment(proposal) && turf ? readjustmentReceipt(proposal, ownerId, turf) : null,
+            receives: kind === 'owner' && deal().isReadjustment(proposal) && turf ? readjustmentReceipt(proposal, ownerId, turf) : null,
             conditions: conditions(proposal),
             alreadyAccepted: acceptedOwnerIds.includes(ownerId),
             progressWithout: progress(proposal, accepted),
@@ -135,5 +151,5 @@
         };
     }
 
-    return { ownersNeeded, progress, ownerReview, conditions };
+    return { progress, ownerReview, conditions };
 });

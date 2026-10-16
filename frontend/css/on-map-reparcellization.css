@@ -346,6 +346,17 @@
     line-height: 1.4;
 }
 
+/* The plan against its scheme's distribution rules (basis, caps on land given up). */
+.reparcel-approval-setup__checks {
+    margin: 0;
+    padding-left: var(--cb-space-4);
+    font-size: var(--cb-text-sm);
+    line-height: 1.4;
+}
+
+.reparcel-approval-setup__checks [data-state="ok"] { color: var(--cb-success-soft-ink); }
+.reparcel-approval-setup__checks [data-state="warn"] { color: var(--cb-danger-soft-ink); }
+
 .reparcel-approval-row__title {
     color: var(--cb-text-strong);
     font-weight: var(--cb-weight-semibold);

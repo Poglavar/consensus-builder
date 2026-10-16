@@ -185,7 +185,7 @@ async function main() {
     lensLog(`verdicts: ${operatorToken ? 'enabled (operator token set)' : 'disabled (LENS_OPERATOR_TOKEN unset)'}`);
     const approval = approvalAttester?.status();
     lensLog(`proposal approval: ${approval
-        ? `enabled from ${values.rights} (${approval.parcels} parcel(s), ${approval.owners} owner(s), ${approval.signers} signer wallet(s); facts valid ${approvalValidityDays} day(s))`
+        ? `enabled from ${values.rights} (${approval.parcels} parcel(s), ${approval.owners} holder(s), ${approval.authorities} authority(ies), ${approval.signers} signer wallet(s); facts valid ${approvalValidityDays} day(s))`
         : 'disabled (no --rights)'}`);
     const server = app.listen(port, values.host, () => {
         lensLog(`listening on http://${values.host}:${port}/lens/status`);

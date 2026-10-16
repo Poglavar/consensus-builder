@@ -195,6 +195,153 @@
     },
     "proposalApproval": {
         "ownerLabel": "Vlasnik {{label}}",
+        "leaseholderLabel": "Zakupnik {{label}}",
+        "authorityLabel": "Nadležno tijelo",
+        "authorityLabelLettered": "Nadležno tijelo {{label}}",
+        "rules": {
+            "all": "svih",
+            "and": " i ",
+            "authorityGeneric": "odobrenje nadležnog tijela",
+            "authorityOnly": "Potrebno je samo {{authority}}. Vlasnici se saslušavaju; njihovi odgovori ne odlučuju.",
+            "passesWith": "Prolazi uz pristanak: {{tests}}.",
+            "passesWithAuthority": "Prolazi uz pristanak: {{tests}}; potrebno je i {{authority}}.",
+            "vacuous": "Ovdje nema koga brojati, pa ovaj uvjet ne blokira.",
+            "heard": "Saslušani, ne broje se",
+            "ownersHeard": "Vlasnici se saslušavaju; odlučuje nadležno tijelo.",
+            "of": {
+                "headcount-owners-all": "vlasnika",
+                "headcount-owners-private": "privatnih vlasnika",
+                "headcount-leaseholders-all": "zakupnika",
+                "headcount-leaseholders-private": "privatnih zakupnika",
+                "headcount-owners-and-leaseholders-all": "vlasnika i zakupnika zajedno",
+                "headcount-owners-and-leaseholders-private": "privatnih vlasnika i zakupnika zajedno",
+                "area-owners-all": "površine",
+                "area-owners-private": "privatnog zemljišta",
+                "area-leaseholders-all": "zakupljene površine",
+                "area-leaseholders-private": "privatno zakupljene površine",
+                "area-owners-and-leaseholders-all": "površine u vlasništvu i zakupu",
+                "area-owners-and-leaseholders-private": "privatne površine u vlasništvu i zakupu"
+            },
+            "meter": {
+                "headcount-owners-private": "Privatni vlasnici",
+                "headcount-leaseholders-all": "Zakupnici",
+                "headcount-leaseholders-private": "Privatni zakupnici",
+                "headcount-owners-and-leaseholders-all": "Vlasnici i zakupnici",
+                "headcount-owners-and-leaseholders-private": "Privatni vlasnici i zakupnici",
+                "area-owners-private": "Privatno zemljište",
+                "area-leaseholders-all": "Zakupljena površina",
+                "area-leaseholders-private": "Privatno zakupljena površina",
+                "area-owners-and-leaseholders-all": "Površina u vlasništvu i zakupu",
+                "area-owners-and-leaseholders-private": "Privatna površina u vlasništvu i zakupu"
+            }
+        },
+        "regime": {
+            "research": "Istraživački predložak",
+            "stage": "Za što je ova podrška: {{stage}}",
+            "stages": {
+                "agreement": "dobrovoljni sporazum",
+                "initiative": "pokretanje postupka (inicijativa)",
+                "association": "osnivanje udruge",
+                "plan": "plan preraspodjele",
+                "execution": "provedbu preraspodjele"
+            },
+            "families": {
+                "voluntary": "Dobrovoljni sporazum",
+                "support-and-authority": "Podrška vlasnika, zatim odlučuje nadležno tijelo",
+                "authority-led": "Vodi nadležno tijelo: vlasnici se saslušavaju"
+            },
+            "basis": {
+                "area": "površini",
+                "value": "vrijednosti zemljišta"
+            },
+            "basisArea": "Nove čestice raspodjeljuju se prema površini.",
+            "basisValue": "Nove čestice raspodjeljuju se prema vrijednosti zemljišta, pa čestice trebaju vrijednosti.",
+            "capPool": "Zemljište koje se ne vraća vlasnicima najviše je {{percent}} % fonda.",
+            "capOwnerWhenArea": "Pri raspodjeli prema površini nijedan vlasnik ne daje više od {{percent}} % svog zemljišta.",
+            "capOwner": "Nijedan vlasnik ne daje više od {{percent}} % svog zemljišta.",
+            "check": {
+                "basisOk": "Raspodijeljeno prema {{basis}}, kako shema traži.",
+                "basisWrong": "Shema raspodjeljuje prema {{basis}}, a ovaj plan prema {{actual}}.",
+                "capOwnerNone": "Nijedan vlasnik ne daje zemljište.",
+                "capOwnerOk": "Najviše daje {{owner}}: {{given}}; granica je {{limit}}.",
+                "capOwnerOver": "{{owner}} daje {{given}} svog zemljišta; granica je {{limit}}.",
+                "capPoolUnknown": "Površina fonda nije poznata, pa se granica od {{limit}} ne može provjeriti.",
+                "capPoolOk": "{{given}} fonda ne vraća se vlasnicima; granica je {{limit}}.",
+                "capPoolOver": "{{given}} fonda ne vraća se vlasnicima, iznad granice od {{limit}}."
+            }
+        },
+        "authority": {
+            "approved": "odobreno: {{role}}",
+            "pending": "čeka se: {{role}}",
+            "given": "nadležno tijelo odobrilo",
+            "awaited": "čeka se nadležno tijelo"
+        },
+        "schemes": {
+            "nl-kavelruil": {
+                "name": "Nizozemska — dobrovoljna urbana zamjena zemljišta (kavelruil)",
+                "note": "Sve strane pristaju. Zamjena se zatim unosi u javnobilježnički akt i upisuje u Kadaster; sudjeluju barem tri strane."
+            },
+            "tw-owner-organized": {
+                "name": "Tajvan — urbana preraspodjela zemljišta koju organiziraju vlasnici",
+                "authority": "odobrenje nadležnog tijela",
+                "note": "Broje se samo privatni vlasnici i privatno zemljište. Zemljište za javne sadržaje i troškove smije zauzeti najviše 45 % površine (postoji postupak iznimke)."
+            },
+            "kr-association": {
+                "name": "Južna Koreja — udruga za urbani razvoj",
+                "authority": "ovlaštenje udruge od tijela koje određuje zonu",
+                "note": "Ovi uvjeti odobravaju osnivanje udruge; plan preraspodjele ima vlastito kasnije odobrenje."
+            },
+            "es-ct-basic": {
+                "name": "Katalonija — osnovna kompenzacija",
+                "authority": "odobrenje projekta kompenzacije od općine",
+                "note": "Vlasnici više od polovice površine mogu je pokrenuti; vlasnici koji se ne pridruže imaju određene uloge."
+            },
+            "es-ct-concertacion": {
+                "name": "Katalonija — kompenzacija dogovorom (concertación)",
+                "authority": "odabir i odobrenje općine",
+                "note": "Vlasnici više od četvrtine površine mogu je pokrenuti; općina zatim provodi odabir."
+            },
+            "es-md-compensation": {
+                "name": "Madrid — kompenzacija koju provode vlasnici",
+                "authority": "odobrenje općine",
+                "note": "Najmanje polovica površine: ovdje je točno polovica dovoljna, za razliku od Katalonije."
+            },
+            "co-readjustment": {
+                "name": "Kolumbija — jedinica urbanog djelovanja / preraspodjela zemljišta",
+                "authority": "odobrenje općinskog tijela za planiranje",
+                "note": "Vlasnici 51 % obuhvaćene površine; projekt treba i više od jednog sudionika."
+            },
+            "jp-association": {
+                "name": "Japan — udruga vlasnika zemljišta",
+                "authority": "odobrenje guvernera prefekture",
+                "note": "Tri uvjeta istodobno: vlasnici, zakupnici te površina u vlasništvu i zakupu. Javno zemljište nije uključeno. Zemljište se preraspodjeljuje prema vrijednosti; rezervno zemljište može se prodati za financiranje radova."
+            },
+            "jp-joint": {
+                "name": "Japan — pojedinačna ili zajednička provedba",
+                "authority": "odobrenje plana od guvernera prefekture",
+                "note": "Pristaju svi vlasnici i zakupnici; neka druga prava su izuzeta."
+            },
+            "de-umlegung-new": {
+                "name": "Njemačka — Umlegung, zemljište koje se prvi put uređuje",
+                "authority": "donošenje plana preraspodjele od tijela za Umlegung",
+                "note": "Nema glasanja vlasnika: tijelo nalaže i odlučuje, a vlasnici se saslušavaju. Pri raspodjeli prema površini nijedan vlasnik ne daje više od 30 % svog zemljišta za javne sadržaje (§58); pri raspodjeli prema vrijednosti dobitak se namiruje novcem."
+            },
+            "de-umlegung-developed": {
+                "name": "Njemačka — Umlegung, već uređeno zemljište",
+                "authority": "odluka tijela za Umlegung o planu preraspodjele",
+                "note": "Nema glasanja vlasnika: tijelo nalaže i odlučuje, a vlasnici se saslušavaju. Pri raspodjeli prema površini nijedan vlasnik ne daje više od 10 % svog zemljišta (§58)."
+            },
+            "tr-article-18": {
+                "name": "Turska — preraspodjela prema članku 18.",
+                "authority": "odluka općine o planu parcelacije",
+                "note": "Pristanak vlasnika nije potreban. Svaki posjed daje najviše 45 % svoje površine za javne namjene (DOP); zakon to primjenjuje po čestici."
+            },
+            "in-gj-tps": {
+                "name": "Indija, Gujarat — shema urbanističkog planiranja",
+                "authority": "odobrenje sheme od vlade savezne države",
+                "note": "Tijelo priprema shemu i razmatra pisane prigovore; konačne čestice oblikuju se prema procjeni vrijednosti."
+            }
+        },
         "deals": {
             "title": "Što svaki vlasnik unosi i dobiva",
             "dealOf": "{{owner}}: što unosi i dobiva",
@@ -221,6 +368,7 @@
         "status": {
             "passed": "Dovoljno za prolaz",
             "pending": "Još nije dovoljno",
+            "authorityPending": "Čeka se nadležno tijelo",
             "unresolved": "Vlasništvo nije razriješeno"
         },
         "ruleUnanimous": "Svaki vlasnik mora prihvatiti.",
@@ -289,7 +437,12 @@
             "needsMore": "Nakon vas moraju prihvatiti još neki vlasnici da bi prijedlog prošao.",
             "verifyFirst": "Da biste prihvatili, najprije kod člana leće potvrdite da vaš novčanik smije djelovati u ime ovog vlasnika.",
             "notSigned": "Novčanik nije potpisao pa ništa nije prihvaćeno.",
-            "cashYouPay": "Novac koji plaćate"
+            "cashYouPay": "Novac koji plaćate",
+            "approveAs": "Odobri kao {{owner}}",
+            "lease": "Zakup {{lease}} na {{parcel}}",
+            "heldWith": "zajedno s {{owners}}",
+            "leaseNote": "Plan preraspodjeljuje vlasništvo. Zakup se broji u pravilima odobravanja, ali iz knjige ovog plana ne dobiva česticu.",
+            "planTitle": "Plan o kojem se odlučuje"
         },
         "receipt": {
             "signed": "Potpisao {{signer}}, {{date}}.",
@@ -392,6 +545,32 @@
             "change": "Promijeni…",
             "setUp": "Postavi…",
             "apply": "Koristi ovu postavku",
+            "summaryLeaseholders": ", {{count}} zakupnik(a)",
+            "publicBody": "javno tijelo",
+            "leaseRow": "Zakup {{lease}} · {{area}}",
+            "rightsNeeded": "Datoteka prava mora navesti {{what}} (parcel-rights/v2); preuzeti predložak ih uključuje.",
+            "needLeases": "svaki zakup i njegove zakupnike",
+            "needPublicBodies": "koji su nositelji prava javna tijela",
+            "sources": "Izvori:",
+            "researchCaveat": "Provjereno {{date}}. Usporedno istraživanje, ne pravni savjet: provjerite važeći zakon i korake samog postupka (obavijesti, saslušanja, upis).",
+            "testComparison": "Usporedba",
+            "testFraction": "Udio",
+            "testMeasure": "Što se broji",
+            "measureHeadcount": "broja",
+            "measureArea": "površine",
+            "testOf": "Čijih",
+            "ofOwners": "vlasnika",
+            "ofLeaseholders": "zakupnika",
+            "ofBoth": "vlasnika i zakupnika",
+            "testScope": "Koji nositelji",
+            "scopeAll": "svi nositelji",
+            "scopePrivate": "samo privatni",
+            "removeTest": "Ukloni ovaj uvjet",
+            "noTests": "Nema uvjeta za vlasnike: odlučuje samo nadležno tijelo.",
+            "addTest": "Dodaj uvjet",
+            "authorityId": "Nadležno tijelo (apstraktni ID; član leće potvrđuje tko djeluje za njega)",
+            "customAuthority": "Mora odobriti i nadležno tijelo",
+            "unknownRegime": "Nepoznata pravila sporazuma.",
             "explainer": "Prenesite apstraktne podatke o vlasnicima čestica i odredite tko mora odobriti prijedlog. Ti su podaci odvojeni od geometrije; bez njih i dalje možete pregledati geometrijski prijedlog. Podaci opisuju prijavljeno vlasništvo, ali ne dokazuju ovlaštenje.",
             "rightsTitle": "Prava vlasnika čestica",
             "importHelp": "Uvezite JSON s pravima čestica ili učitajte podatke iz registriranog izvora. Prethodni skup ostaje sačuvan ako uvoz ne uspije.",
@@ -412,14 +591,15 @@
                 "missingRights": "Nema učitanih podataka o vlasničkim pravima.",
                 "missingParcels": "Odaberite čestice za provjeru vlasničkih podataka.",
                 "incompleteRights": "Vlasnički podaci nisu potpuni za jednu ili više odabranih čestica.",
-                "missingOwners": "Za odabrane čestice nisu navedeni vlasnici."
+                "missingOwners": "Za odabrane čestice nisu navedeni vlasnici.",
+                "authorityIsHolder": "ID nadležnog tijela ujedno je nositelj prava; dajte tijelu vlastiti ID."
             },
             "missingParcels": "Nedostaju odabrane čestice: {{parcels}}",
             "emptyRights": "Skup podataka još nema redaka čestica.",
-            "policyTitle": "Pravila odobravanja",
-            "policyType": "Pravilo",
-            "unanimous": "Jednoglasno",
-            "threshold": "Prilagođeni pragovi",
+            "policyTitle": "Pravila sporazuma",
+            "policyType": "Pravila",
+            "unanimous": "Svaki vlasnik mora pristati",
+            "threshold": "Prilagođena pravila",
             "ownerThreshold": "Prag broja vlasnika (razlomak)",
             "areaThreshold": "Prag površine (razlomak)",
             "ownerRule": "Pravilo broja vlasnika",

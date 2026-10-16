@@ -10,6 +10,12 @@ const providerSource = readFileSync(new URL('../../frontend/js/proposals/approva
 const runtimeSource = readFileSync(new URL('../../frontend/js/proposals/approval-runtime.js', import.meta.url), 'utf8');
 
 const owner = (ownerId, share = '1/1', extra = {}) => ({ ownerId, share, ...extra });
+// The tally reports one entry per test the rules count; the owner/area rule has exactly two.
+const withMet = tally => ({
+    ...tally,
+    ownerThresholdMet: tally.tests.find(test => test.measure === 'headcount')?.met === true,
+    areaThresholdMet: tally.tests.find(test => test.measure === 'area')?.met === true
+});
 const parcel = (parcelId, areaM2, owners, complete = true) => ({ parcelId, complete, areaM2, owners });
 const rights = parcels => ({
     schema: 'parcel-rights/v1',
@@ -63,7 +69,7 @@ describe('parcel approval model', () => {
         ]);
 
         expect(approval.inspect(item).ownerIds).toEqual(['owner-a', 'owner-b', 'owner-c', 'owner-d']);
-        expect(approval.tally(item, ['owner-a', 'owner-b', 'owner-c'])).toMatchObject({
+        expect(withMet(approval.tally(item, ['owner-a', 'owner-b', 'owner-c']))).toMatchObject({
             ready: true, totalOwners: 4, acceptedOwners: 3,
             acceptedParcelIds: ['parcel-a', 'parcel-b'], totalAreaM2: 175,
             acceptedAreaM2: 150, passed: false
@@ -76,7 +82,7 @@ describe('parcel approval model', () => {
             parcel('parcel-b', 34, [owner('owner-a')])
         ]);
 
-        expect(approval.tally(item, ['owner-a'])).toMatchObject({
+        expect(withMet(approval.tally(item, ['owner-a']))).toMatchObject({
             totalOwners: 1, acceptedOwners: 1,
             acceptedParcelIds: ['parcel-a', 'parcel-b'], totalAreaM2: 46, acceptedAreaM2: 46, passed: true
         });
@@ -88,8 +94,8 @@ describe('parcel approval model', () => {
             parcel('solo-20', 20, [owner('owner-c')])
         ], { policy: threshold([1, 2], [7, 10]) });
 
-        expect(approval.tally(item, ['owner-a'])).toMatchObject({ acceptedParcelIds: [], acceptedAreaM2: 0, areaThresholdMet: false, passed: false });
-        expect(approval.tally(item, ['owner-a', 'owner-b'])).toMatchObject({
+        expect(withMet(approval.tally(item, ['owner-a']))).toMatchObject({ acceptedParcelIds: [], acceptedAreaM2: 0, areaThresholdMet: false, passed: false });
+        expect(withMet(approval.tally(item, ['owner-a', 'owner-b']))).toMatchObject({
             acceptedParcelIds: ['shared-80'], acceptedAreaM2: 80, areaThresholdMet: true, passed: true
         });
     });
@@ -104,16 +110,16 @@ describe('parcel approval model', () => {
         const strict = proposal(parcels, { policy: threshold([1, 2], [7, 10], true) });
         const inclusive = proposal(parcels, { policy: threshold([1, 2], [7, 10], false) });
 
-        expect(approval.tally(strict, ['owner-a', 'owner-d'])).toMatchObject({
+        expect(withMet(approval.tally(strict, ['owner-a', 'owner-d']))).toMatchObject({
             acceptedOwners: 2, acceptedAreaM2: 50, ownerThresholdMet: false, areaThresholdMet: false, passed: false
         });
-        expect(approval.tally(inclusive, ['owner-a', 'owner-d'])).toMatchObject({
+        expect(withMet(approval.tally(inclusive, ['owner-a', 'owner-d']))).toMatchObject({
             ownerThresholdMet: true, areaThresholdMet: false, passed: false
         });
-        expect(approval.tally(inclusive, ['owner-b', 'owner-c', 'owner-d'])).toMatchObject({
+        expect(withMet(approval.tally(inclusive, ['owner-b', 'owner-c', 'owner-d']))).toMatchObject({
             ownerThresholdMet: true, areaThresholdMet: false, acceptedAreaM2: 60, passed: false
         });
-        expect(approval.tally(inclusive, ['owner-a', 'owner-b', 'owner-d'])).toMatchObject({
+        expect(withMet(approval.tally(inclusive, ['owner-a', 'owner-b', 'owner-d']))).toMatchObject({
             ownerThresholdMet: true, areaThresholdMet: true, acceptedAreaM2: 80, passed: true
         });
     });
@@ -136,13 +142,13 @@ describe('parcel approval model', () => {
             { ownerId: 'owner-b', share: '1/3' },
             { ownerId: 'owner-c', share: '1/3' }
         ]);
-        expect(approval.tally(thirds, ['owner-a'])).toMatchObject({
+        expect(withMet(approval.tally(thirds, ['owner-a']))).toMatchObject({
             acceptedOwners: 1, acceptedAreaM2: 1, ownerThresholdMet: true, areaThresholdMet: true, passed: true
         });
         const strictThirds = { ...thirds, approvalConfig: {
             ...thirds.approvalConfig, policy: threshold([1, 3], [1, 3], true)
         } };
-        expect(approval.tally(strictThirds, ['owner-a'])).toMatchObject({
+        expect(withMet(approval.tally(strictThirds, ['owner-a']))).toMatchObject({
             ownerThresholdMet: false, areaThresholdMet: false, passed: false
         });
     });
@@ -151,8 +157,8 @@ describe('parcel approval model', () => {
         const missing = { cadastreParcelIds: [], approvalConfig: { schema: 'proposal-approval/v1', rights: null } };
         const incomplete = proposal([parcel('incomplete', null, [], false)]);
 
-        expect(approval.tally(missing, [])).toMatchObject({ ready: false, reason: 'missing-rights', ownerThresholdMet: false, areaThresholdMet: false, passed: false });
-        expect(approval.tally(incomplete, [])).toMatchObject({ ready: false, reason: 'incomplete-rights', ownerThresholdMet: false, areaThresholdMet: false, passed: false });
+        expect(withMet(approval.tally(missing, []))).toMatchObject({ ready: false, reason: 'missing-rights', ownerThresholdMet: false, areaThresholdMet: false, passed: false });
+        expect(withMet(approval.tally(incomplete, []))).toMatchObject({ ready: false, reason: 'incomplete-rights', ownerThresholdMet: false, areaThresholdMet: false, passed: false });
     });
 
     it('rejects bad shares, duplicate parcels or owners, and unsupported right kinds', () => {

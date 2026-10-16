@@ -5303,34 +5303,6 @@
       "controlType": "text"
     },
     {
-      "id": "control-d1464a9c3e113d-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<input type=\"text\" data-approval-fraction=\"owners\" value=\"${esc(fractionText(threshold.owners))}\" placeholder=\"1/2\">",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-9889459ced8bff-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<input type=\"text\" data-approval-fraction=\"area\" value=\"${esc(fractionText(threshold.area))}\" placeholder=\"7/10\">",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-a074bd94e34f5c-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<select data-approval-strict=\"owners\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-7120c2a9620c28-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<select data-approval-strict=\"area\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
       "id": "control-bf1b74e30cb12d-1",
       "source": "js/proposals/approval-setup.js",
       "markup": "<select data-approval-source>",
@@ -5404,13 +5376,6 @@
       "markup": "<button type=\"button\" class=\"btn btn-danger btn-sm\" data-editor-action=\"approval-remove\"${normalized?.rights ? '' : ' disabled'}>",
       "interaction": "click",
       "controlType": "button"
-    },
-    {
-      "id": "control-247326fea7040f-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<select data-approval-policy-type>",
-      "interaction": "change",
-      "controlType": "select"
     },
     {
       "id": "control-09ee9264a0a3d5-1",
@@ -10152,6 +10117,55 @@
       "markup": "<button type=\"button\" class=\"btn btn-sm\" data-reparcel-approval-setup>",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-7ed6db7682f5a5-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<select data-approval-rule ${attribute} aria-label=\"${esc(label)}\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-e19b924c213238-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<input type=\"text\" data-approval-rule data-approval-test-fraction value=\"${esc(fractionText(test))}\" placeholder=\"1/2\" aria-label=\"${esc(t('proposalDrafts.approval.testFraction', 'Fraction'))}\">",
+      "interaction": "change",
+      "controlType": "text"
+    },
+    {
+      "id": "control-36205215699722-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-editor-action=\"approval-test-remove\" data-test-index=\"${index}\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-71e1f8196ee0b3-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-editor-action=\"approval-test-add\"${rules.tests.length >",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-3708b2045166eb-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<input type=\"text\" data-approval-rule data-approval-authority-id=\"${index}\" value=\"${esc(value)}\" autocomplete=\"off\">",
+      "interaction": "change",
+      "controlType": "text"
+    },
+    {
+      "id": "control-241be07962a1de-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<input type=\"checkbox\" data-approval-rule data-approval-custom-authority${authorityIds.length ? ' checked' : ''}>",
+      "interaction": "change",
+      "controlType": "checkbox"
+    },
+    {
+      "id": "control-c5c8c7647f6d44-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<select data-approval-rule data-approval-regime>",
+      "interaction": "change",
+      "controlType": "select"
     }
   ],
   "variantExclusions": [

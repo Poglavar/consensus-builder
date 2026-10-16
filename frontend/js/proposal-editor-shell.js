@@ -308,12 +308,21 @@
         return global.ProposalApprovalSetup || (typeof require === 'function' ? require('./proposals/approval-setup.js') : null);
     }
 
+    // The approval setup is written whole: a patch would be deep-merged (proposal-drafts.js
+    // mergeDraftValues), and a config that drops its scheme pin or source would keep the old one.
+    function writeApprovalConfig(draftId, approvalConfig, coalesceKey) {
+        global.proposalDraftStore.updateDraft(draftId, next => {
+            next.fields = { ...(next.fields || {}), approvalConfig };
+            return next;
+        }, { coalesceKey });
+    }
+
     function renderApprovalPreview(config, draft) {
         return approvalSetup().previewHtml(config, approvalCadastreParcelIds(draft));
     }
 
-    function approvalPolicyText(policy) {
-        return approvalSetup().policyText(policy);
+    function approvalPolicyText(policy, regime = null) {
+        return approvalSetup().policyText(policy, regime);
     }
 
     // The review's words for the approval setup and the lens, which displayValue would print as JSON.
@@ -334,7 +343,7 @@
                 source: [rights.source?.provider, rights.source?.reference].filter(Boolean).join(' · ') || '—'
             })
             : tDraft('proposalDrafts.review.noRights', 'No ownership data.');
-        return `${rightsText} ${approvalPolicyText(value.policy)}`;
+        return `${rightsText} ${approvalPolicyText(value.policy, value.regime)}`;
     }
 
     function renderApproval(draft) {
@@ -633,7 +642,7 @@
             approvalSetup().syncSourceControls(ensureShell());
             return;
         }
-        const policyControl = event.target?.closest?.('[data-approval-policy-type], [data-approval-fraction], [data-approval-strict]');
+        const policyControl = event.target?.closest?.('[data-approval-rule]');
         if (policyControl && editorState.draftId) {
             saveApprovalPolicy();
             return;
@@ -688,7 +697,7 @@
             const draft = global.proposalDraftStore.getDraft(editorState.draftId);
             const normalized = approvalSetup().withPolicyFromForm(ensureShell(), draft.fields?.approvalConfig);
             editorState.approvalError = null;
-            global.proposalDraftStore.updateDraft(editorState.draftId, { fields: { approvalConfig: normalized } }, { coalesceKey: 'approval-policy' });
+            writeApprovalConfig(editorState.draftId, normalized, 'approval-policy');
         } catch (error) {
             editorState.approvalError = error?.message || String(error);
         }
@@ -710,7 +719,7 @@
             // Rights replace the dataset; the policy edited meanwhile stays.
             const approvalConfig = approvalApi().normalizeConfig({ ...approvalConfigFor(latest), rights: imported.rights });
             editorState.approvalError = null;
-            store.updateDraft(draft.id, { fields: { approvalConfig } }, { coalesceKey: 'approval-rights-import' });
+            writeApprovalConfig(draft.id, approvalConfig, 'approval-rights-import');
         } catch (error) {
             // Keep the previous canonical snapshot untouched when a file or provider fails.
             if (importSequence !== editorState.approvalImportSequence || editorState.draftId !== draft.id) return;
@@ -726,7 +735,7 @@
         try {
             const approvalConfig = approvalSetup().withoutRights(draft.fields?.approvalConfig);
             editorState.approvalError = null;
-            global.proposalDraftStore.updateDraft(draft.id, { fields: { approvalConfig } }, { coalesceKey: 'approval-rights-remove' });
+            writeApprovalConfig(draft.id, approvalConfig, 'approval-rights-remove');
         } catch (error) {
             editorState.approvalError = error?.message || String(error);
         }
@@ -736,7 +745,7 @@
     function downloadApprovalTemplate() {
         const draft = global.proposalDraftStore?.getDraft(editorState.draftId);
         if (!draft) return;
-        approvalSetup().downloadTemplate(approvalCadastreParcelIds(draft));
+        approvalSetup().downloadTemplate(approvalCadastreParcelIds(draft), draft.fields?.approvalConfig);
     }
 
     // The app's confirm (js/ui/dialogs.js): every question here throws work away, so the safe answer
@@ -807,6 +816,16 @@
             downloadApprovalTemplate();
         } else if (action === 'approval-remove') {
             removeApprovalRights();
+        } else if (action === 'approval-test-add' || action === 'approval-test-remove') {
+            const draft = store.getDraft(draftId);
+            try {
+                const approvalConfig = approvalSetup().withRuleAction(ensureShell(), draft.fields?.approvalConfig, action, button.dataset.testIndex);
+                editorState.approvalError = null;
+                writeApprovalConfig(draftId, approvalConfig, 'approval-policy');
+            } catch (error) {
+                editorState.approvalError = error?.message || String(error);
+            }
+            renderShell();
         } else if (action === 'focus-issue') {
             const draft = store.getDraft(draftId);
             const issues = [...(draft.validation?.errors || []), ...(draft.validation?.warnings || [])];

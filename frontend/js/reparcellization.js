@@ -584,6 +584,7 @@
                             <div class="reparcel-approval-setup" data-reparcel-approval>
                                 <h3 class="cb-kicker">${t('proposalDrafts.approval.title', 'Ownership and approval')}</h3>
                                 <p class="reparcel-approval-setup__summary" data-reparcel-approval-summary></p>
+                                <ul class="reparcel-approval-setup__checks" data-reparcel-regime-check hidden></ul>
                                 <button type="button" class="btn btn-sm" data-reparcel-approval-setup>${t('proposalDrafts.approval.setUp', 'Set up…')}</button>
                             </div>
                             <div class="reparcel-coverage" data-reparcel-coverage></div>
@@ -1120,6 +1121,7 @@
         resyncJointSliceShares();
         const c = evaluatePlanCompleteness();
         ensureCommitAvailability(c.ok);
+        renderRegimeCheck(c.validation.regimeCheck);
         // NO auto-persist here. This used to write the plan to the draft on every state change —
         // every drawn plot, every owner assignment — which made the editor a live writer rather
         // than a workspace: Cancel had nothing left to discard, because the edits were already
@@ -1155,8 +1157,9 @@
             );
         } else {
             state.coverageEl.setAttribute('data-state', 'warn');
-            state.coverageEl.textContent = [...new Set(c.validation.errors.map(error =>
-                t(`reparcellization.validation.${error.code}`, error.message)))].join(' ');
+            state.coverageEl.textContent = [...new Set(c.validation.errors.map(error => (error.code === 'regime-allocation' && window.ProposalApprovalText
+                ? window.ProposalApprovalText.checkLines({ rules: [error.rule] }, t, key => state.ownerShares.find(owner => owner.ownerKey === key)?.displayName || key)[0]
+                : t(`reparcellization.validation.${error.code}`, error.message))))].join(' ');
         }
     }
 
@@ -4151,6 +4154,16 @@
     // that attests owners. Set here while designing, so a readjustment is created ready for owners to
     // accept. The form is the editor's Approval tab (proposals/approval-setup.js).
 
+    // The plan against its scheme's distribution rules, one line each, under the approval row.
+    function renderRegimeCheck(check) {
+        const list = state.approvalRowEl?.querySelector('[data-reparcel-regime-check]');
+        if (!list) return;
+        const lines = check && window.ProposalApprovalText
+            ? window.ProposalApprovalText.checkLines(check, t, key => state.ownerShares.find(owner => owner.ownerKey === key)?.displayName || key) : [];
+        list.hidden = !lines.length;
+        list.innerHTML = check ? check.rules.map((rule, index) => `<li data-regime-rule="${rule.kind}${rule.per ? `-${rule.per}` : ''}" data-state="${rule.ok ? 'ok' : 'warn'}">${escapeHtml(lines[index])}</li>`).join('') : '';
+    }
+
     function updateApprovalRow() {
         const row = state.approvalRowEl;
         const setup = window.ProposalApprovalSetup;
@@ -4531,7 +4544,11 @@
         // Contribution percent is by value when value data is meaningful,
         // otherwise by area. poolUnitValue (€/m²) lets us value redrawn plots
         // at the pool average, so owners who pooled pricier land get more area.
-        const useValue = totalValue > 0;
+        // A scheme that distributes by area (approval-regimes.js) keeps it by area. Looked up here,
+        // not through a helper: readjustment-owner-identity.test.js runs this function on its own.
+        const scheme = state.approvalConfig?.regime;
+        const schemeBasis = scheme ? window.ProposalApprovalRegimes?.get(scheme.id, scheme.version)?.allocation?.basis : null;
+        const useValue = totalValue > 0 && schemeBasis !== 'area';
         state.totalValue = totalValue;
         state.poolUnitValue = useValue && totalArea > 0 ? totalValue / totalArea : 0;
         state.contributionBasis = useValue ? 'value' : 'area';

@@ -101,7 +101,8 @@
         let state;
         try { state = A.inspect(proposal); } catch (_) { state = { ready: false }; }
         if (!state.ready) return refusal(409, 'ownership_unresolved', 'This proposal has no complete ownership snapshot.');
-        if (!state.ownerIds.includes(receipt.ownerId)) return refusal(404, 'unknown_owner', 'That owner is not in this proposal\'s ownership snapshot.');
+        // A party: an owner or leaseholder of the snapshot, or an authority the rules require.
+        if (!state.partyIds.includes(receipt.ownerId)) return refusal(404, 'unknown_owner', 'That owner is not in this proposal\'s ownership snapshot.');
         const status = proposal.lifecycleStatus;
         if (['Cancelled', 'Expired'].includes(status) || (status === 'Executed' && receipt.decision === 'approve')) {
             return refusal(409, 'proposal_closed', 'This proposal no longer takes decisions.');

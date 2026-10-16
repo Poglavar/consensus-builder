@@ -162,30 +162,43 @@ the wallet's own signature (`ed25519-wallet/v1`); a receipt counts only when all
 verify and both members are in the proposal's lens. Rights and authority may come from different
 members. A dry run signs with an ephemeral key, which `/lens/status` reports as the member key.
 
-The registry (`lens-rights-registry/v1`) holds no names: opaque owner IDs, exact fractions, areas,
-and which wallets act for which owner. One owner may hold several parcels; one wallet may act for
-several owners.
+The registry (`lens-rights-registry/v1`) holds no names: opaque party IDs, exact fractions, areas,
+and which wallets act for which party. One owner may hold several parcels; one wallet may act for
+several parties. A parcel may list its `leases` (holders with shares, and the leased area when it is
+not the whole parcel); `publicBodies` names the holders that "private only" tests leave out; and
+`authorities` names the decision-makers an agreement scheme requires, with the parcels each is
+competent for (land-readjustmend.md §23). An authority ID is never also a rights holder.
 
 ```json
 {
   "schema": "lens-rights-registry/v1",
   "parcels": [
-    { "parcelId": "HR-335550-1/1", "areaM2": 412, "owners": [{ "ownerId": "owner-7f3a", "share": "1/1" }] },
+    { "parcelId": "HR-335550-1/1", "areaM2": 412, "owners": [{ "ownerId": "owner-7f3a", "share": "1/1" }],
+      "leases": [{ "leaseId": "lease-1", "areaM2": 120, "holders": [{ "ownerId": "tenant-20b1", "share": "1/1" }] }] },
     { "parcelId": "HR-335550-2/1", "areaM2": 260, "owners": [
-      { "ownerId": "owner-7f3a", "share": "1/2" }, { "ownerId": "owner-c19e", "share": "1/2" }
+      { "ownerId": "owner-7f3a", "share": "1/2" }, { "ownerId": "city-zg", "share": "1/2" }
     ] }
   ],
+  "publicBodies": ["city-zg"],
+  "authorities": [{ "authorityId": "planning-office", "parcelIds": ["HR-335550-1/1", "HR-335550-2/1"] }],
   "signers": [
     { "ownerId": "owner-7f3a", "wallet": "<base58 wallet>" },
-    { "ownerId": "owner-c19e", "wallet": "<base58 wallet>" }
+    { "ownerId": "tenant-20b1", "wallet": "<base58 wallet>" },
+    { "ownerId": "planning-office", "wallet": "<base58 wallet>" }
   ]
 }
 ```
 
+The member compares a proposal's snapshot with all of this: `rights_mismatch`, `leases_mismatch`,
+`area_mismatch` and `public_body_mismatch` (409), `unknown_parcel` and `unknown_authority` (404),
+`authority_out_of_scope` (409, the proposal names an authority for a parcel it is not competent for).
+A wallet registered for an authority gets an authority fact for it like an owner's; the authority
+then approves through the same signed-decision path.
+
 ```bash
 cd backend
 node lens/run.mjs --dry-run --owners /tmp/owners.json --rights /tmp/rights.json --port 3095
-curl -s localhost:3095/lens/status   # .approval: { enabled, parcels, owners, signers, validitySeconds }
+curl -s localhost:3095/lens/status   # .approval: { enabled, parcels, owners, authorities, signers, validitySeconds }
 ```
 
 The live notary-01 persona (`agents/lens-member-run.mjs --persona notary-01 --live`) reads its registry

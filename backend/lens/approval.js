@@ -1,6 +1,7 @@
 // Lens-member side of abstract proposal approval: compares a proposal's pinned parcel-rights snapshot
-// with this member's own registry of abstract owners, then signs two separate facts with the member
-// key: "these rights are correct" and "this wallet, which proved control, may act for owner X".
+// (and any authority its rules require) with this member's own registry, then signs two separate
+// facts with the member key: "these rights are correct" and "this wallet, which proved control, may
+// act for party X" (an owner, a leaseholder or an authority).
 // Members state facts; they never accept proposals. Statement formats: frontend/js/proposals/approval-proof.js.
 
 import { createHash, createPrivateKey, randomBytes, sign } from 'node:crypto';
@@ -30,27 +31,47 @@ function isPubkey(value) {
     }
 }
 
-// The member's registry: complete owner lists with exact shares and areas per parcel, plus which
-// wallets may act for which abstract owner. No names: owners are opaque, stable IDs.
+// The member's registry: complete owner (and lease) lists with exact shares and areas per parcel,
+// which holders are public bodies, which authorities are competent for which parcels, and which
+// wallets may act for which abstract party (owner, leaseholder or authority). No names: parties are
+// opaque, stable IDs.
 export function normalizeRegistry(raw) {
     if (!raw || raw.schema !== REGISTRY_SCHEMA) throw new Error(`Expected a ${REGISTRY_SCHEMA} registry.`);
     if (!Array.isArray(raw.parcels) || !Array.isArray(raw.signers)) throw new Error('A rights registry needs parcels and signers arrays.');
     const rights = approval.normalizeRights({
-        schema: approval.RIGHTS_SCHEMA,
+        schema: approval.RIGHTS_SCHEMA_V2,
         source: { provider: 'lens-registry' },
         parcels: raw.parcels.map(parcel => ({
-            parcelId: parcel?.parcelId, complete: true, areaM2: parcel?.areaM2 ?? null, owners: parcel?.owners
-        }))
+            parcelId: parcel?.parcelId, complete: true, areaM2: parcel?.areaM2 ?? null, owners: parcel?.owners,
+            ...(parcel?.leases != null ? { leases: parcel.leases } : {})
+        })),
+        ...(raw.publicBodies != null ? { publicBodies: raw.publicBodies } : {})
     });
-    const owners = new Set(rights.parcels.flatMap(parcel => parcel.owners.map(owner => owner.ownerId)));
+    const holders = new Set(rights.parcels.flatMap(parcel => [...parcel.owners, ...(parcel.leases || []).flatMap(lease => lease.holders)]
+        .map(holder => holder.ownerId)));
+    const parcelIds = new Set(rights.parcels.map(parcel => parcel.parcelId));
+    const authorities = new Map();
+    (raw.authorities || []).forEach((row, index) => {
+        const id = row?.authorityId;
+        if (typeof id !== 'string' || !id.trim() || holders.has(id) || authorities.has(id)) {
+            throw new Error(`Authority ${index + 1} needs a unique id that is not a rights holder.`);
+        }
+        if (!Array.isArray(row.parcelIds) || !row.parcelIds.length || row.parcelIds.some(parcelId => !parcelIds.has(String(parcelId)))) {
+            throw new Error(`Authority ${id} needs the registered parcels it is competent for.`);
+        }
+        authorities.set(id, new Set(row.parcelIds.map(String)));
+    });
     const signers = new Map();
     raw.signers.forEach((row, index) => {
-        if (!owners.has(row?.ownerId)) throw new Error(`Signer ${index + 1} names an owner with no registered parcel.`);
+        if (!holders.has(row?.ownerId) && !authorities.has(row?.ownerId)) throw new Error(`Signer ${index + 1} names a party with no registered right or authority.`);
         if (!isPubkey(row.wallet)) throw new Error(`Signer ${index + 1} needs a base58 wallet public key.`);
         if (!signers.has(row.wallet)) signers.set(row.wallet, new Set());
         signers.get(row.wallet).add(row.ownerId);
     });
-    return { parcels: new Map(rights.parcels.map(parcel => [parcel.parcelId, parcel])), signers, owners: owners.size };
+    return {
+        parcels: new Map(rights.parcels.map(parcel => [parcel.parcelId, parcel])), publicBodies: new Set(rights.publicBodies || []),
+        authorities, signers, owners: holders.size
+    };
 }
 
 /**
@@ -90,9 +111,22 @@ export function createApprovalAttester({ keypair, registry, clock, validitySecon
             if (approval.stableStringify(known.owners) !== approval.stableStringify(parcel.owners)) {
                 throw new LensError(409, 'rights_mismatch', `parcel ${parcel.parcelId}: the owners or shares differ from this member's registry`);
             }
+            if (approval.stableStringify(known.leases || []) !== approval.stableStringify(parcel.leases || [])) {
+                throw new LensError(409, 'leases_mismatch', `parcel ${parcel.parcelId}: the leases, their holders or areas differ from this member's registry`);
+            }
             if (known.areaM2 !== parcel.areaM2) {
                 throw new LensError(409, 'area_mismatch', `parcel ${parcel.parcelId}: the declared area differs from this member's registry`);
             }
+        }
+        // Who counts as a public body decides who the "private" tests count, so it is attested too.
+        const publicIds = new Set(state.publicIds);
+        const misclassified = [...state.ownerIds, ...state.leaseholderIds].find(id => registry.publicBodies.has(id) !== publicIds.has(id));
+        if (misclassified) throw new LensError(409, 'public_body_mismatch', `${misclassified}: whether this holder is a public body differs from this member's registry`);
+        for (const id of state.authorityIds) {
+            const scope = registry.authorities.get(id);
+            if (!scope) throw new LensError(404, 'unknown_authority', `authority ${id} is not in this member's registry`);
+            const outside = state.parcels.find(parcel => !scope.has(parcel.parcelId));
+            if (outside) throw new LensError(409, 'authority_out_of_scope', `authority ${id} is not competent for parcel ${outside.parcelId} in this member's registry`);
         }
         return { content, contextHash, state };
     }
@@ -125,7 +159,7 @@ export function createApprovalAttester({ keypair, registry, clock, validitySecon
         member,
 
         status() {
-            return { enabled: true, parcels: registry.parcels.size, owners: registry.owners, signers: registry.signers.size, validitySeconds };
+            return { enabled: true, parcels: registry.parcels.size, owners: registry.owners, authorities: registry.authorities.size, signers: registry.signers.size, validitySeconds };
         },
 
         // Anyone may ask whether a snapshot is right; the answer names no wallet.
@@ -164,9 +198,10 @@ export function createApprovalAttester({ keypair, registry, clock, validitySecon
             if (context.contextHash !== entry.contextHash) {
                 throw new LensError(409, 'context_mismatch', 'the challenge was issued for another approval context');
             }
-            const ownerIds = context.state.ownerIds.filter(ownerId => registry.signers.get(wallet)?.has(ownerId));
+            // Any party of this context: an owner, a leaseholder or an authority the rules require.
+            const ownerIds = context.state.partyIds.filter(ownerId => registry.signers.get(wallet)?.has(ownerId));
             if (!ownerIds.length) {
-                throw new LensError(403, 'not_authorized', 'this wallet may not act for any owner in this approval context');
+                throw new LensError(403, 'not_authorized', 'this wallet may not act for any party in this approval context');
             }
             challenges.delete(challenge);
             const rights = rightsFact(context);

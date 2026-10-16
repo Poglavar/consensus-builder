@@ -22,8 +22,8 @@
     const wallet = () => root.ProposalApprovalLensAuthority.browserWallet();
 
     function labels(proposal) {
-        const ids = runtime().inspect(proposal).ownerIds;
-        return id => runtime().label(id, ids);
+        const state = runtime().inspect(proposal);
+        return id => runtime().label(id, state);
     }
     const list = names => names.join(', ');
     // The cadastral number people know ("1236"), as the rest of the panel shows it.
@@ -33,15 +33,8 @@
         const number = root.ProposalDisplayText.parcelLabel(getParcelDisplayNumberFromProperties(properties, id));
         return t('panel.proposal.parcels.label', 'Parcel {{id}}', { id: number });
     }
-    const fraction = rule => `${rule.numerator}/${rule.denominator}`;
-    function ruleText(policy) {
-        if (policy.type === 'unanimous') return t('proposalApproval.ruleUnanimous', 'Every owner must accept.');
-        const part = rule => (rule.strict
-            ? t('proposalApproval.moreThan', 'more than {{fraction}}', { fraction: fraction(rule) })
-            : t('proposalApproval.atLeast', 'at least {{fraction}}', { fraction: fraction(rule) }));
-        return t('proposalApproval.ruleThreshold', 'Passes with {{owners}} of the owners and {{area}} of the area.',
-            { owners: part(policy.owners), area: part(policy.area) });
-    }
+    const words = () => root.ProposalApprovalText;
+    const ruleText = (policy, regime) => words().rulesText(policy, t, regime);
 
     // The signer the installed providers would use for this owner right now (a wallet, a profile).
     function signerFor(proposal, ownerId) {
@@ -144,35 +137,78 @@
         </div>`;
     }
 
-    function areaNeedText(progress) {
-        if (progress.totalAreaM2 == null) return t('proposalApproval.areaUnknown', 'Parcel areas are unresolved.');
-        if (progress.policy.type === 'unanimous') return t('proposalApproval.areaNeededAll', 'Needs every parcel: {{area}}', { area: area(progress.areaNeededM2) });
-        return progress.areaStrict
-            ? t('proposalApproval.areaNeededMoreThan', 'Needs more than {{area}}', { area: area(progress.areaNeededM2) })
-            : t('proposalApproval.areaNeededAtLeast', 'Needs at least {{area}}', { area: area(progress.areaNeededM2) });
+    function needText(test, isArea) {
+        if (test.vacuous) return t('proposalApproval.rules.vacuous', 'Nobody to count here, so this test does not block.');
+        if (!isArea) return t('proposalApproval.ownersNeeded', 'Needs {{count}}', { count: test.needed });
+        return test.strict
+            ? t('proposalApproval.areaNeededMoreThan', 'Needs more than {{area}}', { area: area(test.needed) })
+            : t('proposalApproval.areaNeededAtLeast', 'Needs at least {{area}}', { area: area(test.needed) });
+    }
+
+    // One meter per test the rules count, then owners and land as plain information where no test
+    // counts them (every owner must accept; or an authority decides and owners are heard).
+    function metersHtml(progress) {
+        const html = words().orderTests(progress.tests).map(test => {
+            const isArea = test.measure === 'area';
+            const name = words().meterName(test), label = words().meterLabel(test, t);
+            if (!test.known) return `<p class="approval-card__note" data-approval-meter="${esc(name)}">${esc(label)}: ${esc(t('proposalApproval.areaUnknown', 'Parcel areas are unresolved.'))}</p>`;
+            const valueText = isArea
+                ? t('proposalApproval.amountOf', '{{amount}} of {{total}}', { amount: area(test.support), total: area(test.total) })
+                : t('proposalApproval.ownersCount', '{{accepted}} of {{total}} accepted', { accepted: test.support, total: test.total });
+            return meter(name, label, valueText, test.support, test.total, needText(test, isArea));
+        });
+        const counts = (measure, of) => progress.tests.some(test => test.measure === measure && test.of.split('+').includes(of));
+        const unanimous = progress.policy.type === 'unanimous';
+        if (!counts('headcount', 'owners')) {
+            html.push(meter('owners', t('proposalApproval.meterOwners', 'Owners'),
+                t('proposalApproval.ownersCount', '{{accepted}} of {{total}} accepted', { accepted: progress.acceptedOwners, total: progress.totalOwners }),
+                progress.acceptedOwners, progress.totalOwners, t('proposalApproval.rules.heard', 'Heard, not counted')));
+        }
+        if (!counts('area', 'owners')) {
+            html.push(progress.totalAreaM2 == null
+                ? `<p class="approval-card__note">${esc(t('proposalApproval.areaUnknown', 'Parcel areas are unresolved.'))}</p>`
+                : meter('area', t('reparcellization.modal.colArea', 'Area'),
+                    t('proposalApproval.amountOf', '{{amount}} of {{total}}', { amount: area(progress.acceptedAreaM2), total: area(progress.totalAreaM2) }),
+                    progress.acceptedAreaM2, progress.totalAreaM2, unanimous
+                        ? t('proposalApproval.areaNeededAll', 'Needs every parcel: {{area}}', { area: area(progress.totalAreaM2) }) : null));
+        }
+        return html.join('');
+    }
+
+    // Required authority decisions, each given or pending.
+    function authoritiesHtml(progress, label) {
+        if (!progress.authorities.length) return '';
+        const role = words().authorityText(progress.regime, t);
+        return `<ul class="approval-card__authorities">${progress.authorities.map(row => `<li data-approval-authority="${esc(row.authorityId)}" data-approval-authority-state="${row.approved ? 'approved' : 'pending'}">
+            <strong>${esc(label(row.authorityId))}</strong> · ${esc(row.approved
+                ? t('proposalApproval.authority.approved', 'approved: {{role}}', { role })
+                : t('proposalApproval.authority.pending', 'pending: {{role}}', { role }))}</li>`).join('')}</ul>`;
     }
 
     function progressHtml(proposal, progress, label) {
-        const owners = meter('owners', t('proposalApproval.meterOwners', 'Owners'),
-            t('proposalApproval.ownersCount', '{{accepted}} of {{total}} accepted', { accepted: progress.acceptedOwners, total: progress.totalOwners }),
-            progress.acceptedOwners, progress.totalOwners,
-            t('proposalApproval.ownersNeeded', 'Needs {{count}}', { count: progress.ownersNeeded }));
-        const land = progress.totalAreaM2 == null
-            ? `<p class="approval-card__note">${esc(t('proposalApproval.areaUnknown', 'Parcel areas are unresolved.'))}</p>`
-            : meter('area', t('reparcellization.modal.colArea', 'Area'),
-                t('proposalApproval.amountOf', '{{amount}} of {{total}}', { amount: area(progress.acceptedAreaM2), total: area(progress.totalAreaM2) }),
-                progress.acceptedAreaM2, progress.totalAreaM2, areaNeedText(progress));
-        const outstanding = progress.outstanding.length
-            ? t('proposalApproval.stillToAccept', 'Still to accept: {{owners}}', { owners: list(progress.outstanding.map(row => label(row.ownerId))) })
-            : t('proposalApproval.everyoneAccepted', 'Every owner has accepted.');
+        const authorityLed = !progress.tests.length;
+        const outstanding = authorityLed
+            ? t('proposalApproval.rules.ownersHeard', 'Owners are heard; the authority decides.')
+            : progress.outstanding.length
+                ? t('proposalApproval.stillToAccept', 'Still to accept: {{owners}}', { owners: list(progress.outstanding.map(row => label(row.ownerId))) })
+                : t('proposalApproval.everyoneAccepted', 'Every owner has accepted.');
         const coOwned = progress.coOwned.map(parcel => `<li data-approval-co-owned="${esc(parcel.parcelId)}">${esc(t('proposalApproval.coOwnedRule',
             '{{parcel}} counts toward the area once {{owners}} have all accepted ({{accepted}} of {{total}} so far).', {
                 parcel: parcelName(parcel.parcelId), owners: list(parcel.owners.map(owner => label(owner.ownerId))),
                 accepted: parcel.owners.filter(owner => owner.accepted).length, total: parcel.owners.length
             }))}</li>`).join('');
-        return `${owners}${land}
+        return `${metersHtml(progress)}${authoritiesHtml(progress, label)}
             <p class="approval-card__outstanding" data-approval-outstanding>${esc(outstanding)}</p>
             ${coOwned ? `<ul class="approval-card__co-owned">${coOwned}</ul>` : ''}`;
+    }
+
+    // The named scheme, if any: what it is, its stage, and that it is a research template.
+    function regimeHtml(progress) {
+        const template = words().regimeOf(progress.regime);
+        if (!template) return '';
+        return `<p class="approval-card__regime" data-approval-regime="${esc(template.id)}"><strong>${esc(words().regimeName(progress.regime, t))}</strong>
+            <span class="cb-badge approval-card__research">${esc(t('proposalApproval.regime.research', 'Research template'))}</span>
+            <small>${esc(words().familyText(template, t))} · ${esc(words().stageText(template, t))}</small></p>`;
     }
 
     function youHtml(proposal, hash, label, accepted) {
@@ -204,7 +240,8 @@
 
     // Every owner's position, for anyone: what they put in and what they get, without a wallet.
     function dealsHtml(proposal, label, accepted) {
-        const ids = runtime().inspect(proposal).ownerIds;
+        const state = runtime().inspect(proposal);
+        const ids = [...state.ownerIds, ...state.leaseholderIds.filter(id => !state.ownerIds.includes(id))];
         if (!ids.length) return '';
         return `<div class="approval-card__deals" data-approval-deals>
             <p class="approval-card__deals-title">${esc(t('proposalApproval.deals.title', 'What each owner puts in and gets'))}</p>
@@ -288,10 +325,13 @@
         const label = labels(proposal);
         const status = progress.passed
             ? `<span class="cb-badge approval-card__status approval-card__status--passed">${esc(t('proposalApproval.status.passed', 'Enough to pass'))}</span>`
-            : `<span class="cb-badge approval-card__status approval-card__status--pending">${esc(t('proposalApproval.status.pending', 'Not enough yet'))}</span>`;
+            : progress.supportMet
+                ? `<span class="cb-badge approval-card__status approval-card__status--pending" data-approval-awaiting-authority>${esc(t('proposalApproval.status.authorityPending', 'Awaiting the authority'))}</span>`
+                : `<span class="cb-badge approval-card__status approval-card__status--pending">${esc(t('proposalApproval.status.pending', 'Not enough yet'))}</span>`;
         return `<section class="approval-card" data-approval-card aria-labelledby="${titleId}">
             <div class="approval-card__head"><h4 id="${titleId}" class="approval-card__title">${esc(t('panel.parcel.acceptance.ownerTitle', 'Owner acceptance'))}</h4>${status}</div>
-            <p class="approval-card__rule">${esc(ruleText(progress.policy))}</p>
+            ${regimeHtml(progress)}
+            <p class="approval-card__rule">${esc(ruleText(progress.policy, progress.regime))}</p>
             ${progressHtml(proposal, progress, label)}
             ${dealsHtml(proposal, label, accepted)}
             ${chainHtml(proposal, hash)}
@@ -348,9 +388,11 @@
 
     async function withdraw(proposalId, ownerId) {
         const proposal = proposalStorage.getProposal(proposalId);
-        const parcelId = proposal ? firstParcelOf(proposal, ownerId) : null;
-        if (!parcelId) return;
-        await handleUserRejectProposal(proposalId, parcelId, ownerId);
+        if (!proposal) return;
+        const parcelId = firstParcelOf(proposal, ownerId);
+        // An owner withdraws from one of their parcels; a leaseholder or an authority has none.
+        if (parcelId) await handleUserRejectProposal(proposalId, parcelId, ownerId);
+        else await recordAbstractProposalDecision(proposal, null, ownerId, actor(), true);
         refreshAll();
     }
 
@@ -514,11 +556,12 @@
 
     // The review speaks to the owner ("What you contribute") when they are about to accept, and about
     // the owner ("What Owner C puts in") when anyone opens it from the card's owner row.
-    function reviewVoice(inspect, owner) {
+    function reviewVoice(inspect, owner, kind = 'owner') {
         if (!inspect) {
             return {
                 inspect: false,
-                title: t('proposalApproval.review.acceptAs', 'Accept as {{owner}}', { owner }),
+                title: kind === 'authority' ? t('proposalApproval.review.approveAs', 'Approve as {{owner}}', { owner })
+                    : t('proposalApproval.review.acceptAs', 'Accept as {{owner}}', { owner }),
                 contributes: t('proposalApproval.review.contributes', 'What you contribute'),
                 receives: t('proposalApproval.review.receives', 'What you get back'),
                 share: share => t('proposalApproval.review.yourShare', 'Your share {{share}}', { share }),
@@ -550,13 +593,33 @@
     }
 
     function contributesHtml(review, label, voice) {
+        const leases = review.leases.map(row => `<li data-approval-lease="${esc(row.leaseId)}">
+            <span>${esc(t('proposalApproval.review.lease', 'Lease {{lease}} on {{parcel}}', { lease: row.leaseId, parcel: parcelName(row.parcelId) }))}</span>
+            <span>${esc(voice.share(row.share))}${row.shareAreaM2 == null ? ''
+                : ` · ${esc(t('proposalApproval.amountOf', '{{amount}} of {{total}}', { amount: area(row.shareAreaM2), total: area(row.leaseAreaM2) }))}`}${row.coHolderIds.length
+                ? ` · ${esc(t('proposalApproval.review.heldWith', 'held with {{owners}}', { owners: list(row.coHolderIds.map(label)) }))}` : ''}</span>
+        </li>`).join('');
         const rows = review.contributes.map(row => `<li data-approval-contribution="${esc(row.parcelId)}">
             <span>${esc(parcelName(row.parcelId))}</span>
             <span>${esc(voice.share(row.share))}${row.shareAreaM2 == null ? ''
                 : ` · ${esc(t('proposalApproval.amountOf', '{{amount}} of {{total}}', { amount: area(row.shareAreaM2), total: area(row.parcelAreaM2) }))}`}${row.coOwnerIds.length
                 ? ` · ${esc(t('proposalApproval.review.coOwnedWith', 'co-owned with {{owners}}', { owners: list(row.coOwnerIds.map(label)) }))}` : ''}</span>
         </li>`).join('');
-        return `<ul class="approval-review__list">${rows}</ul>`;
+        return `<ul class="approval-review__list">${rows}${leases}</ul>`;
+    }
+
+    // What an authority decides on: the whole plan, not a share of it.
+    function planHtml(proposal, review) {
+        const state = runtime().inspect(proposal);
+        const plots = Array.isArray(proposal.reparcellization?.polygons) ? proposal.reparcellization.polygons.length : null;
+        const facts = [
+            [t('proposalDrafts.review.parcels', 'Parcels'), state.parcels.length],
+            [t('proposalApproval.meterOwners', 'Owners'), state.ownerIds.length],
+            ...(state.leaseholderIds.length ? [[t('proposalApproval.rules.meter.headcount-leaseholders-all', 'Leaseholders'), state.leaseholderIds.length]] : []),
+            ...(plots != null ? [[t('reparcellization.modal.newPlots', 'New plots'), plots]] : []),
+            ...(review.progressWithout.totalAreaM2 != null ? [[t('reparcellization.modal.colArea', 'Area'), area(review.progressWithout.totalAreaM2)]] : [])
+        ];
+        return `<dl class="approval-review__facts" data-approval-plan>${facts.map(([name, value]) => `<div><dt>${esc(name)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>`;
     }
 
     function receivesHtml(review, label, voice) {
@@ -597,7 +660,13 @@
 
     function conditionsHtml(review, members, voice) {
         const c = review.conditions;
-        const lines = [ruleText(c.policy)];
+        const template = words().regimeOf(c.regime);
+        const lines = [ruleText(c.policy, c.regime)];
+        if (template) {
+            lines.push(`${words().regimeName(c.regime, t)} — ${words().stageText(template, t)}`, ...words().allocationLines(template, t));
+            const check = regimeCheck(review.proposal);
+            if (check) lines.push(...words().checkLines(check, t, id => labels(review.proposal)(id)));
+        }
         if (c.cashOffered) {
             lines.push(c.isConditional
                 ? t('panel.proposal.disbursement.conditionalHint', 'All owners must accept before payout')
@@ -619,12 +688,26 @@
             ${voice.inspect ? '' : `<p class="approval-review__sign-note">${esc(t('proposalApproval.review.signNote', 'Your wallet signs these exact terms. If they change, your acceptance stops counting.'))}</p>`}`;
     }
 
+    // "2 of 4 owners, 100 m² of 175 m²", then any other test the rules count and the authority.
     function progressLine(progress) {
-        return progress.totalAreaM2 == null
+        const base = progress.totalAreaM2 == null
             ? t('proposalApproval.review.progressOwners', '{{accepted}} of {{total}} owners', { accepted: progress.acceptedOwners, total: progress.totalOwners })
             : t('proposalApproval.review.progressBoth', '{{accepted}} of {{total}} owners, {{area}} of {{totalArea}}', {
                 accepted: progress.acceptedOwners, total: progress.totalOwners, area: area(progress.acceptedAreaM2), totalArea: area(progress.totalAreaM2)
             });
+        const others = words().orderTests(progress.tests || []).filter(test => test.known && !(test.of === 'owners' && test.scope === 'all'))
+            .map(test => `${words().meterLabel(test, t)} ${test.measure === 'area'
+                ? t('proposalApproval.amountOf', '{{amount}} of {{total}}', { amount: area(test.support), total: area(test.total) })
+                : t('proposalApproval.amountOf', '{{amount}} of {{total}}', { amount: test.support, total: test.total })}`);
+        const authority = (progress.authorities || []).length
+            ? [progress.authorityMet ? t('proposalApproval.authority.given', 'authority approved') : t('proposalApproval.authority.awaited', 'authority pending')] : [];
+        return [base, ...others, ...authority].join('; ');
+    }
+
+    // The plan against its scheme's distribution rules (reparcellization-validation.js), when it has both.
+    function regimeCheck(proposal) {
+        if (!proposal?.reparcellization || !root.ReparcellizationValidation) return null;
+        try { return root.ReparcellizationValidation.validate(proposal, { turf: root.turf }).regimeCheck || null; } catch (_) { return null; }
     }
 
     function reviewProgressHtml(review, voice) {
@@ -667,11 +750,16 @@
                 'The selected lens has not established these rights and your authority to act for this owner.'));
             return;
         }
+        review.proposal = proposal;
         const members = (await root.LensPicker.loadDirectory()).members || [];
-        const voice = reviewVoice(inspect, label(ownerId));
+        const voice = reviewVoice(inspect, label(ownerId), review.kind);
         const parts = mount(voice.title, 'cb-dialog--lg');
         parts.dialog.setAttribute(inspect ? 'data-approval-deal' : 'data-approval-review', ownerId);
-        parts.body.innerHTML = section(voice.contributes, contributesHtml(review, label, voice))
+        const leaseNote = review.kind === 'leaseholder'
+            ? `<p class="approval-card__note" data-approval-lease-note>${esc(t('proposalApproval.review.leaseNote', 'The plan reallocates ownership. A lease counts toward the approval rules but gets no plot from this plan’s ledger.'))}</p>` : '';
+        parts.body.innerHTML = (review.kind === 'authority'
+            ? section(t('proposalApproval.review.planTitle', 'The plan to decide on'), planHtml(proposal, review))
+            : section(voice.contributes, contributesHtml(review, label, voice) + leaseNote))
             + (review.receives ? section(voice.receives, receivesHtml(review, label, voice)) : '')
             + section(t('proposalApproval.review.conditions', 'Conditions'), conditionsHtml(review, members, voice))
             + section(t('proposalApproval.review.progress', 'Progress'), reviewProgressHtml(review, voice))
@@ -702,10 +790,11 @@
                 () => openVerify(proposalId, { thenReviewOwnerId: ownerId })));
             return;
         }
-        const accept = button('btn btn-success', t('proposalApproval.review.acceptAs', 'Accept as {{owner}}', { owner: label(ownerId) }), async () => {
+        const accept = button('btn btn-success', voice.title, async () => {
             accept.disabled = true;
             cancel.disabled = true;
             status.textContent = t('panel.proposal.lens.awaitingSignature', 'Waiting for your wallet signature…');
+            // An owner decides from one of their parcels; a leaseholder or an authority from none.
             const parcel = parcelId && review.contributes.some(row => row.parcelId === String(parcelId)) ? String(parcelId) : firstParcelOf(proposal, ownerId);
             let result = null;
             try {
