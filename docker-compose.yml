@@ -4,7 +4,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "8080:80"
+      - "127.0.0.1:8080:80"
     depends_on:
       - backend
     # Mount local frontend code for live reload
@@ -26,7 +26,7 @@ services:
       # so any localhost port (any worktree, any frontend dev server) is allowed via the
       # localhost regex in backend/index.js.
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     depends_on:
       - db
     # Mount local backend code for live reload
@@ -52,9 +52,10 @@ services:
     environment:
       POSTGRES_DB: consensus
       POSTGRES_USER: consensus
-      POSTGRES_PASSWORD: consensus
+      # Only read when the volume is first initialised; the live password is ALTER ROLE-managed.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in the root .env}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata_geodata_pg18:/var/lib/postgresql/data
 
